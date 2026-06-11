@@ -7,9 +7,10 @@ import (
 
 const (
 	pluginAPIVersion = "glade.plugin.v1"
-	pluginVersion    = "0.1.0"
 	pluginSource     = "github.com/glade-sh/glade/tools"
 )
+
+var pluginVersion = "0.1.0"
 
 type pluginManifest struct {
 	APIVersion          string                  `json:"apiVersion"`

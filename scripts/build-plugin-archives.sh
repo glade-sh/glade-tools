@@ -10,6 +10,13 @@ VERSION="${1:-${VERSION:-0.1.0}}"
 OUT_DIR="${OUT_DIR:-$ROOT/dist/plugins}"
 TARGETS="${TARGETS:-darwin/arm64 darwin/amd64 linux/arm64 linux/amd64}"
 
+case "$VERSION" in
+  ""|"."|".."|*..*|*/*|*\\*|*[!A-Za-z0-9._-]*)
+    echo "invalid plugin version: $VERSION" >&2
+    exit 1
+    ;;
+esac
+
 mkdir -p "$OUT_DIR"
 rm -f "$OUT_DIR/checksums.txt"
 rm -f "$OUT_DIR/index.json"
@@ -24,6 +31,18 @@ sha256_file() {
   fi
 }
 
+write_plugin_manifest() {
+  local name="$1"
+  local dest="$2"
+  awk -v version="$VERSION" '
+    !done && $0 ~ /"version"[[:space:]]*:/ {
+      sub(/"version"[[:space:]]*:[[:space:]]*"[^"]*"/, "\"version\": \"" version "\"")
+      done = 1
+    }
+    { print }
+  ' "$ROOT/plugins/$name/plugin.json" > "$dest"
+}
+
 build_archive() {
   local name="$1"
   local target="$2"
@@ -32,16 +51,30 @@ build_archive() {
   local binary="glade-plugin-$name"
   local stage="$OUT_DIR/.stage-$name-$goos-$goarch"
   local archive="$OUT_DIR/${binary}_${VERSION}_${goos}_${goarch}.tar.gz"
+  local ldflags
 
   rm -rf "$stage"
   mkdir -p "$stage/bin"
 
+  case "$name" in
+    compat)
+      ldflags="-X github.com/glade-sh/glade/tools/internal/toolcli.pluginVersion=$VERSION"
+      ;;
+    performance)
+      ldflags="-X github.com/glade-sh/glade/tools/internal/perftool.pluginVersion=$VERSION"
+      ;;
+    *)
+      echo "unknown plugin: $name" >&2
+      exit 1
+      ;;
+  esac
+
   (
     cd "$ROOT"
-    CGO_ENABLED="${CGO_ENABLED:-1}" GOOS="$goos" GOARCH="$goarch" go build -trimpath -o "$stage/bin/$binary" "./cmd/$binary"
+    CGO_ENABLED="${CGO_ENABLED:-1}" GOOS="$goos" GOARCH="$goarch" go build -trimpath -ldflags "$ldflags" -o "$stage/bin/$binary" "./cmd/$binary"
   )
 
-  cp "$ROOT/plugins/$name/plugin.json" "$stage/plugin.json"
+  write_plugin_manifest "$name" "$stage/plugin.json"
   (
     cd "$stage"
     {

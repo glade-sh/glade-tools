@@ -20,11 +20,13 @@ type pluginCommandManifest struct {
 	Summary string   `json:"summary"`
 }
 
+var pluginVersion = "0.1.0"
+
 func writeManifest(w io.Writer) error {
 	manifest := pluginManifest{
 		APIVersion: "glade.plugin.v1",
 		Name:       "performance",
-		Version:    "0.1.0",
+		Version:    pluginVersion,
 		Summary:    "Advisory Salesforce performance scanner.",
 		Commands: []pluginCommandManifest{
 			{Path: []string{"performance"}, Summary: "Scan Salesforce projects for performance risks."},

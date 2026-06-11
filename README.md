@@ -63,6 +63,9 @@ Release archives come from:
 scripts/build-plugin-archives.sh 0.1.0
 ```
 
+The version argument is written into each archive name, archived `plugin.json`,
+binary `manifest --json` response, and registry row.
+
 Set `PLUGIN_ASSET_BASE_URL` to write a registry `index.json` next to the
 archives. The index uses canonical `@glade/*` names, first-party trust metadata,
 platform asset URLs, and archive SHA-256 values.
