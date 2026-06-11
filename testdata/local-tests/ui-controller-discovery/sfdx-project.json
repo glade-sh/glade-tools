@@ -1,0 +1,9 @@
+{
+  "namespace": "pkg",
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true
+    }
+  ]
+}

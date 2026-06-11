@@ -1,0 +1,16 @@
+{
+  "namespace": "pkgx",
+  "version": "1.0",
+  "builtAt": "2026-05-20T00:00:00Z",
+  "apexTypes": [
+    {
+      "kind": "class",
+      "name": "TrailPackageService",
+      "namespace": "pkgx",
+      "sourceRoot": "artifact",
+      "version": "1.0",
+      "dependency": true,
+      "modifiers": ["global"]
+    }
+  ]
+}

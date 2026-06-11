@@ -1,0 +1,2 @@
+project:
+  managedPackageDependencies: ["pkgx:artifact:../managed-package-artifact/pkgx.glade-package.json:1.0"]

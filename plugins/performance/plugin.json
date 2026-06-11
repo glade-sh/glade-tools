@@ -1,0 +1,16 @@
+{
+  "apiVersion": "glade.plugin.v1",
+  "name": "performance",
+  "version": "0.1.0",
+  "summary": "Advisory Salesforce performance scanner.",
+  "commands": [
+    {
+      "path": [
+        "performance"
+      ],
+      "summary": "Scan Salesforce projects for performance risks."
+    }
+  ],
+  "minimumGladeVersion": "0.1.0",
+  "source": "github.com/glade-sh/glade/tools"
+}

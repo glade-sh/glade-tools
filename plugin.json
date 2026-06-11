@@ -1,0 +1,58 @@
+{
+  "apiVersion": "glade.plugin.v1",
+  "name": "compat",
+  "version": "0.1.0",
+  "summary": "Compatibility fixtures, surface ledgers, and maintenance scanners.",
+  "commands": [
+    {
+      "path": [
+        "compat"
+      ],
+      "summary": "Run compatibility fixture and report commands."
+    },
+    {
+      "path": [
+        "surface"
+      ],
+      "summary": "Refresh and inspect the Salesforce surface ledger."
+    },
+    {
+      "path": [
+        "local-tests"
+      ],
+      "summary": "Report local Apex test execution readiness."
+    },
+    {
+      "path": [
+        "post-parity"
+      ],
+      "summary": "Scan a project for unsupported surfaces."
+    },
+    {
+      "path": [
+        "examples"
+      ],
+      "summary": "Scan example projects and report support status."
+    },
+    {
+      "path": [
+        "dashboard"
+      ],
+      "summary": "Generate compatibility dashboard output."
+    },
+    {
+      "path": [
+        "gaps"
+      ],
+      "summary": "Generate known-gaps output."
+    },
+    {
+      "path": [
+        "stdlib"
+      ],
+      "summary": "Generate standard-library coverage output."
+    }
+  ],
+  "minimumGladeVersion": "0.1.0",
+  "source": "github.com/glade-sh/glade/tools"
+}

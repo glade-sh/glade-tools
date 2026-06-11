@@ -1,0 +1,13 @@
+/.glade/
+**/.glade/
+**/.glade-*/
+/bin/
+/dist/
+/coverage.out
+/glade-plugin-*
+/glade-tools
+/*.tar.gz
+*.test
+*.prof
+*.pprof
+.DS_Store

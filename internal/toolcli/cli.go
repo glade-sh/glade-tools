@@ -1,0 +1,113 @@
+package toolcli
+
+import (
+	"context"
+	"fmt"
+	"io"
+	"strings"
+)
+
+func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) == 0 || isHelpArg(args[0]) {
+		printHelp(stdout)
+		return 0
+	}
+	if args[0] == "manifest" {
+		if len(args) != 2 || args[1] != "--json" {
+			fmt.Fprintln(stderr, "glade-tools: usage: glade-plugin-compat manifest --json")
+			return 1
+		}
+		if err := writeCompatManifest(stdout); err != nil {
+			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	if args[0] == "compat" {
+		args = args[1:]
+	}
+	if err := runCompat(ctx, args, stdout); err != nil {
+		fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+		return 1
+	}
+	return 0
+}
+
+func printHelp(w io.Writer) {
+	fmt.Fprint(w, `glade-tools contains Glade maintenance commands.
+
+Usage:
+  glade-tools <command> [flags]
+
+Commands:
+  validate           Validate compatibility fixture files.
+  run                Validate and execute fixtures.
+  matrix             Print the full capability matrix.
+  local-tests        Report local Apex test execution readiness.
+  examples           Scan example projects and report support status.
+  post-parity        Scan a project for unsupported surfaces.
+  surface            Refresh and inspect the Salesforce surface ledger.
+  dashboard          Generate compatibility dashboard.
+  gaps               Generate known gaps document.
+  stdlib             Generate standard library coverage document.
+  docs-inventory     Inventory Salesforce docs.
+  catalog            Build a capability catalog.
+  reconcile          Reconcile docs inventory with the catalog.
+  stub-contracts     Report generated stub behavioral contract policy.
+  stub-behavior      Report generated platform stub behavior status.
+
+Compatibility:
+  glade-tools compat <command> is accepted for old scripts.
+`)
+}
+
+func isHelpArg(arg string) bool {
+	return arg == "help" || arg == "-h" || arg == "--help"
+}
+
+func printCompatHelp(w io.Writer) {
+	fmt.Fprintf(w, "%s\n\nExamples:\n  glade compat matrix --json\n  glade compat local-tests --project . --json\n", compatUsage())
+}
+
+func printCompatLocalTestsHelp(w io.Writer) {
+	fmt.Fprint(w, strings.TrimSpace(`
+Report local Apex test execution readiness.
+
+Usage:
+  glade compat local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--method <name>] [--parallel <n|auto>] [--json]
+
+Common flags:
+  --project <root>          Project root. Defaults to current directory.
+  --class <name>            Run one Apex test class.
+  --class-list <a,b>        Run a comma-separated list of test classes.
+  --class-file <path>       Run classes listed in a file.
+  --start-class <name>      Resume from a class name in sorted order.
+  --method <name>           Run one test method when paired with --class.
+  --changed-since <ref>     Select tests affected since a git ref.
+  --blockers-only           Print only blocking failures.
+  --top-failures <n>        Limit failure groups in human output.
+  --max-failure-groups <n>  Limit grouped failure output.
+  --timeout <ms-per-test>   Per-test timeout in milliseconds.
+  --parallel <n|auto>       Run test classes with n workers.
+  --parallel-methods        Run test methods in parallel within each class.
+  --trace-blockers          Include blocked-test traces in JSON output.
+  --slow-test-ms <n>        Include traces/profiles for tests at or above n ms.
+  --shard-count <n|auto>    Select one shard from a balanced class plan.
+  --shard-index <i|auto>    Shard index to execute.
+  --write-class-shards <dir>  Write balanced class shard files and exit.
+  --duration-history <path> Optional perf JSON used to weight class sharding.
+  --analyze                 Force project analysis before running tests.
+  --profile-on-timeout      Capture profiles for timed-out tests.
+  --cpu-profile <path>      Write a CPU profile for the local-test run.
+  --mem-profile <path>      Write an allocation profile for the local-test run.
+  --perf-json <path>        Write per-class timing data for future sharding.
+  --progress                Print progress while running.
+  --json                    Write JSON readiness results.
+  --check <path>            Compare results with a checked baseline.
+
+Examples:
+  glade compat local-tests --project . --json
+  glade compat local-tests --project . --class AccountServiceTest
+  glade compat local-tests --project . --class-file tests.txt --top-failures 10
+`)+"\n")
+}
