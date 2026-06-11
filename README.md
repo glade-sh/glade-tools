@@ -33,10 +33,17 @@ alias.
 first-party plugin binaries:
 
 ```bash
-glade plugins install compat
-glade plugins install performance
+glade plugins install @glade/compat
+glade plugins install @glade/performance
 glade compat local-tests --project . --json
 glade performance scan --project . --json
+```
+
+The short aliases still resolve for first-party installs:
+
+```bash
+glade plugins install compat
+glade plugins install performance
 ```
 
 During local development, link built binaries instead:
@@ -54,4 +61,12 @@ Release archives come from:
 
 ```bash
 scripts/build-plugin-archives.sh 0.1.0
+```
+
+Set `PLUGIN_ASSET_BASE_URL` to write a registry `index.json` next to the
+archives. The index uses canonical `@glade/*` names, first-party trust metadata,
+platform asset URLs, and archive SHA-256 values.
+
+```bash
+OUT_DIR=dist/plugins TARGETS="darwin/arm64 linux/amd64" PLUGIN_ASSET_BASE_URL="https://plugins.glade.sh/v0.1.0" scripts/build-plugin-archives.sh 0.1.0
 ```
