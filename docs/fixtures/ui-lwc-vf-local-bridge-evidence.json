@@ -1,0 +1,57 @@
+{
+  "name": "ui-lwc-vf-local-bridge-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.ApexPages.Message",
+      "symbol": "ApexPages.Message",
+      "kind": "test",
+      "notes": "Local page messages are collected during Visualforce actions and reset between action lifecycles."
+    },
+    {
+      "surfaceId": "apex:System.PageReference",
+      "symbol": "PageReference",
+      "kind": "test",
+      "notes": "Current-page URL and parameter mutation are visible inside local controller invocation."
+    },
+    {
+      "surfaceId": "apex:System.PageReference(record)",
+      "symbol": "PageReference(record)",
+      "kind": "exec",
+      "notes": "A local ApexPage SObject record constructs a Visualforce PageReference for /apex/<Name>."
+    },
+    {
+      "surfaceId": "apex:System.Test.invokePage(PageReference)",
+      "symbol": "Test.invokePage",
+      "kind": "test",
+      "notes": "Test.invokePage returns a typed Component.apex.page handle without rendering the Visualforce page."
+    },
+    {
+      "surfaceId": "lwc:apex-wire.sobject-json",
+      "symbol": "LWC Apex wire SObject JSON",
+      "kind": "test",
+      "notes": "The local LWC Apex wire bridge serializes controller SObject row responses through the runtime JSON path."
+    }
+  ],
+  "source": [
+    {
+      "path": "internal/vm/ui_invocation_test.go",
+      "content": "Controller invocation tests assert current page parameters, ApexPages.addMessage collection, page-message isolation, and preserved PageReference parameter mutation."
+    },
+    {
+      "path": "internal/server/lightning_test.go",
+      "content": "Lightning Out bridge tests assert Apex wire SObject rows, label module imports, static-resource URLs, and record wire output from local storage."
+    }
+  ],
+  "command": {
+    "kind": "test",
+    "args": [
+      "go test ./internal/vm -run 'Test.*(UIInvocation|PageReference|ApexPages|InvokePage)'",
+      "go test ./internal/server ./internal/lwcbrowser -run 'Test.*(Lightning|Visualforce|Label|Resource|Wire)'"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  }
+}

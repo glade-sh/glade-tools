@@ -434,7 +434,7 @@ func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 		"Search.suggest(String,String,Object)":               StatusPartial,
 		"Search.suggest(String,String,Object,Object)":        StatusPartial,
 		"System.enqueueJob(Object,Object)":                   StatusPartial,
-		"AccessLevel.withPermissionSetId(String)":            StatusPartial,
+		"AccessLevel.withPermissionSetId(String)":            StatusSupported,
 		"System.runAs(Object,Object)":                        StatusPartial,
 		"System.runAs(Package.Version)":                      StatusPartial,
 		"Approval.process(Approval.ProcessRequest)":          StatusPartial,
@@ -446,6 +446,60 @@ func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 		"BusinessHours.nextStartDate(String, Datetime)":      StatusPartial,
 	}
 	assertStdlibStatuses(t, watched)
+}
+
+func TestLWCStdlibIntegrationRowsArePromotedOrBounded(t *testing.T) {
+	watched := map[string]Status{
+		"AccessLevel.withPermissionSetId(String)":               StatusSupported,
+		"Type.newInstance":                                      StatusSupported,
+		"PageReference(record)":                                 StatusSupported,
+		"JSON.deserialize":                                      StatusPartial,
+		"JSON.deserializeStrict":                                StatusPartial,
+		"JSON.deserializeUntyped":                               StatusPartial,
+		"JSON.serialize":                                        StatusPartial,
+		"JSON.serializePretty":                                  StatusPartial,
+		"Schema.getGlobalDescribe()":                            StatusPartial,
+		"Schema.describeSObjects(List<String>)":                 StatusPartial,
+		"DescribeFieldResult":                                   StatusPartial,
+		"DescribeSObjectResult":                                 StatusPartial,
+		"Search.query / SOSL FIND":                              StatusPartial,
+		"Search.query(String,AccessLevel)":                      StatusPartial,
+		"Search.find":                                           StatusPartial,
+		"Search.find(String,AccessLevel)":                       StatusPartial,
+		"Search.suggest":                                        StatusPartial,
+		"Search.suggest(String,String,Search.SuggestionOption)": StatusPartial,
+		"Search.suggest(String,String,Search.SuggestionOption,AccessLevel)": StatusPartial,
+		"ApexPages.Message":                                StatusPartial,
+		"System.enqueueJob(Object,Object)":                 StatusPartial,
+		"Test.getEventBus()":                               StatusPartial,
+		"Test.getExternalService()":                        StatusPartial,
+		"Test.setMock":                                     StatusPartial,
+		"WebServiceCallout.invoke(Object,Object,Map,List)": StatusPartial,
+		"WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)": StatusPartial,
+	}
+	for _, entry := range StdlibMatrix() {
+		want, ok := watched[entry.API]
+		if !ok {
+			continue
+		}
+		delete(watched, entry.API)
+		if entry.Status != want {
+			t.Fatalf("%s = %s, want %s: %s", entry.API, entry.Status, want, entry.Notes)
+		}
+		notes := strings.ToLower(entry.Notes)
+		if want == StatusSupported {
+			if strings.Contains(notes, "not modeled") || strings.Contains(notes, "no full") || strings.Contains(notes, "unsupported") {
+				t.Fatalf("%s supported notes carry open-gap language: %s", entry.API, entry.Notes)
+			}
+			continue
+		}
+		if !strings.Contains(notes, "no ") && !strings.Contains(notes, "not modeled") && !strings.Contains(notes, "not executed") && !strings.Contains(notes, "remain") && !strings.Contains(notes, "fences") {
+			t.Fatalf("%s partial notes do not name a boundary: %s", entry.API, entry.Notes)
+		}
+	}
+	if len(watched) > 0 {
+		t.Fatalf("missing LWC stdlib integration rows: %#v", watched)
+	}
 }
 
 func TestWebServiceCalloutStdlibRowsAreLocallyPromotedOrFenced(t *testing.T) {

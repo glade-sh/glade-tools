@@ -1,0 +1,52 @@
+{
+  "name": "query-runtime-local-search-sosl-evidence",
+  "evidence": [
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_find",
+      "symbol": "SOSL FIND",
+      "kind": "test",
+      "notes": "When fixed search results are absent, SOSL scans local org records in deterministic object and insertion order."
+    },
+    {
+      "surfaceId": "apex:System.Search.query(String)",
+      "symbol": "Search.query",
+      "kind": "test",
+      "notes": "Search.query returns local org-backed SOSL result groups for supported RETURNING clauses."
+    },
+    {
+      "surfaceId": "apex:System.Search.find(String)",
+      "symbol": "Search.find",
+      "kind": "test",
+      "notes": "Search.find returns SearchResults DTOs from deterministic local org matches."
+    },
+    {
+      "surfaceId": "apex:System.Search.suggest(String,String,Search.SuggestionOption)",
+      "symbol": "Search.suggest",
+      "kind": "test",
+      "notes": "Search.suggest returns local suggestion DTOs from name-like fields and respects the local limit option."
+    },
+    {
+      "surfaceId": "apex:System.Search.query(String,System.AccessLevel)",
+      "symbol": "Search.query with AccessLevel",
+      "kind": "test",
+      "notes": "USER_MODE and SYSTEM_MODE route through the local permission checks for supported search rows."
+    }
+  ],
+  "source": [
+    {
+      "path": "internal/vm/platform_test.go",
+      "content": "insert new Account(Name = 'Nook Supply'); insert new Contact(LastName = 'Nook Buyer', Email = 'buyer@example.test'); List<List<SObject>> rows = Search.query('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, Name, Email)'); Search.SearchResults results = Search.find('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, Name)'); Search.SuggestionResults suggestions = Search.suggest('Noo', 'Account', option);"
+    }
+  ],
+  "command": {
+    "kind": "test",
+    "args": [
+      "go test ./internal/vm -run 'Test.*(SOSL|Search|FixedSearchResults)'"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "name": "data-platform-schema-lwc-record-wire-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.AccessLevel.withPermissionSetId(String)",
+      "symbol": "AccessLevel.withPermissionSetId",
+      "kind": "test",
+      "notes": "Permission-set-scoped AccessLevel values drive supported SOQL and DML permission checks."
+    },
+    {
+      "surfaceId": "apex:Schema.Schema.getGlobalDescribe()",
+      "symbol": "Schema.getGlobalDescribe",
+      "kind": "test",
+      "notes": "Local metadata-backed describe maps expose loaded standard and project objects."
+    },
+    {
+      "surfaceId": "apex:Schema.Schema.describeSObjects(List<String>)",
+      "symbol": "Schema.describeSObjects",
+      "kind": "test",
+      "notes": "Local describe results include labels, key prefixes, query/search flags, fields, and record type metadata."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.getPicklistValues()",
+      "symbol": "Schema.DescribeFieldResult.getPicklistValues",
+      "kind": "test",
+      "notes": "Field describe results use local metadata for picklist entries."
+    },
+    {
+      "surfaceId": "lwc:salesforce/uiRecordApi.getObjectInfo",
+      "symbol": "lightning/uiRecordApi getObjectInfo",
+      "kind": "test",
+      "notes": "The local LWC record wire serves object-info JSON from the same metadata model."
+    }
+  ],
+  "source": [
+    {
+      "path": "internal/vm/data_test.go",
+      "content": "AccessLevel scoped = AccessLevel.withPermissionSetId('0PS000000000998'); Database.queryWithBinds('SELECT Id, Hidden__c FROM Account', new Map<String,Object>(), scoped);"
+    },
+    {
+      "path": "internal/lwcbrowser/salesforce_modules_test.go",
+      "content": "Record wire and getObjectInfo tests assert local field labels, object info, and values from storage."
+    }
+  ],
+  "command": {
+    "kind": "test",
+    "args": [
+      "go test ./internal/vm -run 'TestExecDescribe|TestExecFeatureManagement|TestExecAccessLevel|TestExecDatabaseUserMode'",
+      "go test ./internal/lwcbrowser ./internal/server -run 'Test.*(Schema|RecordWire|Lightning|Wire)'"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  }
+}
