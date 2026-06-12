@@ -1,0 +1,63 @@
+{
+  "name": "async-test-harness-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.System.enqueueJob(Object,Object)",
+      "symbol": "System.enqueueJob(Object,Object)",
+      "kind": "test",
+      "notes": "Local AsyncOptions maximumQueueableStackDepth limits queueable chaining during the test harness drain."
+    },
+    {
+      "surfaceId": "apex:System.Test.getEventBus()",
+      "symbol": "Test.getEventBus",
+      "kind": "test",
+      "notes": "The local event-bus test broker delivers queued platform events and runs local platform-event triggers."
+    },
+    {
+      "surfaceId": "apex:System.Test.getExternalService()",
+      "symbol": "Test.getExternalService",
+      "kind": "test",
+      "notes": "The local external-service test harness returns deterministic objects and rejects live-service execution."
+    },
+    {
+      "surfaceId": "apex:System.Test.setMock(Type,Object)",
+      "symbol": "Test.setMock",
+      "kind": "test",
+      "notes": "WebServiceMock values registered through Test.setMock route generated SOAP callouts locally."
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCallout.invoke(Object,Object,Map,List)",
+      "symbol": "WebServiceCallout.invoke",
+      "kind": "test",
+      "notes": "SOAP mock dispatch increments callout limits and materializes response map/list shells without live transport."
+    },
+    {
+      "surfaceId": "apex:System.Test.setContinuationResponse(String,HttpResponse)",
+      "symbol": "Test.setContinuationResponse",
+      "kind": "test",
+      "notes": "Stored continuation responses are visible through local continuation response lookup."
+    }
+  ],
+  "source": [
+    {
+      "path": "internal/vm/platform_test.go",
+      "content": "Focused async tests cover queueable stack depth, publish-immediate limits, continuation response lookup, external-service live execution fencing, and WebServiceCallout mock response materialization."
+    },
+    {
+      "path": "internal/apextest/runner_test.go",
+      "content": "Local Apex test harness tests assert deterministic async, event, and continuation behavior."
+    }
+  ],
+  "command": {
+    "kind": "test",
+    "args": [
+      "go test ./internal/vm -run 'Test.*(Queueable|Async|EventBus|Continuation|ExternalService|WebServiceCallout|Limits)'",
+      "go test ./internal/apextest -run 'Test.*(Async|Event|Continuation)'"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  }
+}

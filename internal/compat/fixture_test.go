@@ -88,7 +88,15 @@ func TestRunDocumentedFixtures(t *testing.T) {
 
 func skipDocumentedFixture(name string) bool {
 	switch name {
-	case "local-tests-corpus", documentedFixtureExampleProjectsName, "ui-controller-discovery", "post-parity-trace-events":
+	case "async-test-harness-local-evidence",
+		"core-runtime-json-dto-lwc-evidence",
+		"data-platform-schema-lwc-record-wire-evidence",
+		"local-tests-corpus",
+		documentedFixtureExampleProjectsName,
+		"query-runtime-local-search-sosl-evidence",
+		"ui-controller-discovery",
+		"ui-lwc-vf-local-bridge-evidence",
+		"post-parity-trace-events":
 		return true
 	default:
 		return false

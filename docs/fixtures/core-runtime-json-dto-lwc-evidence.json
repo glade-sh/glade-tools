@@ -1,0 +1,51 @@
+{
+  "name": "core-runtime-json-dto-lwc-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.JSON.deserialize(String,Type)",
+      "symbol": "JSON.deserialize",
+      "kind": "test",
+      "notes": "Local Apex JSON maps LWC-style DTO payloads into inner DTO lists, enum fields, and Map<String,Object> values."
+    },
+    {
+      "surfaceId": "apex:System.JSON.deserializeStrict(String,Type)",
+      "symbol": "JSON.deserializeStrict",
+      "kind": "test",
+      "notes": "Strict DTO deserialization still rejects unknown fields through a catchable JSONException."
+    },
+    {
+      "surfaceId": "apex:System.JSON.serialize(Object)",
+      "symbol": "JSON.serialize",
+      "kind": "test",
+      "notes": "Local serialization emits enum fields as JSON strings for Apex wire DTO responses."
+    },
+    {
+      "surfaceId": "apex:System.Type.newInstance()",
+      "symbol": "Type.newInstance",
+      "kind": "test",
+      "notes": "Type.newInstance dispatches a zero-argument constructor for a local Apex class and rejects uninstantiable built-ins."
+    }
+  ],
+  "source": [
+    {
+      "path": "internal/vm/json_test.go",
+      "content": "LwcDTO dto = (LwcDTO)JSON.deserialize('{\"name\":\"Widget\",\"status\":\"Ready\",\"rows\":[{\"label\":\"A\",\"count\":2}],\"extra\":{\"ok\":true}}', LwcDTO.class); System.assertEquals(LwcDTO.Status.Ready, dto.status); System.assertEquals(true, dto.extra.get('ok')); System.assert(JSON.serialize(dto).contains('\"status\":\"Ready\"'));"
+    },
+    {
+      "path": "internal/vm/stdlib_test.go",
+      "content": "FactoryTarget made = (FactoryTarget)Type.forName('FactoryTarget').newInstance(); System.assertEquals('constructed', made.marker); Type.forName('String').newInstance();"
+    }
+  ],
+  "command": {
+    "kind": "test",
+    "args": [
+      "go test ./internal/vm -run 'TestExec(JSONDeserialize|JSONSerialize|JSONMalformed|TypeForName|TypeNewInstance|TypeForNameCreatesGenericCollections)'",
+      "go test ./internal/vm -run TestExecLwcControllerDTOs"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  }
+}
