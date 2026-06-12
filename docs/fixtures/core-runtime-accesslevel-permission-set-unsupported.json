@@ -1,11 +1,11 @@
 {
-  "name": "core-runtime-accesslevel-permission-set-unsupported",
+  "name": "core-runtime-accesslevel-permission-set-local",
   "evidence": [
     {
       "surfaceId": "apex:System.AccessLevel.withPermissionSetId(String)",
       "symbol": "AccessLevel.withPermissionSetId",
       "kind": "exec",
-      "notes": "Permission-set-scoped user mode requires permission-set semantics and returns a stable UnsupportedFeature diagnostic locally."
+      "notes": "Permission-set-scoped user mode returns a local AccessLevel token for supported permission checks."
     }
   ],
   "source": [
@@ -21,9 +21,9 @@
     ]
   },
   "expected": {
-    "error": {
-      "type": "UnsupportedFeature",
-      "message": "unsupported call \"AccessLevel.withPermissionSetId permission-set-scoped user mode\""
+    "result": {
+      "debug": null,
+      "ok": true
     }
   }
 }

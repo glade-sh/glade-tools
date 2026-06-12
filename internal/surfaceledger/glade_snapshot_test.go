@@ -220,8 +220,8 @@ func TestBuildGladeSnapshotKeepsExplicitUnsupportedOverStubBehavior(t *testing.T
 	if !ok {
 		t.Fatalf("missing BusinessHours row %s", id)
 	}
-	if row.GladeBehavior != BehaviorUnsupported {
-		t.Fatalf("BusinessHours.add behavior = %s, want %s", row.GladeBehavior, BehaviorUnsupported)
+	if row.GladeBehavior != BehaviorPartial {
+		t.Fatalf("BusinessHours.add behavior = %s, want %s", row.GladeBehavior, BehaviorPartial)
 	}
 }
 

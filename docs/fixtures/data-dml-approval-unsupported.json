@@ -23,7 +23,7 @@
   "expected": {
     "error": {
       "type": "UnsupportedFeature",
-      "message": "unsupported call \"Approval.process local approval process metadata\""
+      "message": "unsupported call \"Approval.process request type null\""
     }
   }
 }

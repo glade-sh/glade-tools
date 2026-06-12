@@ -124,17 +124,6 @@
       ]
     },
     {
-      "name": "quickaction-describe-unsupported",
-      "method": "POST",
-      "path": "/services/data/v61.0/tooling/executeAnonymous",
-      "body": "{\"anonymousBody\": \"QuickAction.describeAvailableActions('Account');\"}",
-      "status": 200,
-      "contains": [
-        "success\":false",
-        "unsupported call \\\"QuickAction.describeAvailableActions local quick action UI surface\\\""
-      ]
-    },
-    {
       "name": "search-query-unsupported",
       "method": "POST",
       "path": "/services/data/v61.0/tooling/executeAnonymous",

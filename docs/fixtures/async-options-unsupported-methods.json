@@ -1,11 +1,11 @@
 {
-  "name": "async-options-unsupported-methods",
+  "name": "async-options-maximum-queueable-stack-depth",
   "evidence": [
     {
       "surfaceId": "apex:System.AsyncOptions.getMaximumQueueableStackDepth()",
       "symbol": "AsyncOptions.getMaximumQueueableStackDepth",
       "kind": "exec",
-      "notes": "Local queueable stack option metadata is not modeled."
+      "notes": "Local queueable stack-depth option metadata is modeled on AsyncOptions."
     }
   ],
   "source": [
@@ -21,9 +21,9 @@
     ]
   },
   "expected": {
-    "error": {
-      "type": "UnsupportedFeature",
-      "message": "unsupported call \"AsyncOptions.getMaximumQueueableStackDepth local async options surface\""
+    "result": {
+      "debug": null,
+      "ok": true
     }
   }
 }

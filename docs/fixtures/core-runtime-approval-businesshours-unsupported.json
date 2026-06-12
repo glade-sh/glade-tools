@@ -11,7 +11,7 @@
       "surfaceId": "apex:BusinessHours.add(String,Datetime,Long)",
       "symbol": "BusinessHours.add",
       "kind": "exec",
-      "notes": "Business-hours datetime math requires BusinessHours and holiday metadata; the local runtime does not assume a 24x7 calendar."
+      "notes": "Business-hours datetime math supports local BusinessHours records and returns a stable UnsupportedFeature diagnostic for missing record IDs."
     },
     {
       "surfaceId": "apex:BusinessHours.addGmt(String,Datetime,Long)",
@@ -46,7 +46,7 @@
   "expected": {
     "error": {
       "type": "UnsupportedFeature",
-      "message": "unsupported call \"BusinessHours.add local business hours metadata\""
+      "message": "unsupported call \"BusinessHours record missing 01m000000000001AAA\""
     }
   }
 }

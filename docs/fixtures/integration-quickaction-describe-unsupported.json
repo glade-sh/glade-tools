@@ -1,10 +1,10 @@
 {
-  "name": "integration-quickaction-describe-unsupported",
+  "name": "integration-quickaction-describe-local",
   "evidence": [
     {
       "symbol": "QuickAction.describeAvailableActions",
       "kind": "exec",
-      "notes": "Quick action discovery is a UI/platform metadata surface; the local VM returns UnsupportedFeature instead of synthetic actions."
+      "notes": "Quick action discovery returns deterministic local metadata DTOs without live UI action service execution."
     }
   ],
   "source": [
@@ -20,9 +20,9 @@
     ]
   },
   "expected": {
-    "error": {
-      "type": "UnsupportedFeature",
-      "message": "unsupported call \"QuickAction.describeAvailableActions local quick action UI surface\""
+    "result": {
+      "debug": null,
+      "ok": true
     }
   }
 }
