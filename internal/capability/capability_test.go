@@ -522,6 +522,109 @@ func TestWebServiceCalloutStdlibRowsAreLocallyPromotedOrFenced(t *testing.T) {
 	}
 }
 
+func TestSecondTierStdlibRowsAreEvidenceBackedOrBounded(t *testing.T) {
+	watched := map[string]struct {
+		status Status
+		notes  []string
+	}{
+		"Crypto.generateDigest": {
+			status: StatusPartial,
+			notes:  []string{"SHA-384", "unsupported digest"},
+		},
+		"Decimal.round": {
+			status: StatusPartial,
+			notes:  []string{"HALF_UP", "precision is not modeled"},
+		},
+		"Decimal.setScale": {
+			status: StatusPartial,
+			notes:  []string{"negative scale", "scale fence"},
+		},
+		"EncodingUtil.urlDecode": {
+			status: StatusPartial,
+			notes:  []string{"UTF-8", "charset replacement behavior is not modeled"},
+		},
+		"EncodingUtil.urlEncode": {
+			status: StatusPartial,
+			notes:  []string{"strict local charset checks", "charset replacement behavior is not modeled"},
+		},
+		"Limits.get*": {
+			status: StatusPartial,
+			notes:  []string{"SOSL", "unmodeled getter families"},
+		},
+		"Messaging.SingleEmailMessage": {
+			status: StatusPartial,
+			notes:  []string{"local file attachments", "no delivery transport"},
+		},
+		"Messaging.sendEmail": {
+			status: StatusPartial,
+			notes:  []string{"SendEmailResult", "send-options"},
+		},
+		"Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption)": {
+			status: StatusPartial,
+			notes:  []string{"static-resource attachment retrieval", "Salesforce content attachment"},
+		},
+		"Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption,Boolean)": {
+			status: StatusPartial,
+			notes:  []string{"updateEmailTemplateUsage", "ignored locally"},
+		},
+		"Matcher.find": {
+			status: StatusPartial,
+			notes:  []string{"Go regexp", "Java-only"},
+		},
+		"Matcher.group": {
+			status: StatusPartial,
+			notes:  []string{"capture groups", "Java-only"},
+		},
+		"Matcher.matches": {
+			status: StatusPartial,
+			notes:  []string{"whole-string", "Java-only"},
+		},
+		"Pattern.compile": {
+			status: StatusPartial,
+			notes:  []string{"quote escapes", "Java-only"},
+		},
+		"Pattern.matches": {
+			status: StatusPartial,
+			notes:  []string{"whole-string", "Java-only"},
+		},
+		"String.split": {
+			status: StatusPartial,
+			notes:  []string{"\\Q...\\E", "empty-match regexes"},
+		},
+		"Test.loadData": {
+			status: StatusPartial,
+			notes:  []string{"Go CSV parsing", "bad-header diagnostics"},
+		},
+		"Test.startTest": {
+			status: StatusPartial,
+			notes:  []string{"governor window", "unmodeled service counters"},
+		},
+		"Test.stopTest": {
+			status: StatusPartial,
+			notes:  []string{"drains supported async", "unmodeled async/service"},
+		},
+	}
+	for _, entry := range StdlibMatrix() {
+		want, ok := watched[entry.API]
+		if !ok {
+			continue
+		}
+		delete(watched, entry.API)
+		if entry.Status != want.status {
+			t.Fatalf("%s = %s, want %s: %s", entry.API, entry.Status, want.status, entry.Notes)
+		}
+		notes := strings.ToLower(entry.Notes)
+		for _, note := range want.notes {
+			if !strings.Contains(notes, strings.ToLower(note)) {
+				t.Fatalf("%s notes missing %q: %s", entry.API, note, entry.Notes)
+			}
+		}
+	}
+	if len(watched) > 0 {
+		t.Fatalf("missing second-tier stdlib rows: %#v", watched)
+	}
+}
+
 func TestHTTPStdlibRowsAreLocallyPromotedOrFenced(t *testing.T) {
 	watched := map[string]Status{
 		"Http.send(HttpRequest)": StatusSupported,
