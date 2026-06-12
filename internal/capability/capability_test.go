@@ -337,55 +337,11 @@ func TestStdlibSupportedRowsDoNotClaimPlaceholderOrNoOpBehavior(t *testing.T) {
 
 func TestCoreServiceContextStdlibRowsAreExplicitUnsupported(t *testing.T) {
 	watched := map[string]bool{
-		"QuickAction.describeAvailableActions":                                          true,
-		"QuickAction.describeAvailableQuickActions(String)":                             true,
-		"QuickAction.describeQuickActions(List<String>)":                                true,
-		"QuickAction.performQuickAction":                                                true,
-		"QuickAction.performQuickAction(QuickAction.QuickActionRequest)":                true,
-		"QuickAction.performQuickAction(QuickAction.QuickActionRequest,Boolean)":        true,
-		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>)":         true,
-		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>,Boolean)": true,
-		"QuickAction.retrieveQuickActionTemplate(String,Id)":                            true,
-		"QuickAction.retrieveQuickActionTemplates(List<String>,Id)":                     true,
-		"Request.getCurrent()":                                                          true,
-		"Request.getQuiddity()":                                                         true,
-		"Request.getRequestId()":                                                        true,
-		"RequestImpl.getCurrent()":                                                      true,
-		"ResetPasswordResult.getPassword()":                                             true,
-		"SandboxContext.organizationId()":                                               true,
-		"SandboxContext.sandboxId()":                                                    true,
-		"SandboxContext.sandboxName()":                                                  true,
-		"SandboxPostCopy.runApexClass(SandboxContext)":                                  true,
-		"Schedulable.execute(SchedulableContext)":                                       true,
-		"SchedulableContext.getTriggerId()":                                             true,
-		"Search.find(String,Object)":                                                    true,
-		"Search.query(String,Object)":                                                   true,
-		"Search.suggest(String,String,Object)":                                          true,
-		"Search.suggest(String,String,Object,Object)":                                   true,
-		"System.enqueueJob(Object,Object)":                                              true,
-		"System.runAs(Object,Object)":                                                   true,
-		"System.runAs(Package.Version)":                                                 true,
-		"System.schedule(String,String,Object)":                                         true,
-		"Test.enableChangeDataCapture()":                                                true,
-		"Test.getEventBus()":                                                            true,
-		"Test.getExternalService()":                                                     true,
-		"Test.invokeContinuationMethod(Object,Continuation)":                            true,
-		"Test.newSendEmailQuickActionDefaults(Id,Id)":                                   true,
-		"Test.setContinuationResponse(String,HttpResponse)":                             true,
-		"Test.setCurrentPageReference(Object)":                                          true,
-		"Test.testInstall(InstallHandler,Version)":                                      true,
-		"Test.testInstall(InstallHandler,Version,Boolean)":                              true,
-		"Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)": true,
-		"Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String)":                                             true,
-		"Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String,Boolean)":                                     true,
-		"Test.testUninstall(UninstallHandler)":                                                                     true,
-		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)":                             true,
-		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                                                         true,
-		"TrailblazerIdentity.splunkLog(String,String)":                                                             true,
-		"UIRequest.getCurrent()":                       true,
-		"UIRequest.getRequestHeader(String)":           true,
-		"UserInfo.hasPackageLicense(Id)":               true,
-		"UserInfo.isCurrentUserLicensedForPackage(Id)": true,
+		"Answers.findSimilar(Question)":                                                true,
+		"ResetPasswordResult.getPassword()":                                            true,
+		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)": true,
+		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                             true,
+		"TrailblazerIdentity.splunkLog(String,String)":                                 true,
 	}
 	for _, entry := range StdlibMatrix() {
 		if !watched[entry.API] {
@@ -399,6 +355,97 @@ func TestCoreServiceContextStdlibRowsAreExplicitUnsupported(t *testing.T) {
 	if len(watched) > 0 {
 		t.Fatalf("missing explicit unsupported core service/context rows: %#v", watched)
 	}
+}
+
+func assertStdlibStatuses(t *testing.T, watched map[string]Status) {
+	t.Helper()
+	for _, entry := range StdlibMatrix() {
+		want, ok := watched[entry.API]
+		if !ok {
+			continue
+		}
+		delete(watched, entry.API)
+		if entry.Status != want {
+			t.Fatalf("%s = %s, want %s: %s", entry.API, entry.Status, want, entry.Notes)
+		}
+		if entry.Notes == "" {
+			t.Fatalf("%s needs local-model notes", entry.API)
+		}
+	}
+	if len(watched) > 0 {
+		t.Fatalf("missing stdlib rows: %#v", watched)
+	}
+}
+
+func TestQuickActionStdlibRowsAreLocalPartial(t *testing.T) {
+	watched := map[string]Status{
+		"QuickAction.describeAvailableActions":                                          StatusPartial,
+		"QuickAction.describeAvailableQuickActions(String)":                             StatusPartial,
+		"QuickAction.describeQuickActions(List<String>)":                                StatusPartial,
+		"QuickAction.retrieveQuickActionTemplate(String,Id)":                            StatusPartial,
+		"QuickAction.retrieveQuickActionTemplates(List<String>,Id)":                     StatusPartial,
+		"QuickAction.performQuickAction":                                                StatusPartial,
+		"QuickAction.performQuickAction(QuickAction.QuickActionRequest)":                StatusPartial,
+		"QuickAction.performQuickAction(QuickAction.QuickActionRequest,Boolean)":        StatusPartial,
+		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>)":         StatusPartial,
+		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>,Boolean)": StatusPartial,
+		"Test.newSendEmailQuickActionDefaults(Id,Id)":                                   StatusSupported,
+	}
+	assertStdlibStatuses(t, watched)
+}
+
+func TestLocalContextStdlibRowsArePromoted(t *testing.T) {
+	watched := map[string]Status{
+		"Request.getCurrent()":                               StatusSupported,
+		"RequestImpl.getCurrent()":                           StatusSupported,
+		"Request.getRequestId()":                             StatusSupported,
+		"Request.getQuiddity()":                              StatusSupported,
+		"UIRequest.getCurrent()":                             StatusSupported,
+		"UIRequest.getRequestHeader(String)":                 StatusSupported,
+		"UserInfo.hasPackageLicense(Id)":                     StatusSupported,
+		"UserInfo.isCurrentUserLicensedForPackage(Id)":       StatusSupported,
+		"Test.enableChangeDataCapture()":                     StatusSupported,
+		"Test.getEventBus()":                                 StatusPartial,
+		"Test.getExternalService()":                          StatusPartial,
+		"Test.setContinuationResponse(String,HttpResponse)":  StatusSupported,
+		"Test.invokeContinuationMethod(Object,Continuation)": StatusSupported,
+		"Test.testInstall(InstallHandler,Version)":           StatusSupported,
+		"Test.testInstall(InstallHandler,Version,Boolean)":   StatusSupported,
+		"Test.testUninstall(UninstallHandler)":               StatusSupported,
+		"Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)": StatusSupported,
+		"Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String)":                                             StatusSupported,
+		"Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String,Boolean)":                                     StatusSupported,
+		"SandboxPostCopy.runApexClass(SandboxContext)":                                                             StatusSupported,
+		"SandboxContext.organizationId()":                                                                          StatusSupported,
+		"SandboxContext.sandboxId()":                                                                               StatusSupported,
+		"SandboxContext.sandboxName()":                                                                             StatusSupported,
+	}
+	assertStdlibStatuses(t, watched)
+}
+
+func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
+	watched := map[string]Status{
+		"System.schedule(String,String,Object)":              StatusSupported,
+		"Schedulable.execute(SchedulableContext)":            StatusSupported,
+		"SchedulableContext.getTriggerId()":                  StatusSupported,
+		"Test.setCurrentPageReference(Object)":               StatusPartial,
+		"Search.find(String,Object)":                         StatusPartial,
+		"Search.query(String,Object)":                        StatusPartial,
+		"Search.suggest(String,String,Object)":               StatusPartial,
+		"Search.suggest(String,String,Object,Object)":        StatusPartial,
+		"System.enqueueJob(Object,Object)":                   StatusPartial,
+		"AccessLevel.withPermissionSetId(String)":            StatusPartial,
+		"System.runAs(Object,Object)":                        StatusPartial,
+		"System.runAs(Package.Version)":                      StatusPartial,
+		"Approval.process(Approval.ProcessRequest)":          StatusPartial,
+		"Approval.process(Approval.ProcessRequest, Boolean)": StatusPartial,
+		"BusinessHours.add(String, Datetime, Long)":          StatusPartial,
+		"BusinessHours.addGmt(String, Datetime, Long)":       StatusPartial,
+		"BusinessHours.diff(String, Datetime, Datetime)":     StatusPartial,
+		"BusinessHours.isWithin(String, Datetime)":           StatusPartial,
+		"BusinessHours.nextStartDate(String, Datetime)":      StatusPartial,
+	}
+	assertStdlibStatuses(t, watched)
 }
 
 func TestWebServiceCalloutStdlibRowsAreLocallyPromotedOrFenced(t *testing.T) {
