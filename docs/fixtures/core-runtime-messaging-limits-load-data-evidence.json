@@ -1,0 +1,155 @@
+{
+  "name": "core-runtime-messaging-limits-load-data-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption)",
+      "symbol": "Messaging.renderStoredEmailTemplate",
+      "kind": "test",
+      "notes": "METADATA_ONLY returns deterministic local static-resource attachment metadata from stored EmailTemplate rows."
+    },
+    {
+      "surfaceId": "apex:System.Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption,Boolean)",
+      "symbol": "Messaging.renderStoredEmailTemplate",
+      "kind": "test",
+      "notes": "METADATA_WITH_BODY returns deterministic local static-resource attachment body bytes; updateEmailTemplateUsage remains ignored locally."
+    },
+    {
+      "surfaceId": "apex:System.Messaging.sendEmail(List<Messaging.Email>,Boolean)",
+      "symbol": "Messaging.sendEmail",
+      "kind": "test",
+      "notes": "allOrNothing=false returns per-message validation errors and increments local email invocation limits once."
+    },
+    {
+      "surfaceId": "apex:System.Limits.getSoslQueries()",
+      "symbol": "Limits.getSoslQueries",
+      "kind": "test",
+      "notes": "Local SOSL execution increments the SOSL query counter."
+    },
+    {
+      "surfaceId": "apex:System.Limits.getLimitSoslQueries()",
+      "symbol": "Limits.getLimitSoslQueries",
+      "kind": "test",
+      "notes": "Local SOSL limit getter returns the modeled Salesforce test limit."
+    },
+    {
+      "surfaceId": "apex:System.Test.loadData(Schema.SObjectType,String)",
+      "symbol": "Test.loadData",
+      "kind": "test",
+      "notes": "CSV static resources use Go CSV parsing, typed field coercion, DML routing, and deterministic header diagnostics."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/EmailTemplate.object-meta.xml",
+      "content": "<CustomObject><label>Email Template</label><pluralLabel>Email Templates</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/fields/DeveloperName.field-meta.xml",
+      "content": "<CustomField><fullName>DeveloperName</fullName><label>Developer Name</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/fields/FolderId.field-meta.xml",
+      "content": "<CustomField><fullName>FolderId</fullName><label>Folder ID</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/fields/Subject.field-meta.xml",
+      "content": "<CustomField><fullName>Subject</fullName><label>Subject</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/fields/Body.field-meta.xml",
+      "content": "<CustomField><fullName>Body</fullName><label>Body</label><type>LongTextArea</type><visibleLines>3</visibleLines></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/fields/HtmlValue.field-meta.xml",
+      "content": "<CustomField><fullName>HtmlValue</fullName><label>HTML Value</label><type>LongTextArea</type><visibleLines>3</visibleLines></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/EmailTemplate/fields/Attachment.field-meta.xml",
+      "content": "<CustomField><fullName>Attachment</fullName><label>Attachment</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/Load_Row__c.object-meta.xml",
+      "content": "<CustomObject><label>Load Row</label><pluralLabel>Load Rows</pluralLabel><nameField><type>Text</type><label>Name</label></nameField></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/fields/Quoted__c.field-meta.xml",
+      "content": "<CustomField><fullName>Quoted__c</fullName><label>Quoted</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/fields/Blank__c.field-meta.xml",
+      "content": "<CustomField><fullName>Blank__c</fullName><label>Blank</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/fields/When__c.field-meta.xml",
+      "content": "<CustomField><fullName>When__c</fullName><label>When</label><type>Date</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/fields/At__c.field-meta.xml",
+      "content": "<CustomField><fullName>At__c</fullName><label>At</label><type>DateTime</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/fields/Ready__c.field-meta.xml",
+      "content": "<CustomField><fullName>Ready__c</fullName><label>Ready</label><type>Checkbox</type><defaultValue>false</defaultValue></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/fields/Amount__c.field-meta.xml",
+      "content": "<CustomField><fullName>Amount__c</fullName><label>Amount</label><type>Number</type><precision>16</precision><scale>2</scale></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Load_Row__c/fields/Lookup__c.field-meta.xml",
+      "content": "<CustomField><fullName>Lookup__c</fullName><label>Lookup</label><type>Lookup</type><referenceTo>Account</referenceTo></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/staticresources/WelcomeAttachment.resource",
+      "content": "welcome attachment"
+    },
+    {
+      "path": "force-app/main/default/staticresources/WelcomeAttachment.resource-meta.xml",
+      "content": "<StaticResource><contentType>text/plain</contentType><cacheControl>Private</cacheControl><description>welcome.txt</description></StaticResource>"
+    },
+    {
+      "path": "force-app/main/default/staticresources/LoadRows.resource",
+      "content": "Name,Quoted__c,Blank__c,When__c,At__c,Ready__c,Amount__c,Lookup__c\r\n\"Acme, Inc.\",\"said \"\"hello\"\"\",,2024-02-29,2024-02-29T12:34:56Z,true,42.50,001000000000001AAA\r\n"
+    },
+    {
+      "path": "force-app/main/default/staticresources/LoadRows.resource-meta.xml",
+      "content": "<StaticResource><contentType>text/csv</contentType><cacheControl>Private</cacheControl></StaticResource>"
+    },
+    {
+      "path": "force-app/main/default/staticresources/BadLoadRows.resource",
+      "content": "Name,Missing__c\nBad,bad\n"
+    },
+    {
+      "path": "force-app/main/default/staticresources/BadLoadRows.resource-meta.xml",
+      "content": "<StaticResource><contentType>text/csv</contentType><cacheControl>Private</cacheControl></StaticResource>"
+    },
+    {
+      "path": "force-app/main/classes/CoreRuntimeMessagingLimitsLoadDataEvidenceTest.cls",
+      "content": "@isTest private class CoreRuntimeMessagingLimitsLoadDataEvidenceTest { @isTest static void messagingLimitsAndLoadDataRows() { EmailTemplate tmpl = new EmailTemplate(Name = 'Trail Template', DeveloperName = 'Trail_Template', FolderId = '00l000000000001AAA', Subject = 'Trail subject', Body = 'Trail body', HtmlValue = '<p>Trail body</p>', Attachment = 'WelcomeAttachment'); insert tmpl; Messaging.SingleEmailMessage withBody = Messaging.renderStoredEmailTemplate(tmpl.Id, null, null, Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY, false); System.assertEquals(1, withBody.getFileAttachments().size()); System.assertEquals('welcome.txt', withBody.getFileAttachments()[0].getFileName()); System.assertEquals('text/plain', withBody.getFileAttachments()[0].getContentType()); System.assertEquals('welcome attachment', withBody.getFileAttachments()[0].getBody().toString()); Messaging.SingleEmailMessage metadataOnly = Messaging.renderStoredEmailTemplate(tmpl.Id, null, null, Messaging.AttachmentRetrievalOption.METADATA_ONLY); System.assertEquals(1, metadataOnly.getFileAttachments().size()); System.assertEquals(null, metadataOnly.getFileAttachments()[0].getBody()); Messaging.SingleEmailMessage invalid = new Messaging.SingleEmailMessage(); List<Messaging.SendEmailResult> results = Messaging.sendEmail(new List<Messaging.Email>{invalid}, false); System.assertEquals(1, results.size()); System.assertEquals(false, results[0].isSuccess()); System.assertEquals(1, results[0].getErrors().size()); System.assertEquals(1, Limits.getEmailInvocations()); insert new Account(Name = 'Acme Load'); System.assertEquals(0, Limits.getSoslQueries()); List<List<SObject>> found = Search.query('FIND {Acme} RETURNING Account(Id, Name)'); System.assertEquals(1, Limits.getSoslQueries()); System.assertEquals(20, Limits.getLimitSoslQueries()); System.assert(found[0].size() > 0); List<Load_Row__c> loaded = Test.loadData(Load_Row__c.SObjectType, 'LoadRows'); System.assertEquals(1, loaded.size()); Load_Row__c row = [SELECT Name, Quoted__c, Blank__c, When__c, At__c, Ready__c, Amount__c, Lookup__c FROM Load_Row__c LIMIT 1]; System.assertEquals('Acme, Inc.', row.Name); System.assertEquals('said \"hello\"', row.Quoted__c); System.assertEquals(null, row.Blank__c); System.assertEquals(Date.newInstance(2024, 2, 29), row.When__c); System.assertEquals(Datetime.valueOfGmt('2024-02-29T12:34:56Z'), row.At__c); System.assertEquals(true, row.Ready__c); System.assertEquals(42.50, row.Amount__c); System.assertEquals('001000000000001AAA', row.Lookup__c); try { Test.loadData(Load_Row__c.SObjectType, 'MissingRows'); System.assert(false, 'missing resource should fail'); } catch (Exception e) { System.assert(e.getMessage().contains('static resource MissingRows not found')); } try { Test.loadData(Load_Row__c.SObjectType, 'BadLoadRows'); System.assert(false, 'bad header should fail'); } catch (Exception e) { System.assert(e.getMessage().contains('Unknown field Missing__c')); } } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}
