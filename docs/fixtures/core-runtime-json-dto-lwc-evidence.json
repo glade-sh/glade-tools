@@ -40,7 +40,7 @@
     "kind": "test",
     "args": [
       "go test ./internal/vm -run 'TestExec(JSONDeserialize|JSONSerialize|JSONMalformed|TypeForName|TypeNewInstance|TypeForNameCreatesGenericCollections)'",
-      "go test ./internal/vm -run TestExecLwcControllerDTOs"
+      "go test ./internal/vm -run TestExecJSONDeserializeLwcControllerDTOs"
     ]
   },
   "expected": {
