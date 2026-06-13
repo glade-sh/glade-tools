@@ -1,0 +1,37 @@
+{
+  "name": "data-dml-approval-process-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:Approval.process(Approval.ProcessRequest,Boolean)",
+      "symbol": "Approval.process",
+      "kind": "test",
+      "notes": "Approval.process accepts a local ProcessSubmitRequest plus allOrNone and returns a ProcessResult instead of needing a live approval process."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/classes/DataDmlApprovalProcessLocalEvidenceTest.cls",
+      "content": "@isTest private class DataDmlApprovalProcessLocalEvidenceTest { @isTest static void submitRequestReturnsLocalResult() { Account account = new Account(Name = 'Needs Approval'); insert account; Approval.ProcessSubmitRequest request = new Approval.ProcessSubmitRequest(); request.setObjectId(account.Id); request.setComments('local submit'); Approval.ProcessResult result = Approval.process(request, true); System.assertEquals(true, result.isSuccess()); System.assertEquals(account.Id, result.getEntityId()); System.assertEquals(0, result.getErrors().size()); System.assertNotEquals(null, result.getInstanceId()); System.assertEquals(1, result.getNewWorkitemIds().size()); Approval.ProcessSubmitRequest bad = new Approval.ProcessSubmitRequest(); Approval.ProcessResult badResult = Approval.process(bad, false); System.assertEquals(false, badResult.isSuccess()); System.assertEquals(1, badResult.getErrors().size()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

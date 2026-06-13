@@ -1,0 +1,53 @@
+{
+  "name": "core-runtime-canvas-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:Canvas.CanvasLifecycleHandler.excludeContextTypes()",
+      "symbol": "Canvas.CanvasLifecycleHandler.excludeContextTypes()",
+      "kind": "test",
+      "notes": "Local Canvas lifecycle handlers return an empty excluded context type set by default."
+    },
+    {
+      "surfaceId": "apex:Canvas.CanvasLifecycleHandler.onRender(Canvas.RenderContext)",
+      "symbol": "Canvas.CanvasLifecycleHandler.onRender(Canvas.RenderContext)",
+      "kind": "test",
+      "notes": "Local Canvas lifecycle handlers accept the mocked RenderContext."
+    },
+    {
+      "surfaceId": "apex:Canvas.CanvasRenderException.getTypeName()",
+      "symbol": "Canvas.CanvasRenderException.getTypeName()",
+      "kind": "test",
+      "notes": "Canvas render exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:Canvas.Test.mockRenderContext(Map<String,String>,Map<String,String>)",
+      "symbol": "Canvas.Test.mockRenderContext(Map<String,String>,Map<String,String>)",
+      "kind": "test",
+      "notes": "The local test harness builds a Canvas.RenderContext from application and environment maps."
+    },
+    {
+      "surfaceId": "apex:Canvas.Test.testCanvasLifecycle(Canvas.CanvasLifecycleHandler,Canvas.RenderContext)",
+      "symbol": "Canvas.Test.testCanvasLifecycle(Canvas.CanvasLifecycleHandler,Canvas.RenderContext)",
+      "kind": "test",
+      "notes": "The local test harness dispatches the lifecycle handler with the supplied RenderContext."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeCanvasLocalEvidenceTest.cls",
+      "content": "@isTest private class CoreRuntimeCanvasLocalEvidenceTest { @isTest static void exercisesLocalCanvasLifecycle() { Map<String,String> app = new Map<String,String>(); app.put('canvasUrl', 'https://canvas.example'); app.put('name', 'Local Canvas'); Map<String,String> env = new Map<String,String>(); env.put('displayLocation', 'Visualforce'); env.put('locationUrl', '/apex/Host'); Canvas.RenderContext ctx = Canvas.Test.mockRenderContext(app, env); System.assertEquals('https://canvas.example', ctx.getApplicationContext().getCanvasUrl()); System.assertEquals('Local Canvas', ctx.getApplicationContext().getName()); System.assertEquals('Visualforce', ctx.getEnvironmentContext().getDisplayLocation()); System.assertEquals('/apex/Host', ctx.getEnvironmentContext().getLocationUrl()); Canvas.CanvasLifecycleHandler handler = new Canvas.CanvasLifecycleHandler(); System.assertEquals(0, handler.excludeContextTypes().size()); handler.onRender(ctx); Canvas.Test.testCanvasLifecycle(handler, ctx); Canvas.CanvasRenderException ex = new Canvas.CanvasRenderException('render failed'); System.assertEquals('Canvas.CanvasRenderException', ex.getTypeName()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  }
+}

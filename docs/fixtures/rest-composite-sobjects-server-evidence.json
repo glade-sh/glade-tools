@@ -1,0 +1,174 @@
+{
+  "name": "rest-composite-sobjects-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections.get",
+      "symbol": "Composite sObject collections",
+      "kind": "server",
+      "notes": "Server fixture verifies local composite sObject collection routes for create, update, delete, typed retrieve, and typed external-id upsert."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections_create.get",
+      "symbol": "Create Records Using sObject Collections",
+      "kind": "server",
+      "notes": "Server fixture verifies POST /services/data/v65.0/composite/sobjects creates multiple local Account rows."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections_update.get",
+      "symbol": "Update Records Using sObject Collections",
+      "kind": "server",
+      "notes": "Server fixture verifies PATCH /services/data/v65.0/composite/sobjects updates existing local Account rows by Id."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections_delete.get",
+      "symbol": "Delete Records Using sObject Collections",
+      "kind": "server",
+      "notes": "Server fixture verifies DELETE /services/data/v65.0/composite/sobjects soft-deletes local Account rows by Id."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections_retrieve.get",
+      "symbol": "Get Records Using sObject Collections",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/composite/sobjects/Account retrieves typed local Account rows with field projection."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections_upsert.get",
+      "symbol": "Upsert Records Using sObject Collections",
+      "kind": "server",
+      "notes": "Server fixture verifies PATCH /services/data/v65.0/composite/sobjects/Account/External_Id__c creates and updates local Account rows by external ID."
+    }
+  ],
+  "seedData": [
+    {
+      "object": "Account",
+      "records": [
+        {
+          "Name": "Seed One",
+          "Description": "First seed",
+          "External_Id__c": "seed-1"
+        },
+        {
+          "Name": "Seed Two",
+          "Description": "Second seed",
+          "External_Id__c": "seed-2"
+        }
+      ]
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "typed-retrieve-seeded",
+      "method": "GET",
+      "path": "/services/data/v65.0/composite/sobjects/Account?ids=001000000000001,001000000000002&fields=Name,External_Id__c",
+      "status": 200,
+      "contains": [
+        "\"records\"",
+        "\"Id\":\"001000000000001\"",
+        "\"Name\":\"Seed One\"",
+        "\"External_Id__c\":\"seed-2\"",
+        "\"url\":\"/services/data/v65.0/sobjects/Account/001000000000001\""
+      ],
+      "notContains": [
+        "First seed",
+        "Second seed"
+      ]
+    },
+    {
+      "name": "collection-create",
+      "method": "POST",
+      "path": "/services/data/v65.0/composite/sobjects",
+      "body": "{\"records\":[{\"attributes\":{\"type\":\"Account\",\"referenceId\":\"create-one\"},\"Name\":\"Created One\",\"External_Id__c\":\"create-1\"},{\"attributes\":{\"type\":\"Account\",\"referenceId\":\"create-two\"},\"Name\":\"Created Two\",\"External_Id__c\":\"create-2\"}]}",
+      "status": 200,
+      "contains": [
+        "\"referenceId\":\"create-one\"",
+        "\"referenceId\":\"create-two\"",
+        "\"id\":\"00100000000LFLV\"",
+        "\"id\":\"00100000000LFLW\"",
+        "\"success\":true"
+      ]
+    },
+    {
+      "name": "collection-update",
+      "method": "PATCH",
+      "path": "/services/data/v65.0/composite/sobjects",
+      "body": "{\"records\":[{\"attributes\":{\"type\":\"Account\",\"referenceId\":\"update-seed\"},\"Id\":\"001000000000001\",\"Name\":\"Seed One Updated\"},{\"attributes\":{\"type\":\"Account\",\"referenceId\":\"update-created\"},\"Id\":\"00100000000LFLV\",\"Description\":\"Created updated\"}]}",
+      "status": 200,
+      "contains": [
+        "\"referenceId\":\"update-seed\"",
+        "\"referenceId\":\"update-created\"",
+        "\"success\":true"
+      ]
+    },
+    {
+      "name": "typed-retrieve-after-update",
+      "method": "GET",
+      "path": "/services/data/v65.0/composite/sobjects/Account?ids=001000000000001,00100000000LFLV&fields=Name,Description,External_Id__c",
+      "status": 200,
+      "contains": [
+        "\"Name\":\"Seed One Updated\"",
+        "\"Description\":\"Created updated\"",
+        "\"External_Id__c\":\"create-1\""
+      ]
+    },
+    {
+      "name": "typed-external-id-upsert-create",
+      "method": "PATCH",
+      "path": "/services/data/v65.0/composite/sobjects/Account/External_Id__c",
+      "body": "{\"records\":[{\"attributes\":{\"referenceId\":\"upsert-created\"},\"Name\":\"Upsert Created\",\"External_Id__c\":\"upsert-1\"}]}",
+      "status": 200,
+      "contains": [
+        "\"referenceId\":\"upsert-created\"",
+        "\"created\":true",
+        "\"success\":true"
+      ]
+    },
+    {
+      "name": "typed-external-id-upsert-update",
+      "method": "PATCH",
+      "path": "/services/data/v65.0/composite/sobjects/Account/External_Id__c",
+      "body": "{\"records\":[{\"attributes\":{\"referenceId\":\"upsert-updated\"},\"Name\":\"Upsert Updated\",\"Description\":\"from external-id update\",\"External_Id__c\":\"upsert-1\"}]}",
+      "status": 200,
+      "contains": [
+        "\"referenceId\":\"upsert-updated\"",
+        "\"created\":false",
+        "\"success\":true"
+      ]
+    },
+    {
+      "name": "query-upserted-proof",
+      "method": "GET",
+      "path": "/services/data/v65.0/query?q=SELECT%20Id,%20Name,%20Description%20FROM%20Account%20WHERE%20External_Id__c%20=%20'upsert-1'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"Upsert Updated\"",
+        "\"Description\":\"from external-id update\""
+      ]
+    },
+    {
+      "name": "collection-delete",
+      "method": "DELETE",
+      "path": "/services/data/v65.0/composite/sobjects?ids=001000000000002,00100000000LFLW&allOrNone=true",
+      "status": 200,
+      "contains": [
+        "\"id\":\"001000000000002\"",
+        "\"id\":\"00100000000LFLW\"",
+        "\"success\":true"
+      ]
+    },
+    {
+      "name": "typed-retrieve-deleted-proof",
+      "method": "GET",
+      "path": "/services/data/v65.0/composite/sobjects/Account?ids=001000000000002",
+      "status": 404,
+      "contains": [
+        "\"errorCode\":\"NOT_FOUND\"",
+        "record not found: 001000000000002"
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

@@ -1,0 +1,81 @@
+{
+  "name": "tooling-schema-metadata-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "tooling:EntityDefinition",
+      "symbol": "Tooling EntityDefinition",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling query reads local virtual EntityDefinition rows from the org schema."
+    },
+    {
+      "surfaceId": "tooling:EntityParticle",
+      "symbol": "Tooling EntityParticle",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling query reads local virtual EntityParticle rows from object fields."
+    },
+    {
+      "surfaceId": "tooling:FieldDefinition",
+      "symbol": "Tooling FieldDefinition",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling query reads local virtual FieldDefinition rows from object fields."
+    },
+    {
+      "surfaceId": "tooling:RelationshipDomain",
+      "symbol": "Tooling RelationshipDomain",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling query accepts the local virtual RelationshipDomain schema metadata object."
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "tooling-query-entity-definition",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20QualifiedApiName,%20Label%20FROM%20EntityDefinition%20WHERE%20QualifiedApiName%20=%20'Account'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"QualifiedApiName\":\"Account\"",
+        "\"Label\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-query-entity-particle",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20QualifiedApiName,%20DataType%20FROM%20EntityParticle%20WHERE%20EntityDefinitionId%20=%20'Account'%20AND%20QualifiedApiName%20=%20'Name'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"QualifiedApiName\":\"Name\"",
+        "\"DataType\":\"STRING\""
+      ]
+    },
+    {
+      "name": "tooling-query-field-definition",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20QualifiedApiName,%20DataType%20FROM%20FieldDefinition%20WHERE%20EntityDefinitionId%20=%20'Account'%20AND%20QualifiedApiName%20=%20'Name'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"QualifiedApiName\":\"Name\"",
+        "\"DataType\":\"STRING\""
+      ]
+    },
+    {
+      "name": "tooling-query-relationship-domain",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20ParentSobjectId,%20ChildSobjectId,%20FieldId%20FROM%20RelationshipDomain",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":13",
+        "\"done\":true",
+        "\"ParentSobjectId\":\"Account\"",
+        "\"ChildSobjectId\":\"Contact\"",
+        "\"FieldId\":\"Contact.AccountId\""
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

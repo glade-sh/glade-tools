@@ -1,0 +1,35 @@
+{
+  "name": "commercepayments-client-adapter-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:commercepayments.ClientSidePaymentAdapter.getClientComponentName()",
+      "symbol": "commercepayments.ClientSidePaymentAdapter.getClientComponentName",
+      "kind": "exec",
+      "notes": "The local client-side payment adapter returns a deterministic null component name."
+    },
+    {
+      "surfaceId": "apex:commercepayments.ClientSidePaymentAdapter.getClientConfiguration()",
+      "symbol": "commercepayments.ClientSidePaymentAdapter.getClientConfiguration",
+      "kind": "exec",
+      "notes": "The local client-side payment adapter returns an empty configuration map."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "commercepayments.ClientSidePaymentAdapter adapter = new commercepayments.ClientSidePaymentAdapter();\nSystem.assertEquals(null, adapter.getClientComponentName());\nSystem.assertEquals(0, adapter.getClientConfiguration().size());\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "commercepayments.ClientSidePaymentAdapter adapter = new commercepayments.ClientSidePaymentAdapter();\nSystem.assertEquals(null, adapter.getClientComponentName());\nSystem.assertEquals(0, adapter.getClientConfiguration().size());\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

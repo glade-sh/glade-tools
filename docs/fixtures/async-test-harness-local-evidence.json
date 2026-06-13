@@ -8,6 +8,102 @@
       "notes": "Local AsyncOptions maximumQueueableStackDepth limits queueable chaining during the test harness drain."
     },
     {
+      "surfaceId": "data-reference:AsyncApexJob.Status",
+      "symbol": "AsyncApexJob.Status",
+      "kind": "test",
+      "notes": "Local async drains record Completed, Failed, and Aborted job status values for modeled jobs."
+    },
+    {
+      "surfaceId": "data-reference:AsyncApexJob.JobType",
+      "symbol": "AsyncApexJob.JobType",
+      "kind": "test",
+      "notes": "Local async drains record modeled job types such as BatchApex and BatchApexWorker."
+    },
+    {
+      "surfaceId": "data-reference:AsyncApexJob.TotalJobItems",
+      "symbol": "AsyncApexJob.TotalJobItems",
+      "kind": "test",
+      "notes": "Local batch drains record total chunk counts for modeled Batchable jobs."
+    },
+    {
+      "surfaceId": "data-reference:AsyncApexJob.JobItemsProcessed",
+      "symbol": "AsyncApexJob.JobItemsProcessed",
+      "kind": "test",
+      "notes": "Local batch drains record processed chunk counts for modeled Batchable jobs."
+    },
+    {
+      "surfaceId": "data-reference:AsyncApexJob.NumberOfErrors",
+      "symbol": "AsyncApexJob.NumberOfErrors",
+      "kind": "test",
+      "notes": "Local batch drains record modeled execute and finish errors on AsyncApexJob rows."
+    },
+    {
+      "surfaceId": "data-reference:AsyncApexJob.CompletedDate",
+      "symbol": "AsyncApexJob.CompletedDate",
+      "kind": "test",
+      "notes": "Local completed and failed modeled Batchable jobs receive a CompletedDate value."
+    },
+    {
+      "surfaceId": "apex:System.Test.enableChangeDataCapture()",
+      "symbol": "Test.enableChangeDataCapture",
+      "kind": "test",
+      "notes": "The local test harness records the ChangeDataCaptureEnabled flag without contacting Salesforce services."
+    },
+    {
+      "surfaceId": "apex:System.Test.invokeContinuationMethod(Object,Continuation)",
+      "symbol": "Test.invokeContinuationMethod",
+      "kind": "test",
+      "notes": "The local continuation harness invokes the named controller callback and returns its response."
+    },
+    {
+      "surfaceId": "apex:System.Test.newSendEmailQuickActionDefaults(Id,Id)",
+      "symbol": "Test.newSendEmailQuickActionDefaults",
+      "kind": "test",
+      "notes": "The local test harness builds deterministic SendEmail QuickAction defaults for the supplied context and reply Ids."
+    },
+    {
+      "surfaceId": "apex:System.Test.setCurrentPageReference(Object)",
+      "symbol": "Test.setCurrentPageReference",
+      "kind": "test",
+      "notes": "The local Object overload accepts PageReference values stored as Object; arbitrary Object values are not claimed."
+    },
+    {
+      "surfaceId": "apex:System.Test.testInstall(InstallHandler,Version)",
+      "symbol": "Test.testInstall",
+      "kind": "test",
+      "notes": "The local install test harness invokes InstallHandler.onInstall with a deterministic InstallContext."
+    },
+    {
+      "surfaceId": "apex:System.Test.testInstall(InstallHandler,Version,Boolean)",
+      "symbol": "Test.testInstall",
+      "kind": "test",
+      "notes": "The local install test harness passes isPush through InstallContext for the three-argument overload."
+    },
+    {
+      "surfaceId": "apex:System.Test.testUninstall(UninstallHandler)",
+      "symbol": "Test.testUninstall",
+      "kind": "test",
+      "notes": "The local uninstall test harness invokes UninstallHandler.onUninstall with a deterministic UninstallContext."
+    },
+    {
+      "surfaceId": "apex:System.Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)",
+      "symbol": "Test.testNotificationActionHandler",
+      "kind": "test",
+      "notes": "The local notification harness dispatches executeAction and returns the handler ActionResult."
+    },
+    {
+      "surfaceId": "apex:System.Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String)",
+      "symbol": "Test.testSandboxPostCopyScript",
+      "kind": "test",
+      "notes": "The local sandbox post-copy harness builds SandboxContext and invokes runApexClass."
+    },
+    {
+      "surfaceId": "apex:System.Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String,Boolean)",
+      "symbol": "Test.testSandboxPostCopyScript",
+      "kind": "test",
+      "notes": "The local sandbox post-copy harness accepts isRunAsAutoProcUser for the five-argument overload."
+    },
+    {
       "surfaceId": "apex:System.Test.getEventBus()",
       "symbol": "Test.getEventBus",
       "kind": "test",
@@ -41,7 +137,7 @@
   "source": [
     {
       "path": "internal/vm/platform_test.go",
-      "content": "Focused async tests cover queueable stack depth, publish-immediate limits, continuation response lookup, external-service live execution fencing, and WebServiceCallout mock response materialization."
+      "content": "Focused async and test-harness tests cover queueable stack depth, publish-immediate limits, durable AsyncApexJob status/count fields, CDC flag recording, continuation callback invocation, send-email QuickAction defaults, PageReference-through-Object current-page setup, install/uninstall callbacks, notification action handlers, sandbox post-copy callbacks, external-service live execution fencing, and WebServiceCallout mock response materialization."
     },
     {
       "path": "internal/apextest/runner_test.go",

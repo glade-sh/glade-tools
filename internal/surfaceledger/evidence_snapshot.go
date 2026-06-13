@@ -30,18 +30,22 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 			}
 			product := productFromID(id)
 			kind := evidenceKindFromSurfaceID(id)
-			area := AreaRuntime
-			if product == ProductDataRef {
-				area = AreaData
-			}
+			area := evidenceAreaForProduct(product)
 			shape := ShapeAbsent
 			behavior := BehaviorNone
-			if strings.EqualFold(evidence.Kind, "unsupported") {
+			if strings.EqualFold(evidence.Kind, "unsupported") || fixtureEvidenceExpectsUnsupportedFeature(fixture, evidence, id) {
 				behavior = BehaviorUnsupported
+			} else if fixtureEvidenceRunsServerSurface(fixture, evidence, product) {
+				shape = ShapeTypeKnown
+				behavior = BehaviorSupported
+			} else if fixtureEvidenceRunsApexSurface(fixture, evidence, product) {
+				behavior = BehaviorSupported
 			} else if product == ProductDataRef && fixture.Expected.Error == nil {
 				shape = ShapeTypeKnown
 				behavior = BehaviorSupported
 			} else if fixtureEvidenceRunsRuntimeGuide(fixture, evidence, id) {
+				behavior = BehaviorSupported
+			} else if fixtureEvidenceRunsLWCBridge(fixture, evidence, product) {
 				behavior = BehaviorSupported
 			}
 			row := RowFromEvidence(SurfaceLedgerRow{
@@ -64,6 +68,51 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 	return rows, nil
 }
 
+func evidenceAreaForProduct(product string) string {
+	switch product {
+	case ProductDataRef:
+		return AreaData
+	case ProductREST, ProductTooling:
+		return AreaServer
+	case ProductLWC, ProductAura, ProductVisualforce:
+		return AreaUI
+	default:
+		return AreaRuntime
+	}
+}
+
+func fixtureEvidenceExpectsUnsupportedFeature(fixture compat.Fixture, evidence compat.FixtureEvidence, id string) bool {
+	if strings.HasPrefix(id, "unknown:") {
+		return false
+	}
+	if fixture.Expected.Error == nil || !strings.EqualFold(fixture.Expected.Error.Type, "UnsupportedFeature") {
+		return false
+	}
+	return strings.EqualFold(evidence.Kind, "test") || strings.EqualFold(evidence.Kind, "exec")
+}
+
+func fixtureEvidenceRunsServerSurface(fixture compat.Fixture, evidence compat.FixtureEvidence, product string) bool {
+	if product != ProductREST && product != ProductTooling {
+		return false
+	}
+	if fixture.Expected.Error != nil || !strings.EqualFold(fixture.Command.Kind, "server") {
+		return false
+	}
+	return strings.EqualFold(evidence.Kind, "server") || strings.EqualFold(evidence.Kind, "test")
+}
+
+func fixtureEvidenceRunsApexSurface(fixture compat.Fixture, evidence compat.FixtureEvidence, product string) bool {
+	if product != ProductApex || fixture.Expected.Error != nil {
+		return false
+	}
+	switch strings.ToLower(strings.TrimSpace(evidence.Kind)) {
+	case "test", "exec", "check", "black-box":
+		return true
+	default:
+		return false
+	}
+}
+
 func fixtureEvidenceRunsRuntimeGuide(fixture compat.Fixture, evidence compat.FixtureEvidence, id string) bool {
 	if !strings.HasPrefix(id, "unknown:") {
 		return false
@@ -72,6 +121,16 @@ func fixtureEvidenceRunsRuntimeGuide(fixture compat.Fixture, evidence compat.Fix
 		return false
 	}
 	if !isQueryRuntimeSOQLSOSLFixture(fixture.Name) || !isQueryRuntimeSOQLSOSLSurfaceID(id) {
+		return false
+	}
+	return strings.EqualFold(evidence.Kind, "test") || strings.EqualFold(evidence.Kind, "exec")
+}
+
+func fixtureEvidenceRunsLWCBridge(fixture compat.Fixture, evidence compat.FixtureEvidence, product string) bool {
+	if product != ProductLWC {
+		return false
+	}
+	if fixture.Expected.Error != nil {
 		return false
 	}
 	return strings.EqualFold(evidence.Kind, "test") || strings.EqualFold(evidence.Kind, "exec")
@@ -93,6 +152,15 @@ func evidenceKindFromSurfaceID(id string) string {
 	if strings.HasPrefix(id, "data-reference:") {
 		rest := strings.TrimPrefix(id, "data-reference:")
 		if strings.Contains(rest, ".") {
+			return KindField
+		}
+		return KindType
+	}
+	if strings.HasPrefix(id, "rest:") {
+		return KindResource
+	}
+	if strings.HasPrefix(id, "tooling:") {
+		if strings.Contains(strings.TrimPrefix(id, "tooling:"), ".") {
 			return KindField
 		}
 		return KindType

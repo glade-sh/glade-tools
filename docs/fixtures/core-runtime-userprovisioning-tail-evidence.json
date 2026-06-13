@@ -1,0 +1,101 @@
+{
+  "name": "core-runtime-userprovisioning-tail-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)",
+      "symbol": "UserProvisioning.DummyConnectorApexHandler.invoke",
+      "kind": "exec",
+      "notes": "Local runtime returns a deterministic ProvisioningProcessHandlerOutput default for the dummy connector handler hook."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.getFlowName()",
+      "symbol": "UserProvisioning.FlowProvisionBase.getFlowName",
+      "kind": "exec",
+      "notes": "Local runtime exposes deterministic empty-string defaults for FlowProvisionBase flow name hooks."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.getFlowNamespace()",
+      "symbol": "UserProvisioning.FlowProvisionBase.getFlowNamespace",
+      "kind": "exec",
+      "notes": "Local runtime exposes deterministic empty-string defaults for FlowProvisionBase flow namespace hooks."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.hasFlow()",
+      "symbol": "UserProvisioning.FlowProvisionBase.hasFlow",
+      "kind": "exec",
+      "notes": "Local runtime exposes deterministic false defaults for FlowProvisionBase flow availability hooks."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.hasFlowOrApex()",
+      "symbol": "UserProvisioning.FlowProvisionBase.hasFlowOrApex",
+      "kind": "exec",
+      "notes": "Local runtime exposes deterministic false defaults for FlowProvisionBase flow-or-Apex availability hooks."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.buildDescribeCall()",
+      "symbol": "UserProvisioning.UserProvisioningPlugin.buildDescribeCall",
+      "kind": "exec",
+      "notes": "Local runtime returns a deterministic Process.PluginDescribeResult default for the describe-call hook."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.describe()",
+      "symbol": "UserProvisioning.UserProvisioningPlugin.describe",
+      "kind": "exec",
+      "notes": "Local runtime returns a deterministic Process.PluginDescribeResult default for the plugin describe hook."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.getPluginClassName()",
+      "symbol": "UserProvisioning.UserProvisioningPlugin.getPluginClassName",
+      "kind": "exec",
+      "notes": "Local runtime returns the built-in UserProvisioning.UserProvisioningPlugin class name."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.invoke(Process.PluginRequest)",
+      "symbol": "UserProvisioning.UserProvisioningPlugin.invoke",
+      "kind": "unsupported",
+      "notes": "Local runtime does not invoke a hosted or user UserProvisioning plugin; this call reports UnsupportedFeature when executed."
+    },
+    {
+      "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)",
+      "symbol": "UserProvisioning.UserProvisioningProcessHandler.invoke",
+      "kind": "exec",
+      "notes": "Local runtime returns a deterministic ProvisioningProcessHandlerOutput default for the process handler hook."
+    },
+    {
+      "surfaceId": "apex:userprovisioning.UserProvisioningLog.log(String,String)",
+      "symbol": "userprovisioning.UserProvisioningLog.log",
+      "kind": "exec",
+      "notes": "The lowercase userprovisioning namespace alias routes to the local no-op log helper."
+    },
+    {
+      "surfaceId": "apex:userprovisioning.UserProvisioningLog.log(String,String,String)",
+      "symbol": "userprovisioning.UserProvisioningLog.log",
+      "kind": "exec",
+      "notes": "The lowercase userprovisioning namespace alias accepts the three-argument local no-op log helper."
+    },
+    {
+      "surfaceId": "apex:userprovisioning.UserProvisioningLog.log(String,String,String,String,String)",
+      "symbol": "userprovisioning.UserProvisioningLog.log",
+      "kind": "exec",
+      "notes": "The lowercase userprovisioning namespace alias accepts the five-argument local no-op log helper."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "UserProvisioning.FlowProvisionBase flowBase = new UserProvisioning.FlowProvisionBase();\nSystem.assertEquals('', flowBase.getFlowName());\nSystem.assertEquals('', flowBase.getFlowNamespace());\nSystem.assertEquals(false, flowBase.hasFlow());\nSystem.assertEquals(false, flowBase.hasFlowOrApex());\nUserProvisioning.UserProvisioningPlugin plugin = new UserProvisioning.UserProvisioningPlugin();\nSystem.assert(plugin.buildDescribeCall() != null);\nSystem.assert(plugin.describe() != null);\nSystem.assertEquals('UserProvisioning.UserProvisioningPlugin', plugin.getPluginClassName());\nUserProvisioning.ProvisioningProcessHandlerInput input = new UserProvisioning.ProvisioningProcessHandlerInput('upr', '005000000000001', 'named', 'filter', 'offset');\nSystem.assert(new UserProvisioning.UserProvisioningProcessHandler().invoke(input) != null);\nSystem.assert(new UserProvisioning.DummyConnectorApexHandler().invoke(input) != null);\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail', 'field', 'value');"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "UserProvisioning.FlowProvisionBase flowBase = new UserProvisioning.FlowProvisionBase();\nSystem.assertEquals('', flowBase.getFlowName());\nSystem.assertEquals('', flowBase.getFlowNamespace());\nSystem.assertEquals(false, flowBase.hasFlow());\nSystem.assertEquals(false, flowBase.hasFlowOrApex());\nUserProvisioning.UserProvisioningPlugin plugin = new UserProvisioning.UserProvisioningPlugin();\nSystem.assert(plugin.buildDescribeCall() != null);\nSystem.assert(plugin.describe() != null);\nSystem.assertEquals('UserProvisioning.UserProvisioningPlugin', plugin.getPluginClassName());\nUserProvisioning.ProvisioningProcessHandlerInput input = new UserProvisioning.ProvisioningProcessHandlerInput('upr', '005000000000001', 'named', 'filter', 'offset');\nSystem.assert(new UserProvisioning.UserProvisioningProcessHandler().invoke(input) != null);\nSystem.assert(new UserProvisioning.DummyConnectorApexHandler().invoke(input) != null);\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail', 'field', 'value');"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

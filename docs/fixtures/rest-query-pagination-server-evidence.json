@@ -1,0 +1,120 @@
+{
+  "name": "rest-query-pagination-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "rest:resources_query.get",
+      "symbol": "REST query pagination",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/query returns a paginated local SOQL result."
+    },
+    {
+      "surfaceId": "rest:resources_query_more_results.get",
+      "symbol": "REST query more results",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/query/{locator} returns the remaining local SOQL rows."
+    },
+    {
+      "surfaceId": "rest:resources_queryall.get",
+      "symbol": "REST queryAll pagination",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/queryAll returns a paginated local SOQL result including deleted rows."
+    },
+    {
+      "surfaceId": "rest:resources_queryall_more_results.get",
+      "symbol": "REST queryAll more results",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/queryAll/{locator} returns the remaining local SOQL rows."
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "seed-accounts",
+      "method": "POST",
+      "path": "/services/data/v65.0/glade/fixture?mode=replace",
+      "body": "{\"version\":\"glade.storage.v1\",\"objects\":[{\"name\":\"Account\",\"records\":[{\"id\":\"001000000000101\",\"fields\":{\"Name\":{\"kind\":\"string\",\"string\":\"Rest Page A\"}}},{\"id\":\"001000000000102\",\"fields\":{\"Name\":{\"kind\":\"string\",\"string\":\"Rest Page B\"}}},{\"id\":\"001000000000103\",\"fields\":{\"Name\":{\"kind\":\"string\",\"string\":\"Rest Page Z\"}}}]}]}",
+      "status": 200,
+      "contains": [
+        "\"success\":true",
+        "\"mode\":\"replace\"",
+        "\"Account\":3"
+      ]
+    },
+    {
+      "name": "query-first-page",
+      "method": "GET",
+      "path": "/services/data/v65.0/query?q=SELECT%20Id,%20Name%20FROM%20Account%20ORDER%20BY%20Name&batchSize=2",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":3",
+        "\"done\":false",
+        "\"Name\":\"Rest Page A\"",
+        "\"Name\":\"Rest Page B\"",
+        "\"nextRecordsUrl\":\"/services/data/v65.0/query/gladeql000001-2\""
+      ],
+      "notContains": [
+        "\"Name\":\"Rest Page Z\""
+      ]
+    },
+    {
+      "name": "query-more-results",
+      "method": "GET",
+      "path": "/services/data/v65.0/query/gladeql000001-2",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":3",
+        "\"done\":true",
+        "\"Name\":\"Rest Page Z\""
+      ],
+      "notContains": [
+        "nextRecordsUrl",
+        "\"Name\":\"Rest Page A\"",
+        "\"Name\":\"Rest Page B\""
+      ]
+    },
+    {
+      "name": "delete-last-account",
+      "method": "DELETE",
+      "path": "/services/data/v65.0/sobjects/Account/001000000000103",
+      "status": 204
+    },
+    {
+      "name": "query-all-first-page",
+      "method": "GET",
+      "path": "/services/data/v65.0/queryAll?q=SELECT%20Id,%20Name,%20IsDeleted%20FROM%20Account%20ORDER%20BY%20Name&batchSize=2",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":3",
+        "\"done\":false",
+        "\"Name\":\"Rest Page A\"",
+        "\"Name\":\"Rest Page B\"",
+        "\"IsDeleted\":false",
+        "\"nextRecordsUrl\":\"/services/data/v65.0/query/gladeql000002-2\""
+      ],
+      "notContains": [
+        "\"Name\":\"Rest Page Z\"",
+        "\"IsDeleted\":true"
+      ]
+    },
+    {
+      "name": "query-all-more-results",
+      "method": "GET",
+      "path": "/services/data/v65.0/query/gladeql000002-2",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":3",
+        "\"done\":true",
+        "\"Name\":\"Rest Page Z\"",
+        "\"IsDeleted\":true"
+      ],
+      "notContains": [
+        "nextRecordsUrl",
+        "\"Name\":\"Rest Page A\"",
+        "\"Name\":\"Rest Page B\""
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

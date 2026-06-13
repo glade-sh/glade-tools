@@ -1,0 +1,87 @@
+{
+  "name": "docs-readme-inventory-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "unknown:README",
+      "symbol": "Salesforce Developer Language References README",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Categories",
+      "symbol": "README Categories",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.File",
+      "symbol": "README File Naming Conventions",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Key",
+      "symbol": "README Key Entry Points",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Metadata",
+      "symbol": "README Metadata Tags",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Namespaces",
+      "symbol": "README Namespaces",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Objects",
+      "symbol": "README Objects & Resources",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Pages",
+      "symbol": "README Pages",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Resource",
+      "symbol": "README Resource Patterns",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Sections",
+      "symbol": "README Sections",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    },
+    {
+      "surfaceId": "unknown:README.Suggested",
+      "symbol": "README Suggested Chunking Strategy",
+      "kind": "unsupported",
+      "notes": "README/index inventory heading from the scraper documentation catalog, not Salesforce runtime or API behavior."
+    }
+  ],
+  "source": [
+    {
+      "path": "/var/folders/04/ymtl0lts3nz2w85kg8ty_2rr0000gn/T/tmp.D9ioyA8aJL/SURFACE_LEDGER.json",
+      "content": "/* Evidence source: /var/folders/04/ymtl0lts3nz2w85kg8ty_2rr0000gn/T/tmp.D9ioyA8aJL/SURFACE_LEDGER.json. Rows are README scraper inventory headings, not Apex source. */"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

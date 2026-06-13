@@ -2,13 +2,13 @@
   "name": "core-runtime-workflow-txnsecurity-local-defaults",
   "evidence": [
     {
-      "surfaceId": "apex:System.workflow.Action.invoke(workflow.Context)",
+      "surfaceId": "apex:workflow.Action.invoke(workflow.Context)",
       "symbol": "workflow.Action.invoke",
       "kind": "exec",
       "notes": "Local workflow action callback returns an empty DML action list without executing workflow automation."
     },
     {
-      "surfaceId": "apex:System.workflow.ActionDml.invoke()",
+      "surfaceId": "apex:workflow.ActionDml.invoke()",
       "symbol": "workflow.ActionDml.invoke",
       "kind": "exec",
       "notes": "Local workflow DML action callback accepts invocation without cloud automation side effects."

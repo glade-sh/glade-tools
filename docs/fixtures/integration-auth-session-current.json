@@ -2,6 +2,7 @@
   "name": "integration-auth-session-current",
   "evidence": [
     {
+      "surfaceId": "apex:Auth.SessionManagement.getCurrentSession()",
       "symbol": "Auth.SessionManagement.getCurrentSession",
       "kind": "exec",
       "notes": "Auth.SessionManagement.getCurrentSession returns a deterministic local session map."

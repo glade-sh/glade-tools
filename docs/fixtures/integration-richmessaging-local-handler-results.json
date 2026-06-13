@@ -2,19 +2,19 @@
   "name": "integration-richmessaging-local-handler-results",
   "evidence": [
     {
-      "surfaceId": "apex:System.RichMessaging.AuthRequestHandler.handleAuthRequest(RichMessaging.AuthRequestResponse)",
+      "surfaceId": "apex:RichMessaging.AuthRequestHandler.handleAuthRequest(RichMessaging.AuthRequestResponse)",
       "symbol": "RichMessaging.AuthRequestHandler.handleAuthRequest",
       "kind": "exec",
       "notes": "Local rich messaging auth handler returns a typed success result with redirect, status, and expiration fields."
     },
     {
-      "surfaceId": "apex:System.RichMessaging.ProcessCatalogOrderHandler.processCatalogOrderRequest(RichMessaging.ProcessCatalogOrderRequest)",
+      "surfaceId": "apex:RichMessaging.ProcessCatalogOrderHandler.processCatalogOrderRequest(RichMessaging.ProcessCatalogOrderRequest)",
       "symbol": "RichMessaging.ProcessCatalogOrderHandler.processCatalogOrderRequest",
       "kind": "exec",
       "notes": "Local rich messaging catalog handler returns a typed success result."
     },
     {
-      "surfaceId": "apex:System.RichMessaging.ProcessPaymentHandler.processPaymentRequest(RichMessaging.ProcessPaymentRequest)",
+      "surfaceId": "apex:RichMessaging.ProcessPaymentHandler.processPaymentRequest(RichMessaging.ProcessPaymentRequest)",
       "symbol": "RichMessaging.ProcessPaymentHandler.processPaymentRequest",
       "kind": "exec",
       "notes": "Local rich messaging payment handler returns a typed success result."

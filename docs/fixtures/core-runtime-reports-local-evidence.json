@@ -1,0 +1,155 @@
+{
+  "name": "core-runtime-reports-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:reports.FeatureNotSupportedException.getTypeName()",
+      "symbol": "reports.FeatureNotSupportedException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:reports.InstanceAccessException.getTypeName()",
+      "symbol": "reports.InstanceAccessException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports instance access exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException.getTypeName()",
+      "symbol": "reports.InvalidFilterException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports invalid filter exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException.getTypeName()",
+      "symbol": "reports.InvalidReportMetadataException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports invalid metadata exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException.getTypeName()",
+      "symbol": "reports.InvalidSnapshotDateException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports invalid snapshot date exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:reports.MetadataException.getTypeName()",
+      "symbol": "reports.MetadataException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports metadata exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType.fieldToField",
+      "symbol": "reports.ReportFilterType.fieldToField",
+      "kind": "exec",
+      "notes": "Local reports enum materialization exposes the field-to-field filter type."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType.fieldValue",
+      "symbol": "reports.ReportFilterType.fieldValue",
+      "kind": "exec",
+      "notes": "Local reports enum materialization exposes the field-value filter type."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.describeReport(Id)",
+      "symbol": "reports.ReportManager.describeReport(Id)",
+      "kind": "exec",
+      "notes": "Local report manager returns deterministic report describe data."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.getDatatypeFilterOperatorMap()",
+      "symbol": "reports.ReportManager.getDatatypeFilterOperatorMap()",
+      "kind": "exec",
+      "notes": "Local report manager returns a deterministic datatype filter operator map."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.getReportInstance(Id)",
+      "symbol": "reports.ReportManager.getReportInstance(Id)",
+      "kind": "exec",
+      "notes": "Local report manager retrieves a deterministic async report instance by id."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.getReportInstances(Id)",
+      "symbol": "reports.ReportManager.getReportInstances(Id)",
+      "kind": "exec",
+      "notes": "Local report manager lists deterministic report instances for a report id."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runAsyncReport(Id)",
+      "symbol": "reports.ReportManager.runAsyncReport(Id)",
+      "kind": "exec",
+      "notes": "Local report manager starts an async report run with default metadata and detail options."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runAsyncReport(Id,Boolean)",
+      "symbol": "reports.ReportManager.runAsyncReport(Id,Boolean)",
+      "kind": "exec",
+      "notes": "Local report manager starts an async report run with explicit detail-row option."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runAsyncReport(Id,reports.ReportMetadata)",
+      "symbol": "reports.ReportManager.runAsyncReport(Id,reports.ReportMetadata)",
+      "kind": "exec",
+      "notes": "Local report manager starts an async report run with supplied report metadata."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runAsyncReport(Id,reports.ReportMetadata,Boolean)",
+      "symbol": "reports.ReportManager.runAsyncReport(Id,reports.ReportMetadata,Boolean)",
+      "kind": "exec",
+      "notes": "Local report manager starts an async report run with supplied metadata and detail option."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runReport(Id)",
+      "symbol": "reports.ReportManager.runReport(Id)",
+      "kind": "exec",
+      "notes": "Local report manager runs a synchronous report with default metadata and detail options."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runReport(Id,Boolean)",
+      "symbol": "reports.ReportManager.runReport(Id,Boolean)",
+      "kind": "exec",
+      "notes": "Local report manager runs a synchronous report with explicit detail-row option."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runReport(Id,reports.ReportMetadata)",
+      "symbol": "reports.ReportManager.runReport(Id,reports.ReportMetadata)",
+      "kind": "exec",
+      "notes": "Local report manager runs a synchronous report with supplied report metadata."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.runReport(Id,reports.ReportMetadata,Boolean)",
+      "symbol": "reports.ReportManager.runReport(Id,reports.ReportMetadata,Boolean)",
+      "kind": "exec",
+      "notes": "Local report manager runs a synchronous report with supplied metadata and detail option."
+    },
+    {
+      "surfaceId": "apex:reports.ReportRunException.getTypeName()",
+      "symbol": "reports.ReportRunException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports run exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:reports.UnsupportedOperationException.getTypeName()",
+      "symbol": "reports.UnsupportedOperationException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local reports unsupported operation exceptions expose their platform type name."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals('reports.FeatureNotSupportedException', new reports.FeatureNotSupportedException().getTypeName()); System.assertEquals('reports.InstanceAccessException', new reports.InstanceAccessException().getTypeName()); System.assertEquals('reports.InvalidFilterException', new reports.InvalidFilterException().getTypeName()); System.assertEquals('reports.InvalidReportMetadataException', new reports.InvalidReportMetadataException().getTypeName()); System.assertEquals('reports.InvalidSnapshotDateException', new reports.InvalidSnapshotDateException().getTypeName()); System.assertEquals('reports.MetadataException', new reports.MetadataException().getTypeName()); System.assertEquals('reports.ReportRunException', new reports.ReportRunException().getTypeName()); System.assertEquals('reports.UnsupportedOperationException', new reports.UnsupportedOperationException().getTypeName()); System.assertEquals(reports.ReportFilterType.fieldToField, reports.ReportFilterType.fieldToField); System.assertEquals(reports.ReportFilterType.fieldValue, reports.ReportFilterType.fieldValue); Id reportId = '00O000000000001'; reports.ReportMetadata metadata = new reports.ReportMetadata(); reports.ReportResults runDefault = reports.ReportManager.runReport(reportId); reports.ReportResults runDetails = reports.ReportManager.runReport(reportId, true); reports.ReportResults runMetadata = reports.ReportManager.runReport(reportId, metadata); reports.ReportResults runMetadataDetails = reports.ReportManager.runReport(reportId, metadata, true); System.assertEquals(false, runDefault.getHasDetailRows()); System.assertEquals(true, runDetails.getHasDetailRows()); System.assertEquals(reportId, runMetadata.getReportMetadata().getId()); System.assertEquals(true, runMetadataDetails.getHasDetailRows()); reports.ReportInstance asyncDefault = reports.ReportManager.runAsyncReport(reportId); String asyncDefaultId = String.valueOf(asyncDefault.getId()); System.assertEquals('Success', asyncDefault.getStatus()); System.assertEquals(asyncDefaultId, String.valueOf(reports.ReportManager.getReportInstance(asyncDefaultId).getId())); System.assertEquals(1, reports.ReportManager.getReportInstances(reportId).size()); reports.ReportInstance asyncDetails = reports.ReportManager.runAsyncReport(reportId, true); reports.ReportInstance asyncMetadata = reports.ReportManager.runAsyncReport(reportId, metadata); reports.ReportInstance asyncMetadataDetails = reports.ReportManager.runAsyncReport(reportId, metadata, true); System.assertEquals(true, asyncDetails.getReportResults().getHasDetailRows()); System.assertEquals(reportId, asyncMetadata.getReportId()); System.assertEquals(true, asyncMetadataDetails.getReportResults().getHasDetailRows()); System.assertEquals(0, reports.ReportManager.getDatatypeFilterOperatorMap().size()); reports.ReportDescribeResult describe = reports.ReportManager.describeReport(reportId); System.assertEquals(reportId, describe.getReportMetadata().getId()); System.assertEquals(0, describe.getReportExtendedMetadata().getDetailColumnInfo().size()); System.assertEquals(0, describe.getReportTypeMetadata().getStandardFilterInfos().size());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals('reports.FeatureNotSupportedException', new reports.FeatureNotSupportedException().getTypeName()); System.assertEquals('reports.InstanceAccessException', new reports.InstanceAccessException().getTypeName()); System.assertEquals('reports.InvalidFilterException', new reports.InvalidFilterException().getTypeName()); System.assertEquals('reports.InvalidReportMetadataException', new reports.InvalidReportMetadataException().getTypeName()); System.assertEquals('reports.InvalidSnapshotDateException', new reports.InvalidSnapshotDateException().getTypeName()); System.assertEquals('reports.MetadataException', new reports.MetadataException().getTypeName()); System.assertEquals('reports.ReportRunException', new reports.ReportRunException().getTypeName()); System.assertEquals('reports.UnsupportedOperationException', new reports.UnsupportedOperationException().getTypeName()); System.assertEquals(reports.ReportFilterType.fieldToField, reports.ReportFilterType.fieldToField); System.assertEquals(reports.ReportFilterType.fieldValue, reports.ReportFilterType.fieldValue); Id reportId = '00O000000000001'; reports.ReportMetadata metadata = new reports.ReportMetadata(); reports.ReportResults runDefault = reports.ReportManager.runReport(reportId); reports.ReportResults runDetails = reports.ReportManager.runReport(reportId, true); reports.ReportResults runMetadata = reports.ReportManager.runReport(reportId, metadata); reports.ReportResults runMetadataDetails = reports.ReportManager.runReport(reportId, metadata, true); System.assertEquals(false, runDefault.getHasDetailRows()); System.assertEquals(true, runDetails.getHasDetailRows()); System.assertEquals(reportId, runMetadata.getReportMetadata().getId()); System.assertEquals(true, runMetadataDetails.getHasDetailRows()); reports.ReportInstance asyncDefault = reports.ReportManager.runAsyncReport(reportId); String asyncDefaultId = String.valueOf(asyncDefault.getId()); System.assertEquals('Success', asyncDefault.getStatus()); System.assertEquals(asyncDefaultId, String.valueOf(reports.ReportManager.getReportInstance(asyncDefaultId).getId())); System.assertEquals(1, reports.ReportManager.getReportInstances(reportId).size()); reports.ReportInstance asyncDetails = reports.ReportManager.runAsyncReport(reportId, true); reports.ReportInstance asyncMetadata = reports.ReportManager.runAsyncReport(reportId, metadata); reports.ReportInstance asyncMetadataDetails = reports.ReportManager.runAsyncReport(reportId, metadata, true); System.assertEquals(true, asyncDetails.getReportResults().getHasDetailRows()); System.assertEquals(reportId, asyncMetadata.getReportId()); System.assertEquals(true, asyncMetadataDetails.getReportResults().getHasDetailRows()); System.assertEquals(0, reports.ReportManager.getDatatypeFilterOperatorMap().size()); reports.ReportDescribeResult describe = reports.ReportManager.describeReport(reportId); System.assertEquals(reportId, describe.getReportMetadata().getId()); System.assertEquals(0, describe.getReportExtendedMetadata().getDetailColumnInfo().size()); System.assertEquals(0, describe.getReportTypeMetadata().getStandardFilterInfos().size());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

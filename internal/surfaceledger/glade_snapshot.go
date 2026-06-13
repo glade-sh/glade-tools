@@ -95,6 +95,7 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	addFixtureBackedStdlibAliasRows(byID)
 	addFixtureBackedSystemAliasRows(byID)
 	addFixtureBackedApexAliasRows(byID)
+	addFixtureBackedApexMirrorAliasRows(byID)
 	addFixtureBackedInvocableActionDTORows(byID)
 	rows := make([]SurfaceLedgerRow, 0, len(byID))
 	for _, row := range byID {
@@ -284,6 +285,11 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.RestRequest.getParameter(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for RestRequest.getParameter(String)"},
 	{SurfaceID: "apex:System.Schema.describeSObjects(List<String>)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Schema.describeSObjects(List<String>)"},
 	{SurfaceID: "apex:System.Schema.getGlobalDescribe()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Schema.getGlobalDescribe()"},
+	{SurfaceID: "apex:System.Search.find", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed stdlib shorthand for deterministic local Search.find(String) behavior"},
+	{SurfaceID: "apex:System.Search.find(String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.find AccessLevel handling"},
+	{SurfaceID: "apex:System.Search.query(String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.query AccessLevel handling"},
+	{SurfaceID: "apex:System.Search.suggest(String,String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.suggest option handling"},
+	{SurfaceID: "apex:System.Search.suggest(String,String,Object,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.suggest option and AccessLevel handling"},
 	{SurfaceID: "apex:System.Time.valueOf(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Time.valueOf(String)"},
 	{SurfaceID: "apex:System.TxnSecurity.EventCondition.evaluate(SObject)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local transaction-security event-condition default evaluation"},
 	{SurfaceID: "apex:System.TxnSecurity.PolicyCondition.evaluate(TxnSecurity.Event)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local transaction-security policy-condition default evaluation"},
@@ -338,6 +344,112 @@ func addFixtureBackedApexAliasRows(byID map[string]SurfaceLedgerRow) {
 			GladeBehavior: alias.Behavior,
 			Sources:       []string{"apex-fixture-alias"},
 			Notes:         alias.Notes,
+		}
+		fillFromApexID(&row)
+		byID[surfaceIDKey(row.SurfaceID)] = RowFromGladeShape(row)
+	}
+}
+
+type fixtureBackedApexMirrorAliasRow struct {
+	SurfaceID string
+	SourceID  string
+	Kind      string
+}
+
+var fixtureBackedApexMirrorAliasRows = []fixtureBackedApexMirrorAliasRow{
+	{SurfaceID: "apex:commercepayments.PostAuthApiPaymentMethodRequest_alternativePaymentMethod", SourceID: "apex:commercepayments.PostAuthApiPaymentMethodRequest.alternativePaymentMethod", Kind: KindType},
+	{SurfaceID: "apex:commercepayments.PostAuthApiPaymentMethodRequest_cardPaymentMethod", SourceID: "apex:commercepayments.PostAuthApiPaymentMethodRequest.cardPaymentMethod", Kind: KindType},
+	{SurfaceID: "apex:commercepayments.PostAuthorizationRequest_accountId", SourceID: "apex:commercepayments.PostAuthorizationRequest.accountId", Kind: KindType},
+	{SurfaceID: "apex:commercepayments.PostAuthorizationRequest_amount", SourceID: "apex:commercepayments.PostAuthorizationRequest.amount", Kind: KindType},
+	{SurfaceID: "apex:commercepayments.PostAuthorizationRequest_comments", SourceID: "apex:commercepayments.PostAuthorizationRequest.comments", Kind: KindType},
+	{SurfaceID: "apex:commercepayments.PostAuthorizationRequest_currencyIsoCode", SourceID: "apex:commercepayments.PostAuthorizationRequest.currencyIsoCode", Kind: KindType},
+	{SurfaceID: "apex:commercepayments.PostAuthorizationRequest_paymentMethod", SourceID: "apex:commercepayments.PostAuthorizationRequest.paymentMethod", Kind: KindType},
+	{SurfaceID: "apex:industriesNlpSvc.NlpResponse_errors", SourceID: "apex:industriesNlpSvc.NlpResponse.errors", Kind: KindType},
+	{SurfaceID: "apex:industriesNlpSvc.NlpResponse_summarizationResult", SourceID: "apex:industriesNlpSvc.NlpResponse.summarizationResult", Kind: KindType},
+	{SurfaceID: "apex:industriesNlpSvc.NlpSummarizationResult_summary", SourceID: "apex:industriesNlpSvc.NlpSummarizationResult.summary", Kind: KindType},
+	{SurfaceID: "apex:ise.DynamicMenuItem", SourceID: "apex:ise_bots_apex.DynamicMenuItem"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.EntityId", SourceID: "apex:ise_bots_apex.DynamicMenuItem.EntityId"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.EntityIdValue", SourceID: "apex:ise_bots_apex.DynamicMenuItem.EntityIdValue"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.EntityName", SourceID: "apex:ise_bots_apex.DynamicMenuItem.EntityName"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.EntityNameValue", SourceID: "apex:ise_bots_apex.DynamicMenuItem.EntityNameValue"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.Label", SourceID: "apex:ise_bots_apex.DynamicMenuItem.Label"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.LabelValue", SourceID: "apex:ise_bots_apex.DynamicMenuItem.LabelValue"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.sortByDate", SourceID: "apex:ise_bots_apex.DynamicMenuItem.sortByDate"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.sortByDateValue", SourceID: "apex:ise_bots_apex.DynamicMenuItem.sortByDateValue"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.SummaryTextWithFormula", SourceID: "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormula"},
+	{SurfaceID: "apex:ise.DynamicMenuItem.SummaryTextWithFormulaValue", SourceID: "apex:ise_bots_apex.DynamicMenuItem.SummaryTextWithFormulaValue"},
+	{SurfaceID: "apex:pref.LoadFormData", SourceID: "apex:pref_center.LoadFormData"},
+	{SurfaceID: "apex:pref.LoadFormData.addOption(String,SelectOption)", SourceID: "apex:pref_center.LoadFormData.addOption(String,SelectOption)"},
+	{SurfaceID: "apex:pref.LoadFormData.addOption(String,String,String)", SourceID: "apex:pref_center.LoadFormData.addOption(String,String,String)"},
+	{SurfaceID: "apex:pref.LoadFormData.addSelectedOption(String,String)", SourceID: "apex:pref_center.LoadFormData.addSelectedOption(String,String)"},
+	{SurfaceID: "apex:pref.LoadFormData.LoadFormData(Map<String,pref_center.FieldProperties>)", SourceID: "apex:pref_center.LoadFormData.LoadFormData(Map<String,pref_center.FieldProperties>)"},
+	{SurfaceID: "apex:pref.LoadFormData.setButtonLabel(String,String)", SourceID: "apex:pref_center.LoadFormData.setButtonLabel(String,String)"},
+	{SurfaceID: "apex:pref.LoadFormData.setOptions(String,List<SelectOption>)", SourceID: "apex:pref_center.LoadFormData.setOptions(String,List<SelectOption>)"},
+	{SurfaceID: "apex:pref.LoadFormData.setSelectedOption(String,String)", SourceID: "apex:pref_center.LoadFormData.setSelectedOption(String,String)"},
+	{SurfaceID: "apex:pref.LoadFormData.setSelectedOptions(String,List<String>)", SourceID: "apex:pref_center.LoadFormData.setSelectedOptions(String,List<String>)"},
+	{SurfaceID: "apex:pref.LoadFormData.setTextHint(String,String)", SourceID: "apex:pref_center.LoadFormData.setTextHint(String,String)"},
+	{SurfaceID: "apex:pref.LoadFormData.setTextValue(String,String)", SourceID: "apex:pref_center.LoadFormData.setTextValue(String,String)"},
+	{SurfaceID: "apex:pref.LoadParameters", SourceID: "apex:pref_center.LoadParameters"},
+	{SurfaceID: "apex:pref.LoadParameters.getRecordId()", SourceID: "apex:pref_center.LoadParameters.getRecordId()"},
+	{SurfaceID: "apex:pref.PreferenceCenterApexHandler", SourceID: "apex:pref_center.PreferenceCenterApexHandler"},
+	{SurfaceID: "apex:pref.PreferenceCenterApexHandler.load(pref_center.LoadParameters,pref_center.LoadFormData,pref_center.ValidationResult)", SourceID: "apex:pref_center.PreferenceCenterApexHandler.load(pref_center.LoadParameters,pref_center.LoadFormData,pref_center.ValidationResult)"},
+	{SurfaceID: "apex:pref.PreferenceCenterApexHandler.submit(pref_center.SubmitParameters,pref_center.SubmitFormData,pref_center.ValidationResult)", SourceID: "apex:pref_center.PreferenceCenterApexHandler.submit(pref_center.SubmitParameters,pref_center.SubmitFormData,pref_center.ValidationResult)"},
+	{SurfaceID: "apex:pref.SubmitFormData", SourceID: "apex:pref_center.SubmitFormData"},
+	{SurfaceID: "apex:pref.SubmitFormData.getButtonClicked()", SourceID: "apex:pref_center.SubmitFormData.getButtonClicked()"},
+	{SurfaceID: "apex:pref.SubmitFormData.getOldSelectedValue(String)", SourceID: "apex:pref_center.SubmitFormData.getOldSelectedValue(String)"},
+	{SurfaceID: "apex:pref.SubmitFormData.getOldSelectedValues(String)", SourceID: "apex:pref_center.SubmitFormData.getOldSelectedValues(String)"},
+	{SurfaceID: "apex:pref.SubmitFormData.getOldStringValue(String)", SourceID: "apex:pref_center.SubmitFormData.getOldStringValue(String)"},
+	{SurfaceID: "apex:pref.SubmitFormData.getSelectedValue(String)", SourceID: "apex:pref_center.SubmitFormData.getSelectedValue(String)"},
+	{SurfaceID: "apex:pref.SubmitFormData.getSelectedValues(String)", SourceID: "apex:pref_center.SubmitFormData.getSelectedValues(String)"},
+	{SurfaceID: "apex:pref.SubmitFormData.getStringValue(String)", SourceID: "apex:pref_center.SubmitFormData.getStringValue(String)"},
+	{SurfaceID: "apex:pref.SubmitParameters", SourceID: "apex:pref_center.SubmitParameters"},
+	{SurfaceID: "apex:pref.SubmitParameters.getRecordId()", SourceID: "apex:pref_center.SubmitParameters.getRecordId()"},
+	{SurfaceID: "apex:pref.TokenType", SourceID: "apex:pref_center.TokenType"},
+	{SurfaceID: "apex:pref.TokenUtility", SourceID: "apex:pref_center.TokenUtility"},
+	{SurfaceID: "apex:pref.TokenUtility.generateToken(String,pref_center.TokenType)", SourceID: "apex:pref_center.TokenUtility.generateToken(String,pref_center.TokenType)"},
+	{SurfaceID: "apex:pref.TokenUtility.generateToken(String)", SourceID: "apex:pref_center.TokenUtility.generateToken(String)"},
+	{SurfaceID: "apex:pref.TokenUtility.generateTokens(List<String>,pref_center.TokenType)", SourceID: "apex:pref_center.TokenUtility.generateTokens(List<String>,pref_center.TokenType)"},
+	{SurfaceID: "apex:pref.TokenUtility.generateTokens(List<String>)", SourceID: "apex:pref_center.TokenUtility.generateTokens(List<String>)"},
+	{SurfaceID: "apex:pref.ValidationResult", SourceID: "apex:pref_center.ValidationResult"},
+	{SurfaceID: "apex:RichMessaging.ProcessFormHandler.processFormRequest", SourceID: "apex:RichMessaging.ProcessFormHandler.processFormRequest(RichMessaging.ProcessFormResponse)"},
+	{SurfaceID: "apex:setup.FlowPerformanceSetupDetails", SourceID: "apex:setup_flow_performance.FlowPerformanceSetupDetails"},
+	{SurfaceID: "apex:sfdc.Example", SourceID: "apex:ConnectApi.Example"},
+	{SurfaceID: "apex:sfdc.LearningEvaluation", SourceID: "apex:sfdc_enablement.LearningEvaluation"},
+	{SurfaceID: "apex:sfdc.LearningEvaluation.getDetails()", SourceID: "apex:sfdc_enablement.LearningEvaluation.getDetails()"},
+	{SurfaceID: "apex:sfdc.LearningEvaluation.getLearningItemId()", SourceID: "apex:sfdc_enablement.LearningEvaluation.getLearningItemId()"},
+	{SurfaceID: "apex:sfdc.LearningEvaluation.setDetails(Map<String,Object>)", SourceID: "apex:sfdc_enablement.LearningEvaluation.setDetails(Map<String,Object>)"},
+	{SurfaceID: "apex:sfdc.LearningEvaluation.setLearningItemId(String)", SourceID: "apex:sfdc_enablement.LearningEvaluation.setLearningItemId(String)"},
+	{SurfaceID: "apex:sfdc.LearningEvaluationResult", SourceID: "apex:sfdc_enablement.LearningEvaluationResult"},
+	{SurfaceID: "apex:sfdc.LearningEvaluationResult.getLearningItemProgress()", SourceID: "apex:sfdc_enablement.LearningEvaluationResult.getLearningItemProgress()"},
+	{SurfaceID: "apex:sfdc.LearningEvaluationResult.getLearningItemProgressStatus()", SourceID: "apex:sfdc_enablement.LearningEvaluationResult.getLearningItemProgressStatus()"},
+	{SurfaceID: "apex:sfdc.LearningEvaluationResult.setLearningItemProgress(Double)", SourceID: "apex:sfdc_enablement.LearningEvaluationResult.setLearningItemProgress(Double)"},
+	{SurfaceID: "apex:sfdc.LearningEvaluationResult.setLearningItemProgressStatus(sfdc_enablement.LearningItemProgressStatus)", SourceID: "apex:sfdc_enablement.LearningEvaluationResult.setLearningItemProgressStatus(sfdc_enablement.LearningItemProgressStatus)"},
+	{SurfaceID: "apex:sfdc.LearningItemEvaluationHandler", SourceID: "apex:sfdc_enablement.LearningItemEvaluationHandler"},
+	{SurfaceID: "apex:sfdc.LearningItemEvaluationHandler.evaluate(Sfdc_enablement.LearningEvaluation)", SourceID: "apex:sfdc_enablement.LearningItemEvaluationHandler.evaluate(sfdc_enablement.LearningEvaluation)"},
+	{SurfaceID: "apex:sfdc.LearningItemProgressStatus", SourceID: "apex:sfdc_enablement.LearningItemProgressStatus"},
+	{SurfaceID: "apex:sfdc.LearningItemSerializeDeserializer", SourceID: "apex:sfdc_enablement.LearningItemSerializeDeserializer"},
+	{SurfaceID: "apex:sfdc.LearningItemSerializeDeserializer.deserialize(String)", SourceID: "apex:sfdc_enablement.LearningItemSerializeDeserializer.deserialize(String)"},
+	{SurfaceID: "apex:sfdc.LearningItemSerializeDeserializer.serialize(String)", SourceID: "apex:sfdc_enablement.LearningItemSerializeDeserializer.serialize(String)"},
+	{SurfaceID: "apex:sfdc.SurveyInvitationLinkShortener", SourceID: "apex:sfdc_surveys.SurveyInvitationLinkShortener"},
+	{SurfaceID: "apex:sfdc.SurveyInvitationLinkShortener.getShortenedURL(String)", SourceID: "apex:sfdc_surveys.SurveyInvitationLinkShortener.getShortenedURL(String)"},
+}
+
+func addFixtureBackedApexMirrorAliasRows(byID map[string]SurfaceLedgerRow) {
+	for _, alias := range fixtureBackedApexMirrorAliasRows {
+		source, ok := byID[surfaceIDKey(alias.SourceID)]
+		if !ok {
+			continue
+		}
+		row := source
+		row.SurfaceID = alias.SurfaceID
+		row.Namespace = ""
+		row.TypeName = ""
+		row.MemberName = ""
+		row.Parameters = nil
+		row.Sources = mergeStrings(row.Sources, []string{"apex-mirror-alias"})
+		row.Notes = "fixture-backed docs alias for " + alias.SourceID
+		if alias.Kind != "" {
+			row.Kind = alias.Kind
 		}
 		fillFromApexID(&row)
 		byID[surfaceIDKey(row.SurfaceID)] = RowFromGladeShape(row)
@@ -765,29 +877,38 @@ func fillFromApexID(row *SurfaceLedgerRow) {
 		return
 	}
 	rest := strings.TrimPrefix(row.SurfaceID, "apex:")
-	if dot := strings.LastIndex(rest, "."); dot > 0 {
-		row.Namespace = rest[:dot]
-		member := rest[dot+1:]
-		if paren := strings.Index(member, "("); paren >= 0 {
-			row.MemberName = member[:paren]
-			typePart := rest[:dot]
-			if typeDot := strings.LastIndex(typePart, "."); typeDot > 0 {
-				row.Namespace = typePart[:typeDot]
-				row.TypeName = typePart[typeDot+1:]
-			}
-			return
-		}
-		if row.Kind == KindMethod || row.Kind == KindProperty || row.Kind == KindField {
+	identity := rest
+	parameters := ""
+	hasParameters := false
+	if open := strings.IndexByte(rest, '('); open >= 0 && strings.HasSuffix(rest, ")") {
+		identity = rest[:open]
+		parameters = rest[open+1 : len(rest)-1]
+		hasParameters = true
+	}
+	if dot := strings.LastIndex(identity, "."); dot > 0 {
+		prefix := identity[:dot]
+		member := identity[dot+1:]
+		if hasParameters || row.Kind == KindMethod || row.Kind == KindProperty || row.Kind == KindField {
 			row.MemberName = member
-			typePart := rest[:dot]
-			if typeDot := strings.LastIndex(typePart, "."); typeDot > 0 {
-				row.Namespace = typePart[:typeDot]
-				row.TypeName = typePart[typeDot+1:]
+			if hasParameters {
+				row.Parameters = cleanList(splitSurfaceParameterList(parameters))
 			}
+			fillApexTypeParts(row, prefix)
 			return
 		}
+		row.Namespace = prefix
 		row.TypeName = member
 	}
+}
+
+func fillApexTypeParts(row *SurfaceLedgerRow, typePart string) {
+	if typeDot := strings.LastIndex(typePart, "."); typeDot > 0 {
+		row.Namespace = typePart[:typeDot]
+		row.TypeName = typePart[typeDot+1:]
+		return
+	}
+	row.Namespace = ""
+	row.TypeName = typePart
 }
 
 func firstNonEmpty(a, b string) string {

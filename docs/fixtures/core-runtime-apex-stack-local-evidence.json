@@ -1,0 +1,53 @@
+{
+  "name": "core-runtime-apex-stack-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:Apex.Stack.empty()",
+      "symbol": "Apex.Stack.empty",
+      "kind": "exec",
+      "notes": "The local runtime implements Apex.Stack empty state tracking."
+    },
+    {
+      "surfaceId": "apex:Apex.Stack.peek()",
+      "symbol": "Apex.Stack.peek",
+      "kind": "exec",
+      "notes": "The local runtime returns the top stack value without removing it."
+    },
+    {
+      "surfaceId": "apex:Apex.Stack.pop()",
+      "symbol": "Apex.Stack.pop",
+      "kind": "exec",
+      "notes": "The local runtime removes and returns the top stack value."
+    },
+    {
+      "surfaceId": "apex:Apex.Stack.push(String)",
+      "symbol": "Apex.Stack.push",
+      "kind": "exec",
+      "notes": "The local runtime pushes and returns string values on Apex.Stack."
+    },
+    {
+      "surfaceId": "apex:Apex.EmptyStackException.getTypeName()",
+      "symbol": "Apex.EmptyStackException.getTypeName",
+      "kind": "exec",
+      "notes": "The local runtime raises Apex.EmptyStackException for an empty pop."
+    }
+  ],
+  "source": [
+    {
+      "path": "scripts/core-runtime-apex-stack-local-evidence.apex",
+      "content": "Apex.Stack stack = new Apex.Stack();\nSystem.assert(stack.empty());\nSystem.assertEquals('one', stack.push('one'));\nstack.push('two');\nSystem.assert(!stack.empty());\nSystem.assertEquals('two', stack.peek());\nSystem.assertEquals('two', stack.pop());\nSystem.assertEquals('one', stack.pop());\nSystem.assert(stack.empty());\ntry {\n  stack.pop();\n  System.assert(false);\n} catch (Apex.EmptyStackException e) {\n  System.assertEquals('Apex.EmptyStackException', e.getTypeName());\n}"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Apex.Stack stack = new Apex.Stack();\nSystem.assert(stack.empty());\nSystem.assertEquals('one', stack.push('one'));\nstack.push('two');\nSystem.assert(!stack.empty());\nSystem.assertEquals('two', stack.peek());\nSystem.assertEquals('two', stack.pop());\nSystem.assertEquals('one', stack.pop());\nSystem.assert(stack.empty());\ntry {\n  stack.pop();\n  System.assert(false);\n} catch (Apex.EmptyStackException e) {\n  System.assertEquals('Apex.EmptyStackException', e.getTypeName());\n}"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

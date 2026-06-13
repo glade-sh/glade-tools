@@ -1,0 +1,49 @@
+{
+  "name": "commerce-industry-tail-callback-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:CommerceExtension.ResolutionStrategy.resolve()",
+      "symbol": "CommerceExtension.ResolutionStrategy.resolve",
+      "kind": "test",
+      "notes": "The local test runner dispatches user Apex implementations of the generated CommerceExtension callback interface."
+    },
+    {
+      "surfaceId": "apex:Readiness.ProductEvaluator.evaluateReadiness(Readiness.ProductEvaluationContext)",
+      "symbol": "Readiness.ProductEvaluator.evaluateReadiness",
+      "kind": "test",
+      "notes": "The local test runner dispatches user Apex implementations of the generated Readiness callback interface."
+    },
+    {
+      "surfaceId": "apex:Readiness.ProductEvaluator.isActive()",
+      "symbol": "Readiness.ProductEvaluator.isActive",
+      "kind": "test",
+      "notes": "The local test runner dispatches user Apex implementations of the generated Readiness callback interface."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CommerceResolver.cls",
+      "content": "public class CommerceResolver implements CommerceExtension.ResolutionStrategy {\n  public CommerceExtension.Resolution resolve() {\n    return new CommerceExtension.Resolution(CommerceExtension.ResolutionStates.OFF);\n  }\n}\n"
+    },
+    {
+      "path": "force-app/main/classes/ReadinessEvaluator.cls",
+      "content": "public class ReadinessEvaluator implements Readiness.ProductEvaluator {\n  public Boolean isActive() {\n    return true;\n  }\n  public List<Readiness.ProductScoreDetail> evaluateReadiness(Readiness.ProductEvaluationContext ctx) {\n    return new List<Readiness.ProductScoreDetail>{\n      new Readiness.ProductScoreDetail('01t000000000001AAA', 'local-rule', 100, 'ready')\n    };\n  }\n}\n"
+    },
+    {
+      "path": "force-app/main/classes/CommerceIndustryCallbackTest.cls",
+      "content": "@isTest private class CommerceIndustryCallbackTest { @isTest static void userCallbacksDispatchLocally() { CommerceExtension.ResolutionStrategy strategy = new CommerceResolver(); System.assertEquals(CommerceExtension.ResolutionStates.OFF, strategy.resolve().getResolutionState()); Readiness.ProductEvaluator evaluator = new ReadinessEvaluator(); System.assertEquals(true, evaluator.isActive()); Readiness.ProductEvaluationContext context = new Readiness.ProductEvaluationContext(new Set<Id>{ '01t000000000001AAA' }); List<Readiness.ProductScoreDetail> scores = evaluator.evaluateReadiness(context); System.assertEquals(1, scores.size()); System.assertEquals('local-rule', scores[0].getRuleName()); System.assertEquals(100, scores[0].getRuleScore()); } }\n"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "name": "core-runtime-sfsqlquery-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.QueryHandle()",
+      "symbol": "sfsqlquery.QueryHandle.QueryHandle()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness constructs an empty QueryHandle DTO."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.create(String,String)",
+      "symbol": "sfsqlquery.QueryHandle.create(String,String)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness creates a QueryHandle with query id and dataspace."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.withOffset(Long)",
+      "symbol": "sfsqlquery.QueryHandle.withOffset(Long)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness records an offset on the QueryHandle and returns the handle."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.withWorkloadName(String)",
+      "symbol": "sfsqlquery.QueryHandle.withWorkloadName(String)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness records a workload name on the QueryHandle and returns the handle."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.cancel()",
+      "symbol": "sfsqlquery.SqlQueueable.cancel()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable cancel is a no-op local harness call."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.chainNextJob(sfsqlquery.QueryHandle)",
+      "symbol": "sfsqlquery.SqlQueueable.chainNextJob(sfsqlquery.QueryHandle)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable accepts the next QueryHandle for chaining."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getColumnNames()",
+      "symbol": "sfsqlquery.SqlQueueable.getColumnNames()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable returns an empty local column-name list."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getMetadata()",
+      "symbol": "sfsqlquery.SqlQueueable.getMetadata()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable returns an empty local metadata list."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getPageOutput()",
+      "symbol": "sfsqlquery.SqlQueueable.getPageOutput()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable returns a QuerySqlPageOutput DTO backed by local rows and metadata."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getQueryId()",
+      "symbol": "sfsqlquery.SqlQueueable.getQueryId()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable exposes the query id from its QueryHandle."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getRows()",
+      "symbol": "sfsqlquery.SqlQueueable.getRows()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable returns a local iterable rows collection."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.processDataChunk()",
+      "symbol": "sfsqlquery.SqlQueueable.processDataChunk()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery queueable processDataChunk is a no-op local harness call."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.SqlRowIterator(sfsqlquery.QueryHandle)",
+      "symbol": "sfsqlquery.SqlRowIterator.SqlRowIterator(sfsqlquery.QueryHandle)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator consumes mock rows from a QueryHandle."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.SqlRowIterator(sfsqlquery.SqlStatement)",
+      "symbol": "sfsqlquery.SqlRowIterator.SqlRowIterator(sfsqlquery.SqlStatement)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator can be constructed from a SqlStatement."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.cancel()",
+      "symbol": "sfsqlquery.SqlRowIterator.cancel()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator cancel marks the iterator exhausted."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.getColumnNames()",
+      "symbol": "sfsqlquery.SqlRowIterator.getColumnNames()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator derives column names from mock metadata."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.getMetadata()",
+      "symbol": "sfsqlquery.SqlRowIterator.getMetadata()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator returns mock metadata."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.getQueryId()",
+      "symbol": "sfsqlquery.SqlRowIterator.getQueryId()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator exposes the QueryHandle query id."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.hasNext()",
+      "symbol": "sfsqlquery.SqlRowIterator.hasNext()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator reports mock row availability."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.iterator()",
+      "symbol": "sfsqlquery.SqlRowIterator.iterator()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator returns itself as the iterator."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.next()",
+      "symbol": "sfsqlquery.SqlRowIterator.next()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery row iterator returns a Row DTO backed by a mock QuerySqlRow."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.SqlStatement()",
+      "symbol": "sfsqlquery.SqlStatement.SqlStatement()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness constructs an empty SqlStatement DTO."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.create(ConnectApi.QuerySqlInput,String)",
+      "symbol": "sfsqlquery.SqlStatement.create(ConnectApi.QuerySqlInput,String)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness creates a SqlStatement from a QuerySqlInput and dataspace."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.create(String,String)",
+      "symbol": "sfsqlquery.SqlStatement.create(String,String)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness creates a SqlStatement from SQL text and dataspace."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.withWorkloadName(String)",
+      "symbol": "sfsqlquery.SqlStatement.withWorkloadName(String)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery harness records a workload name on the SqlStatement and returns the statement."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.clearMocks()",
+      "symbol": "sfsqlquery.SqlTester.clearMocks()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery test harness clears mock rows and metadata."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.enqueueMockRows(List<ConnectApi.QuerySqlRow>)",
+      "symbol": "sfsqlquery.SqlTester.enqueueMockRows(List<ConnectApi.QuerySqlRow>)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery test harness appends mock rows."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.isRunningTest()",
+      "symbol": "sfsqlquery.SqlTester.isRunningTest()",
+      "kind": "exec",
+      "notes": "Local sfsqlquery test harness reports the VM test context state."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.setMockMetadata(List<ConnectApi.QuerySqlMetadataItem>)",
+      "symbol": "sfsqlquery.SqlTester.setMockMetadata(List<ConnectApi.QuerySqlMetadataItem>)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery test harness sets mock metadata."
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.setMockRows(List<ConnectApi.QuerySqlRow>)",
+      "symbol": "sfsqlquery.SqlTester.setMockRows(List<ConnectApi.QuerySqlRow>)",
+      "kind": "exec",
+      "notes": "Local sfsqlquery test harness replaces mock rows."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "sfsqlquery.SqlTester.clearMocks();\nSystem.assertEquals(false, sfsqlquery.SqlTester.isRunningTest());\nConnectApi.QuerySqlRow firstRaw = new ConnectApi.QuerySqlRow();\nfirstRaw.row = new List<Object>{'first'};\nConnectApi.QuerySqlRow secondRaw = new ConnectApi.QuerySqlRow();\nsecondRaw.row = new List<Object>{'second'};\nConnectApi.QuerySqlMetadataItem metadata = new ConnectApi.QuerySqlMetadataItem();\nmetadata.name = 'Name';\nsfsqlquery.SqlTester.setMockRows(new List<ConnectApi.QuerySqlRow>{firstRaw});\nsfsqlquery.SqlTester.enqueueMockRows(new List<ConnectApi.QuerySqlRow>{secondRaw});\nsfsqlquery.SqlTester.setMockMetadata(new List<ConnectApi.QuerySqlMetadataItem>{metadata});\nsfsqlquery.QueryHandle emptyHandle = new sfsqlquery.QueryHandle();\nSystem.assertNotEquals(null, emptyHandle);\nsfsqlquery.QueryHandle handle = sfsqlquery.QueryHandle.create('query-1', 'default');\nSystem.assertEquals(handle, handle.withOffset(5));\nSystem.assertEquals(handle, handle.withWorkloadName('local-work'));\nsfsqlquery.SqlQueueable queued = new sfsqlquery.SqlQueueable(handle);\nSystem.assertEquals('query-1', queued.getQueryId());\nSystem.assertEquals(0, queued.getColumnNames().size());\nSystem.assertEquals(0, queued.getMetadata().size());\nSystem.assertNotEquals(null, queued.getRows());\nSystem.assertNotEquals(null, queued.getPageOutput());\nqueued.chainNextJob(sfsqlquery.QueryHandle.create('query-2', 'default'));\nqueued.processDataChunk();\nqueued.cancel();\nsfsqlquery.SqlRowIterator rows = new sfsqlquery.SqlRowIterator(handle);\nSystem.assertEquals('query-1', rows.getQueryId());\nSystem.assertEquals(1, rows.getMetadata().size());\nSystem.assertEquals('Name', rows.getColumnNames().get(0));\nSystem.assertEquals(true, rows.hasNext());\nSystem.assertEquals(rows, rows.iterator());\nsfsqlquery.Row first = rows.next();\nConnectApi.QuerySqlRow firstRow = first.getRawRow();\nSystem.assertEquals('first', ((List<Object>)firstRow.row).get(0));\nSystem.assertEquals(true, rows.hasNext());\nsfsqlquery.SqlRowIterator cancellable = new sfsqlquery.SqlRowIterator(handle);\ncancellable.cancel();\nSystem.assertEquals(false, cancellable.hasNext());\nsfsqlquery.SqlStatement emptyStatement = new sfsqlquery.SqlStatement();\nSystem.assertNotEquals(null, emptyStatement);\nsfsqlquery.SqlStatement sqlStatement = sfsqlquery.SqlStatement.create('select Name from Account', 'default');\nConnectApi.QuerySqlInput input = new ConnectApi.QuerySqlInput();\ninput.sql = 'select Id from Account';\nsfsqlquery.SqlStatement inputStatement = sfsqlquery.SqlStatement.create(input, 'default');\nSystem.assertEquals(inputStatement, inputStatement.withWorkloadName('input-work'));\nsfsqlquery.SqlRowIterator statementRows = new sfsqlquery.SqlRowIterator(sqlStatement);\nSystem.assertEquals(1, statementRows.getMetadata().size());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "sfsqlquery.SqlTester.clearMocks();\nSystem.assertEquals(false, sfsqlquery.SqlTester.isRunningTest());\nConnectApi.QuerySqlRow firstRaw = new ConnectApi.QuerySqlRow();\nfirstRaw.row = new List<Object>{'first'};\nConnectApi.QuerySqlRow secondRaw = new ConnectApi.QuerySqlRow();\nsecondRaw.row = new List<Object>{'second'};\nConnectApi.QuerySqlMetadataItem metadata = new ConnectApi.QuerySqlMetadataItem();\nmetadata.name = 'Name';\nsfsqlquery.SqlTester.setMockRows(new List<ConnectApi.QuerySqlRow>{firstRaw});\nsfsqlquery.SqlTester.enqueueMockRows(new List<ConnectApi.QuerySqlRow>{secondRaw});\nsfsqlquery.SqlTester.setMockMetadata(new List<ConnectApi.QuerySqlMetadataItem>{metadata});\nsfsqlquery.QueryHandle emptyHandle = new sfsqlquery.QueryHandle();\nSystem.assertNotEquals(null, emptyHandle);\nsfsqlquery.QueryHandle handle = sfsqlquery.QueryHandle.create('query-1', 'default');\nSystem.assertEquals(handle, handle.withOffset(5));\nSystem.assertEquals(handle, handle.withWorkloadName('local-work'));\nsfsqlquery.SqlQueueable queued = new sfsqlquery.SqlQueueable(handle);\nSystem.assertEquals('query-1', queued.getQueryId());\nSystem.assertEquals(0, queued.getColumnNames().size());\nSystem.assertEquals(0, queued.getMetadata().size());\nSystem.assertNotEquals(null, queued.getRows());\nSystem.assertNotEquals(null, queued.getPageOutput());\nqueued.chainNextJob(sfsqlquery.QueryHandle.create('query-2', 'default'));\nqueued.processDataChunk();\nqueued.cancel();\nsfsqlquery.SqlRowIterator rows = new sfsqlquery.SqlRowIterator(handle);\nSystem.assertEquals('query-1', rows.getQueryId());\nSystem.assertEquals(1, rows.getMetadata().size());\nSystem.assertEquals('Name', rows.getColumnNames().get(0));\nSystem.assertEquals(true, rows.hasNext());\nSystem.assertEquals(rows, rows.iterator());\nsfsqlquery.Row first = rows.next();\nConnectApi.QuerySqlRow firstRow = first.getRawRow();\nSystem.assertEquals('first', ((List<Object>)firstRow.row).get(0));\nSystem.assertEquals(true, rows.hasNext());\nsfsqlquery.SqlRowIterator cancellable = new sfsqlquery.SqlRowIterator(handle);\ncancellable.cancel();\nSystem.assertEquals(false, cancellable.hasNext());\nsfsqlquery.SqlStatement emptyStatement = new sfsqlquery.SqlStatement();\nSystem.assertNotEquals(null, emptyStatement);\nsfsqlquery.SqlStatement sqlStatement = sfsqlquery.SqlStatement.create('select Name from Account', 'default');\nConnectApi.QuerySqlInput input = new ConnectApi.QuerySqlInput();\ninput.sql = 'select Id from Account';\nsfsqlquery.SqlStatement inputStatement = sfsqlquery.SqlStatement.create(input, 'default');\nSystem.assertEquals(inputStatement, inputStatement.withWorkloadName('input-work'));\nsfsqlquery.SqlRowIterator statementRows = new sfsqlquery.SqlRowIterator(sqlStatement);\nSystem.assertEquals(1, statementRows.getMetadata().size());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "name": "integration-slack-local-harness-tail-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:Slack.CheckboxGroup.toggleValue(Slack.TestHarness.Option)",
+      "symbol": "Slack.CheckboxGroup.toggleValue(Slack.TestHarness.Option)",
+      "kind": "exec",
+      "notes": "Local Slack checkbox groups toggle the supplied test-harness option value."
+    },
+    {
+      "surfaceId": "apex:Slack.EventDispatcher.allowUnauthenticatedUsers()",
+      "symbol": "Slack.EventDispatcher.allowUnauthenticatedUsers",
+      "kind": "exec",
+      "notes": "Local Slack dispatchers return the default authenticated-only policy."
+    },
+    {
+      "surfaceId": "apex:Slack.Overflow.clickOption(Integer)",
+      "symbol": "Slack.Overflow.clickOption(Integer)",
+      "kind": "exec",
+      "notes": "Local Slack overflow menus record the selected option index."
+    },
+    {
+      "surfaceId": "apex:Slack.Overflow.clickOption(Slack.TestHarness.Option)",
+      "symbol": "Slack.Overflow.clickOption(Slack.TestHarness.Option)",
+      "kind": "exec",
+      "notes": "Local Slack overflow menus record the selected test-harness option."
+    },
+    {
+      "surfaceId": "apex:Slack.ShortcutDispatcher.allowUnauthenticatedUsers()",
+      "symbol": "Slack.ShortcutDispatcher.allowUnauthenticatedUsers",
+      "kind": "exec",
+      "notes": "Local Slack dispatchers return the default authenticated-only policy."
+    },
+    {
+      "surfaceId": "apex:Slack.SlashCommandDispatcher.allowUnauthenticatedUsers()",
+      "symbol": "Slack.SlashCommandDispatcher.allowUnauthenticatedUsers",
+      "kind": "exec",
+      "notes": "Local Slack dispatchers return the default authenticated-only policy."
+    },
+    {
+      "surfaceId": "apex:Slack.State.clearAllClientMocks()",
+      "symbol": "Slack.State.clearAllClientMocks",
+      "kind": "exec",
+      "notes": "Local Slack harness state accepts mock-clearing helpers as deterministic no-ops."
+    },
+    {
+      "surfaceId": "apex:Slack.State.clearAppClientMock()",
+      "symbol": "Slack.State.clearAppClientMock",
+      "kind": "exec",
+      "notes": "Local Slack harness state accepts app-client mock clearing."
+    },
+    {
+      "surfaceId": "apex:Slack.State.clearBotClientMock()",
+      "symbol": "Slack.State.clearBotClientMock",
+      "kind": "exec",
+      "notes": "Local Slack harness state accepts bot-client mock clearing."
+    },
+    {
+      "surfaceId": "apex:Slack.State.clearUserClientMock()",
+      "symbol": "Slack.State.clearUserClientMock",
+      "kind": "exec",
+      "notes": "Local Slack harness state accepts user-client mock clearing."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createDirectChannel(Slack.TestHarness.User)",
+      "symbol": "Slack.State.createDirectChannel",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates direct-channel DTOs for test users."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createEnterprise(String)",
+      "symbol": "Slack.State.createEnterprise(String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates deterministic enterprise DTOs."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createEnterprise(String,String)",
+      "symbol": "Slack.State.createEnterprise(String,String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates deterministic enterprise DTOs with explicit id and name."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createPrivateChannel(Slack.TestHarness.Team,String)",
+      "symbol": "Slack.State.createPrivateChannel(Slack.TestHarness.Team,String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates private-channel DTOs for a team."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createPrivateChannel(Slack.TestHarness.Team,String,String)",
+      "symbol": "Slack.State.createPrivateChannel(Slack.TestHarness.Team,String,String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates private-channel DTOs with locale."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createPrivateChannel(String)",
+      "symbol": "Slack.State.createPrivateChannel(String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates private-channel DTOs in the default team."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createPublicChannel(Slack.TestHarness.Team,String)",
+      "symbol": "Slack.State.createPublicChannel(Slack.TestHarness.Team,String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates public-channel DTOs for a team."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createPublicChannel(Slack.TestHarness.Team,String,String)",
+      "symbol": "Slack.State.createPublicChannel(Slack.TestHarness.Team,String,String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates public-channel DTOs with locale."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createPublicChannel(String)",
+      "symbol": "Slack.State.createPublicChannel(String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates public-channel DTOs in the default team."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createTeam(String)",
+      "symbol": "Slack.State.createTeam(String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates deterministic team DTOs."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createTeam(String,Slack.TestHarness.Enterprise)",
+      "symbol": "Slack.State.createTeam(String,Slack.TestHarness.Enterprise)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates team DTOs under the supplied enterprise."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createUser(String,String)",
+      "symbol": "Slack.State.createUser(String,String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates deterministic user DTOs."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createUser(String,String,Slack.TestHarness.Team)",
+      "symbol": "Slack.State.createUser(String,String,Slack.TestHarness.Team)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates user DTOs under a team."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createUser(String,String,Slack.TestHarness.Team,String)",
+      "symbol": "Slack.State.createUser(String,String,Slack.TestHarness.Team,String)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates user DTOs with locale."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createUserSession()",
+      "symbol": "Slack.State.createUserSession()",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates a default user session."
+    },
+    {
+      "surfaceId": "apex:Slack.State.createUserSession(Slack.TestHarness.User,Slack.TestHarness.Channel)",
+      "symbol": "Slack.State.createUserSession(Slack.TestHarness.User,Slack.TestHarness.Channel)",
+      "kind": "exec",
+      "notes": "Local Slack harness state creates a user session bound to a user and channel."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.closeAllModals()",
+      "symbol": "Slack.UserSession.closeAllModals",
+      "kind": "exec",
+      "notes": "Local Slack sessions accept modal-stack clearing."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.closeModal()",
+      "symbol": "Slack.UserSession.closeModal",
+      "kind": "exec",
+      "notes": "Local Slack sessions accept top-modal closing."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.executeEvent(Slack.Event,Slack.App)",
+      "symbol": "Slack.UserSession.executeEvent",
+      "kind": "exec",
+      "notes": "Local Slack sessions accept event execution hooks as no-ops."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.executeGlobalShortcut(String,Slack.App)",
+      "symbol": "Slack.UserSession.executeGlobalShortcut",
+      "kind": "exec",
+      "notes": "Local Slack sessions accept global shortcut execution hooks as no-ops."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.executeMessageShortcut(String,Slack.TestHarness.Message,Slack.App)",
+      "symbol": "Slack.UserSession.executeMessageShortcut",
+      "kind": "exec",
+      "notes": "Local Slack sessions accept message shortcut execution hooks as no-ops."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.executeSlashCommand(String,Slack.App)",
+      "symbol": "Slack.UserSession.executeSlashCommand(String,Slack.App)",
+      "kind": "exec",
+      "notes": "Local Slack sessions accept slash command execution hooks as no-ops."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.executeSlashCommand(String,String,Slack.App)",
+      "symbol": "Slack.UserSession.executeSlashCommand(String,String,Slack.App)",
+      "kind": "exec",
+      "notes": "Local Slack sessions accept slash command execution hooks with text as no-ops."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getAppHome()",
+      "symbol": "Slack.UserSession.getAppHome",
+      "kind": "exec",
+      "notes": "Local Slack sessions return the current app home DTO."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getMessageCount()",
+      "symbol": "Slack.UserSession.getMessageCount",
+      "kind": "exec",
+      "notes": "Local Slack sessions count locally posted messages."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getMessages()",
+      "symbol": "Slack.UserSession.getMessages",
+      "kind": "exec",
+      "notes": "Local Slack sessions return locally posted messages."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getModalStack()",
+      "symbol": "Slack.UserSession.getModalStack",
+      "kind": "exec",
+      "notes": "Local Slack sessions expose the local modal stack."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getOpenChannel()",
+      "symbol": "Slack.UserSession.getOpenChannel",
+      "kind": "exec",
+      "notes": "Local Slack sessions return the open-channel DTO."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getState()",
+      "symbol": "Slack.UserSession.getState",
+      "kind": "exec",
+      "notes": "Local Slack sessions return their backing local state."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getTopModal()",
+      "symbol": "Slack.UserSession.getTopModal",
+      "kind": "exec",
+      "notes": "Local Slack sessions return the top modal or null."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.getUser()",
+      "symbol": "Slack.UserSession.getUser",
+      "kind": "exec",
+      "notes": "Local Slack sessions return the current user DTO."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.openAppHome(Slack.App)",
+      "symbol": "Slack.UserSession.openAppHome",
+      "kind": "exec",
+      "notes": "Local Slack sessions create and retain an app-home DTO."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.openChannel(String)",
+      "symbol": "Slack.UserSession.openChannel",
+      "kind": "exec",
+      "notes": "Local Slack sessions create and retain an open-channel DTO."
+    },
+    {
+      "surfaceId": "apex:Slack.UserSession.postMessage(String)",
+      "symbol": "Slack.UserSession.postMessage",
+      "kind": "exec",
+      "notes": "Local Slack sessions append a local message DTO."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Slack.State state = new Slack.State();\nSlack.TestHarness.Enterprise enterprise = state.createEnterprise('E1', 'Example');\nSystem.assertNotEquals(null, state.createEnterprise('Solo'));\nSlack.TestHarness.Team team = state.createTeam('example', enterprise);\nSystem.assertNotEquals(null, state.createTeam('solo'));\nSlack.TestHarness.User user = state.createUser('muser', 'M User', team, 'en_US');\nSystem.assertNotEquals(null, state.createUser('two', 'Two User'));\nSystem.assertNotEquals(null, state.createUser('three', 'Three User', team));\nSlack.TestHarness.Channel publicChannel = state.createPublicChannel(team, 'general', 'en_US');\nSystem.assertNotEquals(null, state.createPublicChannel(team, 'ops'));\nSystem.assertNotEquals(null, state.createPublicChannel('default-public'));\nSystem.assertNotEquals(null, state.createPrivateChannel(team, 'private', 'en_US'));\nSystem.assertNotEquals(null, state.createPrivateChannel(team, 'private-two'));\nSystem.assertNotEquals(null, state.createPrivateChannel('default-private'));\nSystem.assertNotEquals(null, state.createDirectChannel(user));\nSlack.TestHarness.UserSession defaultSession = state.createUserSession();\nSystem.assertNotEquals(null, defaultSession);\nSlack.TestHarness.UserSession session = state.createUserSession(user, publicChannel);\nSystem.assertNotEquals(null, session.getState());\nSystem.assertNotEquals(null, session.getUser());\nSystem.assertNotEquals(null, session.getOpenChannel());\nSystem.assertEquals(0, session.getMessageCount());\nSystem.assertEquals(0, session.getMessages().size());\nSystem.assertEquals(0, session.getModalStack().size());\nSystem.assertEquals(null, session.getTopModal());\nSlack.App app = new Slack.App();\nSystem.assertNotEquals(null, session.openAppHome(app));\nSystem.assertNotEquals(null, session.getAppHome());\nSystem.assertNotEquals(null, session.openChannel('C123'));\nSlack.TestHarness.Message message = session.postMessage('hello');\nSystem.assertNotEquals(null, message);\nSystem.assertEquals(1, session.getMessageCount());\nSystem.assertEquals(1, session.getMessages().size());\nsession.executeEvent(new Slack.Event(), app);\nsession.executeGlobalShortcut('global', app);\nsession.executeMessageShortcut('message', message, app);\nsession.executeSlashCommand('/local', app);\nsession.executeSlashCommand('/local', 'text', app);\nsession.closeModal();\nsession.closeAllModals();\nstate.clearAppClientMock();\nstate.clearBotClientMock();\nstate.clearUserClientMock();\nstate.clearAllClientMocks();\nSystem.assertEquals(false, new Slack.EventDispatcher().allowUnauthenticatedUsers());\nSystem.assertEquals(false, new Slack.ShortcutDispatcher().allowUnauthenticatedUsers());\nSystem.assertEquals(false, new Slack.SlashCommandDispatcher().allowUnauthenticatedUsers());\nSlack.TestHarness.Option option = new Slack.TestHarness.Option();\nSlack.CheckboxGroup groupValue = new Slack.CheckboxGroup();\ngroupValue.toggleValue(option);\nSlack.Overflow overflow = new Slack.Overflow();\noverflow.clickOption(0);\noverflow.clickOption(option);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Slack.State state = new Slack.State();\nSlack.TestHarness.Enterprise enterprise = state.createEnterprise('E1', 'Example');\nSystem.assertNotEquals(null, state.createEnterprise('Solo'));\nSlack.TestHarness.Team team = state.createTeam('example', enterprise);\nSystem.assertNotEquals(null, state.createTeam('solo'));\nSlack.TestHarness.User user = state.createUser('muser', 'M User', team, 'en_US');\nSystem.assertNotEquals(null, state.createUser('two', 'Two User'));\nSystem.assertNotEquals(null, state.createUser('three', 'Three User', team));\nSlack.TestHarness.Channel publicChannel = state.createPublicChannel(team, 'general', 'en_US');\nSystem.assertNotEquals(null, state.createPublicChannel(team, 'ops'));\nSystem.assertNotEquals(null, state.createPublicChannel('default-public'));\nSystem.assertNotEquals(null, state.createPrivateChannel(team, 'private', 'en_US'));\nSystem.assertNotEquals(null, state.createPrivateChannel(team, 'private-two'));\nSystem.assertNotEquals(null, state.createPrivateChannel('default-private'));\nSystem.assertNotEquals(null, state.createDirectChannel(user));\nSlack.TestHarness.UserSession defaultSession = state.createUserSession();\nSystem.assertNotEquals(null, defaultSession);\nSlack.TestHarness.UserSession session = state.createUserSession(user, publicChannel);\nSystem.assertNotEquals(null, session.getState());\nSystem.assertNotEquals(null, session.getUser());\nSystem.assertNotEquals(null, session.getOpenChannel());\nSystem.assertEquals(0, session.getMessageCount());\nSystem.assertEquals(0, session.getMessages().size());\nSystem.assertEquals(0, session.getModalStack().size());\nSystem.assertEquals(null, session.getTopModal());\nSlack.App app = new Slack.App();\nSystem.assertNotEquals(null, session.openAppHome(app));\nSystem.assertNotEquals(null, session.getAppHome());\nSystem.assertNotEquals(null, session.openChannel('C123'));\nSlack.TestHarness.Message message = session.postMessage('hello');\nSystem.assertNotEquals(null, message);\nSystem.assertEquals(1, session.getMessageCount());\nSystem.assertEquals(1, session.getMessages().size());\nsession.executeEvent(new Slack.Event(), app);\nsession.executeGlobalShortcut('global', app);\nsession.executeMessageShortcut('message', message, app);\nsession.executeSlashCommand('/local', app);\nsession.executeSlashCommand('/local', 'text', app);\nsession.closeModal();\nsession.closeAllModals();\nstate.clearAppClientMock();\nstate.clearBotClientMock();\nstate.clearUserClientMock();\nstate.clearAllClientMocks();\nSystem.assertEquals(false, new Slack.EventDispatcher().allowUnauthenticatedUsers());\nSystem.assertEquals(false, new Slack.ShortcutDispatcher().allowUnauthenticatedUsers());\nSystem.assertEquals(false, new Slack.SlashCommandDispatcher().allowUnauthenticatedUsers());\nSlack.TestHarness.Option option = new Slack.TestHarness.Option();\nSlack.CheckboxGroup groupValue = new Slack.CheckboxGroup();\ngroupValue.toggleValue(option);\nSlack.Overflow overflow = new Slack.Overflow();\noverflow.clickOption(0);\noverflow.clickOption(option);\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "name": "core-runtime-service-tail-hosted-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:dataweave.Script.createScript(String,String)",
+      "symbol": "dataweave.Script.createScript",
+      "kind": "exec",
+      "notes": "The lowercase DataWeave namespace alias accepts namespace and script name and returns the local script carrier."
+    },
+    {
+      "surfaceId": "apex:LiveAgent.LiveAgentRealTimeSystem.cancelChatRequests(List<String>)",
+      "symbol": "LiveAgent.LiveAgentRealTimeSystem.cancelChatRequests",
+      "kind": "exec",
+      "notes": "The local Live Agent service accepts request-id cancellation calls without hosted chat state."
+    },
+    {
+      "surfaceId": "apex:LiveAgent.LiveAgentRealTimeSystem.routeChatRequests(List<LiveAgent.LiveChatRoutingRoute>)",
+      "symbol": "LiveAgent.LiveAgentRealTimeSystem.routeChatRequests",
+      "kind": "exec",
+      "notes": "The local Live Agent service returns deterministic empty routing decisions."
+    },
+    {
+      "surfaceId": "apex:LiveAgent.LiveAgentRealTimeSystem.setButtonStatus(String,Boolean)",
+      "symbol": "LiveAgent.LiveAgentRealTimeSystem.setButtonStatus",
+      "kind": "exec",
+      "notes": "The local Live Agent service accepts button status mutation calls without hosted chat state."
+    },
+    {
+      "surfaceId": "apex:NLPPredictions.FAQPrediction.predict(NLPPredictions.FAQPredictionInput)",
+      "symbol": "NLPPredictions.FAQPrediction.predict",
+      "kind": "exec",
+      "notes": "The local NLP prediction service returns deterministic empty prediction results."
+    },
+    {
+      "surfaceId": "apex:NLPPredictions.PredictionHandler.handlePredictionRequest(NLPPredictions.PredictionRequestContext)",
+      "symbol": "NLPPredictions.PredictionHandler.handlePredictionRequest",
+      "kind": "exec",
+      "notes": "The local NLP prediction handler accepts request callbacks."
+    },
+    {
+      "surfaceId": "apex:NLPPredictions.PredictionHandler.handlePredictionResponse(NLPPredictions.PredictionResponseContext)",
+      "symbol": "NLPPredictions.PredictionHandler.handlePredictionResponse",
+      "kind": "exec",
+      "notes": "The local NLP prediction handler accepts response callbacks."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "dataweave.Script created = dataweave.Script.createScript('localNs', 'helloWorld');\nSystem.assertEquals('\"Hello World\"', created.execute().getValueAsString());\nLiveAgent.LiveAgentRealTimeSystem.cancelChatRequests(new List<String>{'request-1'});\nLiveAgent.LiveAgentRealTimeSystem.setButtonStatus('button-1', true);\nSystem.assertEquals(0, LiveAgent.LiveAgentRealTimeSystem.routeChatRequests(new List<LiveAgent.LiveChatRoutingRoute>()).size());\nNLPPredictions.FAQPredictionInput input = new NLPPredictions.FAQPredictionInput('How do I reset my password?', 'local-model');\nNLPPredictions.FAQPredictionResult prediction = NLPPredictions.FAQPrediction.predict(input);\nSystem.assertEquals(0, prediction.getMatches().size());\nNLPPredictions.PredictionHandler handler = new NLPPredictions.PredictionHandler();\nhandler.handlePredictionRequest(new NLPPredictions.PredictionRequestContext());\nhandler.handlePredictionResponse(new NLPPredictions.PredictionResponseContext());\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "dataweave.Script created = dataweave.Script.createScript('localNs', 'helloWorld');\nSystem.assertEquals('\"Hello World\"', created.execute().getValueAsString());\nLiveAgent.LiveAgentRealTimeSystem.cancelChatRequests(new List<String>{'request-1'});\nLiveAgent.LiveAgentRealTimeSystem.setButtonStatus('button-1', true);\nSystem.assertEquals(0, LiveAgent.LiveAgentRealTimeSystem.routeChatRequests(new List<LiveAgent.LiveChatRoutingRoute>()).size());\nNLPPredictions.FAQPredictionInput input = new NLPPredictions.FAQPredictionInput('How do I reset my password?', 'local-model');\nNLPPredictions.FAQPredictionResult prediction = NLPPredictions.FAQPrediction.predict(input);\nSystem.assertEquals(0, prediction.getMatches().size());\nNLPPredictions.PredictionHandler handler = new NLPPredictions.PredictionHandler();\nhandler.handlePredictionRequest(new NLPPredictions.PredictionRequestContext());\nhandler.handlePredictionResponse(new NLPPredictions.PredictionResponseContext());\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

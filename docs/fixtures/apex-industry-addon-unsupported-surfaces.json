@@ -1,0 +1,381 @@
+{
+  "name": "apex-industry-addon-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "apex:Canvas.Test_constants",
+      "symbol": "Canvas.Test_constants",
+      "kind": "unsupported",
+      "notes": "Setup, quick action, and Canvas hosted service shapes require Salesforce UI/app hosting services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:CartExtension.CommerceObject.getDelegate()",
+      "symbol": "CartExtension.CommerceObject.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentRequest.ProcessPaymentRequest(String,String,RichMessaging.AddressableContact,RichMessaging.AddressableContact,RichMessaging.PaymentMethod,RichMessaging.ShippingMethod,String)",
+      "symbol": "RichMessaging.ProcessPaymentRequest.ProcessPaymentRequest(String,String,RichMessaging.AddressableContact,RichMessaging.AddressableContact,RichMessaging.PaymentMethod,RichMessaging.ShippingMethod,String)",
+      "kind": "unsupported",
+      "notes": "Rich Messaging hosted channel service shapes require Salesforce messaging channel services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Sfc.ContentDownloadContext",
+      "symbol": "Sfc.ContentDownloadContext",
+      "kind": "unsupported",
+      "notes": "SFC content delivery surfaces require Salesforce file/content delivery services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Sfc.ContentDownloadHandler",
+      "symbol": "Sfc.ContentDownloadHandler",
+      "kind": "unsupported",
+      "notes": "SFC content delivery surfaces require Salesforce file/content delivery services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Sfc.ContentDownloadHandler.downloadErrorMessage",
+      "symbol": "Sfc.ContentDownloadHandler.downloadErrorMessage",
+      "kind": "unsupported",
+      "notes": "SFC content delivery surfaces require Salesforce file/content delivery services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Sfc.ContentDownloadHandler.isDownloadAllowed",
+      "symbol": "Sfc.ContentDownloadHandler.isDownloadAllowed",
+      "kind": "unsupported",
+      "notes": "SFC content delivery surfaces require Salesforce file/content delivery services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Sfc.ContentDownloadHandler.redirectUrl",
+      "symbol": "Sfc.ContentDownloadHandler.redirectUrl",
+      "kind": "unsupported",
+      "notes": "SFC content delivery surfaces require Salesforce file/content delivery services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Sfc.ContentDownloadHandlerFactory",
+      "symbol": "Sfc.ContentDownloadHandlerFactory",
+      "kind": "unsupported",
+      "notes": "SFC content delivery surfaces require Salesforce file/content delivery services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Sfc.ContentDownloadHandlerFactory.getContentDownloadHandler(List<Id>,Sfc.ContentDownloadContext)",
+      "symbol": "Sfc.ContentDownloadHandlerFactory.getContentDownloadHandler(List<Id>,Sfc.ContentDownloadContext)",
+      "kind": "unsupported",
+      "notes": "SFC content delivery surfaces require Salesforce file/content delivery services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercepayments.BaseRequest.BaseRequest(String,Map<String,String>)",
+      "symbol": "commercepayments.BaseRequest.BaseRequest(String,Map<String,String>)",
+      "kind": "unsupported",
+      "notes": "Commerce payments hosted gateway/API surfaces require Salesforce commerce payment services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentGatewayContext.PaymentGatewayContext(commercepayments.PaymentGatewayRequest,String)",
+      "symbol": "commercepayments.PaymentGatewayContext.PaymentGatewayContext(commercepayments.PaymentGatewayRequest,String)",
+      "kind": "unsupported",
+      "notes": "Commerce payments hosted gateway/API surfaces require Salesforce commerce payment services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentGatewayNotificationRequest.requestBody",
+      "symbol": "commercepayments.PaymentGatewayNotificationRequest.requestBody",
+      "kind": "unsupported",
+      "notes": "Commerce payments hosted gateway/API surfaces require Salesforce commerce payment services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentsHttp.send(HttpRequest)",
+      "symbol": "commercepayments.PaymentsHttp.send(HttpRequest)",
+      "kind": "unsupported",
+      "notes": "Commerce payments hosted gateway/API surfaces require Salesforce commerce payment services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthApiPaymentMethodRequest.PostAuthApiPaymentMethodRequest(commercepayments.AlternativePaymentMethodRequestPaymentMethodRequest)",
+      "symbol": "commercepayments.PostAuthApiPaymentMethodRequest.PostAuthApiPaymentMethodRequest(commercepayments.AlternativePaymentMethodRequestPaymentMethodRequest)",
+      "kind": "unsupported",
+      "notes": "Commerce payments hosted gateway/API surfaces require Salesforce commerce payment services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setAlternativePaymentMethodResponse(commercepayments.AlternativePaymentMethodResponse)",
+      "symbol": "commercepayments.PostAuthorizationResponse.setAlternativePaymentMethodResponse(commercepayments.AlternativePaymentMethodResponse)",
+      "kind": "unsupported",
+      "notes": "Commerce payments hosted gateway/API surfaces require Salesforce commerce payment services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.AddressesResponse.getDelegate()",
+      "symbol": "commercetax.AddressesResponse.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.AmountDetailsResponse.getDelegate()",
+      "symbol": "commercetax.AmountDetailsResponse.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.ImpositionResponse.getDelegate()",
+      "symbol": "commercetax.ImpositionResponse.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.JurisdictionResponse.getDelegate()",
+      "symbol": "commercetax.JurisdictionResponse.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.LineItemResponse.getDelegate()",
+      "symbol": "commercetax.LineItemResponse.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.RuleDetailsResponse.getDelegate()",
+      "symbol": "commercetax.RuleDetailsResponse.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxCustomerDetailsRequest.taxCertificateId",
+      "symbol": "commercetax.TaxCustomerDetailsRequest.taxCertificateId",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxDetailsResponse.getDelegate()",
+      "symbol": "commercetax.TaxDetailsResponse.getDelegate()",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxEngineAdapter.Namespace",
+      "symbol": "commercetax.TaxEngineAdapter.Namespace",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxEngineAdapter.Request",
+      "symbol": "commercetax.TaxEngineAdapter.Request",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxEngineAdapter.Response",
+      "symbol": "commercetax.TaxEngineAdapter.Response",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxEngineAdapter.Usage",
+      "symbol": "commercetax.TaxEngineAdapter.Usage",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:commercetax.TaxTransactionRequest.TaxTransactionRequest(commercetax.HeaderTaxAddressesRequest,String,commercetax.TaxCustomerDetailsRequest,String,String,String,Datetime,Datetime,List<commercetax.TaxLineItemRequest>,String,commercetax.TaxSellerDetailsRequest,Map<String,Object>)",
+      "symbol": "commercetax.TaxTransactionRequest.TaxTransactionRequest(commercetax.HeaderTaxAddressesRequest,String,commercetax.TaxCustomerDetailsRequest,String,String,String,Datetime,Datetime,List<commercetax.TaxLineItemRequest>,String,commercetax.TaxSellerDetailsRequest,Map<String,Object>)",
+      "kind": "unsupported",
+      "notes": "Commerce tax/cart extension hosted service surfaces require Salesforce commerce services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.CalculateIncomeExpenseSummary",
+      "symbol": "fsccashflow.CalculateIncomeExpenseSummary",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.CheckCrudOnExpense",
+      "symbol": "fsccashflow.CheckCrudOnExpense",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.CheckCrudOnIncome",
+      "symbol": "fsccashflow.CheckCrudOnIncome",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.CheckReadAccess",
+      "symbol": "fsccashflow.CheckReadAccess",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.FSCCashFlowUtil",
+      "symbol": "fsccashflow.FSCCashFlowUtil",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.GetDurationDateRange",
+      "symbol": "fsccashflow.GetDurationDateRange",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.GetPartyExpenseFrequencyLabel",
+      "symbol": "fsccashflow.GetPartyExpenseFrequencyLabel",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.GetPartyExpenseStatusLabel",
+      "symbol": "fsccashflow.GetPartyExpenseStatusLabel",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.GetPartyExpenseTypeLabel",
+      "symbol": "fsccashflow.GetPartyExpenseTypeLabel",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.GetPartyIncomeFrequencyLabel",
+      "symbol": "fsccashflow.GetPartyIncomeFrequencyLabel",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.GetPartyIncomeStatusLabel",
+      "symbol": "fsccashflow.GetPartyIncomeStatusLabel",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.GetPartyIncomeTypeLabel",
+      "symbol": "fsccashflow.GetPartyIncomeTypeLabel",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.HandleUpsertError",
+      "symbol": "fsccashflow.HandleUpsertError",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.PerformExpenseValidation",
+      "symbol": "fsccashflow.PerformExpenseValidation",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashflow.PerformIncomeValidation",
+      "symbol": "fsccashflow.PerformIncomeValidation",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:fsccashold.FSCCashFlowUtil",
+      "symbol": "fsccashold.FSCCashFlowUtil",
+      "kind": "unsupported",
+      "notes": "Financial Services Cloud cashflow and legacy cashflow surfaces require FSC hosted services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:industries_record_rollup.RecordAggregationRecordRollupResult",
+      "symbol": "industries_record_rollup.RecordAggregationRecordRollupResult",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:industries_record_rollup.RecordAggregationRecordRollupResult.RecordAggregationRecordRollupResult()",
+      "symbol": "industries_record_rollup.RecordAggregationRecordRollupResult.RecordAggregationRecordRollupResult()",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:industries_record_rollup.RecordAggregationRecordRollupResult.clone()",
+      "symbol": "industries_record_rollup.RecordAggregationRecordRollupResult.clone()",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:quickaction.DescribeQuickActionResult.getSourceSobjectType()",
+      "symbol": "quickaction.DescribeQuickActionResult.getSourceSobjectType()",
+      "kind": "unsupported",
+      "notes": "Setup, quick action, and Canvas hosted service shapes require Salesforce UI/app hosting services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.AsyncCartProcessor",
+      "symbol": "sfdc.AsyncCartProcessor",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.AsyncCartProcessor.startCartProcessAsync(sfdc_checkout.IntegrationInfo,Id)",
+      "symbol": "sfdc.AsyncCartProcessor.startCartProcessAsync(sfdc_checkout.IntegrationInfo,Id)",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.B2BCheckoutController",
+      "symbol": "sfdc.B2BCheckoutController",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.B2BCheckoutController.licenseCompliance(String,String)",
+      "symbol": "sfdc.B2BCheckoutController.licenseCompliance(String,String)",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.IntegrationInfo",
+      "symbol": "sfdc.IntegrationInfo",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.IntegrationInfo.integrationId",
+      "symbol": "sfdc.IntegrationInfo.integrationId",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.IntegrationInfo.jobId",
+      "symbol": "sfdc.IntegrationInfo.jobId",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.IntegrationInfo.siteLanguage",
+      "symbol": "sfdc.IntegrationInfo.siteLanguage",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.IntegrationStatus",
+      "symbol": "sfdc.IntegrationStatus",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:sfdc.IntegrationStatus.Status",
+      "symbol": "sfdc.IntegrationStatus.Status",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.order(List<String>)",
+      "symbol": "wave.QueryNode.order(List<String>)",
+      "kind": "unsupported",
+      "notes": "Industries and Einstein add-on Apex namespace shapes require Salesforce add-on services and stay outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "/var/folders/04/ymtl0lts3nz2w85kg8ty_2rr0000gn/T/tmp.D9ioyA8aJL/SURFACE_LEDGER.json",
+      "content": "// Evidence source: SURFACE_LEDGER.json rows where bucket == \"gap\", gladeShape == \"absent\", and namespace is an add-on Apex namespace outside ConnectApi/System.\n// This marker keeps the fixture runnable; evidence rows document absent-shape add-on Apex namespaces as unsupported."
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

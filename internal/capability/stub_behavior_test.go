@@ -899,6 +899,7 @@ func TestStubBehaviorSeparatesServiceMethodsFromPassiveDTOs(t *testing.T) {
 	assertStubBehaviorPrefix(t, entries, "commerce_inventory.CommerceInventoryService.deleteReservation(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "commerce_inventory.CommerceInventoryService.upsertReservation(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "commercepayments.ClientSidePaymentAdapter.getClientComponentName()", StubBehaviorImplemented)
+	assertStubBehaviorPrefix(t, entries, "commercepayments.ClientSidePaymentAdapter.processClientRequest(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "commerce_ordermanagement.ProductExpandService.returnReasons(", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "pref_center.LoadFormData.addOption(String,String,String)", StubBehaviorPassiveDefault)
 	assertStubBehaviorPrefix(t, entries, "pref_center.LoadFormData.setTextValue(", StubBehaviorPassiveDefault)

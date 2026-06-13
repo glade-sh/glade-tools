@@ -1,0 +1,144 @@
+{
+  "name": "tooling-source-metadata-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "tooling:ApexClass",
+      "symbol": "Tooling ApexClass",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API discovery and query read local Apex class source metadata."
+    },
+    {
+      "surfaceId": "tooling:ApexTrigger",
+      "symbol": "Tooling ApexTrigger",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API query reads local Apex trigger source metadata."
+    },
+    {
+      "surfaceId": "tooling:ApexPage",
+      "symbol": "Tooling ApexPage",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API query reads local Visualforce page source metadata."
+    },
+    {
+      "surfaceId": "tooling:ApexComponent",
+      "symbol": "Tooling ApexComponent",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API query reads local Visualforce component source metadata."
+    },
+    {
+      "surfaceId": "tooling:StaticResource",
+      "symbol": "Tooling StaticResource",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API query reads local static resource metadata."
+    }
+  ],
+  "project": {
+    "sourceApiVersion": "65.0",
+    "packageDirectories": [
+      {
+        "path": "force-app",
+        "default": true
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/LocalToolingClass.cls",
+      "content": "public class LocalToolingClass { public String ping() { return 'pong'; } }\n"
+    },
+    {
+      "path": "force-app/main/default/triggers/LocalAccountTrigger.trigger",
+      "content": "trigger LocalAccountTrigger on Account (before insert) {}\n"
+    },
+    {
+      "path": "force-app/main/default/pages/LocalPage.page",
+      "content": "<apex:page controller=\"LocalToolingClass\">Local page</apex:page>\n"
+    },
+    {
+      "path": "force-app/main/default/components/LocalComponent.component",
+      "content": "<apex:component>Local component</apex:component>\n"
+    },
+    {
+      "path": "force-app/main/default/staticresources/LocalAsset.resource",
+      "content": "tooling asset body\n"
+    },
+    {
+      "path": "force-app/main/default/staticresources/LocalAsset.resource-meta.xml",
+      "content": "<StaticResource><cacheControl>Private</cacheControl><contentType>text/plain</contentType></StaticResource>\n"
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "tooling-sobjects-discovery",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects",
+      "status": 200,
+      "contains": [
+        "\"name\":\"ApexClass\"",
+        "\"name\":\"ApexTrigger\"",
+        "\"name\":\"ApexPage\"",
+        "\"name\":\"ApexComponent\"",
+        "\"name\":\"StaticResource\""
+      ]
+    },
+    {
+      "name": "tooling-query-apex-class",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20Name,%20Body%20FROM%20ApexClass%20WHERE%20Name%20=%20'LocalToolingClass'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"LocalToolingClass\"",
+        "public class LocalToolingClass"
+      ]
+    },
+    {
+      "name": "tooling-query-apex-trigger",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20Name,%20Body,%20TableEnumOrId%20FROM%20ApexTrigger%20WHERE%20Name%20=%20'LocalAccountTrigger'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"LocalAccountTrigger\"",
+        "\"TableEnumOrId\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-query-apex-page",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20Name,%20Markup%20FROM%20ApexPage%20WHERE%20Name%20=%20'LocalPage'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"LocalPage\"",
+        "Local page"
+      ]
+    },
+    {
+      "name": "tooling-query-apex-component",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20Name,%20Markup%20FROM%20ApexComponent%20WHERE%20Name%20=%20'LocalComponent'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"LocalComponent\"",
+        "Local component"
+      ]
+    },
+    {
+      "name": "tooling-query-static-resource",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20Name,%20Body%20FROM%20StaticResource%20WHERE%20Name%20=%20'LocalAsset'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"LocalAsset\"",
+        "tooling asset body"
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

@@ -116,6 +116,44 @@ func TestMergeClassifiesGeneratedDataReferenceShapeWithDocsRow(t *testing.T) {
 	}
 }
 
+func TestClassifyFixtureBackedLWCBridgeRowDoesNotRemainBlankGap(t *testing.T) {
+	row := SurfaceLedgerRow{
+		SurfaceID:     "lwc:apex-wire.sobject-json",
+		Product:       ProductLWC,
+		Area:          AreaUI,
+		Kind:          KindMethod,
+		Docs:          SourceAbsent,
+		Org:           SourceAbsent,
+		GladeShape:    ShapeAbsent,
+		GladeBehavior: BehaviorSupported,
+		Evidence:      EvidenceFixture,
+	}
+
+	Classify(&row)
+	if row.Bucket == BucketGap && row.GapClass == "" {
+		t.Fatalf("blank gap remained after fixture evidence merge: %#v", row)
+	}
+}
+
+func TestClassifyEvidenceOnlyRuntimeGuideImplemented(t *testing.T) {
+	row := SurfaceLedgerRow{
+		SurfaceID:     "unknown:sforce_api_calls_soql_select_orderby",
+		Product:       ProductUnknown,
+		Area:          AreaRuntime,
+		Kind:          KindType,
+		Docs:          SourceAbsent,
+		Org:           SourceAbsent,
+		GladeShape:    ShapeAbsent,
+		GladeBehavior: BehaviorSupported,
+		Evidence:      EvidenceFixture,
+	}
+
+	Classify(&row)
+	if row.Bucket != BucketImplemented || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", row.Bucket, row.GapClass, row)
+	}
+}
+
 func TestClassifyGapFromStates(t *testing.T) {
 	tests := []struct {
 		name string
@@ -253,8 +291,8 @@ func TestClassifyGapFromStates(t *testing.T) {
 			if tt.name == "fixture backed runtime guide row" && tt.row.Bucket != BucketImplemented {
 				t.Fatalf("bucket = %q, want %q", tt.row.Bucket, BucketImplemented)
 			}
-			if tt.name == "evidence only runtime guide row" && tt.row.Bucket == BucketImplemented {
-				t.Fatalf("bucket = %q, want non-implemented", tt.row.Bucket)
+			if tt.name == "evidence only runtime guide row" && tt.row.Bucket != BucketImplemented {
+				t.Fatalf("bucket = %q, want %q", tt.row.Bucket, BucketImplemented)
 			}
 		})
 	}

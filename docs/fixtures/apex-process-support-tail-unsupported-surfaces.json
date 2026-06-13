@@ -1,0 +1,57 @@
+{
+  "name": "apex-process-support-tail-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.describePlugin(String)",
+      "symbol": "Process.SparkPlugApi.describePlugin",
+      "kind": "unsupported",
+      "notes": "SparkPlug plugin description depends on a hosted plugin registry; the local default result is only a no-op placeholder."
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.describePlugins()",
+      "symbol": "Process.SparkPlugApi.describePlugins",
+      "kind": "unsupported",
+      "notes": "SparkPlug plugin discovery depends on a hosted plugin registry; the local empty list is only a no-op placeholder."
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.invokePluginWithJson(String,String)",
+      "symbol": "Process.SparkPlugApi.invokePluginWithJson",
+      "kind": "unsupported",
+      "notes": "SparkPlug JSON plugin invocation depends on hosted plugin execution; the local JSON object result is only a no-op placeholder."
+    },
+    {
+      "surfaceId": "apex:Support.EinsteinBots.sendMessageToBot(String,String,String)",
+      "symbol": "Support.EinsteinBots.sendMessageToBot",
+      "kind": "unsupported",
+      "notes": "Einstein bot messaging depends on Salesforce-hosted bot conversation services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:Support.LifeScienceAttendees.parse(String)",
+      "symbol": "Support.LifeScienceAttendees.parse",
+      "kind": "unsupported",
+      "notes": "Life Sciences attendee parsing depends on hosted Support and Health Cloud service behavior; the local empty attendee list is only a placeholder."
+    },
+    {
+      "surfaceId": "apex:Support.LifeScienceUpdateEmailTransactions.updateRecords(String)",
+      "symbol": "Support.LifeScienceUpdateEmailTransactions.updateRecords",
+      "kind": "unsupported",
+      "notes": "Life Sciences email transaction updates depend on hosted Support and Health Cloud service behavior outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/ApexProcessSupportTailUnsupportedSurfacesMarker.cls",
+      "content": "public class ApexProcessSupportTailUnsupportedSurfacesMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

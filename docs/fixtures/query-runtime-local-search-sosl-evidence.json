@@ -30,23 +30,62 @@
       "symbol": "Search.query with AccessLevel",
       "kind": "test",
       "notes": "USER_MODE and SYSTEM_MODE route through the local permission checks for supported search rows."
+    },
+    {
+      "surfaceId": "apex:System.Search.find",
+      "symbol": "Search.find",
+      "kind": "test",
+      "notes": "Search.find is the generated docs member for the local SOSL result DTO path."
+    },
+    {
+      "surfaceId": "apex:System.Search.find(String,Object)",
+      "symbol": "Search.find with Object AccessLevel",
+      "kind": "test",
+      "notes": "Search.find accepts an Object-cast AccessLevel and routes through the same local SOSL model."
+    },
+    {
+      "surfaceId": "apex:System.Search.query(String,Object)",
+      "symbol": "Search.query with Object AccessLevel",
+      "kind": "test",
+      "notes": "Search.query accepts an Object-cast AccessLevel and routes through the same local SOSL model."
+    },
+    {
+      "surfaceId": "apex:System.Search.suggest(String,String,Object)",
+      "symbol": "Search.suggest with Object options",
+      "kind": "test",
+      "notes": "Search.suggest accepts an Object-cast SuggestionOption for the local suggestion DTO path."
+    },
+    {
+      "surfaceId": "apex:System.Search.suggest(String,String,Object,Object)",
+      "symbol": "Search.suggest with Object options and access level",
+      "kind": "test",
+      "notes": "Search.suggest accepts Object-cast options and AccessLevel values for local suggestions."
     }
   ],
   "source": [
     {
-      "path": "internal/vm/platform_test.go",
-      "content": "insert new Account(Name = 'Nook Supply'); insert new Contact(LastName = 'Nook Buyer', Email = 'buyer@example.test'); List<List<SObject>> rows = Search.query('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, Name, Email)'); Search.SearchResults results = Search.find('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, Name)'); Search.SuggestionResults suggestions = Search.suggest('Noo', 'Account', option);"
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/classes/QueryRuntimeLocalSearchSOSLEvidenceTest.cls",
+      "content": "@isTest private class QueryRuntimeLocalSearchSOSLEvidenceTest { @isTest static void localSearchOverloadsUseFixedRows() { Account account = new Account(Name = 'Nook Supply'); insert account; Test.setFixedSearchResults(new List<Id>{account.Id}); List<List<SObject>> rows = Search.query('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name)'); System.assertEquals(1, rows[0].size()); Search.SearchResults results = Search.find('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name)'); System.assertEquals(1, results.get('Account').size()); Search.SuggestionOption option = new Search.SuggestionOption(); Search.SuggestionResults suggestions = Search.suggest('Noo', 'Account', option); System.assertEquals(1, suggestions.getSuggestionResults().size()); List<List<SObject>> accessRows = Search.query('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name)', AccessLevel.USER_MODE); System.assertEquals(1, accessRows[0].size()); List<List<SObject>> objectRows = Search.query('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name)', (Object)AccessLevel.SYSTEM_MODE); System.assertEquals(1, objectRows[0].size()); Search.SearchResults objectFound = Search.find('FIND {Nook*} IN ALL FIELDS RETURNING Account(Id, Name)', (Object)AccessLevel.USER_MODE); System.assertEquals(1, objectFound.get('Account').size()); Search.SuggestionResults objectSuggestions = Search.suggest('Nook', 'Account', (Object)new Search.SuggestionOption()); System.assertEquals(1, objectSuggestions.getSuggestionResults().size()); Search.SuggestionResults objectUserSuggestions = Search.suggest('Nook', 'Account', (Object)new Search.SuggestionOption(), (Object)AccessLevel.SYSTEM_MODE); System.assertEquals(false, objectUserSuggestions.hasMoreResults()); } }"
     }
   ],
   "command": {
-    "kind": "test",
-    "args": [
-      "go test ./internal/vm -run 'Test.*(SOSL|Search|FixedSearchResults)'"
-    ]
+    "kind": "test"
   },
   "expected": {
     "result": {
-      "ok": true
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
     }
   }
 }

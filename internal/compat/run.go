@@ -673,10 +673,18 @@ func storageFixture(fixture Fixture) storage.Fixture {
 		object := storage.FixtureObject{Name: seed.Object}
 		for _, record := range seed.Records {
 			fields := make(map[string]storage.Value, len(record))
+			var id storage.ID
 			for field, raw := range record {
+				if strings.EqualFold(field, "Id") {
+					id = storage.ID(strings.TrimSpace(fmt.Sprint(raw)))
+					if id != "" {
+						fields[field] = storage.IDValue(id)
+						continue
+					}
+				}
 				fields[field] = storageValue(raw)
 			}
-			object.Records = append(object.Records, storage.FixtureRecord{Fields: fields})
+			object.Records = append(object.Records, storage.FixtureRecord{ID: id, Fields: fields})
 		}
 		out.Objects = append(out.Objects, object)
 	}

@@ -29,6 +29,28 @@ func TestBuildEvidenceSnapshotReadsSurfaceID(t *testing.T) {
 	}
 }
 
+func TestBuildEvidenceSnapshotKeepsNamespacedApexTypeIdentity(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "type_identity",
+  "evidence": [{"symbol": "System.Label", "surfaceId": "apex:System.Label", "kind": "test"}],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["apex:System.Label"]
+	if row.Namespace != "System" || row.TypeName != "Label" || row.MemberName != "" {
+		t.Fatalf("identity = namespace:%q type:%q member:%q, want System/Label/<empty>: %#v", row.Namespace, row.TypeName, row.MemberName, rows)
+	}
+}
+
 func TestBuildEvidenceSnapshotMarksRuntimeGuideEvidenceSupported(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "fixture.json")
@@ -80,6 +102,113 @@ func TestBuildEvidenceSnapshotDoesNotPromoteNonQueryUnknownEvidence(t *testing.T
 	}
 }
 
+func TestBuildEvidenceSnapshotMarksLWCBridgeEvidenceSupported(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "ui-lwc-vf-local-bridge-evidence",
+  "evidence": [{
+    "symbol": "LWC Apex wire SObject JSON",
+    "surfaceId": "lwc:apex-wire.sobject-json",
+    "kind": "test"
+  }],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["lwc:apex-wire.sobject-json"]
+	if row.Product != ProductLWC || row.Area != AreaUI || row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
+		t.Fatalf("lwc row = product:%s area:%s behavior:%s evidence:%s rows:%#v", row.Product, row.Area, row.GladeBehavior, row.Evidence, rows)
+	}
+}
+
+func TestBuildEvidenceSnapshotMarksRESTServerEvidenceSupported(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "server-black-box",
+  "evidence": [{
+    "symbol": "REST versions",
+    "surfaceId": "rest:dome_versions.get",
+    "kind": "server"
+  }],
+  "serverRequests": [{"name": "versions", "method": "GET", "path": "/services/data", "status": 200}],
+  "command": {"kind": "server"},
+  "expected": {"result": {"ok": true}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["rest:dome_versions.get"]
+	if row.Product != ProductREST || row.Area != AreaServer || row.GladeShape == ShapeAbsent || row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
+		t.Fatalf("rest row = product:%s area:%s shape:%s behavior:%s evidence:%s rows:%#v", row.Product, row.Area, row.GladeShape, row.GladeBehavior, row.Evidence, rows)
+	}
+}
+
+func TestBuildEvidenceSnapshotMarksToolingObjectEvidenceAsType(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "tooling-source-metadata-server-evidence",
+  "evidence": [{
+    "symbol": "Tooling ApexClass",
+    "surfaceId": "tooling:ApexClass",
+    "kind": "server"
+  }],
+  "serverRequests": [{"name": "query", "method": "GET", "path": "/services/data/v65.0/tooling/query", "status": 200}],
+  "command": {"kind": "server"},
+  "expected": {"result": {"ok": true}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["tooling:ApexClass"]
+	if row.Product != ProductTooling || row.Area != AreaServer || row.Kind != KindType || row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
+		t.Fatalf("tooling row = product:%s area:%s kind:%s behavior:%s evidence:%s rows:%#v", row.Product, row.Area, row.Kind, row.GladeBehavior, row.Evidence, rows)
+	}
+}
+
+func TestBuildEvidenceSnapshotMarksSuccessfulApexFixtureEvidenceSupported(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "integration-auth-session-current",
+  "evidence": [{
+    "symbol": "Auth.SessionManagement.getCurrentSession",
+    "surfaceId": "apex:Auth.SessionManagement.getCurrentSession",
+    "kind": "exec"
+  }],
+  "source": [{"path": "anonymous.apex", "content": "Auth.SessionManagement.getCurrentSession();"}],
+  "command": {"kind": "exec", "args": ["Auth.SessionManagement.getCurrentSession();"]},
+  "expected": {"result": {"ok": true}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["apex:Auth.SessionManagement.getCurrentSession"]
+	if row.Product != ProductApex || row.Area != AreaRuntime || row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
+		t.Fatalf("apex fixture row = product:%s area:%s behavior:%s evidence:%s rows:%#v", row.Product, row.Area, row.GladeBehavior, row.Evidence, rows)
+	}
+}
+
 func TestBuildEvidenceSnapshotDoesNotMarkUnsupportedRuntimeGuideSupported(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "fixture.json")
@@ -122,6 +251,67 @@ func TestBuildEvidenceSnapshotMarksUnsupportedEvidenceUnsupported(t *testing.T) 
 	row := rowsByID(rows)[id]
 	if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorUnsupported {
 		t.Fatalf("unsupported evidence/behavior = %s/%s, want fixture/unsupported: %#v", row.Evidence, row.GladeBehavior, rows)
+	}
+}
+
+func TestBuildEvidenceSnapshotMarksUnsupportedFeatureErrorUnsupported(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "integration-auth-jwt-unsupported",
+  "evidence": [{
+    "symbol": "Auth.JWTUtil.validateJWTWithKeysEndpoint",
+    "surfaceId": "apex:Auth.JWTUtil.validateJWTWithKeysEndpoint",
+    "kind": "exec"
+  }],
+  "command": {"kind": "exec"},
+  "expected": {"error": {"type": "UnsupportedFeature"}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["apex:Auth.JWTUtil.validateJWTWithKeysEndpoint"]
+	if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorUnsupported {
+		t.Fatalf("unsupported feature row evidence/behavior = %s/%s, want fixture/unsupported: %#v", row.Evidence, row.GladeBehavior, rows)
+	}
+}
+
+func TestBuildEvidenceSnapshotParsesQualifiedParameterSurfaceID(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "async-test-harness-local-evidence",
+  "evidence": [{
+    "surfaceId": "apex:System.Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)",
+    "symbol": "Test.testNotificationActionHandler",
+    "kind": "test"
+  }],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["apex:System.Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)"]
+	if row.Namespace != "System" || row.TypeName != "Test" || row.MemberName != "testNotificationActionHandler" {
+		t.Fatalf("identity = namespace:%q type:%q member:%q, want System/Test/testNotificationActionHandler: %#v", row.Namespace, row.TypeName, row.MemberName, rows)
+	}
+	want := []string{"Messaging.NotificationActionHandler", "Messaging.ActionableNotification"}
+	if len(row.Parameters) != len(want) {
+		t.Fatalf("parameters = %#v, want %#v", row.Parameters, want)
+	}
+	for i := range want {
+		if row.Parameters[i] != want[i] {
+			t.Fatalf("parameters = %#v, want %#v", row.Parameters, want)
+		}
 	}
 }
 

@@ -1,0 +1,155 @@
+{
+  "name": "core-runtime-compression-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:compression.ZipEntry.hashcode()",
+      "symbol": "compression.ZipEntry.hashcode()",
+      "kind": "exec",
+      "notes": "Local ZIP entries expose the VM Object hash code method."
+    },
+    {
+      "surfaceId": "apex:compression.ZipException.getTypeName()",
+      "symbol": "compression.ZipException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local compression exceptions expose their platform type name."
+    },
+    {
+      "surfaceId": "apex:compression.ZipReader.ZipReader(Blob)",
+      "symbol": "compression.ZipReader.ZipReader(Blob)",
+      "kind": "exec",
+      "notes": "Local ZIP readers open archives produced by the local ZIP writer."
+    },
+    {
+      "surfaceId": "apex:compression.ZipReader.extract(compression.ZipEntry)",
+      "symbol": "compression.ZipReader.extract(compression.ZipEntry)",
+      "kind": "exec",
+      "notes": "Local ZIP readers extract entry content by ZIP entry object."
+    },
+    {
+      "surfaceId": "apex:compression.ZipReader.extract(string)",
+      "symbol": "compression.ZipReader.extract(string)",
+      "kind": "exec",
+      "notes": "Local ZIP readers extract entry content by entry name."
+    },
+    {
+      "surfaceId": "apex:compression.ZipReader.getEntries()",
+      "symbol": "compression.ZipReader.getEntries()",
+      "kind": "exec",
+      "notes": "Local ZIP readers return deterministic entry lists."
+    },
+    {
+      "surfaceId": "apex:compression.ZipReader.getEntriesMap()",
+      "symbol": "compression.ZipReader.getEntriesMap()",
+      "kind": "exec",
+      "notes": "Local ZIP readers return deterministic maps keyed by entry name."
+    },
+    {
+      "surfaceId": "apex:compression.ZipReader.getEntry(string)",
+      "symbol": "compression.ZipReader.getEntry(string)",
+      "kind": "exec",
+      "notes": "Local ZIP readers look up entries by name."
+    },
+    {
+      "surfaceId": "apex:compression.ZipReader.getEntryNames()",
+      "symbol": "compression.ZipReader.getEntryNames()",
+      "kind": "exec",
+      "notes": "Local ZIP readers return entry names in archive order."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.ZipWriter()",
+      "symbol": "compression.ZipWriter.ZipWriter()",
+      "kind": "exec",
+      "notes": "Local ZIP writers construct with default level and method."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.addEntry(String,String,Datetime,Compression.Method,Blob)",
+      "symbol": "compression.ZipWriter.addEntry(String,String,Datetime,Compression.Method,Blob)",
+      "kind": "exec",
+      "notes": "Local ZIP writers add named entries with comment, timestamp, method, and content."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.addEntry(compression.ZipEntry)",
+      "symbol": "compression.ZipWriter.addEntry(compression.ZipEntry)",
+      "kind": "exec",
+      "notes": "Local ZIP writers add entries from a ZIP entry prototype."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.addEntry(string,blob)",
+      "symbol": "compression.ZipWriter.addEntry(string,blob)",
+      "kind": "exec",
+      "notes": "Local ZIP writers add named blob entries with default metadata."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.getArchive()",
+      "symbol": "compression.ZipWriter.getArchive()",
+      "kind": "exec",
+      "notes": "Local ZIP writers produce a readable archive blob."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.getEntries()",
+      "symbol": "compression.ZipWriter.getEntries()",
+      "kind": "exec",
+      "notes": "Local ZIP writers return their current entry list."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.getEntry(string)",
+      "symbol": "compression.ZipWriter.getEntry(string)",
+      "kind": "exec",
+      "notes": "Local ZIP writers look up current entries by name."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.getEntryNames()",
+      "symbol": "compression.ZipWriter.getEntryNames()",
+      "kind": "exec",
+      "notes": "Local ZIP writers return the current entry-name set."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.getLevel()",
+      "symbol": "compression.ZipWriter.getLevel()",
+      "kind": "exec",
+      "notes": "Local ZIP writers expose their compression level."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.getMethod()",
+      "symbol": "compression.ZipWriter.getMethod()",
+      "kind": "exec",
+      "notes": "Local ZIP writers expose their compression method."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.removeEntry(string)",
+      "symbol": "compression.ZipWriter.removeEntry(string)",
+      "kind": "exec",
+      "notes": "Local ZIP writers remove entries by name."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.setLevel(compression.Level)",
+      "symbol": "compression.ZipWriter.setLevel(compression.Level)",
+      "kind": "exec",
+      "notes": "Local ZIP writers accept level updates."
+    },
+    {
+      "surfaceId": "apex:compression.ZipWriter.setMethod(compression.Method)",
+      "symbol": "compression.ZipWriter.setMethod(compression.Method)",
+      "kind": "exec",
+      "notes": "Local ZIP writers accept method updates."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "compression.ZipWriter writer = new compression.ZipWriter(); System.assertEquals(compression.Level.DEFAULT_LEVEL, writer.getLevel()); System.assertEquals(compression.Method.DEFLATED, writer.getMethod()); compression.ZipEntry first = writer.addEntry('a.txt', Blob.valueOf('alpha')); System.assertEquals(first.hashCode(), first.hashCode()); writer.addEntry('b.txt', 'second file', Datetime.now(), compression.Method.STORED, Blob.valueOf('bravo')); System.assertEquals(2, writer.getEntries().size()); System.assertEquals('a.txt', writer.getEntry('a.txt').getName()); System.assertEquals(true, writer.getEntryNames().contains('b.txt')); writer.setLevel(compression.Level.BEST_SPEED); writer.setMethod(compression.Method.STORED); System.assertEquals(compression.Level.BEST_SPEED, writer.getLevel()); System.assertEquals(compression.Method.STORED, writer.getMethod()); Blob archive = writer.getArchive(); compression.ZipReader reader = new compression.ZipReader(archive); System.assertEquals(2, reader.getEntries().size()); System.assertEquals('alpha', reader.extract('a.txt').toString()); compression.ZipEntry fromReader = reader.getEntry('b.txt'); System.assertEquals('bravo', reader.extract(fromReader).toString()); System.assertEquals(true, reader.getEntriesMap().containsKey('a.txt')); System.assertEquals('a.txt', reader.getEntryNames().get(0)); compression.ZipWriter copied = new compression.ZipWriter(); copied.addEntry(fromReader); System.assertEquals('b.txt', copied.getEntry('b.txt').getName()); writer.removeEntry('a.txt'); System.assertEquals(null, writer.getEntry('a.txt')); System.assertEquals(1, writer.getEntries().size()); try { throw new compression.ZipException(); } catch (compression.ZipException ex) { System.assertEquals('compression.ZipException', ex.getTypeName()); }"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "compression.ZipWriter writer = new compression.ZipWriter(); System.assertEquals(compression.Level.DEFAULT_LEVEL, writer.getLevel()); System.assertEquals(compression.Method.DEFLATED, writer.getMethod()); compression.ZipEntry first = writer.addEntry('a.txt', Blob.valueOf('alpha')); System.assertEquals(first.hashCode(), first.hashCode()); writer.addEntry('b.txt', 'second file', Datetime.now(), compression.Method.STORED, Blob.valueOf('bravo')); System.assertEquals(2, writer.getEntries().size()); System.assertEquals('a.txt', writer.getEntry('a.txt').getName()); System.assertEquals(true, writer.getEntryNames().contains('b.txt')); writer.setLevel(compression.Level.BEST_SPEED); writer.setMethod(compression.Method.STORED); System.assertEquals(compression.Level.BEST_SPEED, writer.getLevel()); System.assertEquals(compression.Method.STORED, writer.getMethod()); Blob archive = writer.getArchive(); compression.ZipReader reader = new compression.ZipReader(archive); System.assertEquals(2, reader.getEntries().size()); System.assertEquals('alpha', reader.extract('a.txt').toString()); compression.ZipEntry fromReader = reader.getEntry('b.txt'); System.assertEquals('bravo', reader.extract(fromReader).toString()); System.assertEquals(true, reader.getEntriesMap().containsKey('a.txt')); System.assertEquals('a.txt', reader.getEntryNames().get(0)); compression.ZipWriter copied = new compression.ZipWriter(); copied.addEntry(fromReader); System.assertEquals('b.txt', copied.getEntry('b.txt').getName()); writer.removeEntry('a.txt'); System.assertEquals(null, writer.getEntry('a.txt')); System.assertEquals(1, writer.getEntries().size()); try { throw new compression.ZipException(); } catch (compression.ZipException ex) { System.assertEquals('compression.ZipException', ex.getTypeName()); }"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

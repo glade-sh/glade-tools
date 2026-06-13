@@ -1,0 +1,144 @@
+{
+  "name": "integration-richmessaging-enum-tail-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCategory.Fee",
+      "symbol": "RichMessaging.OrderItemCategory.Fee",
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCategory.Product",
+      "symbol": "RichMessaging.OrderItemCategory.Product",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCategory.Tax",
+      "symbol": "RichMessaging.OrderItemCategory.Tax",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderType.DigitalGoods",
+      "symbol": "RichMessaging.OrderType.DigitalGoods",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderType.PhysicalGoods",
+      "symbol": "RichMessaging.OrderType.PhysicalGoods",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentCheckoutBehavior.QuickPay",
+      "symbol": "RichMessaging.PaymentCheckoutBehavior.QuickPay",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentCheckoutBehavior.ReviewAndPay",
+      "symbol": "RichMessaging.PaymentCheckoutBehavior.ReviewAndPay",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationMode.ExternalPaymentApp",
+      "symbol": "RichMessaging.PaymentInitiationMode.ExternalPaymentApp",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationMode.GatewayCheckout",
+      "symbol": "RichMessaging.PaymentInitiationMode.GatewayCheckout",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationMode.HostedLink",
+      "symbol": "RichMessaging.PaymentInitiationMode.HostedLink",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentItemStatus.FinalCost",
+      "symbol": "RichMessaging.PaymentItemStatus.FinalCost",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentItemStatus.PendingCost",
+      "symbol": "RichMessaging.PaymentItemStatus.PendingCost",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentPixKeyType.Cnpj",
+      "symbol": "RichMessaging.PaymentPixKeyType.Cnpj",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentPixKeyType.Cpf",
+      "symbol": "RichMessaging.PaymentPixKeyType.Cpf",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentPixKeyType.Email",
+      "symbol": "RichMessaging.PaymentPixKeyType.Email",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentPixKeyType.Evp",
+      "symbol": "RichMessaging.PaymentPixKeyType.Evp",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentPixKeyType.Phone",
+      "symbol": "RichMessaging.PaymentPixKeyType.Phone",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.TimingIntervalUnit.Day",
+      "symbol": "RichMessaging.TimingIntervalUnit.Day",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.TimingIntervalUnit.Hour",
+      "symbol": "RichMessaging.TimingIntervalUnit.Hour",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.TimingIntervalUnit.Minute",
+      "symbol": "RichMessaging.TimingIntervalUnit.Minute",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.TimingIntervalUnit.Month",
+      "symbol": "RichMessaging.TimingIntervalUnit.Month",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.TimingIntervalUnit.Year",
+      "symbol": "RichMessaging.TimingIntervalUnit.Year",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.TimingType.DeferredTiming",
+      "symbol": "RichMessaging.TimingType.DeferredTiming",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:RichMessaging.TimingType.RecurringTiming",
+      "symbol": "RichMessaging.TimingType.RecurringTiming",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals('Fee', RichMessaging.OrderItemCategory.Fee.name());\nSystem.assertEquals('Product', RichMessaging.OrderItemCategory.Product.name());\nSystem.assertEquals('Tax', RichMessaging.OrderItemCategory.Tax.name());\nSystem.assertEquals('DigitalGoods', RichMessaging.OrderType.DigitalGoods.name());\nSystem.assertEquals('PhysicalGoods', RichMessaging.OrderType.PhysicalGoods.name());\nSystem.assertEquals('QuickPay', RichMessaging.PaymentCheckoutBehavior.QuickPay.name());\nSystem.assertEquals('ReviewAndPay', RichMessaging.PaymentCheckoutBehavior.ReviewAndPay.name());\nSystem.assertEquals('ExternalPaymentApp', RichMessaging.PaymentInitiationMode.ExternalPaymentApp.name());\nSystem.assertEquals('GatewayCheckout', RichMessaging.PaymentInitiationMode.GatewayCheckout.name());\nSystem.assertEquals('HostedLink', RichMessaging.PaymentInitiationMode.HostedLink.name());\nSystem.assertEquals('FinalCost', RichMessaging.PaymentItemStatus.FinalCost.name());\nSystem.assertEquals('PendingCost', RichMessaging.PaymentItemStatus.PendingCost.name());\nSystem.assertEquals('Cnpj', RichMessaging.PaymentPixKeyType.Cnpj.name());\nSystem.assertEquals('Cpf', RichMessaging.PaymentPixKeyType.Cpf.name());\nSystem.assertEquals('Email', RichMessaging.PaymentPixKeyType.Email.name());\nSystem.assertEquals('Evp', RichMessaging.PaymentPixKeyType.Evp.name());\nSystem.assertEquals('Phone', RichMessaging.PaymentPixKeyType.Phone.name());\nSystem.assertEquals('Day', RichMessaging.TimingIntervalUnit.Day.name());\nSystem.assertEquals('Hour', RichMessaging.TimingIntervalUnit.Hour.name());\nSystem.assertEquals('Minute', RichMessaging.TimingIntervalUnit.Minute.name());\nSystem.assertEquals('Month', RichMessaging.TimingIntervalUnit.Month.name());\nSystem.assertEquals('Year', RichMessaging.TimingIntervalUnit.Year.name());\nSystem.assertEquals('DeferredTiming', RichMessaging.TimingType.DeferredTiming.name());\nSystem.assertEquals('RecurringTiming', RichMessaging.TimingType.RecurringTiming.name());\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals('Fee', RichMessaging.OrderItemCategory.Fee.name());\nSystem.assertEquals('Product', RichMessaging.OrderItemCategory.Product.name());\nSystem.assertEquals('Tax', RichMessaging.OrderItemCategory.Tax.name());\nSystem.assertEquals('DigitalGoods', RichMessaging.OrderType.DigitalGoods.name());\nSystem.assertEquals('PhysicalGoods', RichMessaging.OrderType.PhysicalGoods.name());\nSystem.assertEquals('QuickPay', RichMessaging.PaymentCheckoutBehavior.QuickPay.name());\nSystem.assertEquals('ReviewAndPay', RichMessaging.PaymentCheckoutBehavior.ReviewAndPay.name());\nSystem.assertEquals('ExternalPaymentApp', RichMessaging.PaymentInitiationMode.ExternalPaymentApp.name());\nSystem.assertEquals('GatewayCheckout', RichMessaging.PaymentInitiationMode.GatewayCheckout.name());\nSystem.assertEquals('HostedLink', RichMessaging.PaymentInitiationMode.HostedLink.name());\nSystem.assertEquals('FinalCost', RichMessaging.PaymentItemStatus.FinalCost.name());\nSystem.assertEquals('PendingCost', RichMessaging.PaymentItemStatus.PendingCost.name());\nSystem.assertEquals('Cnpj', RichMessaging.PaymentPixKeyType.Cnpj.name());\nSystem.assertEquals('Cpf', RichMessaging.PaymentPixKeyType.Cpf.name());\nSystem.assertEquals('Email', RichMessaging.PaymentPixKeyType.Email.name());\nSystem.assertEquals('Evp', RichMessaging.PaymentPixKeyType.Evp.name());\nSystem.assertEquals('Phone', RichMessaging.PaymentPixKeyType.Phone.name());\nSystem.assertEquals('Day', RichMessaging.TimingIntervalUnit.Day.name());\nSystem.assertEquals('Hour', RichMessaging.TimingIntervalUnit.Hour.name());\nSystem.assertEquals('Minute', RichMessaging.TimingIntervalUnit.Minute.name());\nSystem.assertEquals('Month', RichMessaging.TimingIntervalUnit.Month.name());\nSystem.assertEquals('Year', RichMessaging.TimingIntervalUnit.Year.name());\nSystem.assertEquals('DeferredTiming', RichMessaging.TimingType.DeferredTiming.name());\nSystem.assertEquals('RecurringTiming', RichMessaging.TimingType.RecurringTiming.name());\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

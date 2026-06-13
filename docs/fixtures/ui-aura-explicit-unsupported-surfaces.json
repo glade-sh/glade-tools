@@ -1,0 +1,965 @@
+{
+  "name": "ui-aura-explicit-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "aura:component_library",
+      "symbol": "aura:component_library",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:component_library_diff",
+      "symbol": "aura:component_library_diff",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_apex",
+      "symbol": "aura:ref_attr_types_apex",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_aura",
+      "symbol": "aura:ref_attr_types_aura",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_aura_action",
+      "symbol": "aura:ref_attr_types_aura_action",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_basic",
+      "symbol": "aura:ref_attr_types_basic",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_collection",
+      "symbol": "aura:ref_attr_types_collection",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_function",
+      "symbol": "aura:ref_attr_types_function",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_object",
+      "symbol": "aura:ref_attr_types_object",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_attr_types_object_salesforce",
+      "symbol": "aura:ref_attr_types_object_salesforce",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_aura_application",
+      "symbol": "aura:ref_aura_application",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_aura_attribute",
+      "symbol": "aura:ref_aura_attribute",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_aura_event",
+      "symbol": "aura:ref_aura_event",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_aura_interface",
+      "symbol": "aura:ref_aura_interface",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_intro",
+      "symbol": "aura:ref_intro",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_UTCToWallTime",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_UTCToWallTime",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_WallTimeToUTC",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_WallTimeToUTC",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_displayDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_displayDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_displayDurationInDays",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_displayDurationInDays",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_displayDurationInHours",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_displayDurationInHours",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_displayDurationInMilliseconds",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_displayDurationInMilliseconds",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_displayDurationInMinutes",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_displayDurationInMinutes",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_displayDurationInMonths",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_displayDurationInMonths",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_displayDurationInSeconds",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_displayDurationInSeconds",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_duration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_duration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_endOf",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_endOf",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatCurrency",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatCurrency",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatDate",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatDate",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatDateTime",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatDateTime",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatDateTimeUTC",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatDateTimeUTC",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatDateUTC",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatDateUTC",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatNumber",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatNumber",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatPercent",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatPercent",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatTime",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatTime",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_formatTimeUTC",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_formatTimeUTC",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getDateStringBasedOnTimezone",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getDateStringBasedOnTimezone",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getDaysInDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getDaysInDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getDefaultCurrencyFormat",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getDefaultCurrencyFormat",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getDefaultNumberFormat",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getDefaultNumberFormat",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getDefaultPercentFormat",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getDefaultPercentFormat",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getHoursInDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getHoursInDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getLocalizedDateTimeLabels",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getLocalizedDateTimeLabels",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getMillisecondsInDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getMillisecondsInDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getMinutesInDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getMinutesInDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getMonthsInDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getMonthsInDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getNumberFormat",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getNumberFormat",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getSecondsInDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getSecondsInDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getToday",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getToday",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_getYearsInDuration",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_getYearsInDuration",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_isAfter",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_isAfter",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_isBefore",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_isBefore",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_isBetween",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_isBetween",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_isPeriodTimeView",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_isPeriodTimeView",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_isSame",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_isSame",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_parseDateTime",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_parseDateTime",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_parseDateTimeISO8601",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_parseDateTimeISO8601",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_parseDateTimeUTC",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_parseDateTimeUTC",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_startOf",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_startOf",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_toISOString",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_toISOString",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_translateFromLocalizedDigits",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_translateFromLocalizedDigits",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_translateFromOtherCalendar",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_translateFromOtherCalendar",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_translateToLocalizedDigits",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_translateToLocalizedDigits",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_AuraLocalizationService_translateToOtherCalendar",
+      "symbol": "aura:ref_jsapi_AuraLocalizationService_translateToOtherCalendar",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action",
+      "symbol": "aura:ref_jsapi_action",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_getError",
+      "symbol": "aura:ref_jsapi_action_getError",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_getName",
+      "symbol": "aura:ref_jsapi_action_getName",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_getParam",
+      "symbol": "aura:ref_jsapi_action_getParam",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_getParams",
+      "symbol": "aura:ref_jsapi_action_getParams",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_getReturnValue",
+      "symbol": "aura:ref_jsapi_action_getReturnValue",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_getState",
+      "symbol": "aura:ref_jsapi_action_getState",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_isBackground",
+      "symbol": "aura:ref_jsapi_action_isBackground",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_setAbortable",
+      "symbol": "aura:ref_jsapi_action_setAbortable",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_setBackground",
+      "symbol": "aura:ref_jsapi_action_setBackground",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_setCallback",
+      "symbol": "aura:ref_jsapi_action_setCallback",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_setParam",
+      "symbol": "aura:ref_jsapi_action_setParam",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_setParams",
+      "symbol": "aura:ref_jsapi_action_setParams",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_action_setStorable",
+      "symbol": "aura:ref_jsapi_action_setStorable",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component",
+      "symbol": "aura:ref_jsapi_component",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_addEventHandler",
+      "symbol": "aura:ref_jsapi_component_addEventHandler",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_addHandler",
+      "symbol": "aura:ref_jsapi_component_addHandler",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_addValueHandler",
+      "symbol": "aura:ref_jsapi_component_addValueHandler",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_addValueProvider",
+      "symbol": "aura:ref_jsapi_component_addValueProvider",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_autoDestroy",
+      "symbol": "aura:ref_jsapi_component_autoDestroy",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_clearReference",
+      "symbol": "aura:ref_jsapi_component_clearReference",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_destroy",
+      "symbol": "aura:ref_jsapi_component_destroy",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_find",
+      "symbol": "aura:ref_jsapi_component_find",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_get",
+      "symbol": "aura:ref_jsapi_component_get",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getConcreteComponent",
+      "symbol": "aura:ref_jsapi_component_getConcreteComponent",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getElement",
+      "symbol": "aura:ref_jsapi_component_getElement",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getElements",
+      "symbol": "aura:ref_jsapi_component_getElements",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getEvent",
+      "symbol": "aura:ref_jsapi_component_getEvent",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getGlobalId",
+      "symbol": "aura:ref_jsapi_component_getGlobalId",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getLocalId",
+      "symbol": "aura:ref_jsapi_component_getLocalId",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getName",
+      "symbol": "aura:ref_jsapi_component_getName",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getReference",
+      "symbol": "aura:ref_jsapi_component_getReference",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getSuper",
+      "symbol": "aura:ref_jsapi_component_getSuper",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getType",
+      "symbol": "aura:ref_jsapi_component_getType",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_getVersion",
+      "symbol": "aura:ref_jsapi_component_getVersion",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_isConcrete",
+      "symbol": "aura:ref_jsapi_component_isConcrete",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_isInstanceOf",
+      "symbol": "aura:ref_jsapi_component_isInstanceOf",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_isValid",
+      "symbol": "aura:ref_jsapi_component_isValid",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_removeEventHandler",
+      "symbol": "aura:ref_jsapi_component_removeEventHandler",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_component_set",
+      "symbol": "aura:ref_jsapi_component_set",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA",
+      "symbol": "aura:ref_jsapi_dollarA",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_createComponent",
+      "symbol": "aura:ref_jsapi_dollarA_createComponent",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_createComponents",
+      "symbol": "aura:ref_jsapi_dollarA_createComponents",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_enqueueAction",
+      "symbol": "aura:ref_jsapi_dollarA_enqueueAction",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_error",
+      "symbol": "aura:ref_jsapi_dollarA_error",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_get",
+      "symbol": "aura:ref_jsapi_dollarA_get",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_getCallback",
+      "symbol": "aura:ref_jsapi_dollarA_getCallback",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_getComponent",
+      "symbol": "aura:ref_jsapi_dollarA_getComponent",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_getReference",
+      "symbol": "aura:ref_jsapi_dollarA_getReference",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_getRoot",
+      "symbol": "aura:ref_jsapi_dollarA_getRoot",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_getToken",
+      "symbol": "aura:ref_jsapi_dollarA_getToken",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_log",
+      "symbol": "aura:ref_jsapi_dollarA_log",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_reportError",
+      "symbol": "aura:ref_jsapi_dollarA_reportError",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_run",
+      "symbol": "aura:ref_jsapi_dollarA_run",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_set",
+      "symbol": "aura:ref_jsapi_dollarA_set",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_dollarA_warning",
+      "symbol": "aura:ref_jsapi_dollarA_warning",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event",
+      "symbol": "aura:ref_jsapi_event",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_fire",
+      "symbol": "aura:ref_jsapi_event_fire",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getEventType",
+      "symbol": "aura:ref_jsapi_event_getEventType",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getName",
+      "symbol": "aura:ref_jsapi_event_getName",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getParam",
+      "symbol": "aura:ref_jsapi_event_getParam",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getParams",
+      "symbol": "aura:ref_jsapi_event_getParams",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getPhase",
+      "symbol": "aura:ref_jsapi_event_getPhase",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getSource",
+      "symbol": "aura:ref_jsapi_event_getSource",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getSourceEvent",
+      "symbol": "aura:ref_jsapi_event_getSourceEvent",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_getType",
+      "symbol": "aura:ref_jsapi_event_getType",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_pause",
+      "symbol": "aura:ref_jsapi_event_pause",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_preventDefault",
+      "symbol": "aura:ref_jsapi_event_preventDefault",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_resume",
+      "symbol": "aura:ref_jsapi_event_resume",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_setParam",
+      "symbol": "aura:ref_jsapi_event_setParam",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_setParams",
+      "symbol": "aura:ref_jsapi_event_setParams",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_event_stopPropagation",
+      "symbol": "aura:ref_jsapi_event_stopPropagation",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_intro",
+      "symbol": "aura:ref_jsapi_intro",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util",
+      "symbol": "aura:ref_jsapi_util",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_addClass",
+      "symbol": "aura:ref_jsapi_util_addClass",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_getBooleanValue",
+      "symbol": "aura:ref_jsapi_util_getBooleanValue",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_hasClass",
+      "symbol": "aura:ref_jsapi_util_hasClass",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_isArray",
+      "symbol": "aura:ref_jsapi_util_isArray",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_isEmpty",
+      "symbol": "aura:ref_jsapi_util_isEmpty",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_isObject",
+      "symbol": "aura:ref_jsapi_util_isObject",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_isUndefined",
+      "symbol": "aura:ref_jsapi_util_isUndefined",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_isUndefinedOrNull",
+      "symbol": "aura:ref_jsapi_util_isUndefinedOrNull",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_removeClass",
+      "symbol": "aura:ref_jsapi_util_removeClass",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_jsapi_util_toggleClass",
+      "symbol": "aura:ref_jsapi_util_toggleClass",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_set_intro",
+      "symbol": "aura:ref_set_intro",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_supported_html_tags",
+      "symbol": "aura:ref_supported_html_tags",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_supported_html_tags_a",
+      "symbol": "aura:ref_supported_html_tags_a",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_system_tags",
+      "symbol": "aura:ref_system_tags",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_tag_dependency",
+      "symbol": "aura:ref_tag_dependency",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_tag_method",
+      "symbol": "aura:ref_tag_method",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_tag_set_attr_intf",
+      "symbol": "aura:ref_tag_set_attr_intf",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_tag_set_attr_super",
+      "symbol": "aura:ref_tag_set_attr_super",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    },
+    {
+      "surfaceId": "aura:ref_tag_set_cmp_ref",
+      "symbol": "aura:ref_tag_set_cmp_ref",
+      "kind": "unsupported",
+      "notes": "Aura component framework and Aura JavaScript API runtime surfaces require Salesforce-hosted Aura rendering/runtime state and are outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/UiAuraExplicitUnsupportedSurfacesTest.cls",
+      "content": "@isTest private class UiAuraExplicitUnsupportedSurfacesTest { @isTest static void localEvidenceGuard() { System.assertEquals('Account', Account.SObjectType.getDescribe().getName()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

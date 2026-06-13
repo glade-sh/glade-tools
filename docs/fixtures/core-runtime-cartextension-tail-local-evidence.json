@@ -1,0 +1,155 @@
+{
+  "name": "core-runtime-cartextension-tail-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:CartExtension.CartCalculateRuntimeException.getTypeName()",
+      "symbol": "CartExtension.CartCalculateRuntimeException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified CartExtension exception type."
+    },
+    {
+      "surfaceId": "apex:CartExtension.CartTestUtil.createCart()",
+      "symbol": "CartExtension.CartTestUtil.createCart()",
+      "kind": "exec",
+      "notes": "Local CartTestUtil creates a Cart DTO without running Commerce services."
+    },
+    {
+      "surfaceId": "apex:CartExtension.CartTestUtil.createCart(CartExtension.WebStoreTypeEnum)",
+      "symbol": "CartExtension.CartTestUtil.createCart(CartExtension.WebStoreTypeEnum)",
+      "kind": "exec",
+      "notes": "Local CartTestUtil preserves the requested web store type on the Cart DTO."
+    },
+    {
+      "surfaceId": "apex:CartExtension.CartTestUtil.getCart(Id)",
+      "symbol": "CartExtension.CartTestUtil.getCart(Id)",
+      "kind": "exec",
+      "notes": "Local CartTestUtil returns a Cart DTO with the requested cart id."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalBuyerActionDetails.empty()",
+      "symbol": "CartExtension.OptionalBuyerActionDetails.empty()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns an empty OptionalBuyerActionDetails."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalBuyerActionDetails.get()",
+      "symbol": "CartExtension.OptionalBuyerActionDetails.get()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns the present BuyerActionDetails value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalBuyerActionDetails.isPresent()",
+      "symbol": "CartExtension.OptionalBuyerActionDetails.isPresent()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper reports presence state."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalBuyerActionDetails.of(CartExtension.BuyerActionDetails)",
+      "symbol": "CartExtension.OptionalBuyerActionDetails.of(CartExtension.BuyerActionDetails)",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper stores the supplied BuyerActionDetails value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartAdjustmentBasis.empty()",
+      "symbol": "CartExtension.OptionalCartAdjustmentBasis.empty()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns an empty OptionalCartAdjustmentBasis."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartAdjustmentBasis.get()",
+      "symbol": "CartExtension.OptionalCartAdjustmentBasis.get()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns the present CartAdjustmentBasis value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartAdjustmentBasis.isPresent()",
+      "symbol": "CartExtension.OptionalCartAdjustmentBasis.isPresent()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper reports presence state."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartAdjustmentBasis.of(CartExtension.CartAdjustmentBasis)",
+      "symbol": "CartExtension.OptionalCartAdjustmentBasis.of(CartExtension.CartAdjustmentBasis)",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper stores the supplied CartAdjustmentBasis value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartDeliveryGroup.empty()",
+      "symbol": "CartExtension.OptionalCartDeliveryGroup.empty()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns an empty OptionalCartDeliveryGroup."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartDeliveryGroup.get()",
+      "symbol": "CartExtension.OptionalCartDeliveryGroup.get()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns the present CartDeliveryGroup value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartDeliveryGroup.isPresent()",
+      "symbol": "CartExtension.OptionalCartDeliveryGroup.isPresent()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper reports presence state."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartDeliveryGroup.of(CartExtension.CartDeliveryGroup)",
+      "symbol": "CartExtension.OptionalCartDeliveryGroup.of(CartExtension.CartDeliveryGroup)",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper stores the supplied CartDeliveryGroup value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartItem.empty()",
+      "symbol": "CartExtension.OptionalCartItem.empty()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns an empty OptionalCartItem."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartItem.get()",
+      "symbol": "CartExtension.OptionalCartItem.get()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper returns the present CartItem value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartItem.isPresent()",
+      "symbol": "CartExtension.OptionalCartItem.isPresent()",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper reports presence state."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalCartItem.of(CartExtension.CartItem)",
+      "symbol": "CartExtension.OptionalCartItem.of(CartExtension.CartItem)",
+      "kind": "exec",
+      "notes": "Local CartExtension optional wrapper stores the supplied CartItem value."
+    },
+    {
+      "surfaceId": "apex:CartExtension.OptionalNotCheckedException.getTypeName()",
+      "symbol": "CartExtension.OptionalNotCheckedException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified CartExtension exception type."
+    },
+    {
+      "surfaceId": "apex:CartExtension.PlaceOrderValidationException.getTypeName()",
+      "symbol": "CartExtension.PlaceOrderValidationException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified CartExtension exception type."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals('CartExtension.CartCalculateRuntimeException', new CartExtension.CartCalculateRuntimeException().getTypeName());\nSystem.assertEquals('CartExtension.OptionalNotCheckedException', new CartExtension.OptionalNotCheckedException().getTypeName());\nSystem.assertEquals('CartExtension.PlaceOrderValidationException', new CartExtension.PlaceOrderValidationException('bad cart').getTypeName());\nCartExtension.Cart emptyCart = CartExtension.CartTestUtil.createCart();\nCartExtension.Cart b2bCart = CartExtension.CartTestUtil.createCart(CartExtension.WebStoreTypeEnum.B2B);\nCartExtension.Cart fetchedCart = CartExtension.CartTestUtil.getCart('0aB000000000001AAA');\nSystem.assertNotEquals(null, emptyCart);\nSystem.assertEquals(CartExtension.WebStoreTypeEnum.B2B, b2bCart.webStoreType);\nSystem.assertEquals('0aB000000000001AAA', fetchedCart.id);\nCartExtension.BuyerActionDetails buyerDetails = new CartExtension.BuyerActionDetails();\nCartExtension.OptionalBuyerActionDetails emptyBuyer = CartExtension.OptionalBuyerActionDetails.empty();\nCartExtension.OptionalBuyerActionDetails presentBuyer = CartExtension.OptionalBuyerActionDetails.of(buyerDetails);\nSystem.assertEquals(false, emptyBuyer.isPresent());\nSystem.assertEquals(true, presentBuyer.isPresent());\nSystem.assertEquals(buyerDetails, presentBuyer.get());\nCartExtension.CartAdjustmentBasis adjustment = new CartExtension.CartAdjustmentBasis();\nCartExtension.OptionalCartAdjustmentBasis emptyAdjustment = CartExtension.OptionalCartAdjustmentBasis.empty();\nCartExtension.OptionalCartAdjustmentBasis presentAdjustment = CartExtension.OptionalCartAdjustmentBasis.of(adjustment);\nSystem.assertEquals(false, emptyAdjustment.isPresent());\nSystem.assertEquals(true, presentAdjustment.isPresent());\nSystem.assertEquals(adjustment, presentAdjustment.get());\nCartExtension.CartDeliveryGroup deliveryGroup = new CartExtension.CartDeliveryGroup();\nCartExtension.OptionalCartDeliveryGroup emptyDelivery = CartExtension.OptionalCartDeliveryGroup.empty();\nCartExtension.OptionalCartDeliveryGroup presentDelivery = CartExtension.OptionalCartDeliveryGroup.of(deliveryGroup);\nSystem.assertEquals(false, emptyDelivery.isPresent());\nSystem.assertEquals(true, presentDelivery.isPresent());\nSystem.assertEquals(deliveryGroup, presentDelivery.get());\nCartExtension.CartItem item = new CartExtension.CartItem(CartExtension.SalesItemTypeEnum.PRODUCT, deliveryGroup, 'local item');\nCartExtension.OptionalCartItem emptyItem = CartExtension.OptionalCartItem.empty();\nCartExtension.OptionalCartItem presentItem = CartExtension.OptionalCartItem.of(item);\nSystem.assertEquals(false, emptyItem.isPresent());\nSystem.assertEquals(true, presentItem.isPresent());\nSystem.assertEquals(item, presentItem.get());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals('CartExtension.CartCalculateRuntimeException', new CartExtension.CartCalculateRuntimeException().getTypeName());\nSystem.assertEquals('CartExtension.OptionalNotCheckedException', new CartExtension.OptionalNotCheckedException().getTypeName());\nSystem.assertEquals('CartExtension.PlaceOrderValidationException', new CartExtension.PlaceOrderValidationException('bad cart').getTypeName());\nCartExtension.Cart emptyCart = CartExtension.CartTestUtil.createCart();\nCartExtension.Cart b2bCart = CartExtension.CartTestUtil.createCart(CartExtension.WebStoreTypeEnum.B2B);\nCartExtension.Cart fetchedCart = CartExtension.CartTestUtil.getCart('0aB000000000001AAA');\nSystem.assertNotEquals(null, emptyCart);\nSystem.assertEquals(CartExtension.WebStoreTypeEnum.B2B, b2bCart.webStoreType);\nSystem.assertEquals('0aB000000000001AAA', fetchedCart.id);\nCartExtension.BuyerActionDetails buyerDetails = new CartExtension.BuyerActionDetails();\nCartExtension.OptionalBuyerActionDetails emptyBuyer = CartExtension.OptionalBuyerActionDetails.empty();\nCartExtension.OptionalBuyerActionDetails presentBuyer = CartExtension.OptionalBuyerActionDetails.of(buyerDetails);\nSystem.assertEquals(false, emptyBuyer.isPresent());\nSystem.assertEquals(true, presentBuyer.isPresent());\nSystem.assertEquals(buyerDetails, presentBuyer.get());\nCartExtension.CartAdjustmentBasis adjustment = new CartExtension.CartAdjustmentBasis();\nCartExtension.OptionalCartAdjustmentBasis emptyAdjustment = CartExtension.OptionalCartAdjustmentBasis.empty();\nCartExtension.OptionalCartAdjustmentBasis presentAdjustment = CartExtension.OptionalCartAdjustmentBasis.of(adjustment);\nSystem.assertEquals(false, emptyAdjustment.isPresent());\nSystem.assertEquals(true, presentAdjustment.isPresent());\nSystem.assertEquals(adjustment, presentAdjustment.get());\nCartExtension.CartDeliveryGroup deliveryGroup = new CartExtension.CartDeliveryGroup();\nCartExtension.OptionalCartDeliveryGroup emptyDelivery = CartExtension.OptionalCartDeliveryGroup.empty();\nCartExtension.OptionalCartDeliveryGroup presentDelivery = CartExtension.OptionalCartDeliveryGroup.of(deliveryGroup);\nSystem.assertEquals(false, emptyDelivery.isPresent());\nSystem.assertEquals(true, presentDelivery.isPresent());\nSystem.assertEquals(deliveryGroup, presentDelivery.get());\nCartExtension.CartItem item = new CartExtension.CartItem(CartExtension.SalesItemTypeEnum.PRODUCT, deliveryGroup, 'local item');\nCartExtension.OptionalCartItem emptyItem = CartExtension.OptionalCartItem.empty();\nCartExtension.OptionalCartItem presentItem = CartExtension.OptionalCartItem.of(item);\nSystem.assertEquals(false, emptyItem.isPresent());\nSystem.assertEquals(true, presentItem.isPresent());\nSystem.assertEquals(item, presentItem.get());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

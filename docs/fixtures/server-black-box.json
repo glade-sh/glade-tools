@@ -1,5 +1,193 @@
 {
   "name": "server-black-box",
+  "evidence": [
+    {
+      "surfaceId": "rest:dome_versions.get",
+      "symbol": "REST versions",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data returns the local REST versions collection."
+    },
+    {
+      "surfaceId": "rest:resources_versions.get",
+      "symbol": "Versions resource",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data returns version entries and URLs."
+    },
+    {
+      "surfaceId": "rest:resources_list.get",
+      "symbol": "REST resources list",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0 returns the local resource directory."
+    },
+    {
+      "surfaceId": "rest:resources_discoveryresource.get",
+      "symbol": "Discovery Resource",
+      "kind": "server",
+      "notes": "Server fixture verifies the version root exposes stable REST resource links."
+    },
+    {
+      "surfaceId": "rest:dome_discoveryresource.get",
+      "symbol": "Discovery Resource guide",
+      "kind": "server",
+      "notes": "Server fixture verifies the version root response shape used by the discovery guide."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_basic_info.get",
+      "symbol": "SObject basic information",
+      "kind": "server",
+      "notes": "Server fixture verifies local sObject create, read, update error, read-after-update, and delete requests."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_basic_info_get.get",
+      "symbol": "SObject basic information GET",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/{id}."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_basic_info_post.get",
+      "symbol": "SObject basic information POST",
+      "kind": "server",
+      "notes": "Server fixture verifies POST /services/data/v65.0/sobjects/Account creates a local row."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_retrieve.get",
+      "symbol": "SObject retrieve",
+      "kind": "server",
+      "notes": "Server fixture verifies record retrieval by sObject type and Id."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_retrieve_get.get",
+      "symbol": "SObject retrieve GET",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/{id} response fields."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_retrieve_patch.get",
+      "symbol": "SObject retrieve PATCH",
+      "kind": "server",
+      "notes": "Server fixture verifies PATCH /services/data/v65.0/sobjects/Account/{id} validation behavior."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_retrieve_delete.get",
+      "symbol": "SObject retrieve DELETE",
+      "kind": "server",
+      "notes": "Server fixture verifies DELETE /services/data/v65.0/sobjects/Account/{id} soft-deletes the local row."
+    },
+    {
+      "surfaceId": "rest:dome_sobject_create.get",
+      "symbol": "Create a record",
+      "kind": "server",
+      "notes": "Server fixture verifies Account creation through the local REST sObject endpoint."
+    },
+    {
+      "surfaceId": "rest:dome_sobject_basic_info.get",
+      "symbol": "SObject basic information guide",
+      "kind": "server",
+      "notes": "Server fixture verifies the local REST record response shape."
+    },
+    {
+      "surfaceId": "rest:dome_update_fields.get",
+      "symbol": "Update fields",
+      "kind": "server",
+      "notes": "Server fixture verifies field update validation through the local REST PATCH endpoint."
+    },
+    {
+      "surfaceId": "rest:dome_delete_record.get",
+      "symbol": "Delete a record",
+      "kind": "server",
+      "notes": "Server fixture verifies record deletion through the local REST DELETE endpoint."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_describe.get",
+      "symbol": "SObject describe",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/describe returns local metadata."
+    },
+    {
+      "surfaceId": "rest:dome_sobject_describe.get",
+      "symbol": "SObject describe guide",
+      "kind": "server",
+      "notes": "Server fixture verifies the local describe payload shape."
+    },
+    {
+      "surfaceId": "rest:resources_recent_items.get",
+      "symbol": "Recently viewed records",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/recent."
+    },
+    {
+      "surfaceId": "rest:dome_see_recently_viewed.get",
+      "symbol": "See recently viewed records",
+      "kind": "server",
+      "notes": "Server fixture verifies the local recent-record response shape."
+    },
+    {
+      "surfaceId": "rest:resources_query.get",
+      "symbol": "Query",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/query with a SOQL statement."
+    },
+    {
+      "surfaceId": "rest:dome_query.get",
+      "symbol": "Query guide",
+      "kind": "server",
+      "notes": "Server fixture verifies local REST query response fields."
+    },
+    {
+      "surfaceId": "rest:resources_queryall.get",
+      "symbol": "QueryAll",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v62.0/queryAll includes local soft-deleted rows."
+    },
+    {
+      "surfaceId": "rest:dome_queryall.get",
+      "symbol": "QueryAll guide",
+      "kind": "server",
+      "notes": "Server fixture verifies local REST queryAll behavior for deleted records."
+    },
+    {
+      "surfaceId": "rest:resources_limits.get",
+      "symbol": "Limits",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/limits returns stable local limit keys."
+    },
+    {
+      "surfaceId": "rest:resources_getupdated.get",
+      "symbol": "sObject Get Updated",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/updated returns local updated record IDs."
+    },
+    {
+      "surfaceId": "rest:resources_getdeleted.get",
+      "symbol": "sObject Get Deleted",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/deleted returns local deleted record tombstones."
+    },
+    {
+      "surfaceId": "rest:resources_record_count.get",
+      "symbol": "Record Count",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/limits/recordCount returns local object record counts."
+    },
+    {
+      "surfaceId": "rest:responses_record_count.get",
+      "symbol": "Record Count response",
+      "kind": "server",
+      "notes": "Server fixture verifies the local record count response includes Salesforce-shaped sObjects name/count entries."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections.get",
+      "symbol": "Composite sObject collections",
+      "kind": "server",
+      "notes": "Server fixture verifies POST /services/data/v65.0/composite/sobjects collection requests."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections_create.get",
+      "symbol": "Composite sObject collections create",
+      "kind": "server",
+      "notes": "Server fixture verifies local composite collection create requests and all-or-none rollback."
+    }
+  ],
   "serverRequests": [
     {
       "name": "versions",
@@ -97,6 +285,27 @@
       ]
     },
     {
+      "name": "limits",
+      "method": "GET",
+      "path": "/services/data/v65.0/limits",
+      "status": 200,
+      "contains": [
+        "DailyApiRequests",
+        "\"Max\"",
+        "\"Remaining\""
+      ]
+    },
+    {
+      "name": "get-updated-account",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/updated",
+      "status": 200,
+      "contains": [
+        "\"latestDateCovered\"",
+        "\"ids\":[\"00100000000LFLT\"]"
+      ]
+    },
+    {
       "name": "get-account",
       "method": "GET",
       "path": "/services/data/v65.0/sobjects/Account/00100000000LFLT",
@@ -158,6 +367,17 @@
       "status": 204
     },
     {
+      "name": "get-deleted-account",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/deleted",
+      "status": 200,
+      "contains": [
+        "\"deletedRecords\"",
+        "\"id\":\"00100000000LFLT\"",
+        "\"deletedDate\""
+      ]
+    },
+    {
       "name": "query-all-deleted-account",
       "method": "GET",
       "path": "/services/data/v62.0/queryAll?q=SELECT%20Id,%20Name%20FROM%20Account%20WHERE%20Id%20!=%20'ALL%20ROWS%20Cafe'",
@@ -166,6 +386,15 @@
         "\"totalSize\":1",
         "\"Name\":\"Acme\"",
         "\"url\":\"/services/data/v62.0/sobjects/Account/00100000000LFLT\""
+      ]
+    },
+    {
+      "name": "record-count-account",
+      "method": "GET",
+      "path": "/services/data/v65.0/limits/recordCount?sObjects=Account",
+      "status": 200,
+      "contains": [
+        "\"sObjects\":[{\"name\":\"Account\",\"count\":1}]"
       ]
     },
     {
@@ -428,7 +657,7 @@
       "persistedRecords": 45,
       "permissions": 10,
       "profiles": 7,
-      "requests": 39,
+      "requests": 43,
       "statuses": [
         200,
         200,
@@ -440,11 +669,15 @@
         201,
         200,
         200,
+        200,
+        200,
         400,
         200,
         200,
         200,
         204,
+        200,
+        200,
         200,
         200,
         200,

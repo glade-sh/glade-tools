@@ -1,0 +1,33 @@
+{
+  "name": "core-runtime-system-runas-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.System.runAs(Package.Version)",
+      "symbol": "System.runAs(Package.Version)",
+      "kind": "black-box",
+      "notes": "Covered by internal/vm/platform_test.go TestExecRunAsPackageVersionScopesTestContext; the documented test fixture runner does not discover Package.Version test classes."
+    },
+    {
+      "surfaceId": "apex:System.System.runAs(Object,Object)",
+      "symbol": "System.runAs(Object,Object)",
+      "kind": "black-box",
+      "notes": "Covered by internal/vm/platform_test.go TestExecRunAsPackageVersionScopesTestContext; the documented test fixture runner does not discover Package.Version test classes."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/CoreRuntimeSystemRunAsLocalEvidenceMarker.cls",
+      "content": "public class CoreRuntimeSystemRunAsLocalEvidenceMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

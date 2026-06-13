@@ -1,0 +1,47 @@
+{
+  "name": "core-runtime-wavetemplate-tail-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:wavetemplate.TemplateApexException.getTypeName()",
+      "symbol": "wavetemplate.TemplateApexException.getTypeName()",
+      "kind": "exec",
+      "notes": "The generated Wave template exception exposes its qualified platform type name in local execution."
+    },
+    {
+      "surfaceId": "apex:wavetemplate.VisibilityEnum.Disabled",
+      "symbol": "wavetemplate.VisibilityEnum.Disabled",
+      "kind": "exec",
+      "notes": "The local runtime materializes the Disabled visibility enum constant."
+    },
+    {
+      "surfaceId": "apex:wavetemplate.VisibilityEnum.Hidden",
+      "symbol": "wavetemplate.VisibilityEnum.Hidden",
+      "kind": "exec",
+      "notes": "The local runtime materializes the Hidden visibility enum constant."
+    },
+    {
+      "surfaceId": "apex:wavetemplate.VisibilityEnum.Visible",
+      "symbol": "wavetemplate.VisibilityEnum.Visible",
+      "kind": "exec",
+      "notes": "The local runtime materializes the Visible visibility enum constant."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals('wavetemplate.TemplateApexException', new wavetemplate.TemplateApexException('bad').getTypeName());\nSystem.assertEquals('Disabled', wavetemplate.VisibilityEnum.Disabled.name());\nSystem.assertEquals('Hidden', wavetemplate.VisibilityEnum.Hidden.name());\nSystem.assertEquals('Visible', wavetemplate.VisibilityEnum.Visible.name());\nSystem.assertEquals(wavetemplate.VisibilityEnum.Visible, wavetemplate.VisibilityEnum.valueOf('Visible'));\nSystem.assertEquals(3, wavetemplate.VisibilityEnum.values().size());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals('wavetemplate.TemplateApexException', new wavetemplate.TemplateApexException('bad').getTypeName());\nSystem.assertEquals('Disabled', wavetemplate.VisibilityEnum.Disabled.name());\nSystem.assertEquals('Hidden', wavetemplate.VisibilityEnum.Hidden.name());\nSystem.assertEquals('Visible', wavetemplate.VisibilityEnum.Visible.name());\nSystem.assertEquals(wavetemplate.VisibilityEnum.Visible, wavetemplate.VisibilityEnum.valueOf('Visible'));\nSystem.assertEquals(3, wavetemplate.VisibilityEnum.values().size());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

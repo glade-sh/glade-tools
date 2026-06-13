@@ -30,6 +30,270 @@
       "symbol": "LWC Apex wire SObject JSON",
       "kind": "test",
       "notes": "The local LWC Apex wire bridge serializes controller SObject row responses through the runtime JSON path."
+    },
+    {
+      "surfaceId": "lwc:Decorators",
+      "symbol": "LWC decorators",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index the import shape; LWC compiler and browser execution are not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:HTML",
+      "symbol": "LWC HTML",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index the template shape; LWC template rendering is not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:LWC",
+      "symbol": "LWC runtime",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index LWC bundles; browser component runtime execution is not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:PageReference",
+      "symbol": "LWC PageReference",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index PageReference imports; Lightning navigation runtime is not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:Salesforce",
+      "symbol": "LWC Salesforce modules",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index Salesforce module imports; browser service execution is not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:Standard",
+      "symbol": "LWC standard modules",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index standard imports; browser service execution is not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:XML",
+      "symbol": "LWC XML",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index XML metadata shape; browser rendering is not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:`@salesforce`",
+      "symbol": "@salesforce LWC imports",
+      "kind": "unsupported",
+      "notes": "Local Apex controller discovery can index @salesforce imports; Salesforce browser service execution is not modeled locally."
+    },
+    {
+      "surfaceId": "lwc:`experience/blockBuilderApi`",
+      "symbol": "experience/blockBuilderApi",
+      "kind": "unsupported",
+      "notes": "Experience Builder browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`experience/cms*Api`",
+      "symbol": "experience/cms*Api",
+      "kind": "unsupported",
+      "notes": "Experience CMS browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`experience/cmsEditorApi`",
+      "symbol": "experience/cmsEditorApi",
+      "kind": "unsupported",
+      "notes": "Experience CMS editor browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`lightning/analyticsWaveApi`",
+      "symbol": "lightning/analyticsWaveApi",
+      "kind": "unsupported",
+      "notes": "Analytics Wave browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`lightning/graphql`",
+      "symbol": "lightning/graphql",
+      "kind": "unsupported",
+      "notes": "Lightning GraphQL browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`lightning/industriesEducationPublicApi`",
+      "symbol": "lightning/industriesEducationPublicApi",
+      "kind": "unsupported",
+      "notes": "Industries Education browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`lightning/mobileCapabilities`",
+      "symbol": "lightning/mobileCapabilities",
+      "kind": "unsupported",
+      "notes": "Lightning mobile browser capability services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`lightning/serviceKnowledgeApi`",
+      "symbol": "lightning/serviceKnowledgeApi",
+      "kind": "unsupported",
+      "notes": "Lightning Knowledge browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`lightning/ui*Api`",
+      "symbol": "lightning/ui*Api",
+      "kind": "unsupported",
+      "notes": "Lightning UI API browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`lightning/uiGraphQLApi`",
+      "symbol": "lightning/uiGraphQLApi",
+      "kind": "unsupported",
+      "notes": "Lightning UI GraphQL browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:`notifyRecordUpdateAvailable(recordIds)`",
+      "symbol": "notifyRecordUpdateAvailable(recordIds)",
+      "kind": "unsupported",
+      "notes": "Client-side record update notifications are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "lwc:lightning/cmsDeliveryApi",
+      "symbol": "lightning/cmsDeliveryApi",
+      "kind": "unsupported",
+      "notes": "Lightning CMS delivery browser services are outside local Apex test execution."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_page",
+      "symbol": "apex:page",
+      "kind": "test",
+      "notes": "Visualforce page markup is accepted as local metadata shape without browser rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_form",
+      "symbol": "apex:form",
+      "kind": "test",
+      "notes": "Visualforce form markup is accepted as local controller metadata shape without browser rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_actionFunction",
+      "symbol": "apex:actionFunction",
+      "kind": "test",
+      "notes": "Visualforce actionFunction markup is accepted as local controller metadata shape without JavaScript execution."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_actionRegion",
+      "symbol": "apex:actionRegion",
+      "kind": "test",
+      "notes": "Visualforce actionRegion markup is accepted as local metadata shape without partial-page rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_actionSupport",
+      "symbol": "apex:actionSupport",
+      "kind": "test",
+      "notes": "Visualforce actionSupport markup is accepted as local metadata shape without browser event execution."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_pageMessages",
+      "symbol": "apex:pageMessages",
+      "kind": "test",
+      "notes": "Visualforce pageMessages markup is accepted as local metadata shape while ApexPages message state is handled in the VM."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_message",
+      "symbol": "apex:message",
+      "kind": "test",
+      "notes": "Visualforce message markup is accepted as local metadata shape without rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_messages",
+      "symbol": "apex:messages",
+      "kind": "test",
+      "notes": "Visualforce messages markup is accepted as local metadata shape without rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_inputField",
+      "symbol": "apex:inputField",
+      "kind": "test",
+      "notes": "Visualforce inputField markup is accepted as local metadata shape without browser form binding."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_outputPanel",
+      "symbol": "apex:outputPanel",
+      "kind": "test",
+      "notes": "Visualforce outputPanel markup is accepted as local metadata shape without rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_pageBlock",
+      "symbol": "apex:pageBlock",
+      "kind": "test",
+      "notes": "Visualforce pageBlock markup is accepted as local metadata shape without rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_pageBlockButtons",
+      "symbol": "apex:pageBlockButtons",
+      "kind": "test",
+      "notes": "Visualforce pageBlockButtons markup is accepted as local metadata shape without rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_pageBlockSection",
+      "symbol": "apex:pageBlockSection",
+      "kind": "test",
+      "notes": "Visualforce pageBlockSection markup is accepted as local metadata shape without rendering."
+    },
+    {
+      "surfaceId": "visualforce:pages_compref_pageBlockSectionItem",
+      "symbol": "apex:pageBlockSectionItem",
+      "kind": "test",
+      "notes": "Visualforce pageBlockSectionItem markup is accepted as local metadata shape without rendering."
+    },
+    {
+      "surfaceId": "unknown:meta_lightningbolt",
+      "symbol": "Lightning Bolt metadata",
+      "kind": "test",
+      "notes": "Local UI controller discovery treats Lightning Bolt metadata as source shape only."
+    },
+    {
+      "surfaceId": "unknown:meta_lightningcomponentbundle",
+      "symbol": "LightningComponentBundle metadata",
+      "kind": "test",
+      "notes": "Local UI controller discovery treats Lightning component bundle metadata as source shape only."
+    },
+    {
+      "surfaceId": "unknown:meta_lightningexperiencesettings",
+      "symbol": "LightningExperienceSettings metadata",
+      "kind": "test",
+      "notes": "Local UI controller discovery treats Lightning Experience settings as source shape only."
+    },
+    {
+      "surfaceId": "unknown:meta_lightningexperiencetheme",
+      "symbol": "LightningExperienceTheme metadata",
+      "kind": "test",
+      "notes": "Local UI controller discovery treats Lightning Experience theme metadata as source shape only."
+    },
+    {
+      "surfaceId": "unknown:meta_lightningmessagechannel",
+      "symbol": "LightningMessageChannel metadata",
+      "kind": "test",
+      "notes": "Local UI controller discovery treats Lightning message channel metadata as source shape only."
+    },
+    {
+      "surfaceId": "unknown:meta_lightningonboardingconfig",
+      "symbol": "LightningOnboardingConfig metadata",
+      "kind": "test",
+      "notes": "Local UI controller discovery treats Lightning onboarding config metadata as source shape only."
+    },
+    {
+      "surfaceId": "unknown:meta_lightningtypebundle",
+      "symbol": "LightningTypeBundle metadata",
+      "kind": "test",
+      "notes": "Local UI controller discovery treats Lightning type bundle metadata as source shape only."
+    },
+    {
+      "surfaceId": "unknown:ref_attr_types_aura",
+      "symbol": "Aura attribute type",
+      "kind": "test",
+      "notes": "Aura attribute type reference rows are local metadata shape only."
+    },
+    {
+      "surfaceId": "unknown:ref_attr_types_aura_action",
+      "symbol": "Aura action attribute type",
+      "kind": "test",
+      "notes": "Aura action attribute type reference rows are local metadata shape only."
+    },
+    {
+      "surfaceId": "unknown:ref_aura_interface",
+      "symbol": "aura:interface",
+      "kind": "test",
+      "notes": "Aura interface markup is treated as local source shape only."
     }
   ],
   "source": [

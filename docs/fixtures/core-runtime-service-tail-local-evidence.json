@@ -1,0 +1,161 @@
+{
+  "name": "core-runtime-service-tail-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:eventbus.EventPublishFailureCallback.onFailure(eventbus.FailureResult)",
+      "symbol": "eventbus.EventPublishFailureCallback.onFailure",
+      "kind": "exec",
+      "notes": "Local callback base handler accepts a FailureResult argument without reaching a Salesforce event service."
+    },
+    {
+      "surfaceId": "apex:eventbus.EventPublishSuccessCallback.onSuccess(eventbus.SuccessResult)",
+      "symbol": "eventbus.EventPublishSuccessCallback.onSuccess",
+      "kind": "exec",
+      "notes": "Local callback base handler accepts a SuccessResult argument without reaching a Salesforce event service."
+    },
+    {
+      "surfaceId": "apex:eventbus.InvalidReplayIdException.getTypeName()",
+      "symbol": "eventbus.InvalidReplayIdException.getTypeName",
+      "kind": "exec",
+      "notes": "Generated eventbus exception instances expose the local type-name accessor."
+    },
+    {
+      "surfaceId": "apex:eventbus.RetryableException.getTypeName()",
+      "symbol": "eventbus.RetryableException.getTypeName",
+      "kind": "exec",
+      "notes": "Generated eventbus exception instances expose the local type-name accessor."
+    },
+    {
+      "surfaceId": "apex:dataweave.Script.createScript(String)",
+      "symbol": "dataweave.Script.createScript(String)",
+      "kind": "exec",
+      "notes": "The lowercase DataWeave namespace alias creates a deterministic local script carrier."
+    },
+    {
+      "surfaceId": "apex:dataweave.Script.execute()",
+      "symbol": "dataweave.Script.execute()",
+      "kind": "exec",
+      "notes": "Local DataWeave execution returns deterministic Result content for built-in recipe names."
+    },
+    {
+      "surfaceId": "apex:dataweave.Script.execute(Map<String,Object>)",
+      "symbol": "dataweave.Script.execute(Map<String,Object>)",
+      "kind": "exec",
+      "notes": "Local DataWeave execution consumes Apex map inputs and returns deterministic Result content."
+    },
+    {
+      "surfaceId": "apex:pref.TokenUtility.generateToken(String)",
+      "symbol": "pref.TokenUtility.generateToken(String)",
+      "kind": "exec",
+      "notes": "The pref docs alias is backed by the executable pref_center TokenUtility implementation."
+    },
+    {
+      "surfaceId": "apex:pref.TokenUtility.generateToken(String,pref_center.TokenType)",
+      "symbol": "pref.TokenUtility.generateToken(String,pref_center.TokenType)",
+      "kind": "exec",
+      "notes": "The pref docs alias is backed by the executable pref_center TokenUtility token-type overload."
+    },
+    {
+      "surfaceId": "apex:pref.TokenUtility.generateTokens(List<String>)",
+      "symbol": "pref.TokenUtility.generateTokens(List<String>)",
+      "kind": "exec",
+      "notes": "The pref docs alias is backed by the executable pref_center bulk-token implementation."
+    },
+    {
+      "surfaceId": "apex:pref.TokenUtility.generateTokens(List<String>,pref_center.TokenType)",
+      "symbol": "pref.TokenUtility.generateTokens(List<String>,pref_center.TokenType)",
+      "kind": "exec",
+      "notes": "The pref docs alias is backed by the executable pref_center bulk-token token-type overload."
+    },
+    {
+      "surfaceId": "apex:pref_center.PrefCenterException.getTypeName()",
+      "symbol": "pref_center.PrefCenterException.getTypeName",
+      "kind": "exec",
+      "notes": "Generated preference-center exception instances expose the local type-name accessor."
+    },
+    {
+      "surfaceId": "apex:pref_center.TokenUtility.generateToken(String)",
+      "symbol": "pref_center.TokenUtility.generateToken(String)",
+      "kind": "exec",
+      "notes": "Local token generation returns deterministic local-token values."
+    },
+    {
+      "surfaceId": "apex:pref_center.TokenUtility.generateToken(String,pref_center.TokenType)",
+      "symbol": "pref_center.TokenUtility.generateToken(String,pref_center.TokenType)",
+      "kind": "exec",
+      "notes": "Local token generation accepts explicit preference-center token types."
+    },
+    {
+      "surfaceId": "apex:pref_center.TokenUtility.generateTokens(List<String>)",
+      "symbol": "pref_center.TokenUtility.generateTokens(List<String>)",
+      "kind": "exec",
+      "notes": "Local bulk token generation returns one deterministic token per input value."
+    },
+    {
+      "surfaceId": "apex:pref_center.TokenUtility.generateTokens(List<String>,pref_center.TokenType)",
+      "symbol": "pref_center.TokenUtility.generateTokens(List<String>,pref_center.TokenType)",
+      "kind": "exec",
+      "notes": "Local bulk token generation accepts explicit preference-center token types."
+    },
+    {
+      "surfaceId": "apex:pref_center.TokenUtility.generateTokens(List<String>,pref_center.TokenType,pref_center.DataCloudIdTokenType)",
+      "symbol": "pref_center.TokenUtility.generateTokens(List<String>,pref_center.TokenType,pref_center.DataCloudIdTokenType)",
+      "kind": "exec",
+      "notes": "Local bulk token generation accepts Data Cloud id token-type detail."
+    },
+    {
+      "surfaceId": "apex:service_cloud_voice.IntelligenceSignalType.Category",
+      "symbol": "service_cloud_voice.IntelligenceSignalType.Category",
+      "kind": "exec",
+      "notes": "Generated service-cloud-voice enum constants materialize as deterministic local enum values."
+    },
+    {
+      "surfaceId": "apex:service_cloud_voice.IntelligenceSignalType.Sentiment",
+      "symbol": "service_cloud_voice.IntelligenceSignalType.Sentiment",
+      "kind": "exec",
+      "notes": "Generated service-cloud-voice enum constants materialize as deterministic local enum values."
+    },
+    {
+      "surfaceId": "apex:service_cloud_voice.UserInfo.getFirstName()",
+      "symbol": "service_cloud_voice.UserInfo.getFirstName",
+      "kind": "exec",
+      "notes": "Generated service-cloud-voice UserInfo DTOs return constructor-seeded first names."
+    },
+    {
+      "surfaceId": "apex:service_cloud_voice.UserInfo.getLastName()",
+      "symbol": "service_cloud_voice.UserInfo.getLastName",
+      "kind": "exec",
+      "notes": "Generated service-cloud-voice UserInfo DTOs return constructor-seeded last names."
+    },
+    {
+      "surfaceId": "apex:service_cloud_voice.UserInfo.getUserId()",
+      "symbol": "service_cloud_voice.UserInfo.getUserId",
+      "kind": "exec",
+      "notes": "Generated service-cloud-voice UserInfo DTOs return constructor-seeded user ids."
+    },
+    {
+      "surfaceId": "apex:service_cloud_voice.UserInfo.getUserName()",
+      "symbol": "service_cloud_voice.UserInfo.getUserName",
+      "kind": "exec",
+      "notes": "Generated service-cloud-voice UserInfo DTOs return constructor-seeded usernames."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "eventbus.FailureResult failureResult = new eventbus.FailureResult(); new eventbus.EventPublishFailureCallback().onFailure(failureResult); eventbus.SuccessResult successResult = new eventbus.SuccessResult(); new eventbus.EventPublishSuccessCallback().onSuccess(successResult); String invalidReplay = new eventbus.InvalidReplayIdException('bad replay').getTypeName(); System.assert(invalidReplay != null); String retryable = new eventbus.RetryableException('retry').getTypeName(); System.assert(retryable != null); DataWeave.Script dwScript = dataweave.Script.createScript('helloWorld'); DataWeave.Result dwResult = dwScript.execute(); System.assertEquals('\"Hello World\"', dwResult.getValueAsString()); DataWeave.Script dwScriptTwo = dataweave.Script.createScript('records'); Map<String,Object> dwInputs = new Map<String,Object>{'records' => new List<String>{'a', 'b'}}; DataWeave.Result dwResultTwo = dwScriptTwo.execute(dwInputs); System.assertEquals(2, ((List<String>)dwResultTwo.getValue()).size()); String tokenOne = pref_center.TokenUtility.generateToken('subscriber-1'); System.assert(tokenOne.startsWith('local-token-')); String tokenTwo = pref_center.TokenUtility.generateToken('subscriber-1', pref_center.TokenType.EMAIL); System.assert(tokenTwo.startsWith('local-token-')); Map<String,String> tokenMap = pref_center.TokenUtility.generateTokens(new List<String>{'a', 'b'}); System.assertEquals(2, tokenMap.size()); Map<String,String> tokenMapTyped = pref_center.TokenUtility.generateTokens(new List<String>{'c'}, pref_center.TokenType.STANDARD); System.assertEquals(1, tokenMapTyped.size()); Map<String,String> tokenMapDataCloud = pref_center.TokenUtility.generateTokens(new List<String>{'d'}, pref_center.TokenType.DATACLOUDID, pref_center.DataCloudIdTokenType.EMAIL); System.assertEquals(1, tokenMapDataCloud.size()); String prefType = new pref_center.PrefCenterException('pref center').getTypeName(); System.assert(prefType != null); System.assert(service_cloud_voice.IntelligenceSignalType.Category != null); System.assert(service_cloud_voice.IntelligenceSignalType.Sentiment != null); service_cloud_voice.UserInfo voiceUser = new service_cloud_voice.UserInfo('005000000000001', 'Ada', 'Trail', 'ada@example.test'); System.assertEquals('Ada', voiceUser.getFirstName()); System.assertEquals('Trail', voiceUser.getLastName()); System.assertEquals('005000000000001', voiceUser.getUserId()); System.assertEquals('ada@example.test', voiceUser.getUserName());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "eventbus.FailureResult failureResult = new eventbus.FailureResult(); new eventbus.EventPublishFailureCallback().onFailure(failureResult); eventbus.SuccessResult successResult = new eventbus.SuccessResult(); new eventbus.EventPublishSuccessCallback().onSuccess(successResult); String invalidReplay = new eventbus.InvalidReplayIdException('bad replay').getTypeName(); System.assert(invalidReplay != null); String retryable = new eventbus.RetryableException('retry').getTypeName(); System.assert(retryable != null); DataWeave.Script dwScript = dataweave.Script.createScript('helloWorld'); DataWeave.Result dwResult = dwScript.execute(); System.assertEquals('\"Hello World\"', dwResult.getValueAsString()); DataWeave.Script dwScriptTwo = dataweave.Script.createScript('records'); Map<String,Object> dwInputs = new Map<String,Object>{'records' => new List<String>{'a', 'b'}}; DataWeave.Result dwResultTwo = dwScriptTwo.execute(dwInputs); System.assertEquals(2, ((List<String>)dwResultTwo.getValue()).size()); String tokenOne = pref_center.TokenUtility.generateToken('subscriber-1'); System.assert(tokenOne.startsWith('local-token-')); String tokenTwo = pref_center.TokenUtility.generateToken('subscriber-1', pref_center.TokenType.EMAIL); System.assert(tokenTwo.startsWith('local-token-')); Map<String,String> tokenMap = pref_center.TokenUtility.generateTokens(new List<String>{'a', 'b'}); System.assertEquals(2, tokenMap.size()); Map<String,String> tokenMapTyped = pref_center.TokenUtility.generateTokens(new List<String>{'c'}, pref_center.TokenType.STANDARD); System.assertEquals(1, tokenMapTyped.size()); Map<String,String> tokenMapDataCloud = pref_center.TokenUtility.generateTokens(new List<String>{'d'}, pref_center.TokenType.DATACLOUDID, pref_center.DataCloudIdTokenType.EMAIL); System.assertEquals(1, tokenMapDataCloud.size()); String prefType = new pref_center.PrefCenterException('pref center').getTypeName(); System.assert(prefType != null); System.assert(service_cloud_voice.IntelligenceSignalType.Category != null); System.assert(service_cloud_voice.IntelligenceSignalType.Sentiment != null); service_cloud_voice.UserInfo voiceUser = new service_cloud_voice.UserInfo('005000000000001', 'Ada', 'Trail', 'ada@example.test'); System.assertEquals('Ada', voiceUser.getFirstName()); System.assertEquals('Trail', voiceUser.getLastName()); System.assertEquals('005000000000001', voiceUser.getUserId()); System.assertEquals('ada@example.test', voiceUser.getUserName());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "debug": null
+    }
+  }
+}

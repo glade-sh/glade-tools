@@ -3,7 +3,7 @@
   "evidence": [
     {
       "symbol": "Approval.*",
-      "kind": "server",
+      "kind": "unsupported",
       "notes": "Approval process/request surfaces stay explicitly unsupported."
     },
     {

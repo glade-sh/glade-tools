@@ -1,0 +1,549 @@
+{
+  "name": "rest-local-boundary-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "rest:dome_composite_batch.get",
+      "symbol": "Update a Record and Get Its Field Values in a Single Request",
+      "kind": "unsupported",
+      "notes": "Composite batch orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:dome_composite_junction_object.get",
+      "symbol": "Update an Account, Create a Contact, and Link Them with a Junction Object",
+      "kind": "unsupported",
+      "notes": "Composite dependent-request orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:dome_composite_record_manipulation.get",
+      "symbol": "Execute Dependent Requests in a Single API Call",
+      "kind": "unsupported",
+      "notes": "Composite dependent-request orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:dome_composite_sobject_tree_create.get",
+      "symbol": "Create Nested Records",
+      "kind": "unsupported",
+      "notes": "Composite sObject tree orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:dome_composite_sobject_tree_flat.get",
+      "symbol": "Create Multiple Records",
+      "kind": "unsupported",
+      "notes": "Composite sObject tree orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:dome_composite_upsert_example.get",
+      "symbol": "Upsert an Account and Create a Contact",
+      "kind": "unsupported",
+      "notes": "Composite dependent-request orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:dome_get_field_values_external_object.get",
+      "symbol": "Get Field Values from an External Object Record by Using the External ID Standard Field",
+      "kind": "unsupported",
+      "notes": "External-object field-value REST routes require Salesforce Connect services that the local server does not model."
+    },
+    {
+      "surfaceId": "rest:dome_get_field_values_external_object_hdv.get",
+      "symbol": "Get Field Values from an External Object Record by Using the Salesforce ID",
+      "kind": "unsupported",
+      "notes": "External-object field-value REST routes require Salesforce Connect services that the local server does not model."
+    },
+    {
+      "surfaceId": "rest:dome_query_explain.get",
+      "symbol": "Get Feedback on Query Performance (Beta)",
+      "kind": "unsupported",
+      "notes": "Query explain and performance feedback depend on Salesforce optimizer services outside local query execution."
+    },
+    {
+      "surfaceId": "rest:dome_sobject_blob_retrieve.get",
+      "symbol": "Get Blob Data",
+      "kind": "unsupported",
+      "notes": "Blob and rich text binary REST routes stream stored binary content that the local server does not model."
+    },
+    {
+      "surfaceId": "rest:dome_sobject_insert_update_blob.get",
+      "symbol": "Insert or Update Blob Data",
+      "kind": "unsupported",
+      "notes": "Blob and rich text binary REST routes stream stored binary content that the local server does not model."
+    },
+    {
+      "surfaceId": "rest:dome_sobject_rich_text_image_retrieve.get",
+      "symbol": "Get an Image from a Rich Text Area Field",
+      "kind": "unsupported",
+      "notes": "Blob and rich text binary REST routes stream stored binary content that the local server does not model."
+    },
+    {
+      "surfaceId": "rest:dome_sobject_user_password.get",
+      "symbol": "Manage User Passwords",
+      "kind": "unsupported",
+      "notes": "User password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:requests_composite.get",
+      "symbol": "Composite Request Body",
+      "kind": "unsupported",
+      "notes": "Composite request and response body resources describe full REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:requests_composite_batch.get",
+      "symbol": "Batch Request Body",
+      "kind": "unsupported",
+      "notes": "Composite request and response body resources describe full REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:requests_composite_sobject_tree.get",
+      "symbol": "sObject Tree Request Body",
+      "kind": "unsupported",
+      "notes": "Composite request and response body resources describe full REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_allornone.get",
+      "symbol": "allOrNone Parameters in Composite and Collections Requests",
+      "kind": "unsupported",
+      "notes": "Composite allOrNone coordination is part of multi-request REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_batch.get",
+      "symbol": "Composite Batch",
+      "kind": "unsupported",
+      "notes": "Composite batch orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_composite.get",
+      "symbol": "Composite",
+      "kind": "unsupported",
+      "notes": "Composite dependent-request orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_composite_get.get",
+      "symbol": "Get a List of Composite Resources",
+      "kind": "unsupported",
+      "notes": "Composite resource discovery belongs to the full REST orchestration surface outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_composite_post.get",
+      "symbol": "Send Multiple Requests Using Composite",
+      "kind": "unsupported",
+      "notes": "Composite dependent-request orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph.get",
+      "symbol": "Composite Graph",
+      "kind": "unsupported",
+      "notes": "Composite graph orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph_composite_subrequest.get",
+      "symbol": "Composite Subrequest",
+      "kind": "unsupported",
+      "notes": "Composite graph subrequests are part of multi-resource REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph_introduction.get",
+      "symbol": "Using Composite Graphs",
+      "kind": "unsupported",
+      "notes": "Composite graph orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph_limits.get",
+      "symbol": "Composite Graph Limits",
+      "kind": "unsupported",
+      "notes": "Composite graph limits describe Salesforce service constraints outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobject_tree.get",
+      "symbol": "sObject Tree",
+      "kind": "unsupported",
+      "notes": "Composite sObject tree orchestration spans multiple REST resources and stays outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_composite_subrequest_result.get",
+      "symbol": "Composite Subrequest Result",
+      "kind": "unsupported",
+      "notes": "Composite subrequest result shapes belong to multi-resource REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_embeddedserviceconfigdescribe.get",
+      "symbol": "Embedded Service Configuration Describe",
+      "kind": "unsupported",
+      "notes": "Embedded service configuration depends on Salesforce service setup outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_embeddedserviceconfigdescribe_get.get",
+      "symbol": "Get Embedded Service Configuration",
+      "kind": "unsupported",
+      "notes": "Embedded service configuration depends on Salesforce service setup outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_embeddedserviceconfigdescribe_head.get",
+      "symbol": "Return Headers for Embedded Service Configuration",
+      "kind": "unsupported",
+      "notes": "HEAD-only embedded service configuration routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_event_eventschema.get",
+      "symbol": "Platform Event Schema by Schema ID",
+      "kind": "unsupported",
+      "notes": "Platform event schema REST routes require event schema services outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_opportunitylineitemschedules.get",
+      "symbol": "Product Schedules",
+      "kind": "unsupported",
+      "notes": "Opportunity line item schedule REST routes depend on schedule services outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_opportunitylineitemschedules_delete.get",
+      "symbol": "Delete Product Schedules",
+      "kind": "unsupported",
+      "notes": "Opportunity line item schedule REST routes depend on schedule services outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_opportunitylineitemschedules_get.get",
+      "symbol": "Get Product Schedules",
+      "kind": "unsupported",
+      "notes": "Opportunity line item schedule REST routes depend on schedule services outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_opportunitylineitemschedules_put.get",
+      "symbol": "Create Product Schedules",
+      "kind": "unsupported",
+      "notes": "Opportunity line item schedule REST routes depend on schedule services outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.get",
+      "symbol": "Query Performance Feedback (Beta)",
+      "kind": "unsupported",
+      "notes": "Query explain and performance feedback depend on Salesforce optimizer services outside local query execution."
+    },
+    {
+      "surfaceId": "rest:resources_quickactions.get",
+      "symbol": "Quick Actions",
+      "kind": "unsupported",
+      "notes": "Global quick action REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_quickactions_get.get",
+      "symbol": "Get Quick Actions",
+      "kind": "unsupported",
+      "notes": "Global quick action REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_quickactions_head.get",
+      "symbol": "Return Headers of Quick Actions",
+      "kind": "unsupported",
+      "notes": "HEAD-only quick action routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_quickactions_post.get",
+      "symbol": "Create Records Using Quick Actions",
+      "kind": "unsupported",
+      "notes": "Global quick action REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_approvallayouts.get",
+      "symbol": "sObject ApprovalLayouts",
+      "kind": "unsupported",
+      "notes": "Approval layout REST routes depend on approval process metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_approvallayouts_get.get",
+      "symbol": "Get Approval Layouts",
+      "kind": "unsupported",
+      "notes": "Approval layout REST routes depend on approval process metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_approvallayouts_head.get",
+      "symbol": "Return Headers for Approval Layouts",
+      "kind": "unsupported",
+      "notes": "HEAD-only approval layout routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_approvallayouts_process.get",
+      "symbol": "sObject Single Approval Process",
+      "kind": "unsupported",
+      "notes": "Approval process layout REST routes depend on approval process metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_approvallayouts_process_get.get",
+      "symbol": "Get a Layout for a Single Approval Process on a Specified Object",
+      "kind": "unsupported",
+      "notes": "Approval process layout REST routes depend on approval process metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_approvallayouts_process_head.get",
+      "symbol": "Return Headers for a Single Approval Process on a Specified Object",
+      "kind": "unsupported",
+      "notes": "HEAD-only approval process layout routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_blob_retrieve.get",
+      "symbol": "sObject Blob Get",
+      "kind": "unsupported",
+      "notes": "Blob and rich text binary REST routes stream stored binary content that the local server does not model."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_eventschema.get",
+      "symbol": "Platform Event Schema by Event Name",
+      "kind": "unsupported",
+      "notes": "Platform event schema REST routes require event schema services outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_platformaction.get",
+      "symbol": "sObject PlatformAction",
+      "kind": "unsupported",
+      "notes": "sObject action metadata REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions.get",
+      "symbol": "sObject Quick Actions",
+      "kind": "unsupported",
+      "notes": "sObject quick action metadata REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_default_values.get",
+      "symbol": "sObject Quick Action Default Values",
+      "kind": "unsupported",
+      "notes": "Quick action default-value REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_default_values_get.get",
+      "symbol": "Get sObject Quick Action Default Values",
+      "kind": "unsupported",
+      "notes": "Quick action default-value REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_default_values_head.get",
+      "symbol": "Return Headers Using sObject Quick Action Default Values",
+      "kind": "unsupported",
+      "notes": "HEAD-only quick action default-value routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_default_values_id.get",
+      "symbol": "sObject Quick Action Default Values by ID",
+      "kind": "unsupported",
+      "notes": "Quick action default-value REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_default_values_id_get.get",
+      "symbol": "Get sObject Quick Action Default Values by ID",
+      "kind": "unsupported",
+      "notes": "Quick action default-value REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_default_values_id_head.get",
+      "symbol": "Return Headers Using sObject Quick Action Default Values by ID",
+      "kind": "unsupported",
+      "notes": "HEAD-only quick action default-value routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_detail.get",
+      "symbol": "sObject Quick Action Details",
+      "kind": "unsupported",
+      "notes": "sObject quick action detail REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_detail_get.get",
+      "symbol": "Get sObject Quick Action Details",
+      "kind": "unsupported",
+      "notes": "sObject quick action detail REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_detail_head.get",
+      "symbol": "Return Headers Using sObject Quick Action Details",
+      "kind": "unsupported",
+      "notes": "HEAD-only quick action detail routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_get.get",
+      "symbol": "Get sObject Quick Actions",
+      "kind": "unsupported",
+      "notes": "sObject quick action metadata REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_head.get",
+      "symbol": "Return Headers Using sObject Quick Actions",
+      "kind": "unsupported",
+      "notes": "HEAD-only sObject quick action routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_specific_action.get",
+      "symbol": "sObject Specific Quick Actions",
+      "kind": "unsupported",
+      "notes": "Specific quick action REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_specific_action_get.get",
+      "symbol": "Get Specific sObject Quick Actions",
+      "kind": "unsupported",
+      "notes": "Specific quick action REST routes depend on Salesforce UI action metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_specific_action_head.get",
+      "symbol": "Return Headers Using Specific sObject Quick Actions",
+      "kind": "unsupported",
+      "notes": "HEAD-only specific quick action routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_quickactions_specific_action_post.get",
+      "symbol": "Create Records Using Specific sObject Quick Actions",
+      "kind": "unsupported",
+      "notes": "Specific quick action execution REST routes depend on Salesforce UI action services outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_rich_text_image_retrieve.get",
+      "symbol": "sObject Rich Text Image Get",
+      "kind": "unsupported",
+      "notes": "Blob and rich text binary REST routes stream stored binary content that the local server does not model."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_self_service_user_password.get",
+      "symbol": "sObject Self-Service User Password",
+      "kind": "unsupported",
+      "notes": "Self-service user password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_self_service_user_password_delete.get",
+      "symbol": "Reset Self-Service User Password",
+      "kind": "unsupported",
+      "notes": "Self-service user password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_self_service_user_password_get.get",
+      "symbol": "Get Self-Service User Password Expiration Status",
+      "kind": "unsupported",
+      "notes": "Self-service user password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_self_service_user_password_head.get",
+      "symbol": "Return Headers Using sObject Self-Service User Password",
+      "kind": "unsupported",
+      "notes": "HEAD-only self-service user password routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_self_service_user_password_post.get",
+      "symbol": "Set Self-Service User Password",
+      "kind": "unsupported",
+      "notes": "Self-service user password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_upsert_head.get",
+      "symbol": "Return Headers Using sObject Rows by External ID",
+      "kind": "unsupported",
+      "notes": "HEAD-only external-ID row routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_user_password.get",
+      "symbol": "sObject User Password",
+      "kind": "unsupported",
+      "notes": "User password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_user_password_delete.get",
+      "symbol": "Reset User Password",
+      "kind": "unsupported",
+      "notes": "User password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_user_password_get.get",
+      "symbol": "Get User Password Expiration Status",
+      "kind": "unsupported",
+      "notes": "User password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_user_password_head.get",
+      "symbol": "Return Headers Using sObject User Password",
+      "kind": "unsupported",
+      "notes": "HEAD-only user password routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_user_password_post.get",
+      "symbol": "Set User Password",
+      "kind": "unsupported",
+      "notes": "User password REST endpoints depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_tabs.get",
+      "symbol": "Tabs",
+      "kind": "unsupported",
+      "notes": "Tabs REST routes depend on Salesforce UI navigation metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_tabs_get.get",
+      "symbol": "Get Tabs",
+      "kind": "unsupported",
+      "notes": "Tabs REST routes depend on Salesforce UI navigation metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:resources_tabs_head.get",
+      "symbol": "Return Headers Using Tabs",
+      "kind": "unsupported",
+      "notes": "HEAD-only tabs routes are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_themes.get",
+      "symbol": "Themes",
+      "kind": "unsupported",
+      "notes": "Themes REST routes depend on Salesforce UI theme metadata outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:responses_composite.get",
+      "symbol": "Composite Response Body",
+      "kind": "unsupported",
+      "notes": "Composite request and response body resources describe full REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:responses_composite_batch.get",
+      "symbol": "Batch Response Body",
+      "kind": "unsupported",
+      "notes": "Composite request and response body resources describe full REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:responses_composite_sobject_tree.get",
+      "symbol": "sObject Tree Response Body",
+      "kind": "unsupported",
+      "notes": "Composite request and response body resources describe full REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:using_composite_resources.get",
+      "symbol": "Using Composite Resources",
+      "kind": "unsupported",
+      "notes": "Composite resource guides describe full REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:using_resources_composite_graph.get",
+      "symbol": "Using a Composite Graph",
+      "kind": "unsupported",
+      "notes": "Composite graph guides describe multi-resource REST orchestration outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:using_resources_managing_user_passwords.get",
+      "symbol": "Managing User Passwords",
+      "kind": "unsupported",
+      "notes": "User password REST guides depend on Salesforce identity state outside the local server boundary."
+    },
+    {
+      "surfaceId": "rest:using_resources_working_with_processes.get",
+      "symbol": "Working with Approval Processes and Process Rules",
+      "kind": "unsupported",
+      "notes": "Approval process and process rule REST guides depend on Salesforce process services outside the local server boundary."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/RestLocalBoundaryUnsupportedMarker.cls",
+      "content": "public class RestLocalBoundaryUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

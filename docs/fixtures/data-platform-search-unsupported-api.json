@@ -2,9 +2,178 @@
   "name": "data-platform-search-unsupported-api",
   "evidence": [
     {
+      "surfaceId": "apex:System.Search.find(String)",
       "symbol": "Search.find",
       "kind": "test",
       "notes": "Search.find accepts the supported local SOSL smoke shape."
+    },
+    {
+      "surfaceId": "unknown:MockSOQLTestsForDMOs",
+      "symbol": "Data Cloud DMO mock SOQL tests",
+      "kind": "unsupported",
+      "notes": "Data Cloud DMO mock SOQL tests require Data Cloud services and are not executed by the local Apex runtime."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_external_objects_mock_soql_tests",
+      "symbol": "Salesforce Connect external object mock SOQL tests",
+      "kind": "unsupported",
+      "notes": "Salesforce Connect external-object mock SOQL tests require connector services outside the local Apex runtime."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_soslsoql",
+      "symbol": "SOQL and SOSL platform limit tables",
+      "kind": "unsupported",
+      "notes": "SOQL and SOSL platform limit tables document remote service limits, not local Apex query execution behavior."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_describesoqllistview",
+      "symbol": "describeSObject list-view metadata",
+      "kind": "unsupported",
+      "notes": "SOAP describeSObject list-view metadata calls are API metadata surfaces, not local Apex SOQL execution."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_describesoqllistview_soqlwherecondition",
+      "symbol": "DescribeSObject list-view SOQL where condition",
+      "kind": "unsupported",
+      "notes": "List-view SOQL where-condition metadata is returned by describe API calls, not executed as local Apex SOQL."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_describesoqllistviewparams",
+      "symbol": "DescribeSoqlListViews request parameters",
+      "kind": "unsupported",
+      "notes": "DescribeSObject list-view request parameters are SOAP API metadata, not local Apex runtime behavior."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_describesoqllistviewresult",
+      "symbol": "DescribeSObject list-view result DTOs",
+      "kind": "unsupported",
+      "notes": "DescribeSObject list-view result DTOs are SOAP API metadata, not local Apex runtime behavior."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_describesoqllistviews",
+      "symbol": "DescribeSObject list-view collection metadata",
+      "kind": "unsupported",
+      "notes": "DescribeSObject list-view collection metadata is a SOAP API surface outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_describesoqllistviewsrequest",
+      "symbol": "DescribeSoqlListViewsRequest",
+      "kind": "unsupported",
+      "notes": "DescribeSoqlListViewsRequest is SOAP API metadata input, not local Apex SOQL execution."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_changing_batch_size",
+      "symbol": "SOQL API query batch size",
+      "kind": "unsupported",
+      "notes": "API query batch-size negotiation is a remote API cursor setting and has no local Apex test-runner equivalent."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_feeds_url_syntax",
+      "symbol": "SOQL feeds URL syntax",
+      "kind": "unsupported",
+      "notes": "Syndication feed SOQL mapping is public-site feed configuration outside local Apex query execution."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_relationships_query_datacat",
+      "symbol": "SOQL DataCategorySelection relationship query",
+      "kind": "unsupported",
+      "notes": "DataCategorySelection article relationships depend on Knowledge data category services outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_relationships_query_hist",
+      "symbol": "SOQL history relationship query",
+      "kind": "unsupported",
+      "notes": "History relationship queries depend on Salesforce field-history tracking services outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_select_set_options",
+      "symbol": "SOQL SET OPTIONS",
+      "kind": "unsupported",
+      "notes": "SOQL SET OPTIONS targets Data Cloud DLO and DMO service behavior outside local Apex query execution."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_select_with_datacategory",
+      "symbol": "SOQL WITH DATA CATEGORY",
+      "kind": "unsupported",
+      "notes": "SOQL WITH DATA CATEGORY filters Knowledge and Question visibility services outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_select_with_datacategory_catselection",
+      "symbol": "SOQL data category selection syntax",
+      "kind": "unsupported",
+      "notes": "SOQL data category selection syntax depends on Knowledge category services outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_select_with_recordvisibilitycontext",
+      "symbol": "SOQL WITH RecordVisibilityContext",
+      "kind": "unsupported",
+      "notes": "RecordVisibilityContext uses Salesforce visibility service descriptors outside local Apex query execution."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_soql_typos",
+      "symbol": "SOQL typographical conventions",
+      "kind": "unsupported",
+      "notes": "SOQL typographical conventions are documentation syntax guidance, not a runtime surface."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_limits_external_objects",
+      "symbol": "SOSL external object limits",
+      "kind": "unsupported",
+      "notes": "SOSL external-object limits depend on Salesforce Connect services outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_typos",
+      "symbol": "SOSL typographical conventions",
+      "kind": "unsupported",
+      "notes": "SOSL typographical conventions are documentation syntax guidance, not a runtime surface."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_update_tracking",
+      "symbol": "SOSL UPDATE TRACKING",
+      "kind": "unsupported",
+      "notes": "SOSL UPDATE TRACKING records Salesforce Knowledge search analytics outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_update_viewstat",
+      "symbol": "SOSL UPDATE VIEWSTAT",
+      "kind": "unsupported",
+      "notes": "SOSL UPDATE VIEWSTAT records Salesforce Knowledge article view statistics outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_using_listview",
+      "symbol": "SOSL USING ListView",
+      "kind": "unsupported",
+      "notes": "SOSL USING ListView depends on Salesforce list-view metadata and service filtering outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_with",
+      "symbol": "SOSL WITH DivisionFilter",
+      "kind": "unsupported",
+      "notes": "SOSL WITH DivisionFilter depends on Salesforce division filtering services outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_with_data_category",
+      "symbol": "SOSL WITH DATA CATEGORY",
+      "kind": "unsupported",
+      "notes": "SOSL WITH DATA CATEGORY filters Knowledge and Question category visibility outside the local runtime."
+    },
+    {
+      "surfaceId": "unknown:sforce_api_calls_sosl_with_metadata",
+      "symbol": "SOSL WITH METADATA",
+      "kind": "unsupported",
+      "notes": "SOSL WITH METADATA returns service response labels outside local Apex search execution."
+    },
+    {
+      "surfaceId": "unknown:supported_soql",
+      "symbol": "Supported PushTopic query rules",
+      "kind": "unsupported",
+      "notes": "Supported PushTopic query rules are Streaming API behavior outside local Apex query execution."
+    },
+    {
+      "surfaceId": "unknown:unsupported_soql_statements",
+      "symbol": "Unsupported PushTopic query rules",
+      "kind": "unsupported",
+      "notes": "Unsupported PushTopic query rules are Streaming API behavior outside local Apex query execution."
     }
   ],
   "source": [

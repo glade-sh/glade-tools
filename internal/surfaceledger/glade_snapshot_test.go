@@ -300,6 +300,11 @@ func TestBuildGladeSnapshotAddsFixtureBackedSystemAliasRows(t *testing.T) {
 		{id: "apex:System.Integer.MAX_VALUE", kind: KindProperty, behavior: BehaviorSupported},
 		{id: "apex:System.TxnSecurity.EventCondition.evaluate(SObject)", kind: KindMethod, behavior: BehaviorSupported},
 		{id: "apex:System.TxnSecurity.PolicyCondition.evaluate(TxnSecurity.Event)", kind: KindMethod, behavior: BehaviorSupported},
+		{id: "apex:System.Search.find", kind: KindMethod, behavior: BehaviorPartial},
+		{id: "apex:System.Search.find(String,Object)", kind: KindMethod, behavior: BehaviorPartial},
+		{id: "apex:System.Search.query(String,Object)", kind: KindMethod, behavior: BehaviorPartial},
+		{id: "apex:System.Search.suggest(String,String,Object)", kind: KindMethod, behavior: BehaviorPartial},
+		{id: "apex:System.Search.suggest(String,String,Object,Object)", kind: KindMethod, behavior: BehaviorPartial},
 	} {
 		row, ok := byID[tc.id]
 		if !ok {
@@ -342,6 +347,36 @@ func TestBuildGladeSnapshotAddsFixtureBackedApexAliasRows(t *testing.T) {
 		}
 		if row.TypeName != tc.typ || row.MemberName != tc.member {
 			t.Fatalf("%s type/member = %s/%s, want %s/%s", tc.id, row.TypeName, row.MemberName, tc.typ, tc.member)
+		}
+	}
+}
+
+func TestBuildGladeSnapshotAddsFixtureBackedMirrorAliasRows(t *testing.T) {
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+	for _, tc := range []struct {
+		id       string
+		kind     string
+		behavior BehaviorState
+	}{
+		{id: "apex:pref.LoadFormData.addOption(String,String,String)", kind: KindMethod, behavior: BehaviorPassive},
+		{id: "apex:ise.DynamicMenuItem.Label", kind: KindProperty, behavior: BehaviorPassive},
+		{id: "apex:commercepayments.PostAuthorizationRequest_amount", kind: KindType, behavior: BehaviorPassive},
+		{id: "apex:industriesNlpSvc.NlpResponse_errors", kind: KindType, behavior: BehaviorPassive},
+		{id: "apex:setup.FlowPerformanceSetupDetails", kind: KindType, behavior: BehaviorPassive},
+		{id: "apex:sfdc.LearningItemEvaluationHandler.evaluate(Sfdc_enablement.LearningEvaluation)", kind: KindMethod, behavior: BehaviorStubNoOp},
+		{id: "apex:sfdc.SurveyInvitationLinkShortener.getShortenedURL(String)", kind: KindMethod, behavior: BehaviorPassive},
+		{id: "apex:RichMessaging.ProcessFormHandler.processFormRequest", kind: KindMethod, behavior: BehaviorStubNoOp},
+	} {
+		row, ok := byID[tc.id]
+		if !ok {
+			t.Fatalf("missing mirror alias row %s", tc.id)
+		}
+		if row.GladeShape == ShapeAbsent || row.GladeBehavior != tc.behavior || row.Kind != tc.kind {
+			t.Fatalf("%s shape/behavior/kind = %s/%s/%s, want non-absent/%s/%s", tc.id, row.GladeShape, row.GladeBehavior, row.Kind, tc.behavior, tc.kind)
+		}
+		if !hasSource(row.Sources, "apex-mirror-alias") {
+			t.Fatalf("%s sources = %#v, want apex-mirror-alias", tc.id, row.Sources)
 		}
 	}
 }

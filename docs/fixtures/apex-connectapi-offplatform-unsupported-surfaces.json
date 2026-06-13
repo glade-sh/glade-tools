@@ -1,0 +1,1173 @@
+{
+  "name": "apex-connectapi-offplatform-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "apex:ConnectApi.AbstractBaseSequenceInputRepresentation",
+      "symbol": "AbstractBaseSequenceInputRepresentation",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ActivationAttributeConfig",
+      "symbol": "ActivationAttributeConfig",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ApprovalIntent",
+      "symbol": "ApprovalIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BaseManagedSocialAccount",
+      "symbol": "BaseManagedSocialAccount",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BusObjAssociationsInputRepresentation",
+      "symbol": "BusObjAssociationsInputRepresentation",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BusObjAssociationsOutputRepresentation",
+      "symbol": "BusObjAssociationsOutputRepresentation",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BusObjInputRepresentation",
+      "symbol": "BusObjInputRepresentation",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BusObjOutputRepresentation",
+      "symbol": "BusObjOutputRepresentation",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BusinessObjectivesOutputRepresentation",
+      "symbol": "BusinessObjectivesOutputRepresentation",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation",
+      "symbol": "CdpActivation",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation.createActivation(ConnectApi.ActivationDefinitionInput)",
+      "symbol": "CdpActivation.createActivation",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation.deleteActivation(String)",
+      "symbol": "CdpActivation.deleteActivation",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation.getActivation(String)",
+      "symbol": "CdpActivation.getActivation",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation.getActivations()",
+      "symbol": "CdpActivation.getActivations",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation.getActivationsPaginated(Integer,Integer,String,String)",
+      "symbol": "CdpActivation.getActivationsPaginated",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivation.updateActivation(String,ConnectApi.ActivationDefinitionInput)",
+      "symbol": "CdpActivation.updateActivation",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationExternalPlatform",
+      "symbol": "CdpActivationExternalPlatform",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationExternalPlatform.getActivationExternalPlatforms()",
+      "symbol": "CdpActivationExternalPlatform.getActivationExternalPlatforms",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationExternalPlatform.getActivationExternalPlatformsPaginated(Integer,Integer,String)",
+      "symbol": "CdpActivationExternalPlatform.getActivationExternalPlatformsPaginated",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationTarget",
+      "symbol": "CdpActivationTarget",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationTarget.createActivationTarget(ConnectApi.ActivationTargetInput)",
+      "symbol": "CdpActivationTarget.createActivationTarget",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationTarget.getActivationTarget(String)",
+      "symbol": "CdpActivationTarget.getActivationTarget",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationTarget.getActivationTargets()",
+      "symbol": "CdpActivationTarget.getActivationTargets",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationTarget.getActivationTargetsPaginated(Integer,Integer,String,String)",
+      "symbol": "CdpActivationTarget.getActivationTargetsPaginated",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpActivationTarget.updateActivationTarget(String,ConnectApi.ActivationTargetInput)",
+      "symbol": "CdpActivationTarget.updateActivationTarget",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpAudienceDMO",
+      "symbol": "CdpAudienceDMO",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpAudienceDMO.getActivationData(String)",
+      "symbol": "CdpAudienceDMO.getActivationData",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpCalculatedInsight.createCalculatedInsight(ConnectApi.CdpCalculatedInsightInput)",
+      "symbol": "CdpCalculatedInsight.createCalculatedInsight",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpCalculatedInsight.deleteCalculatedInsight(String)",
+      "symbol": "CdpCalculatedInsight.deleteCalculatedInsight",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpCalculatedInsight.updateCalculatedInsight(String,ConnectApi.CdpCalculatedInsightInput)",
+      "symbol": "CdpCalculatedInsight.updateCalculatedInsight",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpConnection",
+      "symbol": "CdpConnection",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpConnection.getDatabaseSchemas(String,ConnectApi.ConnectionDbSchemaCollectionInputRepresentation)",
+      "symbol": "CdpConnection.getDatabaseSchemas",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpDataSpace",
+      "symbol": "CdpDataSpace",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpDataSpace.getAllDataSpaces(Integer,Integer,String)",
+      "symbol": "CdpDataSpace.getAllDataSpaces",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpDataSpace.getDataSpace(String)",
+      "symbol": "CdpDataSpace.getDataSpace",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpDataStreams",
+      "symbol": "CdpDataStreams",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpDataStreams.runDataStream(String,Boolean)",
+      "symbol": "CdpDataStreams.runDataStream",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpIdentityResolution",
+      "symbol": "CdpIdentityResolution",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpIdentityResolution.createIdentityResolution(ConnectApi.CdpIdentityResolutionConfigInput)",
+      "symbol": "CdpIdentityResolution.createIdentityResolution",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpIdentityResolution.deleteIdentityResolution(String)",
+      "symbol": "CdpIdentityResolution.deleteIdentityResolution",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpIdentityResolution.getIdentityResolution(String)",
+      "symbol": "CdpIdentityResolution.getIdentityResolution",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpIdentityResolution.getIdentityResolutions()",
+      "symbol": "CdpIdentityResolution.getIdentityResolutions",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpIdentityResolution.runIdentityResolutionNow(String,ConnectApi.CdpIdentityResolutionRunNowInput)",
+      "symbol": "CdpIdentityResolution.runIdentityResolutionNow",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpIdentityResolution.updateIdentityResolution(String,ConnectApi.CdpIdentityResolutionConfigPatchInput)",
+      "symbol": "CdpIdentityResolution.updateIdentityResolution",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQueryMetadataEntitiesOutput",
+      "symbol": "CdpQueryMetadataEntitiesOutput",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQueryMetadataEntityOutput",
+      "symbol": "CdpQueryMetadataEntityOutput",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpSegmentMemberOutput",
+      "symbol": "CdpSegmentMemberOutput",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpSegmentMemberRowOutput",
+      "symbol": "CdpSegmentMemberRowOutput",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFavorites.getFeedItems(String,String,String,Integer,String,Integer,FeedSortOrder)",
+      "symbol": "ChatterFavorites.getFeedItems",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFavorites.setTestGetFeedItems(String,String,String,Integer,String,Integer,FeedSortOrder,ConnectApi.FeedItemPage)",
+      "symbol": "ChatterFavorites.setTestGetFeedItems",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFavorites.setTestGetFeedItems(String,String,String,String,Integer,FeedSortOrder,ConnectApi.FeedItemPage)",
+      "symbol": "ChatterFavorites.setTestGetFeedItems",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFeeds.getFilterFeed(String,String,String,ConnectApi.FeedType)",
+      "symbol": "ChatterFeeds.getFilterFeed",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFeeds.getReadByForFeedElement(String,String,Integer,Integer)",
+      "symbol": "ChatterFeeds.getReadByForFeedElement",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFeeds.getTopUnansweredQuestions(String,ConnectApi.TopUnansweredQuestionsFilterType)",
+      "symbol": "ChatterFeeds.getTopUnansweredQuestions",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFeeds.setTestGetFeedItemsFromFilterFeedUpdatedSince(String,String,String,Integer,ConnectApi.FeedDensity,String,Integer,ConnectApi.FeedSortOrder,String,ConnectApi.FeedItemPage)",
+      "symbol": "ChatterFeeds.setTestGetFeedItemsFromFilterFeedUpdatedSince",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFeeds.setTestGetTopUnansweredQuestions(String,ConnectApi.TopUnansweredQuestionsFilterType,ConnectApi.FeedElementPage)",
+      "symbol": "ChatterFeeds.setTestGetTopUnansweredQuestions",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFeeds.setTestSearchFeedItemsInFilterFeed(String,ConnectApi.FeedType,String,String,Integer,ConnectApi.FeedDensity,String,Integer,ConnectApi.FeedSortOrder,String,ConnectApi.FeedItemPage)",
+      "symbol": "ChatterFeeds.setTestSearchFeedItemsInFilterFeed",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterFeeds.setTestSearchFeedItemsInFilterFeed(String,ConnectApi.FeedType,String,String,String,Integer,ConnectApi.FeedSortOrder,String,ConnectApi.FeedItemPage)",
+      "symbol": "ChatterFeeds.setTestSearchFeedItemsInFilterFeed",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterGroups.createGroup(String,communityId,ConnectApi.ChatterGroupInput)",
+      "symbol": "ChatterGroups.createGroup",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterGroups.getGroups(String,Integer,Integer,ConnectApi.GroupArchiveStatus)",
+      "symbol": "ChatterGroups.getGroups",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChatterMessages.getConversation(String,String,String,String)",
+      "symbol": "ChatterMessages.getConversation",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Clm",
+      "symbol": "Clm",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Clm.createContract(ConnectApi.ContractInputRepresentation)",
+      "symbol": "Clm.createContract",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Clm.updateContract(ConnectApi.ContractInputRepresentation)",
+      "symbol": "Clm.updateContract",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalogManagement",
+      "symbol": "CommerceCatalogManagement",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalogManagement.compositeCommerceProductCreate(String,ConnectApi.CompositeCommerceProductInputRepresentation)",
+      "symbol": "CommerceCatalogManagement.compositeCommerceProductCreate",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalogManagement.compositeCommerceProductUpdate(String,String,ConnectApi.CompositeCommerceProductInputRepresentation)",
+      "symbol": "CommerceCatalogManagement.compositeCommerceProductUpdate",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalogManagement.compositeCommerceVariationCreate(String,ConnectApi.CompositeCommerceVariationInputRepresentation)",
+      "symbol": "CommerceCatalogManagement.compositeCommerceVariationCreate",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceEinsteinConfiguration",
+      "symbol": "CommerceEinsteinConfiguration",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceEinsteinConfiguration.clone()",
+      "symbol": "CommerceEinsteinConfiguration.clone",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceEinsteinConfiguration.getEinsteinConfiguration(String)",
+      "symbol": "CommerceEinsteinConfiguration.getEinsteinConfiguration",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearchConnectFamily",
+      "symbol": "CommerceSearchConnectFamily",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearchConnectFamily.searchProducts(String,String,String,String,String,List<String>,String,Integer,Integer,String,Boolean)",
+      "symbol": "CommerceSearchConnectFamily.searchProducts",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearchSettings",
+      "symbol": "CommerceSearchSettings",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearchSettings.createCommerceSearchIndex(String,String)",
+      "symbol": "CommerceSearchSettings.createCommerceSearchIndex",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearchSettings.getCommerceSearchIndex(String,String)",
+      "symbol": "CommerceSearchSettings.getCommerceSearchIndex",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearchSettings.getCommerceSearchIndexLogs(String)",
+      "symbol": "CommerceSearchSettings.getCommerceSearchIndexLogs",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceSearchSettings.getCommerceSearchIndexes(String)",
+      "symbol": "CommerceSearchSettings.getCommerceSearchIndexes",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceStorePricing.getProductPrices(String,String,List<String>)",
+      "symbol": "CommerceStorePricing.getProductPrices",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceStorePricing.getProductPrices(String,String,List<String>,String)",
+      "symbol": "CommerceStorePricing.getProductPrices",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommunityModeration.removeFlagsOnFeedItem(String,String,String)",
+      "symbol": "CommunityModeration.removeFlagsOnFeedItem",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ConnectApi",
+      "symbol": "ConnectApi",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ConnectionDbSchemaCollection",
+      "symbol": "ConnectionDbSchemaCollection",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ConnectionDbSchemaCollectionInput",
+      "symbol": "ConnectionDbSchemaCollectionInput",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ContentHub.getAllowedItemTypes(String,String,ConnectApi.ConnectContentHubItemType)",
+      "symbol": "ContentHub.getAllowedItemTypes",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ContentHub.getAllowedItemTypes(String,String,String,ConnectApi.ConnectContentHubItemType)",
+      "symbol": "ContentHub.getAllowedItemTypes",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ConversationApplicationDefinition",
+      "symbol": "ConversationApplicationDefinition",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ConversationApplicationDefinition.getConversationApplicationDefinition(String)",
+      "symbol": "ConversationApplicationDefinition.getConversationApplicationDefinition",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DataStreamActionResponseOutput",
+      "symbol": "DataStreamActionResponseOutput",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud",
+      "symbol": "Datacloud",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud.getCompaniesFromOrder(String,String,String)",
+      "symbol": "Datacloud.getCompaniesFromOrder",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud.getCompany(String)",
+      "symbol": "Datacloud.getCompany",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud.getContact(String)",
+      "symbol": "Datacloud.getContact",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud.getContactsFromOrder(String,String,String)",
+      "symbol": "Datacloud.getContactsFromOrder",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud.getOrder(String)",
+      "symbol": "Datacloud.getOrder",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud.getUsage(String)",
+      "symbol": "Datacloud.getUsage",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Datacloud.postOrder(ConnectApi.DatacloudOrderInput)",
+      "symbol": "Datacloud.postOrder",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeleteIntent",
+      "symbol": "DeleteIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeleteIntents",
+      "symbol": "DeleteIntents",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeleteSocialPostIntent",
+      "symbol": "DeleteSocialPostIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DigestJob",
+      "symbol": "DigestJob",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DmoFilterConfig",
+      "symbol": "DmoFilterConfig",
+      "kind": "unsupported",
+      "notes": "CDP and Data Cloud ConnectApi behavior depends on Salesforce-hosted data, activation, identity, and query services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExtendedCommerceDelivery",
+      "symbol": "ExtendedCommerceDelivery",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExtendedCommerceDelivery.estimateDeliveryDate(ConnectApi.EstimateDeliveryDateInputRepresentation,String)",
+      "symbol": "ExtendedCommerceDelivery.estimateDeliveryDate",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExternalEmailServices",
+      "symbol": "ExternalEmailServices",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ExternalEmailServices.getUserOauthInfo(String)",
+      "symbol": "ExternalEmailServices.getUserOauthInfo",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FieldService",
+      "symbol": "FieldService",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FieldService.createShiftsFromPattern(ConnectApi.ShiftsFromPatternInput,String)",
+      "symbol": "FieldService.createShiftsFromPattern",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FieldService.previewShiftsFromPattern(ConnectApi.ShiftsFromPatternInput,String)",
+      "symbol": "FieldService.previewShiftsFromPattern",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FollowIntents",
+      "symbol": "FollowIntents",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FollowSocialPersonaIntent",
+      "symbol": "FollowSocialPersonaIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.GroupMemberAssociationCycleDetector",
+      "symbol": "GroupMemberAssociationCycleDetector",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.GroupMemberAssociationCycleDetector.clone()",
+      "symbol": "GroupMemberAssociationCycleDetector.clone",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.GroupMemberAssociationCycleDetector.doesMemberAssociationCreatesCycle(ConnectApi.CycleDetectionInputRequestRepresentation)",
+      "symbol": "GroupMemberAssociationCycleDetector.doesMemberAssociationCreatesCycle",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.HideSocialPostIntent",
+      "symbol": "HideSocialPostIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IBusinessObjectivesAndRecsFamily",
+      "symbol": "IBusinessObjectivesAndRecsFamily",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IBusinessObjectivesAndRecsFamily.createRecommendations(ConnectApi.BusObjRecommendationInputRepresentation)",
+      "symbol": "IBusinessObjectivesAndRecsFamily.createRecommendations",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IBusinessObjectivesAndRecsFamily.getBusinessObjectives(String,String,String,Boolean,Boolean)",
+      "symbol": "IBusinessObjectivesAndRecsFamily.getBusinessObjectives",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IBusinessObjectivesAndRecsFamily.getRecommendations(String,String,String,String,String,String,String,String)",
+      "symbol": "IBusinessObjectivesAndRecsFamily.getRecommendations",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IBusinessObjectivesAndRecsFamily.patchBusinessObjective(ConnectApi.BusinessObjectivesInputRepresentation)",
+      "symbol": "IBusinessObjectivesAndRecsFamily.patchBusinessObjective",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IBusinessObjectivesAndRecsFamily.patchRecommendations(ConnectApi.BusObjRecommendationInputRepresentation)",
+      "symbol": "IBusinessObjectivesAndRecsFamily.patchRecommendations",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IBusinessObjectivesAndRecsFamily.updateRecommendations(ConnectApi.BusObjRecommendationInputRepresentation)",
+      "symbol": "IBusinessObjectivesAndRecsFamily.updateRecommendations",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IComplaintMgmtConnectFamily",
+      "symbol": "IComplaintMgmtConnectFamily",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IComplaintMgmtConnectFamily.clone()",
+      "symbol": "IComplaintMgmtConnectFamily.clone",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IComplaintMgmtConnectFamily.createComplaint(ConnectApi.ComplaintMgmtRequestInputRepresentation)",
+      "symbol": "IComplaintMgmtConnectFamily.createComplaint",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IDisputeManagementConnectFamily",
+      "symbol": "IDisputeManagementConnectFamily",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IDisputeManagementConnectFamily.clone()",
+      "symbol": "IDisputeManagementConnectFamily.clone",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.IDisputeManagementConnectFamily.ethocaAlertCallback(ConnectApi.EthocaAlertCallbackInputRepresentation)",
+      "symbol": "IDisputeManagementConnectFamily.ethocaAlertCallback",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.LikeIntent",
+      "symbol": "LikeIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.LikeIntents",
+      "symbol": "LikeIntents",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.LikeSocialPostIntent",
+      "symbol": "LikeSocialPostIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContent.createManagedContentProvider(ConnectApi.ManagedContentProviderInstanceInput)",
+      "symbol": "ManagedContent.createManagedContentProvider",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedSocialAccount",
+      "symbol": "ManagedSocialAccount",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedSocialAccounts",
+      "symbol": "ManagedSocialAccounts",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Missions",
+      "symbol": "Missions",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Missions.exportUserMissionsActivities(String,String)",
+      "symbol": "Missions.exportUserMissionsActivities",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Missions.getUserMissionsProgress(String,String)",
+      "symbol": "Missions.getUserMissionsProgress",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Missions.purgeUserMissionsActivities(String)",
+      "symbol": "Missions.purgeUserMissionsActivities",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Missions.purgeUserMissionsActivities(String,String)",
+      "symbol": "Missions.purgeUserMissionsActivities",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Missions.updateUserMissionActivityCount(ConnectApi.UserMissionActivityType,Integer,String,String)",
+      "symbol": "Missions.updateUserMissionActivityCount",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PardotBusinessUnitContext",
+      "symbol": "PardotBusinessUnitContext",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PardotBusinessUnitContext.clone()",
+      "symbol": "PardotBusinessUnitContext.clone",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PardotBusinessUnitContext.getBusinessUnitContext()",
+      "symbol": "PardotBusinessUnitContext.getBusinessUnitContext",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PardotBusinessUnitContext.getBusinessUnitContextByIsCurrentStatus(Boolean)",
+      "symbol": "PardotBusinessUnitContext.getBusinessUnitContextByIsCurrentStatus",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ProductBundleChildOutput",
+      "symbol": "ProductBundleChildOutput",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Recommendations.updateRecommendationDefinition(String,String,String,String,String,String,String explanation)",
+      "symbol": "Recommendations.updateRecommendationDefinition",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordAggregationFamily",
+      "symbol": "RecordAggregationFamily",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordAggregationFamily.clone()",
+      "symbol": "RecordAggregationFamily.clone",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordAggregationFamily.generateDPE(ConnectApi.RecordAggregationDefinitionInputRepresentation)",
+      "symbol": "RecordAggregationFamily.generateDPE",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordAggregationFamily.generateRecordRollupResult(String,String,ConnectApi.RecordRollupResultInputRepresentation)",
+      "symbol": "RecordAggregationFamily.generateRecordRollupResult",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordFilterCriteriaFamily",
+      "symbol": "RecordFilterCriteriaFamily",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordFilterCriteriaFamily.evaluateRecordsetFilterCriteria(ConnectApi.RecordsetFilterCriteriaInput)",
+      "symbol": "RecordFilterCriteriaFamily.evaluateRecordsetFilterCriteria",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ReplyIntent",
+      "symbol": "ReplyIntent",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ReplyIntents",
+      "symbol": "ReplyIntents",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Retired",
+      "symbol": "Retired",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SalesforceInbox",
+      "symbol": "SalesforceInbox",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SalesforceInbox.shareActivity(String,ConnectApi.ActivitySharingInput)",
+      "symbol": "SalesforceInbox.shareActivity",
+      "kind": "unsupported",
+      "notes": "Industry, sales, service, and marketing ConnectApi behavior depends on Salesforce-hosted application services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SellerDetailsRequest",
+      "symbol": "SellerDetailsRequest",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialAccountRelationship",
+      "symbol": "SocialAccountRelationship",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement",
+      "symbol": "SocialEngagement",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.deleteSocialPost(String,String)",
+      "symbol": "SocialEngagement.deleteSocialPost",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.followSocialPersona(String,String)",
+      "symbol": "SocialEngagement.followSocialPersona",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.followSocialPostPersona(String,String)",
+      "symbol": "SocialEngagement.followSocialPostPersona",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.getIntents(String)",
+      "symbol": "SocialEngagement.getIntents",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.getManagedSocialAccount(String)",
+      "symbol": "SocialEngagement.getManagedSocialAccount",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.getManagedSocialAccounts()",
+      "symbol": "SocialEngagement.getManagedSocialAccounts",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.getManagedSocialAccounts(ConnectApi.SocialNetworkProvider)",
+      "symbol": "SocialEngagement.getManagedSocialAccounts",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.getRelationship(String,String)",
+      "symbol": "SocialEngagement.getRelationship",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.hideSocialPost(String,String)",
+      "symbol": "SocialEngagement.hideSocialPost",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.likeSocialPost(String,String)",
+      "symbol": "SocialEngagement.likeSocialPost",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.massApprove(ConnectApi.SocialPostMassApprovalInput)",
+      "symbol": "SocialEngagement.massApprove",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.recallApproval(String)",
+      "symbol": "SocialEngagement.recallApproval",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.unfollowSocialPersona(String,String)",
+      "symbol": "SocialEngagement.unfollowSocialPersona",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.unfollowSocialPostPersona(String,String)",
+      "symbol": "SocialEngagement.unfollowSocialPostPersona",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.unhideSocialPost(String,String)",
+      "symbol": "SocialEngagement.unhideSocialPost",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialEngagement.unlikeSocialPost(String,String)",
+      "symbol": "SocialEngagement.unlikeSocialPost",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialPostIntents",
+      "symbol": "SocialPostIntents",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialPostMassApprovalInput",
+      "symbol": "SocialPostMassApprovalInput",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SocialPostMassApprovalOutput",
+      "symbol": "SocialPostMassApprovalOutput",
+      "kind": "unsupported",
+      "notes": "Social engagement and managed social account ConnectApi behavior depends on Salesforce-hosted social services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.TaxPlatform",
+      "symbol": "TaxPlatform",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.TaxPlatform.calculateTax(ConnectApi.CalculateTaxRequest)",
+      "symbol": "TaxPlatform.calculateTax",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.TopicEndorsement",
+      "symbol": "TopicEndorsement",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.TopicEndorsementCollection",
+      "symbol": "TopicEndorsementCollection",
+      "kind": "unsupported",
+      "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.getError()",
+      "symbol": "getError",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.getErrorMessage()",
+      "symbol": "getErrorMessage",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.getErrorTypeName()",
+      "symbol": "getErrorTypeName",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.getResult()",
+      "symbol": "getResult",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.getTextClassificationsBulkResults(ids)",
+      "symbol": "getTextClassificationsBulkResults",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.isSuccess()",
+      "symbol": "isSuccess",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.productsExpand(scope,",
+      "symbol": "productsExpand",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.productsReturnRate(pageParam,",
+      "symbol": "productsReturnRate",
+      "kind": "unsupported",
+      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.submitTextClassificationsRequest(textClassificationsRequestInput,",
+      "symbol": "submitTextClassificationsRequest",
+      "kind": "unsupported",
+      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/ConnectApiOffplatformUnsupportedSurfacesMarker.cls",
+      "content": "/*\nSource ledger: /var/folders/04/ymtl0lts3nz2w85kg8ty_2rr0000gn/T/tmp.D9ioyA8aJL/SURFACE_LEDGER.json\nRows generated from bucket=gap, gladeShape=absent, namespace=ConnectApi.\nThese rows are docs/tooling completions absent-shape ConnectApi gaps.\n*/\npublic class ConnectApiOffplatformUnsupportedSurfacesMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

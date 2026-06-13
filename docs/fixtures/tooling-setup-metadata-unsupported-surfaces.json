@@ -1,0 +1,1691 @@
+{
+  "name": "tooling-setup-metadata-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "tooling:AccountPlanObjMeasCalcCond",
+      "symbol": "Tooling AccountPlanObjMeasCalcCond",
+      "kind": "unsupported",
+      "notes": "AccountPlanObjMeasCalcCond is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:AccountPlanObjMeasCalcDef",
+      "symbol": "Tooling AccountPlanObjMeasCalcDef",
+      "kind": "unsupported",
+      "notes": "AccountPlanObjMeasCalcDef is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ActivationPlatform",
+      "symbol": "Tooling ActivationPlatform",
+      "kind": "unsupported",
+      "notes": "ActivationPlatform is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:AdvAccountForecastSet",
+      "symbol": "Tooling AdvAccountForecastSet",
+      "kind": "unsupported",
+      "notes": "AdvAccountForecastSet depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AdvAcctForecastMeasureDef",
+      "symbol": "Tooling AdvAcctForecastMeasureDef",
+      "kind": "unsupported",
+      "notes": "AdvAcctForecastMeasureDef depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AdvAcctFrcstDisplayGroup",
+      "symbol": "Tooling AdvAcctFrcstDisplayGroup",
+      "kind": "unsupported",
+      "notes": "AdvAcctFrcstDisplayGroup depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AIApplication",
+      "symbol": "Tooling AIApplication",
+      "kind": "unsupported",
+      "notes": "AIApplication depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AIApplicationConfig",
+      "symbol": "Tooling AIApplicationConfig",
+      "kind": "unsupported",
+      "notes": "AIApplicationConfig depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AllOrNoneHeader",
+      "symbol": "Tooling AllOrNoneHeader",
+      "kind": "unsupported",
+      "notes": "AllOrNoneHeader is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:Allow",
+      "symbol": "Tooling Allow",
+      "kind": "unsupported",
+      "notes": "Allow is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:AllowFieldTruncationHeader",
+      "symbol": "Tooling AllowFieldTruncationHeader",
+      "kind": "unsupported",
+      "notes": "AllowFieldTruncationHeader is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:AnimationRule",
+      "symbol": "Tooling AnimationRule",
+      "kind": "unsupported",
+      "notes": "AnimationRule is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ApexEmailNotification",
+      "symbol": "Tooling ApexEmailNotification",
+      "kind": "unsupported",
+      "notes": "ApexEmailNotification is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ApexPageInfo",
+      "symbol": "Tooling ApexPageInfo",
+      "kind": "unsupported",
+      "notes": "ApexPageInfo depends on Salesforce source tracking, compiler, or metadata service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ApexResult",
+      "symbol": "Tooling ApexResult",
+      "kind": "unsupported",
+      "notes": "ApexResult is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:ApexTestSuite",
+      "symbol": "Tooling ApexTestSuite",
+      "kind": "unsupported",
+      "notes": "ApexTestSuite is Salesforce test suite or test coverage state that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:API",
+      "symbol": "Tooling API",
+      "kind": "unsupported",
+      "notes": "API is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:ApiFault",
+      "symbol": "Tooling ApiFault",
+      "kind": "unsupported",
+      "notes": "ApiFault is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:AssignmentRule",
+      "symbol": "Tooling AssignmentRule",
+      "kind": "unsupported",
+      "notes": "AssignmentRule is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AuraDefinition",
+      "symbol": "Tooling AuraDefinition",
+      "kind": "unsupported",
+      "notes": "AuraDefinition is Aura or Lightning bundle metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AuraDefinitionBundle",
+      "symbol": "Tooling AuraDefinitionBundle",
+      "kind": "unsupported",
+      "notes": "AuraDefinitionBundle is Aura or Lightning bundle metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AuthorizedEmailDomain",
+      "symbol": "Tooling AuthorizedEmailDomain",
+      "kind": "unsupported",
+      "notes": "AuthorizedEmailDomain depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:AutoResponseRule",
+      "symbol": "Tooling AutoResponseRule",
+      "kind": "unsupported",
+      "notes": "AutoResponseRule is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:BrandingSet",
+      "symbol": "Tooling BrandingSet",
+      "kind": "unsupported",
+      "notes": "BrandingSet is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:BrandingSetProperty",
+      "symbol": "Tooling BrandingSetProperty",
+      "kind": "unsupported",
+      "notes": "BrandingSetProperty is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:BriefcaseDefinition",
+      "symbol": "Tooling BriefcaseDefinition",
+      "kind": "unsupported",
+      "notes": "BriefcaseDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Bulk",
+      "symbol": "Tooling Bulk",
+      "kind": "unsupported",
+      "notes": "Bulk is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:BusinessProcess",
+      "symbol": "Tooling BusinessProcess",
+      "kind": "unsupported",
+      "notes": "BusinessProcess is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:BusinessProcessDefinition",
+      "symbol": "Tooling BusinessProcessDefinition",
+      "kind": "unsupported",
+      "notes": "BusinessProcessDefinition is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:BusinessProcessFeedback",
+      "symbol": "Tooling BusinessProcessFeedback",
+      "kind": "unsupported",
+      "notes": "BusinessProcessFeedback is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:BusinessProcessGroup",
+      "symbol": "Tooling BusinessProcessGroup",
+      "kind": "unsupported",
+      "notes": "BusinessProcessGroup depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:BusProcessFeedbackConfig",
+      "symbol": "Tooling BusProcessFeedbackConfig",
+      "kind": "unsupported",
+      "notes": "BusProcessFeedbackConfig is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Call",
+      "symbol": "Tooling Call",
+      "kind": "unsupported",
+      "notes": "Call is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:CallOptions",
+      "symbol": "Tooling CallOptions",
+      "kind": "unsupported",
+      "notes": "CallOptions is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:Certificate",
+      "symbol": "Tooling Certificate",
+      "kind": "unsupported",
+      "notes": "Certificate depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:CleanDataService",
+      "symbol": "Tooling CleanDataService",
+      "kind": "unsupported",
+      "notes": "CleanDataService depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:CleanRule",
+      "symbol": "Tooling CleanRule",
+      "kind": "unsupported",
+      "notes": "CleanRule is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ColorDefinition",
+      "symbol": "Tooling ColorDefinition",
+      "kind": "unsupported",
+      "notes": "ColorDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CommunityWorkspacesNode",
+      "symbol": "Tooling CommunityWorkspacesNode",
+      "kind": "unsupported",
+      "notes": "CommunityWorkspacesNode is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CompactLayoutInfo",
+      "symbol": "Tooling CompactLayoutInfo",
+      "kind": "unsupported",
+      "notes": "CompactLayoutInfo is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CompactLayoutItemInfo",
+      "symbol": "Tooling CompactLayoutItemInfo",
+      "kind": "unsupported",
+      "notes": "CompactLayoutItemInfo is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Composite",
+      "symbol": "Tooling Composite",
+      "kind": "unsupported",
+      "notes": "Composite is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:ConnectedApplication",
+      "symbol": "Tooling ConnectedApplication",
+      "kind": "unsupported",
+      "notes": "ConnectedApplication is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Considerations",
+      "symbol": "Tooling Considerations",
+      "kind": "unsupported",
+      "notes": "Considerations is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:ContactCenterChannel",
+      "symbol": "Tooling ContactCenterChannel",
+      "kind": "unsupported",
+      "notes": "ContactCenterChannel depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ConversationChannelDefinition",
+      "symbol": "Tooling ConversationChannelDefinition",
+      "kind": "unsupported",
+      "notes": "ConversationChannelDefinition depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ConversationVendorInfo",
+      "symbol": "Tooling ConversationVendorInfo",
+      "kind": "unsupported",
+      "notes": "ConversationVendorInfo depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:CspTrustedSite",
+      "symbol": "Tooling CspTrustedSite",
+      "kind": "unsupported",
+      "notes": "CspTrustedSite depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:CustomApplication",
+      "symbol": "Tooling CustomApplication",
+      "kind": "unsupported",
+      "notes": "CustomApplication is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CustomFieldDisplay",
+      "symbol": "Tooling CustomFieldDisplay",
+      "kind": "unsupported",
+      "notes": "CustomFieldDisplay is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CustomHelpMenuSection",
+      "symbol": "Tooling CustomHelpMenuSection",
+      "kind": "unsupported",
+      "notes": "CustomHelpMenuSection is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CustomHttpHeader",
+      "symbol": "Tooling CustomHttpHeader",
+      "kind": "unsupported",
+      "notes": "CustomHttpHeader is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CustomMsgChannel",
+      "symbol": "Tooling CustomMsgChannel",
+      "kind": "unsupported",
+      "notes": "CustomMsgChannel is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CustomNotifActionDef",
+      "symbol": "Tooling CustomNotifActionDef",
+      "kind": "unsupported",
+      "notes": "CustomNotifActionDef is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:CustomNotificationActionGroup",
+      "symbol": "Tooling CustomNotificationActionGroup",
+      "kind": "unsupported",
+      "notes": "CustomNotificationActionGroup depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:CustomNotificationType",
+      "symbol": "Tooling CustomNotificationType",
+      "kind": "unsupported",
+      "notes": "CustomNotificationType is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:CustomTab",
+      "symbol": "Tooling CustomTab",
+      "kind": "unsupported",
+      "notes": "CustomTab is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:DataAssessmentConfigItem",
+      "symbol": "Tooling DataAssessmentConfigItem",
+      "kind": "unsupported",
+      "notes": "DataAssessmentConfigItem is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:DataIntegrationRecordPurchasePermission",
+      "symbol": "Tooling DataIntegrationRecordPurchasePermission",
+      "kind": "unsupported",
+      "notes": "DataIntegrationRecordPurchasePermission depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:DataSourceBundleDefinition",
+      "symbol": "Tooling DataSourceBundleDefinition",
+      "kind": "unsupported",
+      "notes": "DataSourceBundleDefinition depends on Salesforce source tracking, compiler, or metadata service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:DataStreamTemplate",
+      "symbol": "Tooling DataStreamTemplate",
+      "kind": "unsupported",
+      "notes": "DataStreamTemplate is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:DataType",
+      "symbol": "Tooling DataType",
+      "kind": "unsupported",
+      "notes": "DataType is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:DebuggingHeader",
+      "symbol": "Tooling DebuggingHeader",
+      "kind": "unsupported",
+      "notes": "DebuggingHeader is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:DelegateGroup",
+      "symbol": "Tooling DelegateGroup",
+      "kind": "unsupported",
+      "notes": "DelegateGroup depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:DelegateGroupGrant",
+      "symbol": "Tooling DelegateGroupGrant",
+      "kind": "unsupported",
+      "notes": "DelegateGroupGrant depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:DelegateGroupMember",
+      "symbol": "Tooling DelegateGroupMember",
+      "kind": "unsupported",
+      "notes": "DelegateGroupMember depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:DisableFeedTrackingHeader",
+      "symbol": "Tooling DisableFeedTrackingHeader",
+      "kind": "unsupported",
+      "notes": "DisableFeedTrackingHeader is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:Document",
+      "symbol": "Tooling Document",
+      "kind": "unsupported",
+      "notes": "Document is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:DomainProvision",
+      "symbol": "Tooling DomainProvision",
+      "kind": "unsupported",
+      "notes": "DomainProvision depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:DuplicateJobDefinition",
+      "symbol": "Tooling DuplicateJobDefinition",
+      "kind": "unsupported",
+      "notes": "DuplicateJobDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:DuplicateJobMatchingRuleDefinition",
+      "symbol": "Tooling DuplicateJobMatchingRuleDefinition",
+      "kind": "unsupported",
+      "notes": "DuplicateJobMatchingRuleDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:EmailTemplate",
+      "symbol": "Tooling EmailTemplate",
+      "kind": "unsupported",
+      "notes": "EmailTemplate is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceBranding",
+      "symbol": "Tooling EmbeddedServiceBranding",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceBranding is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceConfig",
+      "symbol": "Tooling EmbeddedServiceConfig",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceConfig is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceCustomComponent",
+      "symbol": "Tooling EmbeddedServiceCustomComponent",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceCustomComponent is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceCustomization",
+      "symbol": "Tooling EmbeddedServiceCustomization",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceCustomization is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceCustomLabel",
+      "symbol": "Tooling EmbeddedServiceCustomLabel",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceCustomLabel is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceFieldService",
+      "symbol": "Tooling EmbeddedServiceFieldService",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceFieldService is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceFlow",
+      "symbol": "Tooling EmbeddedServiceFlow",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceFlow is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceFlowConfig",
+      "symbol": "Tooling EmbeddedServiceFlowConfig",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceFlowConfig is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceLiveAgent",
+      "symbol": "Tooling EmbeddedServiceLiveAgent",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceLiveAgent is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceMenuItem",
+      "symbol": "Tooling EmbeddedServiceMenuItem",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceMenuItem is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceMenuSettings",
+      "symbol": "Tooling EmbeddedServiceMenuSettings",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceMenuSettings is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceQuickAction",
+      "symbol": "Tooling EmbeddedServiceQuickAction",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceQuickAction is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EmbeddedServiceResource",
+      "symbol": "Tooling EmbeddedServiceResource",
+      "kind": "unsupported",
+      "notes": "EmbeddedServiceResource is Embedded Service configuration metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EngagementInsightType",
+      "symbol": "Tooling EngagementInsightType",
+      "kind": "unsupported",
+      "notes": "EngagementInsightType is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:EnrichedField",
+      "symbol": "Tooling EnrichedField",
+      "kind": "unsupported",
+      "notes": "EnrichedField is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:EntityLimit",
+      "symbol": "Tooling EntityLimit",
+      "kind": "unsupported",
+      "notes": "EntityLimit is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:EventDelivery",
+      "symbol": "Tooling EventDelivery",
+      "kind": "unsupported",
+      "notes": "EventDelivery depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EventRelayConfig",
+      "symbol": "Tooling EventRelayConfig",
+      "kind": "unsupported",
+      "notes": "EventRelayConfig depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:EventSubscription",
+      "symbol": "Tooling EventSubscription",
+      "kind": "unsupported",
+      "notes": "EventSubscription depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExtConvParticipantIntegDef",
+      "symbol": "Tooling ExtConvParticipantIntegDef",
+      "kind": "unsupported",
+      "notes": "ExtConvParticipantIntegDef is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ExternalAuthIdentityProvider",
+      "symbol": "Tooling ExternalAuthIdentityProvider",
+      "kind": "unsupported",
+      "notes": "ExternalAuthIdentityProvider depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalClientAppSettings",
+      "symbol": "Tooling ExternalClientAppSettings",
+      "kind": "unsupported",
+      "notes": "ExternalClientAppSettings depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalCredential",
+      "symbol": "Tooling ExternalCredential",
+      "kind": "unsupported",
+      "notes": "ExternalCredential depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalDataSource",
+      "symbol": "Tooling ExternalDataSource",
+      "kind": "unsupported",
+      "notes": "ExternalDataSource depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalDataSrcDescriptor",
+      "symbol": "Tooling ExternalDataSrcDescriptor",
+      "kind": "unsupported",
+      "notes": "ExternalDataSrcDescriptor depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalDataTransportFieldTemplate",
+      "symbol": "Tooling ExternalDataTransportFieldTemplate",
+      "kind": "unsupported",
+      "notes": "ExternalDataTransportFieldTemplate depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalDataTransportObjectTemplate",
+      "symbol": "Tooling ExternalDataTransportObjectTemplate",
+      "kind": "unsupported",
+      "notes": "ExternalDataTransportObjectTemplate depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalServiceRegistration",
+      "symbol": "Tooling ExternalServiceRegistration",
+      "kind": "unsupported",
+      "notes": "ExternalServiceRegistration depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalString",
+      "symbol": "Tooling ExternalString",
+      "kind": "unsupported",
+      "notes": "ExternalString depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ExternalStringLocalization",
+      "symbol": "Tooling ExternalStringLocalization",
+      "kind": "unsupported",
+      "notes": "ExternalStringLocalization depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FieldMapping",
+      "symbol": "Tooling FieldMapping",
+      "kind": "unsupported",
+      "notes": "FieldMapping is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:FieldMappingField",
+      "symbol": "Tooling FieldMappingField",
+      "kind": "unsupported",
+      "notes": "FieldMappingField is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:FieldMappingRow",
+      "symbol": "Tooling FieldMappingRow",
+      "kind": "unsupported",
+      "notes": "FieldMappingRow is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:FieldRestrictionRule",
+      "symbol": "Tooling FieldRestrictionRule",
+      "kind": "unsupported",
+      "notes": "FieldRestrictionRule depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FieldSet",
+      "symbol": "Tooling FieldSet",
+      "kind": "unsupported",
+      "notes": "FieldSet is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:FlexiPage",
+      "symbol": "Tooling FlexiPage",
+      "kind": "unsupported",
+      "notes": "FlexiPage is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Flow",
+      "symbol": "Tooling Flow",
+      "kind": "unsupported",
+      "notes": "Flow is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FlowDefinition",
+      "symbol": "Tooling FlowDefinition",
+      "kind": "unsupported",
+      "notes": "FlowDefinition is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FlowElementTestCoverage",
+      "symbol": "Tooling FlowElementTestCoverage",
+      "kind": "unsupported",
+      "notes": "FlowElementTestCoverage is Salesforce execution coverage state that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FlowTest",
+      "symbol": "Tooling FlowTest",
+      "kind": "unsupported",
+      "notes": "FlowTest is Salesforce test suite or test coverage state that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FlowTestCoverage",
+      "symbol": "Tooling FlowTestCoverage",
+      "kind": "unsupported",
+      "notes": "FlowTestCoverage is Salesforce test suite or test coverage state that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FlowTestResult",
+      "symbol": "Tooling FlowTestResult",
+      "kind": "unsupported",
+      "notes": "FlowTestResult is Salesforce test suite or test coverage state that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ForecastingDisplayedFamily",
+      "symbol": "Tooling ForecastingDisplayedFamily",
+      "kind": "unsupported",
+      "notes": "ForecastingDisplayedFamily depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ForecastingFilter",
+      "symbol": "Tooling ForecastingFilter",
+      "kind": "unsupported",
+      "notes": "ForecastingFilter depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ForecastingFilterCondition",
+      "symbol": "Tooling ForecastingFilterCondition",
+      "kind": "unsupported",
+      "notes": "ForecastingFilterCondition depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ForecastingSourceDefinition",
+      "symbol": "Tooling ForecastingSourceDefinition",
+      "kind": "unsupported",
+      "notes": "ForecastingSourceDefinition depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ForecastingType",
+      "symbol": "Tooling ForecastingType",
+      "kind": "unsupported",
+      "notes": "ForecastingType depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ForecastingTypeSource",
+      "symbol": "Tooling ForecastingTypeSource",
+      "kind": "unsupported",
+      "notes": "ForecastingTypeSource depends on Salesforce forecasting setup and service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:FormulaFunction",
+      "symbol": "Tooling FormulaFunction",
+      "kind": "unsupported",
+      "notes": "FormulaFunction is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:FormulaFunctionAllowedType",
+      "symbol": "Tooling FormulaFunctionAllowedType",
+      "kind": "unsupported",
+      "notes": "FormulaFunctionAllowedType is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:FormulaOperator",
+      "symbol": "Tooling FormulaOperator",
+      "kind": "unsupported",
+      "notes": "FormulaOperator is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:GenAiFunctionDefinition",
+      "symbol": "Tooling GenAiFunctionDefinition",
+      "kind": "unsupported",
+      "notes": "GenAiFunctionDefinition depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:GenAiPlannerDefinition",
+      "symbol": "Tooling GenAiPlannerDefinition",
+      "kind": "unsupported",
+      "notes": "GenAiPlannerDefinition depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:GlobalValueSet",
+      "symbol": "Tooling GlobalValueSet",
+      "kind": "unsupported",
+      "notes": "GlobalValueSet is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Group",
+      "symbol": "Tooling Group",
+      "kind": "unsupported",
+      "notes": "Group depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:GtwyProvPaymentMethodType",
+      "symbol": "Tooling GtwyProvPaymentMethodType",
+      "kind": "unsupported",
+      "notes": "GtwyProvPaymentMethodType depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:HistoryRetentionJob",
+      "symbol": "Tooling HistoryRetentionJob",
+      "kind": "unsupported",
+      "notes": "HistoryRetentionJob is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:HomePageComponent",
+      "symbol": "Tooling HomePageComponent",
+      "kind": "unsupported",
+      "notes": "HomePageComponent is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:HomePageLayout",
+      "symbol": "Tooling HomePageLayout",
+      "kind": "unsupported",
+      "notes": "HomePageLayout is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:IconDefinition",
+      "symbol": "Tooling IconDefinition",
+      "kind": "unsupported",
+      "notes": "IconDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Improve",
+      "symbol": "Tooling Improve",
+      "kind": "unsupported",
+      "notes": "Improve is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:InboundNetworkConnection",
+      "symbol": "Tooling InboundNetworkConnection",
+      "kind": "unsupported",
+      "notes": "InboundNetworkConnection depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:InboundNetworkConnProperty",
+      "symbol": "Tooling InboundNetworkConnProperty",
+      "kind": "unsupported",
+      "notes": "InboundNetworkConnProperty depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Index",
+      "symbol": "Tooling Index",
+      "kind": "unsupported",
+      "notes": "Index is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:IndexField",
+      "symbol": "Tooling IndexField",
+      "kind": "unsupported",
+      "notes": "IndexField is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:InstalledSubscriberPackage",
+      "symbol": "Tooling InstalledSubscriberPackage",
+      "kind": "unsupported",
+      "notes": "InstalledSubscriberPackage depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:InstalledSubscriberPackageVersion",
+      "symbol": "Tooling InstalledSubscriberPackageVersion",
+      "kind": "unsupported",
+      "notes": "InstalledSubscriberPackageVersion depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Introducing",
+      "symbol": "Tooling Introducing",
+      "kind": "unsupported",
+      "notes": "Introducing is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:InvocableActionExtension",
+      "symbol": "Tooling InvocableActionExtension",
+      "kind": "unsupported",
+      "notes": "InvocableActionExtension is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:IPAddressRange",
+      "symbol": "Tooling IPAddressRange",
+      "kind": "unsupported",
+      "notes": "IPAddressRange depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:KeywordList",
+      "symbol": "Tooling KeywordList",
+      "kind": "unsupported",
+      "notes": "KeywordList is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:LightningComponentBundle",
+      "symbol": "Tooling LightningComponentBundle",
+      "kind": "unsupported",
+      "notes": "LightningComponentBundle is Aura or Lightning bundle metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:LightningComponentResource",
+      "symbol": "Tooling LightningComponentResource",
+      "kind": "unsupported",
+      "notes": "LightningComponentResource is Aura or Lightning bundle metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:LightningOutApp",
+      "symbol": "Tooling LightningOutApp",
+      "kind": "unsupported",
+      "notes": "LightningOutApp is Aura or Lightning bundle metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Limit",
+      "symbol": "Tooling Limit",
+      "kind": "unsupported",
+      "notes": "Limit is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:LookupFilter",
+      "symbol": "Tooling LookupFilter",
+      "kind": "unsupported",
+      "notes": "LookupFilter is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ManagedContentNodeType",
+      "symbol": "Tooling ManagedContentNodeType",
+      "kind": "unsupported",
+      "notes": "ManagedContentNodeType is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ManagedContentType",
+      "symbol": "Tooling ManagedContentType",
+      "kind": "unsupported",
+      "notes": "ManagedContentType is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ManagedEventSubscription",
+      "symbol": "Tooling ManagedEventSubscription",
+      "kind": "unsupported",
+      "notes": "ManagedEventSubscription depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MarketingAppExtAction",
+      "symbol": "Tooling MarketingAppExtAction",
+      "kind": "unsupported",
+      "notes": "MarketingAppExtAction depends on Salesforce marketing platform configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MarketingAppExtActivity",
+      "symbol": "Tooling MarketingAppExtActivity",
+      "kind": "unsupported",
+      "notes": "MarketingAppExtActivity depends on Salesforce marketing platform configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MarketingAppExtAssignment",
+      "symbol": "Tooling MarketingAppExtAssignment",
+      "kind": "unsupported",
+      "notes": "MarketingAppExtAssignment depends on Salesforce marketing platform configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MarketingAppExtension",
+      "symbol": "Tooling MarketingAppExtension",
+      "kind": "unsupported",
+      "notes": "MarketingAppExtension depends on Salesforce marketing platform configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MatchingRule",
+      "symbol": "Tooling MatchingRule",
+      "kind": "unsupported",
+      "notes": "MatchingRule is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:MenuItem",
+      "symbol": "Tooling MenuItem",
+      "kind": "unsupported",
+      "notes": "MenuItem is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:MetadataComponentDependency",
+      "symbol": "Tooling MetadataComponentDependency",
+      "kind": "unsupported",
+      "notes": "MetadataComponentDependency depends on Salesforce source tracking, compiler, or metadata service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MetadataPackage",
+      "symbol": "Tooling MetadataPackage",
+      "kind": "unsupported",
+      "notes": "MetadataPackage depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MetadataPackageVersion",
+      "symbol": "Tooling MetadataPackageVersion",
+      "kind": "unsupported",
+      "notes": "MetadataPackageVersion depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MetadataWarningsHeader",
+      "symbol": "Tooling MetadataWarningsHeader",
+      "kind": "unsupported",
+      "notes": "MetadataWarningsHeader is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:MLDataDefinition",
+      "symbol": "Tooling MLDataDefinition",
+      "kind": "unsupported",
+      "notes": "MLDataDefinition depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MLField",
+      "symbol": "Tooling MLField",
+      "kind": "unsupported",
+      "notes": "MLField depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MLFilter",
+      "symbol": "Tooling MLFilter",
+      "kind": "unsupported",
+      "notes": "MLFilter depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:MLPredictionDefinition",
+      "symbol": "Tooling MLPredictionDefinition",
+      "kind": "unsupported",
+      "notes": "MLPredictionDefinition depends on Salesforce AI or machine-learning platform services that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ModerationRule",
+      "symbol": "Tooling ModerationRule",
+      "kind": "unsupported",
+      "notes": "ModerationRule is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:NamedCredential",
+      "symbol": "Tooling NamedCredential",
+      "kind": "unsupported",
+      "notes": "NamedCredential depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ObjectHierarchyRelationship",
+      "symbol": "Tooling ObjectHierarchyRelationship",
+      "kind": "unsupported",
+      "notes": "ObjectHierarchyRelationship is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:OmniSupervisorConfig",
+      "symbol": "Tooling OmniSupervisorConfig",
+      "kind": "unsupported",
+      "notes": "OmniSupervisorConfig depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Operational",
+      "symbol": "Tooling Operational",
+      "kind": "unsupported",
+      "notes": "Operational is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:OperationLog",
+      "symbol": "Tooling OperationLog",
+      "kind": "unsupported",
+      "notes": "OperationLog is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:OpportunitySplitType",
+      "symbol": "Tooling OpportunitySplitType",
+      "kind": "unsupported",
+      "notes": "OpportunitySplitType is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:OrgDomainLog",
+      "symbol": "Tooling OrgDomainLog",
+      "kind": "unsupported",
+      "notes": "OrgDomainLog depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:OutboundNetworkConnection",
+      "symbol": "Tooling OutboundNetworkConnection",
+      "kind": "unsupported",
+      "notes": "OutboundNetworkConnection depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:OutboundNetworkConnProperty",
+      "symbol": "Tooling OutboundNetworkConnProperty",
+      "kind": "unsupported",
+      "notes": "OutboundNetworkConnProperty depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:OwnerChangeOptionInfo",
+      "symbol": "Tooling OwnerChangeOptionInfo",
+      "kind": "unsupported",
+      "notes": "OwnerChangeOptionInfo is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Package",
+      "symbol": "Tooling Package",
+      "kind": "unsupported",
+      "notes": "Package depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Package2",
+      "symbol": "Tooling Package2",
+      "kind": "unsupported",
+      "notes": "Package2 depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Package2Member",
+      "symbol": "Tooling Package2Member",
+      "kind": "unsupported",
+      "notes": "Package2Member depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Package2Version",
+      "symbol": "Tooling Package2Version",
+      "kind": "unsupported",
+      "notes": "Package2Version depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PackageVersionHeader",
+      "symbol": "Tooling PackageVersionHeader",
+      "kind": "unsupported",
+      "notes": "PackageVersionHeader is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:PardotTenant",
+      "symbol": "Tooling PardotTenant",
+      "kind": "unsupported",
+      "notes": "PardotTenant depends on Salesforce marketing platform configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PathAssistant",
+      "symbol": "Tooling PathAssistant",
+      "kind": "unsupported",
+      "notes": "PathAssistant is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PathAssistantStepInfo",
+      "symbol": "Tooling PathAssistantStepInfo",
+      "kind": "unsupported",
+      "notes": "PathAssistantStepInfo is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PathAssistantStepItem",
+      "symbol": "Tooling PathAssistantStepItem",
+      "kind": "unsupported",
+      "notes": "PathAssistantStepItem is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PaymentGatewayProvider",
+      "symbol": "Tooling PaymentGatewayProvider",
+      "kind": "unsupported",
+      "notes": "PaymentGatewayProvider depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PermissionDependency",
+      "symbol": "Tooling PermissionDependency",
+      "kind": "unsupported",
+      "notes": "PermissionDependency depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PermissionSet",
+      "symbol": "Tooling PermissionSet",
+      "kind": "unsupported",
+      "notes": "PermissionSet depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PermissionSetAssignment",
+      "symbol": "Tooling PermissionSetAssignment",
+      "kind": "unsupported",
+      "notes": "PermissionSetAssignment depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PermissionSetGroup",
+      "symbol": "Tooling PermissionSetGroup",
+      "kind": "unsupported",
+      "notes": "PermissionSetGroup depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PermissionSetGroupComponent",
+      "symbol": "Tooling PermissionSetGroupComponent",
+      "kind": "unsupported",
+      "notes": "PermissionSetGroupComponent depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PermissionSetTabSetting",
+      "symbol": "Tooling PermissionSetTabSetting",
+      "kind": "unsupported",
+      "notes": "PermissionSetTabSetting depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PipelineInspMetricConfig",
+      "symbol": "Tooling PipelineInspMetricConfig",
+      "kind": "unsupported",
+      "notes": "PipelineInspMetricConfig is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:PostTemplate",
+      "symbol": "Tooling PostTemplate",
+      "kind": "unsupported",
+      "notes": "PostTemplate is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:PresenceDeclineReason",
+      "symbol": "Tooling PresenceDeclineReason",
+      "kind": "unsupported",
+      "notes": "PresenceDeclineReason depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:PresenceUserConfig",
+      "symbol": "Tooling PresenceUserConfig",
+      "kind": "unsupported",
+      "notes": "PresenceUserConfig depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ProcessFlowMigration",
+      "symbol": "Tooling ProcessFlowMigration",
+      "kind": "unsupported",
+      "notes": "ProcessFlowMigration is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ProductAttributeSet",
+      "symbol": "Tooling ProductAttributeSet",
+      "kind": "unsupported",
+      "notes": "ProductAttributeSet is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Profile",
+      "symbol": "Tooling Profile",
+      "kind": "unsupported",
+      "notes": "Profile depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ProfileLayout",
+      "symbol": "Tooling ProfileLayout",
+      "kind": "unsupported",
+      "notes": "ProfileLayout is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Programming",
+      "symbol": "Tooling Programming",
+      "kind": "unsupported",
+      "notes": "Programming is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:Publisher",
+      "symbol": "Tooling Publisher",
+      "kind": "unsupported",
+      "notes": "Publisher is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Query",
+      "symbol": "Tooling Query",
+      "kind": "unsupported",
+      "notes": "Query is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:QueryResult",
+      "symbol": "Tooling QueryResult",
+      "kind": "unsupported",
+      "notes": "QueryResult is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:QueueRoutingConfig",
+      "symbol": "Tooling QueueRoutingConfig",
+      "kind": "unsupported",
+      "notes": "QueueRoutingConfig is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:QuickActionDefinition",
+      "symbol": "Tooling QuickActionDefinition",
+      "kind": "unsupported",
+      "notes": "QuickActionDefinition is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:QuickActionList",
+      "symbol": "Tooling QuickActionList",
+      "kind": "unsupported",
+      "notes": "QuickActionList is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:QuickActionListItem",
+      "symbol": "Tooling QuickActionListItem",
+      "kind": "unsupported",
+      "notes": "QuickActionListItem is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:RecentlyViewed",
+      "symbol": "Tooling RecentlyViewed",
+      "kind": "unsupported",
+      "notes": "RecentlyViewed is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:RecommendationStrategy",
+      "symbol": "Tooling RecommendationStrategy",
+      "kind": "unsupported",
+      "notes": "RecommendationStrategy is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:RecordActionDeployment",
+      "symbol": "Tooling RecordActionDeployment",
+      "kind": "unsupported",
+      "notes": "RecordActionDeployment is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:RegisteredExternalService",
+      "symbol": "Tooling RegisteredExternalService",
+      "kind": "unsupported",
+      "notes": "RegisteredExternalService depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:RelatedListColumnDefinition",
+      "symbol": "Tooling RelatedListColumnDefinition",
+      "kind": "unsupported",
+      "notes": "RelatedListColumnDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:RelatedListDefinition",
+      "symbol": "Tooling RelatedListDefinition",
+      "kind": "unsupported",
+      "notes": "RelatedListDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:RelationshipInfo",
+      "symbol": "Tooling RelationshipInfo",
+      "kind": "unsupported",
+      "notes": "RelationshipInfo is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:ReleaseUpdate",
+      "symbol": "Tooling ReleaseUpdate",
+      "kind": "unsupported",
+      "notes": "ReleaseUpdate depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ReleaseUpdateStep",
+      "symbol": "Tooling ReleaseUpdateStep",
+      "kind": "unsupported",
+      "notes": "ReleaseUpdateStep depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:RemoteProxy",
+      "symbol": "Tooling RemoteProxy",
+      "kind": "unsupported",
+      "notes": "RemoteProxy is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:REST",
+      "symbol": "Tooling REST",
+      "kind": "unsupported",
+      "notes": "REST is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:RestrictionRule",
+      "symbol": "Tooling RestrictionRule",
+      "kind": "unsupported",
+      "notes": "RestrictionRule depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Retrieve",
+      "symbol": "Tooling Retrieve",
+      "kind": "unsupported",
+      "notes": "Retrieve is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:Run",
+      "symbol": "Tooling Run",
+      "kind": "unsupported",
+      "notes": "Run is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:SandboxInfo",
+      "symbol": "Tooling SandboxInfo",
+      "kind": "unsupported",
+      "notes": "SandboxInfo depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SandboxProcess",
+      "symbol": "Tooling SandboxProcess",
+      "kind": "unsupported",
+      "notes": "SandboxProcess depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SandboxProcessStage",
+      "symbol": "Tooling SandboxProcessStage",
+      "kind": "unsupported",
+      "notes": "SandboxProcessStage depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SchedulingObjective",
+      "symbol": "Tooling SchedulingObjective",
+      "kind": "unsupported",
+      "notes": "SchedulingObjective depends on Salesforce scheduling or workforce service configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SchedulingRule",
+      "symbol": "Tooling SchedulingRule",
+      "kind": "unsupported",
+      "notes": "SchedulingRule depends on Salesforce scheduling or workforce service configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Scontrol",
+      "symbol": "Tooling Scontrol",
+      "kind": "unsupported",
+      "notes": "Scontrol is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:SearchLayout",
+      "symbol": "Tooling SearchLayout",
+      "kind": "unsupported",
+      "notes": "SearchLayout is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:SecurityHealthCheck",
+      "symbol": "Tooling SecurityHealthCheck",
+      "kind": "unsupported",
+      "notes": "SecurityHealthCheck depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SecurityHealthCheckRisks",
+      "symbol": "Tooling SecurityHealthCheckRisks",
+      "kind": "unsupported",
+      "notes": "SecurityHealthCheckRisks depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ServiceChannel",
+      "symbol": "Tooling ServiceChannel",
+      "kind": "unsupported",
+      "notes": "ServiceChannel depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ServiceFieldDataType",
+      "symbol": "Tooling ServiceFieldDataType",
+      "kind": "unsupported",
+      "notes": "ServiceFieldDataType depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:ServicePresenceStatus",
+      "symbol": "Tooling ServicePresenceStatus",
+      "kind": "unsupported",
+      "notes": "ServicePresenceStatus depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SessionHeader",
+      "symbol": "Tooling SessionHeader",
+      "kind": "unsupported",
+      "notes": "SessionHeader is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:Setup",
+      "symbol": "Tooling Setup",
+      "kind": "unsupported",
+      "notes": "Setup is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:ShiftSegmentType",
+      "symbol": "Tooling ShiftSegmentType",
+      "kind": "unsupported",
+      "notes": "ShiftSegmentType depends on Salesforce scheduling or workforce service configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SiteDetail",
+      "symbol": "Tooling SiteDetail",
+      "kind": "unsupported",
+      "notes": "SiteDetail is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Skill",
+      "symbol": "Tooling Skill",
+      "kind": "unsupported",
+      "notes": "Skill is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:SOQL",
+      "symbol": "Tooling SOQL",
+      "kind": "unsupported",
+      "notes": "SOQL is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:SOQLResult",
+      "symbol": "Tooling SOQLResult",
+      "kind": "unsupported",
+      "notes": "SOQLResult is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:SOSL",
+      "symbol": "Tooling SOSL",
+      "kind": "unsupported",
+      "notes": "SOSL is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:SourceMember",
+      "symbol": "Tooling SourceMember",
+      "kind": "unsupported",
+      "notes": "SourceMember depends on Salesforce source tracking, compiler, or metadata service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:StandardAction",
+      "symbol": "Tooling StandardAction",
+      "kind": "unsupported",
+      "notes": "StandardAction is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SubscriberPackage",
+      "symbol": "Tooling SubscriberPackage",
+      "kind": "unsupported",
+      "notes": "SubscriberPackage depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SubscriberPackageVersion",
+      "symbol": "Tooling SubscriberPackageVersion",
+      "kind": "unsupported",
+      "notes": "SubscriberPackageVersion depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SvcCatalogCategory",
+      "symbol": "Tooling SvcCatalogCategory",
+      "kind": "unsupported",
+      "notes": "SvcCatalogCategory depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SvcCatalogCategoryItem",
+      "symbol": "Tooling SvcCatalogCategoryItem",
+      "kind": "unsupported",
+      "notes": "SvcCatalogCategoryItem depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SvcCatalogFulfillFlowItem",
+      "symbol": "Tooling SvcCatalogFulfillFlowItem",
+      "kind": "unsupported",
+      "notes": "SvcCatalogFulfillFlowItem depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SvcCatalogFulfillmentFlow",
+      "symbol": "Tooling SvcCatalogFulfillmentFlow",
+      "kind": "unsupported",
+      "notes": "SvcCatalogFulfillmentFlow depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SvcCatalogItemDef",
+      "symbol": "Tooling SvcCatalogItemDef",
+      "kind": "unsupported",
+      "notes": "SvcCatalogItemDef depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:SymbolTable",
+      "symbol": "Tooling SymbolTable",
+      "kind": "unsupported",
+      "notes": "SymbolTable depends on Salesforce source tracking, compiler, or metadata service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:System",
+      "symbol": "Tooling System",
+      "kind": "unsupported",
+      "notes": "System is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:TabDefinition",
+      "symbol": "Tooling TabDefinition",
+      "kind": "unsupported",
+      "notes": "TabDefinition is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:Territory2SupportedObject",
+      "symbol": "Tooling Territory2SupportedObject",
+      "kind": "unsupported",
+      "notes": "Territory2SupportedObject depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:TestSuiteMembership",
+      "symbol": "Tooling TestSuiteMembership",
+      "kind": "unsupported",
+      "notes": "TestSuiteMembership is Salesforce test suite or test coverage state that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:TimeSheetTemplate",
+      "symbol": "Tooling TimeSheetTemplate",
+      "kind": "unsupported",
+      "notes": "TimeSheetTemplate depends on Salesforce scheduling or workforce service configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:TimeSheetTemplateAssignment",
+      "symbol": "Tooling TimeSheetTemplateAssignment",
+      "kind": "unsupported",
+      "notes": "TimeSheetTemplateAssignment depends on Salesforce scheduling or workforce service configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:Tooling",
+      "symbol": "Tooling Tooling",
+      "kind": "unsupported",
+      "notes": "Tooling is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:TransactionSecurityPolicy",
+      "symbol": "Tooling TransactionSecurityPolicy",
+      "kind": "unsupported",
+      "notes": "TransactionSecurityPolicy depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:User",
+      "symbol": "Tooling User",
+      "kind": "unsupported",
+      "notes": "User depends on Salesforce package, org, user, or administration state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:UserAccessPolicy",
+      "symbol": "Tooling UserAccessPolicy",
+      "kind": "unsupported",
+      "notes": "UserAccessPolicy depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:UserAccessPolicyAction",
+      "symbol": "Tooling UserAccessPolicyAction",
+      "kind": "unsupported",
+      "notes": "UserAccessPolicyAction depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:UserAccessPolicyFilter",
+      "symbol": "Tooling UserAccessPolicyFilter",
+      "kind": "unsupported",
+      "notes": "UserAccessPolicyFilter depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:UserCriteria",
+      "symbol": "Tooling UserCriteria",
+      "kind": "unsupported",
+      "notes": "UserCriteria is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:UserEntityAccess",
+      "symbol": "Tooling UserEntityAccess",
+      "kind": "unsupported",
+      "notes": "UserEntityAccess depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:UserFieldAccess",
+      "symbol": "Tooling UserFieldAccess",
+      "kind": "unsupported",
+      "notes": "UserFieldAccess depends on Salesforce security, access, or credential configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:VirtualVisitConfig",
+      "symbol": "Tooling VirtualVisitConfig",
+      "kind": "unsupported",
+      "notes": "VirtualVisitConfig depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:WebLink",
+      "symbol": "Tooling WebLink",
+      "kind": "unsupported",
+      "notes": "WebLink is a Tooling setup metadata object that is not source-backed by the local Glade product model."
+    },
+    {
+      "surfaceId": "tooling:WebStoreTemplate",
+      "symbol": "Tooling WebStoreTemplate",
+      "kind": "unsupported",
+      "notes": "WebStoreTemplate depends on Salesforce platform service configuration or live service state that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:When",
+      "symbol": "Tooling When",
+      "kind": "unsupported",
+      "notes": "When is a Tooling API header, envelope, or documentation helper surface, not a local source-backed metadata object modeled by Glade."
+    },
+    {
+      "surfaceId": "tooling:WorkflowAlert",
+      "symbol": "Tooling WorkflowAlert",
+      "kind": "unsupported",
+      "notes": "WorkflowAlert is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:WorkflowFieldUpdate",
+      "symbol": "Tooling WorkflowFieldUpdate",
+      "kind": "unsupported",
+      "notes": "WorkflowFieldUpdate is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:WorkflowOutboundMessage",
+      "symbol": "Tooling WorkflowOutboundMessage",
+      "kind": "unsupported",
+      "notes": "WorkflowOutboundMessage is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:WorkflowRule",
+      "symbol": "Tooling WorkflowRule",
+      "kind": "unsupported",
+      "notes": "WorkflowRule is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:WorkflowTask",
+      "symbol": "Tooling WorkflowTask",
+      "kind": "unsupported",
+      "notes": "WorkflowTask is setup automation or action metadata that Glade does not model as local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:WorkSkillRouting",
+      "symbol": "Tooling WorkSkillRouting",
+      "kind": "unsupported",
+      "notes": "WorkSkillRouting depends on Salesforce scheduling or workforce service configuration that Glade does not model in local source-backed Tooling metadata."
+    },
+    {
+      "surfaceId": "tooling:WorkSkillRoutingAttribute",
+      "symbol": "Tooling WorkSkillRoutingAttribute",
+      "kind": "unsupported",
+      "notes": "WorkSkillRoutingAttribute depends on Salesforce scheduling or workforce service configuration that Glade does not model in local source-backed Tooling metadata."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/ToolingSetupMetadataUnsupportedSurfacesTest.cls",
+      "content": "@isTest private class ToolingSetupMetadataUnsupportedSurfacesTest { @isTest static void localRuntimeGuard() { System.assertEquals('Account', Account.SObjectType.getDescribe().getName()); System.assertEquals('Id', Account.Id.getDescribe().getName()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

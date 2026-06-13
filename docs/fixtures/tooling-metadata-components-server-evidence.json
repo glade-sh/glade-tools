@@ -1,0 +1,282 @@
+{
+  "name": "tooling-metadata-components-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "tooling:CustomObject",
+      "symbol": "Tooling CustomObject",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API discovery, describe, query, and record read for local source-backed CustomObject metadata."
+    },
+    {
+      "surfaceId": "tooling:CustomField",
+      "symbol": "Tooling CustomField",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API discovery, describe, query, and record read for local source-backed CustomField metadata."
+    },
+    {
+      "surfaceId": "tooling:Layout",
+      "symbol": "Tooling Layout",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API discovery, describe, query, and record read for local source-backed Layout metadata."
+    },
+    {
+      "surfaceId": "tooling:CompactLayout",
+      "symbol": "Tooling CompactLayout",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API discovery, describe, query, and record read for local source-backed CompactLayout metadata."
+    },
+    {
+      "surfaceId": "tooling:RecordType",
+      "symbol": "Tooling RecordType",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API discovery, describe, query, and record read for local source-backed RecordType metadata."
+    },
+    {
+      "surfaceId": "tooling:ValidationRule",
+      "symbol": "Tooling ValidationRule",
+      "kind": "server",
+      "notes": "Server fixture verifies Tooling API discovery, describe, query, and record read for local source-backed ValidationRule metadata."
+    }
+  ],
+  "project": {
+    "sourceApiVersion": "65.0",
+    "packageDirectories": [
+      {
+        "path": "force-app",
+        "default": true
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel></CustomObject>\n"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Rating__c.field-meta.xml",
+      "content": "<CustomField><fullName>Rating__c</fullName><label>Rating</label><type>Text</type><length>40</length></CustomField>\n"
+    },
+    {
+      "path": "force-app/main/default/layouts/Account-Account Layout.layout-meta.xml",
+      "content": "<Layout/>\n"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/compactLayouts/AccountCard.compactLayout-meta.xml",
+      "content": "<CompactLayout><label>Account Card</label><fields>Name</fields><fields>Rating__c</fields></CompactLayout>\n"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/recordTypes/Business.recordType-meta.xml",
+      "content": "<RecordType><label>Business Account</label><active>true</active></RecordType>\n"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/validationRules/Require_Rating.validationRule-meta.xml",
+      "content": "<ValidationRule><active>true</active><errorConditionFormula>ISBLANK(Rating__c)</errorConditionFormula><errorMessage>Rating required</errorMessage></ValidationRule>\n"
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "tooling-sobjects-discovery",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects",
+      "status": 200,
+      "contains": [
+        "\"name\":\"CustomObject\"",
+        "\"name\":\"CustomField\"",
+        "\"name\":\"Layout\"",
+        "\"name\":\"CompactLayout\"",
+        "\"name\":\"RecordType\"",
+        "\"name\":\"ValidationRule\""
+      ]
+    },
+    {
+      "name": "tooling-describe-custom-object",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/CustomObject/describe",
+      "status": 200,
+      "contains": [
+        "\"name\":\"DeveloperName\"",
+        "\"name\":\"FullName\""
+      ]
+    },
+    {
+      "name": "tooling-describe-custom-field",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/CustomField/describe",
+      "status": 200,
+      "contains": [
+        "\"name\":\"DeveloperName\"",
+        "\"name\":\"TableEnumOrId\""
+      ]
+    },
+    {
+      "name": "tooling-describe-layout",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/Layout/describe",
+      "status": 200,
+      "contains": [
+        "\"name\":\"Name\"",
+        "\"name\":\"TableEnumOrId\""
+      ]
+    },
+    {
+      "name": "tooling-describe-compact-layout",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/CompactLayout/describe",
+      "status": 200,
+      "contains": [
+        "\"name\":\"DeveloperName\"",
+        "\"name\":\"SobjectType\""
+      ]
+    },
+    {
+      "name": "tooling-describe-record-type",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/RecordType/describe",
+      "status": 200,
+      "contains": [
+        "\"name\":\"DeveloperName\"",
+        "\"name\":\"SobjectType\""
+      ]
+    },
+    {
+      "name": "tooling-describe-validation-rule",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/ValidationRule/describe",
+      "status": 200,
+      "contains": [
+        "\"name\":\"ValidationName\"",
+        "\"name\":\"Active\""
+      ]
+    },
+    {
+      "name": "tooling-query-custom-object",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20DeveloperName,%20FullName%20FROM%20CustomObject%20WHERE%20DeveloperName%20=%20'Account'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"DeveloperName\":\"Account\"",
+        "\"FullName\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-query-custom-field",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20DeveloperName,%20TableEnumOrId,%20FullName%20FROM%20CustomField%20WHERE%20FullName%20=%20'Account.Rating__c'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"DeveloperName\":\"Rating__c\"",
+        "\"TableEnumOrId\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-query-layout",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20Name,%20TableEnumOrId%20FROM%20Layout%20WHERE%20Name%20=%20'Account-Account%20Layout'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"Account-Account Layout\"",
+        "\"TableEnumOrId\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-query-compact-layout",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20DeveloperName,%20SobjectType,%20FullName%20FROM%20CompactLayout%20WHERE%20DeveloperName%20=%20'AccountCard'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"DeveloperName\":\"AccountCard\"",
+        "\"SobjectType\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-query-record-type",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20DeveloperName,%20SobjectType,%20FullName%20FROM%20RecordType%20WHERE%20DeveloperName%20=%20'Business'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"DeveloperName\":\"Business\"",
+        "\"SobjectType\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-query-validation-rule",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/query?q=SELECT%20Id,%20ValidationName,%20EntityDefinitionId,%20Active,%20FullName%20FROM%20ValidationRule%20WHERE%20ValidationName%20=%20'Require_Rating'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"ValidationName\":\"Require_Rating\"",
+        "\"Active\":true"
+      ]
+    },
+    {
+      "name": "tooling-read-custom-object",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/CustomObject/01I000000000001",
+      "status": 200,
+      "contains": [
+        "\"DeveloperName\":\"Account\"",
+        "\"FullName\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-read-custom-field",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/CustomField/00N000000000001",
+      "status": 200,
+      "contains": [
+        "\"DeveloperName\":\"Rating__c\"",
+        "\"TableEnumOrId\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-read-layout",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/Layout/00h000000000001",
+      "status": 200,
+      "contains": [
+        "\"Name\":\"Account-Account Layout\"",
+        "\"TableEnumOrId\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-read-compact-layout",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/CompactLayout/0CL000000000001",
+      "status": 200,
+      "contains": [
+        "\"DeveloperName\":\"AccountCard\"",
+        "\"SobjectType\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-read-record-type",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/RecordType/012000000000001",
+      "status": 200,
+      "contains": [
+        "\"DeveloperName\":\"Business\"",
+        "\"SobjectType\":\"Account\""
+      ]
+    },
+    {
+      "name": "tooling-read-validation-rule",
+      "method": "GET",
+      "path": "/services/data/v65.0/tooling/sobjects/ValidationRule/03d000000000001",
+      "status": 200,
+      "contains": [
+        "\"ValidationName\":\"Require_Rating\"",
+        "\"Active\":true"
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

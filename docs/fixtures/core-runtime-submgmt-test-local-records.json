@@ -2,19 +2,19 @@
   "name": "core-runtime-submgmt-test-local-records",
   "evidence": [
     {
-      "surfaceId": "apex:System.SubMgmt.Test.create(String,Map<String,Object>)",
+      "surfaceId": "apex:SubMgmt.Test.create(String,Map<String,Object>)",
       "symbol": "SubMgmt.Test.create",
       "kind": "exec",
       "notes": "Local SubMgmt test helper creates a deterministic per-VM test record id and stores attributes."
     },
     {
-      "surfaceId": "apex:System.SubMgmt.Test.modify(Id,Map<String,Object>)",
+      "surfaceId": "apex:SubMgmt.Test.modify(Id,Map<String,Object>)",
       "symbol": "SubMgmt.Test.modify",
       "kind": "exec",
       "notes": "Local SubMgmt test helper modifies an existing local test record and rejects missing ids."
     },
     {
-      "surfaceId": "apex:System.SubMgmt.Test.remove(Id)",
+      "surfaceId": "apex:SubMgmt.Test.remove(Id)",
       "symbol": "SubMgmt.Test.remove",
       "kind": "exec",
       "notes": "Local SubMgmt test helper removes an existing local test record and rejects later mutation of that id."

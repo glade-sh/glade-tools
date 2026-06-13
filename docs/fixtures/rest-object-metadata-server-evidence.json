@@ -1,0 +1,174 @@
+{
+  "name": "rest-object-metadata-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "rest:resources_listviews.get",
+      "symbol": "List Views",
+      "kind": "server",
+      "notes": "Server fixture verifies local source-backed sObject list view collection discovery."
+    },
+    {
+      "surfaceId": "rest:resources_listview.get",
+      "symbol": "List View",
+      "kind": "server",
+      "notes": "Server fixture verifies local source-backed list view collection and item URLs."
+    },
+    {
+      "surfaceId": "rest:resources_listviewdescribe.get",
+      "symbol": "List View Describe",
+      "kind": "server",
+      "notes": "Server fixture verifies local list view describe output from project source metadata."
+    },
+    {
+      "surfaceId": "rest:resources_listviewresults.get",
+      "symbol": "List View Results",
+      "kind": "server",
+      "notes": "Server fixture verifies local list view results over stored Account records."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_compactlayouts.get",
+      "symbol": "sObject CompactLayouts",
+      "kind": "server",
+      "notes": "Server fixture verifies local compact layout collection output from project source metadata."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_compactlayouts_get.get",
+      "symbol": "Get Compact Layouts Using sObject CompactLayouts",
+      "kind": "server",
+      "notes": "Server fixture verifies local compact layout detail output by developer name."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_named_layouts.get",
+      "symbol": "sObject Named Layouts",
+      "kind": "server",
+      "notes": "Server fixture verifies local named layout metadata output from project source metadata."
+    }
+  ],
+  "project": {
+    "sourceApiVersion": "65.0",
+    "packageDirectories": [
+      {
+        "path": "force-app",
+        "default": true
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>\n"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/listViews/AllAccounts.listView-meta.xml",
+      "content": "<ListView><label>All Accounts</label><columns>Id</columns><columns>Name</columns><filterScope>Everything</filterScope></ListView>\n"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/compactLayouts/Card.compactLayout-meta.xml",
+      "content": "<CompactLayout><label>Card</label><fields>Name</fields></CompactLayout>\n"
+    },
+    {
+      "path": "force-app/main/default/layouts/Account-Account Layout.layout-meta.xml",
+      "content": "<Layout/>\n"
+    }
+  ],
+  "seedData": [
+    {
+      "object": "Account",
+      "records": [
+        {
+          "Name": "Trail Account",
+          "External_Id__c": "listview-1"
+        }
+      ]
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "listviews-collection",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/listviews",
+      "status": 200,
+      "contains": [
+        "\"size\":1",
+        "\"developerName\":\"AllAccounts\"",
+        "\"label\":\"All Accounts\"",
+        "\"describeUrl\":\"/services/data/v65.0/sobjects/Account/listviews/00B000000000001/describe\"",
+        "\"resultsUrl\":\"/services/data/v65.0/sobjects/Account/listviews/00B000000000001/results\""
+      ]
+    },
+    {
+      "name": "listview-describe",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/listviews/00B000000000001/describe",
+      "status": 200,
+      "contains": [
+        "\"developerName\":\"AllAccounts\"",
+        "\"label\":\"All Accounts\"",
+        "\"columns\":[\"Id\",\"Name\"]",
+        "\"query\":\"SELECT Id, Name FROM Account\""
+      ]
+    },
+    {
+      "name": "listview-results",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/listviews/00B000000000001/results",
+      "status": 200,
+      "contains": [
+        "\"listViewId\":\"00B000000000001\"",
+        "\"size\":1",
+        "\"Name\":\"Trail Account\"",
+        "\"query\":\"SELECT Id, Name FROM Account\""
+      ]
+    },
+    {
+      "name": "compact-layouts-collection",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/compactLayouts",
+      "status": 200,
+      "contains": [
+        "\"defaultCompactLayoutId\":\"0CL000000000001\"",
+        "\"developerName\":\"Card\"",
+        "\"label\":\"Card\"",
+        "\"fields\":[\"Name\"]"
+      ]
+    },
+    {
+      "name": "compact-layouts-describe-collection",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/describe/compactLayouts",
+      "status": 200,
+      "contains": [
+        "\"defaultCompactLayoutId\":\"0CL000000000001\"",
+        "\"objectType\":\"Account\"",
+        "\"compactLayouts\""
+      ]
+    },
+    {
+      "name": "compact-layout-detail",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/describe/compactLayouts/Card",
+      "status": 200,
+      "contains": [
+        "\"developerName\":\"Card\"",
+        "\"label\":\"Card\"",
+        "\"fields\":[\"Name\"]",
+        "\"objectType\":\"Account\""
+      ]
+    },
+    {
+      "name": "named-layout-detail",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/namedLayouts/Account-Account%20Layout",
+      "status": 200,
+      "contains": [
+        "\"name\":\"Account-Account Layout\"",
+        "\"objectType\":\"Account\"",
+        "\"url\":\"/services/data/v65.0/sobjects/Account/namedLayouts/Account-Account%20Layout\""
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

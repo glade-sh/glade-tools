@@ -1,0 +1,27 @@
+{
+  "name": "commercepayments-client-adapter-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "apex:commercepayments.ClientSidePaymentAdapter.processClientRequest(commercepayments.ClientRequestContext,Map<String,Object>)",
+      "symbol": "commercepayments.ClientSidePaymentAdapter.processClientRequest",
+      "kind": "unsupported",
+      "notes": "Local runtime does not process hosted commerce payment client requests; the method raises UnsupportedOperationException when invoked."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/CommercePaymentsClientAdapterUnsupportedMarker.cls",
+      "content": "public class CommercePaymentsClientAdapterUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

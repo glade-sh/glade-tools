@@ -1,0 +1,128 @@
+{
+  "name": "rest-sobject-upsert-describe-global-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "rest:resources_describeGlobal.get",
+      "symbol": "Describe Global",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects returns the local global object list."
+    },
+    {
+      "surfaceId": "rest:dome_describeGlobal.get",
+      "symbol": "Describe Global guide",
+      "kind": "server",
+      "notes": "Server fixture verifies the describe global guide shape against the local object directory."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_upsert.get",
+      "symbol": "SObject external ID upsert",
+      "kind": "server",
+      "notes": "Server fixture verifies local external-ID PATCH create/update, GET lookup, and DELETE lookup routes."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_upsert_get.get",
+      "symbol": "SObject external ID GET",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/External_Id__c/{value}."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_upsert_patch.get",
+      "symbol": "SObject external ID PATCH",
+      "kind": "server",
+      "notes": "Server fixture verifies PATCH /services/data/v65.0/sobjects/Account/External_Id__c/{value} creates and updates local records."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_upsert_delete.get",
+      "symbol": "SObject external ID DELETE",
+      "kind": "server",
+      "notes": "Server fixture verifies DELETE /services/data/v65.0/sobjects/Account/External_Id__c/{value} removes the local record."
+    },
+    {
+      "surfaceId": "rest:using_resources_retrieve_with_externalid.get",
+      "symbol": "Retrieve with an external ID",
+      "kind": "server",
+      "notes": "Server fixture verifies the external-ID retrieve guide route using local Account.External_Id__c."
+    },
+    {
+      "surfaceId": "rest:dome_upsert.get",
+      "symbol": "Upsert a record",
+      "kind": "server",
+      "notes": "Server fixture verifies the external-ID upsert guide route using local Account.External_Id__c."
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "describe-global",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects",
+      "status": 200,
+      "contains": [
+        "\"sobjects\"",
+        "\"name\":\"Account\"",
+        "\"describe\":\"/services/data/v65.0/sobjects/Account/describe\""
+      ]
+    },
+    {
+      "name": "external-id-create",
+      "method": "PATCH",
+      "path": "/services/data/v65.0/sobjects/Account/External_Id__c/EXT-1",
+      "body": "{\"Name\":\"Trail\",\"Description\":null}",
+      "status": 201,
+      "contains": [
+        "\"success\":true",
+        "\"created\":true"
+      ]
+    },
+    {
+      "name": "external-id-get",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/External_Id__c/EXT-1",
+      "status": 200,
+      "contains": [
+        "\"attributes\"",
+        "\"Name\":\"Trail\"",
+        "\"External_Id__c\":\"EXT-1\"",
+        "\"Description\":null"
+      ]
+    },
+    {
+      "name": "external-id-update",
+      "method": "PATCH",
+      "path": "/services/data/v65.0/sobjects/Account/External_Id__c/EXT-1",
+      "body": "{\"Name\":\"Trail Updated\",\"External_Id__c\":\"EXT-1\"}",
+      "status": 204
+    },
+    {
+      "name": "external-id-get-updated",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/External_Id__c/EXT-1?fields=Name,External_Id__c",
+      "status": 200,
+      "contains": [
+        "\"Name\":\"Trail Updated\"",
+        "\"External_Id__c\":\"EXT-1\""
+      ],
+      "notContains": [
+        "\"Description\""
+      ]
+    },
+    {
+      "name": "external-id-delete",
+      "method": "DELETE",
+      "path": "/services/data/v65.0/sobjects/Account/External_Id__c/EXT-1",
+      "status": 204
+    },
+    {
+      "name": "external-id-get-deleted",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/External_Id__c/EXT-1",
+      "status": 404,
+      "contains": [
+        "\"errorCode\":\"NOT_FOUND\""
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

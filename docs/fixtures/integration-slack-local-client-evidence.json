@@ -1,0 +1,719 @@
+{
+  "name": "integration-slack-local-client-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:Slack.AppClient.appsEventAuthorizationsList(Slack.AppsEventAuthorizationsListRequest)",
+      "symbol": "Slack.AppClient.appsEventAuthorizationsList(Slack.AppsEventAuthorizationsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.AppClient.authTest(Slack.AuthTestRequest)",
+      "symbol": "Slack.AppClient.authTest(Slack.AuthTestRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.authTeamsList(Slack.AuthTeamsListRequest)",
+      "symbol": "Slack.BotClient.authTeamsList(Slack.AuthTeamsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.authTest(Slack.AuthTestRequest)",
+      "symbol": "Slack.BotClient.authTest(Slack.AuthTestRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.bookmarksEdit(Slack.BookmarksEditRequest)",
+      "symbol": "Slack.BotClient.bookmarksEdit(Slack.BookmarksEditRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.bookmarksList(Slack.BookmarksListRequest)",
+      "symbol": "Slack.BotClient.bookmarksList(Slack.BookmarksListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.botsInfo(Slack.BotsInfoRequest)",
+      "symbol": "Slack.BotClient.botsInfo(Slack.BotsInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.callsInfo(Slack.CallsInfoRequest)",
+      "symbol": "Slack.BotClient.callsInfo(Slack.CallsInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatDelete(Slack.ChatDeleteRequest)",
+      "symbol": "Slack.BotClient.chatDelete(Slack.ChatDeleteRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatDeleteScheduledMessage(Slack.ChatDeleteScheduledMessageRequest)",
+      "symbol": "Slack.BotClient.chatDeleteScheduledMessage(Slack.ChatDeleteScheduledMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatGetPermalink(Slack.ChatGetPermalinkRequest)",
+      "symbol": "Slack.BotClient.chatGetPermalink(Slack.ChatGetPermalinkRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatMeMessage(Slack.ChatMeMessageRequest)",
+      "symbol": "Slack.BotClient.chatMeMessage(Slack.ChatMeMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatPostEphemeral(Slack.ChatPostEphemeralRequest)",
+      "symbol": "Slack.BotClient.chatPostEphemeral(Slack.ChatPostEphemeralRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatPostMessage(Slack.ChatPostMessageRequest)",
+      "symbol": "Slack.BotClient.chatPostMessage(Slack.ChatPostMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatScheduleMessage(Slack.ChatScheduleMessageRequest)",
+      "symbol": "Slack.BotClient.chatScheduleMessage(Slack.ChatScheduleMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatScheduledMessagesList(Slack.ChatScheduledMessagesListRequest)",
+      "symbol": "Slack.BotClient.chatScheduledMessagesList(Slack.ChatScheduledMessagesListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.chatUpdate(Slack.ChatUpdateRequest)",
+      "symbol": "Slack.BotClient.chatUpdate(Slack.ChatUpdateRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsClose(Slack.ConversationsCloseRequest)",
+      "symbol": "Slack.BotClient.conversationsClose(Slack.ConversationsCloseRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsHistory(Slack.ConversationsHistoryRequest)",
+      "symbol": "Slack.BotClient.conversationsHistory(Slack.ConversationsHistoryRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsInfo(Slack.ConversationsInfoRequest)",
+      "symbol": "Slack.BotClient.conversationsInfo(Slack.ConversationsInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsList(Slack.ConversationsListRequest)",
+      "symbol": "Slack.BotClient.conversationsList(Slack.ConversationsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsListConnectInvites(Slack.ConversationsListConnectInvitesRequest)",
+      "symbol": "Slack.BotClient.conversationsListConnectInvites(Slack.ConversationsListConnectInvitesRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsMark(Slack.ConversationsMarkRequest)",
+      "symbol": "Slack.BotClient.conversationsMark(Slack.ConversationsMarkRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsMembers(Slack.ConversationsMembersRequest)",
+      "symbol": "Slack.BotClient.conversationsMembers(Slack.ConversationsMembersRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsOpen(Slack.ConversationsOpenRequest)",
+      "symbol": "Slack.BotClient.conversationsOpen(Slack.ConversationsOpenRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.conversationsReplies(Slack.ConversationsRepliesRequest)",
+      "symbol": "Slack.BotClient.conversationsReplies(Slack.ConversationsRepliesRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.dndInfo(Slack.DndInfoRequest)",
+      "symbol": "Slack.BotClient.dndInfo(Slack.DndInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.dndTeamInfo(Slack.DndTeamInfoRequest)",
+      "symbol": "Slack.BotClient.dndTeamInfo(Slack.DndTeamInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.emojiList(Slack.EmojiListRequest)",
+      "symbol": "Slack.BotClient.emojiList(Slack.EmojiListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.filesInfo(Slack.FilesInfoRequest)",
+      "symbol": "Slack.BotClient.filesInfo(Slack.FilesInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.filesList(Slack.FilesListRequest)",
+      "symbol": "Slack.BotClient.filesList(Slack.FilesListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.filesRemoteInfo(Slack.FilesRemoteInfoRequest)",
+      "symbol": "Slack.BotClient.filesRemoteInfo(Slack.FilesRemoteInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.filesRemoteList(Slack.FilesRemoteListRequest)",
+      "symbol": "Slack.BotClient.filesRemoteList(Slack.FilesRemoteListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.filesRemoteShare(Slack.FilesRemoteShareRequest)",
+      "symbol": "Slack.BotClient.filesRemoteShare(Slack.FilesRemoteShareRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.migrationExchange(Slack.MigrationExchangeRequest)",
+      "symbol": "Slack.BotClient.migrationExchange(Slack.MigrationExchangeRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.pinsList(Slack.PinsListRequest)",
+      "symbol": "Slack.BotClient.pinsList(Slack.PinsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.reactionsGet(Slack.ReactionsGetRequest)",
+      "symbol": "Slack.BotClient.reactionsGet(Slack.ReactionsGetRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.reactionsList(Slack.ReactionsListRequest)",
+      "symbol": "Slack.BotClient.reactionsList(Slack.ReactionsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.teamInfo(Slack.TeamInfoRequest)",
+      "symbol": "Slack.BotClient.teamInfo(Slack.TeamInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.teamProfileGet(Slack.TeamProfileGetRequest)",
+      "symbol": "Slack.BotClient.teamProfileGet(Slack.TeamProfileGetRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usergroupsList(Slack.UsergroupsListRequest)",
+      "symbol": "Slack.BotClient.usergroupsList(Slack.UsergroupsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usergroupsUsersList(Slack.UsergroupsUsersListRequest)",
+      "symbol": "Slack.BotClient.usergroupsUsersList(Slack.UsergroupsUsersListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usersConversations(Slack.UsersConversationsRequest)",
+      "symbol": "Slack.BotClient.usersConversations(Slack.UsersConversationsRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usersGetPresence(Slack.UsersGetPresenceRequest)",
+      "symbol": "Slack.BotClient.usersGetPresence(Slack.UsersGetPresenceRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usersInfo(Slack.UsersInfoRequest)",
+      "symbol": "Slack.BotClient.usersInfo(Slack.UsersInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usersList(Slack.UsersListRequest)",
+      "symbol": "Slack.BotClient.usersList(Slack.UsersListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usersLookupByEmail(Slack.UsersLookupByEmailRequest)",
+      "symbol": "Slack.BotClient.usersLookupByEmail(Slack.UsersLookupByEmailRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.usersProfileGet(Slack.UsersProfileGetRequest)",
+      "symbol": "Slack.BotClient.usersProfileGet(Slack.UsersProfileGetRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.viewsOpen(Slack.ViewsOpenRequest)",
+      "symbol": "Slack.BotClient.viewsOpen(Slack.ViewsOpenRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.viewsPublish(Slack.ViewsPublishRequest)",
+      "symbol": "Slack.BotClient.viewsPublish(Slack.ViewsPublishRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.viewsPush(Slack.ViewsPushRequest)",
+      "symbol": "Slack.BotClient.viewsPush(Slack.ViewsPushRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.viewsUpdate(Slack.ViewsUpdateRequest)",
+      "symbol": "Slack.BotClient.viewsUpdate(Slack.ViewsUpdateRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.workflowsStepCompleted(Slack.WorkflowsStepCompletedRequest)",
+      "symbol": "Slack.BotClient.workflowsStepCompleted(Slack.WorkflowsStepCompletedRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.workflowsStepFailed(Slack.WorkflowsStepFailedRequest)",
+      "symbol": "Slack.BotClient.workflowsStepFailed(Slack.WorkflowsStepFailedRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.BotClient.workflowsUpdateStep(Slack.WorkflowsUpdateStepRequest)",
+      "symbol": "Slack.BotClient.workflowsUpdateStep(Slack.WorkflowsUpdateStepRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.apiTest(Slack.ApiTestRequest)",
+      "symbol": "Slack.UserClient.apiTest(Slack.ApiTestRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.appsEventAuthorizationsList(Slack.AppsEventAuthorizationsListRequest)",
+      "symbol": "Slack.UserClient.appsEventAuthorizationsList(Slack.AppsEventAuthorizationsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.authTeamsList(Slack.AuthTeamsListRequest)",
+      "symbol": "Slack.UserClient.authTeamsList(Slack.AuthTeamsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.authTest(Slack.AuthTestRequest)",
+      "symbol": "Slack.UserClient.authTest(Slack.AuthTestRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.bookmarksEdit(Slack.BookmarksEditRequest)",
+      "symbol": "Slack.UserClient.bookmarksEdit(Slack.BookmarksEditRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.bookmarksList(Slack.BookmarksListRequest)",
+      "symbol": "Slack.UserClient.bookmarksList(Slack.BookmarksListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.botsInfo(Slack.BotsInfoRequest)",
+      "symbol": "Slack.UserClient.botsInfo(Slack.BotsInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.callsInfo(Slack.CallsInfoRequest)",
+      "symbol": "Slack.UserClient.callsInfo(Slack.CallsInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatDelete(Slack.ChatDeleteRequest)",
+      "symbol": "Slack.UserClient.chatDelete(Slack.ChatDeleteRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatDeleteScheduledMessage(Slack.ChatDeleteScheduledMessageRequest)",
+      "symbol": "Slack.UserClient.chatDeleteScheduledMessage(Slack.ChatDeleteScheduledMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatGetPermalink(Slack.ChatGetPermalinkRequest)",
+      "symbol": "Slack.UserClient.chatGetPermalink(Slack.ChatGetPermalinkRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatMeMessage(Slack.ChatMeMessageRequest)",
+      "symbol": "Slack.UserClient.chatMeMessage(Slack.ChatMeMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatPostEphemeral(Slack.ChatPostEphemeralRequest)",
+      "symbol": "Slack.UserClient.chatPostEphemeral(Slack.ChatPostEphemeralRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatPostMessage(Slack.ChatPostMessageRequest)",
+      "symbol": "Slack.UserClient.chatPostMessage(Slack.ChatPostMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatScheduleMessage(Slack.ChatScheduleMessageRequest)",
+      "symbol": "Slack.UserClient.chatScheduleMessage(Slack.ChatScheduleMessageRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatScheduledMessagesList(Slack.ChatScheduledMessagesListRequest)",
+      "symbol": "Slack.UserClient.chatScheduledMessagesList(Slack.ChatScheduledMessagesListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.chatUpdate(Slack.ChatUpdateRequest)",
+      "symbol": "Slack.UserClient.chatUpdate(Slack.ChatUpdateRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsClose(Slack.ConversationsCloseRequest)",
+      "symbol": "Slack.UserClient.conversationsClose(Slack.ConversationsCloseRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsHistory(Slack.ConversationsHistoryRequest)",
+      "symbol": "Slack.UserClient.conversationsHistory(Slack.ConversationsHistoryRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsInfo(Slack.ConversationsInfoRequest)",
+      "symbol": "Slack.UserClient.conversationsInfo(Slack.ConversationsInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsList(Slack.ConversationsListRequest)",
+      "symbol": "Slack.UserClient.conversationsList(Slack.ConversationsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsMark(Slack.ConversationsMarkRequest)",
+      "symbol": "Slack.UserClient.conversationsMark(Slack.ConversationsMarkRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsMembers(Slack.ConversationsMembersRequest)",
+      "symbol": "Slack.UserClient.conversationsMembers(Slack.ConversationsMembersRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsOpen(Slack.ConversationsOpenRequest)",
+      "symbol": "Slack.UserClient.conversationsOpen(Slack.ConversationsOpenRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.conversationsReplies(Slack.ConversationsRepliesRequest)",
+      "symbol": "Slack.UserClient.conversationsReplies(Slack.ConversationsRepliesRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.dndInfo(Slack.DndInfoRequest)",
+      "symbol": "Slack.UserClient.dndInfo(Slack.DndInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.dndTeamInfo(Slack.DndTeamInfoRequest)",
+      "symbol": "Slack.UserClient.dndTeamInfo(Slack.DndTeamInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.emojiList(Slack.EmojiListRequest)",
+      "symbol": "Slack.UserClient.emojiList(Slack.EmojiListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.filesInfo(Slack.FilesInfoRequest)",
+      "symbol": "Slack.UserClient.filesInfo(Slack.FilesInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.filesList(Slack.FilesListRequest)",
+      "symbol": "Slack.UserClient.filesList(Slack.FilesListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.filesRemoteInfo(Slack.FilesRemoteInfoRequest)",
+      "symbol": "Slack.UserClient.filesRemoteInfo(Slack.FilesRemoteInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.filesRemoteList(Slack.FilesRemoteListRequest)",
+      "symbol": "Slack.UserClient.filesRemoteList(Slack.FilesRemoteListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.filesRemoteShare(Slack.FilesRemoteShareRequest)",
+      "symbol": "Slack.UserClient.filesRemoteShare(Slack.FilesRemoteShareRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.filesSharedPublicURL(Slack.FilesSharedPublicURLRequest)",
+      "symbol": "Slack.UserClient.filesSharedPublicURL(Slack.FilesSharedPublicURLRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.migrationExchange(Slack.MigrationExchangeRequest)",
+      "symbol": "Slack.UserClient.migrationExchange(Slack.MigrationExchangeRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.pinsList(Slack.PinsListRequest)",
+      "symbol": "Slack.UserClient.pinsList(Slack.PinsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.reactionsGet(Slack.ReactionsGetRequest)",
+      "symbol": "Slack.UserClient.reactionsGet(Slack.ReactionsGetRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.reactionsList(Slack.ReactionsListRequest)",
+      "symbol": "Slack.UserClient.reactionsList(Slack.ReactionsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.remindersInfo(Slack.RemindersInfoRequest)",
+      "symbol": "Slack.UserClient.remindersInfo(Slack.RemindersInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.remindersList(Slack.RemindersListRequest)",
+      "symbol": "Slack.UserClient.remindersList(Slack.RemindersListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.searchAll(Slack.SearchAllRequest)",
+      "symbol": "Slack.UserClient.searchAll(Slack.SearchAllRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.searchFiles(Slack.SearchFilesRequest)",
+      "symbol": "Slack.UserClient.searchFiles(Slack.SearchFilesRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.searchMessages(Slack.SearchMessagesRequest)",
+      "symbol": "Slack.UserClient.searchMessages(Slack.SearchMessagesRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.starsList(Slack.StarsListRequest)",
+      "symbol": "Slack.UserClient.starsList(Slack.StarsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.teamAccessLogs(Slack.TeamAccessLogsRequest)",
+      "symbol": "Slack.UserClient.teamAccessLogs(Slack.TeamAccessLogsRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.teamBillableInfo(Slack.TeamBillableInfoRequest)",
+      "symbol": "Slack.UserClient.teamBillableInfo(Slack.TeamBillableInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.teamInfo(Slack.TeamInfoRequest)",
+      "symbol": "Slack.UserClient.teamInfo(Slack.TeamInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.teamIntegrationLogs(Slack.TeamIntegrationLogsRequest)",
+      "symbol": "Slack.UserClient.teamIntegrationLogs(Slack.TeamIntegrationLogsRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.teamProfileGet(Slack.TeamProfileGetRequest)",
+      "symbol": "Slack.UserClient.teamProfileGet(Slack.TeamProfileGetRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usergroupsList(Slack.UsergroupsListRequest)",
+      "symbol": "Slack.UserClient.usergroupsList(Slack.UsergroupsListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usergroupsUsersList(Slack.UsergroupsUsersListRequest)",
+      "symbol": "Slack.UserClient.usergroupsUsersList(Slack.UsergroupsUsersListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usersConversations(Slack.UsersConversationsRequest)",
+      "symbol": "Slack.UserClient.usersConversations(Slack.UsersConversationsRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usersGetPresence(Slack.UsersGetPresenceRequest)",
+      "symbol": "Slack.UserClient.usersGetPresence(Slack.UsersGetPresenceRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usersIdentity(Slack.UsersIdentityRequest)",
+      "symbol": "Slack.UserClient.usersIdentity(Slack.UsersIdentityRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usersInfo(Slack.UsersInfoRequest)",
+      "symbol": "Slack.UserClient.usersInfo(Slack.UsersInfoRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usersList(Slack.UsersListRequest)",
+      "symbol": "Slack.UserClient.usersList(Slack.UsersListRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usersLookupByEmail(Slack.UsersLookupByEmailRequest)",
+      "symbol": "Slack.UserClient.usersLookupByEmail(Slack.UsersLookupByEmailRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.usersProfileGet(Slack.UsersProfileGetRequest)",
+      "symbol": "Slack.UserClient.usersProfileGet(Slack.UsersProfileGetRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.viewsOpen(Slack.ViewsOpenRequest)",
+      "symbol": "Slack.UserClient.viewsOpen(Slack.ViewsOpenRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.viewsPush(Slack.ViewsPushRequest)",
+      "symbol": "Slack.UserClient.viewsPush(Slack.ViewsPushRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    },
+    {
+      "surfaceId": "apex:Slack.UserClient.viewsUpdate(Slack.ViewsUpdateRequest)",
+      "symbol": "Slack.UserClient.viewsUpdate(Slack.ViewsUpdateRequest)",
+      "kind": "exec",
+      "notes": "Deterministic local Slack client harness return; this fixture does not call the live Slack API."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Slack.AppClient appClient = new Slack.AppClient();\nSlack.BotClient botClient = new Slack.BotClient();\nSlack.UserClient userClient = new Slack.UserClient();\nSystem.assert(appClient.appsEventAuthorizationsList(new Slack.AppsEventAuthorizationsListRequest()) != null);\nSystem.assert(appClient.authTest(new Slack.AuthTestRequest()) != null);\nSystem.assert(botClient.authTeamsList(new Slack.AuthTeamsListRequest()) != null);\nSystem.assert(botClient.authTest(new Slack.AuthTestRequest()) != null);\nSystem.assert(botClient.bookmarksEdit(new Slack.BookmarksEditRequest()) != null);\nSystem.assert(botClient.bookmarksList(new Slack.BookmarksListRequest()) != null);\nSystem.assert(botClient.botsInfo(new Slack.BotsInfoRequest()) != null);\nSystem.assert(botClient.callsInfo(new Slack.CallsInfoRequest()) != null);\nSystem.assert(botClient.chatDelete(new Slack.ChatDeleteRequest()) != null);\nSystem.assert(botClient.chatDeleteScheduledMessage(new Slack.ChatDeleteScheduledMessageRequest()) != null);\nSystem.assert(botClient.chatGetPermalink(new Slack.ChatGetPermalinkRequest()) != null);\nSystem.assert(botClient.chatMeMessage(new Slack.ChatMeMessageRequest()) != null);\nSystem.assert(botClient.chatPostEphemeral(new Slack.ChatPostEphemeralRequest()) != null);\nSystem.assert(botClient.chatPostMessage(new Slack.ChatPostMessageRequest()) != null);\nSystem.assert(botClient.chatScheduleMessage(new Slack.ChatScheduleMessageRequest()) != null);\nSystem.assert(botClient.chatScheduledMessagesList(new Slack.ChatScheduledMessagesListRequest()) != null);\nSystem.assert(botClient.chatUpdate(new Slack.ChatUpdateRequest()) != null);\nSystem.assert(botClient.conversationsClose(new Slack.ConversationsCloseRequest()) != null);\nSystem.assert(botClient.conversationsHistory(new Slack.ConversationsHistoryRequest()) != null);\nSystem.assert(botClient.conversationsInfo(new Slack.ConversationsInfoRequest()) != null);\nSystem.assert(botClient.conversationsList(new Slack.ConversationsListRequest()) != null);\nSystem.assert(botClient.conversationsListConnectInvites(new Slack.ConversationsListConnectInvitesRequest()) != null);\nSystem.assert(botClient.conversationsMark(new Slack.ConversationsMarkRequest()) != null);\nSystem.assert(botClient.conversationsMembers(new Slack.ConversationsMembersRequest()) != null);\nSystem.assert(botClient.conversationsOpen(new Slack.ConversationsOpenRequest()) != null);\nSystem.assert(botClient.conversationsReplies(new Slack.ConversationsRepliesRequest()) != null);\nSystem.assert(botClient.dndInfo(new Slack.DndInfoRequest()) != null);\nSystem.assert(botClient.dndTeamInfo(new Slack.DndTeamInfoRequest()) != null);\nSystem.assert(botClient.emojiList(new Slack.EmojiListRequest()) != null);\nSystem.assert(botClient.filesInfo(new Slack.FilesInfoRequest()) != null);\nSystem.assert(botClient.filesList(new Slack.FilesListRequest()) != null);\nSystem.assert(botClient.filesRemoteInfo(new Slack.FilesRemoteInfoRequest()) != null);\nSystem.assert(botClient.filesRemoteList(new Slack.FilesRemoteListRequest()) != null);\nSystem.assert(botClient.filesRemoteShare(new Slack.FilesRemoteShareRequest()) != null);\nSystem.assert(botClient.migrationExchange(new Slack.MigrationExchangeRequest()) != null);\nSystem.assert(botClient.pinsList(new Slack.PinsListRequest()) != null);\nSystem.assert(botClient.reactionsGet(new Slack.ReactionsGetRequest()) != null);\nSystem.assert(botClient.reactionsList(new Slack.ReactionsListRequest()) != null);\nSystem.assert(botClient.teamInfo(new Slack.TeamInfoRequest()) != null);\nSystem.assert(botClient.teamProfileGet(new Slack.TeamProfileGetRequest()) != null);\nSystem.assert(botClient.usergroupsList(new Slack.UsergroupsListRequest()) != null);\nSystem.assert(botClient.usergroupsUsersList(new Slack.UsergroupsUsersListRequest()) != null);\nSystem.assert(botClient.usersConversations(new Slack.UsersConversationsRequest()) != null);\nSystem.assert(botClient.usersGetPresence(new Slack.UsersGetPresenceRequest()) != null);\nSystem.assert(botClient.usersInfo(new Slack.UsersInfoRequest()) != null);\nSystem.assert(botClient.usersList(new Slack.UsersListRequest()) != null);\nSystem.assert(botClient.usersLookupByEmail(new Slack.UsersLookupByEmailRequest()) != null);\nSystem.assert(botClient.usersProfileGet(new Slack.UsersProfileGetRequest()) != null);\nSystem.assert(botClient.viewsOpen(new Slack.ViewsOpenRequest()) != null);\nSystem.assert(botClient.viewsPublish(new Slack.ViewsPublishRequest()) != null);\nSystem.assert(botClient.viewsPush(new Slack.ViewsPushRequest()) != null);\nSystem.assert(botClient.viewsUpdate(new Slack.ViewsUpdateRequest()) != null);\nSystem.assert(botClient.workflowsStepCompleted(new Slack.WorkflowsStepCompletedRequest()) != null);\nSystem.assert(botClient.workflowsStepFailed(new Slack.WorkflowsStepFailedRequest()) != null);\nSystem.assert(botClient.workflowsUpdateStep(new Slack.WorkflowsUpdateStepRequest()) != null);\nSystem.assert(userClient.apiTest(new Slack.ApiTestRequest()) != null);\nSystem.assert(userClient.appsEventAuthorizationsList(new Slack.AppsEventAuthorizationsListRequest()) != null);\nSystem.assert(userClient.authTeamsList(new Slack.AuthTeamsListRequest()) != null);\nSystem.assert(userClient.authTest(new Slack.AuthTestRequest()) != null);\nSystem.assert(userClient.bookmarksEdit(new Slack.BookmarksEditRequest()) != null);\nSystem.assert(userClient.bookmarksList(new Slack.BookmarksListRequest()) != null);\nSystem.assert(userClient.botsInfo(new Slack.BotsInfoRequest()) != null);\nSystem.assert(userClient.callsInfo(new Slack.CallsInfoRequest()) != null);\nSystem.assert(userClient.chatDelete(new Slack.ChatDeleteRequest()) != null);\nSystem.assert(userClient.chatDeleteScheduledMessage(new Slack.ChatDeleteScheduledMessageRequest()) != null);\nSystem.assert(userClient.chatGetPermalink(new Slack.ChatGetPermalinkRequest()) != null);\nSystem.assert(userClient.chatMeMessage(new Slack.ChatMeMessageRequest()) != null);\nSystem.assert(userClient.chatPostEphemeral(new Slack.ChatPostEphemeralRequest()) != null);\nSystem.assert(userClient.chatPostMessage(new Slack.ChatPostMessageRequest()) != null);\nSystem.assert(userClient.chatScheduleMessage(new Slack.ChatScheduleMessageRequest()) != null);\nSystem.assert(userClient.chatScheduledMessagesList(new Slack.ChatScheduledMessagesListRequest()) != null);\nSystem.assert(userClient.chatUpdate(new Slack.ChatUpdateRequest()) != null);\nSystem.assert(userClient.conversationsClose(new Slack.ConversationsCloseRequest()) != null);\nSystem.assert(userClient.conversationsHistory(new Slack.ConversationsHistoryRequest()) != null);\nSystem.assert(userClient.conversationsInfo(new Slack.ConversationsInfoRequest()) != null);\nSystem.assert(userClient.conversationsList(new Slack.ConversationsListRequest()) != null);\nSystem.assert(userClient.conversationsMark(new Slack.ConversationsMarkRequest()) != null);\nSystem.assert(userClient.conversationsMembers(new Slack.ConversationsMembersRequest()) != null);\nSystem.assert(userClient.conversationsOpen(new Slack.ConversationsOpenRequest()) != null);\nSystem.assert(userClient.conversationsReplies(new Slack.ConversationsRepliesRequest()) != null);\nSystem.assert(userClient.dndInfo(new Slack.DndInfoRequest()) != null);\nSystem.assert(userClient.dndTeamInfo(new Slack.DndTeamInfoRequest()) != null);\nSystem.assert(userClient.emojiList(new Slack.EmojiListRequest()) != null);\nSystem.assert(userClient.filesInfo(new Slack.FilesInfoRequest()) != null);\nSystem.assert(userClient.filesList(new Slack.FilesListRequest()) != null);\nSystem.assert(userClient.filesRemoteInfo(new Slack.FilesRemoteInfoRequest()) != null);\nSystem.assert(userClient.filesRemoteList(new Slack.FilesRemoteListRequest()) != null);\nSystem.assert(userClient.filesRemoteShare(new Slack.FilesRemoteShareRequest()) != null);\nSystem.assert(userClient.filesSharedPublicURL(new Slack.FilesSharedPublicURLRequest()) != null);\nSystem.assert(userClient.migrationExchange(new Slack.MigrationExchangeRequest()) != null);\nSystem.assert(userClient.pinsList(new Slack.PinsListRequest()) != null);\nSystem.assert(userClient.reactionsGet(new Slack.ReactionsGetRequest()) != null);\nSystem.assert(userClient.reactionsList(new Slack.ReactionsListRequest()) != null);\nSystem.assert(userClient.remindersInfo(new Slack.RemindersInfoRequest()) != null);\nSystem.assert(userClient.remindersList(new Slack.RemindersListRequest()) != null);\nSystem.assert(userClient.searchAll(new Slack.SearchAllRequest()) != null);\nSystem.assert(userClient.searchFiles(new Slack.SearchFilesRequest()) != null);\nSystem.assert(userClient.searchMessages(new Slack.SearchMessagesRequest()) != null);\nSystem.assert(userClient.starsList(new Slack.StarsListRequest()) != null);\nSystem.assert(userClient.teamAccessLogs(new Slack.TeamAccessLogsRequest()) != null);\nSystem.assert(userClient.teamBillableInfo(new Slack.TeamBillableInfoRequest()) != null);\nSystem.assert(userClient.teamInfo(new Slack.TeamInfoRequest()) != null);\nSystem.assert(userClient.teamIntegrationLogs(new Slack.TeamIntegrationLogsRequest()) != null);\nSystem.assert(userClient.teamProfileGet(new Slack.TeamProfileGetRequest()) != null);\nSystem.assert(userClient.usergroupsList(new Slack.UsergroupsListRequest()) != null);\nSystem.assert(userClient.usergroupsUsersList(new Slack.UsergroupsUsersListRequest()) != null);\nSystem.assert(userClient.usersConversations(new Slack.UsersConversationsRequest()) != null);\nSystem.assert(userClient.usersGetPresence(new Slack.UsersGetPresenceRequest()) != null);\nSystem.assert(userClient.usersIdentity(new Slack.UsersIdentityRequest()) != null);\nSystem.assert(userClient.usersInfo(new Slack.UsersInfoRequest()) != null);\nSystem.assert(userClient.usersList(new Slack.UsersListRequest()) != null);\nSystem.assert(userClient.usersLookupByEmail(new Slack.UsersLookupByEmailRequest()) != null);\nSystem.assert(userClient.usersProfileGet(new Slack.UsersProfileGetRequest()) != null);\nSystem.assert(userClient.viewsOpen(new Slack.ViewsOpenRequest()) != null);\nSystem.assert(userClient.viewsPush(new Slack.ViewsPushRequest()) != null);\nSystem.assert(userClient.viewsUpdate(new Slack.ViewsUpdateRequest()) != null);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Slack.AppClient appClient = new Slack.AppClient();\nSlack.BotClient botClient = new Slack.BotClient();\nSlack.UserClient userClient = new Slack.UserClient();\nSystem.assert(appClient.appsEventAuthorizationsList(new Slack.AppsEventAuthorizationsListRequest()) != null);\nSystem.assert(appClient.authTest(new Slack.AuthTestRequest()) != null);\nSystem.assert(botClient.authTeamsList(new Slack.AuthTeamsListRequest()) != null);\nSystem.assert(botClient.authTest(new Slack.AuthTestRequest()) != null);\nSystem.assert(botClient.bookmarksEdit(new Slack.BookmarksEditRequest()) != null);\nSystem.assert(botClient.bookmarksList(new Slack.BookmarksListRequest()) != null);\nSystem.assert(botClient.botsInfo(new Slack.BotsInfoRequest()) != null);\nSystem.assert(botClient.callsInfo(new Slack.CallsInfoRequest()) != null);\nSystem.assert(botClient.chatDelete(new Slack.ChatDeleteRequest()) != null);\nSystem.assert(botClient.chatDeleteScheduledMessage(new Slack.ChatDeleteScheduledMessageRequest()) != null);\nSystem.assert(botClient.chatGetPermalink(new Slack.ChatGetPermalinkRequest()) != null);\nSystem.assert(botClient.chatMeMessage(new Slack.ChatMeMessageRequest()) != null);\nSystem.assert(botClient.chatPostEphemeral(new Slack.ChatPostEphemeralRequest()) != null);\nSystem.assert(botClient.chatPostMessage(new Slack.ChatPostMessageRequest()) != null);\nSystem.assert(botClient.chatScheduleMessage(new Slack.ChatScheduleMessageRequest()) != null);\nSystem.assert(botClient.chatScheduledMessagesList(new Slack.ChatScheduledMessagesListRequest()) != null);\nSystem.assert(botClient.chatUpdate(new Slack.ChatUpdateRequest()) != null);\nSystem.assert(botClient.conversationsClose(new Slack.ConversationsCloseRequest()) != null);\nSystem.assert(botClient.conversationsHistory(new Slack.ConversationsHistoryRequest()) != null);\nSystem.assert(botClient.conversationsInfo(new Slack.ConversationsInfoRequest()) != null);\nSystem.assert(botClient.conversationsList(new Slack.ConversationsListRequest()) != null);\nSystem.assert(botClient.conversationsListConnectInvites(new Slack.ConversationsListConnectInvitesRequest()) != null);\nSystem.assert(botClient.conversationsMark(new Slack.ConversationsMarkRequest()) != null);\nSystem.assert(botClient.conversationsMembers(new Slack.ConversationsMembersRequest()) != null);\nSystem.assert(botClient.conversationsOpen(new Slack.ConversationsOpenRequest()) != null);\nSystem.assert(botClient.conversationsReplies(new Slack.ConversationsRepliesRequest()) != null);\nSystem.assert(botClient.dndInfo(new Slack.DndInfoRequest()) != null);\nSystem.assert(botClient.dndTeamInfo(new Slack.DndTeamInfoRequest()) != null);\nSystem.assert(botClient.emojiList(new Slack.EmojiListRequest()) != null);\nSystem.assert(botClient.filesInfo(new Slack.FilesInfoRequest()) != null);\nSystem.assert(botClient.filesList(new Slack.FilesListRequest()) != null);\nSystem.assert(botClient.filesRemoteInfo(new Slack.FilesRemoteInfoRequest()) != null);\nSystem.assert(botClient.filesRemoteList(new Slack.FilesRemoteListRequest()) != null);\nSystem.assert(botClient.filesRemoteShare(new Slack.FilesRemoteShareRequest()) != null);\nSystem.assert(botClient.migrationExchange(new Slack.MigrationExchangeRequest()) != null);\nSystem.assert(botClient.pinsList(new Slack.PinsListRequest()) != null);\nSystem.assert(botClient.reactionsGet(new Slack.ReactionsGetRequest()) != null);\nSystem.assert(botClient.reactionsList(new Slack.ReactionsListRequest()) != null);\nSystem.assert(botClient.teamInfo(new Slack.TeamInfoRequest()) != null);\nSystem.assert(botClient.teamProfileGet(new Slack.TeamProfileGetRequest()) != null);\nSystem.assert(botClient.usergroupsList(new Slack.UsergroupsListRequest()) != null);\nSystem.assert(botClient.usergroupsUsersList(new Slack.UsergroupsUsersListRequest()) != null);\nSystem.assert(botClient.usersConversations(new Slack.UsersConversationsRequest()) != null);\nSystem.assert(botClient.usersGetPresence(new Slack.UsersGetPresenceRequest()) != null);\nSystem.assert(botClient.usersInfo(new Slack.UsersInfoRequest()) != null);\nSystem.assert(botClient.usersList(new Slack.UsersListRequest()) != null);\nSystem.assert(botClient.usersLookupByEmail(new Slack.UsersLookupByEmailRequest()) != null);\nSystem.assert(botClient.usersProfileGet(new Slack.UsersProfileGetRequest()) != null);\nSystem.assert(botClient.viewsOpen(new Slack.ViewsOpenRequest()) != null);\nSystem.assert(botClient.viewsPublish(new Slack.ViewsPublishRequest()) != null);\nSystem.assert(botClient.viewsPush(new Slack.ViewsPushRequest()) != null);\nSystem.assert(botClient.viewsUpdate(new Slack.ViewsUpdateRequest()) != null);\nSystem.assert(botClient.workflowsStepCompleted(new Slack.WorkflowsStepCompletedRequest()) != null);\nSystem.assert(botClient.workflowsStepFailed(new Slack.WorkflowsStepFailedRequest()) != null);\nSystem.assert(botClient.workflowsUpdateStep(new Slack.WorkflowsUpdateStepRequest()) != null);\nSystem.assert(userClient.apiTest(new Slack.ApiTestRequest()) != null);\nSystem.assert(userClient.appsEventAuthorizationsList(new Slack.AppsEventAuthorizationsListRequest()) != null);\nSystem.assert(userClient.authTeamsList(new Slack.AuthTeamsListRequest()) != null);\nSystem.assert(userClient.authTest(new Slack.AuthTestRequest()) != null);\nSystem.assert(userClient.bookmarksEdit(new Slack.BookmarksEditRequest()) != null);\nSystem.assert(userClient.bookmarksList(new Slack.BookmarksListRequest()) != null);\nSystem.assert(userClient.botsInfo(new Slack.BotsInfoRequest()) != null);\nSystem.assert(userClient.callsInfo(new Slack.CallsInfoRequest()) != null);\nSystem.assert(userClient.chatDelete(new Slack.ChatDeleteRequest()) != null);\nSystem.assert(userClient.chatDeleteScheduledMessage(new Slack.ChatDeleteScheduledMessageRequest()) != null);\nSystem.assert(userClient.chatGetPermalink(new Slack.ChatGetPermalinkRequest()) != null);\nSystem.assert(userClient.chatMeMessage(new Slack.ChatMeMessageRequest()) != null);\nSystem.assert(userClient.chatPostEphemeral(new Slack.ChatPostEphemeralRequest()) != null);\nSystem.assert(userClient.chatPostMessage(new Slack.ChatPostMessageRequest()) != null);\nSystem.assert(userClient.chatScheduleMessage(new Slack.ChatScheduleMessageRequest()) != null);\nSystem.assert(userClient.chatScheduledMessagesList(new Slack.ChatScheduledMessagesListRequest()) != null);\nSystem.assert(userClient.chatUpdate(new Slack.ChatUpdateRequest()) != null);\nSystem.assert(userClient.conversationsClose(new Slack.ConversationsCloseRequest()) != null);\nSystem.assert(userClient.conversationsHistory(new Slack.ConversationsHistoryRequest()) != null);\nSystem.assert(userClient.conversationsInfo(new Slack.ConversationsInfoRequest()) != null);\nSystem.assert(userClient.conversationsList(new Slack.ConversationsListRequest()) != null);\nSystem.assert(userClient.conversationsMark(new Slack.ConversationsMarkRequest()) != null);\nSystem.assert(userClient.conversationsMembers(new Slack.ConversationsMembersRequest()) != null);\nSystem.assert(userClient.conversationsOpen(new Slack.ConversationsOpenRequest()) != null);\nSystem.assert(userClient.conversationsReplies(new Slack.ConversationsRepliesRequest()) != null);\nSystem.assert(userClient.dndInfo(new Slack.DndInfoRequest()) != null);\nSystem.assert(userClient.dndTeamInfo(new Slack.DndTeamInfoRequest()) != null);\nSystem.assert(userClient.emojiList(new Slack.EmojiListRequest()) != null);\nSystem.assert(userClient.filesInfo(new Slack.FilesInfoRequest()) != null);\nSystem.assert(userClient.filesList(new Slack.FilesListRequest()) != null);\nSystem.assert(userClient.filesRemoteInfo(new Slack.FilesRemoteInfoRequest()) != null);\nSystem.assert(userClient.filesRemoteList(new Slack.FilesRemoteListRequest()) != null);\nSystem.assert(userClient.filesRemoteShare(new Slack.FilesRemoteShareRequest()) != null);\nSystem.assert(userClient.filesSharedPublicURL(new Slack.FilesSharedPublicURLRequest()) != null);\nSystem.assert(userClient.migrationExchange(new Slack.MigrationExchangeRequest()) != null);\nSystem.assert(userClient.pinsList(new Slack.PinsListRequest()) != null);\nSystem.assert(userClient.reactionsGet(new Slack.ReactionsGetRequest()) != null);\nSystem.assert(userClient.reactionsList(new Slack.ReactionsListRequest()) != null);\nSystem.assert(userClient.remindersInfo(new Slack.RemindersInfoRequest()) != null);\nSystem.assert(userClient.remindersList(new Slack.RemindersListRequest()) != null);\nSystem.assert(userClient.searchAll(new Slack.SearchAllRequest()) != null);\nSystem.assert(userClient.searchFiles(new Slack.SearchFilesRequest()) != null);\nSystem.assert(userClient.searchMessages(new Slack.SearchMessagesRequest()) != null);\nSystem.assert(userClient.starsList(new Slack.StarsListRequest()) != null);\nSystem.assert(userClient.teamAccessLogs(new Slack.TeamAccessLogsRequest()) != null);\nSystem.assert(userClient.teamBillableInfo(new Slack.TeamBillableInfoRequest()) != null);\nSystem.assert(userClient.teamInfo(new Slack.TeamInfoRequest()) != null);\nSystem.assert(userClient.teamIntegrationLogs(new Slack.TeamIntegrationLogsRequest()) != null);\nSystem.assert(userClient.teamProfileGet(new Slack.TeamProfileGetRequest()) != null);\nSystem.assert(userClient.usergroupsList(new Slack.UsergroupsListRequest()) != null);\nSystem.assert(userClient.usergroupsUsersList(new Slack.UsergroupsUsersListRequest()) != null);\nSystem.assert(userClient.usersConversations(new Slack.UsersConversationsRequest()) != null);\nSystem.assert(userClient.usersGetPresence(new Slack.UsersGetPresenceRequest()) != null);\nSystem.assert(userClient.usersIdentity(new Slack.UsersIdentityRequest()) != null);\nSystem.assert(userClient.usersInfo(new Slack.UsersInfoRequest()) != null);\nSystem.assert(userClient.usersList(new Slack.UsersListRequest()) != null);\nSystem.assert(userClient.usersLookupByEmail(new Slack.UsersLookupByEmailRequest()) != null);\nSystem.assert(userClient.usersProfileGet(new Slack.UsersProfileGetRequest()) != null);\nSystem.assert(userClient.viewsOpen(new Slack.ViewsOpenRequest()) != null);\nSystem.assert(userClient.viewsPush(new Slack.ViewsPushRequest()) != null);\nSystem.assert(userClient.viewsUpdate(new Slack.ViewsUpdateRequest()) != null);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

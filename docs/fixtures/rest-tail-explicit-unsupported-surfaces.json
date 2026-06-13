@@ -1,0 +1,135 @@
+{
+  "name": "rest-tail-explicit-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "rest:describe_global_with_ifmodified_header.get",
+      "symbol": "Describe Global with If-Modified header",
+      "kind": "unsupported",
+      "notes": "Conditional REST 304 handling for Describe Global is not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:dome_event_series_delete.get",
+      "symbol": "Delete event series",
+      "kind": "unsupported",
+      "notes": "Event series deletion depends on Salesforce calendar/event services outside the local REST server boundary."
+    },
+    {
+      "surfaceId": "rest:dome_mark_records_as_recently_viewed.get",
+      "symbol": "Mark records as recently viewed",
+      "kind": "unsupported",
+      "notes": "Recently viewed mutation is a Salesforce user-activity service outside local record CRUD support."
+    },
+    {
+      "surfaceId": "rest:dome_relationship_traversal.get",
+      "symbol": "Traverse relationship records",
+      "kind": "unsupported",
+      "notes": "REST relationship traversal endpoints are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:dome_user_tasks.get",
+      "symbol": "User task REST examples",
+      "kind": "unsupported",
+      "notes": "User task REST examples depend on task-specific service routes outside current local REST support."
+    },
+    {
+      "surfaceId": "rest:resources_composite_sobjects_collections_retrieve_post.get",
+      "symbol": "Get Records Using sObject Collections with POST",
+      "kind": "unsupported",
+      "notes": "POST-only composite collection retrieve is not implemented; the local server supports the typed GET retrieve route."
+    },
+    {
+      "surfaceId": "rest:resources_recentlistviews.get",
+      "symbol": "Recent List Views",
+      "kind": "unsupported",
+      "notes": "The local server implements object list views, not the separate recent list views resource."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_relationships.get",
+      "symbol": "sObject Relationships",
+      "kind": "unsupported",
+      "notes": "REST relationship traversal endpoints are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_relationships_delete.get",
+      "symbol": "Delete relationship records",
+      "kind": "unsupported",
+      "notes": "REST relationship delete endpoints are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_relationships_get.get",
+      "symbol": "Get relationship records",
+      "kind": "unsupported",
+      "notes": "REST relationship get endpoints are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_relationships_patch.get",
+      "symbol": "Update relationship records",
+      "kind": "unsupported",
+      "notes": "REST relationship update endpoints are not implemented by the local server."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_suggest_articles_ID.get",
+      "symbol": "Suggested articles by record ID",
+      "kind": "unsupported",
+      "notes": "Knowledge article suggestion endpoints depend on Salesforce Knowledge services outside local REST support."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_suggest_articles_case.get",
+      "symbol": "Suggested articles for a case",
+      "kind": "unsupported",
+      "notes": "Knowledge article suggestion endpoints depend on Salesforce Knowledge services outside local REST support."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_upsert_post.get",
+      "symbol": "Create or update by external ID with POST",
+      "kind": "unsupported",
+      "notes": "POST external-ID upsert is not implemented; the local server supports external-ID GET, PATCH, and DELETE."
+    },
+    {
+      "surfaceId": "rest:responses_ls.get",
+      "symbol": "Lightning Scheduler responses",
+      "kind": "unsupported",
+      "notes": "Lightning Scheduler response shapes depend on scheduling services outside local REST support."
+    },
+    {
+      "surfaceId": "rest:responses_ls_candidates.get",
+      "symbol": "Lightning Scheduler appointment candidate responses",
+      "kind": "unsupported",
+      "notes": "Lightning Scheduler candidate responses depend on scheduling services outside local REST support."
+    },
+    {
+      "surfaceId": "rest:responses_ls_timeslots.get",
+      "symbol": "Lightning Scheduler time slot responses",
+      "kind": "unsupported",
+      "notes": "Lightning Scheduler time-slot responses depend on scheduling services outside local REST support."
+    },
+    {
+      "surfaceId": "rest:rest_rns.get",
+      "symbol": "REST API release notes",
+      "kind": "unsupported",
+      "notes": "REST release notes are documentation content, not a local REST server behavior surface."
+    },
+    {
+      "surfaceId": "rest:sobject_describe_with_ifmodified_header.get",
+      "symbol": "sObject Describe with If-Modified header",
+      "kind": "unsupported",
+      "notes": "Conditional REST 304 handling for sObject Describe is not implemented by the local server."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/RestTailExplicitUnsupportedMarker.cls",
+      "content": "public class RestTailExplicitUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

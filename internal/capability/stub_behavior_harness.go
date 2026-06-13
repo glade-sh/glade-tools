@@ -50,7 +50,7 @@ func commerceLocalHarnessBehaviorMethod(symbol typesys.TypeSymbol, member typesy
 	switch typeName {
 	case "commercepayments.ClientSidePaymentAdapter":
 		switch name {
-		case "getclientcomponentname", "getclientconfiguration", "processclientrequest":
+		case "getclientcomponentname", "getclientconfiguration":
 			return true
 		default:
 			return false

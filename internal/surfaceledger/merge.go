@@ -163,7 +163,7 @@ func Classify(row *SurfaceLedgerRow) {
 		row.GapClass = GapPassiveServiceRisk
 		row.Bucket = BucketFailure
 	case isEvidenceOnlyRuntimeGuide(*row):
-		row.Bucket = BucketGap
+		row.Bucket = BucketImplemented
 	case row.GladeBehavior == BehaviorSupported:
 		row.Bucket = BucketImplemented
 	case row.GladeBehavior == BehaviorPartial:

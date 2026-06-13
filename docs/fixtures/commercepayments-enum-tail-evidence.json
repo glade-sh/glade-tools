@@ -1,0 +1,254 @@
+{
+  "name": "commercepayments-enum-tail-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:commercepayments.AccountHolderType.Business",
+      "symbol": "commercepayments.AccountHolderType.Business",
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
+    },
+    {
+      "surfaceId": "apex:commercepayments.AccountHolderType.Individual",
+      "symbol": "commercepayments.AccountHolderType.Individual",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.AccountType.Checking",
+      "symbol": "commercepayments.AccountType.Checking",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.AccountType.Savings",
+      "symbol": "commercepayments.AccountType.Savings",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.BankType.Ach",
+      "symbol": "commercepayments.BankType.Ach",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.BankType.Bacs",
+      "symbol": "commercepayments.BankType.Bacs",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.BankType.Becs",
+      "symbol": "commercepayments.BankType.Becs",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.BankType.SepaDebit",
+      "symbol": "commercepayments.BankType.SepaDebit",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardCategory.CreditCard",
+      "symbol": "commercepayments.CardCategory.CreditCard",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardCategory.DebitCard",
+      "symbol": "commercepayments.CardCategory.DebitCard",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardType.AmericanExpress",
+      "symbol": "commercepayments.CardType.AmericanExpress",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardType.DinersClub",
+      "symbol": "commercepayments.CardType.DinersClub",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardType.Jcb",
+      "symbol": "commercepayments.CardType.Jcb",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardType.Maestro",
+      "symbol": "commercepayments.CardType.Maestro",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardType.MasterCard",
+      "symbol": "commercepayments.CardType.MasterCard",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.CardType.Visa",
+      "symbol": "commercepayments.CardType.Visa",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.NotificationStatus.Failed",
+      "symbol": "commercepayments.NotificationStatus.Failed",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.NotificationStatus.Success",
+      "symbol": "commercepayments.NotificationStatus.Success",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentMethodIdType.CardPaymentMethod",
+      "symbol": "commercepayments.PaymentMethodIdType.CardPaymentMethod",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentMethodIdType.SavedPaymentMethod",
+      "symbol": "commercepayments.PaymentMethodIdType.SavedPaymentMethod",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RequestType.AuthorizationReversal",
+      "symbol": "commercepayments.RequestType.AuthorizationReversal",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RequestType.Authorize",
+      "symbol": "commercepayments.RequestType.Authorize",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RequestType.Capture",
+      "symbol": "commercepayments.RequestType.Capture",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RequestType.PostAuth",
+      "symbol": "commercepayments.RequestType.PostAuth",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RequestType.ReferencedRefund",
+      "symbol": "commercepayments.RequestType.ReferencedRefund",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RequestType.Sale",
+      "symbol": "commercepayments.RequestType.Sale",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RequestType.Tokenize",
+      "symbol": "commercepayments.RequestType.Tokenize",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory.CardLimit",
+      "symbol": "commercepayments.RetryCategory.CardLimit",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory.GatewayConnection",
+      "symbol": "commercepayments.RetryCategory.GatewayConnection",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory.PaymentInformation",
+      "symbol": "commercepayments.RetryCategory.PaymentInformation",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory.PaymentProcessing",
+      "symbol": "commercepayments.RetryCategory.PaymentProcessing",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory.Security",
+      "symbol": "commercepayments.RetryCategory.Security",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory.Unknown",
+      "symbol": "commercepayments.RetryCategory.Unknown",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryDecision.NonRetriable",
+      "symbol": "commercepayments.RetryDecision.NonRetriable",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryDecision.Retriable",
+      "symbol": "commercepayments.RetryDecision.Retriable",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SalesforceResultCode.Decline",
+      "symbol": "commercepayments.SalesforceResultCode.Decline",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SalesforceResultCode.Indeterminate",
+      "symbol": "commercepayments.SalesforceResultCode.Indeterminate",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SalesforceResultCode.PermanentFail",
+      "symbol": "commercepayments.SalesforceResultCode.PermanentFail",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SalesforceResultCode.RequiresReview",
+      "symbol": "commercepayments.SalesforceResultCode.RequiresReview",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SalesforceResultCode.Success",
+      "symbol": "commercepayments.SalesforceResultCode.Success",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SalesforceResultCode.SystemError",
+      "symbol": "commercepayments.SalesforceResultCode.SystemError",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SalesforceResultCode.ValidationError",
+      "symbol": "commercepayments.SalesforceResultCode.ValidationError",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.StandardEntryClassCode.Ccd",
+      "symbol": "commercepayments.StandardEntryClassCode.Ccd",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.StandardEntryClassCode.Ppd",
+      "symbol": "commercepayments.StandardEntryClassCode.Ppd",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.StandardEntryClassCode.Tel",
+      "symbol": "commercepayments.StandardEntryClassCode.Tel",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:commercepayments.StandardEntryClassCode.Web",
+      "symbol": "commercepayments.StandardEntryClassCode.Web",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals('Business', commercepayments.AccountHolderType.Business.name());\nSystem.assertEquals('Individual', commercepayments.AccountHolderType.Individual.name());\nSystem.assertEquals('Checking', commercepayments.AccountType.Checking.name());\nSystem.assertEquals('Savings', commercepayments.AccountType.Savings.name());\nSystem.assertEquals('Ach', commercepayments.BankType.Ach.name());\nSystem.assertEquals('Bacs', commercepayments.BankType.Bacs.name());\nSystem.assertEquals('Becs', commercepayments.BankType.Becs.name());\nSystem.assertEquals('SepaDebit', commercepayments.BankType.SepaDebit.name());\nSystem.assertEquals('CreditCard', commercepayments.CardCategory.CreditCard.name());\nSystem.assertEquals('DebitCard', commercepayments.CardCategory.DebitCard.name());\nSystem.assertEquals('AmericanExpress', commercepayments.CardType.AmericanExpress.name());\nSystem.assertEquals('DinersClub', commercepayments.CardType.DinersClub.name());\nSystem.assertEquals('Jcb', commercepayments.CardType.Jcb.name());\nSystem.assertEquals('Maestro', commercepayments.CardType.Maestro.name());\nSystem.assertEquals('MasterCard', commercepayments.CardType.MasterCard.name());\nSystem.assertEquals('Visa', commercepayments.CardType.Visa.name());\nSystem.assertEquals('Failed', commercepayments.NotificationStatus.Failed.name());\nSystem.assertEquals('Success', commercepayments.NotificationStatus.Success.name());\nSystem.assertEquals('CardPaymentMethod', commercepayments.PaymentMethodIdType.CardPaymentMethod.name());\nSystem.assertEquals('SavedPaymentMethod', commercepayments.PaymentMethodIdType.SavedPaymentMethod.name());\nSystem.assertEquals('AuthorizationReversal', commercepayments.RequestType.AuthorizationReversal.name());\nSystem.assertEquals('Authorize', commercepayments.RequestType.Authorize.name());\nSystem.assertEquals('Capture', commercepayments.RequestType.Capture.name());\nSystem.assertEquals('PostAuth', commercepayments.RequestType.PostAuth.name());\nSystem.assertEquals('ReferencedRefund', commercepayments.RequestType.ReferencedRefund.name());\nSystem.assertEquals('Sale', commercepayments.RequestType.Sale.name());\nSystem.assertEquals('Tokenize', commercepayments.RequestType.Tokenize.name());\nSystem.assertEquals('CardLimit', commercepayments.RetryCategory.CardLimit.name());\nSystem.assertEquals('GatewayConnection', commercepayments.RetryCategory.GatewayConnection.name());\nSystem.assertEquals('PaymentInformation', commercepayments.RetryCategory.PaymentInformation.name());\nSystem.assertEquals('PaymentProcessing', commercepayments.RetryCategory.PaymentProcessing.name());\nSystem.assertEquals('Security', commercepayments.RetryCategory.Security.name());\nSystem.assertEquals('Unknown', commercepayments.RetryCategory.Unknown.name());\nSystem.assertEquals('NonRetriable', commercepayments.RetryDecision.NonRetriable.name());\nSystem.assertEquals('Retriable', commercepayments.RetryDecision.Retriable.name());\nSystem.assertEquals('Decline', commercepayments.SalesforceResultCode.Decline.name());\nSystem.assertEquals('Indeterminate', commercepayments.SalesforceResultCode.Indeterminate.name());\nSystem.assertEquals('PermanentFail', commercepayments.SalesforceResultCode.PermanentFail.name());\nSystem.assertEquals('RequiresReview', commercepayments.SalesforceResultCode.RequiresReview.name());\nSystem.assertEquals('Success', commercepayments.SalesforceResultCode.Success.name());\nSystem.assertEquals('SystemError', commercepayments.SalesforceResultCode.SystemError.name());\nSystem.assertEquals('ValidationError', commercepayments.SalesforceResultCode.ValidationError.name());\nSystem.assertEquals('Ccd', commercepayments.StandardEntryClassCode.Ccd.name());\nSystem.assertEquals('Ppd', commercepayments.StandardEntryClassCode.Ppd.name());\nSystem.assertEquals('Tel', commercepayments.StandardEntryClassCode.Tel.name());\nSystem.assertEquals('Web', commercepayments.StandardEntryClassCode.Web.name());\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals('Business', commercepayments.AccountHolderType.Business.name());\nSystem.assertEquals('Individual', commercepayments.AccountHolderType.Individual.name());\nSystem.assertEquals('Checking', commercepayments.AccountType.Checking.name());\nSystem.assertEquals('Savings', commercepayments.AccountType.Savings.name());\nSystem.assertEquals('Ach', commercepayments.BankType.Ach.name());\nSystem.assertEquals('Bacs', commercepayments.BankType.Bacs.name());\nSystem.assertEquals('Becs', commercepayments.BankType.Becs.name());\nSystem.assertEquals('SepaDebit', commercepayments.BankType.SepaDebit.name());\nSystem.assertEquals('CreditCard', commercepayments.CardCategory.CreditCard.name());\nSystem.assertEquals('DebitCard', commercepayments.CardCategory.DebitCard.name());\nSystem.assertEquals('AmericanExpress', commercepayments.CardType.AmericanExpress.name());\nSystem.assertEquals('DinersClub', commercepayments.CardType.DinersClub.name());\nSystem.assertEquals('Jcb', commercepayments.CardType.Jcb.name());\nSystem.assertEquals('Maestro', commercepayments.CardType.Maestro.name());\nSystem.assertEquals('MasterCard', commercepayments.CardType.MasterCard.name());\nSystem.assertEquals('Visa', commercepayments.CardType.Visa.name());\nSystem.assertEquals('Failed', commercepayments.NotificationStatus.Failed.name());\nSystem.assertEquals('Success', commercepayments.NotificationStatus.Success.name());\nSystem.assertEquals('CardPaymentMethod', commercepayments.PaymentMethodIdType.CardPaymentMethod.name());\nSystem.assertEquals('SavedPaymentMethod', commercepayments.PaymentMethodIdType.SavedPaymentMethod.name());\nSystem.assertEquals('AuthorizationReversal', commercepayments.RequestType.AuthorizationReversal.name());\nSystem.assertEquals('Authorize', commercepayments.RequestType.Authorize.name());\nSystem.assertEquals('Capture', commercepayments.RequestType.Capture.name());\nSystem.assertEquals('PostAuth', commercepayments.RequestType.PostAuth.name());\nSystem.assertEquals('ReferencedRefund', commercepayments.RequestType.ReferencedRefund.name());\nSystem.assertEquals('Sale', commercepayments.RequestType.Sale.name());\nSystem.assertEquals('Tokenize', commercepayments.RequestType.Tokenize.name());\nSystem.assertEquals('CardLimit', commercepayments.RetryCategory.CardLimit.name());\nSystem.assertEquals('GatewayConnection', commercepayments.RetryCategory.GatewayConnection.name());\nSystem.assertEquals('PaymentInformation', commercepayments.RetryCategory.PaymentInformation.name());\nSystem.assertEquals('PaymentProcessing', commercepayments.RetryCategory.PaymentProcessing.name());\nSystem.assertEquals('Security', commercepayments.RetryCategory.Security.name());\nSystem.assertEquals('Unknown', commercepayments.RetryCategory.Unknown.name());\nSystem.assertEquals('NonRetriable', commercepayments.RetryDecision.NonRetriable.name());\nSystem.assertEquals('Retriable', commercepayments.RetryDecision.Retriable.name());\nSystem.assertEquals('Decline', commercepayments.SalesforceResultCode.Decline.name());\nSystem.assertEquals('Indeterminate', commercepayments.SalesforceResultCode.Indeterminate.name());\nSystem.assertEquals('PermanentFail', commercepayments.SalesforceResultCode.PermanentFail.name());\nSystem.assertEquals('RequiresReview', commercepayments.SalesforceResultCode.RequiresReview.name());\nSystem.assertEquals('Success', commercepayments.SalesforceResultCode.Success.name());\nSystem.assertEquals('SystemError', commercepayments.SalesforceResultCode.SystemError.name());\nSystem.assertEquals('ValidationError', commercepayments.SalesforceResultCode.ValidationError.name());\nSystem.assertEquals('Ccd', commercepayments.StandardEntryClassCode.Ccd.name());\nSystem.assertEquals('Ppd', commercepayments.StandardEntryClassCode.Ppd.name());\nSystem.assertEquals('Tel', commercepayments.StandardEntryClassCode.Tel.name());\nSystem.assertEquals('Web', commercepayments.StandardEntryClassCode.Web.name());\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

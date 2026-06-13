@@ -1,0 +1,114 @@
+{
+  "name": "core-runtime-businesshours-license-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:BusinessHours.add(String,Datetime,Long)",
+      "symbol": "BusinessHours.add",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic business-hours datetime addition."
+    },
+    {
+      "surfaceId": "apex:BusinessHours.addGmt(String,Datetime,Long)",
+      "symbol": "BusinessHours.addGmt",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic GMT business-hours datetime addition."
+    },
+    {
+      "surfaceId": "apex:BusinessHours.diff(String,Datetime,Datetime)",
+      "symbol": "BusinessHours.diff",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic business-hours interval calculation."
+    },
+    {
+      "surfaceId": "apex:BusinessHours.isWithin(String,Datetime)",
+      "symbol": "BusinessHours.isWithin",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support inside/outside window checks."
+    },
+    {
+      "surfaceId": "apex:BusinessHours.nextStartDate(String,Datetime)",
+      "symbol": "BusinessHours.nextStartDate",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records return the next deterministic local business window."
+    },
+    {
+      "surfaceId": "apex:System.UserInfo.hasPackageLicense(Id)",
+      "symbol": "UserInfo.hasPackageLicense",
+      "kind": "exec",
+      "notes": "Seeded PackageLicense and UserPackageLicense rows drive local package-license checks."
+    },
+    {
+      "surfaceId": "apex:System.UserInfo.isCurrentUserLicensedForPackage(Id)",
+      "symbol": "UserInfo.isCurrentUserLicensedForPackage",
+      "kind": "exec",
+      "notes": "Seeded PackageLicense and UserPackageLicense rows drive local current-user package-license checks."
+    }
+  ],
+  "seedData": [
+    {
+      "object": "BusinessHours",
+      "records": [
+        {
+          "Id": "01m000000000001AAA",
+          "Name": "Default",
+          "IsActive": true,
+          "IsDefault": true,
+          "TimeZoneSidKey": "America/Los_Angeles",
+          "MondayStartTime": "09:00:00.000Z",
+          "MondayEndTime": "17:00:00.000Z",
+          "TuesdayStartTime": "09:00:00.000Z",
+          "TuesdayEndTime": "17:00:00.000Z",
+          "WednesdayStartTime": "09:00:00.000Z",
+          "WednesdayEndTime": "17:00:00.000Z",
+          "ThursdayStartTime": "09:00:00.000Z",
+          "ThursdayEndTime": "17:00:00.000Z",
+          "FridayStartTime": "09:00:00.000Z",
+          "FridayEndTime": "17:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "object": "PackageLicense",
+      "records": [
+        {
+          "Id": "050000000000001",
+          "NamespacePrefix": "pkg",
+          "Status": "Active"
+        },
+        {
+          "Id": "050000000000002",
+          "NamespacePrefix": "missing",
+          "Status": "Active"
+        }
+      ]
+    },
+    {
+      "object": "UserPackageLicense",
+      "records": [
+        {
+          "Id": "0PL000000000001",
+          "PackageLicenseId": "050000000000001",
+          "UserId": "005-local-user"
+        }
+      ]
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Datetime mondayNine = Datetime.newInstanceGmt(2026, 6, 15, 16, 0, 0); System.assertEquals(true, BusinessHours.isWithin('01m000000000001AAA', mondayNine)); Datetime mondayTen = BusinessHours.add('01m000000000001AAA', mondayNine, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 17, 0, 0), mondayTen); Datetime mondayEleven = BusinessHours.addGmt('01m000000000001AAA', mondayTen, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 18, 0, 0), mondayEleven); System.assertEquals(60 * 60 * 1000, BusinessHours.diff('01m000000000001AAA', mondayNine, mondayTen)); Datetime saturday = Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', saturday)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', saturday)); System.assertEquals(true, UserInfo.hasPackageLicense('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensedForPackage('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensed('pkg')); System.assertEquals(false, UserInfo.hasPackageLicense('050000000000002'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Datetime mondayNine = Datetime.newInstanceGmt(2026, 6, 15, 16, 0, 0); System.assertEquals(true, BusinessHours.isWithin('01m000000000001AAA', mondayNine)); Datetime mondayTen = BusinessHours.add('01m000000000001AAA', mondayNine, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 17, 0, 0), mondayTen); Datetime mondayEleven = BusinessHours.addGmt('01m000000000001AAA', mondayTen, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 18, 0, 0), mondayEleven); System.assertEquals(60 * 60 * 1000, BusinessHours.diff('01m000000000001AAA', mondayNine, mondayTen)); Datetime saturday = Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', saturday)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', saturday)); System.assertEquals(true, UserInfo.hasPackageLicense('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensedForPackage('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensed('pkg')); System.assertEquals(false, UserInfo.hasPackageLicense('050000000000002'));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

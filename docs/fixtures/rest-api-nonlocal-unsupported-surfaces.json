@@ -1,0 +1,869 @@
+{
+  "name": "rest-api-nonlocal-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "rest:api_rest_eol.get",
+      "symbol": "API End-of-Life Policy",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_event_log_file_blob.get",
+      "symbol": "Get Event Monitoring Content from a Record",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_event_log_file_describe.get",
+      "symbol": "Describe Event Monitoring Using REST",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_event_log_file_download.get",
+      "symbol": "Download Large Event Log Files Using cURL with REST",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_event_log_file_query.get",
+      "symbol": "Query Event Monitoring Data with REST",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_get_relevant_items.get",
+      "symbol": "View Relevant Items",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_approvals.get",
+      "symbol": "Get a List of All Approval Processes",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_approvals_approve.get",
+      "symbol": "Approve a Record",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_approvals_bulk.get",
+      "symbol": "Bulk Approvals",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_approvals_reject.get",
+      "symbol": "Reject a Record",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_approvals_submit.get",
+      "symbol": "Submit a Record for Approval",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_rules.get",
+      "symbol": "Get a List of Process Rules",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_rules_particular.get",
+      "symbol": "Get a Particular Process Rule",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_process_rules_trigger.get",
+      "symbol": "Trigger Process Rules",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_retrieve_search_layouts.get",
+      "symbol": "Get Search Result Layouts for Objects",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_retrieve_search_scope_order.get",
+      "symbol": "Get the Default Search Scope and Order",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:dome_search.get",
+      "symbol": "Search for a String",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:errorcodes.get",
+      "symbol": "Status Codes and Error Responses",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:event_log_file_delete.get",
+      "symbol": "Delete Event Monitoring Data",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:event_log_file_hourly_diff.get",
+      "symbol": "Differences Between Hourly and 24-Hour Event Logs",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:event_log_file_hourly_overview.get",
+      "symbol": "Query or View Hourly Event Log Files",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:event_log_file_hourly_query.get",
+      "symbol": "Query Hourly Event Log Files",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers.get",
+      "symbol": "Headers",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_api_usage.get",
+      "symbol": "Limit Info Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_autoassign.get",
+      "symbol": "Assignment Rule Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_calloptions.get",
+      "symbol": "Call Options Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_duplicaterules.get",
+      "symbol": "Duplicate Rule Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_mru.get",
+      "symbol": "MRU Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_packageversion.get",
+      "symbol": "Package Version Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_queryoptions.get",
+      "symbol": "Query Options Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:headers_warning.get",
+      "symbol": "Warning Header",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_curl.get",
+      "symbol": "Send REST Requests with cURL",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_oauth_and_connected_apps.get",
+      "symbol": "Authorization Through External Client Apps or Connected Apps and OAuth 2.0",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_rest.get",
+      "symbol": "Introduction to REST API",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_rest_architecture.get",
+      "symbol": "REST API Architecture",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_rest_compatible_editions.get",
+      "symbol": "Supported Editions and Required Permissions",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_rest_compression.get",
+      "symbol": "Compression Headers",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_rest_conditional_requests.get",
+      "symbol": "Conditional Request Headers",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_rest_resources.get",
+      "symbol": "REST Resources and Requests",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_valid_date_formats.get",
+      "symbol": "Valid Date and DateTime Formats",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:intro_what_is_rest_api.get",
+      "symbol": "About REST API",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:openapi_beta.get",
+      "symbol": "Generating an OpenAPI 3.0 Document for sObjects REST API (Beta)",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:quickstart.get",
+      "symbol": "Quick Start",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:quickstart_code.get",
+      "symbol": "Step Three: Walk Through the Sample Code",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:quickstart_dev_org.get",
+      "symbol": "Step One: Sign up for Salesforce Developer Edition",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:quickstart_oauth.get",
+      "symbol": "Step Two: Set Up Authentication",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:quickstart_using_curl.get",
+      "symbol": "Using cURL",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:quickstart_using_other_tools.get",
+      "symbol": "Using Other Tools",
+      "kind": "unsupported",
+      "notes": "This REST API documentation page is reference or setup material, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_body_ls_skillrequirement.get",
+      "symbol": "Skill Requirement",
+      "kind": "unsupported",
+      "notes": "Salesforce Scheduler resources depend on Field Service scheduling services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_body_ls_worktype.get",
+      "symbol": "Work Type",
+      "kind": "unsupported",
+      "notes": "Salesforce Scheduler resources depend on Field Service scheduling services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_survey_translate_add_change.get",
+      "symbol": "Add or Change the Translation of a Survey Field",
+      "kind": "unsupported",
+      "notes": "Survey translation resources manage Salesforce Surveys metadata and service data, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_survey_translate_add_change_multiple.get",
+      "symbol": "Add or Update the Translated Value of Multiple Survey Fields in One or More Languages",
+      "kind": "unsupported",
+      "notes": "Survey translation resources manage Salesforce Surveys metadata and service data, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_survey_translate_delete.get",
+      "symbol": "Delete the Translated Value of a Survey Field",
+      "kind": "unsupported",
+      "notes": "Survey translation resources manage Salesforce Surveys metadata and service data, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_survey_translate_delete_multiple.get",
+      "symbol": "Delete the Translated Value of Multiple Survey Fields in One or More Languages",
+      "kind": "unsupported",
+      "notes": "Survey translation resources manage Salesforce Surveys metadata and service data, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_survey_translate_view.get",
+      "symbol": "Get Translated Value of a Survey Field",
+      "kind": "unsupported",
+      "notes": "Survey translation resources manage Salesforce Surveys metadata and service data, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:request_survey_translate_view_multiple.get",
+      "symbol": "Get the Translated Values of Multiple Survey Fields in One or More Languages",
+      "kind": "unsupported",
+      "notes": "Survey translation resources manage Salesforce Surveys metadata and service data, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:requests_bodies_ls.get",
+      "symbol": "Request Bodies",
+      "kind": "unsupported",
+      "notes": "Salesforce Scheduler resources depend on Field Service scheduling services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:requests_ls_getappointmentcandidates.get",
+      "symbol": "Get Appointment Candidates",
+      "kind": "unsupported",
+      "notes": "Salesforce Scheduler resources depend on Field Service scheduling services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:requests_ls_getappointmentslots.get",
+      "symbol": "Get Appointment Slots",
+      "kind": "unsupported",
+      "notes": "Salesforce Scheduler resources depend on Field Service scheduling services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:requests_ls_scheduling.get",
+      "symbol": "Scheduling",
+      "kind": "unsupported",
+      "notes": "Salesforce Scheduler resources depend on Field Service scheduling services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_custom_deploy_datakit.get",
+      "symbol": "Deploy Data Kit Components by Using Deploy Data Kit Components Flow",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable.get",
+      "symbol": "Invocable Actions",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_custom.get",
+      "symbol": "Invocable Actions Custom",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_custom_get.get",
+      "symbol": "Get Custom Invocable Actions",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_custom_head.get",
+      "symbol": "Return HTTP Headers for Custom Invocable Actions",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_get.get",
+      "symbol": "Get Invocable Actions",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_head.get",
+      "symbol": "Return HTTP Headers for Invocable Actions",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_standard.get",
+      "symbol": "Invocable Actions Standard",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_standard_get.get",
+      "symbol": "Get Standard Invocable Actions",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_actions_invocable_standard_head.get",
+      "symbol": "Return HTTP Headers for Standard Invocable Actions",
+      "kind": "unsupported",
+      "notes": "REST action and invocable action endpoints call Salesforce action services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_appmenu.get",
+      "symbol": "AppMenu Items",
+      "kind": "unsupported",
+      "notes": "App menu REST resources expose Salesforce navigation configuration, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_appmenu_get.get",
+      "symbol": "Get AppMenu Types",
+      "kind": "unsupported",
+      "notes": "App menu REST resources expose Salesforce navigation configuration, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_appmenu_head.get",
+      "symbol": "Return Headers of App Menu Item Requests",
+      "kind": "unsupported",
+      "notes": "App menu REST resources expose Salesforce navigation configuration, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_appmenu_items_get.get",
+      "symbol": "Get AppMenu Items",
+      "kind": "unsupported",
+      "notes": "App menu REST resources expose Salesforce navigation configuration, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_appmenu_items_mobile_get.get",
+      "symbol": "Get AppMenu Mobile Items",
+      "kind": "unsupported",
+      "notes": "App menu REST resources expose Salesforce navigation configuration, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_appmenu_mobile_head.get",
+      "symbol": "Return Headers of AppMenu Mobile Item Requests",
+      "kind": "unsupported",
+      "notes": "App menu REST resources expose Salesforce navigation configuration, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_appmenu_mobile_web.get",
+      "symbol": "AppMenu Mobile Items",
+      "kind": "unsupported",
+      "notes": "App menu REST resources expose Salesforce navigation configuration, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_cdp_query.get",
+      "symbol": "Data Cloud Query Profile Parameters",
+      "kind": "unsupported",
+      "notes": "Data Cloud query profile behavior depends on Salesforce Data Cloud services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_compact_layouts.get",
+      "symbol": "Compact Layouts",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_consent.get",
+      "symbol": "Consent",
+      "kind": "unsupported",
+      "notes": "Consent API behavior compiles Salesforce consent service settings, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_consent_action.get",
+      "symbol": "Compile Consent Settings",
+      "kind": "unsupported",
+      "notes": "Consent API behavior compiles Salesforce consent service settings, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_consent_cdp_params.get",
+      "symbol": "Use the Consent API with Data 360",
+      "kind": "unsupported",
+      "notes": "Consent API behavior compiles Salesforce consent service settings, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_consent_write.get",
+      "symbol": "Consent Write",
+      "kind": "unsupported",
+      "notes": "Consent API behavior compiles Salesforce consent service settings, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_knowledge_retrieve_language.get",
+      "symbol": "Get Knowledge Language Settings",
+      "kind": "unsupported",
+      "notes": "Knowledge REST resources depend on Salesforce Knowledge publishing, language, and data category services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_knowledge_support.get",
+      "symbol": "Support Knowledge with REST API",
+      "kind": "unsupported",
+      "notes": "Knowledge REST resources depend on Salesforce Knowledge publishing, language, and data category services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_knowledge_support_artdetails.get",
+      "symbol": "Articles Details",
+      "kind": "unsupported",
+      "notes": "Knowledge REST resources depend on Salesforce Knowledge publishing, language, and data category services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_knowledge_support_artlist.get",
+      "symbol": "Articles List",
+      "kind": "unsupported",
+      "notes": "Knowledge REST resources depend on Salesforce Knowledge publishing, language, and data category services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_knowledge_support_dcdetail.get",
+      "symbol": "Data Category Detail",
+      "kind": "unsupported",
+      "notes": "Knowledge REST resources depend on Salesforce Knowledge publishing, language, and data category services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_knowledge_support_dcgroups.get",
+      "symbol": "Data Category Groups",
+      "kind": "unsupported",
+      "notes": "Knowledge REST resources depend on Salesforce Knowledge publishing, language, and data category services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_lightning_exitbypagemetrics.get",
+      "symbol": "Lightning Exit by Page Metrics",
+      "kind": "unsupported",
+      "notes": "Lightning usage metrics are product telemetry service endpoints, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_lightning_togglemetrics.get",
+      "symbol": "Lightning Toggle Metrics",
+      "kind": "unsupported",
+      "notes": "Lightning usage metrics are product telemetry service endpoints, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_lightning_usagebyapptypemetrics.get",
+      "symbol": "Lightning Usage by App Type",
+      "kind": "unsupported",
+      "notes": "Lightning usage metrics are product telemetry service endpoints, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_lightning_usagebybrowsermetrics.get",
+      "symbol": "Lightning Usage by Browser",
+      "kind": "unsupported",
+      "notes": "Lightning usage metrics are product telemetry service endpoints, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_lightning_usagebyflexipagemetrics.get",
+      "symbol": "Lightning Usage by FlexiPage",
+      "kind": "unsupported",
+      "notes": "Lightning usage metrics are product telemetry service endpoints, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_lightning_usagebypagemetrics.get",
+      "symbol": "Lightning Usage by Page",
+      "kind": "unsupported",
+      "notes": "Lightning usage metrics are product telemetry service endpoints, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_ls_intro.get",
+      "symbol": "Salesforce Scheduler Resources",
+      "kind": "unsupported",
+      "notes": "Salesforce Scheduler resources depend on Field Service scheduling services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_multiaction_consent.get",
+      "symbol": "Compile Multiple Types of Consent Settings",
+      "kind": "unsupported",
+      "notes": "Consent API behavior compiles Salesforce consent service settings, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_named_query.get",
+      "symbol": "Named Query API",
+      "kind": "unsupported",
+      "notes": "Named Query REST pages describe setup and hosted query APIs, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_named_query_intro.get",
+      "symbol": "Named Query APIs for SOQL Queries",
+      "kind": "unsupported",
+      "notes": "Named Query REST pages describe setup and hosted query APIs, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_named_query_setup.get",
+      "symbol": "Create Named Query APIs in Setup",
+      "kind": "unsupported",
+      "notes": "Named Query REST pages describe setup and hosted query APIs, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_named_query_vscode.get",
+      "symbol": "Create Named Query APIs in VS Code",
+      "kind": "unsupported",
+      "notes": "Named Query REST pages describe setup and hosted query APIs, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_portability.get",
+      "symbol": "Portability",
+      "kind": "unsupported",
+      "notes": "Portability requests compile and track Salesforce service data exports, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_portability_get.get",
+      "symbol": "Get the Status of Your Portability Request",
+      "kind": "unsupported",
+      "notes": "Portability requests compile and track Salesforce service data exports, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_portability_post.get",
+      "symbol": "Compile Data for a Portability Request",
+      "kind": "unsupported",
+      "notes": "Portability requests compile and track Salesforce service data exports, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals.get",
+      "symbol": "Process Approvals",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_get.get",
+      "symbol": "Get Process Approvals",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_head.get",
+      "symbol": "Return HTTP Headers for Process Approvals",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.get",
+      "symbol": "Submit, Approve, or Reject Process Approvals",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rule_object.get",
+      "symbol": "Process Rule for an sObject",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rule_object_get.get",
+      "symbol": "Get a Process Rule for an sObject",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rule_object_head.get",
+      "symbol": "Return HTTP Headers for a Process Rule of an sObject",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rule_object_post.get",
+      "symbol": "Trigger a Process Rule for an sObject",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules.get",
+      "symbol": "Process Rules",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules_get.get",
+      "symbol": "Get Process Rules",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules_head.get",
+      "symbol": "Return HTTP Headers for Process Rules",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules_object.get",
+      "symbol": "Process Rule List for an sObject",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules_object_get.get",
+      "symbol": "Get Process Rules for an sObject",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules_object_head.get",
+      "symbol": "Return HTTP Headers for Process Rules of an sObject",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules_post.get",
+      "symbol": "Trigger Process Rules",
+      "kind": "unsupported",
+      "notes": "Process approval and rule REST endpoints invoke Salesforce workflow services, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.get",
+      "symbol": "sObject Relevant Items",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search.get",
+      "symbol": "Search",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_layouts.get",
+      "symbol": "Search Result Layouts",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_parameterized.get",
+      "symbol": "Parameterized Search",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_parameterized_get.get",
+      "symbol": "Search with Parameters in the URI",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_parameterized_post.get",
+      "symbol": "Search with Parameters in the Request Body",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_scope_order.get",
+      "symbol": "Search Scope and Order",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_suggest_queries.get",
+      "symbol": "Search Suggested Queries",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_suggest_records.get",
+      "symbol": "Search for Records Suggested by Autocomplete and Instant Results",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_search_suggest_title_matches.get",
+      "symbol": "Search Suggested Article Title Matches",
+      "kind": "unsupported",
+      "notes": "REST search, relevant item, and search layout endpoints depend on Salesforce search services and UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_compactlayouts_head.get",
+      "symbol": "Return Headers Using sObject CompactLayouts",
+      "kind": "unsupported",
+      "notes": "The local server supports compact layout GET routes from source metadata; HEAD-specific compact layout requests are outside the local server surface."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts.get",
+      "symbol": "sObject Layouts",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_get.get",
+      "symbol": "Get Layouts and Descriptions for a Specified Object",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_global.get",
+      "symbol": "sObject Global Publisher Layouts",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_global_get.get",
+      "symbol": "Get Global Publisher Layouts and Descriptions",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_global_head.get",
+      "symbol": "Return Headers for All Global Publisher Layouts",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_head.get",
+      "symbol": "Return Layout Headers for a Specified Object",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_multiple_rts.get",
+      "symbol": "sObject Layouts for an Object With Multiple Record Types",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_multiple_rts_get.get",
+      "symbol": "Get Layouts and Descriptions for an Object With Multiple Record Types",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_sobject_layouts_multiple_rts_head.get",
+      "symbol": "Return Layout Headers for an Object With Multiple Record Types",
+      "kind": "unsupported",
+      "notes": "Compact layout and layout REST resources expose Salesforce UI metadata, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:resources_survey_translation.get",
+      "symbol": "Salesforce Surveys Translation Resources",
+      "kind": "unsupported",
+      "notes": "Survey translation resources manage Salesforce Surveys metadata and service data, outside local Apex/server execution."
+    },
+    {
+      "surfaceId": "rest:using_resources_event_log_files.get",
+      "symbol": "Using Event Monitoring",
+      "kind": "unsupported",
+      "notes": "Event Monitoring file query and download behavior depends on Salesforce event log storage, outside local Apex/server execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/RestAPINonlocalUnsupportedSurfacesTest.cls",
+      "content": "@isTest private class RestAPINonlocalUnsupportedSurfacesTest { @isTest static void guard() { System.assertEquals('Account', Account.SObjectType.getDescribe().getName()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

@@ -1,0 +1,318 @@
+{
+  "name": "rest-guide-aliases-server-evidence",
+  "evidence": [
+    {
+      "surfaceId": "rest:dome_get_deleted.get",
+      "symbol": "Get a List of Deleted Records Within a Given Timeframe",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/deleted returns local tombstones after a REST delete."
+    },
+    {
+      "surfaceId": "rest:dome_get_updated.get",
+      "symbol": "Get a List of Updated Records Within a Given Timeframe",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/sobjects/Account/updated returns locally updated record IDs."
+    },
+    {
+      "surfaceId": "rest:dome_limits.get",
+      "symbol": "List Org Limits",
+      "kind": "server",
+      "notes": "Server fixture verifies GET /services/data/v65.0/limits returns deterministic local org limit keys."
+    },
+    {
+      "surfaceId": "rest:dome_get_field_values.get",
+      "symbol": "Get Field Values from a Standard Object Record",
+      "kind": "server",
+      "notes": "Server fixture verifies standard sObject field projection through GET /services/data/v65.0/sobjects/Account/{id}?fields=Name,Description."
+    },
+    {
+      "surfaceId": "rest:using_resources_getting_info_about_my_org.get",
+      "symbol": "Getting Information About My Organization",
+      "kind": "server",
+      "notes": "Server fixture verifies the local resource root, limits, record count, and object directory used for org information."
+    },
+    {
+      "surfaceId": "rest:using_resources_working_with_object_metadata.get",
+      "symbol": "Working with Object Metadata",
+      "kind": "server",
+      "notes": "Server fixture verifies the local sObject directory, object resource, and Account describe metadata routes."
+    },
+    {
+      "surfaceId": "rest:using_resources_working_with_records.get",
+      "symbol": "Working with Records",
+      "kind": "server",
+      "notes": "Server fixture verifies local record create, retrieve, update, delete, and query proof routes."
+    },
+    {
+      "surfaceId": "rest:using_resources_working_with_recently_viewed.get",
+      "symbol": "Working with Recently Viewed Information",
+      "kind": "server",
+      "notes": "Server fixture verifies local global and per-object recently viewed read routes."
+    },
+    {
+      "surfaceId": "rest:using_resources_working_with_searches_and_queries.get",
+      "symbol": "Working with Searches and Queries",
+      "kind": "server",
+      "notes": "Server fixture verifies the supported local query and queryAll routes only; SOSL/search is not claimed."
+    }
+  ],
+  "seedData": [
+    {
+      "object": "Account",
+      "records": [
+        {
+          "Name": "Alias Seed",
+          "Description": "Original guide row",
+          "External_Id__c": "guide-alias-1"
+        },
+        {
+          "Name": "Alias Delete",
+          "Description": "Deleted guide row",
+          "External_Id__c": "guide-alias-2"
+        },
+        {
+          "Name": "Alias Query",
+          "Description": "Query guide row",
+          "External_Id__c": "guide-alias-3"
+        }
+      ]
+    }
+  ],
+  "serverRequests": [
+    {
+      "name": "resource-root",
+      "method": "GET",
+      "path": "/services/data/v65.0",
+      "status": 200,
+      "contains": [
+        "\"limits\":\"/services/data/v65.0/limits\"",
+        "\"query\":\"/services/data/v65.0/query\"",
+        "\"queryAll\":\"/services/data/v65.0/queryAll\"",
+        "\"recent\":\"/services/data/v65.0/recent\"",
+        "\"sobjects\":\"/services/data/v65.0/sobjects\""
+      ]
+    },
+    {
+      "name": "limits",
+      "method": "GET",
+      "path": "/services/data/v65.0/limits",
+      "status": 200,
+      "contains": [
+        "\"DailyApiRequests\":{\"Max\":15000,\"Remaining\":15000}",
+        "\"DataStorageMB\":{\"Max\":512,\"Remaining\":512}",
+        "\"StreamingApiConcurrentClients\":{\"Max\":20,\"Remaining\":20}"
+      ]
+    },
+    {
+      "name": "record-count",
+      "method": "GET",
+      "path": "/services/data/v65.0/limits/recordCount?sObjects=Account",
+      "status": 200,
+      "contains": [
+        "\"sObjects\":[{\"name\":\"Account\",\"count\":3}]"
+      ]
+    },
+    {
+      "name": "describe-global",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects",
+      "status": 200,
+      "contains": [
+        "\"sobjects\"",
+        "\"name\":\"Account\"",
+        "\"url\":\"/services/data/v65.0/sobjects/Account\"",
+        "\"describe\":\"/services/data/v65.0/sobjects/Account/describe\"",
+        "\"recentItems\":\"/services/data/v65.0/sobjects/Account/recent\""
+      ]
+    },
+    {
+      "name": "object-resource",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account",
+      "status": 200,
+      "contains": [
+        "\"name\":\"Account\"",
+        "\"label\":\"Account\"",
+        "\"describe\":\"/services/data/v65.0/sobjects/Account/describe\"",
+        "\"recent\":\"/services/data/v65.0/sobjects/Account/recent\"",
+        "\"updated\":\"/services/data/v65.0/sobjects/Account/updated\"",
+        "\"deleted\":\"/services/data/v65.0/sobjects/Account/deleted\""
+      ]
+    },
+    {
+      "name": "object-describe",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/describe",
+      "status": 200,
+      "contains": [
+        "\"name\":\"Account\"",
+        "\"fields\"",
+        "\"name\":\"Name\"",
+        "\"name\":\"Description\"",
+        "\"queryable\":true"
+      ]
+    },
+    {
+      "name": "record-field-projection",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/001000000000001?fields=Name,Description",
+      "status": 200,
+      "contains": [
+        "\"Id\":\"001000000000001\"",
+        "\"Name\":\"Alias Seed\"",
+        "\"Description\":\"Original guide row\"",
+        "\"url\":\"/services/data/v65.0/sobjects/Account/001000000000001\""
+      ],
+      "notContains": [
+        "\"External_Id__c\"",
+        "\"Alias Delete\""
+      ]
+    },
+    {
+      "name": "record-create",
+      "method": "POST",
+      "path": "/services/data/v65.0/sobjects/Account",
+      "body": "{\"Name\":\"Alias Created\",\"Description\":\"Created by guide alias fixture\"}",
+      "status": 201,
+      "contains": [
+        "\"success\":true",
+        "\"errors\":[]",
+        "\"id\":\"001"
+      ]
+    },
+    {
+      "name": "record-create-query-proof",
+      "method": "GET",
+      "path": "/services/data/v65.0/query?q=SELECT%20Id,%20Name,%20Description%20FROM%20Account%20WHERE%20Name%20=%20'Alias%20Created'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"Alias Created\"",
+        "\"Description\":\"Created by guide alias fixture\""
+      ]
+    },
+    {
+      "name": "record-update",
+      "method": "PATCH",
+      "path": "/services/data/v65.0/sobjects/Account/001000000000001",
+      "body": "{\"Description\":\"Alias changed\"}",
+      "status": 204
+    },
+    {
+      "name": "get-updated",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/updated?start=2001-01-01T00:00:00Z&end=2099-01-01T00:00:00Z",
+      "status": 200,
+      "contains": [
+        "\"latestDateCovered\"",
+        "\"ids\"",
+        "\"001000000000001\""
+      ],
+      "notContains": [
+        "001000000000002",
+        "001000000000003"
+      ]
+    },
+    {
+      "name": "record-update-query-proof",
+      "method": "GET",
+      "path": "/services/data/v65.0/query?q=SELECT%20Id,%20Name,%20Description%20FROM%20Account%20WHERE%20Name%20=%20'Alias%20Seed'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"Alias Seed\"",
+        "\"Description\":\"Alias changed\""
+      ]
+    },
+    {
+      "name": "recent-object",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/recent?limit=2",
+      "status": 200,
+      "contains": [
+        "\"Name\":\"Alias Created\"",
+        "\"Name\":\"Alias Query\"",
+        "\"url\":\"/services/data/v65.0/sobjects/Account/001000000000003\""
+      ],
+      "notContains": [
+        "\"Name\":\"Alias Delete\"",
+        "\"Name\":\"Alias Seed\""
+      ]
+    },
+    {
+      "name": "recent-global",
+      "method": "GET",
+      "path": "/services/data/v65.0/recent?limit=1",
+      "status": 200,
+      "contains": [
+        "\"attributes\"",
+        "\"url\":\"/services/data/v65.0/sobjects/"
+      ],
+      "notContains": [
+        "\"Name\":\"Alias Seed\""
+      ]
+    },
+    {
+      "name": "query-records",
+      "method": "GET",
+      "path": "/services/data/v65.0/query?q=SELECT%20Id,%20Name%20FROM%20Account%20WHERE%20Name%20=%20'Alias%20Query'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"done\":true",
+        "\"Name\":\"Alias Query\"",
+        "\"url\":\"/services/data/v65.0/sobjects/Account/001000000000003\""
+      ]
+    },
+    {
+      "name": "record-delete",
+      "method": "DELETE",
+      "path": "/services/data/v65.0/sobjects/Account/001000000000002",
+      "status": 204
+    },
+    {
+      "name": "get-deleted",
+      "method": "GET",
+      "path": "/services/data/v65.0/sobjects/Account/deleted?start=2001-01-01T00:00:00Z&end=2099-01-01T00:00:00Z",
+      "status": 200,
+      "contains": [
+        "\"deletedRecords\"",
+        "\"id\":\"001000000000002\"",
+        "\"deletedDate\""
+      ],
+      "notContains": [
+        "001000000000001",
+        "001000000000003"
+      ]
+    },
+    {
+      "name": "query-deleted-omitted",
+      "method": "GET",
+      "path": "/services/data/v65.0/query?q=SELECT%20Id,%20Name%20FROM%20Account%20WHERE%20Name%20=%20'Alias%20Delete'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":0",
+        "\"records\":[]"
+      ],
+      "notContains": [
+        "\"Name\":\"Alias Delete\""
+      ]
+    },
+    {
+      "name": "query-all-deleted",
+      "method": "GET",
+      "path": "/services/data/v65.0/queryAll?q=SELECT%20Id,%20Name,%20IsDeleted%20FROM%20Account%20WHERE%20Name%20=%20'Alias%20Delete'",
+      "status": 200,
+      "contains": [
+        "\"totalSize\":1",
+        "\"Name\":\"Alias Delete\"",
+        "\"IsDeleted\":true",
+        "\"url\":\"/services/data/v65.0/sobjects/Account/001000000000002\""
+      ]
+    }
+  ],
+  "command": {
+    "kind": "server"
+  },
+  "expected": {}
+}

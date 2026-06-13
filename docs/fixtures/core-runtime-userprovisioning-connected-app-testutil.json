@@ -2,7 +2,7 @@
   "name": "core-runtime-userprovisioning-connected-app-testutil",
   "evidence": [
     {
-      "surfaceId": "apex:System.UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
+      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
       "symbol": "UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
       "kind": "exec",
       "notes": "Local connector test utility returns a ConnectedApplication DTO with deterministic Id and caller-supplied Name."

@@ -1,0 +1,197 @@
+{
+  "name": "tooling-live-org-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "tooling:ApexCodeCoverage",
+      "symbol": "Tooling ApexCodeCoverage",
+      "kind": "unsupported",
+      "notes": "ApexCodeCoverage depends on Salesforce Apex test execution and coverage stores; the local runtime does not model live-org coverage state."
+    },
+    {
+      "surfaceId": "tooling:ApexCodeCoverageAggregate",
+      "symbol": "Tooling ApexCodeCoverageAggregate",
+      "kind": "unsupported",
+      "notes": "ApexCodeCoverageAggregate depends on Salesforce Apex test execution and coverage aggregation; the local runtime does not model live-org coverage state."
+    },
+    {
+      "surfaceId": "tooling:ApexOrgWideCoverage",
+      "symbol": "Tooling ApexOrgWideCoverage",
+      "kind": "unsupported",
+      "notes": "ApexOrgWideCoverage depends on org-wide Salesforce coverage aggregation; the local runtime does not model live-org coverage state."
+    },
+    {
+      "surfaceId": "tooling:ApexTestQueueItem",
+      "symbol": "Tooling ApexTestQueueItem",
+      "kind": "unsupported",
+      "notes": "ApexTestQueueItem is live Salesforce Apex test queue state; the local runtime does not model org test queue scheduling."
+    },
+    {
+      "surfaceId": "tooling:ApexTestResult",
+      "symbol": "Tooling ApexTestResult",
+      "kind": "unsupported",
+      "notes": "ApexTestResult is produced by Salesforce Apex test execution; the local runtime does not model live-org test result records."
+    },
+    {
+      "surfaceId": "tooling:ApexTestResultLimits",
+      "symbol": "Tooling ApexTestResultLimits",
+      "kind": "unsupported",
+      "notes": "ApexTestResultLimits is produced by Salesforce Apex test execution; the local runtime does not model live-org test limit result records."
+    },
+    {
+      "surfaceId": "tooling:ApexTestRunResult",
+      "symbol": "Tooling ApexTestRunResult",
+      "kind": "unsupported",
+      "notes": "ApexTestRunResult is live Salesforce Apex test run state; the local runtime does not model org test run result records."
+    },
+    {
+      "surfaceId": "tooling:ApexLog",
+      "symbol": "Tooling ApexLog",
+      "kind": "unsupported",
+      "notes": "ApexLog depends on Salesforce debug log capture and retention; the local server does not model live-org log records."
+    },
+    {
+      "surfaceId": "tooling:DebugLevel",
+      "symbol": "Tooling DebugLevel",
+      "kind": "unsupported",
+      "notes": "DebugLevel configures Salesforce debug logging; the local server does not model live-org trace flag and log collection state."
+    },
+    {
+      "surfaceId": "tooling:TraceFlag",
+      "symbol": "Tooling TraceFlag",
+      "kind": "unsupported",
+      "notes": "TraceFlag configures Salesforce debug log capture; the local server does not model live-org tracing state."
+    },
+    {
+      "surfaceId": "tooling:ApexExecutionOverlayAction",
+      "symbol": "Tooling ApexExecutionOverlayAction",
+      "kind": "unsupported",
+      "notes": "ApexExecutionOverlayAction depends on Salesforce debug overlay sessions; the local server does not model live-org debug overlay state."
+    },
+    {
+      "surfaceId": "tooling:ApexExecutionOverlayResult",
+      "symbol": "Tooling ApexExecutionOverlayResult",
+      "kind": "unsupported",
+      "notes": "ApexExecutionOverlayResult is produced by Salesforce debug overlay execution; the local server does not model live-org debug overlay results."
+    },
+    {
+      "surfaceId": "tooling:HeapDump",
+      "symbol": "Tooling HeapDump",
+      "kind": "unsupported",
+      "notes": "HeapDump depends on Salesforce debug session capture; the local server does not model live-org heap dump records."
+    },
+    {
+      "surfaceId": "tooling:MetadataContainer",
+      "symbol": "Tooling MetadataContainer",
+      "kind": "unsupported",
+      "notes": "MetadataContainer is Salesforce Tooling compile container state; the local server does not model live-org metadata container queues."
+    },
+    {
+      "surfaceId": "tooling:ContainerAsyncRequest",
+      "symbol": "Tooling ContainerAsyncRequest",
+      "kind": "unsupported",
+      "notes": "ContainerAsyncRequest is Salesforce Tooling compile queue state; the local server does not model live-org async compile requests."
+    },
+    {
+      "surfaceId": "tooling:ApexClassMember",
+      "symbol": "Tooling ApexClassMember",
+      "kind": "unsupported",
+      "notes": "ApexClassMember is a Tooling metadata container member for live-org compile operations; local source-backed ApexClass coverage is tracked in a separate fixture."
+    },
+    {
+      "surfaceId": "tooling:ApexTriggerMember",
+      "symbol": "Tooling ApexTriggerMember",
+      "kind": "unsupported",
+      "notes": "ApexTriggerMember is a Tooling metadata container member for live-org compile operations; local source-backed ApexTrigger coverage is tracked in a separate fixture."
+    },
+    {
+      "surfaceId": "tooling:ApexPageMember",
+      "symbol": "Tooling ApexPageMember",
+      "kind": "unsupported",
+      "notes": "ApexPageMember is a Tooling metadata container member for live-org compile operations; local source-backed ApexPage coverage is tracked in a separate fixture."
+    },
+    {
+      "surfaceId": "tooling:ApexComponentMember",
+      "symbol": "Tooling ApexComponentMember",
+      "kind": "unsupported",
+      "notes": "ApexComponentMember is a Tooling metadata container member for live-org compile operations; local source-backed ApexComponent coverage is tracked in a separate fixture."
+    },
+    {
+      "surfaceId": "tooling:CustomFieldMember",
+      "symbol": "Tooling CustomFieldMember",
+      "kind": "unsupported",
+      "notes": "CustomFieldMember is a Tooling metadata container member for live-org compile operations; local source-backed CustomField coverage is tracked in a separate fixture."
+    },
+    {
+      "surfaceId": "tooling:DeployRequest",
+      "symbol": "Tooling DeployRequest",
+      "kind": "unsupported",
+      "notes": "DeployRequest depends on Salesforce metadata deployment services; the local server does not model live-org deploy request state."
+    },
+    {
+      "surfaceId": "tooling:DeployDetails",
+      "symbol": "Tooling DeployDetails",
+      "kind": "unsupported",
+      "notes": "DeployDetails depends on Salesforce metadata deployment results; the local server does not model live-org deploy detail records."
+    },
+    {
+      "surfaceId": "tooling:SourceMemberDeployRequest",
+      "symbol": "Tooling SourceMemberDeployRequest",
+      "kind": "unsupported",
+      "notes": "SourceMemberDeployRequest depends on Salesforce source tracking and deployment queues; the local server does not model live-org deploy request state."
+    },
+    {
+      "surfaceId": "tooling:Package2VersionCreateRequest",
+      "symbol": "Tooling Package2VersionCreateRequest",
+      "kind": "unsupported",
+      "notes": "Package2VersionCreateRequest depends on Salesforce packaging services; the local server does not model live-org package version creation queues."
+    },
+    {
+      "surfaceId": "tooling:Package2VersionCreateRequestError",
+      "symbol": "Tooling Package2VersionCreateRequestError",
+      "kind": "unsupported",
+      "notes": "Package2VersionCreateRequestError depends on Salesforce packaging service results; the local server does not model live-org package creation errors."
+    },
+    {
+      "surfaceId": "tooling:PackageInstallRequest",
+      "symbol": "Tooling PackageInstallRequest",
+      "kind": "unsupported",
+      "notes": "PackageInstallRequest depends on Salesforce package installation services; the local server does not model live-org package install request state."
+    },
+    {
+      "surfaceId": "tooling:PackageUploadRequest",
+      "symbol": "Tooling PackageUploadRequest",
+      "kind": "unsupported",
+      "notes": "PackageUploadRequest depends on Salesforce packaging upload services; the local server does not model live-org package upload request state."
+    },
+    {
+      "surfaceId": "tooling:SubscriberPackageVersionUninstallRequest",
+      "symbol": "Tooling SubscriberPackageVersionUninstallRequest",
+      "kind": "unsupported",
+      "notes": "SubscriberPackageVersionUninstallRequest depends on Salesforce package uninstall services; the local server does not model live-org uninstall request state."
+    },
+    {
+      "surfaceId": "tooling:PackageVersionUninstallRequestError",
+      "symbol": "Tooling PackageVersionUninstallRequestError",
+      "kind": "unsupported",
+      "notes": "PackageVersionUninstallRequestError depends on Salesforce package uninstall services; the local server does not model live-org uninstall error state."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/ToolingLiveOrgUnsupportedSurfacesTest.cls",
+      "content": "@isTest private class ToolingLiveOrgUnsupportedSurfacesTest { @isTest static void localRuntimeGuard() { System.assertEquals('Account', Account.SObjectType.getDescribe().getName()); System.assertEquals('Id', Account.Id.getDescribe().getName()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

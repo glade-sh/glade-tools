@@ -1,0 +1,221 @@
+{
+  "name": "core-runtime-wave-tail-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:Wave.Templates.getTemplate(String)",
+      "symbol": "Wave.Templates.getTemplate(String)",
+      "kind": "exec",
+      "notes": "The local runtime returns a deterministic map for Wave template lookup without contacting Analytics services."
+    },
+    {
+      "surfaceId": "apex:Wave.Templates.getTemplateConfig(String)",
+      "symbol": "Wave.Templates.getTemplateConfig(String)",
+      "kind": "exec",
+      "notes": "The local runtime returns a deterministic map for Wave template config lookup without contacting Analytics services."
+    },
+    {
+      "surfaceId": "apex:Wave.Templates.getTemplates()",
+      "symbol": "Wave.Templates.getTemplates()",
+      "kind": "exec",
+      "notes": "The local runtime returns a deterministic template map for the no-argument Wave template list."
+    },
+    {
+      "surfaceId": "apex:Wave.Templates.getTemplates(Wave.TemplatesSearchOptions)",
+      "symbol": "Wave.Templates.getTemplates(Wave.TemplatesSearchOptions)",
+      "kind": "exec",
+      "notes": "The local runtime accepts Wave template search options and returns the same deterministic template map."
+    },
+    {
+      "surfaceId": "apex:wave.InvalidParameterException.getTypeName()",
+      "symbol": "wave.InvalidParameterException.getTypeName()",
+      "kind": "exec",
+      "notes": "The generated Wave exception exposes its qualified platform type name in local execution."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.alias(String)",
+      "symbol": "wave.ProjectionNode.alias(String)",
+      "kind": "exec",
+      "notes": "The local Wave projection builder stores the alias in the generated SAQL fragment."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.avg()",
+      "symbol": "wave.ProjectionNode.avg()",
+      "kind": "exec",
+      "notes": "The local Wave projection builder records an avg aggregate."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.build()",
+      "symbol": "wave.ProjectionNode.build()",
+      "kind": "exec",
+      "notes": "The local Wave projection builder emits a deterministic projection string."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.count()",
+      "symbol": "wave.ProjectionNode.count()",
+      "kind": "exec",
+      "notes": "The local Wave projection builder records a count aggregate."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.max()",
+      "symbol": "wave.ProjectionNode.max()",
+      "kind": "exec",
+      "notes": "The local Wave projection builder records a max aggregate."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.min()",
+      "symbol": "wave.ProjectionNode.min()",
+      "kind": "exec",
+      "notes": "The local Wave projection builder records a min aggregate."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.sum()",
+      "symbol": "wave.ProjectionNode.sum()",
+      "kind": "exec",
+      "notes": "The local Wave projection builder records a sum aggregate."
+    },
+    {
+      "surfaceId": "apex:wave.ProjectionNode.unique()",
+      "symbol": "wave.ProjectionNode.unique()",
+      "kind": "exec",
+      "notes": "The local Wave projection builder records a unique aggregate."
+    },
+    {
+      "surfaceId": "apex:wave.QueryBuilder.cogroup(List<Wave.QueryNode>,List<List<String>>)",
+      "symbol": "wave.QueryBuilder.cogroup(List<wave.QueryNode>,List<List<String>>)",
+      "kind": "exec",
+      "notes": "The local Wave query builder builds a deterministic cogroup node."
+    },
+    {
+      "surfaceId": "apex:wave.QueryBuilder.count()",
+      "symbol": "wave.QueryBuilder.count()",
+      "kind": "exec",
+      "notes": "The local Wave query builder creates a count projection node."
+    },
+    {
+      "surfaceId": "apex:wave.QueryBuilder.get(String)",
+      "symbol": "wave.QueryBuilder.get(String)",
+      "kind": "exec",
+      "notes": "The local Wave query builder creates a projection node for the requested field."
+    },
+    {
+      "surfaceId": "apex:wave.QueryBuilder.load(String,String)",
+      "symbol": "wave.QueryBuilder.load(String,String)",
+      "kind": "exec",
+      "notes": "The local Wave query builder creates a load node for a dataset and version."
+    },
+    {
+      "surfaceId": "apex:wave.QueryBuilder.loadByDeveloperName(String)",
+      "symbol": "wave.QueryBuilder.loadByDeveloperName(String)",
+      "kind": "exec",
+      "notes": "The local Wave query builder creates a load node for a fully qualified developer name."
+    },
+    {
+      "surfaceId": "apex:wave.QueryBuilder.union(List<Wave.QueryNode>)",
+      "symbol": "wave.QueryBuilder.union(List<wave.QueryNode>)",
+      "kind": "exec",
+      "notes": "The local Wave query builder builds a deterministic union node."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.build(String)",
+      "symbol": "wave.QueryNode.build(String)",
+      "kind": "exec",
+      "notes": "The local Wave query node emits a deterministic SAQL-like string."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.cap(Integer)",
+      "symbol": "wave.QueryNode.cap(Integer)",
+      "kind": "exec",
+      "notes": "The local Wave query node records a cap step."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.filter(List<String>)",
+      "symbol": "wave.QueryNode.filter(List<String>)",
+      "kind": "exec",
+      "notes": "The local Wave query node records list filter conditions."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.filter(String)",
+      "symbol": "wave.QueryNode.filter(String)",
+      "kind": "exec",
+      "notes": "The local Wave query node records a string filter condition."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.foreach(List<wave.ProjectionNode>)",
+      "symbol": "wave.QueryNode.foreach(List<wave.ProjectionNode>)",
+      "kind": "exec",
+      "notes": "The local Wave query node records foreach projections."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.group()",
+      "symbol": "wave.QueryNode.group()",
+      "kind": "exec",
+      "notes": "The local Wave query node records a no-argument group step."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.group(List<String>)",
+      "symbol": "wave.QueryNode.group(List<String>)",
+      "kind": "exec",
+      "notes": "The local Wave query node records grouped fields."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.order(List<List<String>>)",
+      "symbol": "wave.QueryNode.order(List<List<String>>)",
+      "kind": "exec",
+      "notes": "The local Wave query node records order clauses."
+    },
+    {
+      "surfaceId": "apex:wave.Templates.cdpQueryMetadata(String,String,String,String)",
+      "symbol": "wave.Templates.cdpQueryMetadata(String,String,String,String)",
+      "kind": "exec",
+      "notes": "The local runtime returns a deterministic metadata map without contacting the CDP service."
+    },
+    {
+      "surfaceId": "apex:wave.Templates.getSObject(String)",
+      "symbol": "wave.Templates.getSObject(String)",
+      "kind": "exec",
+      "notes": "The local runtime returns a deterministic map for a Wave template sObject lookup."
+    },
+    {
+      "surfaceId": "apex:wave.Templates.getSObjects()",
+      "symbol": "wave.Templates.getSObjects()",
+      "kind": "exec",
+      "notes": "The local runtime returns an empty deterministic list for Wave template sObjects."
+    },
+    {
+      "surfaceId": "apex:wave.Templates.getTemplate(String,String,String)",
+      "symbol": "wave.Templates.getTemplate(String,String,String)",
+      "kind": "exec",
+      "notes": "The local runtime returns a deterministic map for the filter-group Wave template lookup."
+    },
+    {
+      "surfaceId": "apex:wave.Templates.getTemplateConfig(String,String,Boolean,String)",
+      "symbol": "wave.Templates.getTemplateConfig(String,String,Boolean,String)",
+      "kind": "exec",
+      "notes": "The local runtime returns a deterministic map for the filter-group Wave template config lookup."
+    },
+    {
+      "surfaceId": "apex:wave.WaveQueryException.getTypeName()",
+      "symbol": "wave.WaveQueryException.getTypeName()",
+      "kind": "exec",
+      "notes": "The generated Wave query exception exposes its qualified platform type name in local execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals(true, (Boolean)Wave.Templates.getTemplates().get('local'));\nSystem.assertEquals(true, (Boolean)Wave.Templates.getTemplates(new Wave.TemplatesSearchOptions()).get('local'));\nSystem.assertEquals(true, (Boolean)Wave.Templates.getTemplate('Template').get('local'));\nSystem.assertEquals(true, (Boolean)Wave.Templates.getTemplateConfig('Template').get('local'));\nSystem.assertEquals(true, (Boolean)wave.Templates.cdpQueryMetadata('entityType', 'category', 'name', 'default').get('local'));\nSystem.assertEquals(true, (Boolean)wave.Templates.getSObject('Account').get('local'));\nSystem.assertEquals(0, wave.Templates.getSObjects().size());\nSystem.assertEquals(true, (Boolean)wave.Templates.getTemplate('Template', 'App', 'default').get('local'));\nSystem.assertEquals(true, (Boolean)wave.Templates.getTemplateConfig('Template', 'App', true, 'default').get('local'));\nSystem.assertEquals('wave.InvalidParameterException', new wave.InvalidParameterException().getTypeName());\nSystem.assertEquals('wave.WaveQueryException', new wave.WaveQueryException().getTypeName());\nwave.ProjectionNode amount = wave.QueryBuilder.get('Amount').sum().alias('total');\nSystem.assertEquals('sum(Amount) as total', amount.build());\nSystem.assertEquals('avg(AccountId)', wave.QueryBuilder.get('AccountId').avg().build());\nSystem.assertEquals('count(AccountId)', wave.QueryBuilder.get('AccountId').count().build());\nSystem.assertEquals('max(AccountId)', wave.QueryBuilder.get('AccountId').max().build());\nSystem.assertEquals('min(AccountId)', wave.QueryBuilder.get('AccountId').min().build());\nSystem.assertEquals('unique(AccountId)', wave.QueryBuilder.get('AccountId').unique().build());\nSystem.assertEquals('count', wave.QueryBuilder.count().build());\nwave.QueryNode query = wave.QueryBuilder.load('dataset', 'v1').filter('Amount > 0').filter(new List<String>{'Stage == ClosedWon'}).group().group(new List<String>{'AccountId'}).foreach(new List<wave.ProjectionNode>{amount}).order(new List<List<String>>{new List<String>{'total', 'desc'}}).cap(10);\nString built = query.build('q');\nSystem.assert(built.contains('q'));\nSystem.assert(built.contains('load'));\nSystem.assert(built.contains('dataset'));\nSystem.assert(built.contains('filter'));\nSystem.assert(built.contains('group'));\nSystem.assert(built.contains('foreach'));\nSystem.assert(built.contains('order'));\nSystem.assert(built.contains('cap'));\nwave.QueryNode byName = wave.QueryBuilder.loadByDeveloperName('pkg.Dataset').filter(new List<String>{'A == 1', 'B == 2'});\nSystem.assert(byName.build('named').contains('pkg.Dataset'));\nSystem.assert(wave.QueryBuilder.union(new List<wave.QueryNode>{query, byName}).build('u').contains('union'));\nSystem.assert(wave.QueryBuilder.cogroup(new List<wave.QueryNode>{query}, new List<List<String>>{new List<String>{'AccountId'}}).build('c').contains('cogroup'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals(true, (Boolean)Wave.Templates.getTemplates().get('local'));\nSystem.assertEquals(true, (Boolean)Wave.Templates.getTemplates(new Wave.TemplatesSearchOptions()).get('local'));\nSystem.assertEquals(true, (Boolean)Wave.Templates.getTemplate('Template').get('local'));\nSystem.assertEquals(true, (Boolean)Wave.Templates.getTemplateConfig('Template').get('local'));\nSystem.assertEquals(true, (Boolean)wave.Templates.cdpQueryMetadata('entityType', 'category', 'name', 'default').get('local'));\nSystem.assertEquals(true, (Boolean)wave.Templates.getSObject('Account').get('local'));\nSystem.assertEquals(0, wave.Templates.getSObjects().size());\nSystem.assertEquals(true, (Boolean)wave.Templates.getTemplate('Template', 'App', 'default').get('local'));\nSystem.assertEquals(true, (Boolean)wave.Templates.getTemplateConfig('Template', 'App', true, 'default').get('local'));\nSystem.assertEquals('wave.InvalidParameterException', new wave.InvalidParameterException().getTypeName());\nSystem.assertEquals('wave.WaveQueryException', new wave.WaveQueryException().getTypeName());\nwave.ProjectionNode amount = wave.QueryBuilder.get('Amount').sum().alias('total');\nSystem.assertEquals('sum(Amount) as total', amount.build());\nSystem.assertEquals('avg(AccountId)', wave.QueryBuilder.get('AccountId').avg().build());\nSystem.assertEquals('count(AccountId)', wave.QueryBuilder.get('AccountId').count().build());\nSystem.assertEquals('max(AccountId)', wave.QueryBuilder.get('AccountId').max().build());\nSystem.assertEquals('min(AccountId)', wave.QueryBuilder.get('AccountId').min().build());\nSystem.assertEquals('unique(AccountId)', wave.QueryBuilder.get('AccountId').unique().build());\nSystem.assertEquals('count', wave.QueryBuilder.count().build());\nwave.QueryNode query = wave.QueryBuilder.load('dataset', 'v1').filter('Amount > 0').filter(new List<String>{'Stage == ClosedWon'}).group().group(new List<String>{'AccountId'}).foreach(new List<wave.ProjectionNode>{amount}).order(new List<List<String>>{new List<String>{'total', 'desc'}}).cap(10);\nString built = query.build('q');\nSystem.assert(built.contains('q'));\nSystem.assert(built.contains('load'));\nSystem.assert(built.contains('dataset'));\nSystem.assert(built.contains('filter'));\nSystem.assert(built.contains('group'));\nSystem.assert(built.contains('foreach'));\nSystem.assert(built.contains('order'));\nSystem.assert(built.contains('cap'));\nwave.QueryNode byName = wave.QueryBuilder.loadByDeveloperName('pkg.Dataset').filter(new List<String>{'A == 1', 'B == 2'});\nSystem.assert(byName.build('named').contains('pkg.Dataset'));\nSystem.assert(wave.QueryBuilder.union(new List<wave.QueryNode>{query, byName}).build('u').contains('union'));\nSystem.assert(wave.QueryBuilder.cogroup(new List<wave.QueryNode>{query}, new List<List<String>>{new List<String>{'AccountId'}}).build('c').contains('cogroup'));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
