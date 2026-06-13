@@ -1,0 +1,57 @@
+{
+  "name": "core-runtime-pure-json-closeout",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.JSON.serialize(Object)",
+      "symbol": "JSON.serialize",
+      "kind": "exec",
+      "notes": "Serializes a source-backed DTO with String, Integer, and List<String> fields."
+    },
+    {
+      "surfaceId": "apex:System.JSON.serializePretty(Object)",
+      "symbol": "JSON.serializePretty",
+      "kind": "exec",
+      "notes": "Pretty-serializes the same source-backed DTO and preserves primitive list elements."
+    },
+    {
+      "surfaceId": "apex:System.JSON.deserialize(String,Type)",
+      "symbol": "JSON.deserialize",
+      "kind": "exec",
+      "notes": "Deserializes a source-backed DTO with String, Integer, and List<String> fields."
+    },
+    {
+      "surfaceId": "apex:System.JSON.deserializeStrict(String,Type)",
+      "symbol": "JSON.deserializeStrict",
+      "kind": "exec",
+      "notes": "Strict DTO deserialization accepts known fields and rejects an unknown source-backed DTO field."
+    },
+    {
+      "surfaceId": "apex:System.JSON.deserializeUntyped(String)",
+      "symbol": "JSON.deserializeUntyped",
+      "kind": "exec",
+      "notes": "Untyped deserialization preserves a nested Map/List primitive graph."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/PureJsonDTO.cls",
+      "content": "public class PureJsonDTO { public String Name; public Integer Count; public List<String> Tags; }"
+    },
+    {
+      "path": "anonymous.apex",
+      "content": "PureJsonDTO dto = new PureJsonDTO();\ndto.Name = 'Cabin';\ndto.Count = 3;\ndto.Tags = new List<String>{'spruce', 'hemlock'};\nString compact = JSON.serialize(dto);\nSystem.assert(compact.contains('\"Name\":\"Cabin\"'));\nSystem.assert(compact.contains('\"Count\":3'));\nSystem.assert(compact.contains('\"Tags\":[\"spruce\",\"hemlock\"]'));\nString pretty = JSON.serializePretty(dto);\nSystem.assert(pretty.contains('\"Name\" : \"Cabin\"'));\nSystem.assert(pretty.contains('\"Count\" : 3'));\nSystem.assert(pretty.contains('\"Tags\" : [ \"spruce\", \"hemlock\" ]'));\nPureJsonDTO decoded = JSON.deserialize(compact, PureJsonDTO.class);\nSystem.assertEquals('Cabin', decoded.Name);\nSystem.assertEquals(3, decoded.Count);\nSystem.assertEquals(2, decoded.Tags.size());\nSystem.assertEquals('hemlock', decoded.Tags[1]);\nPureJsonDTO strictDecoded = JSON.deserializeStrict('{\"Name\":\"Lake\",\"Count\":4,\"Tags\":[\"clear\",\"cold\"]}', PureJsonDTO.class);\nSystem.assertEquals('Lake', strictDecoded.Name);\nSystem.assertEquals(4, strictDecoded.Count);\nSystem.assertEquals('cold', strictDecoded.Tags[1]);\nBoolean strictRejected = false;\ntry {\n  PureJsonDTO bad = JSON.deserializeStrict('{\"Name\":\"Overfull\",\"Count\":1,\"Tags\":[],\"Extra\":\"no\"}', PureJsonDTO.class);\n} catch (JSONException e) {\n  strictRejected = e.getMessage().contains('unknown field \"Extra\"');\n}\nSystem.assert(strictRejected);\nObject root = JSON.deserializeUntyped('{\"nested\":{\"label\":\"bank\",\"values\":[\"spruce\",\"stone\"],\"meta\":{\"depth\":2}}}');\nObject nested = root.get('nested');\nSystem.assertEquals('bank', nested.get('label'));\nObject values = nested.get('values');\nSystem.assertEquals('stone', values.get(1));\nObject meta = nested.get('meta');\nSystem.assertEquals(2, meta.get('depth'));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "PureJsonDTO dto = new PureJsonDTO();\ndto.Name = 'Cabin';\ndto.Count = 3;\ndto.Tags = new List<String>{'spruce', 'hemlock'};\nString compact = JSON.serialize(dto);\nSystem.assert(compact.contains('\"Name\":\"Cabin\"'));\nSystem.assert(compact.contains('\"Count\":3'));\nSystem.assert(compact.contains('\"Tags\":[\"spruce\",\"hemlock\"]'));\nString pretty = JSON.serializePretty(dto);\nSystem.assert(pretty.contains('\"Name\" : \"Cabin\"'));\nSystem.assert(pretty.contains('\"Count\" : 3'));\nSystem.assert(pretty.contains('\"Tags\" : [ \"spruce\", \"hemlock\" ]'));\nPureJsonDTO decoded = JSON.deserialize(compact, PureJsonDTO.class);\nSystem.assertEquals('Cabin', decoded.Name);\nSystem.assertEquals(3, decoded.Count);\nSystem.assertEquals(2, decoded.Tags.size());\nSystem.assertEquals('hemlock', decoded.Tags[1]);\nPureJsonDTO strictDecoded = JSON.deserializeStrict('{\"Name\":\"Lake\",\"Count\":4,\"Tags\":[\"clear\",\"cold\"]}', PureJsonDTO.class);\nSystem.assertEquals('Lake', strictDecoded.Name);\nSystem.assertEquals(4, strictDecoded.Count);\nSystem.assertEquals('cold', strictDecoded.Tags[1]);\nBoolean strictRejected = false;\ntry {\n  PureJsonDTO bad = JSON.deserializeStrict('{\"Name\":\"Overfull\",\"Count\":1,\"Tags\":[],\"Extra\":\"no\"}', PureJsonDTO.class);\n} catch (JSONException e) {\n  strictRejected = e.getMessage().contains('unknown field \"Extra\"');\n}\nSystem.assert(strictRejected);\nObject root = JSON.deserializeUntyped('{\"nested\":{\"label\":\"bank\",\"values\":[\"spruce\",\"stone\"],\"meta\":{\"depth\":2}}}');\nObject nested = root.get('nested');\nSystem.assertEquals('bank', nested.get('label'));\nObject values = nested.get('values');\nSystem.assertEquals('stone', values.get(1));\nObject meta = nested.get('meta');\nSystem.assertEquals(2, meta.get('depth'));\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

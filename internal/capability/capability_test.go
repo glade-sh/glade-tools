@@ -75,6 +75,59 @@ func TestLocalMVPDXRowsAreSupportedWithPostMVPTails(t *testing.T) {
 	}
 }
 
+func TestServerRESTBreadthNotesTrackCompositeBatchEvidence(t *testing.T) {
+	for _, feature := range MVPFeatures() {
+		if feature.ID != "server.rest-breadth" {
+			continue
+		}
+		if feature.Status != StatusPartial {
+			t.Fatalf("%s status = %s, want %s", feature.ID, feature.Status, StatusPartial)
+		}
+		if strings.Contains(feature.Notes, "Composite Batch/Graph") {
+			t.Fatalf("server.rest-breadth notes still group Batch with unsupported Graph: %s", feature.Notes)
+		}
+		if !strings.Contains(feature.Notes, "Composite Batch local subrequests") {
+			t.Fatalf("server.rest-breadth notes missing Batch local evidence: %s", feature.Notes)
+		}
+		if !strings.Contains(feature.Notes, "Bulk API v2 simple scalar query job create/status/whole-result CSV") || !strings.Contains(feature.Notes, "locator paging") {
+			t.Fatalf("server.rest-breadth notes missing Bulk local evidence and remaining fence: %s", feature.Notes)
+		}
+		return
+	}
+	t.Fatal("missing server.rest-breadth feature")
+}
+
+func TestLSPContextCompletionNotesTestBackedSOQLSelectRanking(t *testing.T) {
+	feature := findMVPFeatureForTest(t, "lsp.context-completion")
+	if feature.Status != StatusPartial {
+		t.Fatalf("status = %s, want %s", feature.Status, StatusPartial)
+	}
+	if !strings.Contains(feature.Notes, "SOQL SELECT") || !strings.Contains(feature.Notes, "SObject fields") {
+		t.Fatalf("notes do not name the test-backed context: %s", feature.Notes)
+	}
+}
+
+func TestProfileTimingNotesTrackWallClockSummaryEvidence(t *testing.T) {
+	feature := findMVPFeatureForTest(t, "profile.pprof-and-timing")
+	if feature.Status != StatusPartial {
+		t.Fatalf("status = %s, want %s", feature.Status, StatusPartial)
+	}
+	if !strings.Contains(feature.Notes, "wall-clock summary") || !strings.Contains(feature.Notes, "pprof-compatible CPU output") {
+		t.Fatalf("notes do not name the test-backed timing slice and remaining fence: %s", feature.Notes)
+	}
+}
+
+func findMVPFeatureForTest(t *testing.T, id string) Feature {
+	t.Helper()
+	for _, feature := range MVPFeatures() {
+		if feature.ID == id {
+			return feature
+		}
+	}
+	t.Fatalf("missing %s feature", id)
+	return Feature{}
+}
+
 func TestCoreRuntimeMVPFeaturesAreSupportedWithPostMVPTails(t *testing.T) {
 	report := MVPReport()
 	features := map[string]Feature{}

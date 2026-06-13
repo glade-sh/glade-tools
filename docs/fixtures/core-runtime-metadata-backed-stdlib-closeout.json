@@ -1,0 +1,128 @@
+{
+  "name": "core-runtime-metadata-backed-stdlib-closeout",
+  "evidence": [
+    {
+      "symbol": "Schema.getGlobalDescribe",
+      "surfaceId": "apex:System.Schema.getGlobalDescribe()",
+      "kind": "exec",
+      "notes": "Local global describe is backed by loaded project object metadata."
+    },
+    {
+      "symbol": "Schema.describeSObjects",
+      "surfaceId": "apex:System.Schema.describeSObjects(List<String>)",
+      "kind": "exec",
+      "notes": "Local describeSObjects accepts object names and SObjectType tokens for loaded project objects."
+    },
+    {
+      "symbol": "Schema.DescribeSObjectResult",
+      "surfaceId": "apex:Schema.DescribeSObjectResult",
+      "kind": "exec",
+      "notes": "Local describe exposes object labels, field map, record type maps, and child relationship basics from metadata."
+    },
+    {
+      "symbol": "BusinessHours.add",
+      "surfaceId": "apex:BusinessHours.add(String,Datetime,Long)",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic weekday schedule addition."
+    },
+    {
+      "symbol": "BusinessHours.addGmt",
+      "surfaceId": "apex:BusinessHours.addGmt(String,Datetime,Long)",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic weekday schedule addition in GMT form."
+    },
+    {
+      "symbol": "BusinessHours.diff",
+      "surfaceId": "apex:BusinessHours.diff(String,Datetime,Datetime)",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic weekday schedule interval math."
+    },
+    {
+      "symbol": "BusinessHours.isWithin",
+      "surfaceId": "apex:BusinessHours.isWithin(String,Datetime)",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic inside/outside checks."
+    },
+    {
+      "symbol": "BusinessHours.nextStartDate",
+      "surfaceId": "apex:BusinessHours.nextStartDate(String,Datetime)",
+      "kind": "exec",
+      "notes": "Seeded local BusinessHours records support deterministic next weekday start lookup."
+    }
+  ],
+  "project": {
+    "sourceApiVersion": "64.0",
+    "packageDirectories": [
+      {
+        "path": "force-app",
+        "default": true
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Account Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Amount__c.field-meta.xml",
+      "content": "<CustomField><fullName>Amount__c</fullName><label>Amount</label><type>Number</type><precision>12</precision><scale>2</scale></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/recordTypes/Business.recordType-meta.xml",
+      "content": "<RecordType><fullName>Business</fullName><label>Business Account</label><active>true</active><default>true</default></RecordType>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/Contact.object-meta.xml",
+      "content": "<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/fields/LastName.field-meta.xml",
+      "content": "<CustomField><fullName>LastName</fullName><label>Last Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/fields/AccountId.field-meta.xml",
+      "content": "<CustomField><fullName>AccountId</fullName><label>Account</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Account</relationshipName><childRelationshipName>Contacts</childRelationshipName><deleteConstraint>Cascade</deleteConstraint></CustomField>"
+    }
+  ],
+  "seedData": [
+    {
+      "object": "BusinessHours",
+      "records": [
+        {
+          "Id": "01m000000000001AAA",
+          "Name": "Default",
+          "IsActive": true,
+          "IsDefault": true,
+          "TimeZoneSidKey": "America/Los_Angeles",
+          "MondayStartTime": "09:00:00.000Z",
+          "MondayEndTime": "17:00:00.000Z",
+          "TuesdayStartTime": "09:00:00.000Z",
+          "TuesdayEndTime": "17:00:00.000Z",
+          "WednesdayStartTime": "09:00:00.000Z",
+          "WednesdayEndTime": "17:00:00.000Z",
+          "ThursdayStartTime": "09:00:00.000Z",
+          "ThursdayEndTime": "17:00:00.000Z",
+          "FridayStartTime": "09:00:00.000Z",
+          "FridayEndTime": "17:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Map<String,Object> describes = Schema.getGlobalDescribe(); System.assert(describes.containsKey('Account')); System.assert(describes.containsKey('Contact')); Object accountType = describes.get('Account'); Object accountDescribe = accountType.getDescribe(); System.assertEquals('Account', accountDescribe.getName()); System.assertEquals('Accounts', accountDescribe.getLabelPlural()); System.assertEquals('001', accountDescribe.getKeyPrefix()); Map<String,Object> fields = accountDescribe.getFields().getMap(); System.assert(fields.containsKey('Name')); System.assert(fields.containsKey('Amount__c')); Object amountDescribe = fields.get('Amount__c').getDescribe(); System.assertEquals('Amount', amountDescribe.getLabel()); System.assertEquals(12, amountDescribe.getPrecision()); System.assertEquals(2, amountDescribe.getScale()); List<Object> byName = Schema.describeSObjects(new List<String>{'Account'}); System.assertEquals('Account', byName.get(0).getName()); List<Object> byToken = Schema.describeSObjects(new List<Object>{accountType}); System.assertEquals('Account', byToken.get(0).getName()); Map<String,Object> recordTypes = accountDescribe.getRecordTypeInfosByDeveloperName(); System.assert(recordTypes.containsKey('Business')); Object business = recordTypes.get('Business'); System.assertEquals('Business Account', business.getName()); System.assertEquals('Business', business.getDeveloperName()); System.assert(business.isActive()); System.assert(business.isAvailable()); System.assert(business.isDefaultRecordTypeMapping()); Object contacts = null; for (Object relationship : accountDescribe.getChildRelationships()) { if (relationship.getRelationshipName() == 'Contacts') { contacts = relationship; } } System.assert(contacts != null); System.assertEquals('Contacts', contacts.getRelationshipName()); System.assertEquals('AccountId', contacts.getField().getDescribe().getName()); System.assertEquals('Contact', contacts.getChildSObject().getDescribe().getName()); System.assert(contacts.isCascadeDelete()); Datetime mondayNine = Datetime.newInstanceGmt(2026, 6, 15, 16, 0, 0); Datetime fridayFour = Datetime.newInstanceGmt(2026, 6, 19, 23, 0, 0); Datetime nextMondayTen = Datetime.newInstanceGmt(2026, 6, 22, 17, 0, 0); System.assertEquals(true, BusinessHours.isWithin('01m000000000001AAA', mondayNine)); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0))); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 17, 0, 0), BusinessHours.add('01m000000000001AAA', mondayNine, 60 * 60 * 1000)); System.assertEquals(nextMondayTen, BusinessHours.addGmt('01m000000000001AAA', fridayFour, 2 * 60 * 60 * 1000)); System.assertEquals(2 * 60 * 60 * 1000, BusinessHours.diff('01m000000000001AAA', fridayFour, nextMondayTen)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0)));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

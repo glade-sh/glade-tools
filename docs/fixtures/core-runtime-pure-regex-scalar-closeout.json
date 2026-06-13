@@ -1,0 +1,125 @@
+{
+  "name": "core-runtime-pure-regex-scalar-closeout",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Pattern.compile(String)",
+      "symbol": "Pattern.compile",
+      "kind": "test",
+      "notes": "Local regex compilation covers the supported deterministic Java subset."
+    },
+    {
+      "surfaceId": "apex:System.Pattern.matches(String,String)",
+      "symbol": "Pattern.matches",
+      "kind": "test",
+      "notes": "Whole-string matching is pinned for supported local regex syntax."
+    },
+    {
+      "surfaceId": "apex:System.Matcher.find()",
+      "symbol": "Matcher.find",
+      "kind": "test",
+      "notes": "Find advances through local match state."
+    },
+    {
+      "surfaceId": "apex:System.Matcher.group()",
+      "symbol": "Matcher.group",
+      "kind": "test",
+      "notes": "Whole-match and capture group reads are pinned after find."
+    },
+    {
+      "surfaceId": "apex:System.Matcher.matches()",
+      "symbol": "Matcher.matches",
+      "kind": "test",
+      "notes": "Matcher whole-string matching is pinned for supported local regex syntax."
+    },
+    {
+      "surfaceId": "apex:System.String.split(String)",
+      "symbol": "String.split",
+      "kind": "test",
+      "notes": "Regex-backed split with simple delimiters and local limit behavior is covered."
+    },
+    {
+      "surfaceId": "apex:System.Decimal.round()",
+      "symbol": "Decimal.round",
+      "kind": "test",
+      "notes": "Finite local Decimal rounding is covered; full Salesforce precision fences remain partial."
+    },
+    {
+      "surfaceId": "apex:System.Decimal.setScale(Integer)",
+      "symbol": "Decimal.setScale",
+      "kind": "test",
+      "notes": "Finite local Decimal setScale and common rounding ties are covered; full Salesforce precision fences remain partial."
+    },
+    {
+      "surfaceId": "apex:System.EncodingUtil.urlDecode(String,String)",
+      "symbol": "EncodingUtil.urlDecode",
+      "kind": "test",
+      "notes": "Local UTF-8 URL form decoding is covered."
+    },
+    {
+      "surfaceId": "apex:System.EncodingUtil.urlEncode(String,String)",
+      "symbol": "EncodingUtil.urlEncode",
+      "kind": "test",
+      "notes": "Local UTF-8 URL form encoding is covered."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.generateDigest(String,Blob)",
+      "symbol": "Crypto.generateDigest",
+      "kind": "test",
+      "notes": "Local deterministic digest generation covers SHA-256."
+    },
+    {
+      "surfaceId": "apex:System.Type.forName(String)",
+      "symbol": "Type.forName",
+      "kind": "test",
+      "notes": "Local type-token lookup and newInstance are covered for a fixture class."
+    },
+    {
+      "surfaceId": "apex:System.HttpRequest",
+      "symbol": "HttpRequest",
+      "kind": "test",
+      "notes": "Endpoint, method, headers, timeout, and body accessors are covered."
+    },
+    {
+      "surfaceId": "apex:System.HttpResponse",
+      "symbol": "HttpResponse",
+      "kind": "test",
+      "notes": "Status, headers, and body accessors are covered through a local mock response."
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCallout.invoke(Object,Object,Map,List)",
+      "symbol": "WebServiceCallout.invoke",
+      "kind": "test",
+      "notes": "Registered WebServiceMock routing and response-map mutation are covered locally."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/RegexScalarTypeTarget.cls",
+      "content": "public class RegexScalarTypeTarget { public String name; public RegexScalarTypeTarget() { name = 'made'; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/RegexScalarHttpMock.cls",
+      "content": "public class RegexScalarHttpMock implements HttpCalloutMock { public HttpResponse respond(HttpRequest req) { System.assertEquals('https://example.test/regex-scalar', req.getEndpoint()); System.assertEquals('POST', req.getMethod()); System.assertEquals('trail', req.getBody()); System.assertEquals('yes', req.getHeader('x-local')); HttpResponse res = new HttpResponse(); res.setStatusCode(202); res.setStatus('Accepted'); res.setHeader('Content-Type', 'text/plain'); res.setBody(req.getBody() + ':response'); return res; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/RegexScalarWebServiceMock.cls",
+      "content": "public class RegexScalarWebServiceMock implements WebServiceMock { public void doInvoke(Object stub, Object request, Map<String,Object> response, String endpoint, String soapAction, String requestName, String responseNS, String responseName, String responseType) { response.put('response_x', responseType + ':' + soapAction); } }"
+    },
+    {
+      "path": "force-app/main/default/classes/CoreRuntimePureRegexScalarCloseoutTest.cls",
+      "content": "@isTest private class CoreRuntimePureRegexScalarCloseoutTest { @isTest static void regexAndScalarRows() { Pattern p = Pattern.compile('([A-Z]+)([0-9]+)?'); Matcher m = p.matcher('abc DEF42 ghi XYZ'); System.assert(m.find()); System.assertEquals('DEF42', m.group()); System.assertEquals('DEF', m.group(1)); System.assertEquals('42', m.group(2)); System.assert(m.find()); System.assertEquals('XYZ', m.group()); System.assert(Pattern.matches('[0-9]+', '12345')); System.assert(Pattern.compile('[a-z]+').matcher('trail').matches()); List<String> split = 'alpha,beta,,gamma'.split(','); System.assertEquals(4, split.size()); System.assertEquals('', split.get(2)); List<String> limited = 'one:two:three'.split(':', 2); System.assertEquals(2, limited.size()); System.assertEquals('two:three', limited.get(1)); System.assertEquals(13, Decimal.valueOf('12.5').round()); System.assertEquals(12.35, Decimal.valueOf('12.345').setScale(2)); System.assertEquals(1.3, Decimal.valueOf('1.25').setScale(1, RoundingMode.HALF_UP)); String encoded = EncodingUtil.urlEncode('a b+c/%', 'UTF-8'); System.assertEquals('a+b%2Bc%2F%25', encoded); System.assertEquals('a b+c/%', EncodingUtil.urlDecode(encoded, 'UTF-8')); String digestHex = EncodingUtil.convertToHex(Crypto.generateDigest('SHA-256', Blob.valueOf('abc'))); System.assertEquals('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad', digestHex); Type targetType = Type.forName('RegexScalarTypeTarget'); System.assertNotEquals(null, targetType); RegexScalarTypeTarget made = (RegexScalarTypeTarget)targetType.newInstance(); System.assertEquals('made', made.name); } @isTest static void httpAndSoapRows() { Test.setMock(HttpCalloutMock.class, new RegexScalarHttpMock()); HttpRequest req = new HttpRequest(); System.assertEquals(10000, req.getTimeout()); req.setEndpoint('https://example.test/regex-scalar'); req.setMethod('post'); req.setHeader('X-Local', 'yes'); req.setTimeout(5000); req.setBody('trail'); HttpResponse res = new Http().send(req); System.assertEquals(202, res.getStatusCode()); System.assertEquals('Accepted', res.getStatus()); System.assertEquals('trail:response', res.getBody()); System.assertEquals('text/plain', res.getHeader('content-type')); System.assertEquals(1, Limits.getCallouts()); Test.setMock('WebServiceMock', new RegexScalarWebServiceMock()); Map<String,Object> response = new Map<String,Object>(); WebServiceCallout.invoke(new Object(), 'request', response, new String[]{'https://example.test/soap', 'soapAction', 'requestNS', 'requestName', 'responseNS', 'responseName', 'ResponseType'}); System.assertEquals('ResponseType:soapAction', response.get('response_x')); System.assertEquals(2, Limits.getCallouts()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 2,
+      "total": 2
+    }
+  }
+}
