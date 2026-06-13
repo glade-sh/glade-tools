@@ -5,6 +5,7 @@ go 1.26
 require github.com/glade-sh/glade v0.0.0
 
 require (
+	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.10.0 // indirect
 	github.com/glade-sh/apex-parser v0.1.0 // indirect
@@ -13,6 +14,7 @@ require (
 	github.com/mattn/go-pointer v0.0.1 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
+	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/tree-sitter/go-tree-sitter v0.25.0 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect

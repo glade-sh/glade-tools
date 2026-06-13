@@ -4,7 +4,7 @@
     {
       "symbol": "JSON.deserializeStrict",
       "kind": "exec",
-      "notes": "Strict typed deserialization rejects duplicate object fields before local SObject mapping silently keeps the last value."
+      "notes": "Strict typed SObject deserialization keeps the last duplicate object field value."
     }
   ],
   "schema": [
@@ -20,18 +20,19 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Account decoded = JSON.deserializeStrict('{\"Name\":\"First\",\"Name\":\"Second\"}', Account.class);"
+      "content": "Account decoded = JSON.deserializeStrict('{\"Name\":\"First\",\"Name\":\"Second\"}', Account.class);\nSystem.assertEquals('Second', decoded.Name);"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Account decoded = JSON.deserializeStrict('{\"Name\":\"First\",\"Name\":\"Second\"}', Account.class);"
+      "Account decoded = JSON.deserializeStrict('{\"Name\":\"First\",\"Name\":\"Second\"}', Account.class);\nSystem.assertEquals('Second', decoded.Name);"
     ]
   },
   "expected": {
-    "error": {
-      "message": "JSON.deserializeStrict found duplicate field \"Name\""
+    "result": {
+      "debug": null,
+      "ok": true
     }
   }
 }

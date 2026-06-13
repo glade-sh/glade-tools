@@ -1,0 +1,29 @@
+{
+  "name": "core-string-regex-backreference-split-stdlib",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.String.split(String)",
+      "symbol": "String.split",
+      "kind": "exec",
+      "notes": "String.split supports Java regex numeric backreference delimiters on the regexp2-backed path."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "String source = 'book';\nList<String> parts = source.split('(.)\\\\1');\nSystem.assertEquals(2, parts.size());\nSystem.assertEquals('b', parts[0]);\nSystem.assertEquals('k', parts[1]);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "String source = 'book';\nList<String> parts = source.split('(.)\\\\1');\nSystem.assertEquals(2, parts.size());\nSystem.assertEquals('b', parts[0]);\nSystem.assertEquals('k', parts[1]);\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

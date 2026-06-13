@@ -4,13 +4,13 @@
     {
       "symbol": "Pattern.compile",
       "kind": "exec",
-      "notes": "Public Pattern docs; local implementation uses Go regexp syntax."
+      "notes": "Public Pattern docs; local implementation uses the regexp2-backed Java regex subset."
     },
     {
       "surfaceId": "apex:System.Pattern.matches(String,String)",
       "symbol": "Pattern.matches",
       "kind": "exec",
-      "notes": "Whole-input match backed by Go regexp."
+      "notes": "Whole-input match backed by the regexp2 Java regex subset."
     },
     {
       "symbol": "Pattern.pattern",
@@ -63,7 +63,7 @@
       "surfaceId": "apex:System.Pattern.split(String)",
       "symbol": "Pattern.split",
       "kind": "exec",
-      "notes": "Go regexp-backed split with default, positive, and negative limit behavior."
+      "notes": "regexp2-backed split with default, positive, and negative limit behavior."
     },
     {
       "surfaceId": "apex:System.Matcher.reset()",
@@ -94,7 +94,7 @@
     {
       "symbol": "Matcher.region",
       "kind": "exec",
-      "notes": "Bounds matching to a deterministic local rune-indexed region."
+      "notes": "Bounds matching to a deterministic local Apex UTF-16 code-unit indexed region."
     },
     {
       "surfaceId": "apex:System.Matcher.regionStart()",

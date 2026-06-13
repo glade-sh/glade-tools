@@ -1,0 +1,61 @@
+{
+  "name": "integration-quickaction-defaults-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.QuickAction.describeAvailableActions(String)",
+      "symbol": "QuickAction.describeAvailableActions",
+      "kind": "exec",
+      "notes": "Quick action discovery returns deterministic local metadata DTOs without live UI action service execution."
+    },
+    {
+      "surfaceId": "apex:System.QuickAction.describeQuickActions(List<String>)",
+      "symbol": "QuickAction.describeQuickActions",
+      "kind": "exec",
+      "notes": "Quick action describe results include local predefined default field values from metadata."
+    },
+    {
+      "surfaceId": "apex:System.QuickAction.retrieveQuickActionTemplate(String,Id)",
+      "symbol": "QuickAction.retrieveQuickActionTemplate",
+      "kind": "exec",
+      "notes": "Quick action template defaults materialize local predefined field values on the template SObject."
+    }
+  ],
+  "metadata": {
+    "quickActions": [
+      {
+        "name": "Account.NewTask",
+        "label": "New Task",
+        "type": "Create",
+        "targetObject": "Account",
+        "predefinedFieldValues": [
+          {
+            "field": "Name",
+            "value": "Seed Account"
+          },
+          {
+            "field": "Phone",
+            "value": "555-0100"
+          }
+        ]
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "List<QuickAction.DescribeAvailableQuickActionResult> available = QuickAction.describeAvailableActions('Account'); System.assertEquals(1, available.size()); System.assertEquals('Account.NewTask', available[0].getName()); List<QuickAction.DescribeQuickActionResult> described = QuickAction.describeQuickActions(new List<String>{'Account.NewTask'}); System.assertEquals(1, described.size()); System.assertEquals(2, described[0].getDefaultValues().size()); System.assertEquals('Name', described[0].getDefaultValues()[0].getField()); System.assertEquals('Seed Account', described[0].getDefaultValues()[0].getDefaultValue()); QuickAction.QuickActionTemplateResult template = QuickAction.retrieveQuickActionTemplate('Account.NewTask', '001000000000001'); System.assertEquals('Seed Account', (String)template.getDefaultValues().get('Name')); System.assertEquals('555-0100', (String)template.getDefaultValues().get('Phone'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<QuickAction.DescribeAvailableQuickActionResult> available = QuickAction.describeAvailableActions('Account'); System.assertEquals(1, available.size()); System.assertEquals('Account.NewTask', available[0].getName()); List<QuickAction.DescribeQuickActionResult> described = QuickAction.describeQuickActions(new List<String>{'Account.NewTask'}); System.assertEquals(1, described.size()); System.assertEquals(2, described[0].getDefaultValues().size()); System.assertEquals('Name', described[0].getDefaultValues()[0].getField()); System.assertEquals('Seed Account', described[0].getDefaultValues()[0].getDefaultValue()); QuickAction.QuickActionTemplateResult template = QuickAction.retrieveQuickActionTemplate('Account.NewTask', '001000000000001'); System.assertEquals('Seed Account', (String)template.getDefaultValues().get('Name')); System.assertEquals('555-0100', (String)template.getDefaultValues().get('Phone'));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

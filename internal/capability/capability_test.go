@@ -407,6 +407,34 @@ func TestCoreServiceContextStdlibRowsAreExplicitUnsupported(t *testing.T) {
 	}
 }
 
+func TestNoPartialRowsRemainForNoPartialsCloseoutLanes(t *testing.T) {
+	targetAreas := map[string]bool{
+		"ApexPages":         true,
+		"Approval":          true,
+		"BusinessHours":     true,
+		"FeatureManagement": true,
+		"HTTP":              true,
+		"Limits":            true,
+		"Messaging":         true,
+		"PageReference":     true,
+		"QuickAction":       true,
+		"Schema":            true,
+		"Search":            true,
+		"System":            true,
+		"Test":              true,
+		"Type":              true,
+		"WebServiceCallout": true,
+	}
+	for _, row := range StdlibMatrix() {
+		if !targetAreas[row.Area] {
+			continue
+		}
+		if row.Status == StatusPartial {
+			t.Errorf("%s %s is still partial: %s", row.Area, row.API, row.Notes)
+		}
+	}
+}
+
 func assertStdlibStatuses(t *testing.T, watched map[string]Status) {
 	t.Helper()
 	for _, entry := range StdlibMatrix() {
@@ -429,16 +457,16 @@ func assertStdlibStatuses(t *testing.T, watched map[string]Status) {
 
 func TestQuickActionStdlibRowsAreLocalPartial(t *testing.T) {
 	watched := map[string]Status{
-		"QuickAction.describeAvailableActions":                                          StatusPartial,
-		"QuickAction.describeAvailableQuickActions(String)":                             StatusPartial,
-		"QuickAction.describeQuickActions(List<String>)":                                StatusPartial,
-		"QuickAction.retrieveQuickActionTemplate(String,Id)":                            StatusPartial,
-		"QuickAction.retrieveQuickActionTemplates(List<String>,Id)":                     StatusPartial,
-		"QuickAction.performQuickAction":                                                StatusPartial,
-		"QuickAction.performQuickAction(QuickAction.QuickActionRequest)":                StatusPartial,
-		"QuickAction.performQuickAction(QuickAction.QuickActionRequest,Boolean)":        StatusPartial,
-		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>)":         StatusPartial,
-		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>,Boolean)": StatusPartial,
+		"QuickAction.describeAvailableActions":                                          StatusSupported,
+		"QuickAction.describeAvailableQuickActions(String)":                             StatusSupported,
+		"QuickAction.describeQuickActions(List<String>)":                                StatusSupported,
+		"QuickAction.retrieveQuickActionTemplate(String,Id)":                            StatusSupported,
+		"QuickAction.retrieveQuickActionTemplates(List<String>,Id)":                     StatusSupported,
+		"QuickAction.performQuickAction":                                                StatusSupported,
+		"QuickAction.performQuickAction(QuickAction.QuickActionRequest)":                StatusSupported,
+		"QuickAction.performQuickAction(QuickAction.QuickActionRequest,Boolean)":        StatusSupported,
+		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>)":         StatusSupported,
+		"QuickAction.performQuickActions(List<QuickAction.QuickActionRequest>,Boolean)": StatusSupported,
 		"Test.newSendEmailQuickActionDefaults(Id,Id)":                                   StatusSupported,
 	}
 	assertStdlibStatuses(t, watched)
@@ -455,8 +483,8 @@ func TestLocalContextStdlibRowsArePromoted(t *testing.T) {
 		"UserInfo.hasPackageLicense(Id)":                     StatusSupported,
 		"UserInfo.isCurrentUserLicensedForPackage(Id)":       StatusSupported,
 		"Test.enableChangeDataCapture()":                     StatusSupported,
-		"Test.getEventBus()":                                 StatusPartial,
-		"Test.getExternalService()":                          StatusPartial,
+		"Test.getEventBus()":                                 StatusSupported,
+		"Test.getExternalService()":                          StatusSupported,
 		"Test.setContinuationResponse(String,HttpResponse)":  StatusSupported,
 		"Test.invokeContinuationMethod(Object,Continuation)": StatusSupported,
 		"Test.testInstall(InstallHandler,Version)":           StatusSupported,
@@ -478,25 +506,25 @@ func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 		"System.schedule(String,String,Object)":                                        StatusSupported,
 		"Schedulable.execute(SchedulableContext)":                                      StatusSupported,
 		"SchedulableContext.getTriggerId()":                                            StatusSupported,
-		"Test.setCurrentPageReference(Object)":                                         StatusPartial,
-		"Search.find(String,Object)":                                                   StatusPartial,
-		"Search.query(String,Object)":                                                  StatusPartial,
-		"Search.suggest(String,String,Object)":                                         StatusPartial,
-		"Search.suggest(String,String,Object,Object)":                                  StatusPartial,
-		"System.enqueueJob(Object,Object)":                                             StatusPartial,
+		"Test.setCurrentPageReference(Object)":                                         StatusSupported,
+		"Search.find(String,Object)":                                                   StatusSupported,
+		"Search.query(String,Object)":                                                  StatusSupported,
+		"Search.suggest(String,String,Object)":                                         StatusSupported,
+		"Search.suggest(String,String,Object,Object)":                                  StatusSupported,
+		"System.enqueueJob(Object,Object)":                                             StatusSupported,
 		"AccessLevel.withPermissionSetId(String)":                                      StatusSupported,
-		"System.runAs(Object,Object)":                                                  StatusPartial,
-		"System.runAs(Package.Version)":                                                StatusPartial,
-		"Approval.process(Approval.ProcessRequest)":                                    StatusPartial,
-		"Approval.process(Approval.ProcessRequest, Boolean)":                           StatusPartial,
+		"System.runAs(Object,Object)":                                                  StatusSupported,
+		"System.runAs(Package.Version)":                                                StatusSupported,
+		"Approval.process(Approval.ProcessRequest)":                                    StatusSupported,
+		"Approval.process(Approval.ProcessRequest, Boolean)":                           StatusSupported,
 		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)": StatusSupported,
 		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                             StatusSupported,
 		"TrailblazerIdentity.splunkLog(String,String)":                                 StatusSupported,
-		"BusinessHours.add(String, Datetime, Long)":                                    StatusPartial,
-		"BusinessHours.addGmt(String, Datetime, Long)":                                 StatusPartial,
-		"BusinessHours.diff(String, Datetime, Datetime)":                               StatusPartial,
-		"BusinessHours.isWithin(String, Datetime)":                                     StatusPartial,
-		"BusinessHours.nextStartDate(String, Datetime)":                                StatusPartial,
+		"BusinessHours.add(String, Datetime, Long)":                                    StatusSupported,
+		"BusinessHours.addGmt(String, Datetime, Long)":                                 StatusSupported,
+		"BusinessHours.diff(String, Datetime, Datetime)":                               StatusSupported,
+		"BusinessHours.isWithin(String, Datetime)":                                     StatusSupported,
+		"BusinessHours.nextStartDate(String, Datetime)":                                StatusSupported,
 	}
 	assertStdlibStatuses(t, watched)
 }
@@ -506,29 +534,29 @@ func TestLWCStdlibIntegrationRowsArePromotedOrBounded(t *testing.T) {
 		"AccessLevel.withPermissionSetId(String)":               StatusSupported,
 		"Type.newInstance":                                      StatusSupported,
 		"PageReference(record)":                                 StatusSupported,
-		"JSON.deserialize":                                      StatusPartial,
-		"JSON.deserializeStrict":                                StatusPartial,
-		"JSON.deserializeUntyped":                               StatusPartial,
-		"JSON.serialize":                                        StatusPartial,
-		"JSON.serializePretty":                                  StatusPartial,
-		"Schema.getGlobalDescribe()":                            StatusPartial,
-		"Schema.describeSObjects(List<String>)":                 StatusPartial,
-		"DescribeFieldResult":                                   StatusPartial,
-		"DescribeSObjectResult":                                 StatusPartial,
-		"Search.query / SOSL FIND":                              StatusPartial,
-		"Search.query(String,AccessLevel)":                      StatusPartial,
-		"Search.find":                                           StatusPartial,
-		"Search.find(String,AccessLevel)":                       StatusPartial,
-		"Search.suggest":                                        StatusPartial,
-		"Search.suggest(String,String,Search.SuggestionOption)": StatusPartial,
-		"Search.suggest(String,String,Search.SuggestionOption,AccessLevel)": StatusPartial,
-		"ApexPages.Message":                                StatusPartial,
-		"System.enqueueJob(Object,Object)":                 StatusPartial,
-		"Test.getEventBus()":                               StatusPartial,
-		"Test.getExternalService()":                        StatusPartial,
-		"Test.setMock":                                     StatusPartial,
-		"WebServiceCallout.invoke(Object,Object,Map,List)": StatusPartial,
-		"WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)": StatusPartial,
+		"JSON.deserialize":                                      StatusSupported,
+		"JSON.deserializeStrict":                                StatusSupported,
+		"JSON.deserializeUntyped":                               StatusSupported,
+		"JSON.serialize":                                        StatusSupported,
+		"JSON.serializePretty":                                  StatusSupported,
+		"Schema.getGlobalDescribe()":                            StatusSupported,
+		"Schema.describeSObjects(List<String>)":                 StatusSupported,
+		"DescribeFieldResult":                                   StatusSupported,
+		"DescribeSObjectResult":                                 StatusSupported,
+		"Search.query / SOSL FIND":                              StatusSupported,
+		"Search.query(String,AccessLevel)":                      StatusSupported,
+		"Search.find":                                           StatusSupported,
+		"Search.find(String,AccessLevel)":                       StatusSupported,
+		"Search.suggest":                                        StatusSupported,
+		"Search.suggest(String,String,Search.SuggestionOption)": StatusSupported,
+		"Search.suggest(String,String,Search.SuggestionOption,AccessLevel)": StatusSupported,
+		"ApexPages.Message":                                StatusSupported,
+		"System.enqueueJob(Object,Object)":                 StatusSupported,
+		"Test.getEventBus()":                               StatusSupported,
+		"Test.getExternalService()":                        StatusSupported,
+		"Test.setMock":                                     StatusSupported,
+		"WebServiceCallout.invoke(Object,Object,Map,List)": StatusSupported,
+		"WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)": StatusSupported,
 	}
 	for _, entry := range StdlibMatrix() {
 		want, ok := watched[entry.API]
@@ -557,8 +585,8 @@ func TestLWCStdlibIntegrationRowsArePromotedOrBounded(t *testing.T) {
 
 func TestWebServiceCalloutStdlibRowsAreLocallyPromotedOrFenced(t *testing.T) {
 	watched := map[string]Status{
-		"WebServiceCallout.invoke(Object,Object,Map,List)":                        StatusPartial,
-		"WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)": StatusPartial,
+		"WebServiceCallout.invoke(Object,Object,Map,List)":                        StatusSupported,
+		"WebServiceCallout.invoke(Object,Object,Map<String,Object>,List<String>)": StatusSupported,
 	}
 	for _, entry := range StdlibMatrix() {
 		want, ok := watched[entry.API]
@@ -581,80 +609,80 @@ func TestSecondTierStdlibRowsAreEvidenceBackedOrBounded(t *testing.T) {
 		notes  []string
 	}{
 		"Crypto.generateDigest": {
-			status: StatusPartial,
-			notes:  []string{"SHA-384", "unsupported digest"},
+			status: StatusSupported,
+			notes:  []string{"SHA-384", "SecurityException"},
 		},
 		"Decimal.round": {
-			status: StatusPartial,
-			notes:  []string{"HALF_UP", "precision is not modeled"},
+			status: StatusSupported,
+			notes:  []string{"HALF_EVEN", "RoundingMode"},
 		},
 		"Decimal.setScale": {
-			status: StatusPartial,
-			notes:  []string{"negative scale", "scale fence"},
+			status: StatusSupported,
+			notes:  []string{"negative scale", "Salesforce scale bounds"},
 		},
 		"EncodingUtil.urlDecode": {
-			status: StatusPartial,
-			notes:  []string{"UTF-8", "charset replacement behavior is not modeled"},
+			status: StatusSupported,
+			notes:  []string{"US-ASCII replacement", "UTF-16"},
 		},
 		"EncodingUtil.urlEncode": {
-			status: StatusPartial,
-			notes:  []string{"strict local charset checks", "charset replacement behavior is not modeled"},
+			status: StatusSupported,
+			notes:  []string{"ISO-8859-1", "UTF-16"},
 		},
 		"Limits.get*": {
-			status: StatusPartial,
-			notes:  []string{"SOSL", "unmodeled getter families"},
+			status: StatusSupported,
+			notes:  []string{"deterministic local counters", "zero-valued local service counters"},
 		},
 		"Messaging.SingleEmailMessage": {
-			status: StatusPartial,
-			notes:  []string{"local file attachments", "no delivery transport"},
+			status: StatusSupported,
+			notes:  []string{"DTO setters", "local file attachment"},
 		},
 		"Messaging.sendEmail": {
-			status: StatusPartial,
-			notes:  []string{"SendEmailResult", "send-options"},
+			status: StatusSupported,
+			notes:  []string{"SendEmailResult", "email limits"},
 		},
 		"Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption)": {
-			status: StatusPartial,
-			notes:  []string{"static-resource attachment retrieval", "Salesforce content attachment"},
+			status: StatusSupported,
+			notes:  []string{"static-resource attachments", "METADATA_WITH_BODY"},
 		},
 		"Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption,Boolean)": {
-			status: StatusPartial,
-			notes:  []string{"updateEmailTemplateUsage", "ignored locally"},
+			status: StatusSupported,
+			notes:  []string{"updateEmailTemplateUsage", "remote usage mutation"},
 		},
 		"Matcher.find": {
-			status: StatusPartial,
-			notes:  []string{"Go regexp", "Java-only"},
+			status: StatusSupported,
+			notes:  []string{"regexp2", "UAX #29"},
 		},
 		"Matcher.group": {
-			status: StatusPartial,
-			notes:  []string{"capture groups", "Java-only"},
+			status: StatusSupported,
+			notes:  []string{"whole-match", "Apex UTF-16"},
 		},
 		"Matcher.matches": {
-			status: StatusPartial,
-			notes:  []string{"whole-string", "Java-only"},
+			status: StatusSupported,
+			notes:  []string{"whole-region", "regexp2"},
 		},
 		"Pattern.compile": {
-			status: StatusPartial,
-			notes:  []string{"quote escapes", "Java-only"},
+			status: StatusSupported,
+			notes:  []string{"regexp2", "(?U)", "nested class algebra"},
 		},
 		"Pattern.matches": {
-			status: StatusPartial,
-			notes:  []string{"whole-string", "Java-only"},
+			status: StatusSupported,
+			notes:  []string{"whole-string", "UAX #29"},
 		},
 		"String.split": {
-			status: StatusPartial,
-			notes:  []string{"\\Q...\\E", "empty-match regexes"},
+			status: StatusSupported,
+			notes:  []string{"empty-pattern", "nullable delimiters", "numeric backreference"},
 		},
 		"Test.loadData": {
-			status: StatusPartial,
-			notes:  []string{"Go CSV parsing", "bad-header diagnostics"},
+			status: StatusSupported,
+			notes:  []string{"CSV static-resource", "bad-header diagnostics"},
 		},
 		"Test.startTest": {
-			status: StatusPartial,
-			notes:  []string{"governor window", "unmodeled service counters"},
+			status: StatusSupported,
+			notes:  []string{"governor window", "local counters"},
 		},
 		"Test.stopTest": {
-			status: StatusPartial,
-			notes:  []string{"drains supported async", "unmodeled async/service"},
+			status: StatusSupported,
+			notes:  []string{"outer governor counters", "local async"},
 		},
 	}
 	for _, entry := range StdlibMatrix() {

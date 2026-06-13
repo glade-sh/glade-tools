@@ -1,0 +1,28 @@
+{
+  "name": "core-runtime-webservice-options-validation",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.WebServiceCallout.invoke(Object,Object,Map,List)",
+      "symbol": "WebServiceCallout.invoke(Object,Object,Map,List)",
+      "kind": "exec",
+      "notes": "Local WebServiceCallout.invoke rejects malformed SOAP option lists before mock dispatch."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "WebServiceCallout.invoke(new Object(), 'request', new Map<String,Object>(), new String[]{'https://example.test'});"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "WebServiceCallout.invoke(new Object(), 'request', new Map<String,Object>(), new String[]{'https://example.test'});"
+    ]
+  },
+  "expected": {
+    "error": {
+      "message": "WebServiceCallout.invoke expects 7 option strings"
+    }
+  }
+}

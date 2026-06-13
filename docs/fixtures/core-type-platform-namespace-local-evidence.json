@@ -1,0 +1,29 @@
+{
+  "name": "core-type-platform-namespace-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Type.forName(String,String)",
+      "symbol": "Type.forName",
+      "kind": "exec",
+      "notes": "Local namespace/name lookup resolves selected generated platform types."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals('Schema.DisplayType', Type.forName('Schema', 'DisplayType').getName()); System.assertEquals('Schema.DescribeFieldResult', Type.forName('Schema', 'DescribeFieldResult').getName()); System.assertEquals('ApexPages.StandardController', Type.forName('ApexPages', 'StandardController').getName());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals('Schema.DisplayType', Type.forName('Schema', 'DisplayType').getName()); System.assertEquals('Schema.DescribeFieldResult', Type.forName('Schema', 'DescribeFieldResult').getName()); System.assertEquals('ApexPages.StandardController', Type.forName('ApexPages', 'StandardController').getName());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

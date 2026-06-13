@@ -18,6 +18,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/capability"
 	"github.com/glade-sh/glade/tools/internal/compat"
 	"github.com/glade-sh/glade/tools/internal/examplescan"
+	"github.com/glade-sh/glade/tools/internal/oracleprobe"
 	"github.com/glade-sh/glade/tools/internal/projectscan"
 )
 
@@ -55,6 +56,8 @@ func runCompat(ctx context.Context, args []string, w io.Writer) error {
 		return runCompatGaps(args[1:], w)
 	case "stdlib":
 		return runCompatStdlib(args[1:], w)
+	case "oracle-stdlib":
+		return runCompatOracleStdlib(ctx, args[1:], w)
 	case "docs-inventory":
 		return runCompatDocsInventory(args[1:], w)
 	case "catalog":
@@ -150,7 +153,7 @@ func runCompatSpecialFixture(mode, path, target string, w io.Writer) (bool, erro
 }
 
 func compatUsage() string {
-	tail := "validate|run <fixture.json...> | matrix|mvp [--json] [--require-ready] | local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>] | surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags] | replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...> | ui-controllers [--project <root>] [--json|--check <path>] | post-parity [--project <root>] [--json|--output <path>|--check <path>] [--require-ready] | examples [--project <root>] [--json|--output <path>|--check <path>] | server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json] | dashboard|gaps|stdlib [--output <path>|--check <path>] | stdlib --json | docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>] | catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>] | reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>] | doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>] | salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>] | standard-objects [--json|--output <path>|--check <path>] | stub-contracts [--source <dir>] [--json|--output <path>|--check <path>] | stub-behavior [--json|--output <path>|--check <path>] | stub-inventory [--source <dir>] [--json|--output <path>|--check <path>] | product-namespaces [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--symbols-go] [--json|--output <path>|--check <path>] | tooling-fixtures <report.json...> [--json] | evidence --catalog <path> <fixture.json...> [--json]"
+	tail := "validate|run <fixture.json...> | matrix|mvp [--json] [--require-ready] | local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>] | surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags] | replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...> | ui-controllers [--project <root>] [--json|--check <path>] | post-parity [--project <root>] [--json|--output <path>|--check <path>] [--require-ready] | examples [--project <root>] [--json|--output <path>|--check <path>] | server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json] | dashboard|gaps|stdlib [--output <path>|--check <path>] | stdlib --json | oracle-stdlib --target-org <alias> [--output <path>] | docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>] | catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>] | reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>] | doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>] | salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>] | standard-objects [--json|--output <path>|--check <path>] | stub-contracts [--source <dir>] [--json|--output <path>|--check <path>] | stub-behavior [--json|--output <path>|--check <path>] | stub-inventory [--source <dir>] [--json|--output <path>|--check <path>] | product-namespaces [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--symbols-go] [--json|--output <path>|--check <path>] | tooling-fixtures <report.json...> [--json] | evidence --catalog <path> <fixture.json...> [--json]"
 	return "usage: glade-tools " + tail + "\n       glade compat " + tail
 }
 
@@ -1131,6 +1134,44 @@ func runCompatStdlib(args []string, w io.Writer) error {
 		return capability.WriteStdlibJSON(w)
 	}
 	return runCompatStaticMarkdown(filtered, w, "stdlib", "standard library coverage", capability.WriteStdlibMarkdown)
+}
+
+func runCompatOracleStdlib(ctx context.Context, args []string, w io.Writer) error {
+	targetOrg := ""
+	outputPath := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--target-org":
+			i++
+			if i >= len(args) {
+				return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+			}
+			targetOrg = args[i]
+		case "--output":
+			i++
+			if i >= len(args) {
+				return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+			}
+			outputPath = args[i]
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	if targetOrg == "" {
+		return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+	}
+	report, err := oracleprobe.RunAnonymous(ctx, oracleprobe.StdlibCases(), oracleprobe.Options{TargetOrg: targetOrg})
+	if err != nil {
+		return err
+	}
+	if outputPath != "" {
+		var buf bytes.Buffer
+		if err := oracleprobe.WriteJSON(&buf, report); err != nil {
+			return err
+		}
+		return os.WriteFile(outputPath, buf.Bytes(), 0o644)
+	}
+	return oracleprobe.WriteJSON(w, report)
 }
 
 func runCompatDocsInventory(args []string, w io.Writer) error {

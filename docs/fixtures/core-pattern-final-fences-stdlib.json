@@ -15,7 +15,7 @@
     {
       "symbol": "Matcher.regionStart/regionEnd",
       "kind": "exec",
-      "notes": "Region bounds remain stable across usePattern and report local rune indexes."
+      "notes": "Region bounds remain stable across usePattern and report Apex UTF-16 code-unit indexes."
     },
     {
       "surfaceId": "apex:System.Matcher.hasAnchoringBounds()",

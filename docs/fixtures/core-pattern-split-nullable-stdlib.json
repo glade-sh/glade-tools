@@ -1,0 +1,29 @@
+{
+  "name": "core-pattern-split-nullable-stdlib",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Pattern.split(String,Integer)",
+      "symbol": "Pattern.split",
+      "kind": "exec",
+      "notes": "Nullable delimiter regexes follow Java Pattern.split zero-width and trailing-empty handling over the regexp2-backed path."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Pattern p = Pattern.compile('a*');\nList<String> keepTrailing = p.split('ab cd', -1);\nSystem.assertEquals(7, keepTrailing.size());\nSystem.assertEquals('', keepTrailing[0]);\nSystem.assertEquals('', keepTrailing[1]);\nSystem.assertEquals('b', keepTrailing[2]);\nSystem.assertEquals('', keepTrailing[6]);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Pattern p = Pattern.compile('a*');\nList<String> keepTrailing = p.split('ab cd', -1);\nSystem.assertEquals(7, keepTrailing.size());\nSystem.assertEquals('', keepTrailing[0]);\nSystem.assertEquals('', keepTrailing[1]);\nSystem.assertEquals('b', keepTrailing[2]);\nSystem.assertEquals('', keepTrailing[6]);\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

@@ -153,6 +153,12 @@
         "evidence"
       ],
       "summary": "Compare fixture evidence with a catalog."
+    },
+    {
+      "path": [
+        "oracle-stdlib"
+      ],
+      "summary": "Run scratch-org standard-library oracle probes."
     }
   ],
   "minimumGladeVersion": "0.1.0",

@@ -212,7 +212,7 @@ func TestStdlibAPIIDParsesQualifiedSchemaMethods(t *testing.T) {
 	}
 }
 
-func TestBuildGladeSnapshotKeepsExplicitUnsupportedOverStubBehavior(t *testing.T) {
+func TestBuildGladeSnapshotPromotesBusinessHoursLocalContract(t *testing.T) {
 	rows := BuildGladeSnapshot()
 	byID := rowsByID(rows)
 	id := ApexMemberID("", "BusinessHours", "add", []string{"String", "Datetime", "Long"})
@@ -220,8 +220,17 @@ func TestBuildGladeSnapshotKeepsExplicitUnsupportedOverStubBehavior(t *testing.T
 	if !ok {
 		t.Fatalf("missing BusinessHours row %s", id)
 	}
-	if row.GladeBehavior != BehaviorPartial {
-		t.Fatalf("BusinessHours.add behavior = %s, want %s", row.GladeBehavior, BehaviorPartial)
+	if row.GladeBehavior != BehaviorSupported {
+		t.Fatalf("BusinessHours.add behavior = %s, want %s", row.GladeBehavior, BehaviorSupported)
+	}
+
+	id = ApexTypeID("System", "BusinessHours hosted service calendar holiday expansion")
+	row, ok = byID[id]
+	if !ok {
+		t.Fatalf("missing hosted BusinessHours boundary row %s", id)
+	}
+	if row.GladeBehavior != BehaviorUnsupported {
+		t.Fatalf("BusinessHours hosted boundary behavior = %s, want %s", row.GladeBehavior, BehaviorUnsupported)
 	}
 }
 

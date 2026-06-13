@@ -4,7 +4,7 @@
     {
       "symbol": "String.replaceAll",
       "kind": "exec",
-      "notes": "String regex replacement uses Java-style numeric capture parsing for the local Go-regexp subset."
+      "notes": "String regex replacement uses Java-style numeric capture parsing on the local String replacement path."
     },
     {
       "symbol": "String.replaceFirst",
