@@ -14,9 +14,97 @@ import (
 	"github.com/glade-sh/glade/internal/testreport"
 )
 
+const fullLocalTestFixturesEnv = "GLADE_TOOLS_RUN_FULL_LOCAL_TEST_FIXTURES"
+
+var localTestRunSlots = make(chan struct{}, 1)
+
+type localTestReadyFixture struct {
+	name  string
+	total int
+}
+
+func TestLocalTestFixtureExecutionSelection(t *testing.T) {
+	t.Setenv(fullLocalTestFixturesEnv, "")
+	if shouldRunLocalTestFixture("platform-apis") {
+		t.Fatal("large local-test fixture should not run without the opt-in environment variable")
+	}
+	if shouldRunLocalTestFixture("enterprise-composed") {
+		t.Fatal("full local-test fixture should not run without the opt-in environment variable")
+	}
+
+	t.Setenv(fullLocalTestFixturesEnv, "1")
+	if !shouldRunLocalTestFixture("platform-apis") {
+		t.Fatal("large local-test fixture should run when the opt-in environment variable is set")
+	}
+	if !shouldRunLocalTestFixture("enterprise-composed") {
+		t.Fatal("full local-test fixture should run when the opt-in environment variable is set")
+	}
+}
+
+func TestRunLocalTestsNoDiskCacheDoesNotWriteStartupCache(t *testing.T) {
+	root := t.TempDir()
+	writeLocalTestFile(t, filepath.Join(root, "sfdx-project.json"), `{"packageDirectories":[{"path":"force-app","default":true}]}`)
+	writeLocalTestFile(t, filepath.Join(root, "force-app/main/default/classes/NoDiskCacheTest.cls"), `
+@isTest
+private class NoDiskCacheTest {
+  @isTest static void runs() {
+    System.assertEquals(1, 1);
+  }
+}
+`)
+	report, err := RunLocalTests(LocalTestOptions{Project: root, NoDiskCache: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !report.Ready || report.Summary.Pass != 1 {
+		t.Fatalf("report = %#v", report)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".glade", "test", "startup.gob")); !os.IsNotExist(err) {
+		t.Fatalf("startup cache stat err = %v, want not exist", err)
+	}
+}
+
+func shouldRunLocalTestFixture(string) bool {
+	return os.Getenv(fullLocalTestFixturesEnv) != ""
+}
+
+func requireFullLocalTestFixtures(t *testing.T) {
+	t.Helper()
+	if os.Getenv(fullLocalTestFixturesEnv) == "" {
+		t.Skipf("local-test corpus fixture skipped; set %s=1 to run the full sweep", fullLocalTestFixturesEnv)
+	}
+}
+
+func runLocalTestReadyFixture(t *testing.T, fixture localTestReadyFixture) {
+	t.Helper()
+	if !shouldRunLocalTestFixture(fixture.name) {
+		t.Skipf("local-test fixture skipped; set %s=1 to run the full sweep", fullLocalTestFixturesEnv)
+	}
+	report, err := runLocalTestsForTest(t, LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", fixture.name)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !report.Ready {
+		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
+	}
+	if report.Summary.Total != fixture.total || report.Summary.Pass != fixture.total || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
+		t.Fatalf("summary = %#v", report.Summary)
+	}
+}
+
+func runLocalTestsForTest(t *testing.T, options LocalTestOptions) (LocalTestReport, error) {
+	t.Helper()
+	localTestRunSlots <- struct{}{}
+	t.Cleanup(func() {
+		<-localTestRunSlots
+	})
+	options.NoDiskCache = true
+	return RunLocalTests(options)
+}
+
 func TestRunLocalTestsClassifiesBasicFixture(t *testing.T) {
 	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "basic"), TraceBlocked: true})
+	report, err := runLocalTestsForTest(t, LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "basic"), TraceBlocked: true})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +129,7 @@ func TestRunLocalTestsClassifiesBasicFixture(t *testing.T) {
 func TestRunLocalTestsProgressShowsCountsElapsedAndETA(t *testing.T) {
 	t.Parallel()
 	var progress bytes.Buffer
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:        filepath.Join("..", "..", "testdata", "local-tests", "basic"),
 		ProgressWriter: &progress,
 	})
@@ -71,7 +159,7 @@ func TestRunLocalTestsProgressShowsCountsElapsedAndETA(t *testing.T) {
 
 func TestRunLocalTestsPerfJSONIncludesCloneAndAllocationCounters(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "perf.json")
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:      filepath.Join("..", "..", "testdata", "local-tests", "basic"),
 		PerfJSONPath: path,
 	})
@@ -108,7 +196,7 @@ func TestRunLocalTestsPerfJSONIncludesCloneAndAllocationCounters(t *testing.T) {
 
 func TestRunLocalTestsSkipsTraceByDefault(t *testing.T) {
 	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "basic")})
+	report, err := runLocalTestsForTest(t, LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "basic")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,7 +209,7 @@ func TestRunLocalTestsSkipsTraceByDefault(t *testing.T) {
 
 func TestRunLocalTestsReportsTopFailures(t *testing.T) {
 	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:     filepath.Join("..", "..", "testdata", "local-tests", "basic"),
 		TopFailures: 2,
 	})
@@ -141,7 +229,7 @@ func TestRunLocalTestsReportsTopFailures(t *testing.T) {
 
 func TestRunLocalTestsFiltersClassList(t *testing.T) {
 	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:   filepath.Join("..", "..", "testdata", "local-tests", "basic"),
 		ClassList: []string{"PassingTest"},
 	})
@@ -160,7 +248,7 @@ func TestRunLocalTestsFiltersClassList(t *testing.T) {
 
 func TestRunLocalTestsStartsAtClass(t *testing.T) {
 	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:    filepath.Join("..", "..", "testdata", "local-tests", "basic"),
 		StartClass: "PassingTest",
 	})
@@ -201,7 +289,7 @@ private class %s {
 `, className))
 	}
 
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:          root,
 		BlockersOnly:     true,
 		TopFailures:      1,
@@ -242,7 +330,7 @@ private class %s {
 `, className))
 	}
 
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:          root,
 		BlockersOnly:     true,
 		TopFailures:      1,
@@ -374,7 +462,7 @@ func TestShouldParallelizeMethodsForLargeFocusedClasses(t *testing.T) {
 
 func TestFocusedLocalTestsSkipTraceByDefault(t *testing.T) {
 	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project: filepath.Join("..", "..", "testdata", "local-tests", "basic"),
 		Class:   "FailingTest",
 		Method:  "fails",
@@ -412,7 +500,7 @@ private class ScheduleWithCartSubmitterTest {
 }
 `)
 
-	report, err := RunLocalTests(LocalTestOptions{Project: root, Class: "CartSubmitterTest"})
+	report, err := runLocalTestsForTest(t, LocalTestOptions{Project: root, Class: "CartSubmitterTest"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -450,7 +538,7 @@ private class SampleTest {
 	runGit("add", ".")
 	runGit("commit", "-m", "initial")
 
-	report, err := RunLocalTests(LocalTestOptions{
+	report, err := runLocalTestsForTest(t, LocalTestOptions{
 		Project:      root,
 		Class:        "SampleTest",
 		ChangedSince: "HEAD",
@@ -502,7 +590,7 @@ func TestRunLocalTestsFocusedSelectionReportsNoMatches(t *testing.T) {
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			report, err := RunLocalTests(tt.options)
+			report, err := runLocalTestsForTest(t, tt.options)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -552,189 +640,59 @@ func TestLocalTestRunOutcomeSplitsRuntimeAndTimeout(t *testing.T) {
 }
 
 func TestRunLocalTestsPlatformAPIsFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "platform-apis")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 4 || report.Summary.Pass != 4 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "platform-apis", total: 4})
 }
 
 func TestRunLocalTestsNamedCredentialCalloutsFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "named-credential-callouts")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 2 || report.Summary.Pass != 2 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "named-credential-callouts", total: 2})
 }
 
 func TestRunLocalTestsFilesEmailFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "files-email")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 2 || report.Summary.Pass != 2 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "files-email", total: 2})
 }
 
 func TestRunLocalTestsWorkflowFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "workflow")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 1 || report.Summary.Pass != 1 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "workflow", total: 1})
 }
 
 func TestRunLocalTestsFlowFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "flow")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 1 || report.Summary.Pass != 1 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "flow", total: 1})
 }
 
 func TestRunLocalTestsResourcesLabelsFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "resources-labels")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 2 || report.Summary.Pass != 2 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "resources-labels", total: 2})
 }
 
 func TestRunLocalTestsUIControllerContractsFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "ui-controller-contracts")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 2 || report.Summary.Pass != 2 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "ui-controller-contracts", total: 2})
 }
 
 func TestRunLocalTestsVisualforcePagesFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "visualforce-pages")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 3 || report.Summary.Pass != 3 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "visualforce-pages", total: 3})
 }
 
 func TestRunLocalTestsOrgLikeRunnerFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "org-like-runner")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 2 || report.Summary.Pass != 2 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "org-like-runner", total: 2})
 }
 
 func TestRunLocalTestsVMExceptionDispatchFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "vm-exception-dispatch")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 1 || report.Summary.Pass != 1 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "vm-exception-dispatch", total: 1})
 }
 
 func TestRunLocalTestsStandardObjectShapeFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "standard-object-shape")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 2 || report.Summary.Pass != 2 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "standard-object-shape", total: 2})
 }
 
 func TestRunLocalTestsEnterpriseComposedFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "enterprise-composed")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 2 || report.Summary.Pass != 2 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "enterprise-composed", total: 2})
 }
 
 func TestRunLocalTestsMetadataDeployFixtureReady(t *testing.T) {
-	t.Parallel()
-	report, err := RunLocalTests(LocalTestOptions{Project: filepath.Join("..", "..", "testdata", "local-tests", "metadata-deploy")})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !report.Ready {
-		t.Fatalf("ready = false, summary = %#v outcomes = %#v", report.Summary, report.Outcomes)
-	}
-	if report.Summary.Total != 1 || report.Summary.Pass != 1 || report.Summary.CompileErrors != 0 || report.Summary.Unsupported != 0 {
-		t.Fatalf("summary = %#v", report.Summary)
-	}
+	runLocalTestReadyFixture(t, localTestReadyFixture{name: "metadata-deploy", total: 1})
 }
 
 func TestCheckLocalTestCorpusFixture(t *testing.T) {
-	t.Parallel()
+	requireFullLocalTestFixtures(t)
 	report, err := CheckLocalTestCorpus(filepath.Join("..", "..", "docs", "fixtures", "local-tests-corpus.json"))
 	if err != nil {
 		t.Fatalf("CheckLocalTestCorpus error = %v, report = %#v", err, report)
@@ -745,7 +703,6 @@ func TestCheckLocalTestCorpusFixture(t *testing.T) {
 }
 
 func TestCheckPostParityTraceFixture(t *testing.T) {
-	t.Parallel()
 	report, err := CheckPostParityTraceFixture(filepath.Join("..", "..", "docs", "fixtures", "post-parity-trace-events.json"))
 	if err != nil {
 		t.Fatalf("CheckPostParityTraceFixture error = %v, report = %#v", err, report)
@@ -756,7 +713,6 @@ func TestCheckPostParityTraceFixture(t *testing.T) {
 }
 
 func TestCheckUIControllerDiscoveryFixture(t *testing.T) {
-	t.Parallel()
 	report, err := CheckUIControllerDiscovery(filepath.Join("..", "..", "docs", "fixtures", "ui-controller-discovery.json"))
 	if err != nil {
 		t.Fatalf("CheckUIControllerDiscovery error = %v, report = %#v", err, report)
@@ -770,7 +726,7 @@ func TestRunLocalTestsReportsLoadError(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	writeLocalTestFile(t, filepath.Join(root, "sfdx-project.json"), `{`)
-	report, err := RunLocalTests(LocalTestOptions{Project: root})
+	report, err := runLocalTestsForTest(t, LocalTestOptions{Project: root})
 	if err != nil {
 		t.Fatal(err)
 	}

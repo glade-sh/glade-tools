@@ -51,7 +51,7 @@ func runCompatSurface(args []string, w io.Writer) error {
 }
 
 func surfaceUsage() string {
-	return "usage: glade surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check [flags]"
+	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check [flags]"
 }
 
 func runCompatSurfaceSources(args []string, w io.Writer) error {
@@ -121,7 +121,7 @@ func runCompatSurfaceSources(args []string, w io.Writer) error {
 			return err
 		}
 		if string(existing) != markdown {
-			return fmt.Errorf("surface sources drift: run `glade surface sources --docs %s --output %s`", docs, check)
+			return fmt.Errorf("surface sources drift: run `glade-tools surface sources --docs %s --output %s`", docs, check)
 		}
 		if !surfaceledger.SourceAuditComplete(report) {
 			return fmt.Errorf("surface sources check failed: missing source families: %d, partial source families: %d, missingLocalMarkdown: %d, unmanifestedMarkdown: %d", report.MissingRequired, report.PartialRequired, report.MissingLocalMarkdown, report.UnmanifestedMarkdown)

@@ -8,14 +8,24 @@ if [[ -e "$perf_root" && ! -d "$perf_root" ]]; then
   perf_root="/tmp/glade-perf-runs"
 fi
 out_dir="${GLADE_PERF_DIR:-$perf_root/$timestamp}"
-binary="${GLADE_BIN:-$repo_root/bin/glade-perf}"
-project="${1:-example-projects/src-nmb-nutpl-develop}"
+binary="${GLADE_TOOLS_BIN:-$repo_root/bin/glade-tools-perf}"
+project="${1:-${GLADE_PROJECT:-}}"
 parallel="${GLADE_PARALLEL:-$(sysctl -n hw.logicalcpu 2>/dev/null || nproc 2>/dev/null || printf '1')}"
+
+if [[ -z "$project" ]]; then
+  echo "usage: scripts/local-test-perf.sh <project-root>" >&2
+  echo "or set GLADE_PROJECT to a project root" >&2
+  exit 1
+fi
+
+if [[ "$project" != /* ]]; then
+  project="$repo_root/$project"
+fi
 
 mkdir -p "$out_dir" "$repo_root/bin"
 
 if [[ ! -x "$binary" ]]; then
-  go build -trimpath -o "$binary" "$repo_root/cmd/glade"
+  go build -trimpath -o "$binary" "$repo_root/cmd/glade-tools"
 fi
 
 perf_json="$out_dir/local-tests.perf.json"
@@ -23,8 +33,8 @@ cpu_profile="$out_dir/local-tests.cpu.pprof"
 mem_profile="$out_dir/local-tests.mem.pprof"
 summary="$out_dir/local-tests.summary.json"
 
-"$binary" compat local-tests \
-  --project "$repo_root/$project" \
+"$binary" local-tests \
+  --project "$project" \
   --json \
   --timeout "${GLADE_TIMEOUT_MS:-60000}" \
   --parallel "$parallel" \

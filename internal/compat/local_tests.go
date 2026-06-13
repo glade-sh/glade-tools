@@ -56,6 +56,7 @@ type LocalTestOptions struct {
 	AutoTune            bool
 	AutoShardCount      bool
 	AutoShardIndex      bool
+	NoDiskCache         bool
 }
 
 type LocalTestPhaseTiming struct {
@@ -296,6 +297,7 @@ func RunLocalTests(options LocalTestOptions) (LocalTestReport, error) {
 		TimeoutMS:           options.TimeoutMS,
 		Parallelism:         parallelism,
 		Progress:            progress.handle,
+		NoDiskCache:         options.NoDiskCache,
 	}
 	cases := apextest.Discover(index, testOpts)
 	cases = filterLocalTestCases(cases, options)
@@ -1081,7 +1083,7 @@ func CheckLocalTestCorpus(path string) (LocalTestCorpusReport, error) {
 		if !filepath.IsAbs(projectPath) {
 			projectPath = filepath.Clean(filepath.Join(baseDir, projectPath))
 		}
-		actual, err := RunLocalTests(LocalTestOptions{Project: projectPath})
+		actual, err := RunLocalTests(LocalTestOptions{Project: projectPath, NoDiskCache: true})
 		if err != nil {
 			return report, err
 		}

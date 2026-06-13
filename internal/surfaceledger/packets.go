@@ -44,7 +44,7 @@ func AreaRegistry() []AreaPacket {
 			FocusedTests:       []string{"go test ./glade-tools/internal/surfaceledger"},
 			DoneCriteria:       []string{"false split rows are joined before feature packets start"},
 			RatchetTarget:      "paired missing/stale rows decrease for identity examples",
-			AreaRatchetCommand: "go test ./glade-tools/internal/surfaceledger && glade surface refresh --docs \"$GLADE_SALESFORCE_DOCS_SOURCE\" --tooling-completions testdata/generated/tooling_system_symbols.json.gz --out \"$(mktemp -d)\"",
+			AreaRatchetCommand: "go test ./glade-tools/internal/surfaceledger && glade-tools surface refresh --docs \"$GLADE_SALESFORCE_DOCS_SOURCE\" --tooling-completions testdata/generated/tooling_system_symbols.json.gz --out \"$(mktemp -d)\"",
 		},
 		{
 			Name:      "Core.Runtime.System.FeatureManagement",
@@ -65,7 +65,7 @@ func AreaRegistry() []AreaPacket {
 			FocusedTests:       []string{"go test ./internal/vm ./glade-tools/internal/capability ./internal/repoguard"},
 			DoneCriteria:       []string{"supported methods have behavior evidence", "unsupported behavior is explicit"},
 			RatchetTarget:      "FeatureManagement missing-shape and missing-evidence rows do not increase",
-			AreaRatchetCommand: "glade surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
+			AreaRatchetCommand: "glade-tools surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
 		},
 		{
 			Name:                 "Core.Runtime.Database.Batchable",
@@ -82,7 +82,7 @@ func AreaRegistry() []AreaPacket {
 			FocusedTests:         []string{"go test ./internal/vm ./internal/apextest ./internal/repoguard"},
 			DoneCriteria:         []string{"batch lifecycle has fixture evidence", "query locator overloads have fixture evidence", "AsyncApexJob state is explicit"},
 			RatchetTarget:        "Database.Batchable/QueryLocator missing-shape and missing-evidence rows do not increase",
-			AreaRatchetCommand:   "glade surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
+			AreaRatchetCommand:   "glade-tools surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
 		},
 		{
 			Name:                 "Data.Runtime.SchemaDescribe",
@@ -99,7 +99,7 @@ func AreaRegistry() []AreaPacket {
 			FocusedTests:         []string{"go test ./internal/vm ./internal/schema ./internal/sobject ./internal/repoguard"},
 			DoneCriteria:         []string{"describe shape and behavior evidence stay separated"},
 			RatchetTarget:        "Schema describe missing rows do not increase",
-			AreaRatchetCommand:   "glade surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
+			AreaRatchetCommand:   "glade-tools surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
 		},
 	}
 	packets = append(packets,
@@ -150,7 +150,7 @@ func genericArea(name, title, owner, filter string, allowed []string) AreaPacket
 		FocusedTests:         []string{"go test ./internal/repoguard"},
 		DoneCriteria:         []string{"shape, behavior, evidence, capability/docs, and refresh/check are reported in order"},
 		RatchetTarget:        name + " missing rows do not increase",
-		AreaRatchetCommand:   "glade surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
+		AreaRatchetCommand:   "glade-tools surface check --ledger \"$tmp/SURFACE_LEDGER.json\" --max-parser-failures 0",
 	}
 }
 
@@ -211,7 +211,7 @@ func PacketMarkdown(ledger SurfaceLedger, packet AreaPacket) string {
 	fmt.Fprintln(&b)
 	fmt.Fprintln(&b, "```bash")
 	fmt.Fprintln(&b, "tmp=\"$(mktemp -d)\"")
-	fmt.Fprintln(&b, "glade surface refresh \\")
+	fmt.Fprintln(&b, "glade-tools surface refresh \\")
 	fmt.Fprintln(&b, "  --docs \"$GLADE_SALESFORCE_DOCS_SOURCE\" \\")
 	fmt.Fprintln(&b, "  --tooling-completions testdata/generated/tooling_system_symbols.json.gz \\")
 	fmt.Fprintln(&b, "  --out \"$tmp\"")

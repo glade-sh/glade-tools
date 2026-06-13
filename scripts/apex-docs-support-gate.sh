@@ -22,10 +22,10 @@ trap cleanup EXIT
 
 cd "${ROOT}"
 
-GLADE="${GLADE_BIN:-}"
-if [[ -z "${GLADE}" ]]; then
-  go build -o "${TMP}/glade" ./cmd/glade
-  GLADE="${TMP}/glade"
+GLADE_TOOLS="${GLADE_TOOLS_BIN:-}"
+if [[ -z "${GLADE_TOOLS}" ]]; then
+  go build -o "${TMP}/glade-tools" ./cmd/glade-tools
+  GLADE_TOOLS="${TMP}/glade-tools"
 fi
 
 INVENTORY="${TMP}/apex-docs-inventory.json"
@@ -33,30 +33,30 @@ CATALOG="${TMP}/apex-capability-catalog.json"
 PRODUCT_NAMESPACES="${TMP}/apex-product-namespaces.json"
 EVIDENCE="${TMP}/apex-evidence.txt"
 
-"${GLADE}" compat docs-inventory --source "${SOURCE}" --output "${INVENTORY}"
-"${GLADE}" compat docs-inventory --source "${SOURCE}" --check "${INVENTORY}"
+"${GLADE_TOOLS}" docs-inventory --source "${SOURCE}" --output "${INVENTORY}"
+"${GLADE_TOOLS}" docs-inventory --source "${SOURCE}" --check "${INVENTORY}"
 
-"${GLADE}" compat catalog --inventory "${INVENTORY}" --output "${CATALOG}"
-"${GLADE}" compat catalog --inventory "${INVENTORY}" --check "${CATALOG}"
+"${GLADE_TOOLS}" catalog --inventory "${INVENTORY}" --output "${CATALOG}"
+"${GLADE_TOOLS}" catalog --inventory "${INVENTORY}" --check "${CATALOG}"
 
-"${GLADE}" compat product-namespaces --catalog "${CATALOG}" --output "${PRODUCT_NAMESPACES}"
-"${GLADE}" compat product-namespaces --catalog "${CATALOG}" --check "${PRODUCT_NAMESPACES}"
+"${GLADE_TOOLS}" product-namespaces --catalog "${CATALOG}" --output "${PRODUCT_NAMESPACES}"
+"${GLADE_TOOLS}" product-namespaces --catalog "${CATALOG}" --check "${PRODUCT_NAMESPACES}"
 
 RECONCILE="${TMP}/apex-reconciliation.json"
-"${GLADE}" compat reconcile --catalog "${CATALOG}" --json >"${RECONCILE}"
-"${GLADE}" compat reconcile --catalog "${CATALOG}"
+"${GLADE_TOOLS}" reconcile --catalog "${CATALOG}" --json >"${RECONCILE}"
+"${GLADE_TOOLS}" reconcile --catalog "${CATALOG}"
 
 # Ratchet: documented executable-parity/data-platform surfaces must stay at
 # least type-known. Set GLADE_APEX_DOCS_MAX_UNKNOWN to the current floor (see
 # the `unknown=` count above) to fail the gate when the gap regresses.
 if [[ -n "${GLADE_APEX_DOCS_MAX_UNKNOWN:-}" ]]; then
-  "${GLADE}" compat reconcile --catalog "${CATALOG}" --max-unknown "${GLADE_APEX_DOCS_MAX_UNKNOWN}" >/dev/null || {
+  "${GLADE_TOOLS}" reconcile --catalog "${CATALOG}" --max-unknown "${GLADE_APEX_DOCS_MAX_UNKNOWN}" >/dev/null || {
     echo "apex-docs-support: runtime-target unknown surfaces regressed past ${GLADE_APEX_DOCS_MAX_UNKNOWN}" >&2
     exit 1
   }
 fi
 
-"${GLADE}" compat evidence --catalog "${CATALOG}" docs/fixtures/*.json >"${EVIDENCE}"
+"${GLADE_TOOLS}" evidence --catalog "${CATALOG}" docs/fixtures/*.json >"${EVIDENCE}"
 grep -q 'unmatchedEvidence: 0' "${EVIDENCE}" || {
   echo "apex-docs-support: fixture evidence references symbols missing from the catalog" >&2
   cat "${EVIDENCE}" >&2

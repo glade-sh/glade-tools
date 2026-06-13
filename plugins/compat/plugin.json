@@ -18,6 +18,18 @@
     },
     {
       "path": [
+        "matrix"
+      ],
+      "summary": "Print the full capability matrix."
+    },
+    {
+      "path": [
+        "mvp"
+      ],
+      "summary": "Print MVP readiness status."
+    },
+    {
+      "path": [
         "local-tests"
       ],
       "summary": "Report local Apex test execution readiness."
@@ -36,6 +48,24 @@
     },
     {
       "path": [
+        "replay"
+      ],
+      "summary": "Replay checked run bundles."
+    },
+    {
+      "path": [
+        "ui-controllers"
+      ],
+      "summary": "Discover Visualforce controller surfaces."
+    },
+    {
+      "path": [
+        "server-examples"
+      ],
+      "summary": "Probe checked server route examples."
+    },
+    {
+      "path": [
         "dashboard"
       ],
       "summary": "Generate compatibility dashboard output."
@@ -51,6 +81,78 @@
         "stdlib"
       ],
       "summary": "Generate standard-library coverage output."
+    },
+    {
+      "path": [
+        "docs-inventory"
+      ],
+      "summary": "Inventory Salesforce docs."
+    },
+    {
+      "path": [
+        "catalog"
+      ],
+      "summary": "Build a capability catalog."
+    },
+    {
+      "path": [
+        "reconcile"
+      ],
+      "summary": "Reconcile docs inventory with the catalog."
+    },
+    {
+      "path": [
+        "doc-contracts"
+      ],
+      "summary": "Report Salesforce docs behavior contracts."
+    },
+    {
+      "path": [
+        "salesforce-coverage"
+      ],
+      "summary": "Generate Salesforce coverage manifests."
+    },
+    {
+      "path": [
+        "standard-objects"
+      ],
+      "summary": "Report generated standard object coverage."
+    },
+    {
+      "path": [
+        "stub-contracts"
+      ],
+      "summary": "Report generated stub behavioral contract policy."
+    },
+    {
+      "path": [
+        "stub-behavior"
+      ],
+      "summary": "Report generated platform stub behavior status."
+    },
+    {
+      "path": [
+        "stub-inventory"
+      ],
+      "summary": "Compare stub source with generated shapes."
+    },
+    {
+      "path": [
+        "product-namespaces"
+      ],
+      "summary": "Report product namespace coverage."
+    },
+    {
+      "path": [
+        "tooling-fixtures"
+      ],
+      "summary": "Summarize tooling fixture reports."
+    },
+    {
+      "path": [
+        "evidence"
+      ],
+      "summary": "Compare fixture evidence with a catalog."
     }
   ],
   "minimumGladeVersion": "0.1.0",

@@ -362,9 +362,9 @@ func TestBuildSalesforceCoverageReport(t *testing.T) {
 		t.Fatalf("areas = %#v", report.Areas)
 	}
 	if len(report.NextGates) != 3 ||
-		!strings.Contains(report.NextGates[0].Command, "glade surface refresh") ||
-		!strings.Contains(report.NextGates[1].Command, "glade surface packet") ||
-		!strings.Contains(report.NextGates[2].Command, "glade surface check") {
+		!strings.Contains(report.NextGates[0].Command, "glade-tools surface refresh") ||
+		!strings.Contains(report.NextGates[1].Command, "glade-tools surface packet") ||
+		!strings.Contains(report.NextGates[2].Command, "glade-tools surface check") {
 		t.Fatalf("next gates should point at surface packets: %#v", report.NextGates)
 	}
 	var out bytes.Buffer

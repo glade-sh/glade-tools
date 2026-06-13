@@ -150,7 +150,8 @@ func runCompatSpecialFixture(mode, path, target string, w io.Writer) (bool, erro
 }
 
 func compatUsage() string {
-	return "usage: glade compat validate|run <fixture.json...> | matrix|mvp [--json] [--require-ready] | local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>] | surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags] | replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...> | ui-controllers [--project <root>] [--json|--check <path>] | post-parity [--project <root>] [--json|--output <path>|--check <path>] [--require-ready] | examples [--project <root>] [--json|--output <path>|--check <path>] | server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json] | dashboard|gaps|stdlib [--output <path>|--check <path>] | stdlib --json | docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>] | catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>] | reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>] | doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>] | salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>] | standard-objects [--json|--output <path>|--check <path>] | stub-contracts [--source <dir>] [--json|--output <path>|--check <path>] | stub-behavior [--json|--output <path>|--check <path>] | stub-inventory [--source <dir>] [--json|--output <path>|--check <path>] | product-namespaces [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--symbols-go] [--json|--output <path>|--check <path>] | tooling-fixtures <report.json...> [--json] | evidence --catalog <path> <fixture.json...> [--json]"
+	tail := "validate|run <fixture.json...> | matrix|mvp [--json] [--require-ready] | local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>] | surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags] | replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...> | ui-controllers [--project <root>] [--json|--check <path>] | post-parity [--project <root>] [--json|--output <path>|--check <path>] [--require-ready] | examples [--project <root>] [--json|--output <path>|--check <path>] | server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json] | dashboard|gaps|stdlib [--output <path>|--check <path>] | stdlib --json | docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>] | catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>] | reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>] | doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>] | salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>] | standard-objects [--json|--output <path>|--check <path>] | stub-contracts [--source <dir>] [--json|--output <path>|--check <path>] | stub-behavior [--json|--output <path>|--check <path>] | stub-inventory [--source <dir>] [--json|--output <path>|--check <path>] | product-namespaces [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--symbols-go] [--json|--output <path>|--check <path>] | tooling-fixtures <report.json...> [--json] | evidence --catalog <path> <fixture.json...> [--json]"
+	return "usage: glade-tools " + tail + "\n       glade compat " + tail
 }
 
 type postParityReadiness struct {
@@ -1641,7 +1642,10 @@ func runCompatSalesforceCoverage(args []string, w io.Writer) error {
 		return errors.New("use only one of --source, --inventory, or --catalog")
 	}
 	if sources == 0 {
-		source = defaultSalesforceDocsSource()
+		source = strings.TrimSpace(defaultSalesforceDocsSource())
+		if source == "" {
+			return errors.New("use --source, --inventory, or --catalog, or set GLADE_SALESFORCE_DOCS_SOURCE")
+		}
 	}
 	if toolingCompletionsPath == "" {
 		if defaultPath := defaultSalesforceToolingCompletionsSource(); fileExists(defaultPath) {
@@ -1706,12 +1710,25 @@ func runCompatSalesforceCoverage(args []string, w io.Writer) error {
 			return err
 		}
 		if string(existing) != buf.String() {
-			return fmt.Errorf("Salesforce coverage drift: run `glade-tools salesforce-coverage --output %s`", checkPath)
+			return fmt.Errorf("Salesforce coverage drift: run `glade-tools salesforce-coverage%s --output %s`", salesforceCoverageSourceHint(source, inventoryPath, catalogPath), checkPath)
 		}
 		fmt.Fprintf(w, "%s: up to date\n", checkPath)
 		return nil
 	default:
 		return capability.WriteSalesforceCoverageText(w, report)
+	}
+}
+
+func salesforceCoverageSourceHint(source, inventoryPath, catalogPath string) string {
+	switch {
+	case source != "":
+		return " --source " + source
+	case inventoryPath != "":
+		return " --inventory " + inventoryPath
+	case catalogPath != "":
+		return " --catalog " + catalogPath
+	default:
+		return ""
 	}
 }
 
@@ -2069,7 +2086,7 @@ func runCompatStubInventory(args []string, w io.Writer) error {
 			return err
 		}
 		if string(existing) != buf.String() {
-			return fmt.Errorf("stub inventory drift: run `glade-tools stub-inventory --output %s`", checkPath)
+			return fmt.Errorf("stub inventory drift: run `glade-tools stub-inventory --source %s --output %s`", sourceRoot, checkPath)
 		}
 		fmt.Fprintf(w, "%s: up to date\n", checkPath)
 		return nil
@@ -2111,7 +2128,7 @@ func loadSalesforceCoverageCatalog(source, inventoryPath, catalogPath string) (c
 }
 
 func defaultSalesforceDocsSource() string {
-	return "/Users/matt/Downloads/Kimi_Agent_Salesforce Docs Scraper (1)/salesforce-docs"
+	return os.Getenv("GLADE_SALESFORCE_DOCS_SOURCE")
 }
 
 func defaultSalesforceToolingCompletionsSource() string {
@@ -2203,7 +2220,10 @@ func runCompatProductNamespaces(args []string, w io.Writer) error {
 		return errors.New("use only one of --source, --inventory, or --catalog")
 	}
 	if sources == 0 {
-		source = defaultSalesforceDocsSource()
+		source = strings.TrimSpace(defaultSalesforceDocsSource())
+		if source == "" {
+			return errors.New("use --source, --inventory, or --catalog, or set GLADE_SALESFORCE_DOCS_SOURCE")
+		}
 	}
 	requested := 0
 	for _, set := range []bool{jsonOut, outputPath != "", checkPath != ""} {

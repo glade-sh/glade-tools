@@ -128,7 +128,7 @@ func main() {
 	flag.StringVar(&input, "input", "example-projects", "input root to scan")
 	flag.StringVar(&outputJSON, "output", ".glade/runtime-path-inventory.json", "output JSON path")
 	flag.StringVar(&outputMD, "markdown", ".glade/runtime-path-inventory.md", "output markdown path")
-	flag.BoolVar(&includeStubs, "include-stubs", false, "include example-projects/stubs")
+	flag.BoolVar(&includeStubs, "include-stubs", false, "include the configured stub source corpus")
 	flag.Parse()
 
 	root, err := os.Getwd()

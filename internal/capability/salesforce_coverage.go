@@ -121,13 +121,13 @@ func BuildSalesforceCoverageReportWithTooling(catalog Catalog, tooling *ToolingC
 		Entries:         len(catalog.Entries),
 		NextGates: []SalesforceCoverageNextGate{{
 			Name:    "surface refresh",
-			Command: "glade surface refresh --docs <salesforce-docs> --tooling-completions <tooling-system-symbols.json.gz> --out <surface-out>",
+			Command: "glade-tools surface refresh --docs <salesforce-docs> --tooling-completions <tooling-system-symbols.json.gz> --out <surface-out>",
 		}, {
 			Name:    "surface packet",
-			Command: "glade surface packet --ledger <surface-out>/SURFACE_LEDGER.json --area <area> --out docs/agent-packets/salesforce/<area>.md",
+			Command: "glade-tools surface packet --ledger <surface-out>/SURFACE_LEDGER.json --area <area> --out docs/agent-packets/salesforce/<area>.md",
 		}, {
 			Name:    "surface check",
-			Command: "glade surface check --ledger <surface-out>/SURFACE_LEDGER.json --max-parser-failures 0",
+			Command: "glade-tools surface check --ledger <surface-out>/SURFACE_LEDGER.json --max-parser-failures 0",
 		}},
 	}
 	for _, area := range areas {

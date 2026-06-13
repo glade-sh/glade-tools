@@ -3,25 +3,40 @@
 import { createWriteStream, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, join, relative } from "node:path";
+import { basename, isAbsolute, join, relative } from "node:path";
 import { spawn } from "node:child_process";
 
 const repoRoot = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const timeoutSeconds = Number.parseInt(process.env.GLADE_BASELINE_TIMEOUT_SECONDS || "30", 10);
 const timeoutMs = timeoutSeconds * 1000;
 const outputPath = process.argv[2] || "docs/fixtures/local-tests-example-projects.json";
-const configuredBin = (process.env.GLADE_BIN || "").trim();
-const defaultBin = join(repoRoot, "bin", "glade-perf");
+const configuredBin = (process.env.GLADE_TOOLS_BIN || process.env.GLADE_BIN || "").trim();
+const defaultBin = join(repoRoot, "bin", "glade-tools-perf");
 const gladeBin = configuredBin || (existsSync(defaultBin) ? defaultBin : "");
+const projects = (process.env.GLADE_BASELINE_PROJECTS || "")
+  .split(/[\n,]/)
+  .map((project) => project.trim())
+  .filter(Boolean)
+  .map(parseProjectSpec);
 
-const projects = [
-  "example-projects/NPSP-rel-3.237",
-  "example-projects/src-nmb-nc-develop",
-  "example-projects/src-nmb-nu-develop",
-  "example-projects/src-nmb-nutpl-develop",
-  "example-projects/sf-cred-pkg-develop",
-  "example-projects/nams-workspace",
-];
+if (projects.length === 0) {
+  console.error("set GLADE_BASELINE_PROJECTS to a comma- or newline-separated list of project roots");
+  process.exit(1);
+}
+
+function parseProjectSpec(spec) {
+  const separator = spec.indexOf("=");
+  if (separator === -1) {
+    return { label: spec, path: spec };
+  }
+  const label = spec.slice(0, separator).trim();
+  const path = spec.slice(separator + 1).trim();
+  if (!label || !path) {
+    console.error("GLADE_BASELINE_PROJECTS entries must be <project-root> or <redacted-label>=<project-root>");
+    process.exit(1);
+  }
+  return { label, path };
+}
 
 function normalizeMessage(message) {
   return String(message || "")
@@ -44,13 +59,24 @@ function topGroups(groups, limit = 8) {
     .slice(0, limit);
 }
 
+function displayFileName(file, project) {
+  if (!file) return "";
+  const absoluteFile = isAbsolute(file) ? file : join(repoRoot, file);
+  const absoluteProject = isAbsolute(project.path) ? project.path : join(repoRoot, project.path);
+  const projectRelative = relative(absoluteProject, absoluteFile);
+  if (projectRelative && !projectRelative.startsWith("..") && !isAbsolute(projectRelative)) {
+    return join(project.label, projectRelative);
+  }
+  return relative(repoRoot, absoluteFile);
+}
+
 function summarizeReport(project, report, elapsedMs, command) {
   const outcomeGroups = new Map();
   for (const outcome of report.outcomes || []) {
     if (outcome.outcome === "pass") {
       continue;
     }
-    const file = outcome.file ? relative(repoRoot, outcome.file) : "";
+    const file = displayFileName(outcome.file, project);
     const key = [
       outcome.outcome || "unknown",
       outcome.phase || "",
@@ -71,7 +97,7 @@ function summarizeReport(project, report, elapsedMs, command) {
 
   const diagnosticGroups = new Map();
   for (const diagnostic of report.diagnostics || []) {
-    const file = diagnostic.file ? relative(repoRoot, diagnostic.file) : "";
+    const file = displayFileName(diagnostic.file, project);
     const key = [
       diagnostic.code || "unknown",
       basename(file),
@@ -85,7 +111,7 @@ function summarizeReport(project, report, elapsedMs, command) {
   }
 
   return {
-    project,
+    project: project.label,
     command,
     timeoutSeconds,
     timedOut: false,
@@ -104,14 +130,13 @@ function runProject(project) {
 	const stdoutPath = join(tempDir, "stdout.json");
 	const stderrPath = join(tempDir, "stderr.txt");
 	const command = gladeBin
-		? `${relative(repoRoot, gladeBin) || gladeBin} compat local-tests --project ${project} --json --timeout ${timeoutMs} --top-failures 8`
-		: `go run ./cmd/glade-tools local-tests --project ${project} --json --timeout ${timeoutMs} --top-failures 8`;
+		? `${relative(repoRoot, gladeBin) || gladeBin} local-tests --project ${project.label} --json --timeout ${timeoutMs} --top-failures 8`
+		: `go run ./cmd/glade-tools local-tests --project ${project.label} --json --timeout ${timeoutMs} --top-failures 8`;
 	const spawnCommand = gladeBin || "go";
 	const spawnArgs = gladeBin ? [
-		"compat",
 		"local-tests",
 		"--project",
-		project,
+		project.path,
 		"--json",
 		"--timeout",
 		String(timeoutMs),
@@ -122,7 +147,7 @@ function runProject(project) {
 		"./cmd/glade-tools",
 		"local-tests",
 		"--project",
-		project,
+		project.path,
 		"--json",
 		"--timeout",
 		String(timeoutMs),
@@ -148,7 +173,7 @@ function runProject(project) {
       try {
         if (timedOut) {
           resolve({
-            project,
+            project: project.label,
             command,
             timeoutSeconds,
             timedOut: true,
@@ -193,7 +218,7 @@ function runProject(project) {
         resolve(summary);
       } catch (error) {
         resolve({
-          project,
+          project: project.label,
           command,
           timeoutSeconds,
           timedOut,
@@ -228,13 +253,16 @@ for (const project of projects) {
   results.push(await runProject(project));
 }
 
+const usesRedactedLabels = projects.some((project) => project.label !== project.path);
 const artifact = {
-  target: "enterprise example-project local Apex runtime baseline",
+  target: usesRedactedLabels
+    ? "enterprise example-project local Apex runtime baseline (redacted corpus names)"
+    : "enterprise example-project local Apex runtime baseline",
   generatedAt: new Date().toISOString(),
 	timeoutSupport: {
 		compatLocalTestsTimeoutFlag: true,
 		command: gladeBin
-			? `${relative(repoRoot, gladeBin) || gladeBin} compat local-tests --project <project> --json --timeout ${timeoutMs} --top-failures 8`
+			? `${relative(repoRoot, gladeBin) || gladeBin} local-tests --project <project> --json --timeout ${timeoutMs} --top-failures 8`
 			: `go run ./cmd/glade-tools local-tests --project <project> --json --timeout ${timeoutMs} --top-failures 8`,
 	},
   projects: results,

@@ -27,6 +27,38 @@ go run ./cmd/glade-tools dashboard --output ../glade/docs/COMPATIBILITY_DASHBOAR
 For old scripts, `glade-tools compat <command>` is accepted as a compatibility
 alias.
 
+## Tests
+
+The default compat package tests keep the frequent path bounded. They validate
+documented fixture JSON, execute a small documented-fixture smoke set, and skip
+large local-test readiness fixtures.
+
+Run the full documented fixture sweep when changing fixture runner behavior:
+
+```bash
+GLADE_TOOLS_RUN_FULL_COMPAT_FIXTURES=1 go test ./internal/compat -run '^TestRunDocumentedFixtures$' -count=1 -timeout=10m
+```
+
+Run the full local-test readiness sweep when changing local Apex test behavior:
+
+```bash
+GLADE_TOOLS_RUN_FULL_LOCAL_TEST_FIXTURES=1 go test ./internal/compat -run 'TestRunLocalTests.*FixtureReady|TestCheckLocalTestCorpusFixture' -count=1 -timeout=10m
+```
+
+For private corpus baselines, keep checked output redacted by passing
+`<label>=<project-root>` entries:
+
+```bash
+GLADE_BASELINE_PROJECTS='example-projects/private-corpus-a=/path/to/private/project' node scripts/baseline-local-tests-example-projects.mjs
+```
+
+Checked Salesforce coverage output needs an explicit docs input. Use
+`--source`, `--inventory`, `--catalog`, or set `GLADE_SALESFORCE_DOCS_SOURCE`:
+
+```bash
+GLADE_SALESFORCE_DOCS_SOURCE=/path/to/salesforce-docs go run ./cmd/glade-tools salesforce-coverage --check docs/generated/SALESFORCE_COVERAGE_MANIFEST.json
+```
+
 ## Plugin migration
 
 `glade-tools` remains for one migration release. New installs should use the

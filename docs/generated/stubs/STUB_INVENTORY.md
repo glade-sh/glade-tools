@@ -1,6 +1,6 @@
 # Stub Inventory
 
-Source: `example-projects/stubs`
+Source: `<stub-source-root>`
 
 - System stub classes: 7090
 - Generated platform types: 7514

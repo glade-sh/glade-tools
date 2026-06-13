@@ -1,14 +1,14 @@
 {
-  "target": "enterprise example-project local Apex runtime baseline",
+  "target": "enterprise example-project local Apex runtime baseline (redacted corpus names)",
   "generatedAt": "2026-05-18T23:59:00.000Z",
   "timeoutSupport": {
     "compatLocalTestsTimeoutFlag": true,
-    "command": "go run ./cmd/glade compat local-tests --project <project> --json --timeout 30000 --top-failures 8"
+    "command": "go run ./cmd/glade-tools local-tests --project <project> --json --timeout 30000 --top-failures 8"
   },
   "projects": [
     {
       "project": "example-projects/NPSP-rel-3.237",
-      "command": "go run ./cmd/glade compat local-tests --project example-projects/NPSP-rel-3.237 --json --timeout 30000 --top-failures 8",
+      "command": "go run ./cmd/glade-tools local-tests --project example-projects/NPSP-rel-3.237 --json --timeout 30000 --top-failures 8",
       "timeoutSeconds": 30,
       "timedOut": false,
       "exitCode": 0,
@@ -97,8 +97,8 @@
       ]
     },
     {
-      "project": "example-projects/src-nmb-nc-develop",
-      "command": "go run ./cmd/glade compat local-tests --project example-projects/src-nmb-nc-develop --json --timeout 30000 --top-failures 8",
+      "project": "example-projects/private-corpus-a",
+      "command": "go run ./cmd/glade-tools local-tests --project example-projects/private-corpus-a --json --timeout 30000 --top-failures 8",
       "timeoutSeconds": 30,
       "timedOut": false,
       "exitCode": 0,
@@ -122,9 +122,9 @@
           "outcome": "compile_gap",
           "phase": "compile",
           "capabilityId": "gladesema002",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/AddressMessage.cls",
+          "file": "example-projects/private-corpus-a/src/classes/AddressMessage.cls",
           "line": 8,
-          "error": "field \"address\" references unknown type \"znu.Address\""
+          "error": "field \"address\" references unknown type \"pkg.Address\""
         }
       ],
       "topDiagnostics": [
@@ -132,63 +132,63 @@
           "key": "GLADESEMA008|NavigationInstallData.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 96,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/NavigationInstallData.cls",
+          "file": "example-projects/private-corpus-a/src/classes/NavigationInstallData.cls",
           "message": "method \"createProfileSnapshotNavigationMenuItem\" calls unknown method \"withTitle\""
         },
         {
           "key": "GLADESEMA008|JoinRenewButton2Test.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 89,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/JoinRenewButton2Test.cls",
+          "file": "example-projects/private-corpus-a/src/classes/JoinRenewButton2Test.cls",
           "message": "method \"execute_withOutstandingInvoicesForAssociatedAccount_expectCartFromOrderAction\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA008|BillingAddressComponentControllerTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 76,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/BillingAddressComponentControllerTest.cls",
+          "file": "example-projects/private-corpus-a/src/classes/BillingAddressComponentControllerTest.cls",
           "message": "method \"doHandleMessage_paymentOptionSelected_creditCard_expectShouldRender\" calls unknown method \"getName\""
         },
         {
           "key": "GLADESEMA008|ItemLineDisplayTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 76,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/ItemLineDisplayTest.cls",
+          "file": "example-projects/private-corpus-a/src/classes/ItemLineDisplayTest.cls",
           "message": "method \"isPartOfBundle_forCartItemLine_expectTrue\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA006|PaymentOptionsTest.cls|method \"<symbol>\" constructs unknown type \"<symbol>\"",
           "count": 57,
           "code": "GLADESEMA006",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/PaymentOptionsTest.cls",
-          "message": "method \"getOptions_onePaymentOption_expectNoOptionsAndMessageSent\" constructs unknown type \"znu.PaymentOptions.IOption2\""
+          "file": "example-projects/private-corpus-a/src/classes/PaymentOptionsTest.cls",
+          "message": "method \"getOptions_onePaymentOption_expectNoOptionsAndMessageSent\" constructs unknown type \"pkg.PaymentOptions.IOption2\""
         },
         {
           "key": "GLADESEMA006|CartItemSelectorTest.cls|method \"<symbol>\" declares local \"<symbol>\" with unknown type \"<symbol>\"",
           "count": 53,
           "code": "GLADESEMA006",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/CartItemSelectorTest.cls",
-          "message": "method \"setup\" declares local \"cartItems\" with unknown type \"znu__CartItem__c\""
+          "file": "example-projects/private-corpus-a/src/classes/CartItemSelectorTest.cls",
+          "message": "method \"setup\" declares local \"cartItems\" with unknown type \"pkg__CartItem__c\""
         },
         {
           "key": "GLADESEMA006|PaymentOptionsTest.cls|method \"<symbol>\" declares local \"<symbol>\" with unknown type \"<symbol>\"",
           "count": 51,
           "code": "GLADESEMA006",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/PaymentOptionsTest.cls",
-          "message": "method \"setupCartWithBalance\" declares local \"userCartItem\" with unknown type \"znu__CartItem__c\""
+          "file": "example-projects/private-corpus-a/src/classes/PaymentOptionsTest.cls",
+          "message": "method \"setupCartWithBalance\" declares local \"userCartItem\" with unknown type \"pkg__CartItem__c\""
         },
         {
           "key": "GLADESEMA008|DynamicCheckoutSubmitButtonTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 51,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nc-develop/src/classes/DynamicCheckoutSubmitButtonTest.cls",
+          "file": "example-projects/private-corpus-a/src/classes/DynamicCheckoutSubmitButtonTest.cls",
           "message": "method \"getShouldRender_scheduledPaymentSelected_correctMessage_expectFalse\" calls unknown method \"setField\""
         }
       ]
     },
     {
-      "project": "example-projects/src-nmb-nu-develop",
-      "command": "go run ./cmd/glade compat local-tests --project example-projects/src-nmb-nu-develop --json --timeout 30000 --top-failures 8",
+      "project": "example-projects/private-corpus-b",
+      "command": "go run ./cmd/glade-tools local-tests --project example-projects/private-corpus-b --json --timeout 30000 --top-failures 8",
       "timeoutSeconds": 30,
       "timedOut": false,
       "exitCode": 0,
@@ -212,7 +212,7 @@
           "outcome": "compile_gap",
           "phase": "compile",
           "capabilityId": "gladesema013",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/AccountManager.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/AccountManager.cls",
           "line": 703,
           "error": "method \"getNameAndEvent\" assigns unknown variable \"Status__c\""
         }
@@ -222,63 +222,63 @@
           "key": "GLADESEMA008|TransactionGenerator2Test.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 2220,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/TransactionGenerator2Test.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/TransactionGenerator2Test.cls",
           "message": "method \"createProduct\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA008|CartSubmitterTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 682,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/CartSubmitterTest.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/CartSubmitterTest.cls",
           "message": "method \"submit_refundCart_expectSuccess\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA008|TestOrderPaymentController.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 226,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/TestOrderPaymentController.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/TestOrderPaymentController.cls",
           "message": "method \"paymentAmountChanged_refundWithHosted_expectNegativePaymentNotAllowedMessageNotDisplayed\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA008|DeferredScheduleTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 224,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/DeferredScheduleTest.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/DeferredScheduleTest.cls",
           "message": "method \"getDifferenceInExpectedAmount_correctRecognizedAmount_expectZero\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA008|TestAddressUtils.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 194,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/utility/classes/TestAddressUtils.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/utility/classes/TestAddressUtils.cls",
           "message": "method \"getShipToAddressFromAccount_withShippingAddress_expectShipToAddress\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA008|TestCartSubmitter.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 160,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/TestCartSubmitter.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/TestCartSubmitter.cls",
           "message": "method \"submit_newCouponCartSubmission_expectCouponCreated\" calls unknown method \"then\""
         },
         {
           "key": "GLADESEMA008|TestAutomaticSalesTax.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 149,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/TestAutomaticSalesTax.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/TestAutomaticSalesTax.cls",
           "message": "method \"recalculateTax_NoTaxableLinesOnCartItem_expectSalesTaxRemovedFromCartItem\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA008|TestOrderController.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 124,
           "code": "GLADESEMA008",
-          "file": "example-projects/src-nmb-nu-develop/sfdx-source/nu/main/default/classes/TestOrderController.cls",
+          "file": "example-projects/private-corpus-b/sfdx-source/private-app/main/default/classes/TestOrderController.cls",
           "message": "method \"fullAdjustmentEditItemTest\" calls unknown method \"modifiedItem.OrderItemLines__r.size\""
         }
       ]
     },
     {
-      "project": "example-projects/src-nmb-nutpl-develop",
-      "command": "go run ./cmd/glade compat local-tests --project example-projects/src-nmb-nutpl-develop --json --timeout 30000 --top-failures 8",
+      "project": "example-projects/private-corpus-c",
+      "command": "go run ./cmd/glade-tools local-tests --project example-projects/private-corpus-c --json --timeout 30000 --top-failures 8",
       "timeoutSeconds": 30,
       "timedOut": false,
       "exitCode": 0,
@@ -298,8 +298,8 @@
       "topDiagnostics": []
     },
     {
-      "project": "example-projects/sf-cred-pkg-develop",
-      "command": "go run ./cmd/glade compat local-tests --project example-projects/sf-cred-pkg-develop --parallel 4 --json --timeout 30000 --top-failures 20",
+      "project": "example-projects/private-corpus-d",
+      "command": "go run ./cmd/glade-tools local-tests --project example-projects/private-corpus-d --parallel 4 --json --timeout 30000 --top-failures 20",
       "timeoutSeconds": 30,
       "timedOut": false,
       "exitCode": 0,
@@ -319,8 +319,8 @@
       "topDiagnostics": []
     },
     {
-      "project": "example-projects/nams-workspace",
-      "command": "go run ./cmd/glade compat local-tests --project example-projects/nams-workspace --json --timeout 30000 --top-failures 8",
+      "project": "example-projects/private-corpus-e",
+      "command": "go run ./cmd/glade-tools local-tests --project example-projects/private-corpus-e --json --timeout 30000 --top-failures 8",
       "timeoutSeconds": 30,
       "timedOut": false,
       "exitCode": 0,
@@ -344,9 +344,9 @@
           "outcome": "compile_gap",
           "phase": "compile",
           "capabilityId": "gladesema002",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/unpackaged/invocables/classes/AddProgramsToProformaOrderHelper.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/unpackaged/invocables/classes/AddProgramsToProformaOrderHelper.cls",
           "line": 30,
-          "error": "method \"getIdConditionPlugin\" references unknown type \"znu.Pluggable\""
+          "error": "method \"getIdConditionPlugin\" references unknown type \"pkg.Pluggable\""
         }
       ],
       "topDiagnostics": [
@@ -354,56 +354,56 @@
           "key": "GLADESEMA008|CartToOrderConverterTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 127,
           "code": "GLADESEMA008",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/core/nu-nams-orders/api/helper/CartToOrderConverterTest.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/core/private-orders/api/helper/CartToOrderConverterTest.cls",
           "message": "method \"convert_withBillingHistory_expectCartInformationCorrectlyTranslated\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA010|CommerceCheckoutUiTest.cls|method \"<symbol>\" cannot access private property \"<symbol>\"",
           "count": 108,
           "code": "GLADESEMA010",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/core/nams-commerce/features/store/ui/classes/CommerceCheckoutUiTest.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/core/private-commerce/features/store/ui/classes/CommerceCheckoutUiTest.cls",
           "message": "method \"canGetOrderSummary\" cannot access private property \"GetOrderSummary\""
         },
         {
           "key": "GLADESEMA008|OrderToCartConverterTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 95,
           "code": "GLADESEMA008",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/core/nu-nams-orders/api/helper/OrderToCartConverterTest.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/core/private-orders/api/helper/OrderToCartConverterTest.cls",
           "message": "method \"expectOrderInformationCorrectlyConverted\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA009|R.cls|method \"<symbol>\" has no matching overload for call \"<symbol>\" with <n> argument(s)",
           "count": 80,
           "code": "GLADESEMA009",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/core/headless/libraries/R.apex/src/classes/R.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/core/headless/libraries/R.apex/src/classes/R.cls",
           "message": "method \"exec\" has no matching overload for call \"toString\" with 1 argument(s)"
         },
         {
           "key": "GLADESEMA008|StoredPaymentMethodsRepositoryImplTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 76,
           "code": "GLADESEMA008",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/core/nu-nams-orders/api/payments/domain/repository/StoredPaymentMethodsRepositoryImplTest.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/core/private-orders/api/payments/domain/repository/StoredPaymentMethodsRepositoryImplTest.cls",
           "message": "method \"canGetStoredPaymentMethodsById\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA021|CardPointePaymentGatewayService.cls|method \"<symbol>\" references unknown field \"<symbol>\" on CardPointePaymentGatewayService",
           "count": 60,
           "code": "GLADESEMA021",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-cardpointe/sfdx-source/namz-nu-cardpointe/classes/CardPointePaymentGatewayService.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-payments/sfdx-source/private-card-payments/classes/CardPointePaymentGatewayService.cls",
           "message": "method \"buildAddAndUpdateProfileRequest\" references unknown field \"request.BillingStreet\" on CardPointePaymentGatewayService"
         },
         {
           "key": "GLADESEMA008|SyncProformaLineToCartLineTest.cls|method \"<symbol>\" calls unknown method \"<symbol>\"",
           "count": 54,
           "code": "GLADESEMA008",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/core/nams-commerce/triggers/trigger-handlers/SyncProformaLineToCartLineTest.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/core/private-commerce/triggers/trigger-handlers/SyncProformaLineToCartLineTest.cls",
           "message": "method \"afterUpdate_noCartItemLine_expectNoUpdate\" calls unknown method \"setField\""
         },
         {
           "key": "GLADESEMA010|sfab_FabricatedSObjectTest.cls|method \"<symbol>\" cannot access private method \"<symbol>\"",
           "count": 53,
           "code": "GLADESEMA010",
-          "file": "example-projects/nams-workspace/sfdx-source/nams/src-nmb-namz-core/sfdx-source/core/headless/libraries/SObjectFabricator/classes/sfab_FabricatedSObjectTest.cls",
+          "file": "example-projects/private-corpus-e/sfdx-source/private-suite/private-core/sfdx-source/core/headless/libraries/SObjectFabricator/classes/sfab_FabricatedSObjectTest.cls",
           "message": "method \"constructor_expectFieldsSetViaSObjectField\" cannot access private method \"fabricatedAccount.getNumberOfNodes\""
         }
       ]

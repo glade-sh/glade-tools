@@ -244,7 +244,7 @@ func GapsMarkdown(ledger SurfaceLedger) string {
 	fmt.Fprintln(&b, "| priority | gap | surface | source | next |")
 	fmt.Fprintln(&b, "| ---: | --- | --- | --- | --- |")
 	for _, row := range topRows(ledger.Rows, func(row SurfaceLedgerRow) bool { return row.Bucket == BucketGap }, 0) {
-		fmt.Fprintf(&b, "| %d | %s | `%s` | %s | `glade surface explain --ledger SURFACE_LEDGER.json --id %s` |\n", row.Priority, row.GapClass, row.SurfaceID, row.DocsSource, row.SurfaceID)
+		fmt.Fprintf(&b, "| %d | %s | `%s` | %s | `glade-tools surface explain --ledger SURFACE_LEDGER.json --id %s` |\n", row.Priority, row.GapClass, row.SurfaceID, row.DocsSource, row.SurfaceID)
 	}
 	return b.String()
 }
@@ -533,7 +533,7 @@ func ExplainMarkdown(ledger SurfaceLedger, id string) string {
 		fmt.Fprintf(&b, "- gladeBehavior: %s\n", row.GladeBehavior)
 		fmt.Fprintf(&b, "- evidence: %s\n", row.Evidence)
 		fmt.Fprintf(&b, "- gapClass: %s\n", row.GapClass)
-		fmt.Fprintf(&b, "- next: glade surface gaps --ledger SURFACE_LEDGER.json\n")
+		fmt.Fprintf(&b, "- next: glade-tools surface gaps --ledger SURFACE_LEDGER.json\n")
 		return b.String()
 	}
 	return ""

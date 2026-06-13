@@ -3,6 +3,7 @@ package compat
 import (
 	"encoding/json"
 	"errors"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -11,7 +12,15 @@ import (
 	"github.com/glade-sh/glade/internal/vm"
 )
 
+const fullDocumentedFixturesEnv = "GLADE_TOOLS_RUN_FULL_COMPAT_FIXTURES"
+
 var documentedFixtureExampleProjectsName = strings.Join([]string{"local-tests", "example", "projects"}, "-")
+
+var documentedFixtureSmokeNames = map[string]struct{}{
+	"parser-smoke":                 {},
+	"unsupported-exec-call":        {},
+	"unsupported-parse-diagnostic": {},
+}
 
 func TestFixtureJSONRoundTrip(t *testing.T) {
 	in := Fixture{
@@ -52,28 +61,56 @@ func TestFixtureJSONRoundTrip(t *testing.T) {
 	}
 }
 
-func TestRunDocumentedFixtures(t *testing.T) {
-	paths, err := filepath.Glob("../../docs/fixtures/*.json")
-	if err != nil {
-		t.Fatal(err)
+func TestDocumentedFixtureExecutionSelection(t *testing.T) {
+	t.Setenv(fullDocumentedFixturesEnv, "")
+	if !shouldRunDocumentedFixture("parser-smoke") {
+		t.Fatal("parser-smoke should run in the default documented fixture smoke set")
 	}
-	if len(paths) == 0 {
-		t.Fatal("no documented fixtures matched ../../docs/fixtures/*.json")
+	if shouldRunDocumentedFixture("core-string-stdlib") {
+		t.Fatal("full fixture should not run without the opt-in environment variable")
 	}
 
+	t.Setenv(fullDocumentedFixturesEnv, "1")
+	if !shouldRunDocumentedFixture("core-string-stdlib") {
+		t.Fatal("full fixture should run when the opt-in environment variable is set")
+	}
+	if shouldRunDocumentedFixture("local-tests-corpus") {
+		t.Fatal("focused compat baseline fixture should stay out of documented fixture execution")
+	}
+}
+
+func TestDocumentedFixtureJSONLoadAndValidate(t *testing.T) {
+	paths := documentedFixturePaths(t)
 	for _, path := range paths {
 		path := path
 		name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
 		t.Run(name, func(t *testing.T) {
 			if skipDocumentedFixture(name) {
-				t.Skip("compat baseline is validated by its focused check test")
+				t.Skip("special compat baseline is validated by its focused check test")
 			}
 			fixture, err := LoadFile(path)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if documentedFixtureRunsInParallel(fixture) {
-				t.Parallel()
+			if err := Validate(fixture); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestRunDocumentedFixtures(t *testing.T) {
+	paths := documentedFixturePaths(t)
+	for _, path := range paths {
+		path := path
+		name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+		t.Run(name, func(t *testing.T) {
+			if !shouldRunDocumentedFixture(name) {
+				t.Skipf("documented fixture execution skipped; set %s=1 to run the full sweep", fullDocumentedFixturesEnv)
+			}
+			fixture, err := LoadFile(path)
+			if err != nil {
+				t.Fatal(err)
 			}
 			result, err := Run(fixture)
 			if err != nil {
@@ -84,6 +121,18 @@ func TestRunDocumentedFixtures(t *testing.T) {
 			}
 		})
 	}
+}
+
+func documentedFixturePaths(t *testing.T) []string {
+	t.Helper()
+	paths, err := filepath.Glob("../../docs/fixtures/*.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(paths) == 0 {
+		t.Fatal("no documented fixtures matched ../../docs/fixtures/*.json")
+	}
+	return paths
 }
 
 func skipDocumentedFixture(name string) bool {
@@ -103,13 +152,15 @@ func skipDocumentedFixture(name string) bool {
 	}
 }
 
-func documentedFixtureRunsInParallel(fixture Fixture) bool {
-	switch fixture.Command.Kind {
-	case "db", "server":
+func shouldRunDocumentedFixture(name string) bool {
+	if skipDocumentedFixture(name) {
 		return false
-	default:
+	}
+	if os.Getenv(fullDocumentedFixturesEnv) != "" {
 		return true
 	}
+	_, ok := documentedFixtureSmokeNames[name]
+	return ok
 }
 
 func TestValidateFixture(t *testing.T) {

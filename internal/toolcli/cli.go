@@ -43,9 +43,13 @@ Commands:
   validate           Validate compatibility fixture files.
   run                Validate and execute fixtures.
   matrix             Print the full capability matrix.
+  mvp                Print MVP readiness status.
   local-tests        Report local Apex test execution readiness.
   examples           Scan example projects and report support status.
   post-parity        Scan a project for unsupported surfaces.
+  replay             Replay checked run bundles.
+  ui-controllers     Discover Visualforce controller surfaces.
+  server-examples    Probe checked server route examples.
   surface            Refresh and inspect the Salesforce surface ledger.
   dashboard          Generate compatibility dashboard.
   gaps               Generate known gaps document.
@@ -53,8 +57,15 @@ Commands:
   docs-inventory     Inventory Salesforce docs.
   catalog            Build a capability catalog.
   reconcile          Reconcile docs inventory with the catalog.
+  doc-contracts      Report Salesforce docs behavior contracts.
+  salesforce-coverage  Generate Salesforce coverage manifests.
+  standard-objects   Report generated standard object coverage.
   stub-contracts     Report generated stub behavioral contract policy.
   stub-behavior      Report generated platform stub behavior status.
+  stub-inventory     Compare stub source with generated shapes.
+  product-namespaces Report product namespace coverage.
+  tooling-fixtures   Summarize tooling fixture reports.
+  evidence           Compare fixture evidence with a catalog.
 
 Compatibility:
   glade-tools compat <command> is accepted for old scripts.
@@ -66,7 +77,7 @@ func isHelpArg(arg string) bool {
 }
 
 func printCompatHelp(w io.Writer) {
-	fmt.Fprintf(w, "%s\n\nExamples:\n  glade compat matrix --json\n  glade compat local-tests --project . --json\n", compatUsage())
+	fmt.Fprintf(w, "%s\n\nExamples:\n  glade-tools matrix --json\n  glade-tools local-tests --project . --json\n  glade compat local-tests --project . --json\n", compatUsage())
 }
 
 func printCompatLocalTestsHelp(w io.Writer) {
@@ -74,6 +85,7 @@ func printCompatLocalTestsHelp(w io.Writer) {
 Report local Apex test execution readiness.
 
 Usage:
+  glade-tools local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--method <name>] [--parallel <n|auto>] [--json]
   glade compat local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--method <name>] [--parallel <n|auto>] [--json]
 
 Common flags:
@@ -106,6 +118,7 @@ Common flags:
   --check <path>            Compare results with a checked baseline.
 
 Examples:
+  glade-tools local-tests --project . --json
   glade compat local-tests --project . --json
   glade compat local-tests --project . --class AccountServiceTest
   glade compat local-tests --project . --class-file tests.txt --top-failures 10

@@ -77,15 +77,15 @@ func TestPacketMarkdownIncludesAgentCloseoutRules(t *testing.T) {
 		"packet area did not expand during work",
 		"## Breadth Work Order",
 		"Schema.Describe",
-		"glade surface refresh",
-		"glade surface check",
+		"glade-tools surface refresh",
+		"glade-tools surface check",
 	} {
 		if !strings.Contains(markdown, want) {
 			t.Fatalf("packet markdown missing %q:\n%s", want, markdown)
 		}
 	}
-	if strings.Contains(markdown, "go run ./cmd/glade-tools surface") {
-		t.Fatalf("packet markdown still points at glade-tools surface commands:\n%s", markdown)
+	if strings.Contains(markdown, "glade surface") {
+		t.Fatalf("packet markdown still points at old surface commands:\n%s", markdown)
 	}
 }
 
