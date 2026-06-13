@@ -5,7 +5,7 @@
       "surfaceId": "apex:System.Matcher.find()",
       "symbol": "Matcher.find",
       "kind": "exec",
-      "notes": "Matcher.find is pinned to local Go-regexp behavior with match state, region, and reset handling."
+      "notes": "Matcher.find is pinned to the supported regexp2-backed Java regex path with match state, region, and reset handling."
     },
     {
       "surfaceId": "apex:System.Matcher.group()",
@@ -17,19 +17,19 @@
       "surfaceId": "apex:System.Matcher.matches()",
       "symbol": "Matcher.matches",
       "kind": "exec",
-      "notes": "Matcher.matches is pinned to whole-region matching over the local Go-regexp-backed subset."
+      "notes": "Matcher.matches is pinned to whole-region matching over the supported regexp2-backed Java regex path."
     },
     {
       "surfaceId": "apex:System.Pattern.matches(String,String)",
       "symbol": "Pattern.matches",
       "kind": "exec",
-      "notes": "Pattern.matches is pinned to whole-string matching over the local Go-regexp-backed subset."
+      "notes": "Pattern.matches is pinned to whole-string matching over the supported regexp2-backed Java regex path."
     },
     {
       "surfaceId": "apex:System.String.split(String,Integer)",
       "symbol": "String.split",
       "kind": "exec",
-      "notes": "String.split shares the local Go-regexp dialect with Java-style limit handling."
+      "notes": "String.split shares the supported Java Pattern path with Java-style limit handling."
     }
   ],
   "source": [

@@ -1,0 +1,41 @@
+{
+  "name": "core-pattern-java-regex-stdlib",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Pattern.compile(String)",
+      "symbol": "Pattern.compile",
+      "kind": "exec",
+      "notes": "Java regex features that used to be fenced are supported: COMMENTS inline mode, Java Unicode aliases, linebreak and whitespace escapes, and possessive quantifiers."
+    },
+    {
+      "surfaceId": "apex:System.Pattern.matches(String,String)",
+      "symbol": "Pattern.matches",
+      "kind": "exec",
+      "notes": "Whole-string matching uses the supported regexp2-backed Java regex path."
+    },
+    {
+      "surfaceId": "apex:System.String.split(String,Integer)",
+      "symbol": "String.split",
+      "kind": "exec",
+      "notes": "String.split shares Java regex support for \\R delimiters."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assert(Pattern.matches('(?x)a b', 'ab'));\nSystem.assert(Pattern.matches('(?x)a\\\\ b', 'a b'));\nSystem.assert(Pattern.matches('\\\\p{javaLowerCase}+', 'abcé'));\nSystem.assert(!Pattern.matches('\\\\p{javaLowerCase}+', 'ABC'));\nSystem.assert(Pattern.matches('\\\\p{javaUpperCase}+', 'ABCÉ'));\nSystem.assert(Pattern.matches('(?U)\\\\w+', 'Ω'));\nPattern possessive = Pattern.compile('a++b');\nSystem.assert(possessive.matcher('aaab').matches());\nSystem.assert(!possessive.matcher('aaac').matches());\nString linebreaks = String.fromCharArray(new List<Integer>{65,13,10,66,10,67});\nMatcher r = Pattern.compile('\\\\R').matcher(linebreaks);\nSystem.assert(r.find());\nSystem.assertEquals(1, r.start());\nSystem.assertEquals(3, r.end());\nSystem.assert(r.find());\nSystem.assertEquals(4, r.start());\nList<String> rows = linebreaks.split('\\\\R');\nSystem.assertEquals(3, rows.size());\nSystem.assertEquals('A', rows[0]);\nSystem.assertEquals('B', rows[1]);\nSystem.assertEquals('C', rows[2]);\nString horizontal = String.fromCharArray(new List<Integer>{9,32,160});\nSystem.assert(Pattern.matches('\\\\h+', horizontal));\nSystem.assert(Pattern.matches('\\\\H+', 'abc'));\nString vertical = String.fromCharArray(new List<Integer>{10,13,11,12});\nSystem.assert(Pattern.matches('\\\\v+', vertical));\nSystem.assert(Pattern.matches('\\\\V+', 'abc'));\nSystem.assert(Pattern.matches('[\\\\h]+', horizontal));\nSystem.assert(Pattern.matches('[\\\\v]+', vertical));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assert(Pattern.matches('(?x)a b', 'ab'));\nSystem.assert(Pattern.matches('(?x)a\\\\ b', 'a b'));\nSystem.assert(Pattern.matches('\\\\p{javaLowerCase}+', 'abcé'));\nSystem.assert(!Pattern.matches('\\\\p{javaLowerCase}+', 'ABC'));\nSystem.assert(Pattern.matches('\\\\p{javaUpperCase}+', 'ABCÉ'));\nSystem.assert(Pattern.matches('(?U)\\\\w+', 'Ω'));\nPattern possessive = Pattern.compile('a++b');\nSystem.assert(possessive.matcher('aaab').matches());\nSystem.assert(!possessive.matcher('aaac').matches());\nString linebreaks = String.fromCharArray(new List<Integer>{65,13,10,66,10,67});\nMatcher r = Pattern.compile('\\\\R').matcher(linebreaks);\nSystem.assert(r.find());\nSystem.assertEquals(1, r.start());\nSystem.assertEquals(3, r.end());\nSystem.assert(r.find());\nSystem.assertEquals(4, r.start());\nList<String> rows = linebreaks.split('\\\\R');\nSystem.assertEquals(3, rows.size());\nSystem.assertEquals('A', rows[0]);\nSystem.assertEquals('B', rows[1]);\nSystem.assertEquals('C', rows[2]);\nString horizontal = String.fromCharArray(new List<Integer>{9,32,160});\nSystem.assert(Pattern.matches('\\\\h+', horizontal));\nSystem.assert(Pattern.matches('\\\\H+', 'abc'));\nString vertical = String.fromCharArray(new List<Integer>{10,13,11,12});\nSystem.assert(Pattern.matches('\\\\v+', vertical));\nSystem.assert(Pattern.matches('\\\\V+', 'abc'));\nSystem.assert(Pattern.matches('[\\\\h]+', horizontal));\nSystem.assert(Pattern.matches('[\\\\v]+', vertical));\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

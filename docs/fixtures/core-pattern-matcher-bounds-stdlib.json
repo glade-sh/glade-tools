@@ -5,12 +5,12 @@
       "surfaceId": "apex:System.Matcher.region(Integer,Integer)",
       "symbol": "Matcher.region",
       "kind": "exec",
-      "notes": "Region bounds use rune indexes and constrain find, lookingAt, matches, and replacement operations."
+      "notes": "Region bounds use Apex UTF-16 code-unit indexes and constrain find, lookingAt, matches, and replacement operations."
     },
     {
       "symbol": "Matcher.useAnchoringBounds",
       "kind": "exec",
-      "notes": "Local Go-regexp anchors bind to region edges by default and to full-input edges when anchoring bounds are disabled."
+      "notes": "Local regexp2-backed anchors bind to region edges by default and to full-input edges when anchoring bounds are disabled."
     },
     {
       "symbol": "Matcher.useTransparentBounds",

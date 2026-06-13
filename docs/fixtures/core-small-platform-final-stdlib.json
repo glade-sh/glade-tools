@@ -18,14 +18,14 @@
       "kind": "test"
     },
     {
-      "symbol": "Pattern.compile local regexp dialect",
+      "symbol": "Pattern.compile supported Java regex path",
       "kind": "test",
       "notes": "Supported local flags compile, carry Pattern.pattern source text, and drive Matcher behavior."
     },
     {
-      "symbol": "Pattern.compile Java regex dialect gaps",
+      "symbol": "Pattern.compile Java regex support",
       "kind": "test",
-      "notes": "Java-only regex features remain covered by existing UnsupportedFeature fixtures."
+      "notes": "Java regex features are covered by supported Pattern fixtures; unsupported flag combinations remain fenced separately."
     },
     {
       "symbol": "System.abortJob queued local async",

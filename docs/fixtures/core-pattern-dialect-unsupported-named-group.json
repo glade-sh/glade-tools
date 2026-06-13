@@ -4,7 +4,7 @@
     {
       "symbol": "Pattern.compile",
       "kind": "exec",
-      "notes": "Python-style named groups accepted by Go regexp are fenced to avoid claiming Java Pattern parity for the wrong dialect."
+      "notes": "Python-style named groups remain fenced to avoid claiming Java Pattern parity for the wrong dialect."
     }
   ],
   "source": [

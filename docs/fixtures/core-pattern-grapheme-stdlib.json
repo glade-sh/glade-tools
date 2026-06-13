@@ -1,0 +1,41 @@
+{
+  "name": "core-pattern-grapheme-stdlib",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Pattern.compile(String)",
+      "symbol": "Pattern.compile",
+      "kind": "exec",
+      "notes": "Java \\X and \\b{g} use UAX #29 grapheme boundaries and return Apex UTF-16 code-unit indexes."
+    },
+    {
+      "surfaceId": "apex:System.String.split(String,Integer)",
+      "symbol": "String.split",
+      "kind": "exec",
+      "notes": "String.split shares the supported grapheme-aware Pattern path."
+    },
+    {
+      "surfaceId": "apex:System.Matcher.replaceFirst(String)",
+      "symbol": "Matcher.replaceFirst",
+      "kind": "exec",
+      "notes": "Replacement uses grapheme match spans from the input-aware Pattern plan."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "String gx = String.fromCharArray(new List<Integer>{92}) + 'X';\nString bg = String.fromCharArray(new List<Integer>{92}) + 'b{g}';\nString crlf = String.fromCharArray(new List<Integer>{13,10});\nString jamo = String.fromCharArray(new List<Integer>{4352,4449});\nString flagUS = String.fromCharArray(new List<Integer>{55356,56826,55356,56824});\nString thumbTone = String.fromCharArray(new List<Integer>{55357,56397,55356,57341});\nString family = String.fromCharArray(new List<Integer>{55357,56424,8205,55357,56425,8205,55357,56423,8205,55357,56422});\nString mark = String.fromCharArray(new List<Integer>{769});\nString combining = 'e' + mark;\nSystem.assert(Pattern.matches(gx, crlf));\nSystem.assert(Pattern.matches(gx, jamo));\nSystem.assert(Pattern.matches(gx, flagUS));\nSystem.assert(Pattern.matches(gx, thumbTone));\nSystem.assert(Pattern.matches(gx, family));\nSystem.assert(Pattern.matches(gx, mark));\nSystem.assert(Pattern.matches(gx, combining));\nMatcher thumb = Pattern.compile(gx).matcher(thumbTone + 'x');\nSystem.assert(thumb.find());\nSystem.assertEquals(thumbTone, thumb.group());\nSystem.assertEquals(0, thumb.start());\nSystem.assertEquals(4, thumb.end());\nSystem.assert(thumb.find());\nSystem.assertEquals('x', thumb.group());\nSystem.assertEquals(4, thumb.start());\nSystem.assertEquals(5, thumb.end());\nMatcher boundary = Pattern.compile(bg).matcher(combining + 'x');\nSystem.assert(boundary.find());\nSystem.assertEquals(0, boundary.start());\nSystem.assert(boundary.find());\nSystem.assertEquals(2, boundary.start());\nSystem.assert(boundary.find());\nSystem.assertEquals(3, boundary.start());\nSystem.assert(!boundary.find());\nList<String> stringParts = (thumbTone + 'x').split(gx, -1);\nSystem.assertEquals(3, stringParts.size());\nSystem.assertEquals('', stringParts[0]);\nSystem.assertEquals('', stringParts[1]);\nSystem.assertEquals('', stringParts[2]);\nList<String> patternParts = Pattern.compile(gx).split(thumbTone + 'x', -1);\nSystem.assertEquals(3, patternParts.size());\nSystem.assertEquals('', patternParts[0]);\nSystem.assertEquals('', patternParts[1]);\nSystem.assertEquals('', patternParts[2]);\nSystem.assertEquals('Qx', Pattern.compile(gx).matcher(thumbTone + 'x').replaceFirst('Q'));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "String gx = String.fromCharArray(new List<Integer>{92}) + 'X';\nString bg = String.fromCharArray(new List<Integer>{92}) + 'b{g}';\nString crlf = String.fromCharArray(new List<Integer>{13,10});\nString jamo = String.fromCharArray(new List<Integer>{4352,4449});\nString flagUS = String.fromCharArray(new List<Integer>{55356,56826,55356,56824});\nString thumbTone = String.fromCharArray(new List<Integer>{55357,56397,55356,57341});\nString family = String.fromCharArray(new List<Integer>{55357,56424,8205,55357,56425,8205,55357,56423,8205,55357,56422});\nString mark = String.fromCharArray(new List<Integer>{769});\nString combining = 'e' + mark;\nSystem.assert(Pattern.matches(gx, crlf));\nSystem.assert(Pattern.matches(gx, jamo));\nSystem.assert(Pattern.matches(gx, flagUS));\nSystem.assert(Pattern.matches(gx, thumbTone));\nSystem.assert(Pattern.matches(gx, family));\nSystem.assert(Pattern.matches(gx, mark));\nSystem.assert(Pattern.matches(gx, combining));\nMatcher thumb = Pattern.compile(gx).matcher(thumbTone + 'x');\nSystem.assert(thumb.find());\nSystem.assertEquals(thumbTone, thumb.group());\nSystem.assertEquals(0, thumb.start());\nSystem.assertEquals(4, thumb.end());\nSystem.assert(thumb.find());\nSystem.assertEquals('x', thumb.group());\nSystem.assertEquals(4, thumb.start());\nSystem.assertEquals(5, thumb.end());\nMatcher boundary = Pattern.compile(bg).matcher(combining + 'x');\nSystem.assert(boundary.find());\nSystem.assertEquals(0, boundary.start());\nSystem.assert(boundary.find());\nSystem.assertEquals(2, boundary.start());\nSystem.assert(boundary.find());\nSystem.assertEquals(3, boundary.start());\nSystem.assert(!boundary.find());\nList<String> stringParts = (thumbTone + 'x').split(gx, -1);\nSystem.assertEquals(3, stringParts.size());\nSystem.assertEquals('', stringParts[0]);\nSystem.assertEquals('', stringParts[1]);\nSystem.assertEquals('', stringParts[2]);\nList<String> patternParts = Pattern.compile(gx).split(thumbTone + 'x', -1);\nSystem.assertEquals(3, patternParts.size());\nSystem.assertEquals('', patternParts[0]);\nSystem.assertEquals('', patternParts[1]);\nSystem.assertEquals('', patternParts[2]);\nSystem.assertEquals('Qx', Pattern.compile(gx).matcher(thumbTone + 'x').replaceFirst('Q'));\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

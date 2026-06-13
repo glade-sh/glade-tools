@@ -32,6 +32,12 @@
       "notes": "Seeded local BusinessHours records return the next deterministic local business window."
     },
     {
+      "surfaceId": "apex:BusinessHours.isWithin(String,Datetime)",
+      "symbol": "BusinessHours.isWithin",
+      "kind": "exec",
+      "notes": "Seeded all-day Holiday rows close matching local BusinessHours dates."
+    },
+    {
       "surfaceId": "apex:System.UserInfo.hasPackageLicense(Id)",
       "symbol": "UserInfo.hasPackageLicense",
       "kind": "exec",
@@ -83,6 +89,17 @@
       ]
     },
     {
+      "object": "Holiday",
+      "records": [
+        {
+          "Id": "0H0000000000001AAA",
+          "Name": "Closed Tuesday",
+          "ActivityDate": "2026-06-16",
+          "IsAllDay": true
+        }
+      ]
+    },
+    {
       "object": "UserPackageLicense",
       "records": [
         {
@@ -96,13 +113,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Datetime mondayNine = Datetime.newInstanceGmt(2026, 6, 15, 16, 0, 0); System.assertEquals(true, BusinessHours.isWithin('01m000000000001AAA', mondayNine)); Datetime mondayTen = BusinessHours.add('01m000000000001AAA', mondayNine, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 17, 0, 0), mondayTen); Datetime mondayEleven = BusinessHours.addGmt('01m000000000001AAA', mondayTen, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 18, 0, 0), mondayEleven); System.assertEquals(60 * 60 * 1000, BusinessHours.diff('01m000000000001AAA', mondayNine, mondayTen)); Datetime saturday = Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', saturday)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', saturday)); System.assertEquals(true, UserInfo.hasPackageLicense('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensedForPackage('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensed('pkg')); System.assertEquals(false, UserInfo.hasPackageLicense('050000000000002'));"
+      "content": "Datetime mondayNine = Datetime.newInstanceGmt(2026, 6, 15, 16, 0, 0); System.assertEquals(true, BusinessHours.isWithin('01m000000000001AAA', mondayNine)); Datetime mondayTen = BusinessHours.add('01m000000000001AAA', mondayNine, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 17, 0, 0), mondayTen); Datetime mondayEleven = BusinessHours.addGmt('01m000000000001AAA', mondayTen, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 18, 0, 0), mondayEleven); System.assertEquals(60 * 60 * 1000, BusinessHours.diff('01m000000000001AAA', mondayNine, mondayTen)); Datetime holidayNine = Datetime.newInstanceGmt(2026, 6, 16, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', holidayNine)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', holidayNine)); Datetime saturday = Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', saturday)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', saturday)); System.assertEquals(true, UserInfo.hasPackageLicense('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensedForPackage('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensed('pkg')); System.assertEquals(false, UserInfo.hasPackageLicense('050000000000002'));"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Datetime mondayNine = Datetime.newInstanceGmt(2026, 6, 15, 16, 0, 0); System.assertEquals(true, BusinessHours.isWithin('01m000000000001AAA', mondayNine)); Datetime mondayTen = BusinessHours.add('01m000000000001AAA', mondayNine, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 17, 0, 0), mondayTen); Datetime mondayEleven = BusinessHours.addGmt('01m000000000001AAA', mondayTen, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 18, 0, 0), mondayEleven); System.assertEquals(60 * 60 * 1000, BusinessHours.diff('01m000000000001AAA', mondayNine, mondayTen)); Datetime saturday = Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', saturday)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', saturday)); System.assertEquals(true, UserInfo.hasPackageLicense('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensedForPackage('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensed('pkg')); System.assertEquals(false, UserInfo.hasPackageLicense('050000000000002'));"
+      "Datetime mondayNine = Datetime.newInstanceGmt(2026, 6, 15, 16, 0, 0); System.assertEquals(true, BusinessHours.isWithin('01m000000000001AAA', mondayNine)); Datetime mondayTen = BusinessHours.add('01m000000000001AAA', mondayNine, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 17, 0, 0), mondayTen); Datetime mondayEleven = BusinessHours.addGmt('01m000000000001AAA', mondayTen, 60 * 60 * 1000); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 15, 18, 0, 0), mondayEleven); System.assertEquals(60 * 60 * 1000, BusinessHours.diff('01m000000000001AAA', mondayNine, mondayTen)); Datetime holidayNine = Datetime.newInstanceGmt(2026, 6, 16, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', holidayNine)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', holidayNine)); Datetime saturday = Datetime.newInstanceGmt(2026, 6, 20, 16, 0, 0); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', saturday)); System.assertEquals(Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0), BusinessHours.nextStartDate('01m000000000001AAA', saturday)); System.assertEquals(true, UserInfo.hasPackageLicense('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensedForPackage('050000000000001')); System.assertEquals(true, UserInfo.isCurrentUserLicensed('pkg')); System.assertEquals(false, UserInfo.hasPackageLicense('050000000000002'));"
     ]
   },
   "expected": {

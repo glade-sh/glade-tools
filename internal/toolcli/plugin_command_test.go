@@ -68,6 +68,7 @@ func TestManifestJSONListsCompatCommands(t *testing.T) {
 		"product-namespaces":  true,
 		"tooling-fixtures":    true,
 		"evidence":            true,
+		"oracle-stdlib":       true,
 	}
 	for _, command := range manifest.Commands {
 		if len(command.Path) == 1 {
@@ -146,10 +147,22 @@ func TestTopLevelHelpListsMaintenanceCommandRoots(t *testing.T) {
 		"salesforce-coverage",
 		"tooling-fixtures",
 		"evidence",
+		"oracle-stdlib",
 	} {
 		if !strings.Contains(out, command) {
 			t.Fatalf("help omitted %s:\n%s", command, out)
 		}
+	}
+}
+
+func TestOracleStdlibRequiresTargetOrg(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"oracle-stdlib"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected missing target org to fail, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "oracle-stdlib --target-org") {
+		t.Fatalf("stderr = %q", stderr.String())
 	}
 }
 

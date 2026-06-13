@@ -1,0 +1,57 @@
+{
+  "name": "limits-querylocator-savepoint-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Limits.getQueryLocatorRows()",
+      "symbol": "Limits.getQueryLocatorRows",
+      "kind": "exec",
+      "notes": "Local Database.getQueryLocator increments the query-locator row counter for materialized local rows."
+    },
+    {
+      "surfaceId": "apex:System.Limits.getLimitQueryLocatorRows()",
+      "symbol": "Limits.getLimitQueryLocatorRows",
+      "kind": "exec",
+      "notes": "Local Limits exposes the query-locator row cap."
+    },
+    {
+      "surfaceId": "apex:System.Limits.getSavepointRollbacks()",
+      "symbol": "Limits.getSavepointRollbacks",
+      "kind": "exec",
+      "notes": "Local Database.rollback increments the savepoint rollback counter."
+    },
+    {
+      "surfaceId": "apex:System.Limits.getLimitSavepointRollbacks()",
+      "symbol": "Limits.getLimitSavepointRollbacks",
+      "kind": "exec",
+      "notes": "Local Limits exposes the savepoint rollback cap."
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "insert new Account(Name = 'one'); System.assertEquals(0, Limits.getQueryLocatorRows()); Database.getQueryLocator('SELECT Id FROM Account'); System.assertEquals(1, Limits.getQueryLocatorRows()); System.assertEquals(10000, Limits.getLimitQueryLocatorRows()); System.assertEquals(0, Limits.getSavepointRollbacks()); System.Savepoint sp = Database.setSavepoint(); insert new Account(Name = 'two'); Database.rollback(sp); System.assertEquals(1, Limits.getSavepointRollbacks()); System.assertEquals(100, Limits.getLimitSavepointRollbacks());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "insert new Account(Name = 'one'); System.assertEquals(0, Limits.getQueryLocatorRows()); Database.getQueryLocator('SELECT Id FROM Account'); System.assertEquals(1, Limits.getQueryLocatorRows()); System.assertEquals(10000, Limits.getLimitQueryLocatorRows()); System.assertEquals(0, Limits.getSavepointRollbacks()); System.Savepoint sp = Database.setSavepoint(); insert new Account(Name = 'two'); Database.rollback(sp); System.assertEquals(1, Limits.getSavepointRollbacks()); System.assertEquals(100, Limits.getLimitSavepointRollbacks());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

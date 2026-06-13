@@ -66,6 +66,7 @@ Commands:
   product-namespaces Report product namespace coverage.
   tooling-fixtures   Summarize tooling fixture reports.
   evidence           Compare fixture evidence with a catalog.
+  oracle-stdlib      Run scratch-org standard-library oracle probes.
 
 Compatibility:
   glade-tools compat <command> is accepted for old scripts.

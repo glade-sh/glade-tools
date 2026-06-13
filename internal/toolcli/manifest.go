@@ -59,6 +59,7 @@ func writeCompatManifest(w io.Writer) error {
 			{Path: []string{"product-namespaces"}, Summary: "Report product namespace coverage."},
 			{Path: []string{"tooling-fixtures"}, Summary: "Summarize tooling fixture reports."},
 			{Path: []string{"evidence"}, Summary: "Compare fixture evidence with a catalog."},
+			{Path: []string{"oracle-stdlib"}, Summary: "Run scratch-org standard-library oracle probes."},
 		},
 		MinimumGladeVersion: "0.1.0",
 		Source:              pluginSource,

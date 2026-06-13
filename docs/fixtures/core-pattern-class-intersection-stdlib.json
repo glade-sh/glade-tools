@@ -1,0 +1,29 @@
+{
+  "name": "core-pattern-class-intersection-stdlib",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Pattern.compile(String)",
+      "symbol": "Pattern.compile",
+      "kind": "exec",
+      "notes": "Nested Java character-class union, intersection, and subtraction are compiled onto the regexp2-backed regex path."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assert(Pattern.matches('[a-z&&[^aeiou]]+', 'bcdf'));\nSystem.assert(!Pattern.matches('[a-z&&[^aeiou]]+', 'ae'));\nSystem.assert(Pattern.matches('[a-z&&[^aeiou]&&[^xyz]]+', 'bcdf'));\nSystem.assert(!Pattern.matches('[a-z&&[^aeiou]&&[^xyz]]+', 'xyz'));\nSystem.assert(Pattern.matches('[a-z&&[m-p]&&[n-o]]+', 'no'));\nSystem.assert(!Pattern.matches('[a-z&&[m-p]&&[n-o]]+', 'mp'));\nSystem.assert(Pattern.matches('[a-z&&[m-p]&&[^o]]+', 'mnp'));\nSystem.assert(!Pattern.matches('[a-z&&[m-p]&&[^o]]+', 'o'));\nSystem.assert(Pattern.matches('[a-z&&[m-p&&[^o]]]+', 'mnp'));\nSystem.assert(!Pattern.matches('[a-z&&[m-p&&[^o]]]+', 'o'));\nSystem.assert(Pattern.matches('[a-c[x-z]]+', 'abcxyz'));\nSystem.assert(!Pattern.matches('[a-c[x-z]]+', 'm'));\nSystem.assert(Pattern.matches('[\\\\p{L}&&[\\\\p{Ll}]&&[^x]]+', 'abcé'));\nSystem.assert(!Pattern.matches('[\\\\p{L}&&[\\\\p{Ll}]&&[^x]]+', 'x'));\nList<String> split = 'amnoq'.split('[a-z&&[m-p]&&[^o]]', -1);\nSystem.assertEquals(3, split.size());\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assert(Pattern.matches('[a-z&&[^aeiou]]+', 'bcdf'));\nSystem.assert(!Pattern.matches('[a-z&&[^aeiou]]+', 'ae'));\nSystem.assert(Pattern.matches('[a-z&&[^aeiou]&&[^xyz]]+', 'bcdf'));\nSystem.assert(!Pattern.matches('[a-z&&[^aeiou]&&[^xyz]]+', 'xyz'));\nSystem.assert(Pattern.matches('[a-z&&[m-p]&&[n-o]]+', 'no'));\nSystem.assert(!Pattern.matches('[a-z&&[m-p]&&[n-o]]+', 'mp'));\nSystem.assert(Pattern.matches('[a-z&&[m-p]&&[^o]]+', 'mnp'));\nSystem.assert(!Pattern.matches('[a-z&&[m-p]&&[^o]]+', 'o'));\nSystem.assert(Pattern.matches('[a-z&&[m-p&&[^o]]]+', 'mnp'));\nSystem.assert(!Pattern.matches('[a-z&&[m-p&&[^o]]]+', 'o'));\nSystem.assert(Pattern.matches('[a-c[x-z]]+', 'abcxyz'));\nSystem.assert(!Pattern.matches('[a-c[x-z]]+', 'm'));\nSystem.assert(Pattern.matches('[\\\\p{L}&&[\\\\p{Ll}]&&[^x]]+', 'abcé'));\nSystem.assert(!Pattern.matches('[\\\\p{L}&&[\\\\p{Ll}]&&[^x]]+', 'x'));\nList<String> split = 'amnoq'.split('[a-z&&[m-p]&&[^o]]', -1);\nSystem.assertEquals(3, split.size());\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

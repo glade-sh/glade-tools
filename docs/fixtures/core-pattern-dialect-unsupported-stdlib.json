@@ -4,7 +4,7 @@
     {
       "symbol": "Pattern.compile",
       "kind": "exec",
-      "notes": "Java COMMENTS flag is outside the local Go-regexp flag subset and returns a typed unsupported diagnostic."
+      "notes": "Pattern.COMMENTS flag constants remain outside the supported local flag subset and return a typed unsupported diagnostic; inline (?x) is supported separately."
     }
   ],
   "source": [
