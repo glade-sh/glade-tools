@@ -337,11 +337,8 @@ func TestStdlibSupportedRowsDoNotClaimPlaceholderOrNoOpBehavior(t *testing.T) {
 
 func TestCoreServiceContextStdlibRowsAreExplicitUnsupported(t *testing.T) {
 	watched := map[string]bool{
-		"Answers.findSimilar(Question)":                                                true,
-		"ResetPasswordResult.getPassword()":                                            true,
-		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)": true,
-		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                             true,
-		"TrailblazerIdentity.splunkLog(String,String)":                                 true,
+		"Answers.findSimilar(Question)":     true,
+		"ResetPasswordResult.getPassword()": true,
 	}
 	for _, entry := range StdlibMatrix() {
 		if !watched[entry.API] {
@@ -425,25 +422,28 @@ func TestLocalContextStdlibRowsArePromoted(t *testing.T) {
 
 func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 	watched := map[string]Status{
-		"System.schedule(String,String,Object)":              StatusSupported,
-		"Schedulable.execute(SchedulableContext)":            StatusSupported,
-		"SchedulableContext.getTriggerId()":                  StatusSupported,
-		"Test.setCurrentPageReference(Object)":               StatusPartial,
-		"Search.find(String,Object)":                         StatusPartial,
-		"Search.query(String,Object)":                        StatusPartial,
-		"Search.suggest(String,String,Object)":               StatusPartial,
-		"Search.suggest(String,String,Object,Object)":        StatusPartial,
-		"System.enqueueJob(Object,Object)":                   StatusPartial,
-		"AccessLevel.withPermissionSetId(String)":            StatusSupported,
-		"System.runAs(Object,Object)":                        StatusPartial,
-		"System.runAs(Package.Version)":                      StatusPartial,
-		"Approval.process(Approval.ProcessRequest)":          StatusPartial,
-		"Approval.process(Approval.ProcessRequest, Boolean)": StatusPartial,
-		"BusinessHours.add(String, Datetime, Long)":          StatusPartial,
-		"BusinessHours.addGmt(String, Datetime, Long)":       StatusPartial,
-		"BusinessHours.diff(String, Datetime, Datetime)":     StatusPartial,
-		"BusinessHours.isWithin(String, Datetime)":           StatusPartial,
-		"BusinessHours.nextStartDate(String, Datetime)":      StatusPartial,
+		"System.schedule(String,String,Object)":                                        StatusSupported,
+		"Schedulable.execute(SchedulableContext)":                                      StatusSupported,
+		"SchedulableContext.getTriggerId()":                                            StatusSupported,
+		"Test.setCurrentPageReference(Object)":                                         StatusPartial,
+		"Search.find(String,Object)":                                                   StatusPartial,
+		"Search.query(String,Object)":                                                  StatusPartial,
+		"Search.suggest(String,String,Object)":                                         StatusPartial,
+		"Search.suggest(String,String,Object,Object)":                                  StatusPartial,
+		"System.enqueueJob(Object,Object)":                                             StatusPartial,
+		"AccessLevel.withPermissionSetId(String)":                                      StatusSupported,
+		"System.runAs(Object,Object)":                                                  StatusPartial,
+		"System.runAs(Package.Version)":                                                StatusPartial,
+		"Approval.process(Approval.ProcessRequest)":                                    StatusPartial,
+		"Approval.process(Approval.ProcessRequest, Boolean)":                           StatusPartial,
+		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)": StatusSupported,
+		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                             StatusSupported,
+		"TrailblazerIdentity.splunkLog(String,String)":                                 StatusSupported,
+		"BusinessHours.add(String, Datetime, Long)":                                    StatusPartial,
+		"BusinessHours.addGmt(String, Datetime, Long)":                                 StatusPartial,
+		"BusinessHours.diff(String, Datetime, Datetime)":                               StatusPartial,
+		"BusinessHours.isWithin(String, Datetime)":                                     StatusPartial,
+		"BusinessHours.nextStartDate(String, Datetime)":                                StatusPartial,
 	}
 	assertStdlibStatuses(t, watched)
 }

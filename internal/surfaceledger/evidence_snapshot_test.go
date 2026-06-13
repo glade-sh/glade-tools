@@ -209,6 +209,25 @@ func TestBuildEvidenceSnapshotMarksSuccessfulApexFixtureEvidenceSupported(t *tes
 	}
 }
 
+func TestBuildEvidenceSnapshotReadsTrailblazerIdentityFixture(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-trailblazer-identity-local-evidence.json")
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:System.TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)",
+		"apex:System.TrailblazerIdentity.getUserOrgInfo(List<String>)",
+		"apex:System.TrailblazerIdentity.splunkLog(String,String)",
+	} {
+		row := byID[id]
+		if row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
+			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/supported", id, row.Evidence, row.GladeBehavior)
+		}
+	}
+}
+
 func TestBuildEvidenceSnapshotDoesNotMarkUnsupportedRuntimeGuideSupported(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "fixture.json")

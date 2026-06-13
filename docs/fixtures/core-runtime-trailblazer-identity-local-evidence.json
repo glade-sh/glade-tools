@@ -1,0 +1,41 @@
+{
+  "name": "core-runtime-trailblazer-identity-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)",
+      "symbol": "TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)",
+      "kind": "test",
+      "notes": "Local execution returns a deterministic email verification token without contacting a live identity service."
+    },
+    {
+      "surfaceId": "apex:System.TrailblazerIdentity.getUserOrgInfo(List<String>)",
+      "symbol": "TrailblazerIdentity.getUserOrgInfo(List<String>)",
+      "kind": "test",
+      "notes": "Local execution returns an empty UserOrgInfo list without contacting a live identity lookup service."
+    },
+    {
+      "surfaceId": "apex:System.TrailblazerIdentity.splunkLog(String,String)",
+      "symbol": "TrailblazerIdentity.splunkLog(String,String)",
+      "kind": "test",
+      "notes": "Local execution accepts Splunk log calls without contacting a live logging service."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/TrailblazerIdentityLocalEvidenceTest.cls",
+      "content": "@isTest private class TrailblazerIdentityLocalEvidenceTest { @isTest static void helperCallsAreDeterministic() { String token = TrailblazerIdentity.generateUserEmailVerificationToken('00D000000000001', UserInfo.getUserId(), 'local@example.invalid'); System.assertEquals('local-email-verification-token', token); List<Auth.UserOrgInfo> orgs = TrailblazerIdentity.getUserOrgInfo(new List<String>{'local@example.invalid'}); System.assertEquals(0, orgs.size()); TrailblazerIdentity.splunkLog('local', 'message'); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  }
+}

@@ -5,7 +5,7 @@
       "surfaceId": "apex:Approval.ProcessRequest.getComments()",
       "symbol": "Approval.ProcessRequest.getComments",
       "kind": "test",
-      "notes": "Approval request DTO getters and setters preserve local fields; Approval.process remains explicit unsupported."
+      "notes": "Approval request DTO getters and setters preserve local fields; Approval.process request execution has deterministic local result coverage for supported request shapes."
     },
     {
       "surfaceId": "apex:Approval.ProcessRequest.setComments(String)",
