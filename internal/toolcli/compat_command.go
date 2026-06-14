@@ -2405,6 +2405,7 @@ func runCompatToolingFixtures(args []string, w io.Writer) error {
 func runCompatEvidence(args []string, w io.Writer) error {
 	catalogPath := ""
 	jsonOut := false
+	requireGated := false
 	fixturePaths := make([]string, 0, len(args))
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
@@ -2416,6 +2417,8 @@ func runCompatEvidence(args []string, w io.Writer) error {
 			catalogPath = args[i]
 		case "--json":
 			jsonOut = true
+		case "--require-gated":
+			requireGated = true
 		default:
 			fixturePaths = append(fixturePaths, args[i])
 		}
@@ -2439,6 +2442,9 @@ func runCompatEvidence(args []string, w io.Writer) error {
 		fixtures = append(fixtures, fixture)
 	}
 	report := compat.BuildEvidenceReport(catalog, fixtures)
+	if requireGated && (len(report.UngatedPromoted) > 0 || len(report.UngatedUnsupported) > 0 || len(report.UnmatchedEvidence) > 0) {
+		return fmt.Errorf("fixture evidence gate failed: ungated promoted rows: %d, ungated unsupported rows: %d, unmatched evidence: %d", len(report.UngatedPromoted), len(report.UngatedUnsupported), len(report.UnmatchedEvidence))
+	}
 	if jsonOut {
 		return compat.WriteEvidenceJSON(w, report)
 	}
@@ -2453,6 +2459,7 @@ func writeEvidenceSummary(w io.Writer, report compat.EvidenceReport) {
 	fmt.Fprintf(w, "covered: %d\n", len(report.Covered))
 	fmt.Fprintf(w, "unmatchedEvidence: %d\n", len(report.UnmatchedEvidence))
 	fmt.Fprintf(w, "ungatedPromoted: %d\n", len(report.UngatedPromoted))
+	fmt.Fprintf(w, "ungatedUnsupported: %d\n", len(report.UngatedUnsupported))
 	if len(report.Summary) == 0 {
 		return
 	}

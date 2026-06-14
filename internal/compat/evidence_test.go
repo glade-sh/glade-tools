@@ -25,6 +25,11 @@ func TestBuildEvidenceReport(t *testing.T) {
 		Area:   "Product namespaces",
 		Target: capability.TargetTypedStub,
 		Status: capability.StatusUnknown,
+	}, {
+		Symbol: "Answers.findSimilar",
+		Area:   "Core stdlib",
+		Target: capability.TargetUnsupported,
+		Status: capability.StatusUnsupported,
 	}}}
 	fixtures := []Fixture{{
 		Name: "string-fixture",
@@ -38,7 +43,7 @@ func TestBuildEvidenceReport(t *testing.T) {
 	}}
 
 	report := BuildEvidenceReport(catalog, fixtures)
-	if report.CatalogEntries != 3 || report.Fixtures != 1 || report.Evidence != 2 {
+	if report.CatalogEntries != 4 || report.Fixtures != 1 || report.Evidence != 2 {
 		t.Fatalf("report counts = %#v", report)
 	}
 	if len(report.Covered) != 1 || report.Covered[0].Symbol != "String.trim" {
@@ -49,6 +54,33 @@ func TestBuildEvidenceReport(t *testing.T) {
 	}
 	if len(report.UngatedPromoted) != 1 || report.UngatedPromoted[0].Symbol != "String.contains" {
 		t.Fatalf("ungated = %#v", report.UngatedPromoted)
+	}
+	if len(report.UngatedUnsupported) != 1 || report.UngatedUnsupported[0].Symbol != "Answers.findSimilar" {
+		t.Fatalf("unsupported gaps = %#v", report.UngatedUnsupported)
+	}
+}
+
+func TestBuildEvidenceReportRequiresExplicitUnsupportedFixtureCoverage(t *testing.T) {
+	catalog := capability.Catalog{Entries: []capability.CatalogEntry{{
+		Symbol: "Answers.findSimilar",
+		Area:   "Core stdlib",
+		Target: capability.TargetUnsupported,
+		Status: capability.StatusUnsupported,
+	}}}
+
+	report := BuildEvidenceReport(catalog, []Fixture{{
+		Name: "answers-unsupported",
+		Evidence: []FixtureEvidence{{
+			Symbol: "Answers.findSimilar",
+			Kind:   "unsupported",
+		}},
+	}})
+
+	if len(report.UngatedUnsupported) != 0 {
+		t.Fatalf("unsupported row with explicit fixture was reported as ungated: %#v", report.UngatedUnsupported)
+	}
+	if len(report.Covered) != 1 || report.Covered[0].Status != capability.StatusUnsupported {
+		t.Fatalf("covered unsupported row = %#v", report.Covered)
 	}
 }
 

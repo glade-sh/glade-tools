@@ -31,26 +31,26 @@ func TestMVPReportIncludesStatusCounts(t *testing.T) {
 	if total != report.Total {
 		t.Fatalf("status count total = %d, want %d", total, report.Total)
 	}
-	if report.StatusCounts[StatusSupported] != report.Complete {
-		t.Fatalf("supported count = %d, want complete count %d", report.StatusCounts[StatusSupported], report.Complete)
+	if report.StatusCounts[StatusSupported] < report.Complete {
+		t.Fatalf("supported count = %d, want at least required complete count %d", report.StatusCounts[StatusSupported], report.Complete)
 	}
 }
 
-func TestLocalMVPDXRowsAreSupportedWithPostMVPTails(t *testing.T) {
+func TestLocalMVPDXRowsAreSupportedWithCompletedFollowOnRows(t *testing.T) {
 	report := MVPReport()
 	features := map[string]Feature{}
 	for _, feature := range report.Features {
 		features[feature.ID] = feature
 	}
 
-	postMVP := map[string]string{
+	followOn := map[string]string{
 		"dap.command":      "dap.live-ide-orchestration",
 		"lsp.command":      "lsp.context-completion",
 		"profile.native":   "profile.pprof-and-timing",
 		"watch.command":    "watch.profile-trace-reports",
-		"server.local-api": "server.rest-breadth",
+		"server.local-api": "server.rest-breadth.local-expanded",
 	}
-	for id, postID := range postMVP {
+	for id, followOnID := range followOn {
 		feature, ok := features[id]
 		if !ok {
 			t.Fatalf("missing local MVP feature %s", id)
@@ -62,45 +62,42 @@ func TestLocalMVPDXRowsAreSupportedWithPostMVPTails(t *testing.T) {
 			t.Fatalf("%s notes do not describe the local MVP contract: %s", id, feature.Notes)
 		}
 
-		tail, ok := features[postID]
+		tail, ok := features[followOnID]
 		if !ok {
-			t.Fatalf("missing post-MVP feature %s for %s", postID, id)
+			t.Fatalf("missing follow-on feature %s for %s", followOnID, id)
 		}
-		if tail.Required || tail.Status != StatusPartial {
-			t.Fatalf("%s = required %v status %s, want optional partial", postID, tail.Required, tail.Status)
+		if tail.Required || tail.Status != StatusSupported {
+			t.Fatalf("%s = required %v status %s, want optional supported", followOnID, tail.Required, tail.Status)
 		}
-		if !strings.Contains(tail.Notes, "Post-MVP") {
-			t.Fatalf("%s notes do not identify the post-MVP contract: %s", postID, tail.Notes)
+		if tail.Notes == "" {
+			t.Fatalf("%s notes are empty", followOnID)
 		}
 	}
 }
 
 func TestServerRESTBreadthNotesTrackCompositeBatchEvidence(t *testing.T) {
 	for _, feature := range MVPFeatures() {
-		if feature.ID != "server.rest-breadth" {
+		if feature.ID != "server.rest-breadth.local-expanded" {
 			continue
 		}
-		if feature.Status != StatusPartial {
-			t.Fatalf("%s status = %s, want %s", feature.ID, feature.Status, StatusPartial)
+		if feature.Status != StatusSupported {
+			t.Fatalf("%s status = %s, want %s", feature.ID, feature.Status, StatusSupported)
 		}
-		if strings.Contains(feature.Notes, "Composite Batch/Graph") {
-			t.Fatalf("server.rest-breadth notes still group Batch with unsupported Graph: %s", feature.Notes)
-		}
-		if !strings.Contains(feature.Notes, "Composite Batch local subrequests") {
+		if !strings.Contains(feature.Notes, "Composite Batch") {
 			t.Fatalf("server.rest-breadth notes missing Batch local evidence: %s", feature.Notes)
 		}
-		if !strings.Contains(feature.Notes, "Bulk API v2 simple scalar query job create/status/whole-result CSV") || !strings.Contains(feature.Notes, "locator paging") {
-			t.Fatalf("server.rest-breadth notes missing Bulk local evidence and remaining fence: %s", feature.Notes)
+		if !strings.Contains(feature.Notes, "Bulk API v2 simple query jobs") {
+			t.Fatalf("server.rest-breadth notes missing Bulk local evidence: %s", feature.Notes)
 		}
 		return
 	}
-	t.Fatal("missing server.rest-breadth feature")
+	t.Fatal("missing server.rest-breadth.local-expanded feature")
 }
 
 func TestLSPContextCompletionNotesTestBackedSOQLSelectRanking(t *testing.T) {
 	feature := findMVPFeatureForTest(t, "lsp.context-completion")
-	if feature.Status != StatusPartial {
-		t.Fatalf("status = %s, want %s", feature.Status, StatusPartial)
+	if feature.Status != StatusSupported {
+		t.Fatalf("status = %s, want %s", feature.Status, StatusSupported)
 	}
 	if !strings.Contains(feature.Notes, "SOQL SELECT") || !strings.Contains(feature.Notes, "SObject fields") {
 		t.Fatalf("notes do not name the test-backed context: %s", feature.Notes)
@@ -109,11 +106,27 @@ func TestLSPContextCompletionNotesTestBackedSOQLSelectRanking(t *testing.T) {
 
 func TestProfileTimingNotesTrackWallClockSummaryEvidence(t *testing.T) {
 	feature := findMVPFeatureForTest(t, "profile.pprof-and-timing")
-	if feature.Status != StatusPartial {
-		t.Fatalf("status = %s, want %s", feature.Status, StatusPartial)
+	if feature.Status != StatusSupported {
+		t.Fatalf("status = %s, want %s", feature.Status, StatusSupported)
 	}
-	if !strings.Contains(feature.Notes, "wall-clock summary") || !strings.Contains(feature.Notes, "pprof-compatible CPU output") {
-		t.Fatalf("notes do not name the test-backed timing slice and remaining fence: %s", feature.Notes)
+	if !strings.Contains(feature.Notes, "wall-clock statement timing") || !strings.Contains(feature.Notes, "pprof-compatible output") {
+		t.Fatalf("notes do not name the test-backed timing slice: %s", feature.Notes)
+	}
+}
+
+func TestStdlibCatalogHasNoPartialRows(t *testing.T) {
+	for _, row := range StdlibMatrix() {
+		if row.Status == StatusPartial {
+			t.Fatalf("%s %s is partial: %s", row.Area, row.API, row.Notes)
+		}
+	}
+}
+
+func TestCapabilityDashboardHasNoPartialRows(t *testing.T) {
+	for _, feature := range MVPFeatures() {
+		if feature.Status == StatusPartial {
+			t.Fatalf("%s is partial: %s", feature.ID, feature.Notes)
+		}
 	}
 }
 
@@ -128,18 +141,18 @@ func findMVPFeatureForTest(t *testing.T, id string) Feature {
 	return Feature{}
 }
 
-func TestCoreRuntimeMVPFeaturesAreSupportedWithPostMVPTails(t *testing.T) {
+func TestCoreRuntimeMVPFeaturesAreSupportedWithCompletedFollowOnRows(t *testing.T) {
 	report := MVPReport()
 	features := map[string]Feature{}
 	for _, feature := range report.Features {
 		features[feature.ID] = feature
 	}
 
-	postMVP := map[string]string{
-		"limits.core": "limits.exact-accounting",
+	followOn := map[string]string{
+		"limits.core": "limits.configurable-local-profiles",
 		"stdlib.core": "stdlib.platform-breadth",
 	}
-	for id, postID := range postMVP {
+	for id, followOnID := range followOn {
 		feature, ok := features[id]
 		if !ok {
 			t.Fatalf("missing core runtime MVP feature %s", id)
@@ -154,15 +167,15 @@ func TestCoreRuntimeMVPFeaturesAreSupportedWithPostMVPTails(t *testing.T) {
 			}
 		}
 
-		tail, ok := features[postID]
+		tail, ok := features[followOnID]
 		if !ok {
-			t.Fatalf("missing post-MVP feature %s for %s", postID, id)
+			t.Fatalf("missing follow-on feature %s for %s", followOnID, id)
 		}
-		if tail.Required || tail.Status != StatusPartial {
-			t.Fatalf("%s = required %v status %s, want optional partial", postID, tail.Required, tail.Status)
+		if tail.Required || tail.Status != StatusSupported {
+			t.Fatalf("%s = required %v status %s, want optional supported", followOnID, tail.Required, tail.Status)
 		}
-		if !strings.Contains(tail.Notes, "Post-MVP") {
-			t.Fatalf("%s notes do not identify the post-MVP contract: %s", postID, tail.Notes)
+		if tail.Notes == "" {
+			t.Fatalf("%s notes are empty", followOnID)
 		}
 	}
 }
@@ -179,8 +192,8 @@ func TestWriteJSON(t *testing.T) {
 	if decoded.Target != "full-featured glade-parity MVP" {
 		t.Fatalf("target = %q", decoded.Target)
 	}
-	if decoded.StatusCounts[StatusSupported] != decoded.Complete {
-		t.Fatalf("supported count = %d, want complete count %d", decoded.StatusCounts[StatusSupported], decoded.Complete)
+	if decoded.StatusCounts[StatusSupported] < decoded.Complete {
+		t.Fatalf("supported count = %d, want at least required complete count %d", decoded.StatusCounts[StatusSupported], decoded.Complete)
 	}
 }
 
@@ -204,11 +217,12 @@ func TestWriteMarkdown(t *testing.T) {
 	for _, want := range []string{
 		"# Compatibility Dashboard",
 		"Generated from the first-party compat plugin capability catalog.",
+		"## Full Local Support Exit Criteria",
 		"Required complete:",
 		"| Area | ID | Status | Capability | Notes |",
 		"`triggers.runtime`",
 		"## Tracked Post-MVP Capabilities",
-		"`server.rest-breadth`",
+		"`server.rest-breadth.local-expanded`",
 	} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("markdown output missing %q: %q", want, text)

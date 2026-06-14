@@ -1,0 +1,44 @@
+{
+  "name": "core-runtime-http-client-cert-local",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.HttpRequest.setClientCertificateName(String)",
+      "symbol": "HttpRequest.setClientCertificateName",
+      "kind": "test",
+      "notes": "Named client certificates resolve from local certificate metadata and become inspectable HttpRequest mock metadata."
+    },
+    {
+      "surfaceId": "apex:System.HttpRequest.setClientCertificate(String,String)",
+      "symbol": "HttpRequest.setClientCertificate",
+      "kind": "test",
+      "notes": "Inline certificate material and password presence are stored as deterministic request metadata visible to HttpCalloutMock."
+    }
+  ],
+  "metadata": {
+    "endpoints": [
+      {
+        "kind": "ClientCertificate",
+        "name": "LocalCert",
+        "active": true
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeHttpClientCertLocalTest.cls",
+      "content": "@isTest private class CoreRuntimeHttpClientCertLocalTest { private class Mock implements HttpCalloutMock { public HttpResponse respond(HttpRequest req) { System.assertEquals('named', req.clientCertificateSource); System.assertEquals('LocalCert', req.clientCertificateName); HttpResponse res = new HttpResponse(); res.setStatusCode(204); return res; } } @isTest static void rows() { Test.setMock(HttpCalloutMock.class, new Mock()); HttpRequest req = new HttpRequest(); req.setEndpoint('https://example.test/cert'); req.setMethod('GET'); req.setClientCertificateName('LocalCert'); System.assertEquals(204, new Http().send(req).getStatusCode()); HttpRequest inlineReq = new HttpRequest(); inlineReq.setClientCertificate('-----BEGIN CERTIFICATE----- local', 'secret'); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

@@ -224,13 +224,13 @@ func TestBuildGladeSnapshotPromotesBusinessHoursLocalContract(t *testing.T) {
 		t.Fatalf("BusinessHours.add behavior = %s, want %s", row.GladeBehavior, BehaviorSupported)
 	}
 
-	id = ApexTypeID("System", "BusinessHours hosted service calendar holiday expansion")
+	id = ApexTypeID("System", "BusinessHours malformed local holiday metadata")
 	row, ok = byID[id]
 	if !ok {
-		t.Fatalf("missing hosted BusinessHours boundary row %s", id)
+		t.Fatalf("missing BusinessHours boundary row %s", id)
 	}
 	if row.GladeBehavior != BehaviorUnsupported {
-		t.Fatalf("BusinessHours hosted boundary behavior = %s, want %s", row.GladeBehavior, BehaviorUnsupported)
+		t.Fatalf("BusinessHours boundary behavior = %s, want %s", row.GladeBehavior, BehaviorUnsupported)
 	}
 }
 

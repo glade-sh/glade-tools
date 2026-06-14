@@ -80,6 +80,38 @@ func TestManifestJSONListsCompatCommands(t *testing.T) {
 	}
 }
 
+func TestEvidenceRequireGatedFailsOnUngatedUnsupportedRows(t *testing.T) {
+	dir := t.TempDir()
+	catalogPath := filepath.Join(dir, "catalog.json")
+	fixturePath := filepath.Join(dir, "fixture.json")
+	if err := os.WriteFile(catalogPath, []byte(`{
+  "schemaVersion": 1,
+  "entries": [
+    {"symbol":"String.trim","area":"Core stdlib","target":"executable-parity","status":"supported"},
+    {"symbol":"Answers.findSimilar","area":"Core stdlib","target":"unsupported","status":"unsupported"}
+  ]
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(fixturePath, []byte(`{
+  "name": "string-trim",
+  "source": [{"path": "force-app/main/classes/StringTrim.cls", "content": "public class StringTrim {}"}],
+  "command": {"kind": "exec", "apex": "String s = ' x '.trim();"},
+  "evidence": [{"symbol": "String.trim", "kind": "exec"}]
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"evidence", "--catalog", catalogPath, "--require-gated", fixturePath}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("Run returned 0, stdout=%s stderr=%s", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "ungated unsupported rows: 1") {
+		t.Fatalf("stderr = %q", stderr.String())
+	}
+}
+
 func TestPackagedCompatManifestMatchesRuntimeCommands(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), []string{"manifest", "--json"}, &stdout, &stderr)

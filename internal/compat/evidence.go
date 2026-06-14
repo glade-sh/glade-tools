@@ -4,18 +4,20 @@ import (
 	"encoding/json"
 	"io"
 	"sort"
+	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/capability"
 )
 
 type EvidenceReport struct {
-	CatalogEntries    int                  `json:"catalogEntries"`
-	Fixtures          int                  `json:"fixtures"`
-	Evidence          int                  `json:"evidence"`
-	Covered           []CoveredEvidence    `json:"covered,omitempty"`
-	UnmatchedEvidence []FixtureEvidenceRef `json:"unmatchedEvidence,omitempty"`
-	UngatedPromoted   []CatalogEvidenceGap `json:"ungatedPromoted,omitempty"`
-	Summary           []EvidenceSummary    `json:"summary,omitempty"`
+	CatalogEntries     int                  `json:"catalogEntries"`
+	Fixtures           int                  `json:"fixtures"`
+	Evidence           int                  `json:"evidence"`
+	Covered            []CoveredEvidence    `json:"covered,omitempty"`
+	UnmatchedEvidence  []FixtureEvidenceRef `json:"unmatchedEvidence,omitempty"`
+	UngatedPromoted    []CatalogEvidenceGap `json:"ungatedPromoted,omitempty"`
+	UngatedUnsupported []CatalogEvidenceGap `json:"ungatedUnsupported,omitempty"`
+	Summary            []EvidenceSummary    `json:"summary,omitempty"`
 }
 
 type CoveredEvidence struct {
@@ -55,6 +57,7 @@ func BuildEvidenceReport(catalog capability.Catalog, fixtures []Fixture) Evidenc
 		entriesBySymbol[entry.Symbol] = entry
 	}
 	fixturesBySymbol := map[string]map[string]struct{}{}
+	unsupportedFixturesBySymbol := map[string]map[string]struct{}{}
 	report := EvidenceReport{
 		CatalogEntries: len(catalog.Entries),
 		Fixtures:       len(fixtures),
@@ -77,6 +80,14 @@ func BuildEvidenceReport(catalog capability.Catalog, fixtures []Fixture) Evidenc
 				fixturesBySymbol[evidence.Symbol] = set
 			}
 			set[fixture.Name] = struct{}{}
+			if fixtureEvidenceIsExplicitUnsupported(fixture, evidence) {
+				unsupportedSet := unsupportedFixturesBySymbol[evidence.Symbol]
+				if unsupportedSet == nil {
+					unsupportedSet = map[string]struct{}{}
+					unsupportedFixturesBySymbol[evidence.Symbol] = unsupportedSet
+				}
+				unsupportedSet[fixture.Name] = struct{}{}
+			}
 		}
 	}
 	for symbol, fixtures := range fixturesBySymbol {
@@ -94,18 +105,30 @@ func BuildEvidenceReport(catalog capability.Catalog, fixtures []Fixture) Evidenc
 		report.Covered = append(report.Covered, covered)
 	}
 	for _, entry := range catalog.Entries {
-		if entry.Status != capability.StatusSupported && entry.Status != capability.StatusPartial {
+		switch entry.Status {
+		case capability.StatusSupported, capability.StatusPartial:
+			if _, ok := fixturesBySymbol[entry.Symbol]; ok {
+				continue
+			}
+			report.UngatedPromoted = append(report.UngatedPromoted, CatalogEvidenceGap{
+				Symbol: entry.Symbol,
+				Status: entry.Status,
+				Target: entry.Target,
+				Area:   entry.Area,
+			})
+		case capability.StatusUnsupported:
+			if _, ok := unsupportedFixturesBySymbol[entry.Symbol]; ok {
+				continue
+			}
+			report.UngatedUnsupported = append(report.UngatedUnsupported, CatalogEvidenceGap{
+				Symbol: entry.Symbol,
+				Status: entry.Status,
+				Target: entry.Target,
+				Area:   entry.Area,
+			})
+		default:
 			continue
 		}
-		if _, ok := fixturesBySymbol[entry.Symbol]; ok {
-			continue
-		}
-		report.UngatedPromoted = append(report.UngatedPromoted, CatalogEvidenceGap{
-			Symbol: entry.Symbol,
-			Status: entry.Status,
-			Target: entry.Target,
-			Area:   entry.Area,
-		})
 	}
 	sort.Slice(report.Covered, func(i, j int) bool {
 		return report.Covered[i].Symbol < report.Covered[j].Symbol
@@ -119,8 +142,18 @@ func BuildEvidenceReport(catalog capability.Catalog, fixtures []Fixture) Evidenc
 	sort.Slice(report.UngatedPromoted, func(i, j int) bool {
 		return report.UngatedPromoted[i].Symbol < report.UngatedPromoted[j].Symbol
 	})
+	sort.Slice(report.UngatedUnsupported, func(i, j int) bool {
+		return report.UngatedUnsupported[i].Symbol < report.UngatedUnsupported[j].Symbol
+	})
 	report.Summary = summarizeEvidence(catalog.Entries, fixturesBySymbol)
 	return report
+}
+
+func fixtureEvidenceIsExplicitUnsupported(fixture Fixture, evidence FixtureEvidence) bool {
+	if strings.EqualFold(strings.TrimSpace(evidence.Kind), "unsupported") {
+		return true
+	}
+	return fixture.Expected.Error != nil && strings.EqualFold(fixture.Expected.Error.Type, "UnsupportedFeature")
 }
 
 func WriteEvidenceJSON(w io.Writer, report EvidenceReport) error {
