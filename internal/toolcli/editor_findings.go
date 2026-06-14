@@ -69,8 +69,16 @@ func visualforcePagePath(project, name string) string {
 	return ""
 }
 
-func lwcCaptureEditorFindings(report compat.LwcCaptureReport) editorfindings.Payload {
+func lwcCaptureEditorFindings(report compat.LwcCaptureReport, captureErr error) editorfindings.Payload {
 	var findings []editorfindings.Finding
+	if captureErr != nil {
+		findings = append(findings, editorfindings.Finding{
+			Severity: "warning",
+			Message:  fmt.Sprintf("LWC capture deploy failed for %s: %v", report.TargetOrg, captureErr),
+			RuleID:   "lwc.capture.deploy",
+			Source:   "compat",
+		})
+	}
 	for _, c := range report.Cases {
 		status := strings.TrimSpace(c.Status)
 		if status == "" || status == "pass" || status == "prepared" {

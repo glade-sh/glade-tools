@@ -253,17 +253,28 @@ func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error 
 		}
 	}
 	report, err := compat.RunLwcCapture(ctx, options)
-	if err != nil {
+	if jsonOut {
+		var encodeErr error
+		if err != nil && options.Out != "" && strings.TrimSpace(report.Command) != "" {
+			if writeErr := compat.WriteLwcCaptureJSON(options.Out, report); writeErr != nil {
+				err = errors.Join(err, writeErr)
+			}
+		}
+		if editorFindings {
+			encodeErr = editorfindings.Write(w, lwcCaptureEditorFindings(report, err))
+		} else {
+			enc := json.NewEncoder(w)
+			enc.SetEscapeHTML(false)
+			enc.SetIndent("", "  ")
+			encodeErr = enc.Encode(report)
+		}
+		if encodeErr != nil && err == nil {
+			err = encodeErr
+		}
 		return err
 	}
-	if jsonOut {
-		if editorFindings {
-			return editorfindings.Write(w, lwcCaptureEditorFindings(report))
-		}
-		enc := json.NewEncoder(w)
-		enc.SetEscapeHTML(false)
-		enc.SetIndent("", "  ")
-		return enc.Encode(report)
+	if err != nil {
+		return err
 	}
 	compat.WriteLwcCaptureText(w, report)
 	return nil

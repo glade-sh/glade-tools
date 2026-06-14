@@ -82,6 +82,42 @@ func TestCompatLwcCaptureEditorFindingsJSON(t *testing.T) {
 	if len(payload.Artifacts) != 1 || payload.Artifacts[0].Path != outPath {
 		t.Fatalf("artifacts = %#v, want %s", payload.Artifacts, outPath)
 	}
+	if _, err := os.Stat(outPath); err != nil {
+		t.Fatalf("expected partial report artifact at %s: %v", outPath, err)
+	}
+}
+
+func TestCompatLwcCaptureEditorFindingsJSONOnDeployFailure(t *testing.T) {
+	root := t.TempDir()
+	outPath := filepath.Join(root, "reports", "lwc-org-capture.json")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"compat", "lwc", "capture",
+		"--target-org", "dummy",
+		"--project", root,
+		"--targets", "direct-component",
+		"--out", outPath,
+		"--json",
+		"--editor-findings",
+	}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected deploy failure, stdout=%s", stdout.String())
+	}
+	payload := decodeEditorFindingsPayload(t, stdout.Bytes())
+	if payload.Kind != "glade.findings.v1" || len(payload.Findings) == 0 {
+		t.Fatalf("expected editor findings payload, got %s", stdout.String())
+	}
+	finding := payload.Findings[0]
+	if finding.Source != "compat" || finding.RuleID != "lwc.capture.deploy" || finding.Severity != "warning" ||
+		!strings.Contains(finding.Message, "dummy") {
+		t.Fatalf("unexpected deploy finding: %#v", finding)
+	}
+	if len(payload.Artifacts) != 1 || payload.Artifacts[0].Path != outPath {
+		t.Fatalf("artifacts = %#v, want %s", payload.Artifacts, outPath)
+	}
+	if _, err := os.Stat(outPath); err != nil {
+		t.Fatalf("expected partial report artifact at %s: %v", outPath, err)
+	}
 }
 
 func TestVisualforceLocalCaptureEditorFindingsJSON(t *testing.T) {
