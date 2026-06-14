@@ -23,6 +23,7 @@ type LocalVisualforceCaptureOptions struct {
 	GladeBin   string
 	Project    string
 	Pages      []string
+	Phase      string
 	Out        string
 	Now        func() time.Time
 	HTTPClient VisualforceHTTPClient
@@ -51,6 +52,7 @@ func RunLocalVisualforceCapture(ctx context.Context, options LocalVisualforceCap
 	}
 	sourceDir := visualforceCaptureSourceDir(absProject)
 	pages := normalizeVisualforceCapturePages(options.Pages)
+	explicitPages := len(pages) > 0
 	if len(pages) == 0 {
 		pages, err = discoverVisualforcePages(sourceDir)
 		if err != nil {
@@ -68,6 +70,13 @@ func RunLocalVisualforceCapture(ctx context.Context, options LocalVisualforceCap
 	pageMetadata, err := loadVisualforceProbePageMetadata(absProject)
 	if err != nil {
 		return VisualforceCaptureReport{}, err
+	}
+	pages, err = filterVisualforcePagesByPhase(absProject, pages, pageMetadata, options.Phase, explicitPages)
+	if err != nil {
+		return VisualforceCaptureReport{}, err
+	}
+	if len(pages) == 0 {
+		return VisualforceCaptureReport{}, fmt.Errorf("no Visualforce pages match --phase %s", strings.TrimSpace(options.Phase))
 	}
 
 	report := VisualforceCaptureReport{
@@ -227,7 +236,9 @@ func fetchLocalVisualforceRawCapture(ctx context.Context, client VisualforceHTTP
 		return VisualforceRawCapture{}, nil, err
 	}
 	req.Header.Set("Accept", "text/html,application/xhtml+xml;q=0.9,*/*;q=0.1")
+	started := time.Now()
 	resp, err := client.Do(req)
+	durationMS := time.Since(started).Milliseconds()
 	if err != nil {
 		return VisualforceRawCapture{
 			Page: page,
@@ -237,8 +248,9 @@ func fetchLocalVisualforceRawCapture(ctx context.Context, client VisualforceHTTP
 				Path:   req.URL.EscapedPath(),
 				Query:  req.URL.RawQuery,
 			},
-			Status: "fail",
-			Error:  err.Error(),
+			Status:     "fail",
+			Error:      err.Error(),
+			DurationMS: durationMS,
 		}, nil, nil
 	}
 	defer resp.Body.Close()
@@ -247,6 +259,7 @@ func fetchLocalVisualforceRawCapture(ctx context.Context, client VisualforceHTTP
 		return VisualforceRawCapture{}, nil, err
 	}
 	raw, err := buildVisualforceRawCaptureFromBody(page, endpoint, resp, body)
+	raw.DurationMS = durationMS
 	return raw, body, err
 }
 
@@ -260,7 +273,9 @@ func fetchLocalVisualforcePDFCapture(ctx context.Context, client VisualforceHTTP
 		return VisualforceRawCapture{}, nil, err
 	}
 	req.Header.Set("Accept", "application/pdf,*/*;q=0.1")
+	started := time.Now()
 	resp, err := client.Do(req)
+	durationMS := time.Since(started).Milliseconds()
 	if err != nil {
 		return VisualforceRawCapture{
 			Page: page,
@@ -270,8 +285,9 @@ func fetchLocalVisualforcePDFCapture(ctx context.Context, client VisualforceHTTP
 				Path:   req.URL.EscapedPath(),
 				Query:  req.URL.RawQuery,
 			},
-			Status: "fail",
-			Error:  err.Error(),
+			Status:     "fail",
+			Error:      err.Error(),
+			DurationMS: durationMS,
 		}, nil, nil
 	}
 	defer resp.Body.Close()
@@ -280,6 +296,7 @@ func fetchLocalVisualforcePDFCapture(ctx context.Context, client VisualforceHTTP
 		return VisualforceRawCapture{}, nil, err
 	}
 	raw, err := buildVisualforceRawCaptureFromBody(page, endpoint, resp, body)
+	raw.DurationMS = durationMS
 	return raw, body, err
 }
 
@@ -314,27 +331,32 @@ func localVisualforcePDFURL(baseURL, page string) (string, error) {
 
 func localVisualforceHTMLCapture(raw VisualforceRawCapture, body []byte) VisualforceRenderedCapture {
 	if raw.Status != "pass" {
-		return VisualforceRenderedCapture{Status: "fail", Error: raw.Error}
+		return VisualforceRenderedCapture{Status: "fail", Error: raw.Error, DurationMS: raw.DurationMS}
 	}
 	if raw.StatusCode >= 400 {
-		return VisualforceRenderedCapture{Status: "fail", ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: raw.Status}
+		return VisualforceRenderedCapture{Status: "fail", StatusCode: raw.StatusCode, ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, RedirectURL: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodySize: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: raw.Status, DurationMS: raw.DurationMS}
 	}
 	if raw.PDFSHA256 != "" {
-		return VisualforceRenderedCapture{Status: "notCaptured", ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: "local page route returned PDF"}
+		return VisualforceRenderedCapture{Status: "notCaptured", StatusCode: raw.StatusCode, ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, RedirectURL: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodySize: raw.BodyBytes, PDFSHA256: raw.PDFSHA256, BodyHash: raw.BodySHA256, Error: "local page route returned PDF", DurationMS: raw.DurationMS}
 	}
 	if raw.HTMLSHA256 == "" {
-		return VisualforceRenderedCapture{Status: "fail", ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: "local response was not HTML"}
+		return VisualforceRenderedCapture{Status: "fail", StatusCode: raw.StatusCode, ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, RedirectURL: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodySize: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: "local response was not HTML", DurationMS: raw.DurationMS}
 	}
 	capture := VisualforceRenderedCapture{
 		Status:           "pass",
+		StatusCode:       raw.StatusCode,
 		ContentType:      raw.ContentType,
 		RedirectLocation: raw.RedirectLocation,
+		RedirectURL:      raw.RedirectLocation,
 		Headers:          raw.Headers,
 		Bytes:            raw.BodyBytes,
+		BodySize:         raw.BodyBytes,
 		SHA256:           raw.HTMLSHA256,
+		HTMLSHA256:       raw.HTMLSHA256,
 		BodyHash:         raw.BodySHA256,
 		Text:             raw.NormalizedText,
 		Body:             string(body),
+		DurationMS:       raw.DurationMS,
 	}
 	if raw.NormalizedText != "" {
 		setVisualforceRenderedNormalizedText(&capture, raw.NormalizedText)
@@ -344,23 +366,28 @@ func localVisualforceHTMLCapture(raw VisualforceRawCapture, body []byte) Visualf
 
 func localVisualforcePDFCapture(raw VisualforceRawCapture, body []byte) VisualforceRenderedCapture {
 	if raw.Status != "pass" {
-		return VisualforceRenderedCapture{Status: "notCaptured", Error: raw.Error}
+		return VisualforceRenderedCapture{Status: "notCaptured", Error: raw.Error, DurationMS: raw.DurationMS}
 	}
 	if raw.StatusCode >= 400 {
-		return VisualforceRenderedCapture{Status: "notCaptured", ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: raw.Status}
+		return VisualforceRenderedCapture{Status: "notCaptured", StatusCode: raw.StatusCode, ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, RedirectURL: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodySize: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: raw.Status, DurationMS: raw.DurationMS}
 	}
 	if raw.PDFSHA256 == "" {
-		return VisualforceRenderedCapture{Status: "notCaptured", ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: "local PDF route did not return PDF"}
+		return VisualforceRenderedCapture{Status: "notCaptured", StatusCode: raw.StatusCode, ContentType: raw.ContentType, RedirectLocation: raw.RedirectLocation, RedirectURL: raw.RedirectLocation, Headers: raw.Headers, Bytes: raw.BodyBytes, BodySize: raw.BodyBytes, BodyHash: raw.BodySHA256, Error: "local PDF route did not return PDF", DurationMS: raw.DurationMS}
 	}
 	capture := VisualforceRenderedCapture{
 		Status:           "pass",
+		StatusCode:       raw.StatusCode,
 		ContentType:      raw.ContentType,
 		RedirectLocation: raw.RedirectLocation,
+		RedirectURL:      raw.RedirectLocation,
 		Headers:          raw.Headers,
 		Bytes:            raw.BodyBytes,
+		BodySize:         raw.BodyBytes,
 		SHA256:           raw.PDFSHA256,
+		PDFSHA256:        raw.PDFSHA256,
 		BodyHash:         raw.BodySHA256,
 		Base64:           base64.StdEncoding.EncodeToString(body),
+		DurationMS:       raw.DurationMS,
 	}
 	setVisualforceRenderedPDFText(&capture, body)
 	return capture

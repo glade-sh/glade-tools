@@ -57,10 +57,11 @@ func TestVisualforceProbeFixture(t *testing.T) {
 			Categories []string `json:"categories"`
 		} `json:"summary"`
 		Pages []struct {
-			Name     string `json:"name"`
-			Group    string `json:"group"`
-			Owner    string `json:"owner"`
-			Category string `json:"category"`
+			Name       string   `json:"name"`
+			Group      string   `json:"group"`
+			Owner      string   `json:"owner"`
+			Category   string   `json:"category"`
+			Components []string `json:"components"`
 		} `json:"pages"`
 		Groups []struct {
 			Name     string   `json:"name"`
@@ -180,6 +181,21 @@ func TestVisualforceProbeFixture(t *testing.T) {
 		}
 		if !found {
 			t.Fatalf("page file %q missing from index", page)
+		}
+	}
+	pageComponents := make(map[string][]string, len(index.Pages))
+	for _, entry := range index.Pages {
+		pageComponents[entry.Name] = entry.Components
+	}
+	componentExpectations := map[string][]string{
+		"ProbeFlowInterview":       {"apex:outputLink"},
+		"ProbeFlowFinishLocation":  {"apex:outputLink"},
+		"ProbeLightningOutInclude": {"apex:includeLightning"},
+		"ProbeLightningOutCreate":  {"apex:includeLightning", "$Lightning.use", "$Lightning.createComponent", "lwc:probeLwc"},
+	}
+	for page, want := range componentExpectations {
+		if got := pageComponents[page]; !slices.Equal(got, want) {
+			t.Fatalf("index page %q components = %#v, want %#v", page, got, want)
 		}
 	}
 

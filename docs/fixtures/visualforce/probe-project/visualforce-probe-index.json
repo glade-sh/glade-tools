@@ -8,6 +8,34 @@
     "categories": [
       "phase1",
       "broad-corpus"
+    ],
+    "phases": [
+      "1"
+    ],
+    "families": [
+      "lifecycle",
+      "fields",
+      "tables",
+      "AJAX",
+      "templates",
+      "custom components",
+      "static resources",
+      "remoting",
+      "remote objects",
+      "upload",
+      "flow",
+      "Lightning Out",
+      "PDF",
+      "standard controller",
+      "standard set controller",
+      "expressions/globals",
+      "security/errors"
+    ],
+    "claims": [
+      "oracle-match"
+    ],
+    "statuses": [
+      "active"
     ]
   },
   "groups": [
@@ -19,7 +47,16 @@
         "ProbeLifecycleBasic",
         "ProbeLifecycleAction",
         "ProbeLifecycleReadOnly"
-      ]
+      ],
+      "phase": "1",
+      "family": "lifecycle",
+      "components": [
+        "apex:page",
+        "apex:form",
+        "apex:pageBlock"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "fields",
@@ -30,7 +67,17 @@
         "ProbeFieldsInputField",
         "ProbeFieldsInputText",
         "ProbeFieldsSelectOptions"
-      ]
+      ],
+      "phase": "1",
+      "family": "fields",
+      "components": [
+        "apex:outputField",
+        "apex:inputField",
+        "apex:inputText",
+        "apex:selectList"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "tables",
@@ -41,7 +88,17 @@
         "ProbeTablesPageBlockTable",
         "ProbeTablesRepeat",
         "ProbeTablesPanelGrid"
-      ]
+      ],
+      "phase": "1",
+      "family": "tables",
+      "components": [
+        "apex:dataTable",
+        "apex:pageBlockTable",
+        "apex:repeat",
+        "apex:panelGrid"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "AJAX",
@@ -52,7 +109,17 @@
         "ProbeAjaxActionSupport",
         "ProbeAjaxCommandButton",
         "ProbeAjaxActionStatus"
-      ]
+      ],
+      "phase": "1",
+      "family": "AJAX",
+      "components": [
+        "apex:actionFunction",
+        "apex:actionSupport",
+        "apex:commandButton",
+        "apex:actionStatus"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "templates",
@@ -62,7 +129,16 @@
         "ProbeTemplate",
         "ProbeTemplateContent",
         "ProbeTemplateNested"
-      ]
+      ],
+      "phase": "1",
+      "family": "templates",
+      "components": [
+        "apex:composition",
+        "apex:define",
+        "apex:insert"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "custom components",
@@ -72,7 +148,15 @@
         "ProbeComponentBadge",
         "ProbeComponentPanel",
         "ProbeComponentNested"
-      ]
+      ],
+      "phase": "1",
+      "family": "custom components",
+      "components": [
+        "c:ProbeBadge",
+        "c:ProbePanel"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "static resources",
@@ -82,7 +166,17 @@
         "ProbeStaticStylesheet",
         "ProbeStaticScript",
         "ProbeStaticImageToken"
-      ]
+      ],
+      "phase": "1",
+      "family": "static resources",
+      "components": [
+        "$Resource",
+        "apex:stylesheet",
+        "apex:includeScript",
+        "apex:image"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "remoting",
@@ -92,7 +186,15 @@
         "ProbeRemotingBasic",
         "ProbeRemotingCallback",
         "ProbeRemotingForm"
-      ]
+      ],
+      "phase": "1",
+      "family": "remoting",
+      "components": [
+        "@RemoteAction",
+        "Visualforce.remoting.Manager"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "remote objects",
@@ -101,7 +203,16 @@
       "pages": [
         "ProbeRemoteObjectsAccount",
         "ProbeRemoteObjectsFields"
-      ]
+      ],
+      "phase": "1",
+      "family": "remote objects",
+      "components": [
+        "apex:remoteObjects",
+        "apex:remoteObjectModel",
+        "apex:remoteObjectField"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "upload",
@@ -110,7 +221,15 @@
       "pages": [
         "ProbeUploadInputFile",
         "ProbeUploadMessages"
-      ]
+      ],
+      "phase": "1",
+      "family": "upload",
+      "components": [
+        "apex:inputFile",
+        "apex:messages"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "flow",
@@ -119,7 +238,14 @@
       "pages": [
         "ProbeFlowInterview",
         "ProbeFlowFinishLocation"
-      ]
+      ],
+      "phase": "1",
+      "family": "flow",
+      "components": [
+        "apex:outputLink"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "Lightning Out",
@@ -128,7 +254,17 @@
       "pages": [
         "ProbeLightningOutInclude",
         "ProbeLightningOutCreate"
-      ]
+      ],
+      "phase": "1",
+      "family": "Lightning Out",
+      "components": [
+        "apex:includeLightning",
+        "$Lightning.use",
+        "$Lightning.createComponent",
+        "lwc:probeLwc"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "PDF",
@@ -138,7 +274,15 @@
         "ProbePdfBasic",
         "ProbePdfStyles",
         "ProbePdfTable"
-      ]
+      ],
+      "phase": "1",
+      "family": "PDF",
+      "components": [
+        "renderAs=pdf",
+        "apex:pageBlockTable"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "standard controller",
@@ -148,7 +292,16 @@
         "ProbeStandardControllerView",
         "ProbeStandardControllerEdit",
         "ProbeStandardControllerMessages"
-      ]
+      ],
+      "phase": "1",
+      "family": "standard controller",
+      "components": [
+        "standardController",
+        "apex:detail",
+        "apex:inputField"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "standard set controller",
@@ -157,7 +310,16 @@
       "pages": [
         "ProbeStandardSetTable",
         "ProbeStandardSetPagination"
-      ]
+      ],
+      "phase": "1",
+      "family": "standard set controller",
+      "components": [
+        "recordSetVar",
+        "apex:pageBlockTable",
+        "pagination"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "expressions/globals",
@@ -168,7 +330,17 @@
         "ProbeExpressionsFunctions",
         "ProbeExpressionsConditionals",
         "ProbeExpressionsLinks"
-      ]
+      ],
+      "phase": "1",
+      "family": "expressions/globals",
+      "components": [
+        "expressions",
+        "$User",
+        "$Organization",
+        "$Page"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "security/errors",
@@ -178,7 +350,16 @@
         "ProbeSecurityEscaping",
         "ProbeSecurityMessages",
         "ProbeSecurityExceptionPanel"
-      ]
+      ],
+      "phase": "1",
+      "family": "security/errors",
+      "components": [
+        "apex:outputText",
+        "apex:messages",
+        "apex:pageMessages"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     }
   ],
   "pages": [
@@ -186,301 +367,754 @@
       "name": "ProbeLifecycleBasic",
       "group": "lifecycle",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "lifecycle",
+      "components": [
+        "apex:page",
+        "apex:form",
+        "apex:pageBlock"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeLifecycleAction",
       "group": "lifecycle",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "lifecycle",
+      "components": [
+        "apex:page",
+        "apex:form",
+        "apex:pageBlock"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeLifecycleReadOnly",
       "group": "lifecycle",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "lifecycle",
+      "components": [
+        "apex:page",
+        "apex:form",
+        "apex:pageBlock"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeFieldsOutputField",
       "group": "fields",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "fields",
+      "components": [
+        "apex:outputField",
+        "apex:inputField",
+        "apex:inputText",
+        "apex:selectList"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeFieldsInputField",
       "group": "fields",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "fields",
+      "components": [
+        "apex:outputField",
+        "apex:inputField",
+        "apex:inputText",
+        "apex:selectList"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeFieldsInputText",
       "group": "fields",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "fields",
+      "components": [
+        "apex:outputField",
+        "apex:inputField",
+        "apex:inputText",
+        "apex:selectList"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeFieldsSelectOptions",
       "group": "fields",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "fields",
+      "components": [
+        "apex:outputField",
+        "apex:inputField",
+        "apex:inputText",
+        "apex:selectList"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeTablesDataTable",
       "group": "tables",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "tables",
+      "components": [
+        "apex:dataTable",
+        "apex:pageBlockTable",
+        "apex:repeat",
+        "apex:panelGrid"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeTablesPageBlockTable",
       "group": "tables",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "tables",
+      "components": [
+        "apex:dataTable",
+        "apex:pageBlockTable",
+        "apex:repeat",
+        "apex:panelGrid"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeTablesRepeat",
       "group": "tables",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "tables",
+      "components": [
+        "apex:dataTable",
+        "apex:pageBlockTable",
+        "apex:repeat",
+        "apex:panelGrid"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeTablesPanelGrid",
       "group": "tables",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "tables",
+      "components": [
+        "apex:dataTable",
+        "apex:pageBlockTable",
+        "apex:repeat",
+        "apex:panelGrid"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeAjaxActionFunction",
       "group": "AJAX",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "AJAX",
+      "components": [
+        "apex:actionFunction",
+        "apex:actionSupport",
+        "apex:commandButton",
+        "apex:actionStatus"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeAjaxActionSupport",
       "group": "AJAX",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "AJAX",
+      "components": [
+        "apex:actionFunction",
+        "apex:actionSupport",
+        "apex:commandButton",
+        "apex:actionStatus"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeAjaxCommandButton",
       "group": "AJAX",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "AJAX",
+      "components": [
+        "apex:actionFunction",
+        "apex:actionSupport",
+        "apex:commandButton",
+        "apex:actionStatus"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeAjaxActionStatus",
       "group": "AJAX",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "AJAX",
+      "components": [
+        "apex:actionFunction",
+        "apex:actionSupport",
+        "apex:commandButton",
+        "apex:actionStatus"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeTemplate",
       "group": "templates",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "templates",
+      "components": [
+        "apex:composition",
+        "apex:define",
+        "apex:insert"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeTemplateContent",
       "group": "templates",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "templates",
+      "components": [
+        "apex:composition",
+        "apex:define",
+        "apex:insert"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeTemplateNested",
       "group": "templates",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "templates",
+      "components": [
+        "apex:composition",
+        "apex:define",
+        "apex:insert"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeComponentBadge",
       "group": "custom components",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "custom components",
+      "components": [
+        "c:ProbeBadge",
+        "c:ProbePanel"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeComponentPanel",
       "group": "custom components",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "custom components",
+      "components": [
+        "c:ProbeBadge",
+        "c:ProbePanel"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeComponentNested",
       "group": "custom components",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "custom components",
+      "components": [
+        "c:ProbeBadge",
+        "c:ProbePanel"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStaticStylesheet",
       "group": "static resources",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "static resources",
+      "components": [
+        "$Resource",
+        "apex:stylesheet",
+        "apex:includeScript",
+        "apex:image"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStaticScript",
       "group": "static resources",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "static resources",
+      "components": [
+        "$Resource",
+        "apex:stylesheet",
+        "apex:includeScript",
+        "apex:image"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStaticImageToken",
       "group": "static resources",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "static resources",
+      "components": [
+        "$Resource",
+        "apex:stylesheet",
+        "apex:includeScript",
+        "apex:image"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeRemotingBasic",
       "group": "remoting",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "remoting",
+      "components": [
+        "@RemoteAction",
+        "Visualforce.remoting.Manager"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeRemotingCallback",
       "group": "remoting",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "remoting",
+      "components": [
+        "@RemoteAction",
+        "Visualforce.remoting.Manager"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeRemotingForm",
       "group": "remoting",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "remoting",
+      "components": [
+        "@RemoteAction",
+        "Visualforce.remoting.Manager"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeRemoteObjectsAccount",
       "group": "remote objects",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "remote objects",
+      "components": [
+        "apex:remoteObjects",
+        "apex:remoteObjectModel",
+        "apex:remoteObjectField"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeRemoteObjectsFields",
       "group": "remote objects",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "remote objects",
+      "components": [
+        "apex:remoteObjects",
+        "apex:remoteObjectModel",
+        "apex:remoteObjectField"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeUploadInputFile",
       "group": "upload",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "upload",
+      "components": [
+        "apex:inputFile",
+        "apex:messages"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeUploadMessages",
       "group": "upload",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "upload",
+      "components": [
+        "apex:inputFile",
+        "apex:messages"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeFlowInterview",
       "group": "flow",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "flow",
+      "components": [
+        "apex:outputLink"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeFlowFinishLocation",
       "group": "flow",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "flow",
+      "components": [
+        "apex:outputLink"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeLightningOutInclude",
       "group": "Lightning Out",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "Lightning Out",
+      "components": [
+        "apex:includeLightning"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeLightningOutCreate",
       "group": "Lightning Out",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "Lightning Out",
+      "components": [
+        "apex:includeLightning",
+        "$Lightning.use",
+        "$Lightning.createComponent",
+        "lwc:probeLwc"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbePdfBasic",
       "group": "PDF",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "PDF",
+      "components": [
+        "renderAs=pdf",
+        "apex:pageBlockTable"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbePdfStyles",
       "group": "PDF",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "PDF",
+      "components": [
+        "renderAs=pdf",
+        "apex:pageBlockTable"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbePdfTable",
       "group": "PDF",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "PDF",
+      "components": [
+        "renderAs=pdf",
+        "apex:pageBlockTable"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStandardControllerView",
       "group": "standard controller",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "standard controller",
+      "components": [
+        "standardController",
+        "apex:detail",
+        "apex:inputField"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStandardControllerEdit",
       "group": "standard controller",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "standard controller",
+      "components": [
+        "standardController",
+        "apex:detail",
+        "apex:inputField"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStandardControllerMessages",
       "group": "standard controller",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "standard controller",
+      "components": [
+        "standardController",
+        "apex:detail",
+        "apex:inputField"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStandardSetTable",
       "group": "standard set controller",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "standard set controller",
+      "components": [
+        "recordSetVar",
+        "apex:pageBlockTable",
+        "pagination"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeStandardSetPagination",
       "group": "standard set controller",
       "owner": "oracle/corpus",
-      "category": "phase1"
+      "category": "phase1",
+      "phase": "1",
+      "family": "standard set controller",
+      "components": [
+        "recordSetVar",
+        "apex:pageBlockTable",
+        "pagination"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeExpressionsGlobals",
       "group": "expressions/globals",
       "owner": "oracle/corpus",
-      "category": "broad-corpus"
+      "category": "broad-corpus",
+      "phase": "1",
+      "family": "expressions/globals",
+      "components": [
+        "expressions",
+        "$User",
+        "$Organization",
+        "$Page"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeExpressionsFunctions",
       "group": "expressions/globals",
       "owner": "oracle/corpus",
-      "category": "broad-corpus"
+      "category": "broad-corpus",
+      "phase": "1",
+      "family": "expressions/globals",
+      "components": [
+        "expressions",
+        "$User",
+        "$Organization",
+        "$Page"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeExpressionsConditionals",
       "group": "expressions/globals",
       "owner": "oracle/corpus",
-      "category": "broad-corpus"
+      "category": "broad-corpus",
+      "phase": "1",
+      "family": "expressions/globals",
+      "components": [
+        "expressions",
+        "$User",
+        "$Organization",
+        "$Page"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeExpressionsLinks",
       "group": "expressions/globals",
       "owner": "oracle/corpus",
-      "category": "broad-corpus"
+      "category": "broad-corpus",
+      "phase": "1",
+      "family": "expressions/globals",
+      "components": [
+        "expressions",
+        "$User",
+        "$Organization",
+        "$Page"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeSecurityEscaping",
       "group": "security/errors",
       "owner": "oracle/corpus",
-      "category": "broad-corpus"
+      "category": "broad-corpus",
+      "phase": "1",
+      "family": "security/errors",
+      "components": [
+        "apex:outputText",
+        "apex:messages",
+        "apex:pageMessages"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeSecurityMessages",
       "group": "security/errors",
       "owner": "oracle/corpus",
-      "category": "broad-corpus"
+      "category": "broad-corpus",
+      "phase": "1",
+      "family": "security/errors",
+      "components": [
+        "apex:outputText",
+        "apex:messages",
+        "apex:pageMessages"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     },
     {
       "name": "ProbeSecurityExceptionPanel",
       "group": "security/errors",
       "owner": "oracle/corpus",
-      "category": "broad-corpus"
+      "category": "broad-corpus",
+      "phase": "1",
+      "family": "security/errors",
+      "components": [
+        "apex:outputText",
+        "apex:messages",
+        "apex:pageMessages"
+      ],
+      "claim": "oracle-match",
+      "status": "active"
     }
   ]
 }

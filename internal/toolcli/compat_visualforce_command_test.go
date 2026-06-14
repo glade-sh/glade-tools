@@ -73,8 +73,8 @@ func TestCompatHelpListsVisualforceBatchSizeAndDiffOut(t *testing.T) {
 	}
 	out := stdout.String()
 	for _, want := range []string{
-		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
-		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--out <json>] [--json]",
+		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
+		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]",
 	} {
 		if !strings.Contains(out, want) {
 			t.Fatalf("help omitted %q:\n%s", want, out)
@@ -381,6 +381,13 @@ func TestVisualforceDiffReturnsZeroForMatchingReports(t *testing.T) {
 
 func TestVisualforceSummaryPrintsCorpusFriendlyFixtureCounts(t *testing.T) {
 	root := t.TempDir()
+	pageDir := filepath.Join(root, "force-app", "main", "default", "pages")
+	if err := os.MkdirAll(pageDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"ProbeLifecycleBasic", "ProbeSecurityMessages"} {
+		writeVisualforceCommandTestFile(t, filepath.Join(pageDir, name+".page"), "<apex:page/>")
+	}
 	writeVisualforceCommandTestFile(t, filepath.Join(root, "visualforce-probe-index.json"), `{
   "summary": {
     "pageCount": 2,
@@ -433,6 +440,317 @@ func TestVisualforceSummaryPrintsCorpusFriendlyFixtureCounts(t *testing.T) {
 	}
 }
 
+func TestVisualforceSummaryFiltersAndCountsPhaseLanes(t *testing.T) {
+	root := t.TempDir()
+	writeVisualforceCommandTestFile(t, filepath.Join(root, "visualforce-probe-index.json"), `{
+  "groups": [
+    {"name": "lifecycle", "phase": 1, "family": "lifecycle", "claim": "oracle-match", "status": "active", "pages": ["ProbePhaseOne"]},
+    {"name": "security", "phase": 2, "family": "security", "claim": "known-gap", "status": "draft", "pages": ["ProbePhaseTwo"]}
+  ],
+  "pages": [
+    {"name": "ProbePhaseOne", "group": "lifecycle", "phase": 1, "family": "lifecycle", "components": ["apex:page"], "claim": "oracle-match", "status": "active"},
+    {"name": "ProbePhaseTwo", "group": "security", "phase": 2, "family": "security", "components": ["apex:messages"], "claim": "known-gap", "status": "draft"}
+  ]
+}`)
+	pageDir := filepath.Join(root, "force-app", "main", "default", "pages")
+	if err := os.MkdirAll(pageDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"ProbePhaseOne", "ProbePhaseTwo"} {
+		writeVisualforceCommandTestFile(t, filepath.Join(pageDir, name+".page"), "<apex:page/>")
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "summary", "--project", root, "--phase", "1", "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	var payload struct {
+		PageCount    int            `json:"pageCount"`
+		GroupCount   int            `json:"groupCount"`
+		PhaseCounts  map[string]int `json:"phaseCounts"`
+		FamilyCounts map[string]int `json:"familyCounts"`
+		ClaimCounts  map[string]int `json:"claimCounts"`
+		StatusCounts map[string]int `json:"statusCounts"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("json = %s; err = %v", stdout.String(), err)
+	}
+	if payload.PageCount != 1 || payload.GroupCount != 1 {
+		t.Fatalf("summary = %#v", payload)
+	}
+	if payload.PhaseCounts["1"] != 1 || payload.FamilyCounts["lifecycle"] != 1 || payload.ClaimCounts["oracle-match"] != 1 || payload.StatusCounts["active"] != 1 {
+		t.Fatalf("lane counts = %#v", payload)
+	}
+}
+
+func TestVisualforceSummaryPhaseRequiresProbeIndex(t *testing.T) {
+	root := t.TempDir()
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "summary", "--project", root, "--phase", "1", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected missing probe index to fail, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "visualforce-probe-index.json") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestVisualforceSummaryRejectsEmptyPhase(t *testing.T) {
+	root := t.TempDir()
+	pageDir := filepath.Join(root, "force-app", "main", "default", "pages")
+	if err := os.MkdirAll(pageDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeVisualforceCommandTestFile(t, filepath.Join(pageDir, "ProbePhaseOne.page"), "<apex:page/>")
+	writeVisualforceCommandTestFile(t, filepath.Join(root, "visualforce-probe-index.json"), `{
+  "groups": [{"name": "lifecycle", "phase": 1, "pages": ["ProbePhaseOne"]}],
+  "pages": [{"name": "ProbePhaseOne", "group": "lifecycle", "phase": 1}]
+}`)
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "summary", "--project", root, "--phase", "99", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected empty phase to fail, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "no Visualforce pages match --phase 99") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestVisualforceSummaryRejectsUnknownPageInIndex(t *testing.T) {
+	root := t.TempDir()
+	writeVisualforceCommandTestFile(t, filepath.Join(root, "visualforce-probe-index.json"), `{
+  "groups": [{"name": "lifecycle", "phase": 1, "pages": ["ProbeMissing"]}],
+  "pages": [{"name": "ProbeMissing", "group": "lifecycle", "phase": 1}]
+}`)
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "summary", "--project", root, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected unknown index page to fail, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "ProbeMissing") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestVisualforceSummaryRejectsUnknownGroupPageInIndex(t *testing.T) {
+	root := t.TempDir()
+	pageDir := filepath.Join(root, "force-app", "main", "default", "pages")
+	if err := os.MkdirAll(pageDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeVisualforceCommandTestFile(t, filepath.Join(pageDir, "ProbeOne.page"), "<apex:page/>")
+	writeVisualforceCommandTestFile(t, filepath.Join(root, "visualforce-probe-index.json"), `{
+  "groups": [{"name": "lifecycle", "phase": 1, "pages": ["ProbeOne", "ProbeTypo"]}],
+  "pages": [{"name": "ProbeOne", "group": "lifecycle", "phase": 1}]
+}`)
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "summary", "--project", root, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected bad group page to fail, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "group") || !strings.Contains(stderr.String(), "ProbeTypo") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestVisualforceCapturePhaseRejectsRequestedPageMissingFromIndex(t *testing.T) {
+	root := t.TempDir()
+	pageDir := filepath.Join(root, "force-app", "main", "default", "pages")
+	if err := os.MkdirAll(pageDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"ProbeIndexed", "ProbeUnindexed"} {
+		writeVisualforceCommandTestFile(t, filepath.Join(pageDir, name+".page"), "<apex:page/>")
+	}
+	writeVisualforceCommandTestFile(t, filepath.Join(root, "visualforce-probe-index.json"), `{
+  "groups": [{"name": "lifecycle", "phase": 1, "pages": ["ProbeIndexed"]}],
+  "pages": [{"name": "ProbeIndexed", "group": "lifecycle", "phase": 1}]
+}`)
+	t.Setenv("GLADE_TOOLS_FAKE_GLADE_VF", "1")
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "capture", "--local", "--glade-bin", os.Args[0], "--project", root, "--pages", "ProbeIndexed,ProbeUnindexed", "--phase", "1", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected unindexed phase page to fail, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "ProbeUnindexed") || !strings.Contains(stderr.String(), "visualforce-probe-index.json") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestVisualforceLocalCaptureReturnsCommandFailure(t *testing.T) {
+	root := t.TempDir()
+	pageDir := filepath.Join(root, "force-app", "main", "default", "pages")
+	if err := os.MkdirAll(pageDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeVisualforceCommandTestFile(t, filepath.Join(pageDir, "Core.page"), `<apex:page>Core</apex:page>`)
+	t.Setenv("GLADE_TOOLS_FAKE_GLADE_VF", "1")
+	t.Setenv("GLADE_TOOLS_FAKE_GLADE_VF_EXIT", "1")
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "capture", "--local", "--glade-bin", os.Args[0], "--project", root, "--pages", "Core", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failed local capture command, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "glade dev vf exited before capture") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestVisualforceCapturePhaseFiltersLocalPages(t *testing.T) {
+	root := t.TempDir()
+	pageDir := filepath.Join(root, "force-app", "main", "default", "pages")
+	if err := os.MkdirAll(pageDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"ProbePhaseOne", "ProbePhaseTwo"} {
+		writeVisualforceCommandTestFile(t, filepath.Join(pageDir, name+".page"), "<apex:page/>")
+	}
+	writeVisualforceCommandTestFile(t, filepath.Join(root, "visualforce-probe-index.json"), `{
+  "groups": [
+    {"name": "lifecycle", "phase": 1, "family": "lifecycle", "pages": ["ProbePhaseOne"]},
+    {"name": "security", "phase": 2, "family": "security", "pages": ["ProbePhaseTwo"]}
+  ],
+  "pages": [
+    {"name": "ProbePhaseOne", "group": "lifecycle", "phase": 1, "family": "lifecycle"},
+    {"name": "ProbePhaseTwo", "group": "security", "phase": 2, "family": "security"}
+  ]
+}`)
+	termFile := filepath.Join(t.TempDir(), "terminated.txt")
+	t.Setenv("GLADE_TOOLS_FAKE_GLADE_VF", "1")
+	t.Setenv("GLADE_TOOLS_FAKE_GLADE_VF_PDF", "1")
+	t.Setenv("GLADE_TOOLS_FAKE_GLADE_VF_TERM", termFile)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "capture", "--local", "--glade-bin", os.Args[0], "--project", root, "--phase", "1", "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stdout=%s stderr=%s", code, stdout.String(), stderr.String())
+	}
+	var payload struct {
+		Pages []struct {
+			Name   string `json:"name"`
+			Phase  string `json:"phase"`
+			Family string `json:"family"`
+		} `json:"pages"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("json = %s; err = %v", stdout.String(), err)
+	}
+	if len(payload.Pages) != 1 || payload.Pages[0].Name != "ProbePhaseOne" || payload.Pages[0].Phase != "1" || payload.Pages[0].Family != "lifecycle" {
+		t.Fatalf("pages = %#v", payload.Pages)
+	}
+	waitForFile(t, termFile)
+}
+
+func TestVisualforceDiffPhaseOutputHasOneKnownMismatch(t *testing.T) {
+	dir := t.TempDir()
+	salesforce := filepath.Join(dir, "salesforce.json")
+	local := filepath.Join(dir, "local.json")
+	writeVisualforceCommandTestFile(t, filepath.Join(dir, "visualforce-probe-index.json"), `{
+  "groups": [
+    {"name": "lifecycle", "phase": 1, "family": "lifecycle", "claim": "oracle-match", "status": "active", "pages": ["ProbePhaseOne"]},
+    {"name": "security", "phase": 2, "family": "security", "claim": "known-gap", "status": "draft", "pages": ["ProbePhaseTwo"]}
+  ],
+  "pages": [
+    {"name": "ProbePhaseOne", "group": "lifecycle", "phase": 1, "family": "lifecycle", "claim": "oracle-match", "status": "active"},
+    {"name": "ProbePhaseTwo", "group": "security", "phase": 2, "family": "security", "claim": "known-gap", "status": "draft"}
+  ]
+}`)
+	writeVisualforceCommandTestFile(t, salesforce, `{
+  "pages": [
+    {"name": "ProbePhaseOne", "html": {"status": "pass", "contractText": "One"}},
+    {"name": "ProbePhaseTwo", "html": {"status": "pass", "contractText": "Two"}}
+  ]
+}`)
+	writeVisualforceCommandTestFile(t, local, `{
+  "pages": [
+    {"name": "ProbePhaseOne", "html": {"status": "pass", "contractText": "Different"}},
+    {"name": "ProbePhaseTwo", "html": {"status": "fail", "contractText": "Different"}}
+  ]
+}`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "diff", "--salesforce", salesforce, "--local", local, "--project", dir, "--phase", "1", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected one phase diff, stdout=%s", stdout.String())
+	}
+	var payload struct {
+		DiffCount int `json:"diffCount"`
+		Diffs     []struct {
+			Page  string `json:"page"`
+			Field string `json:"field"`
+		} `json:"diffs"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("json = %s; err = %v", stdout.String(), err)
+	}
+	if payload.DiffCount != 1 || len(payload.Diffs) != 1 || payload.Diffs[0].Page != "ProbePhaseOne" || payload.Diffs[0].Field != "contractText" {
+		t.Fatalf("diff payload = %#v", payload)
+	}
+	if !strings.Contains(stderr.String(), "Visualforce capture diff found: 1 differences") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestVisualforceDiffPhaseWithoutProjectUsesCaptureMetadata(t *testing.T) {
+	dir := t.TempDir()
+	salesforce := filepath.Join(dir, "salesforce.json")
+	local := filepath.Join(dir, "local.json")
+	writeVisualforceCommandTestFile(t, salesforce, `{
+  "pages": [
+    {"name": "ProbePhaseOne", "phase": "1", "html": {"status": "pass", "contractText": "One"}},
+    {"name": "ProbePhaseTwo", "phase": "2", "html": {"status": "pass", "contractText": "Two"}}
+  ]
+}`)
+	writeVisualforceCommandTestFile(t, local, `{
+  "pages": [
+    {"name": "ProbePhaseOne", "phase": "1", "html": {"status": "pass", "contractText": "One"}},
+    {"name": "ProbePhaseTwo", "phase": "2", "html": {"status": "fail", "contractText": "Different"}}
+  ]
+}`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "diff", "--salesforce", salesforce, "--local", local, "--phase", "1", "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stdout=%s stderr=%s", code, stdout.String(), stderr.String())
+	}
+	var payload struct {
+		DiffCount int `json:"diffCount"`
+		Summary   struct {
+			PageCountCompared int `json:"pageCountCompared"`
+		} `json:"summary"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("json = %s; err = %v", stdout.String(), err)
+	}
+	if payload.DiffCount != 0 || payload.Summary.PageCountCompared != 1 {
+		t.Fatalf("diff payload = %#v", payload)
+	}
+}
+
+func TestVisualforceDiffPhaseRejectsEmptyProjectPhase(t *testing.T) {
+	dir := t.TempDir()
+	salesforce := filepath.Join(dir, "salesforce.json")
+	local := filepath.Join(dir, "local.json")
+	writeVisualforceCommandTestFile(t, filepath.Join(dir, "visualforce-probe-index.json"), `{
+  "groups": [{"name": "lifecycle", "phase": 1, "pages": ["ProbePhaseOne"]}],
+  "pages": [{"name": "ProbePhaseOne", "group": "lifecycle", "phase": 1}]
+}`)
+	writeVisualforceCommandTestFile(t, salesforce, `{"pages": [{"name": "ProbePhaseOne", "html": {"status": "pass", "contractText": "One"}}]}`)
+	writeVisualforceCommandTestFile(t, local, `{"pages": [{"name": "ProbePhaseOne", "html": {"status": "fail", "contractText": "Different"}}]}`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"visualforce", "diff", "--salesforce", salesforce, "--local", local, "--project", dir, "--phase", "99", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected empty phase to fail, stdout=%s", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "no Visualforce pages match --phase 99") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
 func TestRootPluginManifestListsVisualforce(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join("..", "..", "plugin.json"))
 	if err != nil {
@@ -479,6 +797,10 @@ func runFakeGladeDevVF() {
 	if len(args) < 2 || args[0] != "dev" || args[1] != "vf" {
 		fmt.Fprintf(os.Stderr, "unexpected fake glade args: %v\n", args)
 		os.Exit(2)
+	}
+	if os.Getenv("GLADE_TOOLS_FAKE_GLADE_VF_EXIT") == "1" {
+		fmt.Fprintln(os.Stderr, "fake glade dev vf failure")
+		os.Exit(7)
 	}
 	addr := ""
 	readyFile := ""

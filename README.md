@@ -22,10 +22,16 @@ go run ./cmd/glade-plugin-compat manifest --json
 go run ./cmd/glade-plugin-performance manifest --json
 go run ./cmd/glade-tools local-tests --project ../glade/testdata/local-tests/basic --json
 go run ./cmd/glade-tools dashboard --output ../glade/docs/COMPATIBILITY_DASHBOARD.md
+go run ./cmd/glade-tools visualforce summary --project docs/fixtures/visualforce/probe-project --json
 ```
 
 For old scripts, `glade-tools compat <command>` is accepted as a compatibility
 alias.
+
+Visualforce scratch-org capture and local renderer diffing use the probe
+project under `docs/fixtures/visualforce/probe-project`. The working guide is
+[`docs/visualforce-oracle.md`](docs/visualforce-oracle.md), including the
+`oaer-probe-max` capture path and phase filters.
 
 ## Tests
 
