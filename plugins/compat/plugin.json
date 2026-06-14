@@ -12,6 +12,21 @@
     },
     {
       "path": [
+        "compat",
+        "lwc"
+      ],
+      "summary": "Prepare LWC fixture-manifest targets."
+    },
+    {
+      "path": [
+        "compat",
+        "lwc",
+        "capture"
+      ],
+      "summary": "Write LWC fixture-manifest target evidence."
+    },
+    {
+      "path": [
         "surface"
       ],
       "summary": "Refresh and inspect the Salesforce surface ledger."
