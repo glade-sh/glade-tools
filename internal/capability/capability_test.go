@@ -117,6 +117,14 @@ func TestProfileTimingNotesTrackWallClockSummaryEvidence(t *testing.T) {
 	}
 }
 
+func TestStdlibCatalogHasNoPartialRows(t *testing.T) {
+	for _, row := range StdlibMatrix() {
+		if row.Status == StatusPartial {
+			t.Fatalf("%s %s is partial: %s", row.Area, row.API, row.Notes)
+		}
+	}
+}
+
 func findMVPFeatureForTest(t *testing.T, id string) Feature {
 	t.Helper()
 	for _, feature := range MVPFeatures() {
