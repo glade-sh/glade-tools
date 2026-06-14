@@ -133,8 +133,8 @@ func TestPackagedCompatManifestMatchesRuntimeCommands(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	runtimeCommands := runtimeCommandSummaryByRoot(runtime.Commands)
-	packagedCommands := packagedCommandSummaryByRoot(packaged.Commands)
+	runtimeCommands := runtimeCommandSummaryByPath(runtime.Commands)
+	packagedCommands := packagedCommandSummaryByPath(packaged.Commands)
 	if len(packagedCommands) != len(runtimeCommands) {
 		t.Fatalf("packaged commands = %v, runtime commands = %v", packagedCommands, runtimeCommands)
 	}
@@ -145,24 +145,60 @@ func TestPackagedCompatManifestMatchesRuntimeCommands(t *testing.T) {
 	}
 }
 
-func runtimeCommandSummaryByRoot(commands []pluginCommandManifest) map[string]string {
+func TestRunCompatLwcCaptureDoesNotPrintPreparedTextWhenReportWriteFails(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"lwc", "capture",
+		"--target-org", "dummy",
+		"--project", ".",
+		"--targets", "direct-component",
+		"--skip-deploy",
+		"--out", t.TempDir(),
+	}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected output write failure, stdout=%s", stdout.String())
+	}
+	if strings.Contains(stdout.String(), "prepared") || strings.Contains(stdout.String(), "artifacts=") {
+		t.Fatalf("stdout claimed prepared output after write failure: %q", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "is a directory") {
+		t.Fatalf("stderr = %q", stderr.String())
+	}
+}
+
+func TestPluginArchiveIndexCompatCommandsIncludeLwcRoots(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-plugin-archives.sh"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	script := string(data)
+	for _, command := range []string{`"lwc"`, `"visualforce"`, `"oracle-stdlib"`} {
+		if !strings.Contains(script, command) {
+			t.Fatalf("archive index command list omits %s", command)
+		}
+	}
+}
+
+func runtimeCommandSummaryByPath(commands []pluginCommandManifest) map[string]string {
 	result := make(map[string]string, len(commands))
 	for _, command := range commands {
-		if len(command.Path) != 1 {
+		path := strings.Join(command.Path, " ")
+		if path == "" {
 			continue
 		}
-		result[command.Path[0]] = command.Summary
+		result[path] = command.Summary
 	}
 	return result
 }
 
-func packagedCommandSummaryByRoot(commands []pluginManifestFileCommand) map[string]string {
+func packagedCommandSummaryByPath(commands []pluginManifestFileCommand) map[string]string {
 	result := make(map[string]string, len(commands))
 	for _, command := range commands {
-		if len(command.Path) != 1 {
+		path := strings.Join(command.Path, " ")
+		if path == "" {
 			continue
 		}
-		result[command.Path[0]] = command.Summary
+		result[path] = command.Summary
 	}
 	return result
 }
@@ -182,6 +218,7 @@ func TestTopLevelHelpListsMaintenanceCommandRoots(t *testing.T) {
 		"evidence",
 		"oracle-stdlib",
 		"visualforce",
+		"lwc",
 	} {
 		if !strings.Contains(out, command) {
 			t.Fatalf("help omitted %s:\n%s", command, out)

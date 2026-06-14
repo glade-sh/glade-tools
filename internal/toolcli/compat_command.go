@@ -44,6 +44,8 @@ func runCompat(ctx context.Context, args []string, w io.Writer) error {
 		return runCompatSurface(args[1:], w)
 	case "visualforce":
 		return runCompatVisualforce(ctx, args[1:], w)
+	case "lwc":
+		return runCompatLwc(ctx, args[1:], w)
 	case "replay":
 		return runCompatReplay(args[1:], w)
 	case "ui-controllers":
@@ -155,8 +157,139 @@ func runCompatSpecialFixture(mode, path, target string, w io.Writer) (bool, erro
 }
 
 func compatUsage() string {
-	tail := "validate|run <fixture.json...> | matrix|mvp [--json] [--require-ready] | local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>] | surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags] | visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json] | visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json] | visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json] | visualforce summary [--project <root>] [--phase <n>] [--json] | replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...> | ui-controllers [--project <root>] [--json|--check <path>] | post-parity [--project <root>] [--json|--output <path>|--check <path>] [--require-ready] | examples [--project <root>] [--json|--output <path>|--check <path>] | server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json] | dashboard|gaps|stdlib [--output <path>|--check <path>] | stdlib --json | oracle-stdlib --target-org <alias> [--output <path>] | docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>] | catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>] | reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>] | doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>] | salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>] | standard-objects [--json|--output <path>|--check <path>] | stub-contracts [--source <dir>] [--json|--output <path>|--check <path>] | stub-behavior [--json|--output <path>|--check <path>] | stub-inventory [--source <dir>] [--json|--output <path>|--check <path>] | product-namespaces [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--symbols-go] [--json|--output <path>|--check <path>] | tooling-fixtures <report.json...> [--json] | evidence --catalog <path> <fixture.json...> [--json]"
+	parts := []string{
+		"validate|run <fixture.json...>",
+		"matrix|mvp [--json] [--require-ready]",
+		"local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>]",
+		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags]",
+		"visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]",
+		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
+		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]",
+		"visualforce summary [--project <root>] [--phase <n>] [--json]",
+		"lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]",
+		"replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...>",
+		"ui-controllers [--project <root>] [--json|--check <path>]",
+		"post-parity [--project <root>] [--json|--output <path>|--check <path>] [--require-ready]",
+		"examples [--project <root>] [--json|--output <path>|--check <path>]",
+		"server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json]",
+		"dashboard|gaps|stdlib [--output <path>|--check <path>]",
+		"stdlib --json",
+		"oracle-stdlib --target-org <alias> [--output <path>]",
+		"docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>]",
+		"catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>]",
+		"reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>]",
+		"doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>]",
+		"salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>]",
+		"standard-objects [--json|--output <path>|--check <path>]",
+		"stub-contracts [--source <dir>] [--json|--output <path>|--check <path>]",
+		"stub-behavior [--json|--output <path>|--check <path>]",
+		"stub-inventory [--source <dir>] [--json|--output <path>|--check <path>]",
+		"product-namespaces [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--symbols-go] [--json|--output <path>|--check <path>]",
+		"tooling-fixtures <report.json...> [--json]",
+		"evidence --catalog <path> <fixture.json...> [--json]",
+	}
+	tail := strings.Join(parts, " | ")
 	return "usage: glade-tools " + tail + "\n       glade compat " + tail
+}
+
+func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {
+	if len(args) == 0 || isHelpArg(args[0]) {
+		printCompatLwcHelp(w)
+		return nil
+	}
+	switch args[0] {
+	case "capture":
+		return runCompatLwcCapture(ctx, args[1:], w)
+	default:
+		return errors.New(compatLwcUsage())
+	}
+}
+
+func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error {
+	options := compat.LwcCaptureOptions{Project: "."}
+	jsonOut := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--target-org":
+			if i+1 >= len(args) {
+				return errors.New("--target-org requires a value")
+			}
+			options.TargetOrg = args[i+1]
+			i++
+		case "--project":
+			if i+1 >= len(args) {
+				return errors.New("--project requires a value")
+			}
+			options.Project = args[i+1]
+			i++
+		case "--targets":
+			if i+1 >= len(args) {
+				return errors.New("--targets requires a value")
+			}
+			options.Targets = append(options.Targets, strings.Split(args[i+1], ",")...)
+			i++
+		case "--include-hosts":
+			if i+1 >= len(args) {
+				return errors.New("--include-hosts requires a value")
+			}
+			options.Hosts = append(options.Hosts, strings.Split(args[i+1], ",")...)
+			i++
+		case "--out":
+			if i+1 >= len(args) {
+				return errors.New("--out requires a value")
+			}
+			options.Out = args[i+1]
+			i++
+		case "--skip-deploy":
+			options.SkipDeploy = true
+		case "--json":
+			jsonOut = true
+		default:
+			return fmt.Errorf("unknown lwc capture flag %q", args[i])
+		}
+	}
+	report, err := compat.RunLwcCapture(ctx, options)
+	if err != nil {
+		return err
+	}
+	if jsonOut {
+		enc := json.NewEncoder(w)
+		enc.SetEscapeHTML(false)
+		enc.SetIndent("", "  ")
+		return enc.Encode(report)
+	}
+	compat.WriteLwcCaptureText(w, report)
+	return nil
+}
+
+func printCompatLwcHelp(w io.Writer) {
+	fmt.Fprint(w, strings.TrimSpace(`
+Prepare LWC fixture-manifest targets for oracle comparison.
+
+This command can deploy the fixture project to a scratch org, then writes the
+stable target manifest used by later browser/oracle comparison work. It does
+not yet open Salesforce pages or capture browser output.
+
+Usage:
+  glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]
+  glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]
+
+Common flags:
+  --target-org <alias>     Scratch org alias or username.
+  --project <root>         Salesforce project root. Defaults to current directory.
+  --targets <a,b>          Comma-separated LWC capture target names.
+  --include-hosts <a,b>    Comma-separated host lanes to include.
+  --out <path>             Write the fixture-manifest report JSON.
+  --skip-deploy            Skip metadata deploy and emit fixture target URLs.
+  --json                   Write the report JSON to stdout.
+
+Examples:
+  glade compat lwc capture --target-org oaer-probe-max --project /tmp/lwc-parity-project --include-hosts lightning-shell,visualforce-lightning-out --out /tmp/glade-lwc-capture.json
+`)+"\n")
+}
+
+func compatLwcUsage() string {
+	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]"
 }
 
 type postParityReadiness struct {
