@@ -1,0 +1,63 @@
+{
+  "name": "core-runtime-local-metadata-search-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Type.forName(namespace,name)",
+      "symbol": "Type.forName(namespace,name)",
+      "kind": "test",
+      "notes": "Resolves a current-package namespace alias for a local metadata-backed custom object."
+    },
+    {
+      "surfaceId": "apex:System.Schema.describeDataCategoryGroups(List<String>)",
+      "symbol": "Schema.describeDataCategoryGroups",
+      "kind": "test",
+      "notes": "Loads local DataCategoryGroup metadata from project files and returns deterministic group describes."
+    },
+    {
+      "surfaceId": "apex:System.Schema.describeDataCategoryGroupStructures(List<Schema.DataCategoryGroupSobjectTypePair>,Boolean)",
+      "symbol": "Schema.describeDataCategoryGroupStructures",
+      "kind": "test",
+      "notes": "Returns deterministic local data category tree structures from project metadata."
+    },
+    {
+      "surfaceId": "apex:System.Search.query(String)",
+      "symbol": "Search.query / SOSL FIND",
+      "kind": "test",
+      "notes": "Local SOSL honors IN ALL FIELDS, NAME FIELDS, EMAIL FIELDS, PHONE FIELDS, RETURNING fields, ORDER BY, and LIMIT."
+    }
+  ],
+  "source": [
+    {
+      "path": "sfdx-project.json",
+      "content": "{\"namespace\":\"pkg\",\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}]}"
+    },
+    {
+      "path": "force-app/main/default/objects/Widget__c/Widget__c.object-meta.xml",
+      "content": "<CustomObject><label>Widget</label><pluralLabel>Widgets</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Widget__c/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/dataCategoryGroups/Products.dataCategoryGroup-meta.xml",
+      "content": "<DataCategoryGroup><label>Products</label><description>Product categories</description><objectUsage><object>Knowledge__kav</object></objectUsage><dataCategory><name>Hardware</name><label>Hardware</label><dataCategory><name>Tools</name><label>Tools</label></dataCategory></dataCategory></DataCategoryGroup>"
+    },
+    {
+      "path": "force-app/main/default/classes/LocalMetadataSearchEvidenceTest.cls",
+      "content": "@isTest private class LocalMetadataSearchEvidenceTest { @isTest static void typeDescribeAndSearchRun() { Type widgetType = Type.forName('pkg', 'Widget__c'); System.assertNotEquals(null, widgetType); System.assertEquals('pkg__Widget__c', widgetType.getName()); List<Object> groups = Schema.describeDataCategoryGroups(new List<String>{'Knowledge__kav'}); System.assertEquals(1, groups.size()); Schema.DescribeDataCategoryGroupResult groupResult = (Schema.DescribeDataCategoryGroupResult)groups[0]; System.assertEquals('Products', groupResult.getName()); System.assertEquals(2, groupResult.getCategoryCount()); Schema.DataCategoryGroupSobjectTypePair pair = new Schema.DataCategoryGroupSobjectTypePair(); pair.setSobject('Knowledge__kav'); pair.setDataCategoryGroupName('Products'); List<Object> structures = Schema.describeDataCategoryGroupStructures(new List<Schema.DataCategoryGroupSobjectTypePair>{pair}, false); Schema.DataCategory top = ((Schema.DescribeDataCategoryGroupStructureResult)structures[0]).getTopCategories()[0]; System.assertEquals('Hardware', top.getName()); System.assertEquals('Tools', top.getChildCategories()[0].getName()); insert new Contact(LastName = 'Needle Name', Email = 'plain@example.test', Phone = '555-0100', Description = 'plain body'); insert new Contact(LastName = 'Plain Name', Email = 'needle@example.test', Phone = '555-0200', Description = 'plain body'); insert new Contact(LastName = 'Plain Other', Email = 'plain2@example.test', Phone = '555-NEEDLE', Description = 'plain body'); insert new Contact(LastName = 'Plain Body', Email = 'plain3@example.test', Phone = '555-0300', Description = 'needle body'); List<List<SObject>> nameRows = Search.query('FIND {Needle} IN NAME FIELDS RETURNING Contact(Id, LastName ORDER BY LastName)'); System.assertEquals(1, nameRows[0].size()); System.assertEquals('Needle Name', ((Contact)nameRows[0][0]).LastName); List<List<SObject>> emailRows = Search.query('FIND {needle} IN EMAIL FIELDS RETURNING Contact(Id, Email ORDER BY Email)'); System.assertEquals(1, emailRows[0].size()); System.assertEquals('needle@example.test', ((Contact)emailRows[0][0]).Email); List<List<SObject>> phoneRows = Search.query('FIND {NEEDLE} IN PHONE FIELDS RETURNING Contact(Id, Phone ORDER BY Phone)'); System.assertEquals(1, phoneRows[0].size()); System.assertEquals('555-NEEDLE', ((Contact)phoneRows[0][0]).Phone); List<List<SObject>> allRows = Search.query('FIND {needle} IN ALL FIELDS RETURNING Contact(Id, LastName ORDER BY LastName LIMIT 4)'); System.assertEquals(4, allRows[0].size()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}
