@@ -121,6 +121,12 @@ func WriteMarkdown(w io.Writer, report Report) error {
 	if _, err := fmt.Fprintf(w, "Generated from the first-party compat plugin capability catalog.\n\n"); err != nil {
 		return err
 	}
+	if _, err := fmt.Fprintf(w, "## Full Local Support Exit Criteria\n\n"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "No post-MVP lane may stay `partial`. Each lane must be split into a complete local `supported` row plus exact hosted-service `unsupported` rows where needed. Local supported rows must cite deterministic tests, fixture evidence, or generated docs.\n\n"); err != nil {
+		return err
+	}
 	if _, err := fmt.Fprintf(w, "## MVP Gate\n\n"); err != nil {
 		return err
 	}

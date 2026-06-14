@@ -212,6 +212,7 @@ func TestWriteMarkdown(t *testing.T) {
 	for _, want := range []string{
 		"# Compatibility Dashboard",
 		"Generated from the first-party compat plugin capability catalog.",
+		"## Full Local Support Exit Criteria",
 		"Required complete:",
 		"| Area | ID | Status | Capability | Notes |",
 		"`triggers.runtime`",
