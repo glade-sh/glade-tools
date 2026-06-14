@@ -1,0 +1,1 @@
+<apex:page><apex:includeScript value="{!$Resource.vfProbeJs}"/><script>document.write(window.vfProbe.mark('script'));</script></apex:page>

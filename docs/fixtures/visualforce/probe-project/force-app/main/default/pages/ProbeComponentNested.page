@@ -1,0 +1,1 @@
+<apex:page><c:ProbePanel title="Nested"><c:ProbeBadge label="Inner"/></c:ProbePanel></apex:page>

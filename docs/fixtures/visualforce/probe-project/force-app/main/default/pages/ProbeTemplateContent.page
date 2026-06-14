@@ -1,0 +1,6 @@
+<apex:page>
+    <apex:composition template="ProbeTemplate">
+        <apex:define name="title">Template Content</apex:define>
+        <apex:define name="body"><apex:outputText value="Body from composition"/></apex:define>
+    </apex:composition>
+</apex:page>

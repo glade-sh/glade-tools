@@ -1,0 +1,486 @@
+{
+  "summary": {
+    "pageCount": 50,
+    "groupCount": 17,
+    "owners": [
+      "oracle/corpus"
+    ],
+    "categories": [
+      "phase1",
+      "broad-corpus"
+    ]
+  },
+  "groups": [
+    {
+      "name": "lifecycle",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeLifecycleBasic",
+        "ProbeLifecycleAction",
+        "ProbeLifecycleReadOnly"
+      ]
+    },
+    {
+      "name": "fields",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeFieldsOutputField",
+        "ProbeFieldsInputField",
+        "ProbeFieldsInputText",
+        "ProbeFieldsSelectOptions"
+      ]
+    },
+    {
+      "name": "tables",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeTablesDataTable",
+        "ProbeTablesPageBlockTable",
+        "ProbeTablesRepeat",
+        "ProbeTablesPanelGrid"
+      ]
+    },
+    {
+      "name": "AJAX",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeAjaxActionFunction",
+        "ProbeAjaxActionSupport",
+        "ProbeAjaxCommandButton",
+        "ProbeAjaxActionStatus"
+      ]
+    },
+    {
+      "name": "templates",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeTemplate",
+        "ProbeTemplateContent",
+        "ProbeTemplateNested"
+      ]
+    },
+    {
+      "name": "custom components",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeComponentBadge",
+        "ProbeComponentPanel",
+        "ProbeComponentNested"
+      ]
+    },
+    {
+      "name": "static resources",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeStaticStylesheet",
+        "ProbeStaticScript",
+        "ProbeStaticImageToken"
+      ]
+    },
+    {
+      "name": "remoting",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeRemotingBasic",
+        "ProbeRemotingCallback",
+        "ProbeRemotingForm"
+      ]
+    },
+    {
+      "name": "remote objects",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeRemoteObjectsAccount",
+        "ProbeRemoteObjectsFields"
+      ]
+    },
+    {
+      "name": "upload",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeUploadInputFile",
+        "ProbeUploadMessages"
+      ]
+    },
+    {
+      "name": "flow",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeFlowInterview",
+        "ProbeFlowFinishLocation"
+      ]
+    },
+    {
+      "name": "Lightning Out",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeLightningOutInclude",
+        "ProbeLightningOutCreate"
+      ]
+    },
+    {
+      "name": "PDF",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbePdfBasic",
+        "ProbePdfStyles",
+        "ProbePdfTable"
+      ]
+    },
+    {
+      "name": "standard controller",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeStandardControllerView",
+        "ProbeStandardControllerEdit",
+        "ProbeStandardControllerMessages"
+      ]
+    },
+    {
+      "name": "standard set controller",
+      "owner": "oracle/corpus",
+      "category": "phase1",
+      "pages": [
+        "ProbeStandardSetTable",
+        "ProbeStandardSetPagination"
+      ]
+    },
+    {
+      "name": "expressions/globals",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus",
+      "pages": [
+        "ProbeExpressionsGlobals",
+        "ProbeExpressionsFunctions",
+        "ProbeExpressionsConditionals",
+        "ProbeExpressionsLinks"
+      ]
+    },
+    {
+      "name": "security/errors",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus",
+      "pages": [
+        "ProbeSecurityEscaping",
+        "ProbeSecurityMessages",
+        "ProbeSecurityExceptionPanel"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "ProbeLifecycleBasic",
+      "group": "lifecycle",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeLifecycleAction",
+      "group": "lifecycle",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeLifecycleReadOnly",
+      "group": "lifecycle",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeFieldsOutputField",
+      "group": "fields",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeFieldsInputField",
+      "group": "fields",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeFieldsInputText",
+      "group": "fields",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeFieldsSelectOptions",
+      "group": "fields",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeTablesDataTable",
+      "group": "tables",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeTablesPageBlockTable",
+      "group": "tables",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeTablesRepeat",
+      "group": "tables",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeTablesPanelGrid",
+      "group": "tables",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeAjaxActionFunction",
+      "group": "AJAX",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeAjaxActionSupport",
+      "group": "AJAX",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeAjaxCommandButton",
+      "group": "AJAX",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeAjaxActionStatus",
+      "group": "AJAX",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeTemplate",
+      "group": "templates",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeTemplateContent",
+      "group": "templates",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeTemplateNested",
+      "group": "templates",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeComponentBadge",
+      "group": "custom components",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeComponentPanel",
+      "group": "custom components",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeComponentNested",
+      "group": "custom components",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStaticStylesheet",
+      "group": "static resources",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStaticScript",
+      "group": "static resources",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStaticImageToken",
+      "group": "static resources",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeRemotingBasic",
+      "group": "remoting",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeRemotingCallback",
+      "group": "remoting",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeRemotingForm",
+      "group": "remoting",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeRemoteObjectsAccount",
+      "group": "remote objects",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeRemoteObjectsFields",
+      "group": "remote objects",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeUploadInputFile",
+      "group": "upload",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeUploadMessages",
+      "group": "upload",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeFlowInterview",
+      "group": "flow",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeFlowFinishLocation",
+      "group": "flow",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeLightningOutInclude",
+      "group": "Lightning Out",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeLightningOutCreate",
+      "group": "Lightning Out",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbePdfBasic",
+      "group": "PDF",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbePdfStyles",
+      "group": "PDF",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbePdfTable",
+      "group": "PDF",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStandardControllerView",
+      "group": "standard controller",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStandardControllerEdit",
+      "group": "standard controller",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStandardControllerMessages",
+      "group": "standard controller",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStandardSetTable",
+      "group": "standard set controller",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeStandardSetPagination",
+      "group": "standard set controller",
+      "owner": "oracle/corpus",
+      "category": "phase1"
+    },
+    {
+      "name": "ProbeExpressionsGlobals",
+      "group": "expressions/globals",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus"
+    },
+    {
+      "name": "ProbeExpressionsFunctions",
+      "group": "expressions/globals",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus"
+    },
+    {
+      "name": "ProbeExpressionsConditionals",
+      "group": "expressions/globals",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus"
+    },
+    {
+      "name": "ProbeExpressionsLinks",
+      "group": "expressions/globals",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus"
+    },
+    {
+      "name": "ProbeSecurityEscaping",
+      "group": "security/errors",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus"
+    },
+    {
+      "name": "ProbeSecurityMessages",
+      "group": "security/errors",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus"
+    },
+    {
+      "name": "ProbeSecurityExceptionPanel",
+      "group": "security/errors",
+      "owner": "oracle/corpus",
+      "category": "broad-corpus"
+    }
+  ]
+}

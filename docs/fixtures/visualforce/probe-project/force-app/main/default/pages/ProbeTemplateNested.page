@@ -1,0 +1,6 @@
+<apex:page>
+    <apex:composition template="ProbeTemplate">
+        <apex:define name="title">Nested Template</apex:define>
+        <apex:define name="body"><apex:include pageName="ProbeLifecycleBasic"/></apex:define>
+    </apex:composition>
+</apex:page>

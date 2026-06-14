@@ -1,0 +1,1 @@
+<apex:page><apex:outputLink value="/flow/Probe_Flow">Open flow</apex:outputLink></apex:page>

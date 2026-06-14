@@ -210,13 +210,13 @@ func WriteKnownGapsMarkdown(w io.Writer, report Report) error {
 		return err
 	}
 	if report.Ready {
-		if _, err := fmt.Fprintf(w, "The MVP target is `%s`. All required capabilities are currently `supported`.\n\n", report.Target); err != nil {
+		if _, err := fmt.Fprintf(w, "All locally supported rows are tracked in `STDLIB_COVERAGE.md` and the public support map. All required local capability rows are currently `supported`.\n\n"); err != nil {
 			return err
 		}
-		_, err := fmt.Fprintf(w, "No required MVP capability gaps are currently tracked.\n")
+		_, err := fmt.Fprintf(w, "No required local support gaps are currently tracked.\n")
 		return err
 	}
-	if _, err := fmt.Fprintf(w, "The MVP target is `%s`. This document lists required capabilities that are not yet `supported`.\n\n", report.Target); err != nil {
+	if _, err := fmt.Fprintf(w, "This document lists required local capabilities that are not yet `supported`.\n\n"); err != nil {
 		return err
 	}
 

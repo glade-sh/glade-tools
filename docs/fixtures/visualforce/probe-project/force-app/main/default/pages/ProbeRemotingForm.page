@@ -1,0 +1,1 @@
+<apex:page controller="ProbeRemotingController"><apex:form><apex:inputText value="{!seed}"/><script>Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.ProbeRemotingController.ping}', 'form', function(result, event){});</script></apex:form></apex:page>

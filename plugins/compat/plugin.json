@@ -66,6 +66,12 @@
     },
     {
       "path": [
+        "visualforce"
+      ],
+      "summary": "Capture and score Visualforce rendering evidence."
+    },
+    {
+      "path": [
         "dashboard"
       ],
       "summary": "Generate compatibility dashboard output."

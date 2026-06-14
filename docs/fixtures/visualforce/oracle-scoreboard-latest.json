@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 1,
+  "kind": "visualforce-oracle-scoreboard",
+  "generatedAt": "2026-06-14T06:00:26Z",
+  "sourceIndex": "docs/fixtures/visualforce/probe-project/visualforce-probe-index.json",
+  "corpus": {
+    "pageCount": 50,
+    "groupCount": 17,
+    "owners": [
+      "oracle/corpus"
+    ],
+    "categories": [
+      "phase1",
+      "broad-corpus"
+    ]
+  },
+  "latestOracleResult": {
+    "status": "pass",
+    "targetOrg": "oaer-probe-max",
+    "salesforceCaptureIncluded": false,
+    "localCaptureIncluded": false,
+    "rawBodiesIncluded": false,
+    "sessionDataIncluded": false,
+    "salesforceCapturedAt": "2026-06-14T05:51:27Z",
+    "localCapturedAt": "2026-06-14T06:00:26Z",
+    "pageCountCompared": 50,
+    "missingPageCount": 0,
+    "differingPageCount": 0,
+    "diffCount": 0,
+    "salesforceCounts": {
+      "pages": 50,
+      "htmlPass": 50,
+      "htmlFail": 0,
+      "pdfPass": 50,
+      "pdfFail": 0
+    },
+    "localCounts": {
+      "pages": 50,
+      "htmlPass": 47,
+      "htmlFail": 0,
+      "pdfPass": 50,
+      "pdfFail": 0
+    },
+    "notes": "Measured with glade-tools visualforce capture against oaer-probe-max and local glade dev vf, then diffed by normalized contract text and PDF contract text. Raw capture bodies and PDF base64 are intentionally not checked in."
+  },
+  "scoreboard": {
+    "owners": [
+      {
+        "name": "oracle/corpus",
+        "pageCount": 50,
+        "passCount": 50,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      }
+    ],
+    "categories": [
+      {
+        "name": "broad-corpus",
+        "pageCount": 7,
+        "passCount": 7,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "phase1",
+        "pageCount": 43,
+        "passCount": 43,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      }
+    ],
+    "groups": [
+      {
+        "name": "AJAX",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 4,
+        "passCount": 4,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "Lightning Out",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 2,
+        "passCount": 2,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "PDF",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "custom components",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "expressions/globals",
+        "owner": "oracle/corpus",
+        "category": "broad-corpus",
+        "pageCount": 4,
+        "passCount": 4,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "fields",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 4,
+        "passCount": 4,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "flow",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 2,
+        "passCount": 2,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "lifecycle",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "remote objects",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 2,
+        "passCount": 2,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "remoting",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "security/errors",
+        "owner": "oracle/corpus",
+        "category": "broad-corpus",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "standard controller",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "standard set controller",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 2,
+        "passCount": 2,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "static resources",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "tables",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 4,
+        "passCount": 4,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "templates",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 3,
+        "passCount": 3,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      },
+      {
+        "name": "upload",
+        "owner": "oracle/corpus",
+        "category": "phase1",
+        "pageCount": 2,
+        "passCount": 2,
+        "failCount": 0,
+        "missingCount": 0,
+        "diffCount": 0
+      }
+    ]
+  },
+  "sanitizePolicy": [
+    "no raw HTML body",
+    "no PDF base64",
+    "no cookies",
+    "no access tokens",
+    "no org session identifiers"
+  ]
+}

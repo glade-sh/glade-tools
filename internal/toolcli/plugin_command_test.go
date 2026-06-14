@@ -53,6 +53,7 @@ func TestManifestJSONListsCompatCommands(t *testing.T) {
 		"replay":              true,
 		"ui-controllers":      true,
 		"server-examples":     true,
+		"visualforce":         true,
 		"dashboard":           true,
 		"gaps":                true,
 		"stdlib":              true,
@@ -180,6 +181,7 @@ func TestTopLevelHelpListsMaintenanceCommandRoots(t *testing.T) {
 		"tooling-fixtures",
 		"evidence",
 		"oracle-stdlib",
+		"visualforce",
 	} {
 		if !strings.Contains(out, command) {
 			t.Fatalf("help omitted %s:\n%s", command, out)

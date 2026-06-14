@@ -1,0 +1,1 @@
+<apex:page><apex:includeLightning/><div id="probeLightning"></div><script>$Lightning.use("c:ProbeLightningOutApp", function(){ if (window.$Lightning) { window.probeLightningReady = true; } });</script></apex:page>

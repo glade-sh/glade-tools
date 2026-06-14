@@ -1,0 +1,1 @@
+<apex:page standardController="Account" recordSetVar="accounts" extensions="ProbeStandardSetControllerExtension"><apex:form><apex:commandButton value="Previous" action="{!previousPage}" disabled="{!NOT(hasPrevious)}"/><apex:commandButton value="Next" action="{!nextPage}" disabled="{!NOT(hasNext)}"/><apex:outputText value="{!resultSize}"/></apex:form></apex:page>

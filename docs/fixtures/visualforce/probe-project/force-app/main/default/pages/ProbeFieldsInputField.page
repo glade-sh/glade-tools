@@ -1,0 +1,1 @@
+<apex:page standardController="Account"><apex:form><apex:inputField value="{!Account.Name}"/></apex:form></apex:page>

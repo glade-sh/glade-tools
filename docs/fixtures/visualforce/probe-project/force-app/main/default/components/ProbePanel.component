@@ -1,0 +1,7 @@
+<apex:component>
+    <apex:attribute name="title" description="Panel title" type="String" required="true"/>
+    <section class="probe-panel">
+        <h2><apex:outputText value="{!title}"/></h2>
+        <apex:componentBody/>
+    </section>
+</apex:component>

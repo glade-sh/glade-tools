@@ -1,0 +1,55 @@
+{
+  "version": "glade.storage.v1",
+  "objects": [
+    {
+      "name": "Account",
+      "records": [
+        {
+          "id": "001000000000001AAA",
+          "fields": {
+            "Name": {
+              "kind": "string",
+              "string": "Acme"
+            }
+          }
+        },
+        {
+          "id": "001000000000002AAA",
+          "fields": {
+            "Name": {
+              "kind": "string",
+              "string": "Acme Probe"
+            }
+          }
+        },
+        {
+          "id": "001000000000003AAA",
+          "fields": {
+            "Name": {
+              "kind": "string",
+              "string": "Global Media"
+            }
+          }
+        },
+        {
+          "id": "001000000000004AAA",
+          "fields": {
+            "Name": {
+              "kind": "string",
+              "string": "salesforce.com"
+            }
+          }
+        },
+        {
+          "id": "001000000000005AAA",
+          "fields": {
+            "Name": {
+              "kind": "string",
+              "string": "Sample Account for Entitlements"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

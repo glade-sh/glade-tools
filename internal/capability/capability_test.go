@@ -239,8 +239,8 @@ func TestWriteKnownGapsMarkdown(t *testing.T) {
 	for _, want := range []string{
 		"# Known Gaps",
 		"Generated from the first-party compat plugin capability catalog.",
-		"All required capabilities are currently `supported`.",
-		"No required MVP capability gaps are currently tracked.",
+		"All required local capability rows are currently `supported`.",
+		"No required local support gaps are currently tracked.",
 	} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("known gaps output missing %q: %q", want, text)

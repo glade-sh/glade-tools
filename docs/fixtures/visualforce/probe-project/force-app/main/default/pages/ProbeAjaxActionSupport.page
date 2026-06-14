@@ -1,0 +1,1 @@
+<apex:page controller="ProbeController"><apex:form><apex:inputText value="{!message}"><apex:actionSupport event="onchange" action="{!step}" rerender="out"/></apex:inputText><apex:outputPanel id="out">{!message}</apex:outputPanel></apex:form></apex:page>

@@ -1,0 +1,1 @@
+<apex:page><html><body><header><apex:insert name="title"/></header><main><apex:insert name="body"/></main></body></html></apex:page>

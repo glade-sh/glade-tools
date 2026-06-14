@@ -1,0 +1,1 @@
+<apex:page><apex:outputText value="User: {!$User.Id}"/><apex:outputText value=" Org: {!$Organization.Id}"/></apex:page>

@@ -1,0 +1,1 @@
+<apex:page controller="ProbeController"><apex:outputPanel rendered="{!ready}"><apex:outputText value="Ready"/></apex:outputPanel></apex:page>

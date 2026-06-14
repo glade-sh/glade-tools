@@ -1,0 +1,4 @@
+<apex:component>
+    <apex:attribute name="label" description="Badge label" type="String" required="true"/>
+    <span class="probe-badge"><apex:outputText value="{!label}"/></span>
+</apex:component>

@@ -1,0 +1,1 @@
+<apex:page><apex:stylesheet value="{!$Resource.vfProbeCss}"/><div class="probe">Static CSS</div></apex:page>

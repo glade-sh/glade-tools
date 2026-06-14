@@ -44,6 +44,7 @@ func writeCompatManifest(w io.Writer) error {
 			{Path: []string{"replay"}, Summary: "Replay checked run bundles."},
 			{Path: []string{"ui-controllers"}, Summary: "Discover Visualforce controller surfaces."},
 			{Path: []string{"server-examples"}, Summary: "Probe checked server route examples."},
+			{Path: []string{"visualforce"}, Summary: "Capture and score Visualforce rendering evidence."},
 			{Path: []string{"dashboard"}, Summary: "Generate compatibility dashboard output."},
 			{Path: []string{"gaps"}, Summary: "Generate known-gaps output."},
 			{Path: []string{"stdlib"}, Summary: "Generate standard-library coverage output."},

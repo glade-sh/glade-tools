@@ -1,0 +1,1 @@
+<apex:page controller="ProbeController"><apex:form enctype="multipart/form-data"><apex:inputFile value="{!uploadBody}" filename="{!uploadName}"/><apex:commandButton value="Upload" action="{!save}"/></apex:form></apex:page>

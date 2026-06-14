@@ -51,6 +51,7 @@ Commands:
   ui-controllers     Discover Visualforce controller surfaces.
   server-examples    Probe checked server route examples.
   surface            Refresh and inspect the Salesforce surface ledger.
+  visualforce        Capture scratch-org Visualforce rendering evidence.
   dashboard          Generate compatibility dashboard.
   gaps               Generate known gaps document.
   stdlib             Generate standard library coverage document.

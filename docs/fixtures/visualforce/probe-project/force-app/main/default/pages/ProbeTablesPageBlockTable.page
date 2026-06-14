@@ -1,0 +1,1 @@
+<apex:page controller="ProbeController"><apex:pageBlock><apex:pageBlockTable value="{!accounts}" var="a"><apex:column value="{!a.Name}"/></apex:pageBlockTable></apex:pageBlock></apex:page>

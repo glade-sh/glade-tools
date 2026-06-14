@@ -1,0 +1,1 @@
+<apex:page controller="ProbeController"><apex:outputLink value="{!flowFinish.url}">Flow finish target</apex:outputLink></apex:page>

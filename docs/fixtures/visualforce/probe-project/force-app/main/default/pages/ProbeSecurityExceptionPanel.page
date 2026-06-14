@@ -1,0 +1,1 @@
+<apex:page controller="ProbeController"><apex:pageMessage severity="warning" summary="Security probe" detail="Rendered with safe text."/></apex:page>

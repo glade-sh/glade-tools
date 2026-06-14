@@ -11,3 +11,4 @@
 *.prof
 *.pprof
 .DS_Store
+**/.sf/

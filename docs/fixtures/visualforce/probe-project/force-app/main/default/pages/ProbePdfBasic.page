@@ -1,0 +1,1 @@
+<apex:page renderAs="pdf"><h1>PDF Basic</h1><p>Probe PDF body.</p></apex:page>
