@@ -1,0 +1,165 @@
+{
+  "name": "core-runtime-businesshours-full-local-calendar",
+  "evidence": [
+    {
+      "surfaceId": "apex:BusinessHours.diff(String,Datetime,Datetime)",
+      "symbol": "BusinessHours.diff",
+      "kind": "exec",
+      "notes": "Seeded partial-day Holiday windows subtract only the closed local minutes from BusinessHours.diff."
+    },
+    {
+      "surfaceId": "apex:BusinessHours.isWithin(String,Datetime)",
+      "symbol": "BusinessHours.isWithin",
+      "kind": "exec",
+      "notes": "Seeded Holiday recurrence metadata supports daily, weekly, monthly, yearly, linked, and global local closures."
+    },
+    {
+      "surfaceId": "apex:BusinessHours.nextStartDate(String,Datetime)",
+      "symbol": "BusinessHours.nextStartDate",
+      "kind": "exec",
+      "notes": "Linked holidays close only the seeded BusinessHours calendar they are associated with."
+    }
+  ],
+  "seedData": [
+    {
+      "object": "BusinessHours",
+      "records": [
+        {
+          "Id": "01m000000000001AAA",
+          "Name": "Default",
+          "IsActive": true,
+          "IsDefault": true,
+          "TimeZoneSidKey": "America/Los_Angeles",
+          "MondayStartTime": "09:00:00.000Z",
+          "MondayEndTime": "17:00:00.000Z",
+          "TuesdayStartTime": "09:00:00.000Z",
+          "TuesdayEndTime": "17:00:00.000Z",
+          "WednesdayStartTime": "09:00:00.000Z",
+          "WednesdayEndTime": "17:00:00.000Z",
+          "ThursdayStartTime": "09:00:00.000Z",
+          "ThursdayEndTime": "17:00:00.000Z",
+          "FridayStartTime": "09:00:00.000Z",
+          "FridayEndTime": "17:00:00.000Z"
+        },
+        {
+          "Id": "01m000000000002AAA",
+          "Name": "Second",
+          "IsActive": true,
+          "IsDefault": false,
+          "TimeZoneSidKey": "America/Los_Angeles",
+          "MondayStartTime": "09:00:00.000Z",
+          "MondayEndTime": "17:00:00.000Z",
+          "TuesdayStartTime": "09:00:00.000Z",
+          "TuesdayEndTime": "17:00:00.000Z",
+          "WednesdayStartTime": "09:00:00.000Z",
+          "WednesdayEndTime": "17:00:00.000Z",
+          "ThursdayStartTime": "09:00:00.000Z",
+          "ThursdayEndTime": "17:00:00.000Z",
+          "FridayStartTime": "09:00:00.000Z",
+          "FridayEndTime": "17:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "object": "Holiday",
+      "records": [
+        {
+          "Id": "0HoPartial000001AAA",
+          "Name": "Partial",
+          "ActivityDate": "2026-06-15",
+          "IsAllDay": false,
+          "StartTimeInMinutes": 720,
+          "EndTimeInMinutes": 780
+        },
+        {
+          "Id": "0HoDaily0000001AAA",
+          "Name": "Daily",
+          "ActivityDate": "2026-06-15",
+          "IsAllDay": true,
+          "IsRecurrence": true,
+          "RecurrenceType": "RecursDaily",
+          "RecurrenceInterval": 2,
+          "RecurrenceStartDate": "2026-06-15",
+          "RecurrenceEndDateOnly": "2026-06-19"
+        },
+        {
+          "Id": "0HoWeekly000001AAA",
+          "Name": "Weekly",
+          "ActivityDate": "2026-06-15",
+          "IsAllDay": true,
+          "IsRecurrence": true,
+          "RecurrenceType": "RecursWeekly",
+          "RecurrenceInterval": 1,
+          "RecurrenceDayOfWeekMask": 2,
+          "RecurrenceStartDate": "2026-06-15",
+          "RecurrenceEndDateOnly": "2026-06-29"
+        },
+        {
+          "Id": "0HoMonthlyDOM01AAA",
+          "Name": "Monthly",
+          "ActivityDate": "2026-06-15",
+          "IsAllDay": true,
+          "IsRecurrence": true,
+          "RecurrenceType": "RecursMonthly",
+          "RecurrenceInterval": 1,
+          "RecurrenceDayOfMonth": 15,
+          "RecurrenceStartDate": "2026-06-15",
+          "RecurrenceEndDateOnly": "2026-08-15"
+        },
+        {
+          "Id": "0HoYearlyInst01AAA",
+          "Name": "Yearly Instance",
+          "ActivityDate": "2026-06-15",
+          "IsAllDay": true,
+          "IsRecurrence": true,
+          "RecurrenceType": "RecursYearly",
+          "RecurrenceDayOfWeekMask": 2,
+          "RecurrenceInstance": "Third",
+          "RecurrenceMonthOfYear": "June",
+          "RecurrenceStartDate": "2026-01-01",
+          "RecurrenceEndDateOnly": "2028-12-31"
+        },
+        {
+          "Id": "0HoLinked000001AAA",
+          "Name": "Linked",
+          "ActivityDate": "2026-06-23",
+          "IsAllDay": true
+        },
+        {
+          "Id": "0HoGlobal0000001AAA",
+          "Name": "Global",
+          "ActivityDate": "2026-06-24",
+          "IsAllDay": true
+        }
+      ]
+    },
+    {
+      "object": "OperatingHoursHoliday",
+      "records": [
+        {
+          "Id": "0OHLinked000001AAA",
+          "HolidayId": "0HoLinked000001AAA",
+          "OperatingHoursId": "01m000000000001AAA"
+        }
+      ]
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals(3600000, BusinessHours.diff('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 15, 18, 30, 0), Datetime.newInstanceGmt(2026, 6, 15, 20, 30, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 7, 15, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2027, 6, 21, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(true, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 24, 16, 0, 0)));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals(3600000, BusinessHours.diff('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 15, 18, 30, 0), Datetime.newInstanceGmt(2026, 6, 15, 20, 30, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 7, 15, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2027, 6, 21, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(true, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 24, 16, 0, 0)));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

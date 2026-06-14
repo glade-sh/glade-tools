@@ -43,7 +43,7 @@ func TestBuildEvidenceReport(t *testing.T) {
 	}}
 
 	report := BuildEvidenceReport(catalog, fixtures)
-	if report.CatalogEntries != 3 || report.Fixtures != 1 || report.Evidence != 2 {
+	if report.CatalogEntries != 4 || report.Fixtures != 1 || report.Evidence != 2 {
 		t.Fatalf("report counts = %#v", report)
 	}
 	if len(report.Covered) != 1 || report.Covered[0].Symbol != "String.trim" {

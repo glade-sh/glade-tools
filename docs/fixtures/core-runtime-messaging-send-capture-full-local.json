@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-messaging-send-capture-full-local",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Messaging.sendEmail(List<Messaging.Email>)",
+      "symbol": "Messaging.sendEmail",
+      "kind": "test",
+      "notes": "Single and mass email DTOs are captured locally with recipients, reply/sender names, template/target/what IDs, attachments, flags, SendEmailOptions, success results, and email limit increments."
+    },
+    {
+      "surfaceId": "apex:System.Messaging.SendEmailOptions",
+      "symbol": "Messaging.SendEmailOptions",
+      "kind": "test",
+      "notes": "TriggerUserEmail, TriggerOtherEmail, and TriggerAutoResponseEmail are local getter/setter values available to send capture."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeMessagingSendCaptureFullLocalTest.cls",
+      "content": "@isTest private class CoreRuntimeMessagingSendCaptureFullLocalTest { @isTest static void rows() { Messaging.SendEmailOptions opts = new Messaging.SendEmailOptions(); opts.setTriggerUserEmail(true); opts.setTriggerOtherEmail(false); opts.setTriggerAutoResponseEmail(true); System.assertEquals(true, opts.getTriggerUserEmail()); Messaging.EmailFileAttachment file = new Messaging.EmailFileAttachment(); file.setFileName('note.txt'); file.setContentType('text/plain'); file.setBody(Blob.valueOf('note body')); Messaging.SingleEmailMessage single = new Messaging.SingleEmailMessage(); single.setToAddresses(new List<String>{'to@example.test'}); single.setCcAddresses(new List<String>{'cc@example.test'}); single.setBccAddresses(new List<String>{'bcc@example.test'}); single.setReplyTo('reply@example.test'); single.setSenderDisplayName('Trail Sender'); single.setSubject('Direct'); single.setPlainTextBody('Direct body'); single.setHtmlBody('<p>Direct body</p>'); single.setTemplateId((Id)'00X000000000010AAA'); single.setTargetObjectId((Id)'003000000000010AAA'); single.setWhatId((Id)'001000000000010AAA'); single.setEntityAttachments(new List<Id>{(Id)'00P000000000010AAA'}); single.setFileAttachments(new List<Messaging.EmailFileAttachment>{file}); single.setBccSender(true); single.setUseSignature(true); Messaging.MassEmailMessage mass = new Messaging.MassEmailMessage(); mass.setTargetObjectIds(new List<String>{'003000000000010AAA', '003000000000011AAA'}); mass.setWhatIds(new List<String>{'001000000000010AAA'}); mass.setTemplateId((Id)'00X000000000010AAA'); mass.setReplyTo('mass-reply@example.test'); mass.setSenderDisplayName('Mass Sender'); List<Messaging.SendEmailResult> results = Messaging.sendEmail(new List<Object>{single, mass}); System.assertEquals(2, results.size()); System.assert(results[0].isSuccess()); System.assert(results[1].isSuccess()); System.assertEquals(1, Limits.getEmailInvocations()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

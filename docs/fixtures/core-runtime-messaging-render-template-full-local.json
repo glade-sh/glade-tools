@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-messaging-render-template-full-local",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption)",
+      "symbol": "Messaging.renderStoredEmailTemplate",
+      "kind": "test",
+      "notes": "Classic stored text and HTML templates merge who and what fields and expand local Attachment plus ContentDocument/ContentVersion files for NONE, METADATA_ONLY, and METADATA_WITH_BODY."
+    },
+    {
+      "surfaceId": "apex:System.Messaging.renderStoredEmailTemplate(String,String,String,Messaging.AttachmentRetrievalOption,Boolean)",
+      "symbol": "Messaging.renderStoredEmailTemplate",
+      "kind": "test",
+      "notes": "The local runtime accepts the five-argument overload while usage mutation remains a hosted-service row unless a local usage field is represented."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeMessagingRenderTemplateFullLocalTest.cls",
+      "content": "@isTest private class CoreRuntimeMessagingRenderTemplateFullLocalTest { @isTest static void rows() { Messaging.SingleEmailMessage withBody = Messaging.renderStoredEmailTemplate((Id)'00X000000000010AAA', (Id)'003000000000010AAA', (Id)'001000000000010AAA', Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY); System.assertEquals('Hello Ada at TrailWorks', withBody.getSubject()); System.assertEquals('<p>Ada Trail / TrailWorks</p>', withBody.getHtmlBody()); System.assertEquals('Ada Trail / TrailWorks', withBody.getPlainTextBody()); System.assertEquals(2, withBody.getFileAttachments().size()); System.assertEquals('contract.txt', withBody.getFileAttachments()[0].getFileName()); System.assertEquals('contract body', withBody.getFileAttachments()[0].getBody().toString()); Messaging.SingleEmailMessage metadataOnly = Messaging.renderStoredEmailTemplate((Id)'00X000000000010AAA', (Id)'003000000000010AAA', (Id)'001000000000010AAA', Messaging.AttachmentRetrievalOption.METADATA_ONLY); System.assertEquals(2, metadataOnly.getFileAttachments().size()); System.assertEquals(null, metadataOnly.getFileAttachments()[0].getBody()); Messaging.SingleEmailMessage none = Messaging.renderStoredEmailTemplate((Id)'00X000000000010AAA', (Id)'003000000000010AAA', (Id)'001000000000010AAA', Messaging.AttachmentRetrievalOption.NONE); System.assertEquals(0, none.getFileAttachments().size()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "core-runtime-approval-local-engine-full",
+  "evidence": [
+    {
+      "surfaceId": "apex:Approval.process(Approval.ProcessRequest)",
+      "symbol": "Approval.process",
+      "kind": "exec",
+      "notes": "Seeded ProcessDefinition and ProcessNode records drive deterministic local approval submission."
+    },
+    {
+      "surfaceId": "apex:Approval.process(Approval.ProcessRequest,Boolean)",
+      "symbol": "Approval.process",
+      "kind": "exec",
+      "notes": "Seeded ProcessInstanceWorkitem records support local approve and reject actions; missing metadata with allOrNone=false returns a failed ProcessResult."
+    }
+  ],
+  "seedData": [
+    {
+      "object": "ProcessDefinition",
+      "records": [
+        {
+          "Id": "04a000000000001AAA",
+          "DeveloperName": "Account_Local_Approval",
+          "Name": "Account Local Approval",
+          "State": "Active",
+          "TableEnumOrId": "Account",
+          "Type": "Approval"
+        }
+      ]
+    },
+    {
+      "object": "ProcessNode",
+      "records": [
+        {
+          "Id": "04h000000000001AAA",
+          "DeveloperName": "Manager_Approval",
+          "Name": "Manager Approval",
+          "ProcessDefinitionId": "04a000000000001AAA",
+          "ActorId": "005000000000002"
+        }
+      ]
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Account approved = new Account(Name = 'Approve Me'); insert approved; Approval.ProcessSubmitRequest submitApprove = new Approval.ProcessSubmitRequest(); submitApprove.setObjectId(approved.Id); submitApprove.setSkipEntryCriteria(true); submitApprove.setNextApproverIds(new List<Id>{ '005000000000002' }); Approval.ProcessResult submittedApprove = Approval.process(submitApprove); System.assertEquals(true, submittedApprove.isSuccess()); System.assertEquals('Pending', submittedApprove.getInstanceStatus()); System.assertEquals(1, submittedApprove.getNewWorkitemIds().size()); Approval.ProcessWorkitemRequest approve = new Approval.ProcessWorkitemRequest(); approve.setWorkitemId(submittedApprove.getNewWorkitemIds().get(0)); approve.setAction('Approve'); Approval.ProcessResult approvedResult = Approval.process(approve); System.assertEquals(true, approvedResult.isSuccess()); System.assertEquals('Approved', approvedResult.getInstanceStatus()); Account rejected = new Account(Name = 'Reject Me'); insert rejected; Approval.ProcessSubmitRequest submitReject = new Approval.ProcessSubmitRequest(); submitReject.setObjectId(rejected.Id); submitReject.setSkipEntryCriteria(true); submitReject.setNextApproverIds(new List<Id>{ '005000000000002' }); Approval.ProcessResult submittedReject = Approval.process(submitReject); Approval.ProcessWorkitemRequest reject = new Approval.ProcessWorkitemRequest(); reject.setWorkitemId(submittedReject.getNewWorkitemIds().get(0)); reject.setAction('Reject'); Approval.ProcessResult rejectedResult = Approval.process(reject); System.assertEquals('Rejected', rejectedResult.getInstanceStatus()); Contact missing = new Contact(LastName = 'No Metadata'); insert missing; Approval.ProcessSubmitRequest missingRequest = new Approval.ProcessSubmitRequest(); missingRequest.setObjectId(missing.Id); Approval.ProcessResult missingResult = Approval.process(missingRequest, false); System.assertEquals(false, missingResult.isSuccess()); System.assertEquals(1, missingResult.getErrors().size());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Account approved = new Account(Name = 'Approve Me'); insert approved; Approval.ProcessSubmitRequest submitApprove = new Approval.ProcessSubmitRequest(); submitApprove.setObjectId(approved.Id); submitApprove.setSkipEntryCriteria(true); submitApprove.setNextApproverIds(new List<Id>{ '005000000000002' }); Approval.ProcessResult submittedApprove = Approval.process(submitApprove); System.assertEquals(true, submittedApprove.isSuccess()); System.assertEquals('Pending', submittedApprove.getInstanceStatus()); System.assertEquals(1, submittedApprove.getNewWorkitemIds().size()); Approval.ProcessWorkitemRequest approve = new Approval.ProcessWorkitemRequest(); approve.setWorkitemId(submittedApprove.getNewWorkitemIds().get(0)); approve.setAction('Approve'); Approval.ProcessResult approvedResult = Approval.process(approve); System.assertEquals(true, approvedResult.isSuccess()); System.assertEquals('Approved', approvedResult.getInstanceStatus()); Account rejected = new Account(Name = 'Reject Me'); insert rejected; Approval.ProcessSubmitRequest submitReject = new Approval.ProcessSubmitRequest(); submitReject.setObjectId(rejected.Id); submitReject.setSkipEntryCriteria(true); submitReject.setNextApproverIds(new List<Id>{ '005000000000002' }); Approval.ProcessResult submittedReject = Approval.process(submitReject); Approval.ProcessWorkitemRequest reject = new Approval.ProcessWorkitemRequest(); reject.setWorkitemId(submittedReject.getNewWorkitemIds().get(0)); reject.setAction('Reject'); Approval.ProcessResult rejectedResult = Approval.process(reject); System.assertEquals('Rejected', rejectedResult.getInstanceStatus()); Contact missing = new Contact(LastName = 'No Metadata'); insert missing; Approval.ProcessSubmitRequest missingRequest = new Approval.ProcessSubmitRequest(); missingRequest.setObjectId(missing.Id); Approval.ProcessResult missingResult = Approval.process(missingRequest, false); System.assertEquals(false, missingResult.isSuccess()); System.assertEquals(1, missingResult.getErrors().size());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
