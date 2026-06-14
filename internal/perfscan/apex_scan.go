@@ -15,9 +15,12 @@ import (
 )
 
 var (
-	invocableRe    = regexp.MustCompile(`(?i)@InvocableMethod\b`)
-	batchableRe    = regexp.MustCompile(`(?i)\bimplements\b[^{};]*Database\.Batchable\b`)
-	newClassTypeRe = regexp.MustCompile(`(?i)new\s+([A-Za-z_][A-Za-z0-9_\.]*)`)
+	invocableRe     = regexp.MustCompile(`(?i)@InvocableMethod\b`)
+	batchableRe     = regexp.MustCompile(`(?i)\bimplements\b[^{};]*Database\.Batchable\b`)
+	newClassTypeRe  = regexp.MustCompile(`(?i)new\s+([A-Za-z_][A-Za-z0-9_\.]*)`)
+	soqlInBindRe    = regexp.MustCompile(`(?i)\bIN\s*:\s*([A-Za-z_][A-Za-z0-9_]*)\b`)
+	soqlEqBindRe    = regexp.MustCompile(`(?i)(?:=|!=|<>|<|>|<=|>=)\s*:\s*([A-Za-z_][A-Za-z0-9_]*)\b`)
+	jsonSerializeRe = regexp.MustCompile(`(?i)\bJSON\s*\.\s*serialize(?:Pretty)?\s*\(`)
 )
 
 const (
@@ -150,6 +153,7 @@ func (s *scanApexFileState) scanNode(node apexast.ASTNode) {
 		s.markFutureDml()
 	case "method_invocation":
 		s.processMethodInvocation(node)
+		s.recordDebugSerialization(node)
 	}
 
 	if node.Kind == "block" {
@@ -449,6 +453,93 @@ func (s *scanApexFileState) recordSoqlQuery(node apexast.ASTNode) {
 	s.recordSoqlProjection(parsed, line, queryText)
 	s.recordSoqlChildQuery(parsed, line, queryText)
 	s.recordSoqlOrderBy(parsed, line, queryText)
+	s.recordSoqlBindRisks(queryText, line, node.Range.Start.Offset)
+}
+
+func (s *scanApexFileState) recordSoqlBindRisks(queryText string, line int, offset int) {
+	for _, match := range soqlInBindRe.FindAllStringSubmatch(queryText, -1) {
+		if len(match) < 2 {
+			continue
+		}
+		name := strings.TrimSpace(match[1])
+		typeName := s.declaredTypeBefore(name, offset)
+		if !isSObjectCollectionBindType(typeName) {
+			continue
+		}
+		s.report.AddFinding(Finding{
+			ID:         "perf.soql.sobject-list-bind",
+			Category:   CategorySOQL,
+			Severity:   SeverityMedium,
+			Confidence: ConfidenceStatic,
+			Score:      66,
+			EntryPoint: EntryPoint{Kind: EntryUnknown},
+			Message:    "SOQL binds an SObject collection directly in an IN predicate.",
+			Location:   Location{File: s.path, Line: line},
+			Evidence: []Evidence{
+				{Kind: "soql", Message: "query", Value: queryText},
+				{Kind: "soql", Message: "SObject collection bind", Value: name},
+			},
+			ResourceRisk: ResourceRisk{CPU: true, DBTime: true, DBRows: true},
+			Fix:          "Extract a Set<Id> or typed key set before the query and bind that collection instead.",
+		})
+	}
+	for _, match := range soqlEqBindRe.FindAllStringSubmatch(queryText, -1) {
+		if len(match) < 2 {
+			continue
+		}
+		name := strings.TrimSpace(match[1])
+		if s.isEnhancedForVariable(name, offset) || s.bindHasNullProof(name, offset) {
+			continue
+		}
+		s.report.AddFinding(Finding{
+			ID:         "perf.soql.null-bind",
+			Category:   CategorySOQL,
+			Severity:   SeverityMedium,
+			Confidence: ConfidenceStatic,
+			Score:      64,
+			EntryPoint: EntryPoint{Kind: EntryUnknown},
+			Message:    "SOQL uses a nullable bind without a nearby null guard.",
+			Location:   Location{File: s.path, Line: line},
+			Evidence: []Evidence{
+				{Kind: "soql", Message: "query", Value: queryText},
+				{Kind: "soql", Message: "bind without null proof", Value: name},
+			},
+			ResourceRisk: ResourceRisk{DBTime: true, DBRows: true},
+			Fix:          "Return early on null binds or route null cases through a separate narrow query path.",
+		})
+	}
+}
+
+func (s *scanApexFileState) recordDebugSerialization(node apexast.ASTNode) {
+	methodName, receiver := methodInvocationParts(node, s.source)
+	if !strings.EqualFold(methodName, "debug") || receiver == nil {
+		return
+	}
+	segments := identifierSegments(*receiver, s.source)
+	if len(segments) == 0 || !strings.EqualFold(segments[0], "System") {
+		return
+	}
+	text := nodeText(s.source, node)
+	if !jsonSerializeRe.MatchString(text) {
+		return
+	}
+	s.report.AddFinding(Finding{
+		ID:         "perf.debug.serialize",
+		Category:   CategoryApex,
+		Severity:   SeverityMedium,
+		Confidence: ConfidenceStatic,
+		Score:      58,
+		EntryPoint: EntryPoint{Kind: EntryUnknown},
+		Message:    "System.debug serializes a runtime payload before log filtering can discard it.",
+		Location:   Location{File: s.path, Line: node.Range.Start.Line},
+		Evidence:   []Evidence{{Kind: "static", Message: "debug serialization", Value: strings.TrimSpace(text)}},
+		ResourceRisk: ResourceRisk{
+			CPU:         true,
+			Heap:        true,
+			SharedLimit: true,
+		},
+		Fix: "Guard debug serialization behind an explicit log flag, or log bounded identifiers instead of full payloads.",
+	})
 }
 
 func (s *scanApexFileState) recordSoqlSelectivity(query soql.Query, line int, queryText string) {
@@ -739,6 +830,93 @@ func (s *scanApexFileState) declareSObjectTypeVar(name string) {
 	s.scopes[top][strings.ToLower(name)] = true
 }
 
+func (s *scanApexFileState) declaredTypeBefore(name string, offset int) string {
+	if name == "" || offset <= 0 || offset > len(s.source) {
+		return ""
+	}
+	prefix := s.source[:offset]
+	re := regexp.MustCompile(`(?is)\b([A-Za-z_][A-Za-z0-9_\.]*(?:\s*<\s*[A-Za-z_][A-Za-z0-9_\.]*(?:\s*,\s*[A-Za-z_][A-Za-z0-9_\.]*)*\s*>)?)\s+` + regexp.QuoteMeta(name) + `\b`)
+	matches := re.FindAllStringSubmatch(prefix, -1)
+	for i := len(matches) - 1; i >= 0; i-- {
+		if len(matches[i]) < 2 {
+			continue
+		}
+		typeName := sourceCleanType(matches[i][1])
+		if typeName != "" && !sourceIsDMLKeyword(typeName) && !sourceIsDeclarationKeyword(typeName) {
+			return typeName
+		}
+	}
+	return ""
+}
+
+func (s *scanApexFileState) isEnhancedForVariable(name string, offset int) bool {
+	if name == "" || offset <= 0 || offset > len(s.source) {
+		return false
+	}
+	prefix := s.source[:offset]
+	re := regexp.MustCompile(`(?is)\bfor\s*\([^)]*\b` + regexp.QuoteMeta(name) + `\s*:`)
+	return re.MatchString(prefix)
+}
+
+func (s *scanApexFileState) bindHasNullProof(name string, offset int) bool {
+	if name == "" || offset <= 0 || offset > len(s.source) {
+		return false
+	}
+	prefix := s.source[:offset]
+	windowStart := len(prefix) - 1200
+	if windowStart < 0 {
+		windowStart = 0
+	}
+	recent := strings.ToLower(prefix[windowStart:])
+	recent = strings.ReplaceAll(recent, " ", "")
+	recent = strings.ReplaceAll(recent, "\t", "")
+	recent = strings.ReplaceAll(recent, "\n", "")
+	recent = strings.ReplaceAll(recent, "\r", "")
+	n := strings.ToLower(name)
+	for _, pattern := range []string{
+		n + "==null",
+		"null==" + n,
+		n + "!=null",
+		"null!=" + n,
+		n + ".isempty()",
+		"!" + n + ".isempty()",
+		"string.isblank(" + n + ")",
+		"string.isnotblank(" + n + ")",
+		"string.isempty(" + n + ")",
+		"string.isnotempty(" + n + ")",
+	} {
+		if strings.Contains(recent, pattern) {
+			return true
+		}
+	}
+	return false
+}
+
+func isSObjectCollectionBindType(typeName string) bool {
+	inner := sourceCollectionInnerType(sourceCleanType(typeName))
+	if inner == "" {
+		return false
+	}
+	inner = shortTypeName(inner)
+	switch strings.ToLower(inner) {
+	case "", "id", "string", "integer", "long", "decimal", "double", "boolean", "date", "datetime", "time", "object", "blob":
+		return false
+	case "sobject":
+		return true
+	default:
+		return sourceLooksLikeObjectName(inner)
+	}
+}
+
+func sourceIsDeclarationKeyword(value string) bool {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "select", "from", "where", "in", "not", "return", "if", "for", "while", "new", "public", "private", "protected", "static", "final":
+		return true
+	default:
+		return false
+	}
+}
+
 func (s *scanApexFileState) pushScope() {
 	s.scopes = append(s.scopes, make(map[string]bool))
 }
@@ -878,15 +1056,41 @@ func isTestRunningReceiver(segments []string) bool {
 
 func staticFinding(id string, category Category, severity Severity, score int, file string, line int, message, fix string) Finding {
 	return Finding{
-		ID:         id,
-		Category:   category,
-		Severity:   severity,
-		Confidence: ConfidenceStatic,
-		Score:      score,
-		Message:    message,
-		Location:   Location{File: file, Line: line},
-		Evidence:   []Evidence{{Kind: "static", Message: message}},
-		Fix:        fix,
+		ID:           id,
+		Category:     category,
+		Severity:     severity,
+		Confidence:   ConfidenceStatic,
+		Score:        score,
+		Message:      message,
+		Location:     Location{File: file, Line: line},
+		Multiplicity: staticFindingMultiplicity(id),
+		Evidence:     []Evidence{{Kind: "static", Message: message}},
+		ResourceRisk: staticFindingResourceRisk(id, category),
+		Fix:          fix,
+	}
+}
+
+func staticFindingResourceRisk(id string, category Category) ResourceRisk {
+	switch id {
+	case "perf.soql.loop":
+		return ResourceRisk{DBTime: true, DBRows: true, SharedLimit: true}
+	case "perf.dml.loop":
+		return ResourceRisk{DBTime: true, Locks: true, SharedLimit: true}
+	case "perf.describe.repeated":
+		return ResourceRisk{CPU: true, Heap: true, SharedLimit: true}
+	}
+	if category == CategoryAsync {
+		return ResourceRisk{CPU: true, SharedLimit: true}
+	}
+	return ResourceRisk{}
+}
+
+func staticFindingMultiplicity(id string) string {
+	switch id {
+	case "perf.soql.loop", "perf.dml.loop", "perf.async.loop":
+		return "per-record"
+	default:
+		return ""
 	}
 }
 
@@ -1360,12 +1564,13 @@ func findLongChains(graph map[string]map[string]asyncCallEdge, maxDepth int) []d
 		chain []string
 		edge  asyncCallEdge
 	}
-	for start := range nodes {
+	for _, start := range sortedStringSetKeys(nodes) {
 		visited := map[string]bool{start: true}
 		state := []string{start}
 		var dfs func(current string)
 		dfs = func(current string) {
-			for to, edge := range graph[current] {
+			for _, to := range sortedAsyncEdgeTargets(graph[current]) {
+				edge := graph[current][to]
 				if visited[to] {
 					continue
 				}
@@ -1405,7 +1610,7 @@ func findCycles(graph map[string]map[string]asyncCallEdge) [][]string {
 		state[node] = 1
 		stackIndex[node] = len(stack)
 		stack = append(stack, node)
-		for to := range graph[node] {
+		for _, to := range sortedAsyncEdgeTargets(graph[node]) {
 			switch state[to] {
 			case 0:
 				dfs(to)
@@ -1418,14 +1623,14 @@ func findCycles(graph map[string]map[string]asyncCallEdge) [][]string {
 					continue
 				}
 				seen[key] = struct{}{}
-				cycles = append(cycles, cycle)
+				cycles = append(cycles, canonicalCycle(cycle))
 			}
 		}
 		delete(stackIndex, node)
 		stack = stack[:len(stack)-1]
 		state[node] = 2
 	}
-	for node := range nodes {
+	for _, node := range sortedStringSetKeys(nodes) {
 		if state[node] == 0 {
 			dfs(node)
 		}
@@ -1450,6 +1655,43 @@ func cycleKey(cycle []string) string {
 	copy(unique, cycle)
 	sort.Strings(unique)
 	return strings.Join(unique, "|")
+}
+
+func canonicalCycle(cycle []string) []string {
+	if len(cycle) <= 2 {
+		out := append([]string{}, cycle...)
+		return out
+	}
+	body := append([]string{}, cycle[:len(cycle)-1]...)
+	best := 0
+	for i := 1; i < len(body); i++ {
+		if body[i] < body[best] {
+			best = i
+		}
+	}
+	out := make([]string, 0, len(cycle))
+	out = append(out, body[best:]...)
+	out = append(out, body[:best]...)
+	out = append(out, out[0])
+	return out
+}
+
+func sortedStringSetKeys(values map[string]struct{}) []string {
+	keys := make([]string, 0, len(values))
+	for key := range values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func sortedAsyncEdgeTargets(edges map[string]asyncCallEdge) []string {
+	keys := make([]string, 0, len(edges))
+	for key := range edges {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 func hasFutureModifier(modifiers []string) bool {

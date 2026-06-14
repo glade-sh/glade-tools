@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 )
 
 func WriteJSON(w io.Writer, report Report) error {
@@ -47,6 +48,26 @@ func WriteMarkdown(w io.Writer, report Report) error {
 		if _, err := fmt.Fprintf(w, "   %s\n\n", finding.Message); err != nil {
 			return err
 		}
+		if len(finding.Path) > 0 {
+			if _, err := fmt.Fprintf(w, "   Path: %s\n\n", formatPath(finding.Path)); err != nil {
+				return err
+			}
+		}
+		if len(finding.NamespacePath) > 0 {
+			if _, err := fmt.Fprintf(w, "   Namespace path: %s\n\n", strings.Join(finding.NamespacePath, " -> ")); err != nil {
+				return err
+			}
+		}
+		if finding.Multiplicity != "" {
+			if _, err := fmt.Fprintf(w, "   Multiplicity: %s\n\n", finding.Multiplicity); err != nil {
+				return err
+			}
+		}
+		if risk := formatResourceRisk(finding.ResourceRisk); risk != "" {
+			if _, err := fmt.Fprintf(w, "   Resource risk: %s\n\n", risk); err != nil {
+				return err
+			}
+		}
 		for _, evidence := range finding.Evidence {
 			if _, err := fmt.Fprintf(w, "   Evidence: %s", evidence.Message); err != nil {
 				return err
@@ -65,6 +86,49 @@ func WriteMarkdown(w io.Writer, report Report) error {
 				return err
 			}
 		}
+		if finding.Acceptance != "" {
+			if _, err := fmt.Fprintf(w, "   Acceptance: %s\n\n", finding.Acceptance); err != nil {
+				return err
+			}
+		}
 	}
 	return nil
+}
+
+func formatPath(path []PathStep) string {
+	parts := make([]string, 0, len(path))
+	for _, step := range path {
+		switch {
+		case step.Kind != "" && step.Name != "":
+			parts = append(parts, step.Kind+" "+step.Name)
+		case step.Kind != "":
+			parts = append(parts, step.Kind)
+		case step.Name != "":
+			parts = append(parts, step.Name)
+		}
+	}
+	return strings.Join(parts, " -> ")
+}
+
+func formatResourceRisk(risk ResourceRisk) string {
+	parts := make([]string, 0, 6)
+	if risk.CPU {
+		parts = append(parts, "CPU")
+	}
+	if risk.Heap {
+		parts = append(parts, "heap")
+	}
+	if risk.DBTime {
+		parts = append(parts, "DB time")
+	}
+	if risk.DBRows {
+		parts = append(parts, "DB rows")
+	}
+	if risk.Locks {
+		parts = append(parts, "locks")
+	}
+	if risk.SharedLimit {
+		parts = append(parts, "shared limits")
+	}
+	return strings.Join(parts, ", ")
 }

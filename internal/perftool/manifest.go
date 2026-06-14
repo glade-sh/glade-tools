@@ -27,9 +27,9 @@ func writeManifest(w io.Writer) error {
 		APIVersion: "glade.plugin.v1",
 		Name:       "performance",
 		Version:    pluginVersion,
-		Summary:    "Advisory Salesforce performance scanner.",
+		Summary:    "Trace-aware Salesforce transaction performance analyzer.",
 		Commands: []pluginCommandManifest{
-			{Path: []string{"performance"}, Summary: "Scan Salesforce projects for performance risks."},
+			{Path: []string{"performance"}, Summary: "Correlate Apex, metadata, trace, and org-shape facts for performance risks."},
 		},
 		MinimumGladeVersion: "0.1.0",
 		Source:              "github.com/glade-sh/glade/tools",

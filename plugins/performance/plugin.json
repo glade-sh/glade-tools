@@ -2,13 +2,13 @@
   "apiVersion": "glade.plugin.v1",
   "name": "performance",
   "version": "0.1.0",
-  "summary": "Advisory Salesforce performance scanner.",
+  "summary": "Trace-aware Salesforce transaction performance analyzer.",
   "commands": [
     {
       "path": [
         "performance"
       ],
-      "summary": "Scan Salesforce projects for performance risks."
+      "summary": "Correlate Apex, metadata, trace, and org-shape facts for performance risks."
     }
   ],
   "minimumGladeVersion": "0.1.0",

@@ -71,6 +71,19 @@ glade compat local-tests --project . --json
 glade performance scan --project . --json
 ```
 
+The performance plugin reads local source, metadata, optional Glade trace JSON,
+and optional org/data-shape snapshots:
+
+```bash
+glade performance scan --project . --format json
+glade performance scan --project . --trace reports/slow.trace.json --top 10
+glade performance scan --project . --org-facts reports/org-facts.json --fail-on high
+glade performance scan --project . --format sarif > reports/glade-performance.sarif
+```
+
+Static findings are leads. Trace-backed findings carry measured local evidence.
+Org facts are local JSON snapshots; the plugin does not call Salesforce.
+
 The short aliases still resolve for first-party installs:
 
 ```bash

@@ -31,6 +31,9 @@ func TestAnalyzeProjectFindsApexPerformanceRisks(t *testing.T) {
 	assertFinding(t, report, "perf.soql.subquery-no-limit")
 	assertFinding(t, report, "perf.soql.where-formula")
 	assertFinding(t, report, "perf.soql.orderby-no-index")
+	assertFinding(t, report, "perf.soql.sobject-list-bind")
+	assertFinding(t, report, "perf.soql.null-bind")
+	assertFinding(t, report, "perf.debug.serialize")
 	assertEntryPoint(t, report, EntryTrigger)
 	assertEntryPoint(t, report, EntryBatch)
 
@@ -48,6 +51,53 @@ func TestAnalyzeProjectFindsApexPerformanceRisks(t *testing.T) {
 	assertNoFinding(t, report, "perf.ui.auraenabled.uncached")
 	assertNoFinding(t, report, "perf.async.batch.unfiltered-start")
 	assertNoFinding(t, report, "perf.soql.unfiltered")
+}
+
+func TestAnalyzeProjectFindsQueryBindAndDebugSerializationRisks(t *testing.T) {
+	root := testPerfProject(t, map[string]string{
+		"force-app/main/default/classes/QueryShapeRisk.cls": `
+public class QueryShapeRisk {
+  public static List<Account> byRecords(List<SObject> records) {
+    return [SELECT Id FROM Account WHERE Id IN :records];
+  }
+
+  public static List<Contact> byMaybeAccount(Id maybeAccountId) {
+    return [SELECT Id FROM Contact WHERE AccountId = :maybeAccountId];
+  }
+
+  public static List<Contact> byProofedAccount(Id accountId) {
+    if (accountId == null) {
+      return new List<Contact>();
+    }
+    return [SELECT Id FROM Contact WHERE AccountId = :accountId];
+  }
+
+  public static List<Account> byIds(List<Id> ids) {
+    return [SELECT Id FROM Account WHERE Id IN :ids];
+  }
+
+  public static void debugRows(List<Account> records) {
+    System.debug(JSON.serialize(records));
+  }
+}`,
+	})
+
+	report := analyzeTestProject(t, root, Options{})
+
+	sobjectBind := requireFinding(t, report, "perf.soql.sobject-list-bind")
+	if sobjectBind.Location.Line != 4 {
+		t.Fatalf("sobject bind location = %#v", sobjectBind.Location)
+	}
+	nullBind := requireFinding(t, report, "perf.soql.null-bind")
+	if nullBind.Location.Line != 8 {
+		t.Fatalf("null bind location = %#v", nullBind.Location)
+	}
+	debugSerialize := requireFinding(t, report, "perf.debug.serialize")
+	if debugSerialize.Location.Line != 23 {
+		t.Fatalf("debug serialize location = %#v", debugSerialize.Location)
+	}
+	assertNoFindingAtLine(t, report, "perf.soql.null-bind", 15)
+	assertNoFindingAtLine(t, report, "perf.soql.sobject-list-bind", 19)
 }
 
 func assertFinding(t *testing.T, report Report, id string) {

@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 2,
+  "project": "$PROJECT",
+  "summary": {
+    "findings": 38,
+    "high": 11,
+    "medium": 26,
+    "low": 1,
+    "categories": {
+      "apex": 1,
+      "async": 14,
+      "automation": 2,
+      "describe": 2,
+      "dml": 5,
+      "soql": 14
+    }
+  },
+  "findings": [
+    {
+      "id": "perf.dml.loop",
+      "category": "dml",
+      "severity": "high",
+      "confidence": "static",
+      "score": 100,
+      "entryPoint": {},
+      "message": "DML inside a loop can exceed statement limits and repeats save-order automation per record.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 35
+      },
+      "multiplicity": "per-record",
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "DML inside a loop can exceed statement limits and repeats save-order automation per record."
+        }
+      ],
+      "resourceRisk": {
+        "dbTime": true,
+        "locks": true,
+        "sharedLimit": true
+      },
+      "fix": "Build a collection inside the loop and run one DML operation after the loop."
+    },
+    {
+      "id": "perf.soql.loop",
+      "category": "soql",
+      "severity": "high",
+      "confidence": "static",
+      "score": 98,
+      "entryPoint": {},
+      "message": "SOQL inside a loop can exceed query limits and repeats database work per record.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 5
+      },
+      "multiplicity": "per-record",
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "SOQL inside a loop can exceed query limits and repeats database work per record."
+        }
+      ],
+      "resourceRisk": {
+        "dbTime": true,
+        "dbRows": true,
+        "sharedLimit": true
+      },
+      "fix": "Move the query outside the loop, query all needed rows once, and use a map keyed by Id or business key."
+    },
+    {
+      "id": "perf.soql.loop",
+      "category": "soql",
+      "severity": "high",
+      "confidence": "static",
+      "score": 98,
+      "entryPoint": {},
+      "message": "SOQL inside a loop can exceed query limits and repeats database work per record.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/triggers/AccountPerf.trigger",
+        "line": 2
+      },
+      "multiplicity": "per-record",
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "SOQL inside a loop can exceed query limits and repeats database work per record."
+        }
+      ],
+      "resourceRisk": {
+        "dbTime": true,
+        "dbRows": true,
+        "sharedLimit": true
+      },
+      "fix": "Move the query outside the loop, query all needed rows once, and use a map keyed by Id or business key."
+    },
+    {
+      "id": "perf.async.loop",
+      "category": "async",
+      "severity": "high",
+      "confidence": "static",
+      "score": 90,
+      "entryPoint": {},
+      "message": "Async enqueue inside a loop can exceed queueable, future, scheduled, or batch enqueue limits.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 69
+      },
+      "multiplicity": "per-record",
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "Async enqueue inside a loop can exceed queueable, future, scheduled, or batch enqueue limits."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "sharedLimit": true
+      },
+      "fix": "Enqueue one job with the full work set or batch the records through a bounded async entry point."
+    },
+    {
+      "id": "perf.static.first-touch",
+      "category": "describe",
+      "severity": "high",
+      "confidence": "static",
+      "score": 79,
+      "entryPoint": {
+        "kind": "aura",
+        "name": "PerfStaticController.label",
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 108
+      },
+      "message": "A cheap static field read first-touches describe, SOQL, or metadata work.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 104
+      },
+      "path": [
+        {
+          "kind": "entryPoint",
+          "name": "PerfStaticController.label",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 108
+        },
+        {
+          "kind": "method",
+          "name": "PerfStaticController.label",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 108
+        },
+        {
+          "kind": "staticInit",
+          "name": "PerfStaticConstants.\u003cstatic_init\u003e",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 104
+        }
+      ],
+      "multiplicity": "once-per-transaction",
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "Schema.getGlobalDescribe in static initializer",
+          "value": "Schema.getGlobalDescribe"
+        },
+        {
+          "kind": "static",
+          "message": "first touch via static field",
+          "value": "PerfStaticConstants.label"
+        },
+        {
+          "kind": "static",
+          "message": "heavy static initializer",
+          "value": "static field TOKENS"
+        },
+        {
+          "kind": "static",
+          "message": "graph path",
+          "nodeId": "31",
+          "path": [
+            {
+              "kind": "entryPoint",
+              "name": "PerfStaticController.label",
+              "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+              "line": 108
+            },
+            {
+              "kind": "method",
+              "name": "PerfStaticController.label",
+              "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+              "line": 108
+            },
+            {
+              "kind": "staticInit",
+              "name": "PerfStaticConstants.\u003cstatic_init\u003e",
+              "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+              "line": 104
+            }
+          ],
+          "resourceRisk": {
+            "cpu": true,
+            "heap": true,
+            "sharedLimit": true
+          }
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "heap": true,
+        "sharedLimit": true
+      },
+      "fix": "Split cheap constants from metadata/config loaders and lazy-load describe/config by key.",
+      "acceptance": "Referencing a string constant must not execute describe, SOQL, or getAll work."
+    },
+    {
+      "id": "perf.dml.blast-radius",
+      "category": "dml",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 67,
+      "entryPoint": {
+        "kind": "future",
+        "name": "FutureRisk.futureOnly",
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 286
+      },
+      "message": "DML touches an object with downstream automation or sharing work in the same save order.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 289
+      },
+      "path": [
+        {
+          "kind": "entryPoint",
+          "name": "FutureRisk.futureOnly",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 286
+        },
+        {
+          "kind": "method",
+          "name": "FutureRisk.futureOnly",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 286
+        },
+        {
+          "kind": "dml",
+          "name": "insert account",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 289
+        }
+      ],
+      "multiplicity": "per-DML",
+      "evidence": [
+        {
+          "kind": "dml",
+          "message": "operation",
+          "value": "insert account"
+        },
+        {
+          "kind": "trigger",
+          "message": "Apex triggers",
+          "value": "AccountPerf"
+        },
+        {
+          "kind": "workflow",
+          "message": "active workflow rules",
+          "value": "1"
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "dbTime": true,
+        "locks": true,
+        "sharedLimit": true
+      },
+      "fix": "Guard no-op updates, bulkify save-order side effects, and remove duplicate Flow, Workflow, and trigger work where safe.",
+      "acceptance": "A no-op field update on the same object is removed or guarded, and DML tests prove only necessary rows are updated."
+    },
+    {
+      "id": "perf.dml.blast-radius",
+      "category": "dml",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 67,
+      "entryPoint": {
+        "kind": "future",
+        "name": "FutureRisk.futureCalloutWithDml",
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 292
+      },
+      "message": "DML touches an object with downstream automation or sharing work in the same save order.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 295
+      },
+      "path": [
+        {
+          "kind": "entryPoint",
+          "name": "FutureRisk.futureCalloutWithDml",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 292
+        },
+        {
+          "kind": "method",
+          "name": "FutureRisk.futureCalloutWithDml",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 292
+        },
+        {
+          "kind": "dml",
+          "name": "insert new Account(Name = names[0])",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 295
+        }
+      ],
+      "multiplicity": "per-DML",
+      "evidence": [
+        {
+          "kind": "dml",
+          "message": "operation",
+          "value": "insert new Account(Name = names[0])"
+        },
+        {
+          "kind": "trigger",
+          "message": "Apex triggers",
+          "value": "AccountPerf"
+        },
+        {
+          "kind": "workflow",
+          "message": "active workflow rules",
+          "value": "1"
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "dbTime": true,
+        "locks": true,
+        "sharedLimit": true
+      },
+      "fix": "Guard no-op updates, bulkify save-order side effects, and remove duplicate Flow, Workflow, and trigger work where safe.",
+      "acceptance": "A no-op field update on the same object is removed or guarded, and DML tests prove only necessary rows are updated."
+    },
+    {
+      "id": "perf.dml.blast-radius",
+      "category": "dml",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 67,
+      "entryPoint": {
+        "kind": "invocable",
+        "name": "PerfRisk.invocableWork",
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 33
+      },
+      "message": "DML touches an object with downstream automation or sharing work in the same save order.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 36
+      },
+      "path": [
+        {
+          "kind": "entryPoint",
+          "name": "PerfRisk.invocableWork",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 33
+        },
+        {
+          "kind": "method",
+          "name": "PerfRisk.invocableWork",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 33
+        },
+        {
+          "kind": "dml",
+          "name": "update new Account(Id = accountId, Description = 'changed')",
+          "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+          "line": 36
+        }
+      ],
+      "multiplicity": "per-DML",
+      "evidence": [
+        {
+          "kind": "dml",
+          "message": "operation",
+          "value": "update new Account(Id = accountId, Description = 'changed')"
+        },
+        {
+          "kind": "static",
+          "message": "direct loop body"
+        },
+        {
+          "kind": "trigger",
+          "message": "Apex triggers",
+          "value": "AccountPerf"
+        },
+        {
+          "kind": "workflow",
+          "message": "active workflow rules",
+          "value": "1"
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "dbTime": true,
+        "locks": true,
+        "sharedLimit": true
+      },
+      "fix": "Guard no-op updates, bulkify save-order side effects, and remove duplicate Flow, Workflow, and trigger work where safe.",
+      "acceptance": "A no-op field update on the same object is removed or guarded, and DML tests prove only necessary rows are updated."
+    },
+    {
+      "id": "perf.dml.blast-radius",
+      "category": "dml",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 67,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "DML touches an object with downstream automation or sharing work in the same save order.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 82
+      },
+      "multiplicity": "per-DML",
+      "evidence": [
+        {
+          "kind": "dml",
+          "message": "operation",
+          "value": "update accounts"
+        },
+        {
+          "kind": "trigger",
+          "message": "Apex triggers",
+          "value": "AccountPerf"
+        },
+        {
+          "kind": "workflow",
+          "message": "active workflow rules",
+          "value": "1"
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "dbTime": true,
+        "locks": true,
+        "sharedLimit": true
+      },
+      "fix": "Guard no-op updates, bulkify save-order side effects, and remove duplicate Flow, Workflow, and trigger work where safe.",
+      "acceptance": "A no-op field update on the same object is removed or guarded, and DML tests prove only necessary rows are updated."
+    },
+    {
+      "id": "perf.soql.null-bind",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 63,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL uses a nullable bind without a nearby null guard.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 142
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "query",
+          "value": "SELECT Id FROM Contact WHERE AccountId = :maybeAccountId"
+        },
+        {
+          "kind": "soql",
+          "message": "bind without null proof",
+          "value": "maybeAccountId"
+        }
+      ],
+      "resourceRisk": {
+        "dbTime": true,
+        "dbRows": true
+      },
+      "fix": "Return early on null binds or route null cases through a separate narrow query path."
+    },
+    {
+      "id": "perf.soql.sobject-list-bind",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 63,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL binds an SObject collection directly in an IN predicate.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 140
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "query",
+          "value": "SELECT Id FROM Account WHERE Id IN :recordBinds"
+        },
+        {
+          "kind": "soql",
+          "message": "SObject collection bind",
+          "value": "recordBinds"
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "dbTime": true,
+        "dbRows": true
+      },
+      "fix": "Extract a Set\u003cId\u003e or typed key set before the query and bind that collection instead."
+    },
+    {
+      "id": "perf.async.batch.unbounded-cycle",
+      "category": "async",
+      "severity": "high",
+      "confidence": "static",
+      "score": 60,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Batch chaining forms a cycle and can run indefinitely across execution contexts.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 257
+      },
+      "evidence": [
+        {
+          "kind": "async",
+          "message": "batch chain",
+          "value": "BatchChainFinish -\u003e BatchChainFinish"
+        }
+      ],
+      "fix": "Stop recursive batch chaining and move state checks to avoid uncontrolled fan-out."
+    },
+    {
+      "id": "perf.async.future.callout-dml",
+      "category": "async",
+      "severity": "high",
+      "confidence": "static",
+      "score": 60,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "@future(callout=true) mixed with DML in one method will throw runtime mixed-DML restrictions.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 292
+      },
+      "fix": "Split callout and DML into separate async paths or use Continuation/queueable orchestration."
+    },
+    {
+      "id": "perf.async.queueable.chain-depth",
+      "category": "async",
+      "severity": "high",
+      "confidence": "static",
+      "score": 60,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Queueable chain depth exceeds the safe limit and can overflow chain safety boundaries.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 167
+      },
+      "evidence": [
+        {
+          "kind": "async",
+          "message": "queueable chain",
+          "value": "QueueableChainStart -\u003e QueueableChainStep2 -\u003e QueueableChainStep3 -\u003e QueueableChainStep4 -\u003e QueueableChainStep5"
+        }
+      ],
+      "fix": "Replace unbounded queueable handoff with explicit completion conditions and per-run limits."
+    },
+    {
+      "id": "perf.async.queueable.chain-depth",
+      "category": "async",
+      "severity": "high",
+      "confidence": "static",
+      "score": 60,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Queueable chain depth exceeds the safe limit and can overflow chain safety boundaries.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 173
+      },
+      "evidence": [
+        {
+          "kind": "async",
+          "message": "queueable chain",
+          "value": "QueueableChainStep2 -\u003e QueueableChainStep3 -\u003e QueueableChainStep4 -\u003e QueueableChainStep5 -\u003e QueueableChainFinal"
+        }
+      ],
+      "fix": "Replace unbounded queueable handoff with explicit completion conditions and per-run limits."
+    },
+    {
+      "id": "perf.async.queueable.cycle",
+      "category": "async",
+      "severity": "high",
+      "confidence": "static",
+      "score": 60,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Queueable chaining has a cycle and can recurse until async limits are reached.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 183
+      },
+      "evidence": [
+        {
+          "kind": "async",
+          "message": "queueable chain",
+          "value": "QueueableCycleA -\u003e QueueableCycleB -\u003e QueueableCycleC -\u003e QueueableCycleA"
+        }
+      ],
+      "fix": "Limit queueable handoff depth and include state checks to stop unbounded chaining."
+    },
+    {
+      "id": "perf.async.schedule.recursive",
+      "category": "async",
+      "severity": "high",
+      "confidence": "static",
+      "score": 60,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Schedulable classes reschedule themselves and can create run-away job loops.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 281
+      },
+      "evidence": [
+        {
+          "kind": "async",
+          "message": "schedule chain",
+          "value": "RecursiveScheduler -\u003e RecursiveScheduler"
+        }
+      ],
+      "fix": "Use explicit termination checks and central schedule configuration to avoid recursive rescheduling."
+    },
+    {
+      "id": "perf.async.batch.execute-queueable",
+      "category": "async",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {},
+      "message": "Batch execute enqueues Queueable work, which can stack async work inside chunked transactions.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 267
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "Batch execute enqueues Queueable work, which can stack async work inside chunked transactions."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "sharedLimit": true
+      },
+      "fix": "Return a bounded payload from batch execute into one queue job per chunk or use an explicit work queue entry."
+    },
+    {
+      "id": "perf.async.batch.execute-queueable",
+      "category": "async",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {},
+      "message": "Batch execute enqueues Queueable work, which can stack async work inside chunked transactions.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 70
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "Batch execute enqueues Queueable work, which can stack async work inside chunked transactions."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "sharedLimit": true
+      },
+      "fix": "Return a bounded payload from batch execute into one queue job per chunk or use an explicit work queue entry."
+    },
+    {
+      "id": "perf.async.batch.execute",
+      "category": "async",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {},
+      "message": "Batch execute calls executeBatch, which can spawn additional full-scan jobs from each execute scope.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 241
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "Batch execute calls executeBatch, which can spawn additional full-scan jobs from each execute scope."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "sharedLimit": true
+      },
+      "fix": "Ensure batching boundaries and terminal conditions exist so chained jobs cannot run indefinitely."
+    },
+    {
+      "id": "perf.async.batch.finish",
+      "category": "async",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {},
+      "message": "Batch finish calls executeBatch, which can continue chain creation after each scope completes.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 257
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "Batch finish calls executeBatch, which can continue chain creation after each scope completes."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "sharedLimit": true
+      },
+      "fix": "Evaluate finish-time batching and cap chaining through explicit run-state checks."
+    },
+    {
+      "id": "perf.async.future",
+      "category": "async",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {},
+      "message": "@future methods defer execution and consume async governor budgets.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 286
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "@future methods defer execution and consume async governor budgets."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "sharedLimit": true
+      },
+      "fix": "Use @future only for intentionally asynchronous work, or prefer Queueable/Batch for longer logic."
+    },
+    {
+      "id": "perf.async.future",
+      "category": "async",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {},
+      "message": "@future methods defer execution and consume async governor budgets.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 292
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "@future methods defer execution and consume async governor budgets."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "sharedLimit": true
+      },
+      "fix": "Use @future only for intentionally asynchronous work, or prefer Queueable/Batch for longer logic."
+    },
+    {
+      "id": "perf.debug.serialize",
+      "category": "apex",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "System.debug serializes a runtime payload before log filtering can discard it.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 143
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "debug serialization",
+          "value": "System.debug(JSON.serialize(manyFields))"
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "heap": true,
+        "sharedLimit": true
+      },
+      "fix": "Guard debug serialization behind an explicit log flag, or log bounded identifiers instead of full payloads."
+    },
+    {
+      "id": "perf.describe.repeated",
+      "category": "describe",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 55,
+      "entryPoint": {},
+      "message": "Repeated describe calls in the same method can waste CPU and heap.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 8
+      },
+      "evidence": [
+        {
+          "kind": "static",
+          "message": "Repeated describe calls in the same method can waste CPU and heap."
+        }
+      ],
+      "resourceRisk": {
+        "cpu": true,
+        "heap": true,
+        "sharedLimit": true
+      },
+      "fix": "Store describe results in a local variable or immutable per-transaction cache."
+    },
+    {
+      "id": "perf.automation.flow.data-fanout",
+      "category": "automation",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 48,
+      "entryPoint": {
+        "kind": "flow",
+        "name": "Perf_Flow",
+        "file": "$PROJECT/force-app/main/default/flows/Perf_Flow.flow-meta.xml"
+      },
+      "message": "Flow data elements add SOQL or DML work inside the same transaction as Apex, triggers, and validation.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/flows/Perf_Flow.flow-meta.xml"
+      },
+      "evidence": [
+        {
+          "kind": "flow",
+          "message": "record lookup count",
+          "value": "1"
+        },
+        {
+          "kind": "flow",
+          "message": "record mutation count",
+          "value": "1"
+        }
+      ],
+      "fix": "Reduce data elements in loops, prefer before-save field updates for simple same-record changes, and avoid duplicate lookup/update paths with Apex triggers."
+    },
+    {
+      "id": "perf.async.queueable.self-continuation",
+      "category": "async",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Queueable execute re-enqueues the same class as a continuation while work remains.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 211
+      },
+      "evidence": [
+        {
+          "kind": "async",
+          "message": "queueable continuation",
+          "value": "QueueableSelfContinuation -\u003e QueueableSelfContinuation"
+        }
+      ],
+      "fix": "Verify the payload shrinks on every run, cap chain depth where possible, and prefer batch or scheduled work for large subscriber-org backlogs."
+    },
+    {
+      "id": "perf.soql.orderby-no-index",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "ORDER BY on non-indexed fields may require a full sort and consume additional query resources.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 135
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "query",
+          "value": "SELECT Id FROM Account WHERE OwnerId != null ORDER BY UnindexedText__c"
+        },
+        {
+          "kind": "soql",
+          "message": "ORDER BY field",
+          "value": "UnindexedText__c"
+        }
+      ],
+      "fix": "Where possible, ORDER BY indexed fields or perform sorting in post-fetch application logic on small result sets."
+    },
+    {
+      "id": "perf.soql.overfetch",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL returns more columns than needed and may increase row transfer and CPU.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 122
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "query",
+          "value": "SELECT FIELDS(ALL) FROM Account WHERE Id != null"
+        },
+        {
+          "kind": "soql",
+          "message": "query uses FIELDS(ALL)"
+        }
+      ],
+      "fix": "Project only fields required by the business path. Prefer explicit minimal field lists over broad selectors."
+    },
+    {
+      "id": "perf.soql.overfetch",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL returns more columns than needed and may increase row transfer and CPU.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 124
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "query",
+          "value": "SELECT\n            Id, Name, Description, Phone, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry,\n            ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry,\n            CreatedDate, SystemModstamp, OwnerId, Type, Industry, AnnualRevenue, Website, LastName, FirstName,\n            Name, ExternalId__c\n            FROM Account WHERE Id != null"
+        },
+        {
+          "kind": "soql",
+          "message": "query projects 25 fields"
+        }
+      ],
+      "fix": "Project only fields required by the business path. Prefer explicit minimal field lists over broad selectors."
+    },
+    {
+      "id": "perf.soql.selectivity",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL WHERE clauses may be non-selective for large subscriber-org tables.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 116
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "soql selectivity score",
+          "value": "3"
+        },
+        {
+          "kind": "soql",
+          "message": "LIKE with leading wildcard"
+        }
+      ],
+      "fix": "Check the query plan with production-scale row counts, then refine filters to indexed fields or narrower predicates where needed."
+    },
+    {
+      "id": "perf.soql.selectivity",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL WHERE clauses may be non-selective for large subscriber-org tables.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 122
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "soql selectivity score",
+          "value": "3"
+        },
+        {
+          "kind": "soql",
+          "message": "!="
+        }
+      ],
+      "fix": "Check the query plan with production-scale row counts, then refine filters to indexed fields or narrower predicates where needed."
+    },
+    {
+      "id": "perf.soql.selectivity",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL WHERE clauses may be non-selective for large subscriber-org tables.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 124
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "soql selectivity score",
+          "value": "3"
+        },
+        {
+          "kind": "soql",
+          "message": "!="
+        }
+      ],
+      "fix": "Check the query plan with production-scale row counts, then refine filters to indexed fields or narrower predicates where needed."
+    },
+    {
+      "id": "perf.soql.selectivity",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL WHERE clauses may be non-selective for large subscriber-org tables.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 133
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "soql selectivity score",
+          "value": "3"
+        },
+        {
+          "kind": "soql",
+          "message": "Formula field in WHERE"
+        }
+      ],
+      "fix": "Check the query plan with production-scale row counts, then refine filters to indexed fields or narrower predicates where needed."
+    },
+    {
+      "id": "perf.soql.selectivity",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "SOQL WHERE clauses may be non-selective for large subscriber-org tables.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 135
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "soql selectivity score",
+          "value": "3"
+        },
+        {
+          "kind": "soql",
+          "message": "!="
+        }
+      ],
+      "fix": "Check the query plan with production-scale row counts, then refine filters to indexed fields or narrower predicates where needed."
+    },
+    {
+      "id": "perf.soql.subquery-no-limit",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Parent-child subqueries without LIMIT can amplify row processing in nested loops.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 131
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "query",
+          "value": "SELECT Id, Name, (SELECT Id FROM Contacts) FROM Account"
+        },
+        {
+          "kind": "soql",
+          "message": "child relationship without LIMIT",
+          "value": "Contacts"
+        }
+      ],
+      "fix": "Cap subquery output with LIMIT and move filters to the child query root where possible."
+    },
+    {
+      "id": "perf.soql.where-formula",
+      "category": "soql",
+      "severity": "medium",
+      "confidence": "static",
+      "score": 40,
+      "entryPoint": {
+        "kind": "unknown"
+      },
+      "message": "Formula expressions in WHERE break index usage and can force full scans.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+        "line": 133
+      },
+      "evidence": [
+        {
+          "kind": "soql",
+          "message": "SELECT Id FROM Account WHERE CALENDAR_MONTH(CreatedDate) = 12"
+        },
+        {
+          "kind": "soql",
+          "message": "Formula field in WHERE"
+        }
+      ],
+      "fix": "Move formula-derived comparisons to indexed fields or precompute values into helper columns."
+    },
+    {
+      "id": "perf.automation.workflow.active-rule",
+      "category": "automation",
+      "severity": "low",
+      "confidence": "static",
+      "score": 28,
+      "entryPoint": {
+        "kind": "workflow",
+        "name": "Account",
+        "file": "$PROJECT/force-app/main/default/workflows/Account.workflow-meta.xml"
+      },
+      "message": "Active Workflow rules can add field updates and email work after DML and can cause additional save-order passes.",
+      "location": {
+        "file": "$PROJECT/force-app/main/default/workflows/Account.workflow-meta.xml"
+      },
+      "evidence": [
+        {
+          "kind": "workflow",
+          "message": "active workflow metadata"
+        }
+      ],
+      "fix": "Check whether Workflow field updates duplicate trigger or Flow work, and consolidate save-order side effects where safe."
+    }
+  ],
+  "entryPoints": [
+    {
+      "kind": "aura",
+      "name": "PerfRisk.uncachedAccounts",
+      "file": "$PROJECT/force-app/main/default/aura/perfAura/perfAuraController.js",
+      "line": 3,
+      "method": "uncachedAccounts"
+    },
+    {
+      "kind": "batch",
+      "name": "PerfRisk",
+      "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+      "line": 1
+    },
+    {
+      "kind": "flow",
+      "name": "Perf_Flow",
+      "file": "$PROJECT/force-app/main/default/flows/Perf_Flow.flow-meta.xml"
+    },
+    {
+      "kind": "invocable",
+      "name": "InvocableMethod",
+      "file": "$PROJECT/force-app/main/default/classes/PerfRisk.cls",
+      "line": 33
+    },
+    {
+      "kind": "lwc",
+      "name": "PerfRisk.uncachedAccounts",
+      "file": "$PROJECT/force-app/main/default/lwc/perfLwc/perfLwc.js",
+      "line": 2,
+      "method": "uncachedAccounts"
+    },
+    {
+      "kind": "trigger",
+      "name": "AccountPerf",
+      "file": "$PROJECT/force-app/main/default/triggers/AccountPerf.trigger",
+      "line": 1
+    },
+    {
+      "kind": "visualforce",
+      "name": "PerfPage",
+      "file": "$PROJECT/force-app/main/default/pages/PerfPage.page"
+    },
+    {
+      "kind": "workflow",
+      "name": "Account",
+      "file": "$PROJECT/force-app/main/default/workflows/Account.workflow-meta.xml"
+    }
+  ]
+}

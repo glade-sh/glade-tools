@@ -2,7 +2,7 @@ package perfscan
 
 import "sort"
 
-const SchemaVersion = 1
+const SchemaVersion = 2
 
 type Category string
 
@@ -68,17 +68,21 @@ type Summary struct {
 }
 
 type Finding struct {
-	ID         string     `json:"id"`
-	Category   Category   `json:"category"`
-	Severity   Severity   `json:"severity"`
-	Confidence Confidence `json:"confidence"`
-	Score      int        `json:"score"`
-	EntryPoint EntryPoint `json:"entryPoint,omitempty"`
-	Message    string     `json:"message"`
-	Location   Location   `json:"location,omitempty"`
-	Path       []PathStep `json:"path,omitempty"`
-	Evidence   []Evidence `json:"evidence,omitempty"`
-	Fix        string     `json:"fix,omitempty"`
+	ID            string       `json:"id"`
+	Category      Category     `json:"category"`
+	Severity      Severity     `json:"severity"`
+	Confidence    Confidence   `json:"confidence"`
+	Score         int          `json:"score"`
+	EntryPoint    EntryPoint   `json:"entryPoint,omitempty"`
+	Message       string       `json:"message"`
+	Location      Location     `json:"location,omitempty"`
+	Path          []PathStep   `json:"path,omitempty"`
+	NamespacePath []string     `json:"namespacePath,omitempty"`
+	Multiplicity  string       `json:"multiplicity,omitempty"`
+	Evidence      []Evidence   `json:"evidence,omitempty"`
+	ResourceRisk  ResourceRisk `json:"resourceRisk,omitempty,omitzero"`
+	Fix           string       `json:"fix,omitempty"`
+	Acceptance    string       `json:"acceptance,omitempty"`
 }
 
 type EntryPoint struct {
@@ -103,18 +107,49 @@ type PathStep struct {
 }
 
 type Evidence struct {
-	Kind    string `json:"kind"`
-	Message string `json:"message"`
-	Value   string `json:"value,omitempty"`
+	Kind         string       `json:"kind"`
+	Message      string       `json:"message"`
+	Value        string       `json:"value,omitempty"`
+	NodeID       string       `json:"nodeId,omitempty"`
+	Operation    string       `json:"operation,omitempty"`
+	Path         []PathStep   `json:"path,omitempty"`
+	ResourceRisk ResourceRisk `json:"resourceRisk,omitempty,omitzero"`
 }
 
 type Measurement struct {
-	Name       string `json:"name"`
-	Category   string `json:"category,omitempty"`
-	DurationMS int64  `json:"durationMs,omitempty"`
-	Count      int    `json:"count,omitempty"`
-	File       string `json:"file,omitempty"`
-	Line       int    `json:"line,omitempty"`
+	Name         string       `json:"name"`
+	Category     string       `json:"category,omitempty"`
+	DurationMS   int64        `json:"durationMs,omitempty"`
+	Count        int          `json:"count,omitempty"`
+	File         string       `json:"file,omitempty"`
+	Line         int          `json:"line,omitempty"`
+	EntryPoint   EntryPoint   `json:"entryPoint,omitempty,omitzero"`
+	Path         []PathStep   `json:"path,omitempty"`
+	Namespace    string       `json:"namespace,omitempty"`
+	Operation    string       `json:"operation,omitempty"`
+	OperationID  string       `json:"operationId,omitempty"`
+	ResourceRisk ResourceRisk `json:"resourceRisk,omitempty,omitzero"`
+	Evidence     []Evidence   `json:"evidence,omitempty"`
+}
+
+type ResourceRisk struct {
+	CPU         bool `json:"cpu,omitempty"`
+	Heap        bool `json:"heap,omitempty"`
+	DBTime      bool `json:"dbTime,omitempty"`
+	DBRows      bool `json:"dbRows,omitempty"`
+	Locks       bool `json:"locks,omitempty"`
+	SharedLimit bool `json:"sharedLimit,omitempty"`
+}
+
+func mergeResourceRisk(left, right ResourceRisk) ResourceRisk {
+	return ResourceRisk{
+		CPU:         left.CPU || right.CPU,
+		Heap:        left.Heap || right.Heap,
+		DBTime:      left.DBTime || right.DBTime,
+		DBRows:      left.DBRows || right.DBRows,
+		Locks:       left.Locks || right.Locks,
+		SharedLimit: left.SharedLimit || right.SharedLimit,
+	}
 }
 
 func (r *Report) AddFinding(f Finding) {
@@ -136,15 +171,7 @@ func (r *Report) Finalize() {
 	if r.SchemaVersion == 0 {
 		r.SchemaVersion = SchemaVersion
 	}
-	sort.Slice(r.Findings, func(i, j int) bool {
-		if r.Findings[i].Score != r.Findings[j].Score {
-			return r.Findings[i].Score > r.Findings[j].Score
-		}
-		if r.Findings[i].Severity != r.Findings[j].Severity {
-			return severityRank(r.Findings[i].Severity) > severityRank(r.Findings[j].Severity)
-		}
-		return r.Findings[i].ID < r.Findings[j].ID
-	})
+	r.Findings = RankFindings(r.Findings, RankOptions{})
 	sort.Slice(r.EntryPoints, func(i, j int) bool {
 		if r.EntryPoints[i].Kind != r.EntryPoints[j].Kind {
 			return r.EntryPoints[i].Kind < r.EntryPoints[j].Kind

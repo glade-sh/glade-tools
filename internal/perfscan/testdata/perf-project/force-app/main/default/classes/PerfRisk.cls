@@ -99,6 +99,18 @@ class FakeQueueable {
     public void enqueueJob(Object o) {}
 }
 
+public class PerfStaticConstants {
+    public static final String LABEL = 'Perf';
+    public static Map<String, Schema.SObjectType> TOKENS = Schema.getGlobalDescribe();
+}
+
+public class PerfStaticController {
+    @AuraEnabled(cacheable=true)
+    public static String label() {
+        return PerfStaticConstants.LABEL;
+    }
+}
+
 class PerfRiskSelectivityTests {
     public static void selectivityAndAggregationScans() {
         List<Account> accounts = [
@@ -124,6 +136,11 @@ class PerfRiskSelectivityTests {
 
         Integer countAll = [SELECT COUNT() FROM Account];
         Integer countById = [SELECT COUNT(Id) FROM Account];
+        List<SObject> recordBinds = new List<SObject>{new Account(Id = '001000000000001AAA')};
+        List<Account> sObjectBind = [SELECT Id FROM Account WHERE Id IN :recordBinds];
+        Id maybeAccountId = null;
+        List<Contact> nullableBind = [SELECT Id FROM Contact WHERE AccountId = :maybeAccountId];
+        System.debug(JSON.serialize(manyFields));
     }
 }
 

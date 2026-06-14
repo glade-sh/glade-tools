@@ -11,9 +11,10 @@ import (
 )
 
 type Options struct {
-	ProjectRoot string
-	TracePath   string
-	TopN        int
+	ProjectRoot  string
+	TracePath    string
+	OrgFactsPath string
+	TopN         int
 }
 
 func AnalyzeProject(options Options) (Report, error) {
@@ -46,16 +47,48 @@ func AnalyzeProject(options Options) (Report, error) {
 
 	index := typesys.Build(p, schema)
 	scanApex(&report, p, parsed, index)
-	scanMetadata(&report, p, index)
+	sourceGraph := BuildSourceGraph(parsed, index)
+	metadataFacts := BuildMetadataFacts(p, parsed)
+	ApplyMetadataFacts(sourceGraph, metadataFacts, parsed)
+	var orgFacts OrgFacts
+	hasOrgFacts := false
+	if options.OrgFactsPath != "" {
+		loadedOrgFacts, err := LoadOrgFacts(options.OrgFactsPath)
+		if err != nil {
+			return report, err
+		}
+		orgFacts = loadedOrgFacts
+		hasOrgFacts = true
+		ApplyOrgFacts(sourceGraph, orgFacts)
+	}
+	traceLoaded := false
 	if options.TracePath != "" {
 		data, err := os.ReadFile(options.TracePath)
 		if err != nil {
 			return report, err
 		}
-		if err := scanTraceBytes(&report, data); err != nil {
+		profileReport, err := TraceProfileFromBytes(data)
+		if err != nil {
 			return report, err
 		}
+		correlation := CorrelateTrace(sourceGraph, profileReport)
+		AddTraceMeasurements(&report, profileReport.Spans)
+		AddMeasuredTraceFindingsForEntries(&report, correlation.Unmatched)
+		traceLoaded = true
+	}
+	emitSourceGraphFindings(&report, sourceGraph)
+	emitMetadataGraphFindings(&report, sourceGraph)
+	if hasOrgFacts {
+		emitOrgFactFindings(&report, sourceGraph, orgFacts)
+	}
+	scanMetadata(&report, p, index)
+	if traceLoaded {
+		promoteReportFindingsFromTrace(&report, sourceGraph)
 	}
 	report.Finalize()
+	if options.TopN > 0 && len(report.Findings) > options.TopN {
+		report.Findings = report.Findings[:options.TopN]
+		report.Finalize()
+	}
 	return report, nil
 }
