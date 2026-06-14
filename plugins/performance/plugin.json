@@ -11,6 +11,29 @@
       "summary": "Correlate Apex, metadata, trace, and org-shape facts for performance risks."
     }
   ],
+  "editor": {
+    "actions": [
+      {
+        "id": "performance.scanProject",
+        "title": "Scan Performance Risks",
+        "view": "startHere",
+        "contexts": [
+          "project"
+        ],
+        "command": [
+          "performance"
+        ],
+        "args": [
+          "--project",
+          "${projectRoot}",
+          "--json",
+          "--editor-findings"
+        ],
+        "output": "glade.findings.v1",
+        "icon": "pulse"
+      }
+    ]
+  },
   "minimumGladeVersion": "0.1.0",
   "source": "github.com/glade-sh/glade/tools"
 }

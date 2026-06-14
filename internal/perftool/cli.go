@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/glade-sh/glade/internal/flagparse"
+	"github.com/glade-sh/glade/tools/internal/editorfindings"
 	"github.com/glade-sh/glade/tools/internal/perfscan"
 )
 
@@ -58,10 +59,14 @@ func run(ctx context.Context, args []string, w io.Writer) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if len(args) < 2 || args[0] != "performance" || args[1] != "scan" {
-		return errors.New("usage: glade performance scan [--project <root>] [--trace <path>] [--org-facts <path>] [--format markdown|json|sarif] [--min-confidence static|measured|combined] [--fail-on none|high|measured] [--top <n>]")
+	if len(args) < 1 || args[0] != "performance" {
+		return errors.New("usage: glade performance [scan] [--project <root>] [--trace <path>] [--org-facts <path>] [--format markdown|json|sarif] [--min-confidence static|measured|combined] [--fail-on none|high|measured] [--top <n>] [--editor-findings]")
 	}
-	return runScan(args[2:], w)
+	scanArgs := args[1:]
+	if len(scanArgs) > 0 && scanArgs[0] == "scan" {
+		scanArgs = scanArgs[1:]
+	}
+	return runScan(scanArgs, w)
 }
 
 func runScan(args []string, w io.Writer) error {
@@ -82,6 +87,7 @@ func runScan(args []string, w io.Writer) error {
 		String("min-confidence", "").
 		String("fail-on", "").
 		Bool("json", "j").
+		Bool("editor-findings", "").
 		Parse(args)
 	if err != nil {
 		return err
@@ -117,7 +123,11 @@ func runScan(args []string, w io.Writer) error {
 		return err
 	}
 	report = filterReport(report, minConfidence, topN)
-	if err := writeReport(w, format, report); err != nil {
+	if parsed.Bool("editor-findings") {
+		if err := editorfindings.Write(w, performanceEditorFindings(report)); err != nil {
+			return err
+		}
+	} else if err := writeReport(w, format, report); err != nil {
 		return err
 	}
 	if failOnReport(report, failOn) {
@@ -130,7 +140,7 @@ func printHelp(w io.Writer) {
 	fmt.Fprint(w, `glade performance plugin.
 
 Usage:
-  glade performance scan [--project <root>] [--trace <path>] [--org-facts <path>] [--format markdown|json|sarif] [--min-confidence static|measured|combined] [--fail-on none|high|measured] [--top <n>]
+  glade performance [scan] [--project <root>] [--trace <path>] [--org-facts <path>] [--format markdown|json|sarif] [--min-confidence static|measured|combined] [--fail-on none|high|measured] [--top <n>] [--editor-findings]
   glade-plugin-performance manifest --json
 `)
 }

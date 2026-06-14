@@ -18,6 +18,7 @@ type pluginManifest struct {
 	Version             string                  `json:"version"`
 	Summary             string                  `json:"summary"`
 	Commands            []pluginCommandManifest `json:"commands"`
+	Editor              pluginEditorManifest    `json:"editor,omitempty"`
 	MinimumGladeVersion string                  `json:"minimumGladeVersion"`
 	Source              string                  `json:"source"`
 }
@@ -25,6 +26,29 @@ type pluginManifest struct {
 type pluginCommandManifest struct {
 	Path    []string `json:"path"`
 	Summary string   `json:"summary"`
+}
+
+type pluginEditorManifest struct {
+	Actions []pluginEditorActionManifest `json:"actions,omitempty"`
+}
+
+type pluginEditorActionManifest struct {
+	ID       string                      `json:"id"`
+	Title    string                      `json:"title"`
+	View     string                      `json:"view"`
+	Contexts []string                    `json:"contexts,omitempty"`
+	Command  []string                    `json:"command"`
+	Args     []string                    `json:"args,omitempty"`
+	Inputs   []pluginEditorInputManifest `json:"inputs,omitempty"`
+	Output   string                      `json:"output"`
+	Icon     string                      `json:"icon,omitempty"`
+}
+
+type pluginEditorInputManifest struct {
+	Name     string `json:"name"`
+	Label    string `json:"label"`
+	Type     string `json:"type"`
+	Required bool   `json:"required"`
 }
 
 func writeCompatManifest(w io.Writer) error {
@@ -63,6 +87,43 @@ func writeCompatManifest(w io.Writer) error {
 			{Path: []string{"tooling-fixtures"}, Summary: "Summarize tooling fixture reports."},
 			{Path: []string{"evidence"}, Summary: "Compare fixture evidence with a catalog."},
 			{Path: []string{"oracle-stdlib"}, Summary: "Run scratch-org standard-library oracle probes."},
+		},
+		Editor: pluginEditorManifest{
+			Actions: []pluginEditorActionManifest{
+				{
+					ID:       "compat.postParity",
+					Title:    "Scan Unsupported Local Surfaces",
+					View:     "runs",
+					Contexts: []string{"project"},
+					Command:  []string{"post-parity"},
+					Args:     []string{"--project", "${projectRoot}", "--json", "--editor-findings"},
+					Output:   "glade.findings.v1",
+					Icon:     "search",
+				},
+				{
+					ID:       "compat.visualforceLocalCapture",
+					Title:    "Capture Local Visualforce Evidence",
+					View:     "preview",
+					Contexts: []string{"project", "vfServerRunning"},
+					Command:  []string{"visualforce", "capture"},
+					Args:     []string{"--local", "--glade-bin", "glade", "--project", "${projectRoot}", "--out", "${outputDir}/visualforce-local.json", "--json", "--editor-findings"},
+					Output:   "glade.findings.v1",
+					Icon:     "record",
+				},
+				{
+					ID:       "compat.lwcCapture",
+					Title:    "Capture LWC Org Evidence",
+					View:     "preview",
+					Contexts: []string{"project", "lwcServerRunning"},
+					Command:  []string{"compat", "lwc", "capture"},
+					Inputs: []pluginEditorInputManifest{
+						{Name: "targetOrg", Label: "Target org alias", Type: "text", Required: true},
+					},
+					Args:   []string{"--target-org", "${input.targetOrg}", "--project", "${projectRoot}", "--out", "${outputDir}/lwc-org-capture.json", "--json", "--editor-findings"},
+					Output: "glade.findings.v1",
+					Icon:   "cloud-download",
+				},
+			},
 		},
 		MinimumGladeVersion: "0.1.0",
 		Source:              pluginSource,

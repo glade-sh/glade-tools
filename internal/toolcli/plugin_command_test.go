@@ -12,11 +12,35 @@ import (
 
 type pluginManifestFile struct {
 	Commands []pluginManifestFileCommand `json:"commands"`
+	Editor   pluginManifestFileEditor    `json:"editor"`
 }
 
 type pluginManifestFileCommand struct {
 	Path    []string `json:"path"`
 	Summary string   `json:"summary"`
+}
+
+type pluginManifestFileEditor struct {
+	Actions []pluginManifestFileEditorAction `json:"actions"`
+}
+
+type pluginManifestFileEditorAction struct {
+	ID       string                          `json:"id"`
+	Title    string                          `json:"title"`
+	View     string                          `json:"view"`
+	Contexts []string                        `json:"contexts"`
+	Command  []string                        `json:"command"`
+	Args     []string                        `json:"args"`
+	Inputs   []pluginManifestFileEditorInput `json:"inputs,omitempty"`
+	Output   string                          `json:"output"`
+	Icon     string                          `json:"icon"`
+}
+
+type pluginManifestFileEditorInput struct {
+	Name     string `json:"name"`
+	Label    string `json:"label"`
+	Type     string `json:"type"`
+	Required bool   `json:"required"`
 }
 
 func TestManifestJSONListsCompatCommands(t *testing.T) {
@@ -78,6 +102,61 @@ func TestManifestJSONListsCompatCommands(t *testing.T) {
 	}
 	if len(want) != 0 {
 		t.Fatalf("manifest missing command roots: %#v", want)
+	}
+}
+
+func TestManifestJSONListsCompatEditorActions(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"manifest", "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	var manifest pluginManifestFile
+	if err := json.Unmarshal(stdout.Bytes(), &manifest); err != nil {
+		t.Fatalf("manifest is not JSON: %v\n%s", err, stdout.String())
+	}
+
+	actions := editorActionByID(manifest.Editor.Actions)
+	want := map[string]pluginManifestFileEditorAction{
+		"compat.postParity": {
+			ID:       "compat.postParity",
+			Title:    "Scan Unsupported Local Surfaces",
+			View:     "runs",
+			Contexts: []string{"project"},
+			Command:  []string{"post-parity"},
+			Args:     []string{"--project", "${projectRoot}", "--json", "--editor-findings"},
+			Output:   "glade.findings.v1",
+			Icon:     "search",
+		},
+		"compat.visualforceLocalCapture": {
+			ID:       "compat.visualforceLocalCapture",
+			Title:    "Capture Local Visualforce Evidence",
+			View:     "preview",
+			Contexts: []string{"project", "vfServerRunning"},
+			Command:  []string{"visualforce", "capture"},
+			Args:     []string{"--local", "--glade-bin", "glade", "--project", "${projectRoot}", "--out", "${outputDir}/visualforce-local.json", "--json", "--editor-findings"},
+			Output:   "glade.findings.v1",
+			Icon:     "record",
+		},
+		"compat.lwcCapture": {
+			ID:       "compat.lwcCapture",
+			Title:    "Capture LWC Org Evidence",
+			View:     "preview",
+			Contexts: []string{"project", "lwcServerRunning"},
+			Command:  []string{"compat", "lwc", "capture"},
+			Inputs:   []pluginManifestFileEditorInput{{Name: "targetOrg", Label: "Target org alias", Type: "text", Required: true}},
+			Args:     []string{"--target-org", "${input.targetOrg}", "--project", "${projectRoot}", "--out", "${outputDir}/lwc-org-capture.json", "--json", "--editor-findings"},
+			Output:   "glade.findings.v1",
+			Icon:     "cloud-download",
+		},
+	}
+	if len(actions) != len(want) {
+		t.Fatalf("editor actions = %#v, want %#v", actions, want)
+	}
+	for id, wantAction := range want {
+		if got, ok := actions[id]; !ok || !editorActionsEqual(got, wantAction) {
+			t.Fatalf("editor action %s = %#v, want %#v", id, got, wantAction)
+		}
 	}
 }
 
@@ -143,6 +222,17 @@ func TestPackagedCompatManifestMatchesRuntimeCommands(t *testing.T) {
 			t.Fatalf("packaged manifest command %q = %q, want %q", command, packagedSummary, runtimeSummary)
 		}
 	}
+
+	runtimeActions := runtimeEditorActionByID(runtime.Editor.Actions)
+	packagedActions := editorActionByID(packaged.Editor.Actions)
+	if len(packagedActions) != len(runtimeActions) {
+		t.Fatalf("packaged actions = %#v, runtime actions = %#v", packagedActions, runtimeActions)
+	}
+	for id, runtimeAction := range runtimeActions {
+		if packagedAction, ok := packagedActions[id]; !ok || !editorActionsEqual(packagedAction, runtimeAction) {
+			t.Fatalf("packaged editor action %q = %#v, want %#v", id, packagedAction, runtimeAction)
+		}
+	}
 }
 
 func TestRunCompatLwcCaptureDoesNotPrintPreparedTextWhenReportWriteFails(t *testing.T) {
@@ -201,6 +291,81 @@ func packagedCommandSummaryByPath(commands []pluginManifestFileCommand) map[stri
 		result[path] = command.Summary
 	}
 	return result
+}
+
+func editorActionByID(actions []pluginManifestFileEditorAction) map[string]pluginManifestFileEditorAction {
+	out := make(map[string]pluginManifestFileEditorAction, len(actions))
+	for _, action := range actions {
+		out[action.ID] = action
+	}
+	return out
+}
+
+func runtimeEditorActionByID(actions []pluginEditorActionManifest) map[string]pluginManifestFileEditorAction {
+	out := make(map[string]pluginManifestFileEditorAction, len(actions))
+	for _, action := range actions {
+		out[action.ID] = pluginManifestFileEditorAction{
+			ID:       action.ID,
+			Title:    action.Title,
+			View:     action.View,
+			Contexts: action.Contexts,
+			Command:  action.Command,
+			Args:     action.Args,
+			Inputs:   runtimeEditorInputs(action.Inputs),
+			Output:   action.Output,
+			Icon:     action.Icon,
+		}
+	}
+	return out
+}
+
+func runtimeEditorInputs(inputs []pluginEditorInputManifest) []pluginManifestFileEditorInput {
+	out := make([]pluginManifestFileEditorInput, 0, len(inputs))
+	for _, input := range inputs {
+		out = append(out, pluginManifestFileEditorInput{
+			Name:     input.Name,
+			Label:    input.Label,
+			Type:     input.Type,
+			Required: input.Required,
+		})
+	}
+	return out
+}
+
+func editorActionsEqual(a, b pluginManifestFileEditorAction) bool {
+	return a.ID == b.ID &&
+		a.Title == b.Title &&
+		a.View == b.View &&
+		a.Output == b.Output &&
+		a.Icon == b.Icon &&
+		stringSliceEqual(a.Contexts, b.Contexts) &&
+		stringSliceEqual(a.Command, b.Command) &&
+		stringSliceEqual(a.Args, b.Args) &&
+		editorInputsEqual(a.Inputs, b.Inputs)
+}
+
+func editorInputsEqual(a, b []pluginManifestFileEditorInput) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func stringSliceEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func TestTopLevelHelpListsMaintenanceCommandRoots(t *testing.T) {

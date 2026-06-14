@@ -17,6 +17,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"github.com/glade-sh/glade/tools/internal/capability"
 	"github.com/glade-sh/glade/tools/internal/compat"
+	"github.com/glade-sh/glade/tools/internal/editorfindings"
 	"github.com/glade-sh/glade/tools/internal/examplescan"
 	"github.com/glade-sh/glade/tools/internal/oracleprobe"
 	"github.com/glade-sh/glade/tools/internal/projectscan"
@@ -166,10 +167,10 @@ func compatUsage() string {
 		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
 		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]",
 		"visualforce summary [--project <root>] [--phase <n>] [--json]",
-		"lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]",
+		"lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]",
 		"replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...>",
 		"ui-controllers [--project <root>] [--json|--check <path>]",
-		"post-parity [--project <root>] [--json|--output <path>|--check <path>] [--require-ready]",
+		"post-parity [--project <root>] [--json|--output <path>|--check <path>] [--editor-findings] [--require-ready]",
 		"examples [--project <root>] [--json|--output <path>|--check <path>]",
 		"server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json]",
 		"dashboard|gaps|stdlib [--output <path>|--check <path>]",
@@ -208,6 +209,7 @@ func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {
 func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error {
 	options := compat.LwcCaptureOptions{Project: "."}
 	jsonOut := false
+	editorFindings := false
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--target-org":
@@ -244,6 +246,8 @@ func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error 
 			options.SkipDeploy = true
 		case "--json":
 			jsonOut = true
+		case "--editor-findings":
+			editorFindings = true
 		default:
 			return fmt.Errorf("unknown lwc capture flag %q", args[i])
 		}
@@ -253,6 +257,9 @@ func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error 
 		return err
 	}
 	if jsonOut {
+		if editorFindings {
+			return editorfindings.Write(w, lwcCaptureEditorFindings(report))
+		}
 		enc := json.NewEncoder(w)
 		enc.SetEscapeHTML(false)
 		enc.SetIndent("", "  ")
@@ -271,8 +278,8 @@ stable target manifest used by later browser/oracle comparison work. It does
 not yet open Salesforce pages or capture browser output.
 
 Usage:
-  glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]
-  glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]
+  glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]
+  glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]
 
 Common flags:
   --target-org <alias>     Scratch org alias or username.
@@ -282,6 +289,7 @@ Common flags:
   --out <path>             Write the fixture-manifest report JSON.
   --skip-deploy            Skip metadata deploy and emit fixture target URLs.
   --json                   Write the report JSON to stdout.
+  --editor-findings        With --json, write glade.findings.v1 to stdout.
 
 Examples:
   glade compat lwc capture --target-org oaer-probe-max --project /tmp/lwc-parity-project --include-hosts lightning-shell,visualforce-lightning-out --out /tmp/glade-lwc-capture.json
@@ -289,7 +297,7 @@ Examples:
 }
 
 func compatLwcUsage() string {
-	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json]"
+	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]"
 }
 
 type postParityReadiness struct {
@@ -816,6 +824,7 @@ func runCompatExamples(args []string, w io.Writer) error {
 func runCompatPostParity(args []string, w io.Writer) error {
 	root := "."
 	jsonOut := false
+	editorFindings := false
 	requireReady := false
 	outputPath := ""
 	checkPath := ""
@@ -823,6 +832,8 @@ func runCompatPostParity(args []string, w io.Writer) error {
 		switch args[i] {
 		case "--json":
 			jsonOut = true
+		case "--editor-findings":
+			editorFindings = true
 		case "--require-ready":
 			requireReady = true
 		case "--output":
@@ -874,10 +885,16 @@ func runCompatPostParity(args []string, w io.Writer) error {
 	}
 	switch {
 	case jsonOut:
-		enc := json.NewEncoder(w)
-		enc.SetIndent("", "  ")
-		if err := enc.Encode(readiness); err != nil {
-			return err
+		if editorFindings {
+			if err := editorfindings.Write(w, postParityEditorFindings(report)); err != nil {
+				return err
+			}
+		} else {
+			enc := json.NewEncoder(w)
+			enc.SetIndent("", "  ")
+			if err := enc.Encode(readiness); err != nil {
+				return err
+			}
 		}
 	case outputPath != "":
 		var buf strings.Builder

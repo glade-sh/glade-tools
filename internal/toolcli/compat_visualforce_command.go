@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/compat"
+	"github.com/glade-sh/glade/tools/internal/editorfindings"
 )
 
 func runCompatVisualforce(ctx context.Context, args []string, w io.Writer) error {
@@ -37,6 +38,7 @@ func runCompatVisualforceCapture(ctx context.Context, args []string, w io.Writer
 	localOptions := compat.LocalVisualforceCaptureOptions{Project: "."}
 	localCapture := false
 	jsonOut := false
+	editorFindings := false
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--local":
@@ -95,6 +97,8 @@ func runCompatVisualforceCapture(ctx context.Context, args []string, w io.Writer
 			i++
 		case "--json":
 			jsonOut = true
+		case "--editor-findings":
+			editorFindings = true
 		default:
 			return fmt.Errorf("unknown visualforce capture flag %q", args[i])
 		}
@@ -107,10 +111,20 @@ func runCompatVisualforceCapture(ctx context.Context, args []string, w io.Writer
 		report, err = compat.RunVisualforceCapture(ctx, options)
 	}
 	if jsonOut {
-		enc := json.NewEncoder(w)
-		enc.SetEscapeHTML(false)
-		enc.SetIndent("", "  ")
-		if encodeErr := enc.Encode(report); encodeErr != nil && err == nil {
+		var encodeErr error
+		if editorFindings {
+			outPath := options.Out
+			if localCapture {
+				outPath = localOptions.Out
+			}
+			encodeErr = editorfindings.Write(w, visualforceCaptureEditorFindings(report, outPath))
+		} else {
+			enc := json.NewEncoder(w)
+			enc.SetEscapeHTML(false)
+			enc.SetIndent("", "  ")
+			encodeErr = enc.Encode(report)
+		}
+		if encodeErr != nil && err == nil {
 			err = encodeErr
 		}
 		return visualforceCaptureError(report, err)
@@ -363,12 +377,12 @@ func printCompatVisualforceHelp(w io.Writer) {
 Capture and diff Visualforce rendering evidence.
 
 Usage:
-  glade-tools visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]
-  glade-tools visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]
+  glade-tools visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json] [--editor-findings]
+  glade-tools visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json] [--editor-findings]
   glade-tools visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]
   glade-tools visualforce summary [--project <root>] [--phase <n>] [--json]
-  glade compat visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]
-  glade compat visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]
+  glade compat visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json] [--editor-findings]
+  glade compat visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json] [--editor-findings]
   glade compat visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]
   glade compat visualforce summary [--project <root>] [--phase <n>] [--json]
 
@@ -386,6 +400,7 @@ Common flags:
   --local <json>         Local capture report for diff.
   --project <root>       Project root containing visualforce-probe-index.json for scoreboard lanes.
   --json                 Write the report JSON to stdout.
+  --editor-findings      With --json, write glade.findings.v1 to stdout.
 
 Examples:
   glade-tools visualforce capture --local --glade-bin /path/to/glade --project /tmp/vf-parity-project --pages Core,Fields --phase 1 --out /tmp/glade-vf-local-capture.json
@@ -399,5 +414,5 @@ Examples:
 }
 
 func compatVisualforceUsage() string {
-	return "usage: glade-tools visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]\n       glade-tools visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]\n       glade-tools visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]\n       glade-tools visualforce summary [--project <root>] [--phase <n>] [--json]"
+	return "usage: glade-tools visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json] [--editor-findings]\n       glade-tools visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json] [--editor-findings]\n       glade-tools visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]\n       glade-tools visualforce summary [--project <root>] [--phase <n>] [--json]"
 }

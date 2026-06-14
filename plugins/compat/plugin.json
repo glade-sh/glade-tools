@@ -182,6 +182,89 @@
       "summary": "Run scratch-org standard-library oracle probes."
     }
   ],
+  "editor": {
+    "actions": [
+      {
+        "id": "compat.postParity",
+        "title": "Scan Unsupported Local Surfaces",
+        "view": "runs",
+        "contexts": [
+          "project"
+        ],
+        "command": [
+          "post-parity"
+        ],
+        "args": [
+          "--project",
+          "${projectRoot}",
+          "--json",
+          "--editor-findings"
+        ],
+        "output": "glade.findings.v1",
+        "icon": "search"
+      },
+      {
+        "id": "compat.visualforceLocalCapture",
+        "title": "Capture Local Visualforce Evidence",
+        "view": "preview",
+        "contexts": [
+          "project",
+          "vfServerRunning"
+        ],
+        "command": [
+          "visualforce",
+          "capture"
+        ],
+        "args": [
+          "--local",
+          "--glade-bin",
+          "glade",
+          "--project",
+          "${projectRoot}",
+          "--out",
+          "${outputDir}/visualforce-local.json",
+          "--json",
+          "--editor-findings"
+        ],
+        "output": "glade.findings.v1",
+        "icon": "record"
+      },
+      {
+        "id": "compat.lwcCapture",
+        "title": "Capture LWC Org Evidence",
+        "view": "preview",
+        "contexts": [
+          "project",
+          "lwcServerRunning"
+        ],
+        "command": [
+          "compat",
+          "lwc",
+          "capture"
+        ],
+        "inputs": [
+          {
+            "name": "targetOrg",
+            "label": "Target org alias",
+            "type": "text",
+            "required": true
+          }
+        ],
+        "args": [
+          "--target-org",
+          "${input.targetOrg}",
+          "--project",
+          "${projectRoot}",
+          "--out",
+          "${outputDir}/lwc-org-capture.json",
+          "--json",
+          "--editor-findings"
+        ],
+        "output": "glade.findings.v1",
+        "icon": "cloud-download"
+      }
+    ]
+  },
   "minimumGladeVersion": "0.1.0",
   "source": "github.com/glade-sh/glade/tools"
 }

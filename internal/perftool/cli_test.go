@@ -37,6 +37,46 @@ func TestManifestJSONListsPerformanceScan(t *testing.T) {
 	}
 }
 
+func TestManifestJSONListsPerformanceEditorAction(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"manifest", "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+
+	var manifest struct {
+		Editor struct {
+			Actions []struct {
+				ID       string   `json:"id"`
+				Title    string   `json:"title"`
+				View     string   `json:"view"`
+				Contexts []string `json:"contexts"`
+				Command  []string `json:"command"`
+				Args     []string `json:"args"`
+				Output   string   `json:"output"`
+				Icon     string   `json:"icon"`
+			} `json:"actions"`
+		} `json:"editor"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &manifest); err != nil {
+		t.Fatalf("manifest is not JSON: %v\n%s", err, stdout.String())
+	}
+	if len(manifest.Editor.Actions) != 1 {
+		t.Fatalf("editor actions = %#v", manifest.Editor.Actions)
+	}
+	action := manifest.Editor.Actions[0]
+	if action.ID != "performance.scanProject" ||
+		action.Title != "Scan Performance Risks" ||
+		action.View != "startHere" ||
+		action.Output != "glade.findings.v1" ||
+		action.Icon != "pulse" ||
+		!stringSlicesEqual(action.Contexts, []string{"project"}) ||
+		!stringSlicesEqual(action.Command, []string{"performance"}) ||
+		!stringSlicesEqual(action.Args, []string{"--project", "${projectRoot}", "--json", "--editor-findings"}) {
+		t.Fatalf("unexpected editor action: %#v", action)
+	}
+}
+
 func TestPerformanceScanJSON(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	project := filepath.Join("..", "perfscan", "testdata", "perf-project")
@@ -59,6 +99,41 @@ func TestPerformanceScanJSON(t *testing.T) {
 	}
 }
 
+func TestPerformanceScanEditorFindingsJSON(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	project := filepath.Join("..", "perfscan", "testdata", "perf-project")
+	code := Run(context.Background(), []string{"performance", "--project", project, "--json", "--editor-findings"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+
+	var payload struct {
+		Kind     string `json:"kind"`
+		Summary  string `json:"summary"`
+		Findings []struct {
+			Severity string `json:"severity"`
+			Message  string `json:"message"`
+			File     string `json:"file"`
+			Line     int    `json:"line"`
+			RuleID   string `json:"ruleId"`
+			Source   string `json:"source"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("payload is not JSON: %v\n%s", err, stdout.String())
+	}
+	if payload.Kind != "glade.findings.v1" || len(payload.Findings) == 0 {
+		t.Fatalf("unexpected payload: %s", stdout.String())
+	}
+	first := payload.Findings[0]
+	if first.Source != "performance" || first.RuleID == "" || first.Message == "" {
+		t.Fatalf("unexpected first finding: %#v", first)
+	}
+	if !strings.Contains(payload.Summary, "finding") {
+		t.Fatalf("summary = %q", payload.Summary)
+	}
+}
+
 func TestPerformanceScanFormatJSON(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	project := filepath.Join("..", "perfscan", "testdata", "perf-project")
@@ -78,6 +153,18 @@ func TestPerformanceScanFormatJSON(t *testing.T) {
 	if len(report.Findings) != 1 {
 		t.Fatalf("top filter did not trim findings: %#v", report.Findings)
 	}
+}
+
+func stringSlicesEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func TestPerformanceScanFormatSARIF(t *testing.T) {
