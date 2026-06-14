@@ -35,6 +35,8 @@ func writeCompatManifest(w io.Writer) error {
 		Summary:    "Compatibility fixtures, surface ledgers, and maintenance scanners.",
 		Commands: []pluginCommandManifest{
 			{Path: []string{"compat"}, Summary: "Run compatibility fixture and report commands."},
+			{Path: []string{"compat", "lwc"}, Summary: "Prepare LWC fixture-manifest targets."},
+			{Path: []string{"compat", "lwc", "capture"}, Summary: "Write LWC fixture-manifest target evidence."},
 			{Path: []string{"surface"}, Summary: "Refresh and inspect the Salesforce surface ledger."},
 			{Path: []string{"matrix"}, Summary: "Print the full capability matrix."},
 			{Path: []string{"mvp"}, Summary: "Print MVP readiness status."},

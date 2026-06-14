@@ -29,6 +29,7 @@ type VisualforceCaptureOptions struct {
 	TargetOrg  string
 	Project    string
 	Pages      []string
+	Phase      string
 	Out        string
 	SkipDeploy bool
 	BatchSize  int
@@ -74,22 +75,32 @@ type VisualforceCommandResult struct {
 }
 
 type VisualforcePageCapture struct {
-	Name     string                     `json:"name"`
-	Group    string                     `json:"group,omitempty"`
-	Owner    string                     `json:"owner,omitempty"`
-	Category string                     `json:"category,omitempty"`
-	HTML     VisualforceRenderedCapture `json:"html"`
-	PDF      VisualforceRenderedCapture `json:"pdf"`
-	Raw      []VisualforceRawCapture    `json:"raw,omitempty"`
+	Name       string                     `json:"name"`
+	Group      string                     `json:"group,omitempty"`
+	Owner      string                     `json:"owner,omitempty"`
+	Category   string                     `json:"category,omitempty"`
+	Phase      string                     `json:"phase,omitempty"`
+	Family     string                     `json:"family,omitempty"`
+	Components []string                   `json:"components,omitempty"`
+	Claim      string                     `json:"claim,omitempty"`
+	Status     string                     `json:"status,omitempty"`
+	HTML       VisualforceRenderedCapture `json:"html"`
+	PDF        VisualforceRenderedCapture `json:"pdf"`
+	Raw        []VisualforceRawCapture    `json:"raw,omitempty"`
 }
 
 type VisualforceRenderedCapture struct {
 	Status           string            `json:"status"`
+	StatusCode       int               `json:"statusCode,omitempty"`
 	ContentType      string            `json:"contentType,omitempty"`
 	RedirectLocation string            `json:"redirectLocation,omitempty"`
+	RedirectURL      string            `json:"redirectURL,omitempty"`
 	Headers          map[string]string `json:"headers,omitempty"`
 	Bytes            int               `json:"bytes,omitempty"`
+	BodySize         int               `json:"bodySize,omitempty"`
 	SHA256           string            `json:"sha256,omitempty"`
+	HTMLSHA256       string            `json:"htmlSha256,omitempty"`
+	PDFSHA256        string            `json:"pdfSha256,omitempty"`
 	BodyHash         string            `json:"bodyHash,omitempty"`
 	TextHash         string            `json:"textHash,omitempty"`
 	Text             string            `json:"text,omitempty"`
@@ -98,6 +109,7 @@ type VisualforceRenderedCapture struct {
 	Body             string            `json:"body,omitempty"`
 	Base64           string            `json:"base64,omitempty"`
 	Error            string            `json:"error,omitempty"`
+	DurationMS       int64             `json:"durationMs,omitempty"`
 }
 
 type VisualforceProbeIndex struct {
@@ -114,17 +126,27 @@ type VisualforceProbeIndexSummary struct {
 }
 
 type VisualforceProbeGroup struct {
-	Name     string   `json:"name"`
-	Owner    string   `json:"owner,omitempty"`
-	Category string   `json:"category,omitempty"`
-	Pages    []string `json:"pages"`
+	Name       string                `json:"name"`
+	Owner      string                `json:"owner,omitempty"`
+	Category   string                `json:"category,omitempty"`
+	Phase      VisualforceProbePhase `json:"phase,omitempty"`
+	Family     string                `json:"family,omitempty"`
+	Components []string              `json:"components,omitempty"`
+	Claim      string                `json:"claim,omitempty"`
+	Status     string                `json:"status,omitempty"`
+	Pages      []string              `json:"pages"`
 }
 
 type VisualforceProbePage struct {
-	Name     string `json:"name"`
-	Group    string `json:"group"`
-	Owner    string `json:"owner,omitempty"`
-	Category string `json:"category,omitempty"`
+	Name       string                `json:"name"`
+	Group      string                `json:"group"`
+	Owner      string                `json:"owner,omitempty"`
+	Category   string                `json:"category,omitempty"`
+	Phase      VisualforceProbePhase `json:"phase,omitempty"`
+	Family     string                `json:"family,omitempty"`
+	Components []string              `json:"components,omitempty"`
+	Claim      string                `json:"claim,omitempty"`
+	Status     string                `json:"status,omitempty"`
 }
 
 type VisualforceProbeCorpusSummary struct {
@@ -133,14 +155,47 @@ type VisualforceProbeCorpusSummary struct {
 	GroupCount     int                            `json:"groupCount"`
 	OwnerCounts    map[string]int                 `json:"ownerCounts"`
 	CategoryCounts map[string]int                 `json:"categoryCounts"`
+	PhaseCounts    map[string]int                 `json:"phaseCounts,omitempty"`
+	FamilyCounts   map[string]int                 `json:"familyCounts,omitempty"`
+	ClaimCounts    map[string]int                 `json:"claimCounts,omitempty"`
+	StatusCounts   map[string]int                 `json:"statusCounts,omitempty"`
 	Groups         []VisualforceProbeGroupSummary `json:"groups"`
 }
 
 type VisualforceProbeGroupSummary struct {
-	Name      string `json:"name"`
-	Owner     string `json:"owner,omitempty"`
-	Category  string `json:"category,omitempty"`
-	PageCount int    `json:"pageCount"`
+	Name       string   `json:"name"`
+	Owner      string   `json:"owner,omitempty"`
+	Category   string   `json:"category,omitempty"`
+	Phase      string   `json:"phase,omitempty"`
+	Family     string   `json:"family,omitempty"`
+	Components []string `json:"components,omitempty"`
+	Claim      string   `json:"claim,omitempty"`
+	Status     string   `json:"status,omitempty"`
+	PageCount  int      `json:"pageCount"`
+}
+
+type VisualforceProbePhase string
+
+func (p *VisualforceProbePhase) UnmarshalJSON(data []byte) error {
+	var raw any
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	switch value := raw.(type) {
+	case nil:
+		*p = ""
+	case string:
+		*p = VisualforceProbePhase(strings.TrimSpace(value))
+	case float64:
+		*p = VisualforceProbePhase(strconv.FormatInt(int64(value), 10))
+	default:
+		return fmt.Errorf("Visualforce probe phase must be a string or number")
+	}
+	return nil
+}
+
+func (p VisualforceProbePhase) MarshalJSON() ([]byte, error) {
+	return json.Marshal(string(p))
 }
 
 type VisualforceCaptureCounts struct {
@@ -167,6 +222,7 @@ type VisualforceRawCapture struct {
 	PDFSHA256        string                       `json:"pdfSha256,omitempty"`
 	NormalizedText   string                       `json:"normalizedText,omitempty"`
 	Error            string                       `json:"error,omitempty"`
+	DurationMS       int64                        `json:"durationMs,omitempty"`
 }
 
 type VisualforceRawCaptureRequest struct {
@@ -225,6 +281,7 @@ func RunVisualforceCapture(ctx context.Context, options VisualforceCaptureOption
 	}
 	sourceDir := visualforceCaptureSourceDir(absProject)
 	pages := normalizeVisualforceCapturePages(options.Pages)
+	explicitPages := len(pages) > 0
 	if len(pages) == 0 {
 		pages, err = discoverVisualforcePages(sourceDir)
 		if err != nil {
@@ -241,6 +298,13 @@ func RunVisualforceCapture(ctx context.Context, options VisualforceCaptureOption
 	pageMetadata, err := loadVisualforceProbePageMetadata(absProject)
 	if err != nil {
 		return VisualforceCaptureReport{}, err
+	}
+	pages, err = filterVisualforcePagesByPhase(absProject, pages, pageMetadata, options.Phase, explicitPages)
+	if err != nil {
+		return VisualforceCaptureReport{}, err
+	}
+	if len(pages) == 0 {
+		return VisualforceCaptureReport{}, fmt.Errorf("no Visualforce pages match --phase %s", strings.TrimSpace(options.Phase))
 	}
 
 	report := VisualforceCaptureReport{
@@ -385,7 +449,9 @@ func fetchVisualforceRawCaptureEndpoint(ctx context.Context, client VisualforceH
 	}
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Accept", accept)
+	started := time.Now()
 	resp, err := client.Do(req)
+	durationMS := time.Since(started).Milliseconds()
 	if err != nil {
 		return VisualforceRawCapture{
 			Page: page,
@@ -395,8 +461,9 @@ func fetchVisualforceRawCaptureEndpoint(ctx context.Context, client VisualforceH
 				Path:   req.URL.EscapedPath(),
 				Query:  req.URL.RawQuery,
 			},
-			Status: "fail",
-			Error:  err.Error(),
+			Status:     "fail",
+			Error:      err.Error(),
+			DurationMS: durationMS,
 		}
 	}
 	capture, err := buildVisualforceRawCapture(page, endpoint, resp)
@@ -409,10 +476,12 @@ func fetchVisualforceRawCaptureEndpoint(ctx context.Context, client VisualforceH
 				Path:   req.URL.EscapedPath(),
 				Query:  req.URL.RawQuery,
 			},
-			Status: "fail",
-			Error:  err.Error(),
+			Status:     "fail",
+			Error:      err.Error(),
+			DurationMS: durationMS,
 		}
 	}
+	capture.DurationMS = durationMS
 	return capture
 }
 
@@ -468,12 +537,23 @@ func ReadVisualforceProbeIndex(project string) (VisualforceProbeIndex, error) {
 }
 
 func SummarizeVisualforceProbeIndex(project string) (VisualforceProbeCorpusSummary, error) {
+	return SummarizeVisualforceProbeIndexWithPhase(project, "")
+}
+
+func SummarizeVisualforceProbeIndexWithPhase(project, phase string) (VisualforceProbeCorpusSummary, error) {
 	absProject, err := filepath.Abs(project)
 	if err != nil {
 		return VisualforceProbeCorpusSummary{}, err
 	}
 	index, err := ReadVisualforceProbeIndex(absProject)
 	if err != nil {
+		return VisualforceProbeCorpusSummary{}, err
+	}
+	index = FilterVisualforceProbeIndexByPhase(index, phase)
+	if strings.TrimSpace(phase) != "" && len(index.Pages) == 0 {
+		return VisualforceProbeCorpusSummary{}, fmt.Errorf("no Visualforce pages match --phase %s", strings.TrimSpace(phase))
+	}
+	if err := validateVisualforceProbeIndexPages(absProject, index); err != nil {
 		return VisualforceProbeCorpusSummary{}, err
 	}
 	groupMetadata := visualforceProbeGroupsByName(index.Groups)
@@ -483,6 +563,10 @@ func SummarizeVisualforceProbeIndex(project string) (VisualforceProbeCorpusSumma
 		GroupCount:     len(index.Groups),
 		OwnerCounts:    map[string]int{},
 		CategoryCounts: map[string]int{},
+		PhaseCounts:    map[string]int{},
+		FamilyCounts:   map[string]int{},
+		ClaimCounts:    map[string]int{},
+		StatusCounts:   map[string]int{},
 	}
 	for _, page := range index.Pages {
 		page = fillVisualforceProbePageDefaults(page, groupMetadata[page.Group])
@@ -492,16 +576,67 @@ func SummarizeVisualforceProbeIndex(project string) (VisualforceProbeCorpusSumma
 		if page.Category != "" {
 			summary.CategoryCounts[page.Category]++
 		}
+		if phase := string(page.Phase); phase != "" {
+			summary.PhaseCounts[phase]++
+		}
+		if page.Family != "" {
+			summary.FamilyCounts[page.Family]++
+		}
+		if page.Claim != "" {
+			summary.ClaimCounts[page.Claim]++
+		}
+		if page.Status != "" {
+			summary.StatusCounts[page.Status]++
+		}
 	}
 	for _, group := range index.Groups {
 		summary.Groups = append(summary.Groups, VisualforceProbeGroupSummary{
-			Name:      group.Name,
-			Owner:     group.Owner,
-			Category:  group.Category,
-			PageCount: len(group.Pages),
+			Name:       group.Name,
+			Owner:      group.Owner,
+			Category:   group.Category,
+			Phase:      string(group.Phase),
+			Family:     group.Family,
+			Components: append([]string(nil), group.Components...),
+			Claim:      group.Claim,
+			Status:     group.Status,
+			PageCount:  len(group.Pages),
 		})
 	}
 	return summary, nil
+}
+
+func FilterVisualforceProbeIndexByPhase(index VisualforceProbeIndex, phase string) VisualforceProbeIndex {
+	phase = strings.TrimSpace(phase)
+	if phase == "" {
+		return index
+	}
+	groups := visualforceProbeGroupsByName(index.Groups)
+	filtered := VisualforceProbeIndex{Summary: index.Summary}
+	keptPages := map[string]bool{}
+	for _, page := range index.Pages {
+		page = fillVisualforceProbePageDefaults(page, groups[page.Group])
+		if !visualforceProbePhaseMatches(page.Phase, phase) {
+			continue
+		}
+		filtered.Pages = append(filtered.Pages, page)
+		keptPages[page.Name] = true
+	}
+	for _, group := range index.Groups {
+		var pages []string
+		for _, pageName := range group.Pages {
+			if keptPages[pageName] {
+				pages = append(pages, pageName)
+			}
+		}
+		if len(pages) == 0 {
+			continue
+		}
+		group.Pages = pages
+		filtered.Groups = append(filtered.Groups, group)
+	}
+	filtered.Summary.PageCount = len(filtered.Pages)
+	filtered.Summary.GroupCount = len(filtered.Groups)
+	return filtered
 }
 
 func loadVisualforceProbePageMetadata(project string) (map[string]VisualforceProbePage, error) {
@@ -540,6 +675,27 @@ func fillVisualforceProbePageDefaults(page VisualforceProbePage, group Visualfor
 	if page.Category == "" {
 		page.Category = group.Category
 	}
+	if page.Phase == "" {
+		page.Phase = group.Phase
+	}
+	if page.Phase == "" {
+		page.Phase = VisualforceProbePhase(visualforcePhaseFromCategory(page.Category))
+	}
+	if page.Family == "" {
+		page.Family = group.Family
+	}
+	if page.Family == "" {
+		page.Family = page.Group
+	}
+	if len(page.Components) == 0 && len(group.Components) != 0 {
+		page.Components = append([]string(nil), group.Components...)
+	}
+	if page.Claim == "" {
+		page.Claim = group.Claim
+	}
+	if page.Status == "" {
+		page.Status = group.Status
+	}
 	return page
 }
 
@@ -551,6 +707,89 @@ func applyVisualforceProbePageMetadata(capture *VisualforcePageCapture, metadata
 	capture.Group = page.Group
 	capture.Owner = page.Owner
 	capture.Category = page.Category
+	capture.Phase = string(page.Phase)
+	capture.Family = page.Family
+	capture.Components = append([]string(nil), page.Components...)
+	capture.Claim = page.Claim
+	capture.Status = page.Status
+}
+
+func filterVisualforcePagesByPhase(project string, pages []string, metadata map[string]VisualforceProbePage, phase string, requireIndexedPages bool) ([]string, error) {
+	phase = strings.TrimSpace(phase)
+	if phase == "" {
+		return pages, nil
+	}
+	if len(metadata) == 0 {
+		return nil, fmt.Errorf("%s is required for --phase", filepath.Join(project, "visualforce-probe-index.json"))
+	}
+	var filtered []string
+	for _, page := range pages {
+		meta, ok := metadata[page]
+		if !ok {
+			if requireIndexedPages {
+				return nil, fmt.Errorf("--phase requires Visualforce page %q to be listed in %s", page, filepath.Join(project, "visualforce-probe-index.json"))
+			}
+			continue
+		}
+		if visualforceProbePhaseMatches(meta.Phase, phase) {
+			filtered = append(filtered, page)
+		}
+	}
+	return filtered, nil
+}
+
+func visualforceProbePhaseMatches(pagePhase VisualforceProbePhase, phase string) bool {
+	return normalizeVisualforceProbePhase(string(pagePhase)) == normalizeVisualforceProbePhase(phase)
+}
+
+func normalizeVisualforceProbePhase(phase string) string {
+	phase = strings.TrimSpace(strings.ToLower(phase))
+	phase = strings.TrimPrefix(phase, "phase")
+	return strings.TrimSpace(phase)
+}
+
+func visualforcePhaseFromCategory(category string) string {
+	category = strings.TrimSpace(strings.ToLower(category))
+	if strings.HasPrefix(category, "phase") {
+		return strings.TrimSpace(strings.TrimPrefix(category, "phase"))
+	}
+	return ""
+}
+
+func validateVisualforceProbeIndexPages(project string, index VisualforceProbeIndex) error {
+	pages, err := discoverVisualforcePages(visualforceCaptureSourceDir(project))
+	if err != nil {
+		return err
+	}
+	known := make(map[string]bool, len(pages))
+	for _, page := range pages {
+		known[page] = true
+	}
+	indexed := make(map[string]bool, len(index.Pages))
+	for _, page := range index.Pages {
+		if page.Name == "" {
+			continue
+		}
+		indexed[page.Name] = true
+		if !known[page.Name] {
+			return fmt.Errorf("visualforce-probe-index.json lists unknown page %q", page.Name)
+		}
+	}
+	for _, group := range index.Groups {
+		for _, pageName := range group.Pages {
+			pageName = strings.TrimSpace(pageName)
+			if pageName == "" {
+				continue
+			}
+			if !known[pageName] {
+				return fmt.Errorf("visualforce-probe-index.json group %q lists unknown page %q", group.Name, pageName)
+			}
+			if !indexed[pageName] {
+				return fmt.Errorf("visualforce-probe-index.json group %q lists page %q missing from pages", group.Name, pageName)
+			}
+		}
+	}
+	return nil
 }
 
 func setVisualforceRenderedBodyText(capture *VisualforceRenderedCapture, body []byte) {
@@ -683,14 +922,17 @@ func parseVisualforceProbeCaptures(output []byte) map[string]VisualforceRendered
 		}
 		sum := sha256.Sum256(raw)
 		capture := VisualforceRenderedCapture{
-			Status: "pass",
-			Bytes:  len(raw),
-			SHA256: hex.EncodeToString(sum[:]),
+			Status:   "pass",
+			Bytes:    len(raw),
+			BodySize: len(raw),
+			SHA256:   hex.EncodeToString(sum[:]),
 		}
 		if kind == "HTML" {
+			capture.HTMLSHA256 = capture.SHA256
 			capture.Body = string(raw)
 			setVisualforceRenderedBodyText(&capture, raw)
 		} else {
+			capture.PDFSHA256 = capture.SHA256
 			capture.Base64 = base64.StdEncoding.EncodeToString(raw)
 			setVisualforceRenderedPDFText(&capture, raw)
 		}
@@ -754,14 +996,17 @@ func parseVisualforceProbeCaptureChunks(captures map[string]VisualforceRenderedC
 			captures[key] = VisualforceRenderedCapture{Status: "fail", Error: "probe capture SHA-256 mismatch"}
 			continue
 		}
-		capture := VisualforceRenderedCapture{Status: "pass", Bytes: len(raw), SHA256: actualSHA}
+		capture := VisualforceRenderedCapture{Status: "pass", Bytes: len(raw), BodySize: len(raw), SHA256: actualSHA}
 		if set.bytes > 0 {
 			capture.Bytes = set.bytes
+			capture.BodySize = set.bytes
 		}
 		if set.kind == "HTML" {
+			capture.HTMLSHA256 = actualSHA
 			capture.Body = string(raw)
 			setVisualforceRenderedBodyText(&capture, raw)
 		} else {
+			capture.PDFSHA256 = actualSHA
 			capture.Base64 = base64.StdEncoding.EncodeToString(raw)
 			setVisualforceRenderedPDFText(&capture, raw)
 		}

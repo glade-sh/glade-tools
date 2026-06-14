@@ -58,11 +58,16 @@ type visualforceDiffCaptureReport struct {
 }
 
 type visualforceDiffPage struct {
-	Name     string
-	Group    string
-	Owner    string
-	Category string
-	Variants map[string]map[string]any
+	Name       string
+	Group      string
+	Owner      string
+	Category   string
+	Phase      string
+	Family     string
+	Components []string
+	Claim      string
+	Status     string
+	Variants   map[string]map[string]any
 }
 
 var visualforceRenderDiffFields = []string{
@@ -85,6 +90,10 @@ func DiffVisualforceCaptureFiles(salesforcePath, localPath string) (VisualforceC
 }
 
 func DiffVisualforceCaptureFilesWithProject(salesforcePath, localPath, project string) (VisualforceCaptureDiffReport, error) {
+	return DiffVisualforceCaptureFilesWithProjectPhase(salesforcePath, localPath, project, "")
+}
+
+func DiffVisualforceCaptureFilesWithProjectPhase(salesforcePath, localPath, project, phase string) (VisualforceCaptureDiffReport, error) {
 	salesforce, err := os.ReadFile(salesforcePath)
 	if err != nil {
 		return VisualforceCaptureDiffReport{}, err
@@ -94,13 +103,17 @@ func DiffVisualforceCaptureFilesWithProject(salesforcePath, localPath, project s
 		return VisualforceCaptureDiffReport{}, err
 	}
 	if strings.TrimSpace(project) == "" {
-		return DiffVisualforceCaptureReports(salesforce, local)
+		return diffVisualforceCaptureReportsWithOptions(salesforce, local, nil, false, phase)
 	}
 	index, err := ReadVisualforceProbeIndex(project)
 	if err != nil {
 		return VisualforceCaptureDiffReport{}, err
 	}
-	return diffVisualforceCaptureReports(salesforce, local, &index)
+	index = FilterVisualforceProbeIndexByPhase(index, phase)
+	if strings.TrimSpace(phase) != "" && len(index.Pages) == 0 {
+		return VisualforceCaptureDiffReport{}, fmt.Errorf("no Visualforce pages match --phase %s", strings.TrimSpace(phase))
+	}
+	return diffVisualforceCaptureReportsWithOptions(salesforce, local, &index, strings.TrimSpace(phase) != "", phase)
 }
 
 func DiffVisualforceCaptureReports(salesforceJSON, localJSON []byte) (VisualforceCaptureDiffReport, error) {
@@ -108,6 +121,10 @@ func DiffVisualforceCaptureReports(salesforceJSON, localJSON []byte) (Visualforc
 }
 
 func diffVisualforceCaptureReports(salesforceJSON, localJSON []byte, index *VisualforceProbeIndex) (VisualforceCaptureDiffReport, error) {
+	return diffVisualforceCaptureReportsWithOptions(salesforceJSON, localJSON, index, false, "")
+}
+
+func diffVisualforceCaptureReportsWithOptions(salesforceJSON, localJSON []byte, index *VisualforceProbeIndex, restrictToIndex bool, phase string) (VisualforceCaptureDiffReport, error) {
 	salesforce, err := readVisualforceDiffCaptureReport(salesforceJSON)
 	if err != nil {
 		return VisualforceCaptureDiffReport{}, fmt.Errorf("read salesforce capture: %w", err)
@@ -119,6 +136,17 @@ func diffVisualforceCaptureReports(salesforceJSON, localJSON []byte, index *Visu
 	report := VisualforceCaptureDiffReport{OK: true}
 	salesforcePages := visualforceDiffPagesByName(salesforce.Pages)
 	localPages := visualforceDiffPagesByName(local.Pages)
+	if strings.TrimSpace(phase) != "" && index == nil {
+		salesforcePages = filterVisualforceDiffPagesByPhase(salesforcePages, phase)
+		localPages = filterVisualforceDiffPagesByPhase(localPages, phase)
+		if len(salesforcePages) == 0 && len(localPages) == 0 {
+			return VisualforceCaptureDiffReport{}, fmt.Errorf("no Visualforce pages match --phase %s", strings.TrimSpace(phase))
+		}
+	}
+	if restrictToIndex && index != nil {
+		salesforcePages = filterVisualforceDiffPagesToIndex(salesforcePages, index)
+		localPages = filterVisualforceDiffPagesToIndex(localPages, index)
+	}
 	for _, page := range sortedVisualforceDiffPageNames(salesforcePages, localPages, index) {
 		salesforcePage, hasSalesforce := salesforcePages[page]
 		localPage, hasLocal := localPages[page]
@@ -141,6 +169,39 @@ func diffVisualforceCaptureReports(salesforceJSON, localJSON []byte, index *Visu
 	return report, nil
 }
 
+func filterVisualforceDiffPagesByPhase(pages map[string]visualforceDiffPage, phase string) map[string]visualforceDiffPage {
+	filtered := map[string]visualforceDiffPage{}
+	for name, page := range pages {
+		if visualforceProbePhaseMatches(VisualforceProbePhase(page.Phase), phase) {
+			filtered[name] = page
+		}
+	}
+	return filtered
+}
+
+func filterVisualforceDiffPagesToIndex(pages map[string]visualforceDiffPage, index *VisualforceProbeIndex) map[string]visualforceDiffPage {
+	allowed := map[string]bool{}
+	for _, page := range index.Pages {
+		if page.Name != "" {
+			allowed[page.Name] = true
+		}
+	}
+	for _, group := range index.Groups {
+		for _, page := range group.Pages {
+			if page != "" {
+				allowed[page] = true
+			}
+		}
+	}
+	filtered := map[string]visualforceDiffPage{}
+	for name, page := range pages {
+		if allowed[name] {
+			filtered[name] = page
+		}
+	}
+	return filtered
+}
+
 func (p *visualforceDiffPage) UnmarshalJSON(data []byte) error {
 	var raw map[string]json.RawMessage
 	if err := json.Unmarshal(data, &raw); err != nil {
@@ -154,9 +215,14 @@ func (p *visualforceDiffPage) UnmarshalJSON(data []byte) error {
 	_ = json.Unmarshal(raw["group"], &p.Group)
 	_ = json.Unmarshal(raw["owner"], &p.Owner)
 	_ = json.Unmarshal(raw["category"], &p.Category)
+	_ = json.Unmarshal(raw["phase"], &p.Phase)
+	_ = json.Unmarshal(raw["family"], &p.Family)
+	_ = json.Unmarshal(raw["components"], &p.Components)
+	_ = json.Unmarshal(raw["claim"], &p.Claim)
+	_ = json.Unmarshal(raw["status"], &p.Status)
 	p.Variants = map[string]map[string]any{}
 	for key, value := range raw {
-		if key == "name" || key == "group" || key == "owner" || key == "category" {
+		if key == "name" || key == "group" || key == "owner" || key == "category" || key == "phase" || key == "family" || key == "components" || key == "claim" || key == "status" {
 			continue
 		}
 		var fields map[string]any
@@ -459,10 +525,15 @@ func visualforceDiffScoreboardPageMetadata(salesforcePages, localPages map[strin
 					continue
 				}
 				metadata[pageName] = VisualforceProbePage{
-					Name:     pageName,
-					Group:    group.Name,
-					Owner:    group.Owner,
-					Category: group.Category,
+					Name:       pageName,
+					Group:      group.Name,
+					Owner:      group.Owner,
+					Category:   group.Category,
+					Phase:      group.Phase,
+					Family:     group.Family,
+					Components: append([]string(nil), group.Components...),
+					Claim:      group.Claim,
+					Status:     group.Status,
 				}
 			}
 		}
@@ -493,7 +564,22 @@ func visualforceDiffAddCaptureMetadata(metadata map[string]VisualforceProbePage,
 	if existing.Category == "" {
 		existing.Category = page.Category
 	}
-	if existing.Group != "" || existing.Owner != "" || existing.Category != "" {
+	if existing.Phase == "" {
+		existing.Phase = VisualforceProbePhase(page.Phase)
+	}
+	if existing.Family == "" {
+		existing.Family = page.Family
+	}
+	if len(existing.Components) == 0 && len(page.Components) != 0 {
+		existing.Components = append([]string(nil), page.Components...)
+	}
+	if existing.Claim == "" {
+		existing.Claim = page.Claim
+	}
+	if existing.Status == "" {
+		existing.Status = page.Status
+	}
+	if existing.Group != "" || existing.Owner != "" || existing.Category != "" || existing.Phase != "" || existing.Family != "" || existing.Claim != "" || existing.Status != "" {
 		metadata[page.Name] = existing
 	}
 }
