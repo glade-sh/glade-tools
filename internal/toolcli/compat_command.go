@@ -244,6 +244,22 @@ func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error 
 			i++
 		case "--skip-deploy":
 			options.SkipDeploy = true
+		case "--browser-capture":
+			options.BrowserCapture = true
+		case "--local-browser-capture":
+			options.LocalBrowserCapture = true
+		case "--local-base-url":
+			if i+1 >= len(args) {
+				return errors.New("--local-base-url requires a value")
+			}
+			options.LocalBaseURL = args[i+1]
+			i++
+		case "--glade-bin":
+			if i+1 >= len(args) {
+				return errors.New("--glade-bin requires a value")
+			}
+			options.GladeBin = args[i+1]
+			i++
 		case "--json":
 			jsonOut = true
 		case "--editor-findings":
@@ -282,33 +298,49 @@ func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error 
 
 func printCompatLwcHelp(w io.Writer) {
 	fmt.Fprint(w, strings.TrimSpace(`
-Prepare LWC fixture-manifest targets for oracle comparison.
+Prepare LWC fixture metadata, browser DOM evidence, and support rows for oracle comparison.
 
 This command can deploy the fixture project to a scratch org, then writes the
-stable target manifest used by later browser/oracle comparison work. It does
-not yet open Salesforce pages or capture browser output.
+stable local and Salesforce target evidence used by browser/oracle comparison
+work. Pass --browser-capture to open authenticated Salesforce pages. Pass
+--local-browser-capture with --glade-bin or --local-base-url to capture the
+local shell. Browser capture records DOM, console errors, and page errors
+without writing frontdoor URLs. When deployed fixture metadata includes
+permission sets, the command assigns them to the target-org user before browser
+capture; duplicate assignments are treated as already done.
 
 Usage:
-  glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]
-  glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]
+  glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
+  glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
 
 Common flags:
   --target-org <alias>     Scratch org alias or username.
   --project <root>         Salesforce project root. Defaults to current directory.
   --targets <a,b>          Comma-separated LWC capture target names.
   --include-hosts <a,b>    Comma-separated host lanes to include.
-  --out <path>             Write the fixture-manifest report JSON.
+  --out <path>             Write the LWC capture report JSON.
   --skip-deploy            Skip metadata deploy and emit fixture target URLs.
+  --browser-capture        Capture authenticated browser DOM for direct Salesforce paths.
+  --local-browser-capture  Capture local Glade LWC shell browser DOM.
+  --local-base-url <url>   Use an already-running local glade dev lwc server.
+  --glade-bin <path>       Start this glade binary for local browser capture.
   --json                   Write the report JSON to stdout.
   --editor-findings        With --json, write glade.findings.v1 to stdout.
 
+Targets:
+  direct-component, record-page, app-page, home-page, custom-tab,
+  url-addressable-component, record-quick-action, visualforce-lightning-out,
+  apex-wire, imperative-apex, lds-read, ui-object-info, ui-related-list,
+  lds-create-defaults, ui-layout, lds-mutation, navigation, toast, lms,
+  base-components, visualforce-base-components
+
 Examples:
-  glade compat lwc capture --target-org oaer-probe-max --project /tmp/lwc-parity-project --include-hosts lightning-shell,visualforce-lightning-out --out /tmp/glade-lwc-capture.json
+  glade compat lwc capture --target-org oaer-probe-max --project /Users/matt/Dev/lwc-full-shell/glade/testdata/local-tests/lwc-shell --targets custom-tab,url-addressable-component --local-browser-capture --glade-bin /Users/matt/Dev/lwc-full-shell/glade/bin/glade --browser-capture --out /tmp/glade-lwc-full-shell-capture.json
 `)+"\n")
 }
 
 func compatLwcUsage() string {
-	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]"
+	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]"
 }
 
 type postParityReadiness struct {
