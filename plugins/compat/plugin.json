@@ -15,7 +15,7 @@
         "compat",
         "lwc"
       ],
-      "summary": "Prepare LWC fixture-manifest targets."
+      "summary": "Capture LWC shell and browser evidence."
     },
     {
       "path": [
@@ -23,7 +23,7 @@
         "lwc",
         "capture"
       ],
-      "summary": "Write LWC fixture-manifest target evidence."
+      "summary": "Write LWC target, browser, and support evidence."
     },
     {
       "path": [
@@ -231,7 +231,7 @@
       },
       {
         "id": "compat.lwcCapture",
-        "title": "Capture LWC Org Evidence",
+        "title": "Capture LWC Browser Evidence",
         "view": "preview",
         "contexts": [
           "project",
@@ -248,6 +248,12 @@
             "label": "Target org alias",
             "type": "text",
             "required": true
+          },
+          {
+            "name": "localBaseUrl",
+            "label": "Local LWC shell URL",
+            "type": "text",
+            "required": true
           }
         ],
         "args": [
@@ -255,8 +261,12 @@
           "${input.targetOrg}",
           "--project",
           "${projectRoot}",
+          "--local-browser-capture",
+          "--local-base-url",
+          "${input.localBaseUrl}",
+          "--browser-capture",
           "--out",
-          "${outputDir}/lwc-org-capture.json",
+          "${outputDir}/lwc-browser-capture.json",
           "--json",
           "--editor-findings"
         ],

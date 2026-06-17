@@ -21,6 +21,10 @@ func TestMain(m *testing.M) {
 		runFakeGladeDevVF()
 		return
 	}
+	if os.Getenv("GLADE_TOOLS_FAKE_GLADE_LWC") == "1" {
+		runFakeGladeDevLWC()
+		return
+	}
 	os.Exit(m.Run())
 }
 
@@ -349,6 +353,58 @@ func runFakeGladeDevVF() {
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	<-signals
 	if path := os.Getenv("GLADE_TOOLS_FAKE_GLADE_VF_TERM"); path != "" {
+		_ = os.WriteFile(path, []byte("terminated"), 0o644)
+	}
+	_ = server.Close()
+	os.Exit(0)
+}
+
+func runFakeGladeDevLWC() {
+	args := os.Args[1:]
+	if len(args) < 2 || args[0] != "dev" || args[1] != "lwc" {
+		fmt.Fprintf(os.Stderr, "unexpected fake glade args: %v\n", args)
+		os.Exit(2)
+	}
+	addr := ""
+	readyFile := ""
+	for i := 2; i < len(args); i++ {
+		switch args[i] {
+		case "--addr":
+			i++
+			addr = args[i]
+		case "--ready-file":
+			i++
+			readyFile = args[i]
+		case "--project":
+			i++
+		}
+	}
+	if path := os.Getenv("GLADE_TOOLS_FAKE_GLADE_LWC_ARGS"); path != "" {
+		_ = os.WriteFile(path, []byte(strings.Join(args, " ")), 0o644)
+	}
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	actualAddr := ln.Addr().String()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		fmt.Fprintf(w, "<html><body><main data-local-lwc=\"true\">%s</main></body></html>", r.URL.String())
+	})
+	server := &http.Server{Handler: mux}
+	go func() {
+		_ = server.Serve(ln)
+	}()
+	if readyFile != "" {
+		ready := fmt.Sprintf("{\n  \"url\": \"http://%s\",\n  \"addr\": \"%s\",\n  \"routes\": [\"/lwc/preview/cmp/c/actionProbe?c__mode=demo\"]\n}\n", actualAddr, actualAddr)
+		_ = os.WriteFile(readyFile, []byte(ready), 0o644)
+	}
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	<-signals
+	if path := os.Getenv("GLADE_TOOLS_FAKE_GLADE_LWC_TERM"); path != "" {
 		_ = os.WriteFile(path, []byte("terminated"), 0o644)
 	}
 	_ = server.Close()

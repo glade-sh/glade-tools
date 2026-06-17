@@ -59,8 +59,8 @@ func writeCompatManifest(w io.Writer) error {
 		Summary:    "Compatibility fixtures, surface ledgers, and maintenance scanners.",
 		Commands: []pluginCommandManifest{
 			{Path: []string{"compat"}, Summary: "Run compatibility fixture and report commands."},
-			{Path: []string{"compat", "lwc"}, Summary: "Prepare LWC fixture-manifest targets."},
-			{Path: []string{"compat", "lwc", "capture"}, Summary: "Write LWC fixture-manifest target evidence."},
+			{Path: []string{"compat", "lwc"}, Summary: "Capture LWC shell and browser evidence."},
+			{Path: []string{"compat", "lwc", "capture"}, Summary: "Write LWC target, browser, and support evidence."},
 			{Path: []string{"surface"}, Summary: "Refresh and inspect the Salesforce surface ledger."},
 			{Path: []string{"matrix"}, Summary: "Print the full capability matrix."},
 			{Path: []string{"mvp"}, Summary: "Print MVP readiness status."},
@@ -112,14 +112,15 @@ func writeCompatManifest(w io.Writer) error {
 				},
 				{
 					ID:       "compat.lwcCapture",
-					Title:    "Capture LWC Org Evidence",
+					Title:    "Capture LWC Browser Evidence",
 					View:     "preview",
 					Contexts: []string{"project", "lwcServerRunning"},
 					Command:  []string{"compat", "lwc", "capture"},
 					Inputs: []pluginEditorInputManifest{
 						{Name: "targetOrg", Label: "Target org alias", Type: "text", Required: true},
+						{Name: "localBaseUrl", Label: "Local LWC shell URL", Type: "text", Required: true},
 					},
-					Args:   []string{"--target-org", "${input.targetOrg}", "--project", "${projectRoot}", "--out", "${outputDir}/lwc-org-capture.json", "--json", "--editor-findings"},
+					Args:   []string{"--target-org", "${input.targetOrg}", "--project", "${projectRoot}", "--local-browser-capture", "--local-base-url", "${input.localBaseUrl}", "--browser-capture", "--out", "${outputDir}/lwc-browser-capture.json", "--json", "--editor-findings"},
 					Output: "glade.findings.v1",
 					Icon:   "cloud-download",
 				},

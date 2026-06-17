@@ -82,6 +82,27 @@ func TestCompatHelpListsVisualforceBatchSizeAndDiffOut(t *testing.T) {
 	}
 }
 
+func TestLWCHelpListsBrowserCapture(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"lwc", "--help"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"lwc capture",
+		"--browser-capture",
+		"--local-browser-capture",
+		"--local-base-url",
+		"--glade-bin",
+		"authenticated browser DOM",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("help omitted %q:\n%s", want, out)
+		}
+	}
+}
+
 func TestVisualforceLocalCaptureRequiresGladeBin(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), []string{"visualforce", "capture", "--local", "--project", t.TempDir(), "--pages", "Core"}, &stdout, &stderr)

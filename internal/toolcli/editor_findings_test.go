@@ -58,7 +58,7 @@ func TestCompatPostParityEditorFindingsJSON(t *testing.T) {
 	}
 }
 
-func TestCompatLwcCaptureEditorFindingsJSON(t *testing.T) {
+func TestCompatLWCCaptureEditorFindingsJSON(t *testing.T) {
 	root := t.TempDir()
 	outPath := filepath.Join(root, "reports", "lwc-org-capture.json")
 	var stdout, stderr bytes.Buffer
@@ -87,7 +87,7 @@ func TestCompatLwcCaptureEditorFindingsJSON(t *testing.T) {
 	}
 }
 
-func TestCompatLwcCaptureEditorFindingsJSONOnDeployFailure(t *testing.T) {
+func TestCompatLWCCaptureEditorFindingsJSONOnDeployFailure(t *testing.T) {
 	root := t.TempDir()
 	outPath := filepath.Join(root, "reports", "lwc-org-capture.json")
 	var stdout, stderr bytes.Buffer

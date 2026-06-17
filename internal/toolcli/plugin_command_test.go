@@ -140,14 +140,17 @@ func TestManifestJSONListsCompatEditorActions(t *testing.T) {
 		},
 		"compat.lwcCapture": {
 			ID:       "compat.lwcCapture",
-			Title:    "Capture LWC Org Evidence",
+			Title:    "Capture LWC Browser Evidence",
 			View:     "preview",
 			Contexts: []string{"project", "lwcServerRunning"},
 			Command:  []string{"compat", "lwc", "capture"},
-			Inputs:   []pluginManifestFileEditorInput{{Name: "targetOrg", Label: "Target org alias", Type: "text", Required: true}},
-			Args:     []string{"--target-org", "${input.targetOrg}", "--project", "${projectRoot}", "--out", "${outputDir}/lwc-org-capture.json", "--json", "--editor-findings"},
-			Output:   "glade.findings.v1",
-			Icon:     "cloud-download",
+			Inputs: []pluginManifestFileEditorInput{
+				{Name: "targetOrg", Label: "Target org alias", Type: "text", Required: true},
+				{Name: "localBaseUrl", Label: "Local LWC shell URL", Type: "text", Required: true},
+			},
+			Args:   []string{"--target-org", "${input.targetOrg}", "--project", "${projectRoot}", "--local-browser-capture", "--local-base-url", "${input.localBaseUrl}", "--browser-capture", "--out", "${outputDir}/lwc-browser-capture.json", "--json", "--editor-findings"},
+			Output: "glade.findings.v1",
+			Icon:   "cloud-download",
 		},
 	}
 	if len(actions) != len(want) {
@@ -235,7 +238,7 @@ func TestPackagedCompatManifestMatchesRuntimeCommands(t *testing.T) {
 	}
 }
 
-func TestRunCompatLwcCaptureDoesNotPrintPreparedTextWhenReportWriteFails(t *testing.T) {
+func TestRunCompatLWCCaptureDoesNotPrintPreparedTextWhenReportWriteFails(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), []string{
 		"lwc", "capture",
@@ -256,7 +259,7 @@ func TestRunCompatLwcCaptureDoesNotPrintPreparedTextWhenReportWriteFails(t *test
 	}
 }
 
-func TestPluginArchiveIndexCompatCommandsIncludeLwcRoots(t *testing.T) {
+func TestPluginArchiveIndexCompatCommandsIncludeLWCRoots(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-plugin-archives.sh"))
 	if err != nil {
 		t.Fatal(err)
