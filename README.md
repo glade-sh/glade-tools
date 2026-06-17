@@ -2,6 +2,11 @@
 
 Maintenance commands for the sibling `glade` project.
 
+Source is hosted in the private `glade-sh/glade-tools` repository. The module
+path remains `github.com/glade-sh/glade/tools` so this repo can import
+`github.com/glade-sh/glade/internal/...` packages while it is built beside
+`../glade`.
+
 This project owns the shop work:
 
 - compatibility fixtures and fixture runners
@@ -124,3 +129,6 @@ platform asset URLs, and archive SHA-256 values.
 ```bash
 OUT_DIR=dist/plugins TARGETS="darwin/arm64 linux/amd64" PLUGIN_ASSET_BASE_URL="https://plugins.glade.sh/v0.1.0" scripts/build-plugin-archives.sh 0.1.0
 ```
+
+See [`docs/plugin-registry.md`](docs/plugin-registry.md) for the private source
+and registry endpoint setup.
