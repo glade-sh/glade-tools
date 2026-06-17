@@ -168,6 +168,7 @@ func compatUsage() string {
 		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]",
 		"visualforce summary [--project <root>] [--phase <n>] [--json]",
 		"lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]",
+		"lwc corpus --root <path> --out <path> --json [--include-repos <a,b>]",
 		"replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...>",
 		"ui-controllers [--project <root>] [--json|--check <path>]",
 		"post-parity [--project <root>] [--json|--output <path>|--check <path>] [--editor-findings] [--require-ready]",
@@ -201,9 +202,58 @@ func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {
 	switch args[0] {
 	case "capture":
 		return runCompatLwcCapture(ctx, args[1:], w)
+	case "corpus":
+		return runCompatLwcCorpus(args[1:], w)
 	default:
 		return errors.New(compatLwcUsage())
 	}
+}
+
+func runCompatLwcCorpus(args []string, w io.Writer) error {
+	options := compat.LwcCorpusScanOptions{}
+	jsonOut := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--root":
+			if i+1 >= len(args) {
+				return errors.New("--root requires a value")
+			}
+			options.Root = args[i+1]
+			i++
+		case "--out":
+			if i+1 >= len(args) {
+				return errors.New("--out requires a value")
+			}
+			options.Out = args[i+1]
+			i++
+		case "--include-repos":
+			if i+1 >= len(args) {
+				return errors.New("--include-repos requires a value")
+			}
+			options.IncludeRepos = append(options.IncludeRepos, strings.Split(args[i+1], ",")...)
+			i++
+		case "--json":
+			jsonOut = true
+		default:
+			return fmt.Errorf("unknown lwc corpus flag %q", args[i])
+		}
+	}
+	if strings.TrimSpace(options.Root) == "" || strings.TrimSpace(options.Out) == "" {
+		return errors.New("usage: glade-plugin-compat lwc corpus --root <path> --out <path> --json [--include-repos <a,b>]")
+	}
+	report, err := compat.ScanLwcCorpus(options)
+	if err != nil {
+		return err
+	}
+	if err := compat.WriteLwcCorpusReportJSON(options.Out, report); err != nil {
+		return err
+	}
+	if jsonOut {
+		return compat.WriteLwcCorpusJSON(w, report)
+	}
+	compat.WriteLwcCorpusText(w, report)
+	fmt.Fprintf(w, "wrote %s\n", options.Out)
+	return nil
 }
 
 func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error {
@@ -312,6 +362,8 @@ capture; duplicate assignments are treated as already done.
 Usage:
   glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
   glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
+  glade-plugin-compat lwc corpus --root <path> --out <path> --json [--include-repos <a,b>]
+  glade compat lwc corpus --root <path> --out <path> --json [--include-repos <a,b>]
 
 Common flags:
   --target-org <alias>     Scratch org alias or username.
@@ -327,20 +379,28 @@ Common flags:
   --json                   Write the report JSON to stdout.
   --editor-findings        With --json, write glade.findings.v1 to stdout.
 
+Corpus flags:
+  --root <path>            Corpus root or one Salesforce project root.
+  --out <path>             Write the LWC corpus report JSON.
+  --include-repos <a,b>    Limit the corpus scan to named repos; missing repos are counted as zero.
+  --json                   Write the report JSON to stdout.
+
 Targets:
   direct-component, record-page, app-page, home-page, custom-tab,
   url-addressable-component, record-quick-action, visualforce-lightning-out,
   apex-wire, imperative-apex, lds-read, ui-object-info, ui-related-list,
   lds-create-defaults, ui-layout, lds-mutation, navigation, toast, lms,
-  base-components, visualforce-base-components
+  community-page, community-component, community-context, base-components,
+  visualforce-base-components, phase3-base-components
 
 Examples:
-  glade compat lwc capture --target-org oaer-probe-max --project /Users/matt/Dev/lwc-full-shell/glade/testdata/local-tests/lwc-shell --targets custom-tab,url-addressable-component --local-browser-capture --glade-bin /Users/matt/Dev/lwc-full-shell/glade/bin/glade --browser-capture --out /tmp/glade-lwc-full-shell-capture.json
+  glade compat lwc capture --target-org <target-org> --project ../glade/testdata/local-tests/lwc-shell --targets custom-tab,url-addressable-component --local-browser-capture --glade-bin ../glade/bin/glade --browser-capture --out /tmp/glade-lwc-shell-capture.json
+  glade-plugin-compat lwc corpus --root /tmp/lwc-corpus --out /tmp/lwc-corpus.json --json --include-repos repo-a,repo-b
 `)+"\n")
 }
 
 func compatLwcUsage() string {
-	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]"
+	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade-plugin-compat lwc corpus --root <path> --out <path> --json [--include-repos <a,b>]\n       glade compat lwc corpus --root <path> --out <path> --json [--include-repos <a,b>]"
 }
 
 type postParityReadiness struct {

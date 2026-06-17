@@ -90,6 +90,8 @@ func (r *fakeLwcBrowserRunner) CaptureDOM(ctx context.Context, url string) (LwcB
 		return r.capture(`<main><c-related-list-probe>Related List Probe</c-related-list-probe></main>`), nil
 	case strings.Contains(url, "/lwc/preview/component/c/layoutProbe"):
 		return r.capture(`<main><c-layout-probe>Layout Probe</c-layout-probe></main>`), nil
+	case strings.Contains(url, "/lwc/preview/community/"):
+		return r.capture(`<main><c-community-theme-layout><div id="glade-lwc-main-0"><c-community-probe>Community Probe /partners 0DB000000000001 0DM000000000001 true comm__namedPage /lwc/preview/community/Partner_Portal/Account?c__view=summary</c-community-probe></div></c-community-theme-layout></main>`), nil
 	case strings.Contains(url, "/lwc/preview/component/c/baseComponentHost") || strings.Contains(url, "/apex/MultiWidgetHost"):
 		return r.capture(`<main><c-base-component-host>Base Components</c-base-component-host></main>`), nil
 	case strings.Contains(url, "/apex/LwcShellProbe") || strings.Contains(url, "/lwc/preview/component/c/contextProbe"):
@@ -487,6 +489,36 @@ func TestRunLWCCaptureComparesLocalAndSalesforceBrowserEvidence(t *testing.T) {
 	assertSupportRow(t, report, "lwc.target.url-addressable-component", "lightning-shell", "supported")
 }
 
+func TestRunLWCCaptureCommunityLocalBrowserEvidenceIncludesContext(t *testing.T) {
+	root := t.TempDir()
+	runner := &fakeLwcCommandRunner{}
+	browser := &fakeLwcBrowserRunner{}
+
+	report, err := RunLwcCapture(context.Background(), LwcCaptureOptions{
+		Project:             root,
+		TargetOrg:           "oaer-probe-max",
+		Targets:             []string{"community-context"},
+		SkipDeploy:          true,
+		LocalBrowserCapture: true,
+		LocalBaseURL:        "http://127.0.0.1:34567",
+		Runner:              runner,
+		Browser:             browser,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := findLwcCaptureCase(t, report, "community-context")
+	if c.LocalEvidence == nil || c.LocalEvidence.Status != "captured" {
+		t.Fatalf("local evidence = %#v", c.LocalEvidence)
+	}
+	for _, want := range []string{"/partners", "0DB000000000001", "0DM000000000001", "true", "comm__namedPage", "c-community-theme-layout"} {
+		if !strings.Contains(c.LocalEvidence.DOM, want) {
+			t.Fatalf("missing %q in community DOM: %s", want, c.LocalEvidence.DOM)
+		}
+	}
+	assertSupportRow(t, report, "lwc.service.community-context", "lightning-shell", "supported-local")
+}
+
 func TestRunLWCCaptureMarksCaseFailedWhenBrowserComparisonDiffs(t *testing.T) {
 	root := t.TempDir()
 	runner := &fakeLwcCommandRunner{}
@@ -621,7 +653,7 @@ func TestRunLWCCaptureSkipDeployWritesFixtureReport(t *testing.T) {
 	if !report.OK {
 		t.Fatalf("ok = false")
 	}
-	if report.Counts.Targets != 21 || report.Counts.Prepared != 21 || report.Counts.Pass != 0 || report.Counts.Fail != 0 {
+	if report.Counts.Targets != 34 || report.Counts.Prepared != 34 || report.Counts.Pass != 0 || report.Counts.Fail != 0 {
 		t.Fatalf("counts = %#v", report.Counts)
 	}
 	if report.Artifacts.Report != out {
@@ -646,35 +678,61 @@ func TestRunLWCCaptureSkipDeployWritesFixtureReport(t *testing.T) {
 		"custom-tab",
 		"url-addressable-component",
 		"record-quick-action",
+		"community-page",
+		"community-component",
 		"visualforce-lightning-out",
 		"apex-wire",
+		"visualforce-apex-wire",
 		"imperative-apex",
+		"visualforce-imperative-apex",
 		"lds-read",
+		"visualforce-lds-read",
 		"ui-object-info",
+		"visualforce-ui-object-info",
 		"ui-related-list",
 		"lds-create-defaults",
 		"ui-layout",
 		"lds-mutation",
+		"visualforce-lds-mutation",
 		"navigation",
+		"visualforce-navigation",
 		"toast",
+		"visualforce-toast",
 		"lms",
+		"visualforce-lms",
+		"visualforce-resource-loader",
+		"community-context",
 		"base-components",
 		"visualforce-base-components",
+		"phase3-base-components",
 	}
 	if !reflect.DeepEqual(gotNames, wantNames) {
 		t.Fatalf("case names = %#v", gotNames)
 	}
-	if len(report.Support) != 23 {
-		t.Fatalf("support rows = %d, want 23: %#v", len(report.Support), report.Support)
+	if len(report.Support) != 36 {
+		t.Fatalf("support rows = %d, want 36: %#v", len(report.Support), report.Support)
 	}
 	assertSupportRow(t, report, "lwc.host.lightning-shell", "lightning-shell", "prepared-local")
 	assertSupportRow(t, report, "lwc.host.visualforce-lightning-out", "visualforce-lightning-out", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.ui-object-info", "lightning-shell", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.apex-wire", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.imperative-apex", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.lds-read", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.ui-object-info", "visualforce-lightning-out", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.ui-related-list", "lightning-shell", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.lds-create-defaults", "lightning-shell", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.ui-layout", "lightning-shell", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.lds-mutation", "lightning-shell", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.lds-mutation", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.navigation", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.toast", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.lms", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.resource-loader", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.target.community-page", "lightning-shell", "org-setup-required")
+	assertSupportRow(t, report, "lwc.target.community-component", "lightning-shell", "org-setup-required")
+	assertSupportRow(t, report, "lwc.service.community-context", "lightning-shell", "org-setup-required")
 	assertSupportRow(t, report, "lwc.service.base-components", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.phase3-base-components", "lightning-shell", "prepared-local")
 
 	recordCase := findLwcCaptureCase(t, report, "record-page")
 	if recordCase.Metadata.Route != "/lwc/preview/record/Account/001000000000001AAA?page=Account_Record_Page" {
@@ -714,6 +772,10 @@ func TestRunLWCCaptureSkipDeployWritesFixtureReport(t *testing.T) {
 	actionCase := findLwcCaptureCase(t, report, "record-quick-action")
 	if actionCase.SalesforceEvidence == nil || actionCase.SalesforceEvidence.TargetURL != "/lightning/r/Account/001000000000001AAA/view?quickAction=Account.Update_Status" {
 		t.Fatalf("quick action salesforce evidence = %#v", actionCase.SalesforceEvidence)
+	}
+	communityCase := findLwcCaptureCase(t, report, "community-page")
+	if communityCase.Metadata.Route != "/lwc/preview/community/Partner_Portal/Account" || communityCase.Metadata.Component != "communityProbe" {
+		t.Fatalf("community page metadata = %#v", communityCase.Metadata)
 	}
 
 	data, err := os.ReadFile(out)
@@ -899,6 +961,52 @@ func TestRunLWCCaptureWritesSupportRowsForRequestedFeature(t *testing.T) {
 		t.Fatalf("toast metadata = %#v", toastCase.Metadata)
 	}
 	assertSupportRow(t, report, "lwc.service.toast", "lightning-shell", "prepared-local")
+}
+
+func TestRunLWCCaptureIncludesPackagePhase1BaseComponentsTarget(t *testing.T) {
+	report, err := RunLwcCapture(context.Background(), LwcCaptureOptions{
+		Project:    t.TempDir(),
+		TargetOrg:  "oaer-probe-max",
+		Targets:    []string{"package-phase1-base-components"},
+		SkipDeploy: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Counts.Targets != 1 || len(report.Cases) != 1 {
+		t.Fatalf("report = %#v", report)
+	}
+	c := report.Cases[0]
+	if c.Feature != "lwc.service.package-phase1-base-components" || c.Metadata.Component != "baseComponentHost" || c.Metadata.Route != "/lwc/preview/component/c/baseComponentHost?context=packagePhase1BaseComponents" {
+		t.Fatalf("package phase1 metadata = %#v", c)
+	}
+	if c.SalesforceEvidence == nil || !strings.Contains(c.SalesforceEvidence.DOM, `data-probe="package-phase1-base-components"`) || !strings.Contains(c.SalesforceEvidence.DOM, "Package Phase 1") {
+		t.Fatalf("package phase1 prepared DOM = %#v", c.SalesforceEvidence)
+	}
+	assertSupportRow(t, report, "lwc.service.package-phase1-base-components", "lightning-shell", "prepared-local")
+}
+
+func TestRunLWCCaptureIncludesPhase3BaseComponentsTarget(t *testing.T) {
+	report, err := RunLwcCapture(context.Background(), LwcCaptureOptions{
+		Project:    t.TempDir(),
+		TargetOrg:  "oaer-probe-max",
+		Targets:    []string{"phase3-base-components"},
+		SkipDeploy: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Counts.Targets != 1 || len(report.Cases) != 1 {
+		t.Fatalf("report = %#v", report)
+	}
+	c := report.Cases[0]
+	if c.Feature != "lwc.service.phase3-base-components" || c.Metadata.Component != "baseComponentHost" || c.Metadata.Route != "/lwc/preview/component/c/baseComponentHost?context=phase3BaseComponents" {
+		t.Fatalf("phase3 metadata = %#v", c)
+	}
+	if c.SalesforceEvidence == nil || !strings.Contains(c.SalesforceEvidence.DOM, `data-probe="phase3-base-components"`) || !strings.Contains(c.SalesforceEvidence.DOM, "Providers") {
+		t.Fatalf("phase3 prepared DOM = %#v", c.SalesforceEvidence)
+	}
+	assertSupportRow(t, report, "lwc.service.phase3-base-components", "lightning-shell", "prepared-local")
 }
 
 func findLwcCaptureCase(t *testing.T, report LwcCaptureReport, name string) LwcCaptureCase {

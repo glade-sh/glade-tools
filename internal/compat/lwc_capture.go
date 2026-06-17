@@ -155,20 +155,33 @@ var defaultLwcCaptureCases = []string{
 	"custom-tab",
 	"url-addressable-component",
 	"record-quick-action",
+	"community-page",
+	"community-component",
 	"visualforce-lightning-out",
 	"apex-wire",
+	"visualforce-apex-wire",
 	"imperative-apex",
+	"visualforce-imperative-apex",
 	"lds-read",
+	"visualforce-lds-read",
 	"ui-object-info",
+	"visualforce-ui-object-info",
 	"ui-related-list",
 	"lds-create-defaults",
 	"ui-layout",
 	"lds-mutation",
+	"visualforce-lds-mutation",
 	"navigation",
+	"visualforce-navigation",
 	"toast",
+	"visualforce-toast",
 	"lms",
+	"visualforce-lms",
+	"visualforce-resource-loader",
+	"community-context",
 	"base-components",
 	"visualforce-base-components",
+	"phase3-base-components",
 }
 
 type lwcCaptureTargetDefinition struct {
@@ -280,6 +293,29 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Files:         []string{"force-app/main/default/quickActions/Account.Update_Status.quickAction-meta.xml", "force-app/main/default/lwc/actionProbe/actionProbe.js"},
 		Assertions:    []string{"action metadata", "record context"},
 	},
+	"community-page": {
+		Name:       "community-page",
+		Feature:    "lwc.target.community-page",
+		Host:       "lightning-shell",
+		Route:      "/lwc/preview/community/Partner_Portal/Account",
+		Component:  "communityProbe",
+		Page:       "Account",
+		DOM:        `<section data-probe="community"><h2>Community Probe</h2></section>`,
+		Notes:      "Community page route resolves the communityAccount preset, mounts c:communityProbe, and carries Experience Cloud context.",
+		Files:      []string{"glade.lwc.json", "force-app/main/default/lwc/communityProbe/communityProbe.js", "force-app/main/default/lwc/communityThemeLayout/communityThemeLayout.js-meta.xml"},
+		Assertions: []string{"community context", "comm PageReference", "theme layout boundary"},
+	},
+	"community-component": {
+		Name:       "community-component",
+		Feature:    "lwc.target.community-component",
+		Host:       "lightning-shell",
+		Route:      "/lwc/preview/community/Partner_Portal/cmp/c/communityProbe",
+		Component:  "communityProbe",
+		DOM:        `<section data-probe="community"><h2>Community Probe</h2></section>`,
+		Notes:      "Direct community component route mounts lightningCommunity__Default with local site context and /s base-path fallback.",
+		Files:      []string{"force-app/main/default/lwc/communityProbe/communityProbe.js", "force-app/main/default/lwc/communityProbe/communityProbe.js-meta.xml"},
+		Assertions: []string{"community direct component route", "basePath fallback"},
+	},
 	"visualforce-lightning-out": {
 		Name:       "visualforce-lightning-out",
 		Feature:    "lwc.target.visualforce-lightning-out",
@@ -302,6 +338,17 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Files:      []string{"force-app/main/default/lwc/wireProbe/wireProbe.js", "force-app/main/default/classes/LwcProbeController.cls"},
 		Assertions: []string{"wire payload shape", "visible text"},
 	},
+	"visualforce-apex-wire": {
+		Name:       "visualforce-apex-wire",
+		Feature:    "lwc.service.apex-wire",
+		Host:       "visualforce-lightning-out",
+		Route:      "/apex/MultiWidgetHost",
+		Component:  "wireProbe",
+		DOM:        `<section data-probe="vf-wire"><p>Local Widget</p></section>`,
+		Notes:      "Visualforce Lightning Out c:wireProbe and c:apexWireHost prove Apex wire through the shared runtime.",
+		Files:      []string{"force-app/main/default/lwc/wireProbe/wireProbe.js", "force-app/main/default/lwc/apexWireHost/apexWireHost.js", "force-app/main/default/classes/ItemCtrl.cls"},
+		Assertions: []string{"Visualforce Apex wire payload", "visible text"},
+	},
 	"imperative-apex": {
 		Name:       "imperative-apex",
 		Feature:    "lwc.service.imperative-apex",
@@ -312,6 +359,17 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Notes:      "wireProbe imports @salesforce/apex/LwcProbeController.imperativeAccount.",
 		Files:      []string{"force-app/main/default/lwc/wireProbe/wireProbe.js", "force-app/main/default/classes/LwcProbeController.cls"},
 		Assertions: []string{"imperative payload shape", "visible text after click"},
+	},
+	"visualforce-imperative-apex": {
+		Name:       "visualforce-imperative-apex",
+		Feature:    "lwc.service.imperative-apex",
+		Host:       "visualforce-lightning-out",
+		Route:      "/apex/MultiWidgetHost",
+		Component:  "wireProbe",
+		DOM:        `<section data-probe="vf-wire"><p>Local Widget</p></section>`,
+		Notes:      "Visualforce Lightning Out c:wireProbe invokes @salesforce/apex/ItemCtrl.getItems as an imperative function.",
+		Files:      []string{"force-app/main/default/lwc/wireProbe/wireProbe.js", "force-app/main/default/classes/ItemCtrl.cls"},
+		Assertions: []string{"Visualforce imperative Apex function call", "visible text"},
 	},
 	"lds-read": {
 		Name:          "lds-read",
@@ -326,6 +384,19 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Files:         []string{"force-app/main/default/lwc/recordProbe/recordProbe.js", "data/accounts.json"},
 		Assertions:    []string{"record fields", "batch record results", "object info results", "wire payload shape"},
 	},
+	"visualforce-lds-read": {
+		Name:          "visualforce-lds-read",
+		Feature:       "lwc.service.lds-read",
+		Host:          "visualforce-lightning-out",
+		Route:         "/apex/MultiWidgetHost",
+		Component:     "recordWireHost",
+		ObjectAPIName: "Account",
+		RecordID:      "001XX0000000001",
+		DOM:           `<p class="name">Acme</p>`,
+		Notes:         "Visualforce Lightning Out c:recordWireHost proves getRecord against local org state.",
+		Files:         []string{"force-app/main/default/lwc/recordWireHost/recordWireHost.js", "data/accounts.json"},
+		Assertions:    []string{"Visualforce record wire", "visible text"},
+	},
 	"ui-object-info": {
 		Name:          "ui-object-info",
 		Feature:       "lwc.service.ui-object-info",
@@ -337,6 +408,18 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Notes:         "Local lightning/uiObjectInfoApi covers getObjectInfo, getObjectInfos, getPicklistValues, and getPicklistValuesByRecordType with local schema limits.",
 		Files:         []string{"force-app/main/default/lwc/objectInfoProbe/objectInfoProbe.js", "data/accounts.json"},
 		Assertions:    []string{"object info payload", "picklist values", "wire payload shape"},
+	},
+	"visualforce-ui-object-info": {
+		Name:          "visualforce-ui-object-info",
+		Feature:       "lwc.service.ui-object-info",
+		Host:          "visualforce-lightning-out",
+		Route:         "/apex/MultiWidgetHost",
+		Component:     "objectInfoHost",
+		ObjectAPIName: "Account",
+		DOM:           `<p class="label">Account</p>`,
+		Notes:         "Visualforce Lightning Out c:objectInfoHost proves getObjectInfo through the shared runtime.",
+		Files:         []string{"force-app/main/default/lwc/objectInfoHost/objectInfoHost.js", "data/accounts.json"},
+		Assertions:    []string{"Visualforce object info wire", "visible text"},
 	},
 	"ui-related-list": {
 		Name:          "ui-related-list",
@@ -388,6 +471,18 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Files:         []string{"force-app/main/default/lwc/recordProbe/recordProbe.js"},
 		Assertions:    []string{"mutation payload shape", "record cache notification"},
 	},
+	"visualforce-lds-mutation": {
+		Name:          "visualforce-lds-mutation",
+		Feature:       "lwc.service.lds-mutation",
+		Host:          "visualforce-lightning-out",
+		Route:         "/apex/MultiWidgetHost",
+		Component:     "recordMutationHost",
+		ObjectAPIName: "Account",
+		DOM:           `<p class="status">mutation complete</p>`,
+		Notes:         "Visualforce Lightning Out c:recordMutationHost proves createRecord, updateRecord, and deleteRecord against local org state.",
+		Files:         []string{"force-app/main/default/lwc/recordMutationHost/recordMutationHost.js"},
+		Assertions:    []string{"Visualforce LDS mutation helpers", "visible text"},
+	},
 	"navigation": {
 		Name:       "navigation",
 		Feature:    "lwc.service.navigation",
@@ -398,6 +493,17 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Notes:      "Runtime browser tests cover GenerateUrl, Navigate, CurrentPageReference, and local route diagnostics; strict capture proves the shell route loads without browser errors.",
 		Files:      []string{"glade.lwc.json", "force-app/main/default/lwc/contextProbe/contextProbe.js"},
 		Assertions: []string{"PageReference JSON", "GenerateUrl result"},
+	},
+	"visualforce-navigation": {
+		Name:       "visualforce-navigation",
+		Feature:    "lwc.service.navigation",
+		Host:       "visualforce-lightning-out",
+		Route:      "/apex/MultiWidgetHost",
+		Component:  "serviceHost",
+		DOM:        `<section data-probe="vf-services"><p class="page-type">standard__webPage</p></section>`,
+		Notes:      "Visualforce Lightning Out c:serviceHost proves CurrentPageReference and local navigation diagnostics.",
+		Files:      []string{"force-app/main/default/lwc/serviceHost/serviceHost.js", "force-app/main/default/pages/MultiWidgetHost.page"},
+		Assertions: []string{"CurrentPageReference", "unsupported navigation diagnostic"},
 	},
 	"toast": {
 		Name:       "toast",
@@ -410,6 +516,17 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Files:      []string{"force-app/main/default/lwc/contextProbe/contextProbe.js"},
 		Assertions: []string{"toast event detail", "rendered toast text"},
 	},
+	"visualforce-toast": {
+		Name:       "visualforce-toast",
+		Feature:    "lwc.service.toast",
+		Host:       "visualforce-lightning-out",
+		Route:      "/apex/MultiWidgetHost",
+		Component:  "serviceHost",
+		DOM:        `<section data-probe="vf-services"><p class="toast-title">VF Toast</p></section>`,
+		Notes:      "Visualforce Lightning Out c:serviceHost dispatches ShowToastEvent through the shared local runtime.",
+		Files:      []string{"force-app/main/default/lwc/serviceHost/serviceHost.js", "force-app/main/default/pages/MultiWidgetHost.page"},
+		Assertions: []string{"toast event detail", "visible toast title"},
+	},
 	"lms": {
 		Name:       "lms",
 		Feature:    "lwc.service.lms",
@@ -421,6 +538,39 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Files:      []string{"force-app/main/default/lwc/contextProbe/contextProbe.js"},
 		Assertions: []string{"message channel payload", "subscriber delivery"},
 	},
+	"visualforce-lms": {
+		Name:       "visualforce-lms",
+		Feature:    "lwc.service.lms",
+		Host:       "visualforce-lightning-out",
+		Route:      "/apex/MultiWidgetHost",
+		Component:  "serviceHost",
+		DOM:        `<section data-probe="vf-services"><p class="message-record">001XX0000000001</p></section>`,
+		Notes:      "Visualforce Lightning Out c:serviceHost imports @salesforce/messageChannel metadata and proves local publish and subscribe.",
+		Files:      []string{"force-app/main/default/lwc/serviceHost/serviceHost.js", "force-app/main/default/messageChannels/LwcProbe.messageChannel-meta.xml"},
+		Assertions: []string{"message channel token", "subscriber delivery"},
+	},
+	"visualforce-resource-loader": {
+		Name:       "visualforce-resource-loader",
+		Feature:    "lwc.service.resource-loader",
+		Host:       "visualforce-lightning-out",
+		Route:      "/apex/MultiWidgetHost",
+		Component:  "serviceHost",
+		DOM:        `<section data-probe="vf-services"><p class="resource-status">loaded</p></section>`,
+		Notes:      "Visualforce Lightning Out c:serviceHost proves platformResourceLoader loadScript/loadStyle against local static resources.",
+		Files:      []string{"force-app/main/default/lwc/serviceHost/serviceHost.js", "force-app/main/default/staticresources/ServiceScript.resource", "force-app/main/default/staticresources/ServiceStyles.resource"},
+		Assertions: []string{"static resource script", "static resource stylesheet"},
+	},
+	"community-context": {
+		Name:       "community-context",
+		Feature:    "lwc.service.community-context",
+		Host:       "lightning-shell",
+		Route:      "/lwc/preview/community/Partner_Portal/Account",
+		Component:  "communityProbe",
+		DOM:        `<section data-probe="community"><p data-field="basePath">/partners</p><p data-field="isGuest">true</p></section>`,
+		Notes:      "Community shims export basePath, network ID, site ID, guest mode, and supported comm__ navigation URL generation.",
+		Files:      []string{"force-app/main/default/lwc/communityProbe/communityProbe.js", "glade.lwc.json"},
+		Assertions: []string{"@salesforce/community", "@salesforce/site", "@salesforce/user/isGuest", "comm navigation"},
+	},
 	"base-components": {
 		Name:       "base-components",
 		Feature:    "lwc.service.base-components",
@@ -431,6 +581,28 @@ var lwcCaptureTargetDefinitions = map[string]lwcCaptureTargetDefinition{
 		Notes:      "Practical base shims render common lightning/* modules and cover click, change, submit, datatable rowaction, tab active, and unsupported-attribute diagnostics.",
 		Files:      []string{"force-app/main/default/lwc/baseComponentHost/baseComponentHost.html", "force-app/main/default/lwc/baseComponentHost/baseComponentHost.js"},
 		Assertions: []string{"public attributes", "visible text", "event payload"},
+	},
+	"package-phase1-base-components": {
+		Name:       "package-phase1-base-components",
+		Feature:    "lwc.service.package-phase1-base-components",
+		Host:       "lightning-shell",
+		Route:      "/lwc/preview/component/c/baseComponentHost?context=packagePhase1BaseComponents",
+		Component:  "baseComponentHost",
+		DOM:        `<section data-probe="package-phase1-base-components"><lightning-accordion><lightning-accordion-section label="Package Phase 1"></lightning-accordion-section></lightning-accordion></section>`,
+		Notes:      "Package-phase1 base shims render the lightning/* modules found in the prioritized LWC corpus package lane.",
+		Files:      []string{"force-app/main/default/lwc/baseComponentHost/baseComponentHost.html", "force-app/main/default/lwc/baseComponentHost/baseComponentHost.js", "glade.lwc.json"},
+		Assertions: []string{"package-phase1 context", "visible text", "event payload"},
+	},
+	"phase3-base-components": {
+		Name:       "phase3-base-components",
+		Feature:    "lwc.service.phase3-base-components",
+		Host:       "lightning-shell",
+		Route:      "/lwc/preview/component/c/baseComponentHost?context=phase3BaseComponents",
+		Component:  "baseComponentHost",
+		DOM:        `<section data-probe="phase3-base-components"><lightning-dual-listbox label="Providers"></lightning-dual-listbox><lightning-tree-grid></lightning-tree-grid></section>`,
+		Notes:      "Capability Phase 3 base shims render high-use expanded lightning/* modules including dual listbox, select, slider, rich text input, progress, breadcrumbs, tree grid, map, carousel, and email links.",
+		Files:      []string{"force-app/main/default/lwc/baseComponentHost/baseComponentHost.html", "force-app/main/default/lwc/baseComponentHost/baseComponentHost.js", "glade.lwc.json"},
+		Assertions: []string{"phase3 context", "visible text", "expanded component tags", "event payload"},
 	},
 	"visualforce-base-components": {
 		Name:       "visualforce-base-components",
@@ -648,7 +820,7 @@ func buildLwcCaptureCases(targets, hosts []string, targetOrg string) []LwcCaptur
 				Source:    targetOrg,
 				Status:    "pending-org-capture",
 				TargetURL: lwcSalesforceTargetPath(def),
-				DOM:       "<pending salesforce dom capture for " + target + ">",
+				DOM:       def.DOM,
 				Notes:     lwcSalesforceEvidenceNotes(def),
 			},
 			Notes: def.Notes,
@@ -1053,7 +1225,21 @@ func lwcSupportStatusForCase(c LwcCaptureCase) string {
 	if salesforceCaptured {
 		return "supported-salesforce"
 	}
+	if lwcCaseRequiresOrgSetup(c) {
+		return "org-setup-required"
+	}
 	return "prepared-local"
+}
+
+func lwcCaseRequiresOrgSetup(c LwcCaptureCase) bool {
+	if c.SalesforceEvidence == nil || !strings.HasPrefix(strings.TrimSpace(c.SalesforceEvidence.TargetURL), "salesforce://local-only") {
+		return false
+	}
+	switch c.Name {
+	case "community-page", "community-component", "community-context":
+		return true
+	}
+	return strings.Contains(c.Feature, ".community-") || strings.Contains(c.Feature, "community-context")
 }
 
 func lwcSupportEvidenceRef(reportPath, feature, host string) string {

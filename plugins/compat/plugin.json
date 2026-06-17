@@ -27,6 +27,14 @@
     },
     {
       "path": [
+        "compat",
+        "lwc",
+        "corpus"
+      ],
+      "summary": "Scan package-first LWC corpus support gaps."
+    },
+    {
+      "path": [
         "surface"
       ],
       "summary": "Refresh and inspect the Salesforce surface ledger."

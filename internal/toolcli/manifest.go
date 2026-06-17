@@ -61,6 +61,7 @@ func writeCompatManifest(w io.Writer) error {
 			{Path: []string{"compat"}, Summary: "Run compatibility fixture and report commands."},
 			{Path: []string{"compat", "lwc"}, Summary: "Capture LWC shell and browser evidence."},
 			{Path: []string{"compat", "lwc", "capture"}, Summary: "Write LWC target, browser, and support evidence."},
+			{Path: []string{"compat", "lwc", "corpus"}, Summary: "Scan package-first LWC corpus support gaps."},
 			{Path: []string{"surface"}, Summary: "Refresh and inspect the Salesforce surface ledger."},
 			{Path: []string{"matrix"}, Summary: "Print the full capability matrix."},
 			{Path: []string{"mvp"}, Summary: "Print MVP readiness status."},
