@@ -27,6 +27,36 @@ go run ./cmd/glade-plugin-compat lwc capture \
   --out /tmp/glade-lwc-two-sided-browser-check.json
 ```
 
+The 2026-06-17 wrap-up used active scratch org `oaer-probe-max`:
+
+```bash
+go run ./cmd/glade-plugin-compat lwc capture \
+  --target-org oaer-probe-max \
+  --project ../glade/testdata/local-tests/lwc-shell \
+  --include-hosts lightning-shell,visualforce-lightning-out \
+  --out /tmp/glade-lwc-oaer-phase8-10-capture.json \
+  --json
+```
+
+That deploy/prepared capture returned `ok: true`, `deployed: true`, 34 targets,
+34 prepared, and 0 fail.
+
+```bash
+go run ./cmd/glade-plugin-compat lwc capture \
+  --target-org oaer-probe-max \
+  --project ../glade/testdata/local-tests/lwc-shell \
+  --targets app-page,custom-tab,url-addressable-component \
+  --local-browser-capture \
+  --glade-bin /tmp/glade-lwc-phase-wrap-bin \
+  --browser-capture \
+  --out /tmp/glade-lwc-oaer-phase8-10-browser.json \
+  --json
+```
+
+That two-sided browser capture returned `ok: true`, `deployed: true`, 3 pass,
+and 0 fail for app page, custom tab, and URL-addressable component support
+rows.
+
 The report JSON includes:
 
 - `ok`
@@ -66,8 +96,8 @@ DOM loads with no console or page errors. Rerun this capture lane to refresh the
 external JSON after product changes.
 
 The latest live two-sided browser proof captured `app-page`, `custom-tab`, and
-`url-addressable-component` against both the local Glade shell and a configured
-Salesforce org: 3 targets, 3 pass, 0 console errors, 0 page errors, and no
+`url-addressable-component` against both the local Glade shell and
+`oaer-probe-max`: 3 targets, 3 pass, 0 console errors, 0 page errors, and no
 frontdoor URL persisted in the JSON. Selector-scoped comparison passes for the
 app page inside `c-wire-probe`, the custom tab inside `c-context-probe`, and the
 URL-addressable component inside `c-action-probe`. The app-page and custom-tab
