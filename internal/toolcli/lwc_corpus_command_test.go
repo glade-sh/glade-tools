@@ -39,6 +39,7 @@ func TestRunCompatLWCCorpusWritesJSONToStdoutAndOut(t *testing.T) {
 		} `json:"counts"`
 		Repositories []struct {
 			Name   string `json:"name"`
+			Path   string `json:"path"`
 			Counts struct {
 				Bundles int `json:"bundles"`
 			} `json:"counts"`
@@ -57,7 +58,7 @@ func TestRunCompatLWCCorpusWritesJSONToStdoutAndOut(t *testing.T) {
 	if payload.Command != "glade compat lwc corpus" || payload.Counts.Meta != 1 || payload.Counts.JS != 1 || payload.Counts.HTML != 1 || payload.Counts.Bundles != 1 {
 		t.Fatalf("payload = %#v", payload)
 	}
-	if len(payload.Repositories) != 2 || payload.Repositories[1].Name != "repo-empty" || payload.Repositories[1].Counts.Bundles != 0 {
+	if len(payload.Repositories) != 2 || payload.Repositories[0].Path != "repo-a" || payload.Repositories[1].Name != "repo-empty" || payload.Repositories[1].Counts.Bundles != 0 {
 		t.Fatalf("repositories = %#v", payload.Repositories)
 	}
 	if len(payload.Packages) != 1 || payload.Packages[0].Repository != "repo-a" || payload.Packages[0].Name != "Main" || payload.Packages[0].Counts.Bundles != 1 {
@@ -72,6 +73,55 @@ func TestRunCompatLWCCorpusWritesJSONToStdoutAndOut(t *testing.T) {
 	}
 }
 
+func TestRunCompatLWCCorpusWritesJSONToStdoutWithoutOut(t *testing.T) {
+	root := t.TempDir()
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "repo-a", "force-app", "main", "default", "lwc", "statusPanel", "statusPanel.js"), `import { LightningElement } from 'lwc';`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"compat", "lwc", "corpus",
+		"--root", root,
+		"--include-repos", "repo-a",
+		"--json",
+	}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	var payload struct {
+		Counts struct {
+			JS int `json:"js"`
+		} `json:"counts"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("stdout is not JSON: %v\n%s", err, stdout.String())
+	}
+	if payload.Counts.JS != 1 {
+		t.Fatalf("payload = %#v", payload)
+	}
+	if strings.Contains(stdout.String(), "wrote ") {
+		t.Fatalf("stdout included file write message: %s", stdout.String())
+	}
+}
+
+func TestRunCompatLWCCorpusCheckFailsForUnsupportedTags(t *testing.T) {
+	root := t.TempDir()
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "repo-a", "force-app", "main", "default", "lwc", "statusPanel", "statusPanel.html"), `<template><lightning-unknown-panel></lightning-unknown-panel></template>`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"compat", "lwc", "corpus",
+		"--root", root,
+		"--include-repos", "repo-a",
+		"--check",
+	}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("Run returned success, stdout=%s stderr=%s", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "unsupported tags=1") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
 func TestLWCHelpListsCorpusCommand(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), []string{"lwc", "--help"}, &stdout, &stderr)
@@ -80,8 +130,9 @@ func TestLWCHelpListsCorpusCommand(t *testing.T) {
 	}
 	out := stdout.String()
 	for _, want := range []string{
-		"lwc corpus --root <path> --out <path> --json",
+		"lwc corpus --root <path> [--out <path>] [--json] [--check]",
 		"--include-repos <a,b>",
+		"--check",
 		"LWC corpus report",
 	} {
 		if !strings.Contains(out, want) {

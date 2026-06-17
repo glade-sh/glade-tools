@@ -180,6 +180,7 @@ var defaultLwcCaptureCases = []string{
 	"visualforce-resource-loader",
 	"community-context",
 	"base-components",
+	"package-phase1-base-components",
 	"visualforce-base-components",
 	"phase3-base-components",
 }

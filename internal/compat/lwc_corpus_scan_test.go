@@ -27,6 +27,7 @@ export default class TrailCard extends LightningElement {}
 <template>
   <lightning-card>
     <lightning-button label="Open"></lightning-button>
+    <lightning-unknown-panel></lightning-unknown-panel>
     <trail-map></trail-map>
   </lightning-card>
 </template>
@@ -69,18 +70,20 @@ export default class TrailCard extends LightningElement {}
 	assertLwcCorpusCount(t, report.Imports, "c/helper", 1)
 	assertLwcCorpusCount(t, report.LightningTags, "lightning-card", 1)
 	assertLwcCorpusCount(t, report.LightningTags, "lightning-button", 1)
+	assertLwcCorpusCount(t, report.LightningTags, "lightning-unknown-panel", 1)
 	assertLwcCorpusCount(t, report.PropertyTypes, "String", 1)
 	assertLwcCorpusCount(t, report.PropertyTypes, "Boolean", 1)
 	assertLwcCorpusCount(t, report.UnsupportedTags, "trail-map", 1)
+	assertLwcCorpusCount(t, report.UnsupportedTags, "lightning-unknown-panel", 1)
 	assertLwcCorpusCount(t, report.Examples, "trailCardRecordPage", 1)
 
 	if len(report.Repositories) != 2 {
 		t.Fatalf("repositories = %#v", report.Repositories)
 	}
-	if report.Repositories[0].Name != "repo-a" || report.Repositories[0].Counts.Bundles != 1 {
+	if report.Repositories[0].Name != "repo-a" || report.Repositories[0].Path != "repo-a" || report.Repositories[0].Counts.Bundles != 1 {
 		t.Fatalf("repo-a summary = %#v", report.Repositories[0])
 	}
-	if report.Repositories[0].Counts.Imports != 4 || report.Repositories[0].Counts.LightningTags != 2 || report.Repositories[0].Counts.Targets != 2 || report.Repositories[0].Counts.PropertyTypes != 2 || report.Repositories[0].Counts.UnsupportedTags != 1 || report.Repositories[0].Counts.Examples != 1 {
+	if report.Repositories[0].Counts.Imports != 4 || report.Repositories[0].Counts.LightningTags != 3 || report.Repositories[0].Counts.Targets != 2 || report.Repositories[0].Counts.PropertyTypes != 2 || report.Repositories[0].Counts.UnsupportedTags != 2 || report.Repositories[0].Counts.Examples != 1 {
 		t.Fatalf("repo-a detailed counts = %#v", report.Repositories[0].Counts)
 	}
 	if report.Repositories[1].Name != "repo-empty" || report.Repositories[1].Counts.Bundles != 0 {
@@ -92,7 +95,7 @@ export default class TrailCard extends LightningElement {}
 	if report.Packages[0].Repository != "repo-a" || report.Packages[0].Name != "Core UI" || report.Packages[0].Counts.Bundles != 1 {
 		t.Fatalf("core package = %#v", report.Packages[0])
 	}
-	if report.Packages[0].Counts.Imports != 4 || report.Packages[0].Counts.LightningTags != 2 || report.Packages[0].Counts.Targets != 2 || report.Packages[0].Counts.PropertyTypes != 2 || report.Packages[0].Counts.UnsupportedTags != 1 || report.Packages[0].Counts.Examples != 1 {
+	if report.Packages[0].Counts.Imports != 4 || report.Packages[0].Counts.LightningTags != 3 || report.Packages[0].Counts.Targets != 2 || report.Packages[0].Counts.PropertyTypes != 2 || report.Packages[0].Counts.UnsupportedTags != 2 || report.Packages[0].Counts.Examples != 1 {
 		t.Fatalf("core package detailed counts = %#v", report.Packages[0].Counts)
 	}
 	if report.Packages[1].Repository != "repo-a" || report.Packages[1].Name != "Empty UI" || report.Packages[1].Counts.Bundles != 0 {
@@ -109,7 +112,7 @@ func TestScanLwcCorpusUsesRootAsRepoWhenRootIsAProject(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(report.Repositories) != 1 || report.Repositories[0].Name != filepath.Base(root) || report.Repositories[0].Counts.JS != 1 {
+	if len(report.Repositories) != 1 || report.Repositories[0].Name != filepath.Base(root) || report.Repositories[0].Path != "." || report.Repositories[0].Counts.JS != 1 {
 		t.Fatalf("repositories = %#v", report.Repositories)
 	}
 	if len(report.Packages) != 1 || report.Packages[0].Path != "force-app" || report.Packages[0].Counts.JS != 1 {

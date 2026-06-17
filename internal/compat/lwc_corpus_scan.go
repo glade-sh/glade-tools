@@ -17,6 +17,7 @@ type LwcCorpusScanOptions struct {
 	Root         string
 	Out          string
 	IncludeRepos []string
+	Check        bool
 }
 
 type LwcCorpusReport struct {
@@ -140,7 +141,7 @@ func ScanLwcCorpus(options LwcCorpusScanOptions) (LwcCorpusReport, error) {
 		}
 		report.Repositories = append(report.Repositories, LwcCorpusRepositorySummary{
 			Name:   repos[i].name,
-			Path:   repos[i].path,
+			Path:   lwcCorpusPathRelativeTo(absRoot, repos[i].path),
 			Counts: repos[i].counts,
 		})
 		for _, pkg := range repos[i].packages {
@@ -192,10 +193,17 @@ func WriteLwcCorpusReportJSON(path string, report LwcCorpusReport) error {
 }
 
 func WriteLwcCorpusText(w io.Writer, report LwcCorpusReport) {
-	fmt.Fprintf(w, "lwc corpus: repos=%d packages=%d bundles=%d meta=%d js=%d html=%d\n", len(report.Repositories), len(report.Packages), report.Counts.Bundles, report.Counts.Meta, report.Counts.JS, report.Counts.HTML)
+	fmt.Fprintf(w, "lwc corpus: repos=%d packages=%d bundles=%d meta=%d js=%d html=%d unsupportedTags=%d\n", len(report.Repositories), len(report.Packages), report.Counts.Bundles, report.Counts.Meta, report.Counts.JS, report.Counts.HTML, report.Counts.UnsupportedTags)
 	for _, repo := range report.Repositories {
 		fmt.Fprintf(w, "- %s: bundles=%d meta=%d js=%d html=%d\n", repo.Name, repo.Counts.Bundles, repo.Counts.Meta, repo.Counts.JS, repo.Counts.HTML)
 	}
+}
+
+func CheckLwcCorpusReport(report LwcCorpusReport) error {
+	if report.Counts.UnsupportedTags > 0 {
+		return fmt.Errorf("lwc corpus check failed: unsupported tags=%d", report.Counts.UnsupportedTags)
+	}
+	return nil
 }
 
 func discoverLwcCorpusRepos(root string, includeRepos []string) ([]lwcCorpusRepo, error) {
@@ -459,9 +467,14 @@ func scanLwcCorpusHTML(data []byte, counter *lwcCorpusCounter, detailCounts ...*
 			for _, counts := range detailCounts {
 				counts.LightningTags++
 			}
-			continue
-		}
-		if isUnsupportedLwcCorpusTag(tag) {
+			if !isSupportedLwcCorpusLightningTag(tag) {
+				counter.unsupportedTags[tag]++
+				counter.counts.UnsupportedTags++
+				for _, counts := range detailCounts {
+					counts.UnsupportedTags++
+				}
+			}
+		} else if isUnsupportedLwcCorpusTag(tag) {
 			counter.unsupportedTags[tag]++
 			counter.counts.UnsupportedTags++
 			for _, counts := range detailCounts {
@@ -469,6 +482,82 @@ func scanLwcCorpusHTML(data []byte, counter *lwcCorpusCounter, detailCounts ...*
 			}
 		}
 	}
+}
+
+func isSupportedLwcCorpusLightningTag(tag string) bool {
+	return supportedLwcCorpusLightningTags[tag]
+}
+
+var supportedLwcCorpusLightningTags = map[string]bool{
+	"lightning-accordion":                   true,
+	"lightning-accordion-section":           true,
+	"lightning-avatar":                      true,
+	"lightning-badge":                       true,
+	"lightning-breadcrumb":                  true,
+	"lightning-breadcrumbs":                 true,
+	"lightning-button":                      true,
+	"lightning-button-group":                true,
+	"lightning-button-icon":                 true,
+	"lightning-button-icon-stateful":        true,
+	"lightning-button-menu":                 true,
+	"lightning-button-stateful":             true,
+	"lightning-card":                        true,
+	"lightning-carousel":                    true,
+	"lightning-carousel-image":              true,
+	"lightning-checkbox-group":              true,
+	"lightning-combobox":                    true,
+	"lightning-datatable":                   true,
+	"lightning-dual-listbox":                true,
+	"lightning-file-upload":                 true,
+	"lightning-flow":                        true,
+	"lightning-formatted-address":           true,
+	"lightning-formatted-date-time":         true,
+	"lightning-formatted-email":             true,
+	"lightning-formatted-number":            true,
+	"lightning-formatted-phone":             true,
+	"lightning-formatted-rich-text":         true,
+	"lightning-formatted-text":              true,
+	"lightning-formatted-time":              true,
+	"lightning-formatted-url":               true,
+	"lightning-helptext":                    true,
+	"lightning-icon":                        true,
+	"lightning-input":                       true,
+	"lightning-input-address":               true,
+	"lightning-input-field":                 true,
+	"lightning-input-rich-text":             true,
+	"lightning-layout":                      true,
+	"lightning-layout-item":                 true,
+	"lightning-map":                         true,
+	"lightning-menu-divider":                true,
+	"lightning-menu-item":                   true,
+	"lightning-menu-subheader":              true,
+	"lightning-messages":                    true,
+	"lightning-modal":                       true,
+	"lightning-output-field":                true,
+	"lightning-pill":                        true,
+	"lightning-pill-container":              true,
+	"lightning-progress-bar":                true,
+	"lightning-progress-indicator":          true,
+	"lightning-progress-ring":               true,
+	"lightning-progress-step":               true,
+	"lightning-quick-action-panel":          true,
+	"lightning-radio-group":                 true,
+	"lightning-record-edit-form":            true,
+	"lightning-record-form":                 true,
+	"lightning-record-picker":               true,
+	"lightning-record-view-form":            true,
+	"lightning-select":                      true,
+	"lightning-slider":                      true,
+	"lightning-spinner":                     true,
+	"lightning-tab":                         true,
+	"lightning-tabset":                      true,
+	"lightning-textarea":                    true,
+	"lightning-tile":                        true,
+	"lightning-tree":                        true,
+	"lightning-tree-grid":                   true,
+	"lightning-vertical-navigation":         true,
+	"lightning-vertical-navigation-item":    true,
+	"lightning-vertical-navigation-section": true,
 }
 
 func isUnsupportedLwcCorpusTag(tag string) bool {
@@ -574,6 +663,18 @@ func normalizeLwcCorpusList(values []string) []string {
 		}
 	}
 	return out
+}
+
+func lwcCorpusPathRelativeTo(root, path string) string {
+	rel, err := filepath.Rel(root, path)
+	if err != nil {
+		return filepath.ToSlash(path)
+	}
+	rel = filepath.ToSlash(rel)
+	if rel == "" {
+		return "."
+	}
+	return rel
 }
 
 func lwcCorpusContains(values []string, want string) bool {

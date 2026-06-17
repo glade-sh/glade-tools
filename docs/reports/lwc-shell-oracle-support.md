@@ -38,8 +38,8 @@ go run ./cmd/glade-plugin-compat lwc capture \
   --json
 ```
 
-That deploy/prepared capture returned `ok: true`, `deployed: true`, 34 targets,
-34 prepared, and 0 fail.
+That deploy/prepared capture returned `ok: true`, `deployed: true`, 35 targets,
+35 prepared, and 0 fail.
 
 ```bash
 go run ./cmd/glade-plugin-compat lwc capture \
@@ -76,7 +76,8 @@ The report JSON includes:
   LDS read, UI object info, UI related lists, LDS create defaults, UI layout,
   LDS mutation, navigation, toast, LMS, Visualforce Lightning Out navigation,
   toast, LMS, resource loading, community context, shell base components,
-  expanded base components, and Visualforce Lightning Out base components
+  package phase 1 base components, expanded base components, and Visualforce
+  Lightning Out base components
 - shell base-component runtime proof covers practical DOM plus local `click`,
   `change`, `submit`, datatable `rowaction`, tab `active`,
   dual-listbox/select/slider/rich-text changes, record-picker changes,
@@ -88,9 +89,10 @@ The product documentation file to update from this report is:
 ../glade/docs/generated/LWC_SHELL_SUPPORT.md
 ```
 
-The default capture set now prepares 34 targets: the original shell lanes,
+The default capture set now prepares 35 targets: the original shell lanes,
 community page/component/context lanes, Visualforce Lightning Out service
-lanes, and the `phase3-base-components` lane.
+lanes, the `package-phase1-base-components` lane, and the
+`phase3-base-components` lane.
 Rows with live local browser capture report `supported-local` when the browser
 DOM loads with no console or page errors. Rerun this capture lane to refresh the
 external JSON after product changes.

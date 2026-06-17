@@ -653,7 +653,7 @@ func TestRunLWCCaptureSkipDeployWritesFixtureReport(t *testing.T) {
 	if !report.OK {
 		t.Fatalf("ok = false")
 	}
-	if report.Counts.Targets != 34 || report.Counts.Prepared != 34 || report.Counts.Pass != 0 || report.Counts.Fail != 0 {
+	if report.Counts.Targets != 35 || report.Counts.Prepared != 35 || report.Counts.Pass != 0 || report.Counts.Fail != 0 {
 		t.Fatalf("counts = %#v", report.Counts)
 	}
 	if report.Artifacts.Report != out {
@@ -703,14 +703,15 @@ func TestRunLWCCaptureSkipDeployWritesFixtureReport(t *testing.T) {
 		"visualforce-resource-loader",
 		"community-context",
 		"base-components",
+		"package-phase1-base-components",
 		"visualforce-base-components",
 		"phase3-base-components",
 	}
 	if !reflect.DeepEqual(gotNames, wantNames) {
 		t.Fatalf("case names = %#v", gotNames)
 	}
-	if len(report.Support) != 36 {
-		t.Fatalf("support rows = %d, want 36: %#v", len(report.Support), report.Support)
+	if len(report.Support) != 37 {
+		t.Fatalf("support rows = %d, want 37: %#v", len(report.Support), report.Support)
 	}
 	assertSupportRow(t, report, "lwc.host.lightning-shell", "lightning-shell", "prepared-local")
 	assertSupportRow(t, report, "lwc.host.visualforce-lightning-out", "visualforce-lightning-out", "prepared-local")
@@ -718,6 +719,7 @@ func TestRunLWCCaptureSkipDeployWritesFixtureReport(t *testing.T) {
 	assertSupportRow(t, report, "lwc.service.apex-wire", "visualforce-lightning-out", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.imperative-apex", "visualforce-lightning-out", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.lds-read", "visualforce-lightning-out", "prepared-local")
+	assertSupportRow(t, report, "lwc.service.package-phase1-base-components", "lightning-shell", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.ui-object-info", "visualforce-lightning-out", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.ui-related-list", "lightning-shell", "prepared-local")
 	assertSupportRow(t, report, "lwc.service.lds-create-defaults", "lightning-shell", "prepared-local")
