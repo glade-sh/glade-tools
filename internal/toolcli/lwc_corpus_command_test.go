@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/glade-sh/glade/tools/internal/lwcparity"
 )
 
 func TestRunCompatLWCCorpusWritesJSONToStdoutAndOut(t *testing.T) {
@@ -193,8 +195,339 @@ func TestRunCompatLWCParityWritesReportAndChecksIt(t *testing.T) {
 	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
 		t.Fatalf("stdout is not JSON: %v\n%s", err, stdout.String())
 	}
-	if payload.SchemaVersion != 1 || payload.Summary.ByStatus["supported-local"] == 0 {
+	if payload.SchemaVersion != 2 || payload.Summary.ByStatus["supported-local"] == 0 {
 		t.Fatalf("payload = %#v", payload)
+	}
+}
+
+func TestRunCompatLWCParityRefreshDocsWritesJSONWhenInventoryGapsAllowed(t *testing.T) {
+	root := t.TempDir()
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-api-modules.md"), `
+| API Module Name | Provides | First Available in Salesforce API Version |
+| --- | --- | --- |
+| [lightning/uiRecordApi](reference-lightning-ui-api-record.md) | Wire adapters and functions for record data. | 45.0 |
+`)
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-salesforce-modules.md"), "`@salesforce/site/activeLanguages`\n")
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-page-reference-type.md"), "These page reference types are supported.\n\n- Record Page\n")
+	outPath := filepath.Join(root, "LWC_NATIVE_API_PARITY.json")
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"lwc", "parity", "refresh-docs",
+		"--source", root,
+		"--output", outPath,
+		"--allow-inventory-gaps",
+	}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "wrote "+outPath) {
+		t.Fatalf("stdout = %s", stdout.String())
+	}
+	var payload struct {
+		SchemaVersion int `json:"schemaVersion"`
+		Summary       struct {
+			ByStatus map[string]int `json:"byStatus"`
+		} `json:"summary"`
+	}
+	data, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &payload); err != nil {
+		t.Fatalf("output is not JSON: %v\n%s", err, string(data))
+	}
+	if payload.SchemaVersion != 2 || payload.Summary.ByStatus["local-only"] == 0 {
+		t.Fatalf("payload = %#v", payload)
+	}
+}
+
+func TestRunCompatLWCParityRefreshDocsFailsOnInventoryGapsByDefault(t *testing.T) {
+	root := t.TempDir()
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-api-modules.md"), `
+| API Module Name | Provides | First Available in Salesforce API Version |
+| --- | --- | --- |
+| [lightning/uiRecordApi](reference-lightning-ui-api-record.md) | Wire adapters and functions for record data. | 45.0 |
+`)
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-salesforce-modules.md"), "`@salesforce/site/activeLanguages`\n")
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-page-reference-type.md"), "These page reference types are supported.\n\n- Record Page\n")
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"lwc", "parity", "refresh-docs",
+		"--source", root,
+		"--output", filepath.Join(root, "ledger.json"),
+	}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("Run returned success, stdout=%s stderr=%s", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "inventory gaps") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestRunCompatLWCParityFailsOnStatusGate(t *testing.T) {
+	root := t.TempDir()
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-api-modules.md"), `
+| API Module Name | Provides | First Available in Salesforce API Version |
+| --- | --- | --- |
+| [lightning/uiRecordApi](reference-lightning-ui-api-record.md) | Wire adapters and functions for record data. | 45.0 |
+`)
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-salesforce-modules.md"), "`@salesforce/site/activeLanguages`\n")
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-page-reference-type.md"), "These page reference types are supported.\n\n- Record Page\n")
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"lwc", "parity",
+		"--docs", root,
+		"--fail-on", "local-only",
+	}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("Run returned success, stdout=%s stderr=%s", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "LWC parity gate failed") || !strings.Contains(stderr.String(), "local-only=") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestRunCompatLWCParityFailsWhenOracleRequired(t *testing.T) {
+	root := t.TempDir()
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-api-modules.md"), `
+| API Module Name | Provides | First Available in Salesforce API Version |
+| --- | --- | --- |
+| [lightning/uiRecordApi](reference-lightning-ui-api-record.md) | Wire adapters and functions for record data. | 45.0 |
+`)
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-salesforce-modules.md"), "`@salesforce/site/activeLanguages`\n")
+	writeLWCCorpusCommandTestFile(t, filepath.Join(root, "reference-page-reference-type.md"), "These page reference types are supported.\n\n- Record Page\n")
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"lwc", "parity",
+		"--docs", root,
+		"--require-oracle",
+	}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("Run returned success, stdout=%s stderr=%s", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "oracle-missing=") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestRunCompatLWCParityLedgerSatisfiesOracleGate(t *testing.T) {
+	root := t.TempDir()
+	ledgerPath := filepath.Join(root, "ledger.json")
+	checkPath := filepath.Join(root, "ledger.md")
+	writeLWCCorpusCommandTestFile(t, ledgerPath, `{
+  "schemaVersion": 2,
+  "rows": [
+    {
+      "id": "api-module:lightning/uiRecordApi",
+      "category": "api-module",
+      "name": "lightning/uiRecordApi",
+      "status": "supported-local",
+      "oracleStatus": "pass",
+      "oracleTest": "uiRecordApiOracle"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "byCategory": {"api-module": 1},
+    "byStatus": {"supported-local": 1}
+  }
+}`)
+	var rendered bytes.Buffer
+	var report lwcparity.Report
+	data, err := os.ReadFile(ledgerPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &report); err != nil {
+		t.Fatal(err)
+	}
+	if err := lwcparity.WriteMarkdown(&rendered, report); err != nil {
+		t.Fatal(err)
+	}
+	writeLWCCorpusCommandTestFile(t, checkPath, rendered.String())
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"lwc", "parity",
+		"--ledger", ledgerPath,
+		"--require-oracle",
+		"--check", checkPath,
+	}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stdout=%s stderr=%s", code, stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "up to date") {
+		t.Fatalf("stdout = %s", stdout.String())
+	}
+}
+
+func TestRunCompatLWCParityReconcileOracleWritesJSON(t *testing.T) {
+	root := t.TempDir()
+	ledgerPath := filepath.Join(root, "ledger.json")
+	capturePath := filepath.Join(root, "capture.json")
+	outPath := filepath.Join(root, "reconciled.json")
+	writeLWCCorpusCommandTestFile(t, ledgerPath, `{
+  "schemaVersion": 2,
+  "rows": [
+    {
+      "id": "api-module:lightning/uiRecordApi",
+      "category": "api-module",
+      "name": "lightning/uiRecordApi",
+      "status": "supported-local",
+      "oracleStatus": "not-probed"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "byCategory": {"api-module": 1},
+    "byStatus": {"supported-local": 1}
+  }
+}`)
+	writeLWCCorpusCommandTestFile(t, capturePath, `{
+  "capturedAt": "2026-06-19T12:34:56Z",
+  "rows": [
+    {
+      "category": "api-module",
+      "name": "lightning/uiRecordApi",
+      "oracleTest": "uiRecordApiOracle",
+      "oracleStatus": "pass"
+    }
+  ]
+}`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"lwc", "parity", "reconcile-oracle",
+		"--ledger", ledgerPath,
+		"--capture", capturePath,
+		"--output", outPath,
+	}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "reconciled 1 oracle rows") {
+		t.Fatalf("stdout = %s", stdout.String())
+	}
+	var payload struct {
+		Rows []struct {
+			OracleTest   string `json:"oracleTest"`
+			OracleStatus string `json:"oracleStatus"`
+			LastVerified string `json:"lastVerified"`
+		} `json:"rows"`
+	}
+	data, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &payload); err != nil {
+		t.Fatalf("output is not JSON: %v\n%s", err, string(data))
+	}
+	if len(payload.Rows) != 1 || payload.Rows[0].OracleTest != "uiRecordApiOracle" || payload.Rows[0].OracleStatus != "pass" || payload.Rows[0].LastVerified != "2026-06-19T12:34:56Z" {
+		t.Fatalf("payload = %#v", payload)
+	}
+}
+
+func TestRunCompatLWCParityFixturesCheckDetectsDrift(t *testing.T) {
+	root := t.TempDir()
+	ledgerPath := filepath.Join(root, "ledger.json")
+	outPath := filepath.Join(root, "fixtures")
+	componentPath := filepath.Join(outPath, "force-app", "main", "default", "lwc", "uiAppsApiOracle", "uiAppsApiOracle.js")
+	writeLWCCorpusCommandTestFile(t, ledgerPath, `{
+  "schemaVersion": 2,
+  "rows": [
+    {
+      "id": "api-module:lightning/uiAppsApi",
+      "category": "api-module",
+      "name": "lightning/uiAppsApi",
+      "status": "supported-local",
+      "oracleStatus": "not-probed"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "byCategory": {"api-module": 1},
+    "byStatus": {"supported-local": 1}
+  }
+}`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"lwc", "parity", "fixtures", "--ledger", ledgerPath, "--out", outPath}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"lwc", "parity", "fixtures", "--ledger", ledgerPath, "--out", outPath, "--check"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), outPath+": up to date") {
+		t.Fatalf("stdout = %s", stdout.String())
+	}
+	if err := os.WriteFile(componentPath, []byte("changed\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"lwc", "parity", "fixtures", "--ledger", ledgerPath, "--out", outPath, "--check"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("Run returned success, stdout=%s stderr=%s", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "fixture drift") {
+		t.Fatalf("stderr = %s", stderr.String())
+	}
+}
+
+func TestRunCompatLWCParityFixturesWritesGeneratedProject(t *testing.T) {
+	root := t.TempDir()
+	ledgerPath := filepath.Join(root, "ledger.json")
+	outPath := filepath.Join(root, "fixtures")
+	writeLWCCorpusCommandTestFile(t, ledgerPath, `{
+  "schemaVersion": 2,
+  "rows": [
+    {
+      "id": "api-module:lightning/uiAppsApi",
+      "category": "api-module",
+      "name": "lightning/uiAppsApi",
+      "status": "supported-local",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__flow",
+      "category": "page-reference",
+      "name": "standard__flow",
+      "status": "supported-local",
+      "oracleStatus": "not-probed"
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "byCategory": {"api-module": 1, "page-reference": 1},
+    "byStatus": {"supported-local": 2}
+  }
+}`)
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"lwc", "parity", "fixtures", "--ledger", ledgerPath, "--out", outPath}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "wrote 2 LWC oracle fixtures") {
+		t.Fatalf("stdout = %s", stdout.String())
+	}
+	for _, path := range []string{
+		filepath.Join(outPath, "sfdx-project.json"),
+		filepath.Join(outPath, "glade-lwc-oracle.json"),
+		filepath.Join(outPath, "force-app", "main", "default", "lwc", "uiAppsApiOracle", "uiAppsApiOracle.js"),
+		filepath.Join(outPath, "force-app", "main", "default", "lwc", "standardFlowOracle", "standardFlowOracle.js"),
+	} {
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("missing %s: %v", path, err)
+		}
 	}
 }
 
@@ -206,7 +539,10 @@ func TestLWCHelpListsParityCommand(t *testing.T) {
 	}
 	out := stdout.String()
 	for _, want := range []string{
-		"lwc parity --docs <dir> [--json|--output <path>|--check <path>]",
+		"lwc parity [--docs <dir>|--ledger <json>] [--json|--output <path>|--check <path>] [--fail-on <statuses>] [--require-oracle]",
+		"lwc parity refresh-docs --source <dir> --output <json> [--allow-inventory-gaps]",
+		"lwc parity reconcile-oracle --ledger <json> --capture <json> --output <path>",
+		"lwc parity fixtures --ledger <path> --out <dir> [--check]",
 		"Native LWC API parity ledger",
 	} {
 		if !strings.Contains(out, want) {

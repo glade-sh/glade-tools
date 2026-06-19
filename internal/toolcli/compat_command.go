@@ -168,9 +168,12 @@ func compatUsage() string {
 		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
 		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]",
 		"visualforce summary [--project <root>] [--phase <n>] [--json]",
-		"lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]",
+		"lwc capture --target-org <alias> --project <root> [--targets <a,b>|--manifest <path>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]",
 		"lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]",
-		"lwc parity --docs <dir> [--json|--output <path>|--check <path>]",
+		"lwc parity [--docs <dir>|--ledger <json>] [--json|--output <path>|--check <path>] [--fail-on <statuses>] [--require-oracle]",
+		"lwc parity refresh-docs --source <dir> --output <json> [--allow-inventory-gaps]",
+		"lwc parity reconcile-oracle --ledger <json> --capture <json> --output <path>",
+		"lwc parity fixtures --ledger <path> --out <dir> [--check]",
 		"replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...>",
 		"ui-controllers [--project <root>] [--json|--check <path>]",
 		"post-parity [--project <root>] [--json|--output <path>|--check <path>] [--editor-findings] [--require-ready]",
@@ -214,10 +217,22 @@ func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {
 }
 
 func runCompatLwcParity(args []string, w io.Writer) error {
+	if len(args) > 0 && args[0] == "refresh-docs" {
+		return runCompatLwcParityRefreshDocs(args[1:], w)
+	}
+	if len(args) > 0 && args[0] == "reconcile-oracle" {
+		return runCompatLwcParityReconcileOracle(args[1:], w)
+	}
+	if len(args) > 0 && args[0] == "fixtures" {
+		return runCompatLwcParityFixtures(args[1:], w)
+	}
 	options := lwcparity.Options{}
 	jsonOut := false
 	outputPath := ""
 	checkPath := ""
+	ledgerPath := ""
+	failOn := []string{}
+	requireOracle := false
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--docs":
@@ -225,6 +240,12 @@ func runCompatLwcParity(args []string, w io.Writer) error {
 				return errors.New("--docs requires a value")
 			}
 			options.DocsDir = args[i+1]
+			i++
+		case "--ledger":
+			if i+1 >= len(args) {
+				return errors.New("--ledger requires a value")
+			}
+			ledgerPath = args[i+1]
 			i++
 		case "--json":
 			jsonOut = true
@@ -240,11 +261,19 @@ func runCompatLwcParity(args []string, w io.Writer) error {
 			}
 			checkPath = args[i+1]
 			i++
+		case "--fail-on":
+			if i+1 >= len(args) {
+				return errors.New("--fail-on requires a value")
+			}
+			failOn = append(failOn, strings.Split(args[i+1], ",")...)
+			i++
+		case "--require-oracle":
+			requireOracle = true
 		default:
 			return fmt.Errorf("unknown lwc parity flag %q", args[i])
 		}
 	}
-	if strings.TrimSpace(options.DocsDir) == "" {
+	if strings.TrimSpace(options.DocsDir) == "" && strings.TrimSpace(ledgerPath) == "" {
 		options.DocsDir = strings.TrimSpace(os.Getenv("GLADE_LWC_DOCS_SOURCE"))
 	}
 	selected := 0
@@ -261,8 +290,23 @@ func runCompatLwcParity(args []string, w io.Writer) error {
 		return errors.New("use only one of --json, --output, or --check")
 	}
 
-	report, err := lwcparity.Build(options)
-	if err != nil {
+	var report lwcparity.Report
+	if strings.TrimSpace(ledgerPath) != "" {
+		data, err := os.ReadFile(ledgerPath)
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(data, &report); err != nil {
+			return err
+		}
+	} else {
+		var err error
+		report, err = lwcparity.Build(options)
+		if err != nil {
+			return err
+		}
+	}
+	if err := lwcparity.CheckReportGates(report, failOn, requireOracle); err != nil {
 		return err
 	}
 
@@ -289,6 +333,9 @@ func runCompatLwcParity(args []string, w io.Writer) error {
 			return err
 		}
 		if !bytes.Equal(existing, buf.Bytes()) {
+			if strings.TrimSpace(ledgerPath) != "" {
+				return fmt.Errorf("LWC native API parity drift: regenerate %s from %s", checkPath, ledgerPath)
+			}
 			return fmt.Errorf("LWC native API parity drift: run `glade-tools lwc parity --docs %s --output %s`", options.DocsDir, checkPath)
 		}
 		fmt.Fprintf(w, "%s: up to date\n", checkPath)
@@ -306,6 +353,167 @@ func runCompatLwcParity(args []string, w io.Writer) error {
 		}
 		return nil
 	}
+}
+
+func runCompatLwcParityRefreshDocs(args []string, w io.Writer) error {
+	sourcePath := ""
+	outputPath := ""
+	allowInventoryGaps := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--source":
+			if i+1 >= len(args) {
+				return errors.New("--source requires a value")
+			}
+			sourcePath = args[i+1]
+			i++
+		case "--output":
+			if i+1 >= len(args) {
+				return errors.New("--output requires a value")
+			}
+			outputPath = args[i+1]
+			i++
+		case "--allow-inventory-gaps":
+			allowInventoryGaps = true
+		default:
+			return fmt.Errorf("unknown lwc parity refresh-docs flag %q", args[i])
+		}
+	}
+	if strings.TrimSpace(sourcePath) == "" || strings.TrimSpace(outputPath) == "" {
+		return errors.New("usage: glade-tools lwc parity refresh-docs --source <dir> --output <json> [--allow-inventory-gaps]")
+	}
+	report, err := lwcparity.Build(lwcparity.Options{DocsDir: sourcePath})
+	if err != nil {
+		return err
+	}
+	if !allowInventoryGaps {
+		if err := lwcparity.CheckRequiredInventory(report); err != nil {
+			return err
+		}
+	}
+	var buf bytes.Buffer
+	if err := lwcparity.WriteJSON(&buf, report); err != nil {
+		return err
+	}
+	if err := os.WriteFile(outputPath, buf.Bytes(), 0o644); err != nil {
+		return err
+	}
+	fmt.Fprintf(w, "wrote %s\n", outputPath)
+	return nil
+}
+
+func runCompatLwcParityReconcileOracle(args []string, w io.Writer) error {
+	ledgerPath := ""
+	capturePath := ""
+	outputPath := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--ledger":
+			if i+1 >= len(args) {
+				return errors.New("--ledger requires a value")
+			}
+			ledgerPath = args[i+1]
+			i++
+		case "--capture":
+			if i+1 >= len(args) {
+				return errors.New("--capture requires a value")
+			}
+			capturePath = args[i+1]
+			i++
+		case "--output":
+			if i+1 >= len(args) {
+				return errors.New("--output requires a value")
+			}
+			outputPath = args[i+1]
+			i++
+		default:
+			return fmt.Errorf("unknown lwc parity reconcile-oracle flag %q", args[i])
+		}
+	}
+	if strings.TrimSpace(ledgerPath) == "" || strings.TrimSpace(capturePath) == "" || strings.TrimSpace(outputPath) == "" {
+		return errors.New("usage: glade-tools lwc parity reconcile-oracle --ledger <json> --capture <json> --output <path>")
+	}
+	ledgerData, err := os.ReadFile(ledgerPath)
+	if err != nil {
+		return err
+	}
+	var report lwcparity.Report
+	if err := json.Unmarshal(ledgerData, &report); err != nil {
+		return err
+	}
+	captureData, err := os.ReadFile(capturePath)
+	if err != nil {
+		return err
+	}
+	reconciled, count, err := lwcparity.ReconcileOracleCapture(report, captureData)
+	if err != nil {
+		return err
+	}
+	var buf bytes.Buffer
+	if strings.EqualFold(filepath.Ext(outputPath), ".json") {
+		if err := lwcparity.WriteJSON(&buf, reconciled); err != nil {
+			return err
+		}
+	} else {
+		if err := lwcparity.WriteMarkdown(&buf, reconciled); err != nil {
+			return err
+		}
+	}
+	if err := os.WriteFile(outputPath, buf.Bytes(), 0o644); err != nil {
+		return err
+	}
+	fmt.Fprintf(w, "reconciled %d oracle rows to %s\n", count, outputPath)
+	return nil
+}
+
+func runCompatLwcParityFixtures(args []string, w io.Writer) error {
+	ledgerPath := ""
+	outPath := ""
+	checkOnly := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--ledger":
+			if i+1 >= len(args) {
+				return errors.New("--ledger requires a value")
+			}
+			ledgerPath = args[i+1]
+			i++
+		case "--out":
+			if i+1 >= len(args) {
+				return errors.New("--out requires a value")
+			}
+			outPath = args[i+1]
+			i++
+		case "--check":
+			checkOnly = true
+		default:
+			return fmt.Errorf("unknown lwc parity fixtures flag %q", args[i])
+		}
+	}
+	if strings.TrimSpace(ledgerPath) == "" || strings.TrimSpace(outPath) == "" {
+		return errors.New("usage: glade-tools lwc parity fixtures --ledger <path> --out <dir> [--check]")
+	}
+	data, err := os.ReadFile(ledgerPath)
+	if err != nil {
+		return err
+	}
+	var report lwcparity.Report
+	if err := json.Unmarshal(data, &report); err != nil {
+		return err
+	}
+	if checkOnly {
+		if err := lwcparity.CheckOracleFixtures(report, outPath); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, "%s: up to date\n", outPath)
+		return nil
+	}
+	manifest, err := lwcparity.WriteOracleFixtures(report, outPath)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(w, "wrote %d LWC oracle fixtures to %s\n", len(manifest.Fixtures), outPath)
+	return nil
 }
 
 func runCompatLwcCorpus(args []string, w io.Writer) error {
@@ -391,6 +599,12 @@ func runCompatLwcCapture(ctx context.Context, args []string, w io.Writer) error 
 			}
 			options.Targets = append(options.Targets, strings.Split(args[i+1], ",")...)
 			i++
+		case "--manifest":
+			if i+1 >= len(args) {
+				return errors.New("--manifest requires a value")
+			}
+			options.Manifest = args[i+1]
+			i++
 		case "--include-hosts":
 			if i+1 >= len(args) {
 				return errors.New("--include-hosts requires a value")
@@ -471,17 +685,21 @@ permission sets, the command assigns them to the target-org user before browser
 capture; duplicate assignments are treated as already done.
 
 Usage:
-  glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
-  glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
+  glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>|--manifest <path>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
+  glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>|--manifest <path>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
   glade-plugin-compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]
   glade compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]
-  glade-tools lwc parity --docs <dir> [--json|--output <path>|--check <path>]
-  glade compat lwc parity --docs <dir> [--json|--output <path>|--check <path>]
+  glade-tools lwc parity [--docs <dir>|--ledger <json>] [--json|--output <path>|--check <path>] [--fail-on <statuses>] [--require-oracle]
+  glade compat lwc parity [--docs <dir>|--ledger <json>] [--json|--output <path>|--check <path>] [--fail-on <statuses>] [--require-oracle]
+  glade-tools lwc parity refresh-docs --source <dir> --output <json> [--allow-inventory-gaps]
+  glade-tools lwc parity reconcile-oracle --ledger <json> --capture <json> --output <path>
+  glade-tools lwc parity fixtures --ledger <path> --out <dir> [--check]
 
 Common flags:
   --target-org <alias>     Scratch org alias or username.
   --project <root>         Salesforce project root. Defaults to current directory.
   --targets <a,b>          Comma-separated LWC capture target names.
+  --manifest <path>        Generated LWC native API oracle manifest, relative to --project when not absolute.
   --include-hosts <a,b>    Comma-separated host lanes to include.
   --out <path>             Write the LWC capture report JSON.
   --skip-deploy            Skip metadata deploy and emit fixture target URLs.
@@ -501,9 +719,15 @@ Corpus flags:
 
 Parity flags:
   --docs <dir>             Local Salesforce LWC docs scrape. Defaults to GLADE_LWC_DOCS_SOURCE.
+  --ledger <json>          Existing reconciled LWC parity JSON ledger.
   --output <path>          Write the Native LWC API parity ledger Markdown.
   --check <path>           Compare generated Markdown against a checked ledger.
+  --fail-on <statuses>     Fail when generated rows still have any comma-separated status.
+  --require-oracle         Fail when generated rows have no reconciled oracle status.
   --json                   Write the Native LWC API parity ledger JSON to stdout.
+  refresh-docs             Write a docs-built ledger JSON and fail on inventory gaps unless allowed.
+  reconcile-oracle         Merge oracle capture status into a checked ledger.
+  fixtures                 Generate or check a deployable LWC oracle fixture project from a ledger JSON.
 
 Targets:
   direct-component, record-page, app-page, home-page, custom-tab,
@@ -518,11 +742,14 @@ Examples:
   glade compat lwc capture --target-org <target-org> --project ../glade/testdata/local-tests/lwc-shell --targets custom-tab,url-addressable-component --local-browser-capture --glade-bin ../glade/bin/glade --browser-capture --out /tmp/glade-lwc-shell-capture.json
   glade-plugin-compat lwc corpus --root /tmp/lwc-corpus --json --include-repos repo-a,repo-b
   glade-tools lwc parity --docs ../glade/example-projects/Salesforce\ Docs\ Scraper/salesforce-docs-expanded-run/lwc --output docs/generated/LWC_NATIVE_API_PARITY.md
+  glade-tools lwc parity refresh-docs --source ../glade/example-projects/Salesforce\ Docs\ Scraper/salesforce-docs-expanded-run/lwc --output docs/generated/LWC_NATIVE_API_PARITY.json --allow-inventory-gaps
+  glade-tools lwc parity reconcile-oracle --ledger docs/generated/LWC_NATIVE_API_PARITY.json --capture /tmp/lwc-oracle-capture.json --output docs/generated/LWC_NATIVE_API_PARITY.md
+  glade-tools lwc parity fixtures --ledger docs/generated/LWC_NATIVE_API_PARITY.json --out docs/fixtures/lwc-native-api-oracle --check
 `)+"\n")
 }
 
 func compatLwcUsage() string {
-	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade-plugin-compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]\n       glade compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]\n       glade-tools lwc parity --docs <dir> [--json|--output <path>|--check <path>]\n       glade compat lwc parity --docs <dir> [--json|--output <path>|--check <path>]"
+	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>|--manifest <path>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>|--manifest <path>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade-plugin-compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]\n       glade compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]\n       glade-tools lwc parity [--docs <dir>|--ledger <json>] [--json|--output <path>|--check <path>] [--fail-on <statuses>] [--require-oracle]\n       glade compat lwc parity [--docs <dir>|--ledger <json>] [--json|--output <path>|--check <path>] [--fail-on <statuses>] [--require-oracle]\n       glade-tools lwc parity refresh-docs --source <dir> --output <json> [--allow-inventory-gaps]\n       glade-tools lwc parity reconcile-oracle --ledger <json> --capture <json> --output <path>\n       glade-tools lwc parity fixtures --ledger <path> --out <dir> [--check]"
 }
 
 type postParityReadiness struct {

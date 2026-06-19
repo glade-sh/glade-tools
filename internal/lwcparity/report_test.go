@@ -2,6 +2,7 @@ package lwcparity
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,13 +38,13 @@ These page reference types are supported.
 	}
 	rows := rowsByID(report.Rows)
 	assertLWCParityRow(t, rows, "api-module:lightning/uiRecordApi", StatusSupportedLocal, "Wire adapters and functions for record data.", "45.0")
-	assertLWCParityRow(t, rows, "api-module:lightning/uiAppsApi", StatusDocsOnly, "Wire adapters and functions for app metadata.", "48.0")
+	assertLWCParityRow(t, rows, "api-module:lightning/uiAppsApi", StatusSupportedLocal, "Wire adapters and functions for app metadata.", "48.0")
 	assertLWCParityRow(t, rows, "api-module:lightning/uiListApi", StatusPartialLocal, "", "")
 	assertLWCParityRow(t, rows, "salesforce-module:@salesforce/community/basePath", StatusSupportedLocal, "", "")
-	assertLWCParityRow(t, rows, "salesforce-module:@salesforce/site/activeLanguages", StatusUnsupportedLocal, "", "")
-	assertLWCParityRow(t, rows, "salesforce-module:@salesforce/userPermission/ViewSetup", StatusDocsOnly, "", "")
+	assertLWCParityRow(t, rows, "salesforce-module:@salesforce/site/activeLanguages", StatusSupportedLocal, "", "")
+	assertLWCParityRow(t, rows, "salesforce-module:@salesforce/userPermission/ViewSetup", StatusPartialLocal, "", "")
 	assertLWCParityRow(t, rows, "page-reference:standard__recordPage", StatusSupportedLocal, "Record Page", "")
-	assertLWCParityRow(t, rows, "page-reference:standard__flow", StatusDocsOnly, "Standard Flow", "")
+	assertLWCParityRow(t, rows, "page-reference:standard__flow", StatusSupportedLocal, "Standard Flow", "")
 	assertLWCParityRow(t, rows, "base-component:lightning/button", StatusLocalOnly, "", "")
 	for id := range rows {
 		if strings.Contains(id, "`") {
@@ -65,9 +66,83 @@ These page reference types are supported.
 		"`@salesforce/site/activeLanguages`",
 		"`standard__flow`",
 		"`lightning/button`",
+		"--manifest glade-lwc-oracle.json",
 	} {
 		if !strings.Contains(markdown.String(), want) {
 			t.Fatalf("markdown omitted %q:\n%s", want, markdown.String())
+		}
+	}
+}
+
+func TestBuildEmitsMemberLevelRows(t *testing.T) {
+	docs := t.TempDir()
+	writeLWCParityDoc(t, docs, "reference-api-modules.md", `
+| API Module Name | Provides | First Available in Salesforce API Version |
+| --- | --- | --- |
+| [lightning/uiRecordApi](reference-ui-api.md) | Wire adapters and functions for record data. | 45.0 |
+`)
+	writeLWCParityDoc(t, docs, "reference-ui-api.md",
+		"# `lightning/ui*Api` Wire Adapters and Functions\n\n"+
+			"- [`lightning/uiRecordApi`](reference-lightning-ui-api-record.md)\n\n"+
+			"Type definitions are in the `lightning` namespace.\n")
+	writeLWCParityDoc(t, docs, "reference-lightning-ui-api-record.md",
+		"# lightning/uiRecordApi\n\n"+
+			"Import `getRecord`, `getFieldValue`, and `getRecordCreateDefaults` from `lightning/uiRecordApi`.\n")
+	writeLWCParityDoc(t, docs, "reference-salesforce-modules.md", "`@salesforce/user/Id`\n")
+	writeLWCParityDoc(t, docs, "reference-page-reference-type.md", "These page reference types are supported.\n\n- Record Page\n")
+
+	report, err := Build(Options{DocsDir: docs})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.SchemaVersion != 2 {
+		t.Fatalf("schemaVersion = %d, want 2", report.SchemaVersion)
+	}
+
+	rows := rowsByID(report.Rows)
+	row, ok := rows["api-module:lightning/uiRecordApi"]
+	if !ok {
+		t.Fatalf("missing preserved module row")
+	}
+	if row.Name != "lightning/uiRecordApi" || strings.Contains(row.Name, "`") {
+		t.Fatalf("dirty module name = %q", row.Name)
+	}
+	if row.Container != "lightning/uiRecordApi" {
+		t.Fatalf("container = %q", row.Container)
+	}
+	if len(row.Members) == 0 || !containsString(row.Members, "getRecord") {
+		t.Fatalf("members = %#v", row.Members)
+	}
+	if containsString(row.Members, "lightning") {
+		t.Fatalf("members included index prose: %#v", row.Members)
+	}
+	if row.ParityTier == "" {
+		t.Fatalf("parityTier is empty")
+	}
+	for _, member := range row.Members {
+		if strings.Contains(member, "`") {
+			t.Fatalf("dirty member name = %q", member)
+		}
+	}
+	for _, row := range report.Rows {
+		if row.ParityTier == "" {
+			t.Fatalf("%s parityTier is empty", row.ID)
+		}
+	}
+
+	var payload map[string]any
+	var buf bytes.Buffer
+	if err := WriteJSON(&buf, report); err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(buf.Bytes(), &payload); err != nil {
+		t.Fatal(err)
+	}
+	encodedRows := payload["rows"].([]any)
+	encodedFirstRow := encodedRows[0].(map[string]any)
+	for _, key := range []string{"container", "members", "parityTier", "localTest", "oracleTest", "docsUrl", "lastVerified"} {
+		if _, ok := encodedFirstRow[key]; !ok {
+			t.Fatalf("encoded row omitted %s: %#v", key, encodedFirstRow)
 		}
 	}
 }
@@ -110,4 +185,13 @@ func assertLWCParityRow(t *testing.T, rows map[string]Row, id, status, summary, 
 	if firstAPI != "" && row.FirstAPI != firstAPI {
 		t.Fatalf("%s firstAPI=%q want %q", id, row.FirstAPI, firstAPI)
 	}
+}
+
+func containsString(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
 }

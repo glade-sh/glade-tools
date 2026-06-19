@@ -790,7 +790,130 @@ func TestRunLWCCaptureSkipDeployWritesFixtureReport(t *testing.T) {
 	}
 }
 
-func TestBuildLwcSupportRowsFlagsUnknownCaptureCase(t *testing.T) {
+func TestRunLWCCaptureConsumesOracleManifest(t *testing.T) {
+	root := t.TempDir()
+	writeLwcCaptureTestFile(t, filepath.Join(root, "glade-lwc-oracle.json"), `{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "api-module:lightning/uiAppsApi",
+      "category": "api-module",
+      "name": "lightning/uiAppsApi",
+      "componentName": "uiAppsApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiAppsApiOracle",
+      "assertions": ["imports", "renders"]
+    }
+  ]
+}`)
+	browser := &fakeLwcBrowserRunner{
+		domByURL: map[string]string{
+			"http://127.0.0.1:18081/lwc/preview/component/c/uiAppsApiOracle": `<main><c-ui-apps-api-oracle>lightning/uiAppsApi</c-ui-apps-api-oracle></main>`,
+		},
+	}
+
+	report, err := RunLwcCapture(context.Background(), LwcCaptureOptions{
+		Project:             root,
+		TargetOrg:           "oaer-probe-max",
+		Manifest:            "glade-lwc-oracle.json",
+		SkipDeploy:          true,
+		LocalBrowserCapture: true,
+		LocalBaseURL:        "http://127.0.0.1:18081",
+		Browser:             browser,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Counts.Targets != 1 || report.Counts.Pass != 1 || report.Counts.Fail != 0 {
+		t.Fatalf("counts = %#v", report.Counts)
+	}
+	c := findLwcCaptureCase(t, report, "api-module:lightning/uiAppsApi")
+	if c.Feature != "lwc.native-api.api-module" || c.Metadata.Component != "uiAppsApiOracle" {
+		t.Fatalf("case = %#v", c)
+	}
+	if c.SalesforceEvidence == nil || c.SalesforceEvidence.TargetURL != "/lightning/cmp/c__uiAppsApiOracle" {
+		t.Fatalf("salesforce evidence = %#v", c.SalesforceEvidence)
+	}
+	if got := browser.urls; len(got) != 1 || got[0] != "http://127.0.0.1:18081/lwc/preview/component/c/uiAppsApiOracle" {
+		t.Fatalf("browser urls = %#v", got)
+	}
+}
+
+func TestRunLWCCaptureSkipsStandardBrowserForHostScopedOracle(t *testing.T) {
+	root := t.TempDir()
+	writeLwcCaptureTestFile(t, filepath.Join(root, "glade-lwc-oracle.json"), `{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "api-module:experience/blockBuilderApi",
+      "category": "api-module",
+      "name": "experience/blockBuilderApi",
+      "componentName": "experienceBlockBuilderApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/experienceBlockBuilderApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": ["imports", "renders"]
+    }
+  ]
+}`)
+	browser := &fakeLwcBrowserRunner{
+		domByURL: map[string]string{
+			"http://127.0.0.1:18081/lwc/preview/component/c/experienceBlockBuilderApiOracle": `<main><c-experience-block-builder-api-oracle>experience/blockBuilderApi</c-experience-block-builder-api-oracle></main>`,
+		},
+	}
+
+	report, err := RunLwcCapture(context.Background(), LwcCaptureOptions{
+		Project:             root,
+		TargetOrg:           "oaer-probe-max",
+		Manifest:            "glade-lwc-oracle.json",
+		SkipDeploy:          true,
+		BrowserCapture:      true,
+		LocalBrowserCapture: true,
+		LocalBaseURL:        "http://127.0.0.1:18081",
+		Browser:             browser,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := findLwcCaptureCase(t, report, "api-module:experience/blockBuilderApi")
+	if c.SalesforceEvidence == nil || !strings.HasPrefix(c.SalesforceEvidence.TargetURL, "salesforce://host-context-only") {
+		t.Fatalf("salesforce evidence = %#v", c.SalesforceEvidence)
+	}
+	if c.LocalEvidence == nil || c.LocalEvidence.Status != "captured" {
+		t.Fatalf("local evidence = %#v", c.LocalEvidence)
+	}
+	if got := browser.urls; len(got) != 1 || got[0] != "http://127.0.0.1:18081/lwc/preview/component/c/experienceBlockBuilderApiOracle" {
+		t.Fatalf("browser urls = %#v", got)
+	}
+}
+
+func TestLWCCaptureSelectorKeepsAcronymsTogether(t *testing.T) {
+	c := LwcCaptureCase{
+		Metadata: LwcCaptureMetadata{Component: "uiGraphQLApiOracle"},
+	}
+	got := expectedLwcCaptureSelector(c)
+	if got != "c-ui-graph-q-l-api-oracle" {
+		t.Fatalf("selector = %q", got)
+	}
+	aliases := expectedLwcCaptureSelectors(c)
+	if len(aliases) != 2 || aliases[1] != "c-ui-graph-qlapi-oracle" {
+		t.Fatalf("aliases = %#v", aliases)
+	}
+}
+
+func TestCompareLwcBrowserEvidenceUsesSelectorAliasesPerSide(t *testing.T) {
+	comparison := compareLwcBrowserEvidenceForComponent(
+		&LwcCaptureEvidence{Status: "captured", DOM: `<main><c-ui-graph-qlapi-oracle><p>lightning/uiGraphQLApi</p></c-ui-graph-qlapi-oracle></main>`},
+		&LwcCaptureEvidence{Status: "captured", DOM: `<main><c-ui-graph-q-l-api-oracle><p>lightning/uiGraphQLApi</p></c-ui-graph-q-l-api-oracle></main>`},
+		"uiGraphQLApiOracle",
+	)
+	if comparison == nil || !comparison.OK || comparison.Scope.LocalFound != true || comparison.Scope.SalesforceFound != true {
+		t.Fatalf("comparison = %#v", comparison)
+	}
+}
+
+func TestBuildLwcSupportRowsClassifiesManifestCaptureCase(t *testing.T) {
 	rows := buildLwcSupportRows([]LwcCaptureCase{{
 		Name:   "missing-target",
 		Host:   "lightning-shell",
@@ -803,11 +926,8 @@ func TestBuildLwcSupportRowsFlagsUnknownCaptureCase(t *testing.T) {
 			continue
 		}
 		found = true
-		if row.Host != "lightning-shell" || row.Status != "failed" {
+		if row.Host != "lightning-shell" || row.Status != "prepared-local" {
 			t.Fatalf("unknown row = %#v", row)
-		}
-		if !strings.Contains(row.Notes, "Unknown LWC capture target") {
-			t.Fatalf("unknown row notes = %q", row.Notes)
 		}
 	}
 	if !found {
@@ -838,8 +958,18 @@ func TestPrepareLWCCaptureDeployProjectSkipsGlobalQuickActions(t *testing.T) {
 	writeLwcCaptureTestFile(t, filepath.Join(root, "force-app/main/default/quickActions/Account.Update_Status.quickAction-meta.xml"), "<QuickAction/>")
 	writeLwcCaptureTestFile(t, filepath.Join(root, "force-app/main/default/quickActions/Global_Status.quickAction-meta.xml"), "<QuickAction/>")
 	writeLwcCaptureTestFile(t, filepath.Join(root, "force-app/main/default/lwc/actionProbe/actionProbe.js"), "export default class ActionProbe {}")
+	writeLwcCaptureTestFile(t, filepath.Join(root, "force-app/main/default/lwc/localOnlyProbe/localOnlyProbe.js"), "export default class LocalOnlyProbe {}")
+	writeLwcCaptureTestFile(t, filepath.Join(root, "force-app/main/default/lwc/omittedProbe/omittedProbe.js"), "export default class OmittedProbe {}")
+	writeLwcCaptureTestFile(t, filepath.Join(root, "glade-lwc-oracle.json"), `{"fixtures":[
+  {"id":"deployable","componentName":"actionProbe","route":"/lwc/preview/component/c/actionProbe","salesforceDeployable":true},
+  {"id":"local-only","componentName":"localOnlyProbe","route":"/lwc/preview/component/c/localOnlyProbe","salesforceDeployable":false}
+]}`)
 
-	deployRoot, cleanup, err := prepareLwcCaptureDeployProject(root)
+	skipComponents, err := lwcCaptureNonDeployableComponents(root, "glade-lwc-oracle.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	deployRoot, cleanup, err := prepareLwcCaptureDeployProject(root, skipComponents)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -854,6 +984,12 @@ func TestPrepareLWCCaptureDeployProjectSkipsGlobalQuickActions(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(deployRoot, "force-app/main/default/lwc/actionProbe/actionProbe.js")); err != nil {
 		t.Fatalf("lwc file missing from deploy copy: %v", err)
 	}
+	if _, err := os.Stat(filepath.Join(deployRoot, "force-app/main/default/lwc/localOnlyProbe/localOnlyProbe.js")); !os.IsNotExist(err) {
+		t.Fatalf("local-only lwc should be skipped, err=%v", err)
+	}
+	if _, err := os.Stat(filepath.Join(deployRoot, "force-app/main/default/lwc/omittedProbe/omittedProbe.js")); !os.IsNotExist(err) {
+		t.Fatalf("lwc omitted from manifest should be skipped, err=%v", err)
+	}
 }
 
 func TestRunLWCCaptureDeployAssignsFixturePermissionSet(t *testing.T) {
@@ -863,7 +999,7 @@ func TestRunLWCCaptureDeployAssignsFixturePermissionSet(t *testing.T) {
 </PermissionSet>`)
 	runner := &fakeLwcCommandRunner{}
 
-	if err := runLwcCaptureDeploy(context.Background(), runner, root, "oaer-probe-max"); err != nil {
+	if err := runLwcCaptureDeploy(context.Background(), runner, root, "oaer-probe-max", ""); err != nil {
 		t.Fatal(err)
 	}
 	if len(runner.calls) != 2 {
@@ -889,7 +1025,7 @@ func TestRunLWCCaptureDeployTreatsDuplicatePermissionSetAssignmentAsAssigned(t *
 		errors: []error{nil, os.ErrExist},
 	}
 
-	if err := runLwcCaptureDeploy(context.Background(), runner, root, "oaer-probe-max"); err != nil {
+	if err := runLwcCaptureDeploy(context.Background(), runner, root, "oaer-probe-max", ""); err != nil {
 		t.Fatalf("duplicate assignment should be ignored, got %v", err)
 	}
 }

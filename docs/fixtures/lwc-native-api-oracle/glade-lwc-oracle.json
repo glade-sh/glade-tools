@@ -1,0 +1,2361 @@
+{
+  "schemaVersion": 1,
+  "projectPath": ".",
+  "fixtures": [
+    {
+      "id": "api-module:experience/blockBuilderApi",
+      "category": "api-module",
+      "name": "experience/blockBuilderApi",
+      "componentName": "experienceBlockBuilderApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/experienceBlockBuilderApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:experience/cmsDeliveryApi",
+      "category": "api-module",
+      "name": "experience/cmsDeliveryApi",
+      "componentName": "experienceCmsDeliveryApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/experienceCmsDeliveryApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:experience/cmsEditorApi",
+      "category": "api-module",
+      "name": "experience/cmsEditorApi",
+      "componentName": "experienceCmsEditorApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/experienceCmsEditorApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/analyticsWaveApi",
+      "category": "api-module",
+      "name": "lightning/analyticsWaveApi",
+      "componentName": "analyticsWaveApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/analyticsWaveApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/cmsDeliveryApi",
+      "category": "api-module",
+      "name": "lightning/cmsDeliveryApi",
+      "componentName": "cmsDeliveryApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/cmsDeliveryApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/conversationToolkitApi",
+      "category": "api-module",
+      "name": "lightning/conversationToolkitApi",
+      "componentName": "conversationToolkitApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/conversationToolkitApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/empApi",
+      "category": "api-module",
+      "name": "lightning/empApi",
+      "componentName": "empApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/empApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/graphql",
+      "category": "api-module",
+      "name": "lightning/graphql",
+      "componentName": "graphqlOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/graphqlOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/industriesEducationPublicApi",
+      "category": "api-module",
+      "name": "lightning/industriesEducationPublicApi",
+      "componentName": "industriesEducationPublicApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/industriesEducationPublicApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/mobileCapabilities",
+      "category": "api-module",
+      "name": "lightning/mobileCapabilities",
+      "componentName": "mobileCapabilitiesOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/mobileCapabilitiesOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/platformUtilityBarApi",
+      "category": "api-module",
+      "name": "lightning/platformUtilityBarApi",
+      "componentName": "platformUtilityBarApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/platformUtilityBarApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/platformWorkspaceApi",
+      "category": "api-module",
+      "name": "lightning/platformWorkspaceApi",
+      "componentName": "platformWorkspaceApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/platformWorkspaceApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/serviceCloudVoiceToolkitApi",
+      "category": "api-module",
+      "name": "lightning/serviceCloudVoiceToolkitApi",
+      "componentName": "serviceCloudVoiceToolkitApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/serviceCloudVoiceToolkitApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/serviceKnowledgeApi",
+      "category": "api-module",
+      "name": "lightning/serviceKnowledgeApi",
+      "componentName": "serviceKnowledgeApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/serviceKnowledgeApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiAppsApi",
+      "category": "api-module",
+      "name": "lightning/uiAppsApi",
+      "componentName": "uiAppsApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiAppsApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiGraphQLApi",
+      "category": "api-module",
+      "name": "lightning/uiGraphQLApi",
+      "componentName": "uiGraphQLApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiGraphQLApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiLayoutApi",
+      "category": "api-module",
+      "name": "lightning/uiLayoutApi",
+      "componentName": "uiLayoutApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiLayoutApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiLearningPlatformApi",
+      "category": "api-module",
+      "name": "lightning/uiLearningPlatformApi",
+      "componentName": "uiLearningPlatformApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiLearningPlatformApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiListApi",
+      "category": "api-module",
+      "name": "lightning/uiListApi",
+      "componentName": "uiListApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiListApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiListsApi",
+      "category": "api-module",
+      "name": "lightning/uiListsApi",
+      "componentName": "uiListsApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiListsApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiObjectInfoApi",
+      "category": "api-module",
+      "name": "lightning/uiObjectInfoApi",
+      "componentName": "uiObjectInfoApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiObjectInfoApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiRecordApi",
+      "category": "api-module",
+      "name": "lightning/uiRecordApi",
+      "componentName": "uiRecordApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiRecordApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "api-module:lightning/uiRelatedListApi",
+      "category": "api-module",
+      "name": "lightning/uiRelatedListApi",
+      "componentName": "uiRelatedListApiOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/uiRelatedListApiOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/accordion",
+      "category": "base-component",
+      "name": "lightning/accordion",
+      "componentName": "lightningAccordionOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningAccordionOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/accordionSection",
+      "category": "base-component",
+      "name": "lightning/accordionSection",
+      "componentName": "lightningAccordionSectionOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningAccordionSectionOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/alert",
+      "category": "base-component",
+      "name": "lightning/alert",
+      "componentName": "lightningAlertOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningAlertOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/avatar",
+      "category": "base-component",
+      "name": "lightning/avatar",
+      "componentName": "lightningAvatarOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningAvatarOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/badge",
+      "category": "base-component",
+      "name": "lightning/badge",
+      "componentName": "lightningBadgeOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningBadgeOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/barcodeScanner",
+      "category": "base-component",
+      "name": "lightning/barcodeScanner",
+      "componentName": "lightningBarcodeScannerOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningBarcodeScannerOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/baseFormattedText",
+      "category": "base-component",
+      "name": "lightning/baseFormattedText",
+      "componentName": "lightningBaseFormattedTextOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningBaseFormattedTextOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/breadcrumb",
+      "category": "base-component",
+      "name": "lightning/breadcrumb",
+      "componentName": "lightningBreadcrumbOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningBreadcrumbOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/breadcrumbs",
+      "category": "base-component",
+      "name": "lightning/breadcrumbs",
+      "componentName": "lightningBreadcrumbsOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningBreadcrumbsOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/button",
+      "category": "base-component",
+      "name": "lightning/button",
+      "componentName": "lightningButtonOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningButtonOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/buttonGroup",
+      "category": "base-component",
+      "name": "lightning/buttonGroup",
+      "componentName": "lightningButtonGroupOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningButtonGroupOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/buttonIcon",
+      "category": "base-component",
+      "name": "lightning/buttonIcon",
+      "componentName": "lightningButtonIconOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningButtonIconOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/buttonIconStateful",
+      "category": "base-component",
+      "name": "lightning/buttonIconStateful",
+      "componentName": "lightningButtonIconStatefulOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningButtonIconStatefulOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/buttonMenu",
+      "category": "base-component",
+      "name": "lightning/buttonMenu",
+      "componentName": "lightningButtonMenuOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningButtonMenuOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/buttonStateful",
+      "category": "base-component",
+      "name": "lightning/buttonStateful",
+      "componentName": "lightningButtonStatefulOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningButtonStatefulOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/card",
+      "category": "base-component",
+      "name": "lightning/card",
+      "componentName": "lightningCardOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningCardOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/carousel",
+      "category": "base-component",
+      "name": "lightning/carousel",
+      "componentName": "lightningCarouselOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningCarouselOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/carouselImage",
+      "category": "base-component",
+      "name": "lightning/carouselImage",
+      "componentName": "lightningCarouselImageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningCarouselImageOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/checkboxGroup",
+      "category": "base-component",
+      "name": "lightning/checkboxGroup",
+      "componentName": "lightningCheckboxGroupOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningCheckboxGroupOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/combobox",
+      "category": "base-component",
+      "name": "lightning/combobox",
+      "componentName": "lightningComboboxOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningComboboxOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/datatable",
+      "category": "base-component",
+      "name": "lightning/datatable",
+      "componentName": "lightningDatatableOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningDatatableOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/dialog",
+      "category": "base-component",
+      "name": "lightning/dialog",
+      "componentName": "lightningDialogOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningDialogOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/dualListbox",
+      "category": "base-component",
+      "name": "lightning/dualListbox",
+      "componentName": "lightningDualListboxOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningDualListboxOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/dynamicIcon",
+      "category": "base-component",
+      "name": "lightning/dynamicIcon",
+      "componentName": "lightningDynamicIconOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningDynamicIconOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/fileUpload",
+      "category": "base-component",
+      "name": "lightning/fileUpload",
+      "componentName": "lightningFileUploadOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFileUploadOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/flow",
+      "category": "base-component",
+      "name": "lightning/flow",
+      "componentName": "lightningFlowOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFlowOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/focusTrap",
+      "category": "base-component",
+      "name": "lightning/focusTrap",
+      "componentName": "lightningFocusTrapOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFocusTrapOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedAddress",
+      "category": "base-component",
+      "name": "lightning/formattedAddress",
+      "componentName": "lightningFormattedAddressOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedAddressOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedDateTime",
+      "category": "base-component",
+      "name": "lightning/formattedDateTime",
+      "componentName": "lightningFormattedDateTimeOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedDateTimeOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedEmail",
+      "category": "base-component",
+      "name": "lightning/formattedEmail",
+      "componentName": "lightningFormattedEmailOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedEmailOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedLocation",
+      "category": "base-component",
+      "name": "lightning/formattedLocation",
+      "componentName": "lightningFormattedLocationOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedLocationOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedLookup",
+      "category": "base-component",
+      "name": "lightning/formattedLookup",
+      "componentName": "lightningFormattedLookupOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedLookupOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedName",
+      "category": "base-component",
+      "name": "lightning/formattedName",
+      "componentName": "lightningFormattedNameOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedNameOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedNumber",
+      "category": "base-component",
+      "name": "lightning/formattedNumber",
+      "componentName": "lightningFormattedNumberOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedNumberOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedPhone",
+      "category": "base-component",
+      "name": "lightning/formattedPhone",
+      "componentName": "lightningFormattedPhoneOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedPhoneOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedRichText",
+      "category": "base-component",
+      "name": "lightning/formattedRichText",
+      "componentName": "lightningFormattedRichTextOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedRichTextOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedText",
+      "category": "base-component",
+      "name": "lightning/formattedText",
+      "componentName": "lightningFormattedTextOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedTextOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedTime",
+      "category": "base-component",
+      "name": "lightning/formattedTime",
+      "componentName": "lightningFormattedTimeOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedTimeOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/formattedUrl",
+      "category": "base-component",
+      "name": "lightning/formattedUrl",
+      "componentName": "lightningFormattedUrlOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningFormattedUrlOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/groupedCombobox",
+      "category": "base-component",
+      "name": "lightning/groupedCombobox",
+      "componentName": "lightningGroupedComboboxOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningGroupedComboboxOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/helptext",
+      "category": "base-component",
+      "name": "lightning/helptext",
+      "componentName": "lightningHelptextOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningHelptextOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/icon",
+      "category": "base-component",
+      "name": "lightning/icon",
+      "componentName": "lightningIconOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningIconOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/input",
+      "category": "base-component",
+      "name": "lightning/input",
+      "componentName": "lightningInputOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningInputOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/inputAddress",
+      "category": "base-component",
+      "name": "lightning/inputAddress",
+      "componentName": "lightningInputAddressOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningInputAddressOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/inputField",
+      "category": "base-component",
+      "name": "lightning/inputField",
+      "componentName": "lightningInputFieldOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningInputFieldOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/inputLocation",
+      "category": "base-component",
+      "name": "lightning/inputLocation",
+      "componentName": "lightningInputLocationOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningInputLocationOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/inputName",
+      "category": "base-component",
+      "name": "lightning/inputName",
+      "componentName": "lightningInputNameOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningInputNameOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/inputRichText",
+      "category": "base-component",
+      "name": "lightning/inputRichText",
+      "componentName": "lightningInputRichTextOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningInputRichTextOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/layout",
+      "category": "base-component",
+      "name": "lightning/layout",
+      "componentName": "lightningLayoutOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningLayoutOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/layoutItem",
+      "category": "base-component",
+      "name": "lightning/layoutItem",
+      "componentName": "lightningLayoutItemOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningLayoutItemOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/lookupAddress",
+      "category": "base-component",
+      "name": "lightning/lookupAddress",
+      "componentName": "lightningLookupAddressOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningLookupAddressOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/map",
+      "category": "base-component",
+      "name": "lightning/map",
+      "componentName": "lightningMapOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningMapOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/menuDivider",
+      "category": "base-component",
+      "name": "lightning/menuDivider",
+      "componentName": "lightningMenuDividerOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningMenuDividerOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/menuItem",
+      "category": "base-component",
+      "name": "lightning/menuItem",
+      "componentName": "lightningMenuItemOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningMenuItemOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/menuSubheader",
+      "category": "base-component",
+      "name": "lightning/menuSubheader",
+      "componentName": "lightningMenuSubheaderOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningMenuSubheaderOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/messages",
+      "category": "base-component",
+      "name": "lightning/messages",
+      "componentName": "lightningMessagesOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningMessagesOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/modal",
+      "category": "base-component",
+      "name": "lightning/modal",
+      "componentName": "lightningModalOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningModalOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/modalBody",
+      "category": "base-component",
+      "name": "lightning/modalBody",
+      "componentName": "lightningModalBodyOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningModalBodyOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/modalFooter",
+      "category": "base-component",
+      "name": "lightning/modalFooter",
+      "componentName": "lightningModalFooterOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningModalFooterOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/modalHeader",
+      "category": "base-component",
+      "name": "lightning/modalHeader",
+      "componentName": "lightningModalHeaderOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningModalHeaderOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/multiColumnSortingModal",
+      "category": "base-component",
+      "name": "lightning/multiColumnSortingModal",
+      "componentName": "lightningMultiColumnSortingModalOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningMultiColumnSortingModalOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/outputField",
+      "category": "base-component",
+      "name": "lightning/outputField",
+      "componentName": "lightningOutputFieldOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningOutputFieldOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/overlay",
+      "category": "base-component",
+      "name": "lightning/overlay",
+      "componentName": "lightningOverlayOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningOverlayOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/picklist",
+      "category": "base-component",
+      "name": "lightning/picklist",
+      "componentName": "lightningPicklistOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningPicklistOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/pill",
+      "category": "base-component",
+      "name": "lightning/pill",
+      "componentName": "lightningPillOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningPillOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/pillContainer",
+      "category": "base-component",
+      "name": "lightning/pillContainer",
+      "componentName": "lightningPillContainerOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningPillContainerOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/popup",
+      "category": "base-component",
+      "name": "lightning/popup",
+      "componentName": "lightningPopupOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningPopupOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/primitiveFigure",
+      "category": "base-component",
+      "name": "lightning/primitiveFigure",
+      "componentName": "lightningPrimitiveFigureOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningPrimitiveFigureOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/progressBar",
+      "category": "base-component",
+      "name": "lightning/progressBar",
+      "componentName": "lightningProgressBarOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningProgressBarOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/progressIndicator",
+      "category": "base-component",
+      "name": "lightning/progressIndicator",
+      "componentName": "lightningProgressIndicatorOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningProgressIndicatorOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/progressRing",
+      "category": "base-component",
+      "name": "lightning/progressRing",
+      "componentName": "lightningProgressRingOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningProgressRingOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/progressStep",
+      "category": "base-component",
+      "name": "lightning/progressStep",
+      "componentName": "lightningProgressStepOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningProgressStepOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/prompt",
+      "category": "base-component",
+      "name": "lightning/prompt",
+      "componentName": "lightningPromptOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningPromptOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/quickActionPanel",
+      "category": "base-component",
+      "name": "lightning/quickActionPanel",
+      "componentName": "lightningQuickActionPanelOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningQuickActionPanelOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/radioGroup",
+      "category": "base-component",
+      "name": "lightning/radioGroup",
+      "componentName": "lightningRadioGroupOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningRadioGroupOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/recordEditForm",
+      "category": "base-component",
+      "name": "lightning/recordEditForm",
+      "componentName": "lightningRecordEditFormOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningRecordEditFormOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/recordForm",
+      "category": "base-component",
+      "name": "lightning/recordForm",
+      "componentName": "lightningRecordFormOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningRecordFormOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/recordPicker",
+      "category": "base-component",
+      "name": "lightning/recordPicker",
+      "componentName": "lightningRecordPickerOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningRecordPickerOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/recordViewForm",
+      "category": "base-component",
+      "name": "lightning/recordViewForm",
+      "componentName": "lightningRecordViewFormOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningRecordViewFormOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/relativeDateTime",
+      "category": "base-component",
+      "name": "lightning/relativeDateTime",
+      "componentName": "lightningRelativeDateTimeOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningRelativeDateTimeOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/select",
+      "category": "base-component",
+      "name": "lightning/select",
+      "componentName": "lightningSelectOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningSelectOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/slider",
+      "category": "base-component",
+      "name": "lightning/slider",
+      "componentName": "lightningSliderOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningSliderOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/spinner",
+      "category": "base-component",
+      "name": "lightning/spinner",
+      "componentName": "lightningSpinnerOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningSpinnerOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/stackedTab",
+      "category": "base-component",
+      "name": "lightning/stackedTab",
+      "componentName": "lightningStackedTabOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningStackedTabOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/stackedTabset",
+      "category": "base-component",
+      "name": "lightning/stackedTabset",
+      "componentName": "lightningStackedTabsetOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningStackedTabsetOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/tab",
+      "category": "base-component",
+      "name": "lightning/tab",
+      "componentName": "lightningTabOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningTabOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/tabset",
+      "category": "base-component",
+      "name": "lightning/tabset",
+      "componentName": "lightningTabsetOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningTabsetOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/textarea",
+      "category": "base-component",
+      "name": "lightning/textarea",
+      "componentName": "lightningTextareaOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningTextareaOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/tile",
+      "category": "base-component",
+      "name": "lightning/tile",
+      "componentName": "lightningTileOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningTileOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/toast",
+      "category": "base-component",
+      "name": "lightning/toast",
+      "componentName": "lightningToastOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningToastOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/toastContainer",
+      "category": "base-component",
+      "name": "lightning/toastContainer",
+      "componentName": "lightningToastContainerOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningToastContainerOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/tree",
+      "category": "base-component",
+      "name": "lightning/tree",
+      "componentName": "lightningTreeOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningTreeOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/treeGrid",
+      "category": "base-component",
+      "name": "lightning/treeGrid",
+      "componentName": "lightningTreeGridOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningTreeGridOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/verticalNavigation",
+      "category": "base-component",
+      "name": "lightning/verticalNavigation",
+      "componentName": "lightningVerticalNavigationOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningVerticalNavigationOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationItem",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationItem",
+      "componentName": "lightningVerticalNavigationItemOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningVerticalNavigationItemOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationItemBadge",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationItemBadge",
+      "componentName": "lightningVerticalNavigationItemBadgeOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningVerticalNavigationItemBadgeOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationItemIcon",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationItemIcon",
+      "componentName": "lightningVerticalNavigationItemIconOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningVerticalNavigationItemIconOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationOverflow",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationOverflow",
+      "componentName": "lightningVerticalNavigationOverflowOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningVerticalNavigationOverflowOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationSection",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationSection",
+      "componentName": "lightningVerticalNavigationSectionOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/lightningVerticalNavigationSectionOracle",
+      "salesforceDeployable": false,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:comm__loginPage",
+      "category": "page-reference",
+      "name": "comm__loginPage",
+      "componentName": "commLoginPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/commLoginPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:comm__managedContentPage",
+      "category": "page-reference",
+      "name": "comm__managedContentPage",
+      "componentName": "commManagedContentPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/commManagedContentPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:comm__namedPage",
+      "category": "page-reference",
+      "name": "comm__namedPage",
+      "componentName": "commNamedPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/commNamedPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__app",
+      "category": "page-reference",
+      "name": "standard__app",
+      "componentName": "standardAppOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardAppOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__component",
+      "category": "page-reference",
+      "name": "standard__component",
+      "componentName": "standardComponentOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardComponentOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__externalRecordPage",
+      "category": "page-reference",
+      "name": "standard__externalRecordPage",
+      "componentName": "standardExternalRecordPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardExternalRecordPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__externalRecordRelationshipPage",
+      "category": "page-reference",
+      "name": "standard__externalRecordRelationshipPage",
+      "componentName": "standardExternalRecordRelationshipPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardExternalRecordRelationshipPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__flow",
+      "category": "page-reference",
+      "name": "standard__flow",
+      "componentName": "standardFlowOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardFlowOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__knowledgeArticlePage",
+      "category": "page-reference",
+      "name": "standard__knowledgeArticlePage",
+      "componentName": "standardKnowledgeArticlePageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardKnowledgeArticlePageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__namedPage",
+      "category": "page-reference",
+      "name": "standard__namedPage",
+      "componentName": "standardNamedPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardNamedPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__navItemPage",
+      "category": "page-reference",
+      "name": "standard__navItemPage",
+      "componentName": "standardNavItemPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardNavItemPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__objectPage",
+      "category": "page-reference",
+      "name": "standard__objectPage",
+      "componentName": "standardObjectPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardObjectPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__quickAction",
+      "category": "page-reference",
+      "name": "standard__quickAction",
+      "componentName": "standardQuickActionOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardQuickActionOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__recordPage",
+      "category": "page-reference",
+      "name": "standard__recordPage",
+      "componentName": "standardRecordPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardRecordPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__recordRelationshipPage",
+      "category": "page-reference",
+      "name": "standard__recordRelationshipPage",
+      "componentName": "standardRecordRelationshipPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardRecordRelationshipPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "page-reference:standard__webPage",
+      "category": "page-reference",
+      "name": "standard__webPage",
+      "componentName": "standardWebPageOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/standardWebPageOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/apex/",
+      "category": "salesforce-module",
+      "name": "@salesforce/apex/",
+      "componentName": "salesforceApexOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceApexOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/apexContinuation",
+      "category": "salesforce-module",
+      "name": "@salesforce/apexContinuation",
+      "componentName": "salesforceApexContinuationOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceApexContinuationOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/community/",
+      "category": "salesforce-module",
+      "name": "@salesforce/community/",
+      "componentName": "salesforceCommunityOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceCommunityOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/community/Id",
+      "category": "salesforce-module",
+      "name": "@salesforce/community/Id",
+      "componentName": "salesforceCommunityIdOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceCommunityIdOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/community/basePath",
+      "category": "salesforce-module",
+      "name": "@salesforce/community/basePath",
+      "componentName": "salesforceCommunityBasePathOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceCommunityBasePathOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/contentAssetUrl/",
+      "category": "salesforce-module",
+      "name": "@salesforce/contentAssetUrl/",
+      "componentName": "salesforceContentAssetUrlOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceContentAssetUrlOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/customPermission/",
+      "category": "salesforce-module",
+      "name": "@salesforce/customPermission/",
+      "componentName": "salesforceCustomPermissionOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceCustomPermissionOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/i18n/",
+      "category": "salesforce-module",
+      "name": "@salesforce/i18n/",
+      "componentName": "salesforceI18nOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceI18nOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/i18n/dir",
+      "category": "salesforce-module",
+      "name": "@salesforce/i18n/dir",
+      "componentName": "salesforceI18nDirOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceI18nDirOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/i18n/lang",
+      "category": "salesforce-module",
+      "name": "@salesforce/i18n/lang",
+      "componentName": "salesforceI18nLangOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceI18nLangOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/label/",
+      "category": "salesforce-module",
+      "name": "@salesforce/label/",
+      "componentName": "salesforceLabelOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceLabelOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/resourceUrl/",
+      "category": "salesforce-module",
+      "name": "@salesforce/resourceUrl/",
+      "componentName": "salesforceResourceUrlOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceResourceUrlOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/schema/",
+      "category": "salesforce-module",
+      "name": "@salesforce/schema/",
+      "componentName": "salesforceSchemaOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceSchemaOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/site/",
+      "category": "salesforce-module",
+      "name": "@salesforce/site/",
+      "componentName": "salesforceSiteOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceSiteOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/site/Id",
+      "category": "salesforce-module",
+      "name": "@salesforce/site/Id",
+      "componentName": "salesforceSiteIdOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceSiteIdOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/site/activeLanguages",
+      "category": "salesforce-module",
+      "name": "@salesforce/site/activeLanguages",
+      "componentName": "salesforceSiteActiveLanguagesOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceSiteActiveLanguagesOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": false,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/user/Id",
+      "category": "salesforce-module",
+      "name": "@salesforce/user/Id",
+      "componentName": "salesforceUserIdOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceUserIdOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/user/isGuest",
+      "category": "salesforce-module",
+      "name": "@salesforce/user/isGuest",
+      "componentName": "salesforceUserIsGuestOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceUserIsGuestOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    },
+    {
+      "id": "salesforce-module:@salesforce/userPermission/",
+      "category": "salesforce-module",
+      "name": "@salesforce/userPermission/",
+      "componentName": "salesforceUserPermissionOracle",
+      "targetHost": "lightning-shell",
+      "route": "/lwc/preview/component/c/salesforceUserPermissionOracle",
+      "salesforceDeployable": true,
+      "salesforceBrowserCapturable": true,
+      "assertions": [
+        "imports",
+        "renders",
+        "no console errors"
+      ]
+    }
+  ]
+}

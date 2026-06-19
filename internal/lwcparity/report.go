@@ -13,7 +13,7 @@ import (
 	"github.com/glade-sh/glade/internal/lwcbrowser"
 )
 
-const SchemaVersion = 1
+const SchemaVersion = 2
 
 type Options struct {
 	DocsDir string
@@ -28,17 +28,24 @@ type Report struct {
 }
 
 type Row struct {
-	ID            string `json:"id"`
-	Category      string `json:"category"`
-	Name          string `json:"name"`
-	Status        string `json:"status"`
-	DocsSource    string `json:"docsSource,omitempty"`
-	LocalSource   string `json:"localSource,omitempty"`
-	FirstAPI      string `json:"firstApiVersion,omitempty"`
-	Summary       string `json:"summary,omitempty"`
-	LocalEvidence string `json:"localEvidence,omitempty"`
-	OracleStatus  string `json:"oracleStatus"`
-	Notes         string `json:"notes,omitempty"`
+	ID            string   `json:"id"`
+	Category      string   `json:"category"`
+	Name          string   `json:"name"`
+	Container     string   `json:"container"`
+	Members       []string `json:"members"`
+	Status        string   `json:"status"`
+	ParityTier    string   `json:"parityTier"`
+	DocsSource    string   `json:"docsSource,omitempty"`
+	LocalSource   string   `json:"localSource,omitempty"`
+	FirstAPI      string   `json:"firstApiVersion,omitempty"`
+	Summary       string   `json:"summary,omitempty"`
+	LocalEvidence string   `json:"localEvidence,omitempty"`
+	LocalTest     string   `json:"localTest"`
+	OracleTest    string   `json:"oracleTest"`
+	DocsURL       string   `json:"docsUrl"`
+	LastVerified  string   `json:"lastVerified"`
+	OracleStatus  string   `json:"oracleStatus"`
+	Notes         string   `json:"notes,omitempty"`
 }
 
 type Summary struct {
@@ -100,7 +107,7 @@ func Build(options Options) (Report, error) {
 		Rows:          sortedRows(rows),
 		NextGates: []NextGate{{
 			Name:    "live org oracle",
-			Command: "glade-tools lwc capture --target-org oaer-probe-max --project <fixture> --local-browser-capture --browser-capture --out <capture.json>",
+			Command: "glade-tools lwc capture --target-org oaer-probe-max --project <fixture> --manifest glade-lwc-oracle.json --local-browser-capture --browser-capture --out <capture.json>",
 		}, {
 			Name:    "expand docs source",
 			Command: "refresh the LWC docs scrape with Component Reference and per-module API pages, then rerun glade-tools lwc parity --docs <lwc-docs>",
@@ -127,7 +134,7 @@ func addAPIModuleDocs(rows map[string]Row, docsDir string) error {
 			if !strings.Contains(line, "lightning/") && !strings.Contains(line, "experience/") {
 				continue
 			}
-			module, ok := firstMarkdownLinkLabel(line)
+			module, target, ok := firstMarkdownLink(line)
 			if !ok {
 				continue
 			}
@@ -144,7 +151,11 @@ func addAPIModuleDocs(rows map[string]Row, docsDir string) error {
 			if len(cells) >= 3 {
 				firstAPI = strings.TrimSpace(cells[2])
 			}
-			upsertDocRow(rows, CategoryAPIModule, module, relDocSource(source), summary, firstAPI)
+			docsURL := resolveModuleDocTarget(docsDir, target, module)
+			id := upsertDocRow(rows, CategoryAPIModule, module, relDocSource(source), summary, firstAPI, docsURL)
+			if err := addMembersFromDoc(rows, id, optionsForMemberInventory(docsDir, docsURL, module)); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -162,14 +173,14 @@ func addSalesforceModuleDocs(rows map[string]Row, docsDir string) error {
 	text := string(content)
 	for _, raw := range salesforceModuleRE.FindAllString(text, -1) {
 		module := normalizeSalesforceModule(raw)
-		upsertDocRow(rows, CategorySalesforceModule, module, relDocSource(source), "", "")
+		upsertDocRow(rows, CategorySalesforceModule, module, relDocSource(source), "", "", "")
 	}
 	lower := strings.ToLower(text)
 	if strings.Contains(lower, "custom permission") {
-		upsertDocRow(rows, CategorySalesforceModule, "@salesforce/customPermission/", relDocSource(source), "", "")
+		upsertDocRow(rows, CategorySalesforceModule, "@salesforce/customPermission/", relDocSource(source), "", "", "")
 	}
 	if strings.Contains(lower, "user permission") {
-		upsertDocRow(rows, CategorySalesforceModule, "@salesforce/userPermission/", relDocSource(source), "", "")
+		upsertDocRow(rows, CategorySalesforceModule, "@salesforce/userPermission/", relDocSource(source), "", "", "")
 	}
 	return nil
 }
@@ -205,7 +216,7 @@ func addPageReferenceDocs(rows map[string]Row, docsDir string) error {
 		if !supported[label] {
 			continue
 		}
-		upsertDocRow(rows, CategoryPageReference, pageType, relDocSource(source), label, "")
+		upsertDocRow(rows, CategoryPageReference, pageType, relDocSource(source), label, "", "")
 	}
 	return nil
 }
@@ -239,7 +250,10 @@ func addLocalBaseComponents(rows map[string]Row) {
 			ID:            id,
 			Category:      CategoryBaseComponent,
 			Name:          specifier,
+			Container:     specifier,
+			Members:       []string{},
 			Status:        StatusLocalOnly,
+			ParityTier:    parityTierForStatus(StatusLocalOnly),
 			LocalSource:   "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
 			LocalEvidence: "/lightning/shims/lightning/" + name + ".js",
 			OracleStatus:  StatusOracleMissing,
@@ -270,6 +284,7 @@ func applyLocalStatuses(rows map[string]Row) {
 		if row.OracleStatus == "" {
 			row.OracleStatus = StatusOracleMissing
 		}
+		finalizeRowContract(&row)
 		rows[id] = row
 	}
 }
@@ -293,31 +308,21 @@ func moduleLocalStatus(name string, imports map[string]string) (string, string, 
 
 func localModuleOverrides() map[string]string {
 	return map[string]string{
-		"@salesforce/community/":           StatusPartialLocal,
-		"@salesforce/i18n/":                StatusPartialLocal,
-		"@salesforce/site/":                StatusPartialLocal,
-		"@salesforce/site/activeLanguages": StatusUnsupportedLocal,
-		"@salesforce/user/":                StatusPartialLocal,
-		"@salesforce/userPermission/":      StatusDocsOnly,
-		"lightning/graphql":                StatusDocsOnly,
-		"lightning/uiAppsApi":              StatusDocsOnly,
-		"lightning/uiGraphQLApi":           StatusDocsOnly,
-		"lightning/uiLearningPlatformApi":  StatusDocsOnly,
-		"lightning/uiListApi":              StatusPartialLocal,
-		"lightning/uiListsApi":             StatusDocsOnly,
-		"lightning/platformUtilityBarApi":  StatusDocsOnly,
+		"@salesforce/community/": StatusPartialLocal,
+		"@salesforce/i18n/":      StatusPartialLocal,
+		"@salesforce/site/":      StatusPartialLocal,
+		"@salesforce/user/":      StatusPartialLocal,
+		"lightning/uiListApi":    StatusPartialLocal,
 	}
 }
 
 func localModuleOverrideNotes() map[string]string {
 	return map[string]string{
-		"@salesforce/community/":           "only basePath and Id are modeled",
-		"@salesforce/i18n/":                "common locale values are modeled; full org locale matrix is not probed",
-		"@salesforce/site/":                "only Id is modeled",
-		"@salesforce/site/activeLanguages": "local site shim returns unsupported for activeLanguages",
-		"@salesforce/user/":                "Id and isGuest are modeled",
-		"@salesforce/userPermission/":      "no local user permission shim is registered",
-		"lightning/uiListApi":              "deprecated module has a local diagnostic path, not full List UI parity",
+		"@salesforce/community/": "only basePath and Id are modeled",
+		"@salesforce/i18n/":      "common locale values are modeled; full org locale matrix is not probed",
+		"@salesforce/site/":      "only Id is modeled",
+		"@salesforce/user/":      "Id and isGuest are modeled",
+		"lightning/uiListApi":    "deprecated module has a local diagnostic path, not full List UI parity",
 	}
 }
 
@@ -345,6 +350,10 @@ func localPageReferenceTypes() map[string]bool {
 		"standard__component",
 		"standard__quickAction",
 		"standard__webPage",
+		"standard__externalRecordPage",
+		"standard__externalRecordRelationshipPage",
+		"standard__flow",
+		"standard__knowledgeArticlePage",
 		"comm__namedPage",
 		"comm__loginPage",
 		"comm__managedContentPage",
@@ -356,10 +365,10 @@ func localPageReferenceTypes() map[string]bool {
 	return out
 }
 
-func upsertDocRow(rows map[string]Row, category, name, source, summary, firstAPI string) {
+func upsertDocRow(rows map[string]Row, category, name, source, summary, firstAPI, docsURL string) string {
 	name = strings.TrimSpace(name)
 	if name == "" {
-		return
+		return ""
 	}
 	id := rowID(category, name)
 	row := rows[id]
@@ -369,7 +378,9 @@ func upsertDocRow(rows map[string]Row, category, name, source, summary, firstAPI
 	row.DocsSource = firstNonEmpty(row.DocsSource, source)
 	row.Summary = firstNonEmpty(row.Summary, summary)
 	row.FirstAPI = firstNonEmpty(row.FirstAPI, firstAPI)
+	row.DocsURL = firstNonEmpty(row.DocsURL, docsURL)
 	rows[id] = row
+	return id
 }
 
 func sortedRows(rows map[string]Row) []Row {
@@ -396,6 +407,9 @@ func summarize(rows []Row) Summary {
 }
 
 func WriteJSON(w io.Writer, report Report) error {
+	for i := range report.Rows {
+		finalizeRowContract(&report.Rows[i])
+	}
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 	return enc.Encode(report)
@@ -420,13 +434,16 @@ func WriteMarkdown(w io.Writer, report Report) error {
 	}
 
 	b.WriteString("\n## Rows\n\n")
-	b.WriteString("| Category | Name | Status | Oracle | Evidence | Source | Notes |\n")
-	b.WriteString("| --- | --- | --- | --- | --- | --- | --- |\n")
+	b.WriteString("| Category | Name | Status | Parity Tier | Members | Oracle | Evidence | Source | Notes |\n")
+	b.WriteString("| --- | --- | --- | --- | ---: | --- | --- | --- | --- |\n")
 	for _, row := range report.Rows {
-		fmt.Fprintf(&b, "| `%s` | `%s` | `%s` | `%s` | %s | %s | %s |\n",
+		finalizeRowContract(&row)
+		fmt.Fprintf(&b, "| `%s` | `%s` | `%s` | `%s` | %d | `%s` | %s | %s | %s |\n",
 			row.Category,
 			row.Name,
 			row.Status,
+			row.ParityTier,
+			len(row.Members),
 			row.OracleStatus,
 			mdCell(row.LocalEvidence),
 			mdCell(row.DocsSource),
@@ -443,15 +460,29 @@ func WriteMarkdown(w io.Writer, report Report) error {
 }
 
 func firstMarkdownLinkLabel(line string) (string, bool) {
+	label, _, ok := firstMarkdownLink(line)
+	return label, ok
+}
+
+func firstMarkdownLink(line string) (string, string, bool) {
 	start := strings.Index(line, "[")
 	if start < 0 {
-		return "", false
+		return "", "", false
 	}
 	end := strings.Index(line[start+1:], "]")
 	if end < 0 {
-		return "", false
+		return "", "", false
 	}
-	return line[start+1 : start+1+end], true
+	label := line[start+1 : start+1+end]
+	afterLabel := start + 1 + end + 1
+	if afterLabel >= len(line) || line[afterLabel] != '(' {
+		return label, "", true
+	}
+	close := strings.Index(line[afterLabel+1:], ")")
+	if close < 0 {
+		return label, "", true
+	}
+	return label, strings.TrimSpace(line[afterLabel+1 : afterLabel+1+close]), true
 }
 
 func markdownCells(line string) []string {
@@ -546,4 +577,32 @@ func mdCell(s string) string {
 	s = strings.ReplaceAll(s, "\n", " ")
 	s = strings.ReplaceAll(s, "|", "\\|")
 	return strings.TrimSpace(s)
+}
+
+func finalizeRowContract(row *Row) {
+	row.Container = firstNonEmpty(row.Container, row.Name)
+	if row.Members == nil {
+		row.Members = []string{}
+	}
+	row.Members = cleanMemberNames(row.Members)
+	if row.ParityTier == "" {
+		row.ParityTier = parityTierForStatus(row.Status)
+	}
+}
+
+func parityTierForStatus(status string) string {
+	switch status {
+	case StatusSupportedLocal:
+		return "supported-local"
+	case StatusPartialLocal:
+		return "partial-local"
+	case StatusUnsupportedLocal:
+		return "unsupported-local"
+	case StatusLocalOnly:
+		return "inventory-gap"
+	case StatusDocsOnly:
+		return "docs-only"
+	default:
+		return "unknown"
+	}
 }

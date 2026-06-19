@@ -40,11 +40,12 @@ func compareLwcBrowserEvidenceForComponent(local, salesforce *LwcCaptureEvidence
 	scope := lwcComparisonScope(component, local.DOM, salesforce.DOM)
 	localDOM := local.DOM
 	salesforceDOM := salesforce.DOM
+	selectors := lwcComponentSelectors(component)
 	if scope.Selector != "" && scope.LocalFound {
-		localDOM = extractLwcComponentDOM(local.DOM, scope.Selector)
+		localDOM = extractLwcComponentDOMAny(local.DOM, selectors)
 	}
 	if scope.Selector != "" && scope.SalesforceFound {
-		salesforceDOM = extractLwcComponentDOM(salesforce.DOM, scope.Selector)
+		salesforceDOM = extractLwcComponentDOMAny(salesforce.DOM, selectors)
 	}
 	comparison := &LwcCaptureComparison{
 		OK:         true,
@@ -79,33 +80,37 @@ func compareLwcBrowserEvidenceForComponent(local, salesforce *LwcCaptureEvidence
 }
 
 func lwcComparisonScope(component, localDOM, salesforceDOM string) LwcCaptureComparisonScope {
-	selector := lwcComponentSelector(component)
-	if selector == "" {
+	selectors := lwcComponentSelectors(component)
+	if len(selectors) == 0 {
 		return LwcCaptureComparisonScope{}
+	}
+	selector := selectors[0]
+	localFound := false
+	salesforceFound := false
+	for _, candidate := range selectors {
+		if !localFound {
+			localFound = extractLwcComponentDOM(localDOM, candidate) != ""
+		}
+		if !salesforceFound {
+			salesforceFound = extractLwcComponentDOM(salesforceDOM, candidate) != ""
+		}
+		if selector == selectors[0] && (localFound || salesforceFound) {
+			selector = candidate
+		}
 	}
 	return LwcCaptureComparisonScope{
 		Selector:        selector,
-		LocalFound:      extractLwcComponentDOM(localDOM, selector) != "",
-		SalesforceFound: extractLwcComponentDOM(salesforceDOM, selector) != "",
+		LocalFound:      localFound,
+		SalesforceFound: salesforceFound,
 	}
 }
 
 func lwcComponentSelector(component string) string {
-	component = strings.TrimSpace(component)
-	if component == "" {
+	selectors := lwcComponentSelectors(component)
+	if len(selectors) == 0 {
 		return ""
 	}
-	if strings.Contains(component, ":") {
-		parts := strings.Split(component, ":")
-		component = parts[len(parts)-1]
-	}
-	component = strings.TrimPrefix(component, "c-")
-	component = strings.TrimPrefix(component, "c__")
-	kebab := lwcCamelToKebab(component)
-	if kebab == "" {
-		return ""
-	}
-	return "c-" + kebab
+	return selectors[0]
 }
 
 func lwcCamelToKebab(value string) string {
@@ -139,6 +144,15 @@ func extractLwcComponentDOM(dom, selector string) string {
 	}
 	openPattern := regexp.MustCompile(`(?is)<` + regexp.QuoteMeta(selector) + `\b[^>]*>`)
 	return openPattern.FindString(dom)
+}
+
+func extractLwcComponentDOMAny(dom string, selectors []string) string {
+	for _, selector := range selectors {
+		if match := extractLwcComponentDOM(dom, selector); match != "" {
+			return match
+		}
+	}
+	return ""
 }
 
 func summarizeLwcBrowserDOM(dom string) LwcCaptureComparisonSide {

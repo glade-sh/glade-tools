@@ -19,6 +19,7 @@ type LwcCaptureOptions struct {
 	TargetOrg           string
 	Targets             []string
 	Hosts               []string
+	Manifest            string
 	Out                 string
 	SkipDeploy          bool
 	BrowserCapture      bool
@@ -145,6 +146,22 @@ type LwcCaptureCounts struct {
 
 type LwcCaptureArtifacts struct {
 	Report string `json:"report,omitempty"`
+}
+
+type lwcOracleManifest struct {
+	Fixtures []lwcOracleFixture `json:"fixtures"`
+}
+
+type lwcOracleFixture struct {
+	ID                          string   `json:"id"`
+	Category                    string   `json:"category"`
+	Name                        string   `json:"name"`
+	ComponentName               string   `json:"componentName"`
+	TargetHost                  string   `json:"targetHost"`
+	Route                       string   `json:"route"`
+	SalesforceDeployable        *bool    `json:"salesforceDeployable"`
+	SalesforceBrowserCapturable *bool    `json:"salesforceBrowserCapturable"`
+	Assertions                  []string `json:"assertions"`
 }
 
 var defaultLwcCaptureCases = []string{
@@ -639,11 +656,14 @@ func RunLwcCapture(ctx context.Context, options LwcCaptureOptions) (LwcCaptureRe
 	if (options.BrowserCapture || options.LocalBrowserCapture) && options.Browser == nil {
 		options.Browser = newShellLwcBrowserRunner(absProject)
 	}
-	targets, err := normalizeLwcCaptureTargets(options.Targets)
+	cases, targets, err := loadLwcCaptureCases(absProject, options)
 	if err != nil {
 		return LwcCaptureReport{}, err
 	}
 	hosts := normalizeLwcCaptureList(options.Hosts)
+	if strings.TrimSpace(options.Manifest) == "" {
+		cases = buildLwcCaptureCases(targets, hosts, options.TargetOrg)
+	}
 	report := LwcCaptureReport{
 		Command:   "glade compat lwc capture",
 		TargetOrg: options.TargetOrg,
@@ -654,9 +674,9 @@ func RunLwcCapture(ctx context.Context, options LwcCaptureOptions) (LwcCaptureRe
 	}
 	var localCleanup func()
 	if options.LocalBrowserCapture && strings.TrimSpace(options.LocalBaseURL) == "" && strings.TrimSpace(options.GladeBin) != "" {
-		baseURL, cleanup, err := startLocalLWCCaptureServer(ctx, options.GladeBin, absProject, firstLwcLocalCaptureRoute(targets, hosts))
+		baseURL, cleanup, err := startLocalLWCCaptureServer(ctx, options.GladeBin, absProject, firstLwcLocalCaptureCaseRoute(cases, targets, hosts))
 		if err != nil {
-			report.Counts.Fail = len(targets)
+			report.Counts.Fail = len(cases)
 			report.OK = false
 			return report, err
 		}
@@ -667,14 +687,14 @@ func RunLwcCapture(ctx context.Context, options LwcCaptureOptions) (LwcCaptureRe
 		defer localCleanup()
 	}
 	if !options.SkipDeploy {
-		if err := runLwcCaptureDeploy(ctx, options.Runner, absProject, options.TargetOrg); err != nil {
-			report.Counts.Fail = len(targets)
+		if err := runLwcCaptureDeploy(ctx, options.Runner, absProject, options.TargetOrg, options.Manifest); err != nil {
+			report.Counts.Fail = len(cases)
 			report.OK = false
 			return report, err
 		}
 		report.Deployed = true
 	}
-	report.Cases = buildLwcCaptureCases(targets, hosts, options.TargetOrg)
+	report.Cases = cases
 	if options.LocalBrowserCapture {
 		captureLwcLocalBrowserEvidence(ctx, &report, options)
 	}
@@ -777,6 +797,91 @@ func normalizeLwcCaptureList(values []string) []string {
 		}
 	}
 	return result
+}
+
+func loadLwcCaptureCases(project string, options LwcCaptureOptions) ([]LwcCaptureCase, []string, error) {
+	manifestPath := strings.TrimSpace(options.Manifest)
+	if manifestPath == "" {
+		targets, err := normalizeLwcCaptureTargets(options.Targets)
+		return nil, targets, err
+	}
+	if !filepath.IsAbs(manifestPath) {
+		manifestPath = filepath.Join(project, manifestPath)
+	}
+	data, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	var manifest lwcOracleManifest
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return nil, nil, err
+	}
+	hosts := normalizeLwcCaptureList(options.Hosts)
+	cases := make([]LwcCaptureCase, 0, len(manifest.Fixtures))
+	for _, fixture := range manifest.Fixtures {
+		if strings.TrimSpace(fixture.ID) == "" || strings.TrimSpace(fixture.Route) == "" {
+			continue
+		}
+		host := strings.TrimSpace(fixture.TargetHost)
+		if host == "" {
+			host = "lightning-shell"
+		}
+		if len(hosts) > 0 && !containsLwcCaptureHost(hosts, host) {
+			continue
+		}
+		component := strings.TrimSpace(fixture.ComponentName)
+		deployable := fixture.SalesforceDeployable == nil || *fixture.SalesforceDeployable
+		browserCapturable := fixture.SalesforceBrowserCapturable == nil || *fixture.SalesforceBrowserCapturable
+		salesforcePath := "salesforce://local-only" + fixture.Route
+		if component != "" && deployable && browserCapturable {
+			salesforcePath = "/lightning/cmp/c__" + component
+		} else if component != "" && deployable {
+			salesforcePath = "salesforce://host-context-only" + fixture.Route
+		}
+		cases = append(cases, LwcCaptureCase{
+			Name:      fixture.ID,
+			Feature:   "lwc.native-api." + strings.TrimSpace(fixture.Category),
+			Host:      host,
+			Status:    "prepared",
+			TargetURL: "fixture://lwc-native-api/" + fixture.ID,
+			Metadata: LwcCaptureMetadata{
+				Route:      fixture.Route,
+				Component:  component,
+				Assertions: append([]string(nil), fixture.Assertions...),
+			},
+			LocalEvidence: &LwcCaptureEvidence{
+				Kind:      "local-dom-stub",
+				Source:    "local-fixture",
+				Status:    "prepared",
+				TargetURL: fixture.Route,
+				Notes:     "Prepared from generated LWC native API oracle manifest.",
+			},
+			SalesforceEvidence: &LwcCaptureEvidence{
+				Kind:      "salesforce-dom-stub",
+				Source:    options.TargetOrg,
+				Status:    "pending-org-capture",
+				TargetURL: salesforcePath,
+				Notes:     "Generated LWC native API oracle component route.",
+			},
+			Notes: fixture.Name,
+		})
+	}
+	if len(cases) == 0 {
+		return nil, nil, fmt.Errorf("manifest contains no LWC oracle fixtures: %s", manifestPath)
+	}
+	return cases, nil, nil
+}
+
+func firstLwcLocalCaptureCaseRoute(cases []LwcCaptureCase, targets, hosts []string) string {
+	for _, c := range cases {
+		if c.LocalEvidence != nil && strings.TrimSpace(c.LocalEvidence.TargetURL) != "" {
+			return c.LocalEvidence.TargetURL
+		}
+		if strings.TrimSpace(c.Metadata.Route) != "" {
+			return c.Metadata.Route
+		}
+	}
+	return firstLwcLocalCaptureRoute(targets, hosts)
 }
 
 func buildLwcCaptureCases(targets, hosts []string, targetOrg string) []LwcCaptureCase {
@@ -960,7 +1065,7 @@ func captureLwcSalesforceBrowserEvidence(ctx context.Context, report *LwcCapture
 			continue
 		}
 		stablePath := strings.TrimSpace(caseReport.SalesforceEvidence.TargetURL)
-		if stablePath == "" || strings.HasPrefix(stablePath, "salesforce://local-only") {
+		if stablePath == "" || strings.HasPrefix(stablePath, "salesforce://") {
 			continue
 		}
 		openURL, err := openLwcSalesforceBrowserURL(ctx, options.Runner, options.TargetOrg, stablePath)
@@ -1013,8 +1118,8 @@ func applyLwcBrowserCaptureStatus(caseReport *LwcCaptureCase, capture *LwcBrowse
 		caseReport.Status = "fail"
 		return
 	}
-	if selector := expectedLwcCaptureSelector(*caseReport); selector != "" && !strings.Contains(strings.ToLower(capture.DOM), "<"+selector) {
-		message := "browser capture missing expected component selector " + selector
+	if selectors := expectedLwcCaptureSelectors(*caseReport); len(selectors) > 0 && !lwcCaptureContainsAnySelector(capture.DOM, selectors) {
+		message := "browser capture missing expected component selector " + selectors[0]
 		capture.PageErrors = append(capture.PageErrors, message)
 		caseReport.PageErrors = append(caseReport.PageErrors, message)
 		caseReport.Status = "fail"
@@ -1030,11 +1135,45 @@ func applyLwcBrowserCaptureStatus(caseReport *LwcCaptureCase, capture *LwcBrowse
 }
 
 func expectedLwcCaptureSelector(caseReport LwcCaptureCase) string {
-	component := strings.TrimSpace(caseReport.Metadata.Component)
-	if component == "" {
+	selectors := expectedLwcCaptureSelectors(caseReport)
+	if len(selectors) == 0 {
 		return ""
 	}
-	return "c-" + lwcComponentNameToKebab(component)
+	return selectors[0]
+}
+
+func expectedLwcCaptureSelectors(caseReport LwcCaptureCase) []string {
+	component := strings.TrimSpace(caseReport.Metadata.Component)
+	return lwcComponentSelectors(component)
+}
+
+func lwcCaptureContainsAnySelector(dom string, selectors []string) bool {
+	lowerDOM := strings.ToLower(dom)
+	for _, selector := range selectors {
+		if strings.Contains(lowerDOM, "<"+selector) {
+			return true
+		}
+	}
+	return false
+}
+
+func lwcComponentSelectors(component string) []string {
+	component = strings.TrimSpace(component)
+	if component == "" {
+		return nil
+	}
+	if strings.Contains(component, ":") {
+		parts := strings.Split(component, ":")
+		component = parts[len(parts)-1]
+	}
+	component = strings.TrimPrefix(component, "c-")
+	component = strings.TrimPrefix(component, "c__")
+	primary := "c-" + lwcComponentNameToKebab(component)
+	compact := "c-" + lwcComponentNameToKebabCompactAcronyms(component)
+	if compact == primary {
+		return []string{primary}
+	}
+	return []string{primary, compact}
 }
 
 func lwcComponentNameToKebab(name string) string {
@@ -1048,6 +1187,24 @@ func lwcComponentNameToKebab(name string) string {
 			continue
 		}
 		b.WriteRune(unicode.ToLower(r))
+	}
+	return b.String()
+}
+
+func lwcComponentNameToKebabCompactAcronyms(name string) string {
+	var b strings.Builder
+	var prev rune
+	for i, r := range name {
+		if unicode.IsUpper(r) {
+			if i > 0 && (unicode.IsLower(prev) || unicode.IsDigit(prev)) {
+				b.WriteByte('-')
+			}
+			b.WriteRune(unicode.ToLower(r))
+			prev = r
+			continue
+		}
+		b.WriteRune(unicode.ToLower(r))
+		prev = r
 	}
 	return b.String()
 }
@@ -1151,9 +1308,9 @@ func buildLwcSupportRows(cases []LwcCaptureCase, requestedHosts []string, report
 			rows = append(rows, LwcSupportRow{
 				Feature:  feature,
 				Host:     c.Host,
-				Status:   "failed",
+				Status:   lwcSupportStatusForCase(c),
 				Evidence: lwcSupportEvidenceRef(reportPath, feature, c.Host),
-				Notes:    "Unknown LWC capture target; support evidence cannot be classified.",
+				Notes:    strings.TrimSpace(c.Notes),
 			})
 			continue
 		}
@@ -1250,8 +1407,12 @@ func lwcSupportEvidenceRef(reportPath, feature, host string) string {
 	return "capture://lwc/support/" + feature + lwcCaptureHostQuery(host)
 }
 
-func runLwcCaptureDeploy(ctx context.Context, runner LwcCommandRunner, project, targetOrg string) error {
-	deployProject, cleanup, err := prepareLwcCaptureDeployProject(project)
+func runLwcCaptureDeploy(ctx context.Context, runner LwcCommandRunner, project, targetOrg, manifestPath string) error {
+	skipComponents, err := lwcCaptureNonDeployableComponents(project, manifestPath)
+	if err != nil {
+		return err
+	}
+	deployProject, cleanup, err := prepareLwcCaptureDeployProject(project, skipComponents)
 	if err != nil {
 		return err
 	}
@@ -1336,7 +1497,7 @@ func runLwcCommandInDir(ctx context.Context, runner LwcCommandRunner, dir, name 
 	return runner.Run(ctx, name, args...)
 }
 
-func prepareLwcCaptureDeployProject(project string) (string, func(), error) {
+func prepareLwcCaptureDeployProject(project string, skipComponents map[string]bool) (string, func(), error) {
 	tmp, err := os.MkdirTemp("", "glade-lwc-capture-deploy-")
 	if err != nil {
 		return "", func() {}, err
@@ -1352,6 +1513,9 @@ func prepareLwcCaptureDeployProject(project string) (string, func(), error) {
 		}
 		if rel == "." {
 			return nil
+		}
+		if shouldSkipLwcCaptureDeployComponent(rel, entry, skipComponents) {
+			return filepath.SkipDir
 		}
 		if entry.IsDir() {
 			return os.MkdirAll(filepath.Join(tmp, rel), 0o755)
@@ -1378,6 +1542,68 @@ func prepareLwcCaptureDeployProject(project string) (string, func(), error) {
 		return "", func() {}, err
 	}
 	return tmp, cleanup, nil
+}
+
+func lwcCaptureNonDeployableComponents(project, manifestPath string) (map[string]bool, error) {
+	manifestPath = strings.TrimSpace(manifestPath)
+	if manifestPath == "" {
+		return nil, nil
+	}
+	if !filepath.IsAbs(manifestPath) {
+		manifestPath = filepath.Join(project, manifestPath)
+	}
+	data, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return nil, err
+	}
+	var manifest lwcOracleManifest
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return nil, err
+	}
+	skip := map[string]bool{}
+	included := map[string]bool{}
+	for _, fixture := range manifest.Fixtures {
+		deployable := fixture.SalesforceDeployable == nil || *fixture.SalesforceDeployable
+		component := strings.TrimSpace(fixture.ComponentName)
+		if component != "" {
+			included[component] = true
+		}
+		if !deployable && component != "" {
+			skip[component] = true
+		}
+	}
+	lwcRoot := filepath.Join(project, "force-app", "main", "default", "lwc")
+	entries, err := os.ReadDir(lwcRoot)
+	if err != nil && !os.IsNotExist(err) {
+		return nil, err
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		component := entry.Name()
+		if !included[component] {
+			skip[component] = true
+		}
+	}
+	if len(skip) == 0 {
+		return nil, nil
+	}
+	return skip, nil
+}
+
+func shouldSkipLwcCaptureDeployComponent(rel string, entry os.DirEntry, skipComponents map[string]bool) bool {
+	if len(skipComponents) == 0 || !entry.IsDir() {
+		return false
+	}
+	parts := strings.Split(filepath.ToSlash(rel), "/")
+	if len(parts) != 5 {
+		return false
+	}
+	if parts[0] != "force-app" || parts[1] != "main" || parts[2] != "default" || parts[3] != "lwc" {
+		return false
+	}
+	return skipComponents[parts[4]]
 }
 
 func shouldSkipLwcCaptureDeployFile(rel string) bool {
