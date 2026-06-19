@@ -19,6 +19,10 @@ This project owns the shop work:
 `glade-tools` may depend on `../glade`. The `glade` product repo must not depend
 on this project.
 
+Current Salesforce surface expansion work is tracked in
+[`docs/CAPABILITY_WORK_QUEUE.md`](docs/CAPABILITY_WORK_QUEUE.md). Checked
+generated reports live under `docs/generated/`.
+
 ## Build
 
 ```bash

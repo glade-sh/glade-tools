@@ -7,7 +7,7 @@ import (
 )
 
 func TestCapabilityWorkQueueDocumentsSalesforceSurfaceSlices(t *testing.T) {
-	body, err := os.ReadFile("../../docs/migrated/CAPABILITY_WORK_QUEUE.md")
+	body, err := os.ReadFile("../../docs/CAPABILITY_WORK_QUEUE.md")
 	if err != nil {
 		t.Fatalf("read capability work queue: %v", err)
 	}

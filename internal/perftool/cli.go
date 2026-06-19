@@ -140,8 +140,31 @@ func printHelp(w io.Writer) {
 	fmt.Fprint(w, `glade performance plugin.
 
 Usage:
-  glade performance [scan] [--project <root>] [--trace <path>] [--org-facts <path>] [--format markdown|json|sarif] [--min-confidence static|measured|combined] [--fail-on none|high|measured] [--top <n>] [--editor-findings]
+  glade performance scan [flags]
+  glade performance [flags]
   glade-plugin-performance manifest --json
+
+Entrypoints:
+  glade performance scan [flags]
+  glade-plugin-performance performance scan [flags]
+
+Flags:
+  --project <root>                    Project root. Defaults to current directory.
+  --trace <path>                      Glade trace JSON with measured execution timings.
+  --org-facts <path>                  Org or data-shape facts JSON.
+  --format markdown|json|sarif        Output format. Defaults to markdown.
+  --json                              Alias for --format json.
+  --min-confidence static|measured|combined
+                                      Keep findings at or above this confidence.
+  --fail-on none|high|measured        Exit 2 when matching findings are present.
+  --top <n>                           Limit findings after filtering.
+  --editor-findings                   Write glade.findings.v1 JSON for editor integration.
+
+Examples:
+  glade performance scan --project . --format json
+  glade performance scan --project . --trace reports/slow.trace.json --top 10
+  glade performance scan --project . --org-facts reports/org-facts.json --fail-on high
+  glade performance scan --project . --format sarif > reports/glade-performance.sarif
 `)
 }
 

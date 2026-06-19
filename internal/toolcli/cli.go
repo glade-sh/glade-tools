@@ -42,6 +42,17 @@ func printHelp(w io.Writer) {
 Usage:
   glade-tools <command> [flags]
 
+Entrypoints:
+  glade-tools <command> [flags]
+  glade-plugin-compat <command> [flags]
+  glade compat <command> [flags]
+
+Help:
+  glade-tools <command> --help
+  glade compat local-tests --help
+  glade compat visualforce --help
+  glade compat lwc --help
+
 Commands:
   validate           Validate compatibility fixture files.
   run                Validate and execute fixtures.
@@ -76,6 +87,7 @@ Commands:
 
 Compatibility:
   glade-tools compat <command> is accepted for old scripts.
+  Prefer glade compat <command> after installing @glade/compat.
 `)
 }
 

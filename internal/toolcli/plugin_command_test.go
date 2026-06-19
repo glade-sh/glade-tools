@@ -381,6 +381,18 @@ func TestTopLevelHelpListsMaintenanceCommandRoots(t *testing.T) {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
 	out := stdout.String()
+	for _, want := range []string{
+		"Entrypoints:",
+		"glade-tools <command> [flags]",
+		"glade-plugin-compat <command> [flags]",
+		"glade compat <command> [flags]",
+		"Help:",
+		"glade-tools <command> --help",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("help omitted %q:\n%s", want, out)
+		}
+	}
 	for _, command := range []string{
 		"stub-inventory",
 		"product-namespaces",

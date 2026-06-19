@@ -37,6 +37,30 @@ func TestManifestJSONListsPerformanceScan(t *testing.T) {
 	}
 }
 
+func TestHelpListsEntrypointsFlagsAndExamples(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"--help"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"Entrypoints:",
+		"glade performance scan [flags]",
+		"glade-plugin-performance performance scan [flags]",
+		"Flags:",
+		"--trace <path>",
+		"--org-facts <path>",
+		"--fail-on none|high|measured",
+		"Examples:",
+		"glade performance scan --project . --trace reports/slow.trace.json --top 10",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("help omitted %q:\n%s", want, out)
+		}
+	}
+}
+
 func TestManifestJSONListsPerformanceEditorAction(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), []string{"manifest", "--json"}, &stdout, &stderr)
