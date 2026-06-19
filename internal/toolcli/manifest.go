@@ -18,7 +18,7 @@ type pluginManifest struct {
 	Version             string                  `json:"version"`
 	Summary             string                  `json:"summary"`
 	Commands            []pluginCommandManifest `json:"commands"`
-	Editor              pluginEditorManifest    `json:"editor,omitempty"`
+	Editor              *pluginEditorManifest   `json:"editor,omitempty"`
 	MinimumGladeVersion string                  `json:"minimumGladeVersion"`
 	Source              string                  `json:"source"`
 }
@@ -90,7 +90,7 @@ func writeCompatManifest(w io.Writer) error {
 			{Path: []string{"evidence"}, Summary: "Compare fixture evidence with a catalog."},
 			{Path: []string{"oracle-stdlib"}, Summary: "Run scratch-org standard-library oracle probes."},
 		},
-		Editor: pluginEditorManifest{
+		Editor: &pluginEditorManifest{
 			Actions: []pluginEditorActionManifest{
 				{
 					ID:       "compat.postParity",
@@ -127,6 +127,24 @@ func writeCompatManifest(w io.Writer) error {
 					Icon:   "cloud-download",
 				},
 			},
+		},
+		MinimumGladeVersion: "0.1.0",
+		Source:              pluginSource,
+	}
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	return enc.Encode(manifest)
+}
+
+func writeOrgPackageManifest(w io.Writer) error {
+	manifest := pluginManifest{
+		APIVersion: pluginAPIVersion,
+		Name:       "orgpackage",
+		Version:    pluginVersion,
+		Summary:    "Capture installed Salesforce package artifacts from an org.",
+		Commands: []pluginCommandManifest{
+			{Path: []string{"orgpackage"}, Summary: "Capture and inspect org-backed package artifacts."},
+			{Path: []string{"orgpackage", "capture"}, Summary: "Capture an installed package artifact from a Salesforce org."},
 		},
 		MinimumGladeVersion: "0.1.0",
 		Source:              pluginSource,

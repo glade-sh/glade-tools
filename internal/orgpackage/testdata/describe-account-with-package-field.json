@@ -1,0 +1,29 @@
+{
+  "name": "Account",
+  "label": "Account",
+  "labelPlural": "Accounts",
+  "fields": [
+    {
+      "name": "Name",
+      "label": "Account Name",
+      "type": "string",
+      "nillable": false
+    },
+    {
+      "name": "pkg__Billing_Profile__c",
+      "label": "Billing Profile",
+      "type": "reference",
+      "nillable": true,
+      "referenceTo": ["pkg__Billing_Profile__c"],
+      "relationshipName": "pkg__Billing_Profile__r"
+    }
+  ],
+  "recordTypeInfos": [],
+  "childRelationships": [
+    {
+      "childSObject": "Invoice__c",
+      "field": "pkg__Billing_Profile__c",
+      "relationshipName": "Invoices__r"
+    }
+  ]
+}

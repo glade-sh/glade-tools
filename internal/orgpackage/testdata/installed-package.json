@@ -1,0 +1,20 @@
+{
+  "done": true,
+  "records": [
+    {
+      "Id": "0A3xx0000000001",
+      "SubscriberPackageId": "033xx0000000001",
+      "SubscriberPackage": {
+        "Name": "Billing Core",
+        "NamespacePrefix": "pkg"
+      },
+      "SubscriberPackageVersionId": "04txx0000000001",
+      "SubscriberPackageVersion": {
+        "MajorVersion": 1,
+        "MinorVersion": 2,
+        "PatchVersion": 3,
+        "BuildNumber": 4
+      }
+    }
+  ]
+}

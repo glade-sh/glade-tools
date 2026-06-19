@@ -1,0 +1,20 @@
+{
+  "name": "pkg__Billing_Profile__c",
+  "label": "Billing Profile",
+  "labelPlural": "Billing Profiles",
+  "custom": true,
+  "fields": [
+    {
+      "name": "pkg__External_Key__c",
+      "label": "External Key",
+      "type": "string",
+      "nillable": true,
+      "externalId": true,
+      "unique": true
+    }
+  ],
+  "recordTypeInfos": [
+    {"name": "Retail", "developerName": "Retail", "available": true}
+  ],
+  "childRelationships": []
+}

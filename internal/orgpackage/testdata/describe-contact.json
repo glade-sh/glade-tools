@@ -1,0 +1,15 @@
+{
+  "name": "Contact",
+  "label": "Contact",
+  "labelPlural": "Contacts",
+  "fields": [
+    {
+      "name": "Name",
+      "label": "Name",
+      "type": "string",
+      "nillable": false
+    }
+  ],
+  "recordTypeInfos": [],
+  "childRelationships": []
+}

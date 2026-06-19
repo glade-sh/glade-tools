@@ -1,0 +1,31 @@
+{
+  "done": true,
+  "records": [
+    {
+      "Id": "01pxx0000000001",
+      "Name": "BillingGateway",
+      "NamespacePrefix": "pkg",
+      "ManageableState": "installed",
+      "SymbolTable": {
+        "tableDeclaration": {
+          "name": "BillingGateway",
+          "visibility": "GLOBAL",
+          "modifiers": ["global"]
+        },
+        "methods": [
+          {
+            "name": "authorize",
+            "returnType": "Boolean",
+            "visibility": "GLOBAL",
+            "modifiers": ["global", "static"],
+            "parameters": [
+              {"name": "amount", "type": "Decimal"}
+            ]
+          }
+        ],
+        "constructors": [],
+        "properties": []
+      }
+    }
+  ]
+}

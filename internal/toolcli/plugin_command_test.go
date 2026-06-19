@@ -226,6 +226,9 @@ func TestPackagedCompatManifestMatchesRuntimeCommands(t *testing.T) {
 		}
 	}
 
+	if runtime.Editor == nil {
+		t.Fatal("runtime manifest missing editor actions")
+	}
 	runtimeActions := runtimeEditorActionByID(runtime.Editor.Actions)
 	packagedActions := editorActionByID(packaged.Editor.Actions)
 	if len(packagedActions) != len(runtimeActions) {

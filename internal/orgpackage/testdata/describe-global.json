@@ -1,0 +1,7 @@
+{
+  "sobjects": [
+    {"name": "Account"},
+    {"name": "Contact"},
+    {"name": "pkg__Billing_Profile__c"}
+  ]
+}

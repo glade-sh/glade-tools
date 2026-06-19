@@ -1,0 +1,23 @@
+{
+  "apiVersion": "glade.plugin.v1",
+  "name": "orgpackage",
+  "version": "0.1.0",
+  "summary": "Capture installed Salesforce package artifacts from an org.",
+  "commands": [
+    {
+      "path": [
+        "orgpackage"
+      ],
+      "summary": "Capture and inspect org-backed package artifacts."
+    },
+    {
+      "path": [
+        "orgpackage",
+        "capture"
+      ],
+      "summary": "Capture an installed package artifact from a Salesforce org."
+    }
+  ],
+  "minimumGladeVersion": "0.1.0",
+  "source": "github.com/glade-sh/glade/tools"
+}

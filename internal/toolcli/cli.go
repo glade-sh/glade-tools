@@ -23,6 +23,9 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		}
 		return 0
 	}
+	if args[0] == "orgpackage" {
+		return RunOrgPackage(ctx, args, stdout, stderr)
+	}
 	if args[0] == "compat" {
 		args = args[1:]
 	}
@@ -69,6 +72,7 @@ Commands:
   tooling-fixtures   Summarize tooling fixture reports.
   evidence           Compare fixture evidence with a catalog.
   oracle-stdlib      Run scratch-org standard-library oracle probes.
+  orgpackage         Capture installed package artifacts from a Salesforce org.
 
 Compatibility:
   glade-tools compat <command> is accepted for old scripts.

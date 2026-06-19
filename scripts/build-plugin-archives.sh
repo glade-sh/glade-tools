@@ -60,6 +60,9 @@ build_archive() {
     compat)
       ldflags="-X github.com/glade-sh/glade/tools/internal/toolcli.pluginVersion=$VERSION"
       ;;
+    orgpackage)
+      ldflags="-X github.com/glade-sh/glade/tools/internal/toolcli.pluginVersion=$VERSION"
+      ;;
     performance)
       ldflags="-X github.com/glade-sh/glade/tools/internal/perftool.pluginVersion=$VERSION"
       ;;
@@ -93,13 +96,14 @@ build_archive() {
 
 for target in $TARGETS; do
   build_archive compat "$target"
+  build_archive orgpackage "$target"
   build_archive performance "$target"
 done
 
 if [[ -n "${PLUGIN_ASSET_BASE_URL:-}" ]]; then
   {
     printf '{\n  "version": 1,\n  "plugins": [\n'
-    for plugin_name in compat performance; do
+    for plugin_name in compat orgpackage performance; do
       case "$plugin_name" in
         compat)
           canonical="@glade/compat"
@@ -107,6 +111,13 @@ if [[ -n "${PLUGIN_ASSET_BASE_URL:-}" ]]; then
           summary="Compatibility fixtures, surface ledgers, and maintenance scanners."
           commands='["compat","lwc","surface","matrix","mvp","local-tests","post-parity","examples","replay","ui-controllers","server-examples","visualforce","dashboard","gaps","stdlib","oracle-stdlib","docs-inventory","catalog","reconcile","doc-contracts","salesforce-coverage","standard-objects","stub-contracts","stub-behavior","stub-inventory","product-namespaces","tooling-fixtures","evidence"]'
           docs="https://glade.sh/guide/plugins/first-party"
+          ;;
+        orgpackage)
+          canonical="@glade/orgpackage"
+          aliases='["orgpackage"]'
+          summary="Capture installed Salesforce package artifacts from an org."
+          commands='["orgpackage"]'
+          docs="https://glade.sh/guide/rich-local-workflows"
           ;;
         performance)
           canonical="@glade/performance"
