@@ -19,6 +19,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 	"github.com/glade-sh/glade/tools/internal/editorfindings"
 	"github.com/glade-sh/glade/tools/internal/examplescan"
+	"github.com/glade-sh/glade/tools/internal/lwcparity"
 	"github.com/glade-sh/glade/tools/internal/oracleprobe"
 	"github.com/glade-sh/glade/tools/internal/projectscan"
 )
@@ -169,6 +170,7 @@ func compatUsage() string {
 		"visualforce summary [--project <root>] [--phase <n>] [--json]",
 		"lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--json] [--editor-findings]",
 		"lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]",
+		"lwc parity --docs <dir> [--json|--output <path>|--check <path>]",
 		"replay [--json] [--continue-on-error] [--artifacts <dir>] <bundle-dir...>",
 		"ui-controllers [--project <root>] [--json|--check <path>]",
 		"post-parity [--project <root>] [--json|--output <path>|--check <path>] [--editor-findings] [--require-ready]",
@@ -204,8 +206,105 @@ func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {
 		return runCompatLwcCapture(ctx, args[1:], w)
 	case "corpus":
 		return runCompatLwcCorpus(args[1:], w)
+	case "parity":
+		return runCompatLwcParity(args[1:], w)
 	default:
 		return errors.New(compatLwcUsage())
+	}
+}
+
+func runCompatLwcParity(args []string, w io.Writer) error {
+	options := lwcparity.Options{}
+	jsonOut := false
+	outputPath := ""
+	checkPath := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--docs":
+			if i+1 >= len(args) {
+				return errors.New("--docs requires a value")
+			}
+			options.DocsDir = args[i+1]
+			i++
+		case "--json":
+			jsonOut = true
+		case "--output":
+			if i+1 >= len(args) {
+				return errors.New("--output requires a value")
+			}
+			outputPath = args[i+1]
+			i++
+		case "--check":
+			if i+1 >= len(args) {
+				return errors.New("--check requires a value")
+			}
+			checkPath = args[i+1]
+			i++
+		default:
+			return fmt.Errorf("unknown lwc parity flag %q", args[i])
+		}
+	}
+	if strings.TrimSpace(options.DocsDir) == "" {
+		options.DocsDir = strings.TrimSpace(os.Getenv("GLADE_LWC_DOCS_SOURCE"))
+	}
+	selected := 0
+	if jsonOut {
+		selected++
+	}
+	if outputPath != "" {
+		selected++
+	}
+	if checkPath != "" {
+		selected++
+	}
+	if selected > 1 {
+		return errors.New("use only one of --json, --output, or --check")
+	}
+
+	report, err := lwcparity.Build(options)
+	if err != nil {
+		return err
+	}
+
+	switch {
+	case jsonOut:
+		return lwcparity.WriteJSON(w, report)
+	case outputPath != "":
+		var buf bytes.Buffer
+		if err := lwcparity.WriteMarkdown(&buf, report); err != nil {
+			return err
+		}
+		if err := os.WriteFile(outputPath, buf.Bytes(), 0o644); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, "wrote %s\n", outputPath)
+		return nil
+	case checkPath != "":
+		var buf bytes.Buffer
+		if err := lwcparity.WriteMarkdown(&buf, report); err != nil {
+			return err
+		}
+		existing, err := os.ReadFile(checkPath)
+		if err != nil {
+			return err
+		}
+		if !bytes.Equal(existing, buf.Bytes()) {
+			return fmt.Errorf("LWC native API parity drift: run `glade-tools lwc parity --docs %s --output %s`", options.DocsDir, checkPath)
+		}
+		fmt.Fprintf(w, "%s: up to date\n", checkPath)
+		return nil
+	default:
+		fmt.Fprintf(w, "lwc parity: rows=%d\n", report.Summary.Total)
+		for _, status := range []string{
+			lwcparity.StatusSupportedLocal,
+			lwcparity.StatusPartialLocal,
+			lwcparity.StatusUnsupportedLocal,
+			lwcparity.StatusDocsOnly,
+			lwcparity.StatusLocalOnly,
+		} {
+			fmt.Fprintf(w, "  %s=%d\n", status, report.Summary.ByStatus[status])
+		}
+		return nil
 	}
 }
 
@@ -376,6 +475,8 @@ Usage:
   glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]
   glade-plugin-compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]
   glade compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]
+  glade-tools lwc parity --docs <dir> [--json|--output <path>|--check <path>]
+  glade compat lwc parity --docs <dir> [--json|--output <path>|--check <path>]
 
 Common flags:
   --target-org <alias>     Scratch org alias or username.
@@ -398,6 +499,12 @@ Corpus flags:
   --check                  Fail when the corpus contains unsupported tags.
   --json                   Write the report JSON to stdout.
 
+Parity flags:
+  --docs <dir>             Local Salesforce LWC docs scrape. Defaults to GLADE_LWC_DOCS_SOURCE.
+  --output <path>          Write the Native LWC API parity ledger Markdown.
+  --check <path>           Compare generated Markdown against a checked ledger.
+  --json                   Write the Native LWC API parity ledger JSON to stdout.
+
 Targets:
   direct-component, record-page, app-page, home-page, custom-tab,
   url-addressable-component, record-quick-action, visualforce-lightning-out,
@@ -410,11 +517,12 @@ Targets:
 Examples:
   glade compat lwc capture --target-org <target-org> --project ../glade/testdata/local-tests/lwc-shell --targets custom-tab,url-addressable-component --local-browser-capture --glade-bin ../glade/bin/glade --browser-capture --out /tmp/glade-lwc-shell-capture.json
   glade-plugin-compat lwc corpus --root /tmp/lwc-corpus --json --include-repos repo-a,repo-b
+  glade-tools lwc parity --docs ../glade/example-projects/Salesforce\ Docs\ Scraper/salesforce-docs-expanded-run/lwc --output docs/generated/LWC_NATIVE_API_PARITY.md
 `)+"\n")
 }
 
 func compatLwcUsage() string {
-	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade-plugin-compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]\n       glade compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]"
+	return "usage: glade-tools lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade compat lwc capture --target-org <alias> --project <root> [--targets <a,b>] [--include-hosts <a,b>] [--out <path>] [--skip-deploy] [--browser-capture] [--local-browser-capture] [--local-base-url <url>|--glade-bin <path>] [--json] [--editor-findings]\n       glade-plugin-compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]\n       glade compat lwc corpus --root <path> [--out <path>] [--json] [--check] [--include-repos <a,b>]\n       glade-tools lwc parity --docs <dir> [--json|--output <path>|--check <path>]\n       glade compat lwc parity --docs <dir> [--json|--output <path>|--check <path>]"
 }
 
 type postParityReadiness struct {

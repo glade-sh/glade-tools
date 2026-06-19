@@ -15,7 +15,7 @@
         "compat",
         "lwc"
       ],
-      "summary": "Capture LWC shell and browser evidence."
+      "summary": "Capture LWC shell evidence and native API parity."
     },
     {
       "path": [
@@ -32,6 +32,14 @@
         "corpus"
       ],
       "summary": "Scan package-first LWC corpus support gaps."
+    },
+    {
+      "path": [
+        "compat",
+        "lwc",
+        "parity"
+      ],
+      "summary": "Generate the Native LWC API parity ledger."
     },
     {
       "path": [

@@ -28,6 +28,7 @@ go run ./cmd/glade-plugin-performance manifest --json
 go run ./cmd/glade-tools local-tests --project ../glade/testdata/local-tests/basic --json
 go run ./cmd/glade-tools dashboard --output ../glade/docs/COMPATIBILITY_DASHBOARD.md
 go run ./cmd/glade-tools visualforce summary --project docs/fixtures/visualforce/probe-project --json
+go run ./cmd/glade-tools lwc parity --docs "../glade/example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/lwc" --check docs/generated/LWC_NATIVE_API_PARITY.md
 ```
 
 For old scripts, `glade-tools compat <command>` is accepted as a compatibility
@@ -37,6 +38,12 @@ Visualforce scratch-org capture and local renderer diffing use the probe
 project under `docs/fixtures/visualforce/probe-project`. The working guide is
 [`docs/visualforce-oracle.md`](docs/visualforce-oracle.md), including the
 `oaer-probe-max` capture path and phase filters.
+
+LWC native API parity is tracked in
+[`docs/generated/LWC_NATIVE_API_PARITY.md`](docs/generated/LWC_NATIVE_API_PARITY.md).
+Refresh it from the local Salesforce LWC docs scrape with
+`glade-tools lwc parity --docs <lwc-docs> --output docs/generated/LWC_NATIVE_API_PARITY.md`.
+Use `--json` for the machine-readable report.
 
 ## Tests
 

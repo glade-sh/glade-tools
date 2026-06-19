@@ -1,0 +1,1620 @@
+{
+  "schemaVersion": 1,
+  "docsDir": "../glade/example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/lwc",
+  "rows": [
+    {
+      "id": "api-module:experience/blockBuilderApi",
+      "category": "api-module",
+      "name": "experience/blockBuilderApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "66.0",
+      "summary": "Components in Marketing Cloud Next content and CMS extensions",
+      "oracleStatus": "not-probed",
+      "notes": "documented by Salesforce but no local shim is registered"
+    },
+    {
+      "id": "api-module:experience/cmsDeliveryApi",
+      "category": "api-module",
+      "name": "experience/cmsDeliveryApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "54.0",
+      "summary": "Content from an enhanced CMS workspace",
+      "oracleStatus": "not-probed",
+      "notes": "documented by Salesforce but no local shim is registered"
+    },
+    {
+      "id": "api-module:experience/cmsEditorApi",
+      "category": "api-module",
+      "name": "experience/cmsEditorApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "54.0",
+      "summary": "Content editor of an enhanced CMS workspace",
+      "oracleStatus": "not-probed",
+      "notes": "documented by Salesforce but no local shim is registered"
+    },
+    {
+      "id": "api-module:lightning/analyticsWaveApi",
+      "category": "api-module",
+      "name": "lightning/analyticsWaveApi",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "52.0",
+      "summary": "Data and metadata for CRM Analytics assets, execute queries, and schedule data syncs for recipes, dataflows, and data connectors.",
+      "localEvidence": "/lightning/shims/lightning/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "api-module:lightning/cmsDeliveryApi",
+      "category": "api-module",
+      "name": "lightning/cmsDeliveryApi",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "52.0",
+      "summary": "Content from Salesforce CMS",
+      "localEvidence": "/lightning/shims/lightning/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "api-module:lightning/conversationToolkitApi",
+      "category": "api-module",
+      "name": "lightning/conversationToolkitApi",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "60.0",
+      "summary": "Enhanced Messaging channels",
+      "localEvidence": "/lightning/shims/lightning/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "api-module:lightning/empApi",
+      "category": "api-module",
+      "name": "lightning/empApi",
+      "status": "supported-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "45.0",
+      "summary": "Platform events, such as subscribing to a streaming channel",
+      "localEvidence": "/lightning/shims/lightning/empApi.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/graphql",
+      "category": "api-module",
+      "name": "lightning/graphql",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "65.0",
+      "summary": "Retrieves and manages record data using GraphQL API. Supports optional fields and dynamic query construction.",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/industriesEducationPublicApi",
+      "category": "api-module",
+      "name": "lightning/industriesEducationPublicApi",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "60.0",
+      "summary": "Education Cloud, such as updating Benefit Assignment records",
+      "localEvidence": "/lightning/shims/lightning/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "api-module:lightning/mobileCapabilities",
+      "category": "api-module",
+      "name": "lightning/mobileCapabilities",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "48.0",
+      "summary": "Mobile functionalities, such as for barcode scanning and contacts access",
+      "localEvidence": "/lightning/shims/lightning/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "api-module:lightning/platformUtilityBarApi",
+      "category": "api-module",
+      "name": "lightning/platformUtilityBarApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "61.0",
+      "summary": "Utility bars, as part of Lightning Console API",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/platformWorkspaceApi",
+      "category": "api-module",
+      "name": "lightning/platformWorkspaceApi",
+      "status": "supported-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "59.0",
+      "summary": "Workspace tabs, as part of Lightning Console API",
+      "localEvidence": "/lightning/shims/lightning/platformWorkspaceApi.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/serviceCloudVoiceToolkitApi",
+      "category": "api-module",
+      "name": "lightning/serviceCloudVoiceToolkitApi",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "52.0",
+      "summary": "Service Cloud Voice, as part of Service Cloud Voice Toolkit API",
+      "localEvidence": "/lightning/shims/lightning/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "api-module:lightning/serviceKnowledgeApi",
+      "category": "api-module",
+      "name": "lightning/serviceKnowledgeApi",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "60.0",
+      "summary": "Knowledge articles, such as retrieving the view count statistics",
+      "localEvidence": "/lightning/shims/lightning/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "api-module:lightning/uiAppsApi",
+      "category": "api-module",
+      "name": "lightning/uiAppsApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "50.0",
+      "summary": "Data and metadata for apps displayed in the Salesforce UI",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/uiGraphQLApi",
+      "category": "api-module",
+      "name": "lightning/uiGraphQLApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "57.0",
+      "summary": "Retrieves and manages record data using GraphQL API. Supports Mobile Offline use cases.",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/uiLayoutApi",
+      "category": "api-module",
+      "name": "lightning/uiLayoutApi",
+      "status": "supported-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "62.0",
+      "summary": "Record layout metadata and data",
+      "localEvidence": "/lightning/shims/lightning/uiLayoutApi.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/uiLearningPlatformApi",
+      "category": "api-module",
+      "name": "lightning/uiLearningPlatformApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "62.0",
+      "summary": "Data related to learning items used with Enablement programs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/uiListApi",
+      "category": "api-module",
+      "name": "lightning/uiListApi",
+      "status": "partial-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "45.0",
+      "summary": "Superseded by ui-lists-api",
+      "localEvidence": "/lightning/shims/lightning/uiListApi.js",
+      "oracleStatus": "not-probed",
+      "notes": "deprecated module has a local diagnostic path, not full List UI parity"
+    },
+    {
+      "id": "api-module:lightning/uiListsApi",
+      "category": "api-module",
+      "name": "lightning/uiListsApi",
+      "status": "docs-only",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "52.0",
+      "summary": "Metadata for a list view",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/uiObjectInfoApi",
+      "category": "api-module",
+      "name": "lightning/uiObjectInfoApi",
+      "status": "supported-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "45.0",
+      "summary": "Object metadata and picklist values",
+      "localEvidence": "/lightning/shims/lightning/uiObjectInfoApi.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/uiRecordApi",
+      "category": "api-module",
+      "name": "lightning/uiRecordApi",
+      "status": "supported-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "46.0",
+      "summary": "Record data",
+      "localEvidence": "/lightning/shims/lightning/uiRecordApi.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "api-module:lightning/uiRelatedListApi",
+      "category": "api-module",
+      "name": "lightning/uiRelatedListApi",
+      "status": "supported-local",
+      "docsSource": "reference-api-modules.md",
+      "firstApiVersion": "53.0",
+      "summary": "Related list metadata and record data",
+      "localEvidence": "/lightning/shims/lightning/uiRelatedListApi.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "base-component:lightning/accordion",
+      "category": "base-component",
+      "name": "lightning/accordion",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/accordion.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/accordionSection",
+      "category": "base-component",
+      "name": "lightning/accordionSection",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/accordionSection.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/alert",
+      "category": "base-component",
+      "name": "lightning/alert",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/alert.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/avatar",
+      "category": "base-component",
+      "name": "lightning/avatar",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/avatar.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/badge",
+      "category": "base-component",
+      "name": "lightning/badge",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/badge.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/barcodeScanner",
+      "category": "base-component",
+      "name": "lightning/barcodeScanner",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/barcodeScanner.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/baseFormattedText",
+      "category": "base-component",
+      "name": "lightning/baseFormattedText",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/baseFormattedText.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/breadcrumb",
+      "category": "base-component",
+      "name": "lightning/breadcrumb",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/breadcrumb.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/breadcrumbs",
+      "category": "base-component",
+      "name": "lightning/breadcrumbs",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/breadcrumbs.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/button",
+      "category": "base-component",
+      "name": "lightning/button",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/button.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/buttonGroup",
+      "category": "base-component",
+      "name": "lightning/buttonGroup",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/buttonGroup.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/buttonIcon",
+      "category": "base-component",
+      "name": "lightning/buttonIcon",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/buttonIcon.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/buttonIconStateful",
+      "category": "base-component",
+      "name": "lightning/buttonIconStateful",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/buttonIconStateful.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/buttonMenu",
+      "category": "base-component",
+      "name": "lightning/buttonMenu",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/buttonMenu.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/buttonStateful",
+      "category": "base-component",
+      "name": "lightning/buttonStateful",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/buttonStateful.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/card",
+      "category": "base-component",
+      "name": "lightning/card",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/card.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/carousel",
+      "category": "base-component",
+      "name": "lightning/carousel",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/carousel.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/carouselImage",
+      "category": "base-component",
+      "name": "lightning/carouselImage",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/carouselImage.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/checkboxGroup",
+      "category": "base-component",
+      "name": "lightning/checkboxGroup",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/checkboxGroup.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/combobox",
+      "category": "base-component",
+      "name": "lightning/combobox",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/combobox.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/datatable",
+      "category": "base-component",
+      "name": "lightning/datatable",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/datatable.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/dialog",
+      "category": "base-component",
+      "name": "lightning/dialog",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/dialog.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/dualListbox",
+      "category": "base-component",
+      "name": "lightning/dualListbox",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/dualListbox.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/dynamicIcon",
+      "category": "base-component",
+      "name": "lightning/dynamicIcon",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/dynamicIcon.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/fileUpload",
+      "category": "base-component",
+      "name": "lightning/fileUpload",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/fileUpload.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/flow",
+      "category": "base-component",
+      "name": "lightning/flow",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/flow.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/focusTrap",
+      "category": "base-component",
+      "name": "lightning/focusTrap",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/focusTrap.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedAddress",
+      "category": "base-component",
+      "name": "lightning/formattedAddress",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedAddress.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedDateTime",
+      "category": "base-component",
+      "name": "lightning/formattedDateTime",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedDateTime.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedEmail",
+      "category": "base-component",
+      "name": "lightning/formattedEmail",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedEmail.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedLocation",
+      "category": "base-component",
+      "name": "lightning/formattedLocation",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedLocation.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedLookup",
+      "category": "base-component",
+      "name": "lightning/formattedLookup",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedLookup.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedName",
+      "category": "base-component",
+      "name": "lightning/formattedName",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedName.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedNumber",
+      "category": "base-component",
+      "name": "lightning/formattedNumber",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedNumber.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedPhone",
+      "category": "base-component",
+      "name": "lightning/formattedPhone",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedPhone.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedRichText",
+      "category": "base-component",
+      "name": "lightning/formattedRichText",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedRichText.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedText",
+      "category": "base-component",
+      "name": "lightning/formattedText",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedText.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedTime",
+      "category": "base-component",
+      "name": "lightning/formattedTime",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedTime.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/formattedUrl",
+      "category": "base-component",
+      "name": "lightning/formattedUrl",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/formattedUrl.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/groupedCombobox",
+      "category": "base-component",
+      "name": "lightning/groupedCombobox",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/groupedCombobox.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/helptext",
+      "category": "base-component",
+      "name": "lightning/helptext",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/helptext.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/icon",
+      "category": "base-component",
+      "name": "lightning/icon",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/icon.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/input",
+      "category": "base-component",
+      "name": "lightning/input",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/input.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/inputAddress",
+      "category": "base-component",
+      "name": "lightning/inputAddress",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/inputAddress.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/inputField",
+      "category": "base-component",
+      "name": "lightning/inputField",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/inputField.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/inputLocation",
+      "category": "base-component",
+      "name": "lightning/inputLocation",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/inputLocation.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/inputName",
+      "category": "base-component",
+      "name": "lightning/inputName",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/inputName.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/inputRichText",
+      "category": "base-component",
+      "name": "lightning/inputRichText",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/inputRichText.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/layout",
+      "category": "base-component",
+      "name": "lightning/layout",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/layout.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/layoutItem",
+      "category": "base-component",
+      "name": "lightning/layoutItem",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/layoutItem.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/lookupAddress",
+      "category": "base-component",
+      "name": "lightning/lookupAddress",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/lookupAddress.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/map",
+      "category": "base-component",
+      "name": "lightning/map",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/map.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/menuDivider",
+      "category": "base-component",
+      "name": "lightning/menuDivider",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/menuDivider.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/menuItem",
+      "category": "base-component",
+      "name": "lightning/menuItem",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/menuItem.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/menuSubheader",
+      "category": "base-component",
+      "name": "lightning/menuSubheader",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/menuSubheader.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/messages",
+      "category": "base-component",
+      "name": "lightning/messages",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/messages.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/modal",
+      "category": "base-component",
+      "name": "lightning/modal",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/modal.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/modalBody",
+      "category": "base-component",
+      "name": "lightning/modalBody",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/modalBody.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/modalFooter",
+      "category": "base-component",
+      "name": "lightning/modalFooter",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/modalFooter.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/modalHeader",
+      "category": "base-component",
+      "name": "lightning/modalHeader",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/modalHeader.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/multiColumnSortingModal",
+      "category": "base-component",
+      "name": "lightning/multiColumnSortingModal",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/multiColumnSortingModal.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/outputField",
+      "category": "base-component",
+      "name": "lightning/outputField",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/outputField.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/overlay",
+      "category": "base-component",
+      "name": "lightning/overlay",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/overlay.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/picklist",
+      "category": "base-component",
+      "name": "lightning/picklist",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/picklist.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/pill",
+      "category": "base-component",
+      "name": "lightning/pill",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/pill.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/pillContainer",
+      "category": "base-component",
+      "name": "lightning/pillContainer",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/pillContainer.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/popup",
+      "category": "base-component",
+      "name": "lightning/popup",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/popup.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/primitiveFigure",
+      "category": "base-component",
+      "name": "lightning/primitiveFigure",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/primitiveFigure.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/progressBar",
+      "category": "base-component",
+      "name": "lightning/progressBar",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/progressBar.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/progressIndicator",
+      "category": "base-component",
+      "name": "lightning/progressIndicator",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/progressIndicator.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/progressRing",
+      "category": "base-component",
+      "name": "lightning/progressRing",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/progressRing.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/progressStep",
+      "category": "base-component",
+      "name": "lightning/progressStep",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/progressStep.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/prompt",
+      "category": "base-component",
+      "name": "lightning/prompt",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/prompt.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/quickActionPanel",
+      "category": "base-component",
+      "name": "lightning/quickActionPanel",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/quickActionPanel.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/radioGroup",
+      "category": "base-component",
+      "name": "lightning/radioGroup",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/radioGroup.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/recordEditForm",
+      "category": "base-component",
+      "name": "lightning/recordEditForm",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/recordEditForm.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/recordForm",
+      "category": "base-component",
+      "name": "lightning/recordForm",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/recordForm.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/recordPicker",
+      "category": "base-component",
+      "name": "lightning/recordPicker",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/recordPicker.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/recordViewForm",
+      "category": "base-component",
+      "name": "lightning/recordViewForm",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/recordViewForm.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/relativeDateTime",
+      "category": "base-component",
+      "name": "lightning/relativeDateTime",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/relativeDateTime.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/select",
+      "category": "base-component",
+      "name": "lightning/select",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/select.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/slider",
+      "category": "base-component",
+      "name": "lightning/slider",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/slider.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/spinner",
+      "category": "base-component",
+      "name": "lightning/spinner",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/spinner.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/stackedTab",
+      "category": "base-component",
+      "name": "lightning/stackedTab",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/stackedTab.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/stackedTabset",
+      "category": "base-component",
+      "name": "lightning/stackedTabset",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/stackedTabset.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/tab",
+      "category": "base-component",
+      "name": "lightning/tab",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/tab.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/tabset",
+      "category": "base-component",
+      "name": "lightning/tabset",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/tabset.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/textarea",
+      "category": "base-component",
+      "name": "lightning/textarea",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/textarea.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/tile",
+      "category": "base-component",
+      "name": "lightning/tile",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/tile.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/toast",
+      "category": "base-component",
+      "name": "lightning/toast",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/toast.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/toastContainer",
+      "category": "base-component",
+      "name": "lightning/toastContainer",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/toastContainer.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/tree",
+      "category": "base-component",
+      "name": "lightning/tree",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/tree.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/treeGrid",
+      "category": "base-component",
+      "name": "lightning/treeGrid",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/treeGrid.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/verticalNavigation",
+      "category": "base-component",
+      "name": "lightning/verticalNavigation",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/verticalNavigation.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationItem",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationItem",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/verticalNavigationItem.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationItemBadge",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationItemBadge",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/verticalNavigationItemBadge.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationItemIcon",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationItemIcon",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/verticalNavigationItemIcon.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationOverflow",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationOverflow",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/verticalNavigationOverflow.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "base-component:lightning/verticalNavigationSection",
+      "category": "base-component",
+      "name": "lightning/verticalNavigationSection",
+      "status": "local-only",
+      "localSource": "github.com/glade-sh/glade/internal/lwcbrowser.SupportedLightningBaseComponentSpecifiers",
+      "localEvidence": "/lightning/shims/lightning/verticalNavigationSection.js",
+      "oracleStatus": "not-probed",
+      "notes": "local base-component implementation; supplied LWC docs scrape does not include Component Reference rows"
+    },
+    {
+      "id": "page-reference:comm__loginPage",
+      "category": "page-reference",
+      "name": "comm__loginPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Login Page",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:comm__managedContentPage",
+      "category": "page-reference",
+      "name": "comm__managedContentPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Managed Content Page (Salesforce CMS)",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:comm__namedPage",
+      "category": "page-reference",
+      "name": "comm__namedPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Named Page (Experience Builder sites)",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__app",
+      "category": "page-reference",
+      "name": "standard__app",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "App",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__component",
+      "category": "page-reference",
+      "name": "standard__component",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Lightning Component",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__externalRecordPage",
+      "category": "page-reference",
+      "name": "standard__externalRecordPage",
+      "status": "docs-only",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "External Record Page",
+      "oracleStatus": "not-probed",
+      "notes": "not implemented by the local navigation service"
+    },
+    {
+      "id": "page-reference:standard__externalRecordRelationshipPage",
+      "category": "page-reference",
+      "name": "standard__externalRecordRelationshipPage",
+      "status": "docs-only",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "External Record Relationship Page",
+      "oracleStatus": "not-probed",
+      "notes": "not implemented by the local navigation service"
+    },
+    {
+      "id": "page-reference:standard__flow",
+      "category": "page-reference",
+      "name": "standard__flow",
+      "status": "docs-only",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Standard Flow",
+      "oracleStatus": "not-probed",
+      "notes": "not implemented by the local navigation service"
+    },
+    {
+      "id": "page-reference:standard__knowledgeArticlePage",
+      "category": "page-reference",
+      "name": "standard__knowledgeArticlePage",
+      "status": "docs-only",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Knowledge Article",
+      "oracleStatus": "not-probed",
+      "notes": "not implemented by the local navigation service"
+    },
+    {
+      "id": "page-reference:standard__namedPage",
+      "category": "page-reference",
+      "name": "standard__namedPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Named Page (Standard)",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__navItemPage",
+      "category": "page-reference",
+      "name": "standard__navItemPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Navigation Item Page",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__objectPage",
+      "category": "page-reference",
+      "name": "standard__objectPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Object Page",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__quickAction",
+      "category": "page-reference",
+      "name": "standard__quickAction",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Quick Action Page Type",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__recordPage",
+      "category": "page-reference",
+      "name": "standard__recordPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Record Page",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__recordRelationshipPage",
+      "category": "page-reference",
+      "name": "standard__recordRelationshipPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Record Relationship Page",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "page-reference:standard__webPage",
+      "category": "page-reference",
+      "name": "standard__webPage",
+      "status": "supported-local",
+      "docsSource": "reference-page-reference-type.md",
+      "summary": "Web Page",
+      "localEvidence": "lwcruntime/src/shell/navigation-service.mjs",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/apex/",
+      "category": "salesforce-module",
+      "name": "@salesforce/apex/",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/apex/",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/apexContinuation",
+      "category": "salesforce-module",
+      "name": "@salesforce/apexContinuation",
+      "status": "docs-only",
+      "docsSource": "reference-salesforce-modules.md",
+      "oracleStatus": "not-probed",
+      "notes": "documented by Salesforce but no local shim is registered"
+    },
+    {
+      "id": "salesforce-module:@salesforce/community/",
+      "category": "salesforce-module",
+      "name": "@salesforce/community/",
+      "status": "partial-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/community/",
+      "oracleStatus": "not-probed",
+      "notes": "only basePath and Id are modeled"
+    },
+    {
+      "id": "salesforce-module:@salesforce/community/Id",
+      "category": "salesforce-module",
+      "name": "@salesforce/community/Id",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/community/Id.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/community/basePath",
+      "category": "salesforce-module",
+      "name": "@salesforce/community/basePath",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/community/basePath.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/contentAssetUrl/",
+      "category": "salesforce-module",
+      "name": "@salesforce/contentAssetUrl/",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/contentAssetUrl/",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/customPermission/",
+      "category": "salesforce-module",
+      "name": "@salesforce/customPermission/",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/customPermission/",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/i18n/",
+      "category": "salesforce-module",
+      "name": "@salesforce/i18n/",
+      "status": "partial-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/i18n/",
+      "oracleStatus": "not-probed",
+      "notes": "common locale values are modeled; full org locale matrix is not probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/i18n/dir",
+      "category": "salesforce-module",
+      "name": "@salesforce/i18n/dir",
+      "status": "partial-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/i18n/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/i18n/lang",
+      "category": "salesforce-module",
+      "name": "@salesforce/i18n/lang",
+      "status": "partial-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/i18n/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/label/",
+      "category": "salesforce-module",
+      "name": "@salesforce/label/",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/label/",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/resourceUrl/",
+      "category": "salesforce-module",
+      "name": "@salesforce/resourceUrl/",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/resourceUrl/",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/schema/",
+      "category": "salesforce-module",
+      "name": "@salesforce/schema/",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/schema/",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/site/",
+      "category": "salesforce-module",
+      "name": "@salesforce/site/",
+      "status": "partial-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/site/",
+      "oracleStatus": "not-probed",
+      "notes": "only Id is modeled"
+    },
+    {
+      "id": "salesforce-module:@salesforce/site/Id",
+      "category": "salesforce-module",
+      "name": "@salesforce/site/Id",
+      "status": "supported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/site/Id.js",
+      "oracleStatus": "not-probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/site/activeLanguages",
+      "category": "salesforce-module",
+      "name": "@salesforce/site/activeLanguages",
+      "status": "unsupported-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/site/",
+      "oracleStatus": "not-probed",
+      "notes": "local site shim returns unsupported for activeLanguages"
+    },
+    {
+      "id": "salesforce-module:@salesforce/user/Id",
+      "category": "salesforce-module",
+      "name": "@salesforce/user/Id",
+      "status": "partial-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/user/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/user/isGuest",
+      "category": "salesforce-module",
+      "name": "@salesforce/user/isGuest",
+      "status": "partial-local",
+      "docsSource": "reference-salesforce-modules.md",
+      "localEvidence": "/lightning/shims/user/",
+      "oracleStatus": "not-probed",
+      "notes": "dynamic import family exists; individual member behavior must be probed"
+    },
+    {
+      "id": "salesforce-module:@salesforce/userPermission/",
+      "category": "salesforce-module",
+      "name": "@salesforce/userPermission/",
+      "status": "docs-only",
+      "docsSource": "reference-salesforce-modules.md",
+      "oracleStatus": "not-probed",
+      "notes": "no local user permission shim is registered"
+    }
+  ],
+  "summary": {
+    "total": 157,
+    "byCategory": {
+      "api-module": 23,
+      "base-component": 99,
+      "page-reference": 16,
+      "salesforce-module": 19
+    },
+    "byStatus": {
+      "docs-only": 15,
+      "local-only": 99,
+      "partial-local": 15,
+      "supported-local": 27,
+      "unsupported-local": 1
+    }
+  },
+  "nextGates": [
+    {
+      "name": "live org oracle",
+      "command": "glade-tools lwc capture --target-org oaer-probe-max --project \u003cfixture\u003e --local-browser-capture --browser-capture --out \u003ccapture.json\u003e"
+    },
+    {
+      "name": "expand docs source",
+      "command": "refresh the LWC docs scrape with Component Reference and per-module API pages, then rerun glade-tools lwc parity --docs \u003clwc-docs\u003e"
+    },
+    {
+      "name": "local parity check",
+      "command": "glade-tools lwc parity --docs \u003clwc-docs\u003e --check docs/generated/LWC_NATIVE_API_PARITY.md"
+    }
+  ]
+}

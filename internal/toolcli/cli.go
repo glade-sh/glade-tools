@@ -52,7 +52,7 @@ Commands:
   server-examples    Probe checked server route examples.
   surface            Refresh and inspect the Salesforce surface ledger.
   visualforce        Capture scratch-org Visualforce rendering evidence.
-  lwc                Capture LWC shell and browser evidence.
+  lwc                Capture LWC shell evidence and native API parity.
   dashboard          Generate compatibility dashboard.
   gaps               Generate known gaps document.
   stdlib             Generate standard library coverage document.

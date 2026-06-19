@@ -1,6 +1,7 @@
 /.glade/
 **/.glade/
 **/.glade-*/
+/.wrangler/
 /bin/
 /dist/
 /coverage.out
