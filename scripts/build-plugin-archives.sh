@@ -3,8 +3,13 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  echo "usage: scripts/build-plugin-archives.sh <version>"
+  echo "usage: scripts/build-plugin-archives.sh [--check] <version>"
   exit 0
+fi
+CHECK="${CHECK:-0}"
+if [[ "${1:-}" == "--check" ]]; then
+  CHECK=1
+  shift
 fi
 VERSION="${1:-${VERSION:-0.1.0}}"
 OUT_DIR="${OUT_DIR:-$ROOT/dist/plugins}"
@@ -29,6 +34,19 @@ sha256_file() {
   else
     shasum -a 256 "$1" | awk '{print $1}'
   fi
+}
+
+validate_archive() {
+  local archive="$1"
+  local binary="$2"
+  local listing
+  listing="$(tar -tzf "$archive")"
+  for required in "bin/$binary" "plugin.json" "checksums.txt"; do
+    if [[ "$listing" != *"$required"* ]]; then
+      echo "archive $archive missing $required" >&2
+      exit 1
+    fi
+  done
 }
 
 write_plugin_manifest() {
@@ -86,6 +104,7 @@ build_archive() {
     } > checksums.txt
     COPYFILE_DISABLE=1 tar -czf "$archive" bin plugin.json checksums.txt
   )
+  validate_archive "$archive" "$binary"
 
   local archive_sum
   archive_sum="$(sha256_file "$archive")"
@@ -108,7 +127,7 @@ if [[ -n "${PLUGIN_ASSET_BASE_URL:-}" ]]; then
         compat)
           canonical="@glade/compat"
           aliases='["compat"]'
-          summary="Compatibility fixtures, surface ledgers, and maintenance scanners."
+          summary="Maintainer support tools, fixtures, surface ledgers, and parity scanners."
           commands='["compat","lwc","surface","matrix","mvp","local-tests","post-parity","examples","replay","ui-controllers","server-examples","visualforce","dashboard","gaps","stdlib","oracle-stdlib","docs-inventory","catalog","reconcile","doc-contracts","salesforce-coverage","standard-objects","stub-contracts","stub-behavior","stub-inventory","product-namespaces","tooling-fixtures","evidence"]'
           docs="https://glade.sh/guide/plugins/first-party"
           ;;
@@ -155,4 +174,7 @@ if [[ -n "${PLUGIN_ASSET_BASE_URL:-}" ]]; then
   } > "$OUT_DIR/index.json"
 fi
 
+if [[ "$CHECK" == "1" ]]; then
+  echo "Plugin archive check passed for $TARGETS"
+fi
 echo "Wrote plugin archives to $OUT_DIR"

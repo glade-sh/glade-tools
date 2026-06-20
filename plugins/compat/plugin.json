@@ -2,7 +2,7 @@
   "apiVersion": "glade.plugin.v1",
   "name": "compat",
   "version": "0.1.0",
-  "summary": "Compatibility fixtures, surface ledgers, and maintenance scanners.",
+  "summary": "Maintainer support tools, fixtures, surface ledgers, and parity scanners.",
   "commands": [
     {
       "path": [
