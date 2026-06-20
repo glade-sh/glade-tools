@@ -62,7 +62,7 @@ jobs:
         env:
           VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
           TARGETS: ${{ matrix.target }}
-          OUT_DIR: dist/plugins
+          OUT_DIR: ${{ github.workspace }}/glade-tools/dist/plugins
         run: scripts/build-plugin-archives.sh "${VERSION#v}"
       - name: Name platform checksums
         run: cp dist/plugins/checksums.txt dist/plugins/checksums-${{ matrix.artifact }}.txt
