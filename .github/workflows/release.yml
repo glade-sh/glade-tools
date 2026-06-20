@@ -30,8 +30,18 @@ jobs:
             target: darwin/arm64
             artifact: darwin-arm64
     runs-on: ${{ matrix.runs-on }}
+    defaults:
+      run:
+        working-directory: glade-tools
     steps:
       - uses: actions/checkout@v6
+        with:
+          path: glade-tools
+      - uses: actions/checkout@v6
+        with:
+          repository: glade-sh/glade
+          path: glade
+          ref: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'main' }}
       - uses: actions/setup-go@v6
         with:
           go-version: "1.26.3"
@@ -48,8 +58,8 @@ jobs:
         with:
           name: glade-plugin-release-${{ matrix.artifact }}
           path: |
-            dist/plugins/*.tar.gz
-            dist/plugins/checksums-${{ matrix.artifact }}.txt
+            glade-tools/dist/plugins/*.tar.gz
+            glade-tools/dist/plugins/checksums-${{ matrix.artifact }}.txt
           if-no-files-found: error
 
   publish:
