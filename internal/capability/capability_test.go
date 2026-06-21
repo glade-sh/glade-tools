@@ -114,6 +114,27 @@ func TestProfileTimingNotesTrackWallClockSummaryEvidence(t *testing.T) {
 	}
 }
 
+func TestMVPReportIncludesApexNamespaceResolutionGate(t *testing.T) {
+	feature := findMVPFeatureForTest(t, "apex.namespace-resolution")
+	if !feature.Required {
+		t.Fatalf("%s should be required", feature.ID)
+	}
+	if feature.Status != StatusSupported {
+		t.Fatalf("namespace resolution status = %q, want %q", feature.Status, StatusSupported)
+	}
+	for _, required := range []string{
+		"System default imports",
+		"Schema implicit imports",
+		"shadowed platform classes",
+		"inner-type-before-namespace",
+		"every documented System and Schema type spelling",
+	} {
+		if !strings.Contains(feature.Notes, required) {
+			t.Fatalf("namespace resolution notes missing %q: %s", required, feature.Notes)
+		}
+	}
+}
+
 func TestStdlibCatalogHasNoPartialRows(t *testing.T) {
 	for _, row := range StdlibMatrix() {
 		if row.Status == StatusPartial {
@@ -203,7 +224,7 @@ func TestWriteText(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := out.String()
-	if !strings.Contains(text, "MVP readiness: ready") || !strings.Contains(text, "Required complete: 21/21") {
+	if !strings.Contains(text, "MVP readiness: ready") || !strings.Contains(text, "Required complete: 22/22") {
 		t.Fatalf("text output = %q", text)
 	}
 }

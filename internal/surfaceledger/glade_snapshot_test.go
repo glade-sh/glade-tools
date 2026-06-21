@@ -15,6 +15,31 @@ func TestBuildGladeSnapshotIncludesKnownStdlibBehavior(t *testing.T) {
 	}
 }
 
+func TestBuildGladeSnapshotIncludesApexNamespaceLanguageRules(t *testing.T) {
+	ledger := Merge(nil, nil, BuildGladeSnapshot(), nil)
+	byID := rowsByID(ledger.Rows)
+	for _, id := range []string{
+		ApexLanguageRuleID("SystemNamespaceDefaultImport"),
+		ApexLanguageRuleID("SchemaNamespaceImplicitImport"),
+		ApexLanguageRuleID("NamespaceClassVariablePrecedence"),
+		ApexLanguageRuleID("TypeResolutionSystemNamespace"),
+	} {
+		row, ok := byID[id]
+		if !ok {
+			t.Fatalf("missing language rule row %s", id)
+		}
+		if row.Product != ProductApex || row.Area != AreaFrontend || row.Kind != KindLanguageRule {
+			t.Fatalf("%s product/area/kind = %s/%s/%s", id, row.Product, row.Area, row.Kind)
+		}
+		if row.Owner != "internal/sema" {
+			t.Fatalf("%s owner = %q", id, row.Owner)
+		}
+		if row.Bucket != BucketImplemented || row.GapClass != "" {
+			t.Fatalf("%s bucket/gap = %s/%s", id, row.Bucket, row.GapClass)
+		}
+	}
+}
+
 func TestBuildGladeSnapshotUsesHTTPStdlibSignature(t *testing.T) {
 	rows := BuildGladeSnapshot()
 	byID := rowsByID(rows)
