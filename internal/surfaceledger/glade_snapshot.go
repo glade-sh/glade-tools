@@ -97,12 +97,71 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	addFixtureBackedApexAliasRows(byID)
 	addFixtureBackedApexMirrorAliasRows(byID)
 	addFixtureBackedInvocableActionDTORows(byID)
+	addApexLanguageRuleRows(byID)
 	rows := make([]SurfaceLedgerRow, 0, len(byID))
 	for _, row := range byID {
 		rows = append(rows, withDefaults(row))
 	}
 	sortRows(rows)
 	return rows
+}
+
+type apexLanguageRuleRow struct {
+	ID         string
+	Namespace  string
+	TypeName   string
+	DocsSource string
+	Notes      string
+}
+
+var apexLanguageRuleRows = []apexLanguageRuleRow{
+	{
+		ID:         ApexLanguageRuleID("SystemNamespaceDefaultImport"),
+		Namespace:  "System",
+		TypeName:   "System namespace default import",
+		DocsSource: "apex-guide/apex_classes_namespaces_and_invoking_methods.md",
+		Notes:      "Salesforce documents System as the default namespace; Glade sema covers qualified and unqualified System type spellings.",
+	},
+	{
+		ID:         ApexLanguageRuleID("SchemaNamespaceImplicitImport"),
+		Namespace:  "Schema",
+		TypeName:   "Schema namespace implicit import",
+		DocsSource: "apex-guide/apex_classes_schema_namespace_using.md",
+		Notes:      "Salesforce documents Schema.* as implicitly imported; Glade sema covers qualified and short Schema type spellings.",
+	},
+	{
+		ID:         ApexLanguageRuleID("NamespaceClassVariablePrecedence"),
+		TypeName:   "Namespace, class, and variable precedence",
+		DocsSource: "apex-guide/apex_classes_namespace_precedence.md",
+		Notes:      "Salesforce documents expression lookup as local variable, class, then namespace; Glade sema covers shadowing and disambiguation.",
+	},
+	{
+		ID:         ApexLanguageRuleID("TypeResolutionSystemNamespace"),
+		TypeName:   "Type resolution and System namespace for types",
+		DocsSource: "apex-guide/apex_classes_namespace_type_resolution.md",
+		Notes:      "Salesforce documents scalar, local, class, and system type precedence; Glade sema covers inner-type-before-namespace resolution.",
+	},
+}
+
+func addApexLanguageRuleRows(byID map[string]SurfaceLedgerRow) {
+	for _, rule := range apexLanguageRuleRows {
+		byID[surfaceIDKey(rule.ID)] = withDefaults(SurfaceLedgerRow{
+			SurfaceID:     rule.ID,
+			Product:       ProductApex,
+			Area:          AreaFrontend,
+			Namespace:     rule.Namespace,
+			TypeName:      rule.TypeName,
+			Kind:          KindLanguageRule,
+			Docs:          SourcePresent,
+			GladeShape:    ShapeTypeKnown,
+			GladeBehavior: BehaviorSupported,
+			Evidence:      EvidenceFixture,
+			DocsSource:    rule.DocsSource,
+			Owner:         "internal/sema",
+			Sources:       []string{"apex-language-rules", "namespace-resolution-tests"},
+			Notes:         rule.Notes,
+		})
+	}
 }
 
 type fixtureBackedStdlibAlias struct {

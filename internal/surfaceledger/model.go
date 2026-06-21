@@ -55,21 +55,23 @@ const (
 )
 
 const (
-	AreaRuntime = "runtime"
-	AreaServer  = "server"
-	AreaUI      = "ui"
-	AreaData    = "data"
+	AreaRuntime  = "runtime"
+	AreaServer   = "server"
+	AreaUI       = "ui"
+	AreaData     = "data"
+	AreaFrontend = "front-end"
 )
 
 const (
-	KindType      = "type"
-	KindMethod    = "method"
-	KindProperty  = "property"
-	KindField     = "field"
-	KindResource  = "resource"
-	KindAttribute = "attribute"
-	KindModule    = "module"
-	KindGuide     = "guide"
+	KindType         = "type"
+	KindMethod       = "method"
+	KindProperty     = "property"
+	KindField        = "field"
+	KindResource     = "resource"
+	KindAttribute    = "attribute"
+	KindModule       = "module"
+	KindGuide        = "guide"
+	KindLanguageRule = "language-rule"
 )
 
 const (
@@ -265,6 +267,8 @@ func implementationTargetForRow(row SurfaceLedgerRow) string {
 		return "ui-or-explicit-unsupported"
 	case AreaRuntime:
 		return "runtime"
+	case AreaFrontend:
+		return "semantic-analysis"
 	default:
 		return "explicit-unsupported"
 	}

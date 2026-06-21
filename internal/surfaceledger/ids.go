@@ -19,6 +19,10 @@ func ApexMemberID(namespace, typeName, memberName string, parameters []string) s
 	return id
 }
 
+func ApexLanguageRuleID(name string) string {
+	return "apex-language:" + cleanIdentityPart(name)
+}
+
 func ToolingObjectID(objectName string) string {
 	return "tooling:" + strings.TrimSpace(objectName)
 }
