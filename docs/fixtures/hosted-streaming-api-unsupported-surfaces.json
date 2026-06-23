@@ -1,0 +1,572 @@
+{
+  "name": "hosted-streaming-api-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "streaming-api:BayeauxProtocolAndCometD",
+      "symbol": "BayeauxProtocolAndCometD",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:DebuggingStreamingAPIApplications",
+      "symbol": "DebuggingStreamingAPIApplications",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:api_streaming_code_examples",
+      "symbol": "api_streaming_code_examples",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:api_streaming_eol",
+      "symbol": "api_streaming_eol",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_auth_dev_test",
+      "symbol": "code_sample_auth_dev_test",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_auth_oauth",
+      "symbol": "code_sample_auth_oauth",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_authentication_intro",
+      "symbol": "code_sample_authentication_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_combined_generic_intro",
+      "symbol": "code_sample_combined_generic_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_combined_pushtopic_intro",
+      "symbol": "code_sample_combined_pushtopic_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_generic_vfp_deploy_project",
+      "symbol": "code_sample_generic_vfp_deploy_project",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_generic_vfp_intro",
+      "symbol": "code_sample_generic_vfp_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_generic_vfp_permission_set",
+      "symbol": "code_sample_generic_vfp_permission_set",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_generic_vfp_prereqs",
+      "symbol": "code_sample_generic_vfp_prereqs",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_generic_vfp_walkthrough",
+      "symbol": "code_sample_generic_vfp_walkthrough",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_interactive_vfp_create_VF_page",
+      "symbol": "code_sample_interactive_vfp_create_VF_page",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_interactive_vfp_create_object",
+      "symbol": "code_sample_interactive_vfp_create_object",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_interactive_vfp_create_pushtopic",
+      "symbol": "code_sample_interactive_vfp_create_pushtopic",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_interactive_vfp_create_static_resources",
+      "symbol": "code_sample_interactive_vfp_create_static_resources",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_interactive_vfp_intro",
+      "symbol": "code_sample_interactive_vfp_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_interactive_vfp_prereqs",
+      "symbol": "code_sample_interactive_vfp_prereqs",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_interactive_vfp_test_pushtopic_channel",
+      "symbol": "code_sample_interactive_vfp_test_pushtopic_channel",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_add_source",
+      "symbol": "code_sample_java_add_source",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_add_source_oauth",
+      "symbol": "code_sample_java_add_source_oauth",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_client_intro",
+      "symbol": "code_sample_java_client_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_create_object",
+      "symbol": "code_sample_java_create_object",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_create_pushtopic",
+      "symbol": "code_sample_java_create_pushtopic",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_download_jars",
+      "symbol": "code_sample_java_download_jars",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_emp_connector",
+      "symbol": "code_sample_java_emp_connector",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_java_prereqs",
+      "symbol": "code_sample_java_prereqs",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:code_sample_lightning_cmp",
+      "symbol": "code_sample_lightning_cmp",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:cometd_support",
+      "symbol": "cometd_support",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:create_a_streaming_channel",
+      "symbol": "create_a_streaming_channel",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:create_java_client",
+      "symbol": "create_java_client",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:create_java_client_oauth",
+      "symbol": "create_java_client_oauth",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:deactivating_pushtopic",
+      "symbol": "deactivating_pushtopic",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:event_comparison",
+      "symbol": "event_comparison",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:event_notification_rules_intro",
+      "symbol": "event_notification_rules_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:events",
+      "symbol": "events",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:generate_event_using_rest",
+      "symbol": "generate_event_using_rest",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:generic_streaming_intro",
+      "symbol": "generic_streaming_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:generic_streaming_intro_replay",
+      "symbol": "generic_streaming_intro_replay",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:generic_streaming_quick_start",
+      "symbol": "generic_streaming_quick_start",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:intro_client_specs",
+      "symbol": "intro_client_specs",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:intro_push_technology",
+      "symbol": "intro_push_technology",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:intro_stream",
+      "symbol": "intro_stream",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:limits",
+      "symbol": "limits",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:limits_generic",
+      "symbol": "limits_generic",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:notification_scenarios",
+      "symbol": "notification_scenarios",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:notifications",
+      "symbol": "notifications",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:notifyforfields_all",
+      "symbol": "notifyforfields_all",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:notifyforfields_referenced",
+      "symbol": "notifyforfields_referenced",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:notifyforfields_select",
+      "symbol": "notifyforfields_select",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:notifyforfields_where",
+      "symbol": "notifyforfields_where",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:pushtopic",
+      "symbol": "pushtopic",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:pushtopic_considerations",
+      "symbol": "pushtopic_considerations",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:pushtopic_event_publishing_for_personaccount",
+      "symbol": "pushtopic_event_publishing_for_personaccount",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:pushtopic_events_intro",
+      "symbol": "pushtopic_events_intro",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:pushtopic_queries",
+      "symbol": "pushtopic_queries",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:pushtopic_queries_compound_fields",
+      "symbol": "pushtopic_queries_compound_fields",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:replay_pushtopic_events",
+      "symbol": "replay_pushtopic_events",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push",
+      "symbol": "resources_push",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push.ChannelName",
+      "symbol": "resources_push.ChannelName",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push.OnlineUserIds",
+      "symbol": "resources_push.OnlineUserIds",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push.fanoutCount",
+      "symbol": "resources_push.fanoutCount",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push.payload",
+      "symbol": "resources_push.payload",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push.pushEvents",
+      "symbol": "resources_push.pushEvents",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push.userIds",
+      "symbol": "resources_push.userIds",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:resources_push.userOnlineStatus",
+      "symbol": "resources_push.userOnlineStatus",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:security_pushtopic_query",
+      "symbol": "security_pushtopic_query",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:streamingChannel",
+      "symbol": "streamingChannel",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:streaming_api_experience_cloud_site",
+      "symbol": "streaming_api_experience_cloud_site",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:streaming_api_lock_sesssions",
+      "symbol": "streaming_api_lock_sesssions",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:streaming_error_codes",
+      "symbol": "streaming_error_codes",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:streaming_handling_errors",
+      "symbol": "streaming_handling_errors",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:supported_soql",
+      "symbol": "supported_soql",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:terms",
+      "symbol": "terms",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:unsupported_soql_statements",
+      "symbol": "unsupported_soql_statements",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_filtered_subscriptions",
+      "symbol": "using_filtered_subscriptions",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api",
+      "symbol": "using_streaming_api",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_bulk",
+      "symbol": "using_streaming_api_bulk",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_client_connection",
+      "symbol": "using_streaming_api_client_connection",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_durability",
+      "symbol": "using_streaming_api_durability",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_message_order",
+      "symbol": "using_streaming_api_message_order",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_monitoring_events_usage",
+      "symbol": "using_streaming_api_monitoring_events_usage",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_monitoring_events_usage_api",
+      "symbol": "using_streaming_api_monitoring_events_usage_api",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_monitoring_events_usage_ui",
+      "symbol": "using_streaming_api_monitoring_events_usage_ui",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_multiple_notifications",
+      "symbol": "using_streaming_api_multiple_notifications",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_multiple_notifications_last_notification",
+      "symbol": "using_streaming_api_multiple_notifications_last_notification",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_multiple_notifications_reverse_order",
+      "symbol": "using_streaming_api_multiple_notifications_reverse_order",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_multiple_notifications_same_record",
+      "symbol": "using_streaming_api_multiple_notifications_same_record",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_stateless",
+      "symbol": "using_streaming_api_stateless",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:using_streaming_api_timeouts",
+      "symbol": "using_streaming_api_timeouts",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "streaming-api:working_with_pushtopics",
+      "symbol": "working_with_pushtopics",
+      "kind": "unsupported",
+      "notes": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    }
+  ],
+  "command": {
+    "kind": "policy-evidence"
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "Streaming API rows describe Salesforce-hosted CometD, PushTopic, and event stream behavior outside local Apex execution."
+    }
+  }
+}

@@ -54,6 +54,7 @@ func applyApexDeclarationSignatures(rows []SurfaceLedgerRow, source string) {
 		}
 		row.Signature = signature
 		row.Parameters = params
+		row.DocsParameters = append([]string(nil), params...)
 		row.SurfaceID = ApexMemberID(row.Namespace, row.TypeName, row.MemberName, params)
 	}
 	sortRows(rows)
@@ -179,7 +180,7 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 			namespace = identity.namespace
 			typeName = identity.typeName
 			if identity.memberName != "" {
-				rows = append(rows, RowFromDocs(SurfaceLedgerRow{
+				rows = append(rows, rowFromDocsSnapshot(SurfaceLedgerRow{
 					SurfaceID:  ApexMemberID(namespace, typeName, identity.memberName, identity.parameters),
 					Product:    product,
 					Area:       areaForProduct(product),
@@ -201,7 +202,7 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 			surfaceID = ApexTypeID(namespace, typeName)
 		}
 		if shouldEmitDocsDocumentRow(product, doc) {
-			row := RowFromDocs(SurfaceLedgerRow{
+			row := rowFromDocsSnapshot(SurfaceLedgerRow{
 				SurfaceID:  surfaceID,
 				Product:    product,
 				Area:       areaForProduct(product),
@@ -219,11 +220,13 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 			if product == ProductApex && isApexHeadingOnlySignature(member.Signature) && apexRealSignatures[member.Name] {
 				continue
 			}
+			params := docsMemberParameters(member)
+			returnType := docsMemberReturnType(member)
 			surfaceID := docsSurfaceID(product, doc, member)
 			if product == ProductApex {
-				surfaceID = ApexMemberID(namespace, typeName, member.Name, parametersFromSignature(member.Signature))
+				surfaceID = ApexMemberID(namespace, typeName, member.Name, params)
 			}
-			rows = append(rows, RowFromDocs(SurfaceLedgerRow{
+			rows = append(rows, rowFromDocsSnapshot(SurfaceLedgerRow{
 				SurfaceID:  surfaceID,
 				Product:    product,
 				Area:       areaForProduct(product),
@@ -232,7 +235,8 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 				MemberName: member.Name,
 				Kind:       docsKind(product, member.Kind),
 				Signature:  member.Signature,
-				Parameters: parametersFromSignature(member.Signature),
+				ReturnType: returnType,
+				Parameters: params,
 				DocsSource: doc.SourcePath,
 				DocsTitle:  doc.Title,
 				Sources:    []string{"docs"},
@@ -241,6 +245,36 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 	}
 	sortRows(rows)
 	return rows
+}
+
+func rowFromDocsSnapshot(row SurfaceLedgerRow) SurfaceLedgerRow {
+	row = identifyDocsSourceFamily(row)
+	return RowFromDocs(row)
+}
+
+func identifyDocsSourceFamily(row SurfaceLedgerRow) SurfaceLedgerRow {
+	family := sourceFamilyFromPath(row.DocsSource)
+	if family == "" {
+		family = surfaceFamilyForProduct(row.Product)
+	}
+	if family != "" && family != ProductUnknown {
+		row.SalesforceSurfaceFamily = family
+	}
+	return row
+}
+
+func docsMemberReturnType(member apexdocs.Member) string {
+	if member.PropertyType != "" {
+		return member.PropertyType
+	}
+	return member.ReturnType
+}
+
+func docsMemberParameters(member apexdocs.Member) []string {
+	if len(member.Parameters) > 0 {
+		return append([]string(nil), member.Parameters...)
+	}
+	return parametersFromSignature(member.Signature)
 }
 
 type apexDocsDocumentIdentity struct {
@@ -384,10 +418,36 @@ func ProductFromSourcePath(sourcePath string) string {
 		switch strings.ToLower(part) {
 		case "apex":
 			return ProductApex
+		case "bulk-api":
+			return ProductBulkAPI
+		case "cli-reference":
+			return ProductCLIReference
+		case "commerce-cli-reference":
+			return ProductCommerceCLIReference
+		case "analytics-cli-reference":
+			return ProductAnalyticsCLIReference
+		case "connect-rest-api":
+			return ProductConnectRESTAPI
+		case "lightning":
+			return ProductLightning
+		case "metadata-api":
+			return ProductMetadataAPI
+		case "platform-events":
+			return ProductPlatformEvents
 		case "rest-api", "rest_api":
 			return ProductREST
+		case "service-connector-api-reference":
+			return ProductServiceConnectorAPIRef
+		case "site-references":
+			return ProductSiteReferences
+		case "soap-api":
+			return ProductSOAPAPI
+		case "streaming-api":
+			return ProductStreamingAPI
 		case "tooling-api", "tooling_api":
 			return ProductTooling
+		case "ui-api":
+			return ProductUIAPI
 		case "visualforce":
 			return ProductVisualforce
 		case "lightning-aura", "aura":
@@ -399,6 +459,14 @@ func ProductFromSourcePath(sourcePath string) string {
 		}
 	}
 	return ProductUnknown
+}
+
+func sourceFamilyFromPath(sourcePath string) string {
+	product := ProductFromSourcePath(sourcePath)
+	if product == ProductUnknown {
+		return ""
+	}
+	return surfaceFamilyForProduct(product)
 }
 
 func docsSurfaceID(product string, doc apexdocs.Document, member apexdocs.Member) string {
@@ -593,11 +661,13 @@ func docsDocumentKind(product, kind string) string {
 
 func areaForProduct(product string) string {
 	switch product {
-	case ProductREST, ProductTooling:
+	case ProductREST, ProductTooling, ProductBulkAPI, ProductCLIReference, ProductCommerceCLIReference, ProductConnectRESTAPI,
+		ProductAnalyticsCLIReference, ProductMetadataAPI, ProductPlatformEvents,
+		ProductServiceConnectorAPIRef, ProductSOAPAPI, ProductStreamingAPI:
 		return AreaServer
 	case ProductDataRef:
 		return AreaData
-	case ProductVisualforce, ProductAura, ProductLWC:
+	case ProductVisualforce, ProductAura, ProductLWC, ProductLightning, ProductSiteReferences, ProductUIAPI:
 		return AreaUI
 	default:
 		return AreaRuntime
@@ -683,7 +753,7 @@ func sourceStem(sourcePath string) string {
 	if len(parts) > 1 {
 		sourcePath = strings.Join(parts[1:], "/")
 	}
-	return sourcePath
+	return cleanIdentityPart(sourcePath)
 }
 
 func readAPIVersion(path string) string {

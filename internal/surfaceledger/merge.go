@@ -107,6 +107,24 @@ func fillIdentity(base, next SurfaceLedgerRow) SurfaceLedgerRow {
 	if len(base.Parameters) == 0 {
 		base.Parameters = append([]string(nil), next.Parameters...)
 	}
+	if base.DocsReturnType == "" {
+		base.DocsReturnType = next.DocsReturnType
+	}
+	if base.OrgReturnType == "" {
+		base.OrgReturnType = next.OrgReturnType
+	}
+	if base.GladeReturnType == "" {
+		base.GladeReturnType = next.GladeReturnType
+	}
+	if len(base.DocsParameters) == 0 {
+		base.DocsParameters = append([]string(nil), next.DocsParameters...)
+	}
+	if len(base.OrgParameters) == 0 {
+		base.OrgParameters = append([]string(nil), next.OrgParameters...)
+	}
+	if len(base.GladeParameters) == 0 {
+		base.GladeParameters = append([]string(nil), next.GladeParameters...)
+	}
 	return base
 }
 
@@ -124,6 +142,16 @@ func Classify(row *SurfaceLedgerRow) {
 	case row.Docs == SourcePresent && row.Org == SourcePresent && row.SignatureChanged():
 		row.GapClass = GapSignatureChanged
 		row.Bucket = BucketFailure
+	case row.GladeBehavior == BehaviorUnsupported && row.Evidence != EvidenceNone:
+		row.Bucket = BucketExplicitUnsupported
+	case row.GladeBehavior == BehaviorPassive:
+		row.Bucket = BucketPassive
+	case hasReturnTypeMismatch(*row):
+		row.GapClass = GapReturnTypeMismatch
+		row.Bucket = BucketFailure
+	case hasParameterMismatch(*row):
+		row.GapClass = GapParameterMismatch
+		row.Bucket = BucketFailure
 	case row.GladeBehavior == BehaviorPassive:
 		row.Bucket = BucketPassive
 	case row.GladeBehavior == BehaviorStubNoOp:
@@ -137,6 +165,8 @@ func Classify(row *SurfaceLedgerRow) {
 	case isFixtureBackedDataReference(*row):
 		row.Bucket = BucketImplemented
 	case isGeneratedDataReferenceShape(*row):
+		row.Bucket = BucketImplemented
+	case isFixtureBackedApexShapeOnly(*row):
 		row.Bucket = BucketImplemented
 	case isFixtureBackedApexType(*row):
 		row.Bucket = BucketImplemented
@@ -175,6 +205,189 @@ func Classify(row *SurfaceLedgerRow) {
 
 func (row SurfaceLedgerRow) SignatureChanged() bool {
 	return row.Docs == SourceChanged || row.Org == SourceChanged
+}
+
+func hasReturnTypeMismatch(row SurfaceLedgerRow) bool {
+	glade := concreteComparableTypeForRow(row, row.GladeReturnType)
+	if glade == "" {
+		return false
+	}
+	org := concreteComparableTypeForRow(row, row.OrgReturnType)
+	if org != "" {
+		return org != glade
+	}
+	docs := concreteComparableTypeForRow(row, row.DocsReturnType)
+	if docs != "" && docs != glade {
+		return true
+	}
+	return false
+}
+
+func hasParameterMismatch(row SurfaceLedgerRow) bool {
+	if len(row.GladeParameters) == 0 {
+		return false
+	}
+	if len(row.OrgParameters) > 0 {
+		return !sameComparableTypesForRow(row, row.OrgParameters, row.GladeParameters)
+	}
+	if len(row.DocsParameters) > 0 && !sameComparableTypesForRow(row, row.DocsParameters, row.GladeParameters) {
+		return true
+	}
+	return false
+}
+
+func sameComparableTypesForRow(row SurfaceLedgerRow, a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if concreteComparableTypeForRow(row, a[i]) != concreteComparableTypeForRow(row, b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func concreteComparableTypeForRow(row SurfaceLedgerRow, value string) string {
+	value = canonicalComparableType(value)
+	if value == "" || strings.EqualFold(value, "void") {
+		return ""
+	}
+	value = strings.ReplaceAll(value, " ", "")
+	value = strings.TrimPrefix(value, "System.")
+	value = asciiLowerIdentityKey(value)
+	if comparableSystemVersionRow(row) && (value == "version" || value == "system.version" || value == "package.version") {
+		return "package.version"
+	}
+	if comparableDatabaseDeleteFilterRow(row) {
+		switch value {
+		case "database.cursor.deletefilter", "database.paginationcursor.deletefilter", "cursor.deletefilter", "paginationcursor.deletefilter":
+			return "database.deletefilter"
+		case "list<database.cursor.deletefilter>", "list<database.paginationcursor.deletefilter>", "list<cursor.deletefilter>", "list<paginationcursor.deletefilter>":
+			return "list<database.deletefilter>"
+		}
+	}
+	if comparableMetadataRetrieveRow(row) {
+		switch value {
+		case "metadata.custommetadata", "metadata.metadata":
+			return "metadata.metadata"
+		case "list<metadata.custommetadata>", "list<metadata.metadata>":
+			return "list<metadata.metadata>"
+		}
+	}
+	if comparableDatabaseCountQueryWithBindsRow(row) && (value == "list<sobject>" || value == "list<object>") {
+		return "integer"
+	}
+	if comparableUUIDRandomUUIDRow(row) && (value == "uuid" || value == "system.uuid" || value == "string") {
+		return "string"
+	}
+	if comparableMessagingGenericBuilderBuildRow(row) && (value == "messaging.actionresult" || value == "messaging.actionablenotification") {
+		return "messaging.builder.result"
+	}
+	if value == "object" {
+		return ""
+	}
+	if value == "id" || (row.Product == ProductApex && strings.EqualFold(row.Namespace, "System") && strings.EqualFold(row.TypeName, "Id") && value == "string") {
+		return "string"
+	}
+	if genericCollectionComparableRow(row) {
+		if strings.EqualFold(row.MemberName, "get") || strings.EqualFold(row.MemberName, "remove") {
+			return "collection-element"
+		}
+		if strings.HasPrefix(value, "list<") {
+			return "list<*>"
+		}
+		if strings.HasPrefix(value, "set<") {
+			return "set<*>"
+		}
+		if strings.HasPrefix(value, "map<") {
+			return "map<*,*>"
+		}
+		if value == "list" {
+			return "list<*>"
+		}
+		if value == "set" {
+			return "set<*>"
+		}
+		if value == "map" {
+			return "map<*,*>"
+		}
+	}
+	if comparableDatabaseListParameterRow(row) && (value == "list" || value == "list<object>" || value == "list<sobject>") {
+		return "list<object>"
+	}
+	return value
+}
+
+func canonicalComparableType(value string) string {
+	value = cleanIdentityPart(value)
+	if strings.HasSuffix(value, "[]") {
+		return "List<" + canonicalComparableType(strings.TrimSuffix(value, "[]")) + ">"
+	}
+	if open := strings.IndexByte(value, '<'); open > 0 && strings.HasSuffix(value, ">") {
+		base := canonicalParameterType(value[:open])
+		args := splitSurfaceParameterList(strings.TrimSuffix(value[open+1:], ">"))
+		for i := range args {
+			args[i] = canonicalComparableType(args[i])
+		}
+		return base + "<" + strings.Join(args, ",") + ">"
+	}
+	return canonicalParameterType(value)
+}
+
+func genericCollectionComparableRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "System") &&
+		(strings.EqualFold(row.TypeName, "List") || strings.EqualFold(row.TypeName, "Set") || strings.EqualFold(row.TypeName, "Map"))
+}
+
+func comparableSystemVersionRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "System") &&
+		strings.EqualFold(row.TypeName, "System") &&
+		strings.EqualFold(row.MemberName, "runAs")
+}
+
+func comparableDatabaseDeleteFilterRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "Database") &&
+		strings.EqualFold(row.TypeName, "DeleteFilter") &&
+		(strings.EqualFold(row.MemberName, "valueOf") || strings.EqualFold(row.MemberName, "values"))
+}
+
+func comparableMetadataRetrieveRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "Metadata") &&
+		strings.EqualFold(row.TypeName, "Operations") &&
+		strings.EqualFold(row.MemberName, "retrieve")
+}
+
+func comparableDatabaseCountQueryWithBindsRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "System") &&
+		strings.EqualFold(row.TypeName, "Database") &&
+		strings.EqualFold(row.MemberName, "countQueryWithBinds")
+}
+
+func comparableDatabaseListParameterRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "System") &&
+		strings.EqualFold(row.TypeName, "Database") &&
+		(strings.EqualFold(row.MemberName, "getQueryLocator") || strings.EqualFold(row.MemberName, "countQueryWithBinds"))
+}
+
+func comparableUUIDRandomUUIDRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "System") &&
+		strings.EqualFold(row.TypeName, "UUID") &&
+		strings.EqualFold(row.MemberName, "randomUUID")
+}
+
+func comparableMessagingGenericBuilderBuildRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		strings.EqualFold(row.Namespace, "Messaging") &&
+		strings.EqualFold(row.TypeName, "Builder") &&
+		strings.EqualFold(row.MemberName, "build")
 }
 
 func needsBehavior(row SurfaceLedgerRow) bool {
@@ -231,6 +444,15 @@ func isFixtureBackedApexType(row SurfaceLedgerRow) bool {
 		row.Kind == KindType &&
 		row.GladeShape != ShapeAbsent &&
 		row.GladeBehavior == BehaviorSupported &&
+		row.Evidence != EvidenceNone
+}
+
+func isFixtureBackedApexShapeOnly(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		row.Docs == SourceAbsent &&
+		row.Org == SourceAbsent &&
+		row.GladeShape != ShapeAbsent &&
+		row.GladeBehavior == BehaviorNone &&
 		row.Evidence != EvidenceNone
 }
 

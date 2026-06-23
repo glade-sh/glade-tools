@@ -1,0 +1,81 @@
+{
+  "name": "external-marketing-cloud-handlebars-current-manifest-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/index",
+      "symbol": "marketing handlebars for marketing cloud next index",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-comparison-references/mcn-handlebars-reference-comparison",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars comparison references mcn handlebars reference comparison",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-content-references/mcn-handlebars-reference-content",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars content references mcn handlebars reference content",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-date-time-references/mcn-handlebars-reference-date-time",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars date time references mcn handlebars reference date time",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-math-references/mcn-handlebars-reference-math",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars math references mcn handlebars reference math",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-objects-references/mcn-handlebars-reference-objects",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars objects references mcn handlebars reference objects",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-personalization-references/mcn-handlebars-reference-personalization",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars personalization references mcn handlebars reference personalization",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-references/mcn-handlebars-about",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars references mcn handlebars about",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-string-references/mcn-handlebars-reference-string",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars string references mcn handlebars reference string",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-utility-references/mcn-handlebars-reference-utility",
+      "symbol": "marketing handlebars for marketing cloud next mcn handlebars utility references mcn handlebars reference utility",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud Handlebars reference pages describe Marketing Cloud rendering behavior outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/ExternalMarketingCloudHandlebarsCurrentManifestUnsupportedMarker.cls",
+      "content": "public class ExternalMarketingCloudHandlebarsCurrentManifestUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

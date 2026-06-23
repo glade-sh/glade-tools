@@ -80,8 +80,12 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 		}
 		row.GladeBehavior = mergeGladeBehavior(row.GladeBehavior, behaviorFromStubStatus(entry.Status))
 		row.ReturnType = firstNonEmpty(row.ReturnType, entry.ReturnType)
+		row.GladeReturnType = firstNonEmpty(row.GladeReturnType, entry.ReturnType)
 		if len(row.Parameters) == 0 {
 			row.Parameters = append([]string(nil), entry.Parameters...)
+		}
+		if len(row.GladeParameters) == 0 {
+			row.GladeParameters = append([]string(nil), row.Parameters...)
 		}
 		row.Notes = firstNonEmpty(row.Notes, entry.Notes)
 		row.Sources = mergeStrings(row.Sources, []string{"stub-behavior"})
@@ -98,6 +102,7 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	addFixtureBackedApexMirrorAliasRows(byID)
 	addFixtureBackedInvocableActionDTORows(byID)
 	addApexLanguageRuleRows(byID)
+	addSurfaceClosureTailGladeRows(byID)
 	rows := make([]SurfaceLedgerRow, 0, len(byID))
 	for _, row := range byID {
 		rows = append(rows, withDefaults(row))
@@ -505,6 +510,7 @@ func addFixtureBackedApexMirrorAliasRows(byID map[string]SurfaceLedgerRow) {
 		row.TypeName = ""
 		row.MemberName = ""
 		row.Parameters = nil
+		row.GladeParameters = nil
 		row.Sources = mergeStrings(row.Sources, []string{"apex-mirror-alias"})
 		row.Notes = "fixture-backed docs alias for " + alias.SourceID
 		if alias.Kind != "" {
@@ -740,6 +746,43 @@ func addUnsupportedQueryRuntimeGladeRows(byID map[string]SurfaceLedgerRow) {
 			Sources:       []string{"query-runtime-explicit-unsupported"},
 			Notes:         item.Note,
 		})
+	}
+}
+
+type surfaceClosureTailRow struct {
+	ID       string
+	Kind     string
+	Behavior BehaviorState
+	Notes    string
+}
+
+var surfaceClosureTailRows = []surfaceClosureTailRow{
+	{ID: ApexMemberID("ConnectApi", "CommerceSearchConnectFamily", "searchProducts", []string{"String", "String", "List<String>", "String", "String", "String", "List<String>", "String", "Integer", "Integer", "String", "List<String>", "Boolean", "Boolean"}), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "ConnectApi commerce search executes hosted Commerce search services outside the local runtime."},
+	{ID: ApexMemberID("ConnectApi", "OptimizationFiles", "FetchOptimizationFiles", []string{"ConnectApi.fetchFilesInput"}), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "ConnectApi optimization files fetches hosted optimization resources outside the local runtime."},
+	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withActionIdentifier", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
+	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withTargetId", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
+	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withTargetPageRef", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
+	{ID: ApexMemberID("Schema", "DescribeSObjectResult", "getAssociateEntityType", nil), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Schema associate entity type is represented as a passive describe shape in local metadata."},
+	{ID: ApexMemberID("System", "List", "List", []string{"Set<T>"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic List Set-copy constructor is a passive collection shape."},
+	{ID: ApexMemberID("System", "Set", "Set", []string{"Object"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic Set Object constructor is a passive collection shape."},
+	{ID: ApexMemberID("System", "Site", "getCurrentSiteUrl", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
+	{ID: ApexMemberID("System", "Site", "getCustomWebAddress", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
+	{ID: ApexMemberID("System", "Site", "getPrefix", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
+}
+
+func addSurfaceClosureTailGladeRows(byID map[string]SurfaceLedgerRow) {
+	for _, item := range surfaceClosureTailRows {
+		row := RowFromGladeShape(SurfaceLedgerRow{
+			SurfaceID:     item.ID,
+			Product:       ProductApex,
+			Area:          AreaRuntime,
+			Kind:          item.Kind,
+			GladeBehavior: item.Behavior,
+			Sources:       []string{"surface-closure-tail-shape"},
+			Notes:         item.Notes,
+		})
+		fillFromApexID(&row)
+		byID[surfaceIDKey(item.ID)] = row
 	}
 }
 

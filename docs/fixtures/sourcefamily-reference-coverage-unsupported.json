@@ -1,0 +1,27 @@
+{
+  "name": "sourcefamily-reference-coverage-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "unknown:REFERENCE_COVERAGE",
+      "symbol": "REFERENCE COVERAGE",
+      "kind": "unsupported",
+      "notes": "REFERENCE-COVERAGE is scraper inventory documentation, not a Salesforce runtime or API behavior surface."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/SourceFamilyReferenceCoverageUnsupportedMarker.cls",
+      "content": "public class SourceFamilyReferenceCoverageUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

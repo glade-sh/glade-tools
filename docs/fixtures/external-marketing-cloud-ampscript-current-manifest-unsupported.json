@@ -1,0 +1,123 @@
+{
+  "name": "external-marketing-cloud-ampscript-current-manifest-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/index",
+      "symbol": "marketing marketing cloud ampscript index",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-api/mc-ampscript-reference-api",
+      "symbol": "marketing marketing cloud ampscript mc ampscript api mc ampscript reference api",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-contacts/mc-ampscript-reference-contacts",
+      "symbol": "marketing marketing cloud ampscript mc ampscript contacts mc ampscript reference contacts",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-content/mc-ampscript-reference-content",
+      "symbol": "marketing marketing cloud ampscript mc ampscript content mc ampscript reference content",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-data-extension/mc-ampscript-reference-data-extension",
+      "symbol": "marketing marketing cloud ampscript mc ampscript data extension mc ampscript reference data extension",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-date-time/mc-ampscript-reference-date-time",
+      "symbol": "marketing marketing cloud ampscript mc ampscript date time mc ampscript reference date time",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-encryption/mc-ampscript-reference-encryption",
+      "symbol": "marketing marketing cloud ampscript mc ampscript encryption mc ampscript reference encryption",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-http/mc-ampscript-reference-http",
+      "symbol": "marketing marketing cloud ampscript mc ampscript http mc ampscript reference http",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-math/mc-ampscript-reference-math",
+      "symbol": "marketing marketing cloud ampscript mc ampscript math mc ampscript reference math",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-mscrm/mc-ampscript-reference-microsoft-dynamics-crm",
+      "symbol": "marketing marketing cloud ampscript mc ampscript mscrm mc ampscript reference microsoft dynamics crm",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-references/mc-ampscript-references",
+      "symbol": "marketing marketing cloud ampscript mc ampscript references mc ampscript references",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-salesforce/mc-ampscript-reference-salesforce",
+      "symbol": "marketing marketing cloud ampscript mc ampscript salesforce mc ampscript reference salesforce",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-sites/mc-ampscript-reference-sites",
+      "symbol": "marketing marketing cloud ampscript mc ampscript sites mc ampscript reference sites",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-sms/mc-ampscript-reference-sms",
+      "symbol": "marketing marketing cloud ampscript mc ampscript sms mc ampscript reference sms",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-social/mc-ampscript-reference-social",
+      "symbol": "marketing marketing cloud ampscript mc ampscript social mc ampscript reference social",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-string/mc-ampscript-reference-string",
+      "symbol": "marketing marketing cloud ampscript mc ampscript string mc ampscript reference string",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-ampscript/mc-ampscript-utilities/mc-ampscript-reference-utilities",
+      "symbol": "marketing marketing cloud ampscript mc ampscript utilities mc ampscript reference utilities",
+      "kind": "unsupported",
+      "notes": "Marketing Cloud AMPscript reference pages describe Marketing Cloud script execution outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/ExternalMarketingCloudAMPscriptCurrentManifestUnsupportedMarker.cls",
+      "content": "public class ExternalMarketingCloudAMPscriptCurrentManifestUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "integration-salesforce-connect-amazon-rds-current-manifest-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "site-references:platform/sf-connect-amazon-rds/index",
+      "symbol": "platform sf connect amazon rds index",
+      "kind": "unsupported",
+      "notes": "Salesforce Connect Amazon RDS reference pages describe external connector configuration outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:platform/sf-connect-amazon-rds/sf-connect-amazon-rds-reference/attach-discount",
+      "symbol": "platform sf connect amazon rds sf connect amazon rds reference attach discount",
+      "kind": "unsupported",
+      "notes": "Salesforce Connect Amazon RDS reference pages describe external connector configuration outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/IntegrationSalesforceConnectAmazonRDSCurrentManifestUnsupportedMarker.cls",
+      "content": "public class IntegrationSalesforceConnectAmazonRDSCurrentManifestUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

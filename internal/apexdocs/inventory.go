@@ -48,11 +48,14 @@ type Document struct {
 }
 
 type Member struct {
-	Kind        string `json:"kind"`
-	Name        string `json:"name"`
-	Signature   string `json:"signature"`
-	Section     string `json:"section,omitempty"`
-	Description string `json:"description,omitempty"`
+	Kind         string   `json:"kind"`
+	Name         string   `json:"name"`
+	Signature    string   `json:"signature"`
+	ReturnType   string   `json:"returnType,omitempty"`
+	PropertyType string   `json:"propertyType,omitempty"`
+	Parameters   []string `json:"parameters,omitempty"`
+	Section      string   `json:"section,omitempty"`
+	Description  string   `json:"description,omitempty"`
 }
 
 // DocBehavior is a behavioral constraint mined from a doc's Usage prose, such
@@ -531,6 +534,12 @@ func cantBeUsedInItems(usage []string) []string {
 func collectMembers(lines []string, typeName string) []Member {
 	var members []Member
 	section := ""
+	propertyMembers := collectPropertyTableMembers(lines)
+	propertyTypes := map[string]string{}
+	for _, member := range propertyMembers {
+		propertyTypes[member.Name] = member.PropertyType
+	}
+	seen := map[string]bool{}
 	for i, line := range lines {
 		if strings.HasPrefix(line, "## ") {
 			section = strings.TrimSpace(strings.TrimPrefix(line, "## "))
@@ -553,6 +562,30 @@ func collectMembers(lines []string, typeName string) []Member {
 			Section:     section,
 			Description: firstParagraph(lines[i+1:]),
 		}
+		if propertyType := propertyTypes[member.Name]; propertyType != "" {
+			member.Kind = "property"
+			member.PropertyType = propertyType
+		}
+		if signature := signatureBlock(lines[i+1:]); signature != "" {
+			member.Signature = signature
+			if parsed := parseApexSignature(signature, typeName); parsed.name != "" {
+				member.Name = parsed.name
+				member.ReturnType = parsed.returnType
+				member.Parameters = parsed.parameters
+				if parsed.constructor {
+					member.Kind = "constructor"
+				} else {
+					member.Kind = "method"
+				}
+			}
+		}
+		members = append(members, member)
+		seen[member.Name] = true
+	}
+	for _, member := range propertyMembers {
+		if seen[member.Name] {
+			continue
+		}
 		members = append(members, member)
 	}
 	sort.SliceStable(members, func(i, j int) bool {
@@ -562,6 +595,343 @@ func collectMembers(lines []string, typeName string) []Member {
 		return members[i].Name < members[j].Name
 	})
 	return members
+}
+
+func collectPropertyTableMembers(lines []string) []Member {
+	var out []Member
+	section := ""
+	for i := 0; i < len(lines); i++ {
+		if strings.HasPrefix(lines[i], "## ") {
+			section = strings.TrimSpace(strings.TrimPrefix(lines[i], "## "))
+			continue
+		}
+		cells := markdownTableCells(lines[i])
+		if len(cells) == 0 {
+			continue
+		}
+		if !strings.Contains(strings.ToLower(section), "propert") {
+			continue
+		}
+		nameIdx, typeIdx := propertyTableIndexes(cells)
+		if nameIdx < 0 || typeIdx < 0 {
+			continue
+		}
+		for j := i + 1; j < len(lines); j++ {
+			row := markdownTableCells(lines[j])
+			if len(row) == 0 {
+				break
+			}
+			if isMarkdownSeparatorRow(row) {
+				continue
+			}
+			if nameIdx >= len(row) || typeIdx >= len(row) {
+				continue
+			}
+			name := strings.TrimSpace(stripMarkdownInline(row[nameIdx]))
+			if name == "" {
+				continue
+			}
+			if typ := NormalizeApexDocType(row[typeIdx]); typ != "" {
+				out = append(out, Member{
+					Kind:         "property",
+					Name:         name,
+					Signature:    name,
+					PropertyType: typ,
+					Section:      section,
+				})
+			}
+		}
+	}
+	return out
+}
+
+func markdownTableCells(line string) []string {
+	line = strings.TrimSpace(line)
+	if !strings.HasPrefix(line, "|") || !strings.HasSuffix(line, "|") {
+		return nil
+	}
+	line = strings.Trim(line, "|")
+	raw := strings.Split(line, "|")
+	cells := make([]string, 0, len(raw))
+	for _, cell := range raw {
+		cells = append(cells, strings.TrimSpace(cell))
+	}
+	return cells
+}
+
+func propertyTableIndexes(cells []string) (int, int) {
+	nameIdx, typeIdx := -1, -1
+	for i, cell := range cells {
+		header := strings.ToLower(strings.Join(strings.Fields(stripMarkdownInline(cell)), " "))
+		switch header {
+		case "property name", "name":
+			nameIdx = i
+		case "type":
+			typeIdx = i
+		}
+	}
+	return nameIdx, typeIdx
+}
+
+func isMarkdownSeparatorRow(cells []string) bool {
+	if len(cells) == 0 {
+		return false
+	}
+	for _, cell := range cells {
+		cell = strings.Trim(cell, " :-")
+		if cell != "" {
+			return false
+		}
+	}
+	return true
+}
+
+func signatureBlock(lines []string) string {
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "### ") {
+			break
+		}
+		if trimmed != "#### Signature" {
+			continue
+		}
+		return readSignatureCode(lines[i+1:])
+	}
+	return ""
+}
+
+func readSignatureCode(lines []string) string {
+	var b strings.Builder
+	inFence := false
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "#### ") || strings.HasPrefix(trimmed, "### ") {
+			break
+		}
+		if strings.HasPrefix(trimmed, "```") {
+			if inFence {
+				break
+			}
+			inFence = true
+			continue
+		}
+		if inFence {
+			if trimmed != "" {
+				b.WriteString(trimmed)
+				b.WriteByte(' ')
+			}
+			continue
+		}
+		if inline := inlineCode(trimmed); inline != "" {
+			return inline
+		}
+	}
+	return strings.Join(strings.Fields(b.String()), " ")
+}
+
+func inlineCode(line string) string {
+	start := strings.IndexByte(line, '`')
+	if start < 0 {
+		return ""
+	}
+	end := strings.IndexByte(line[start+1:], '`')
+	if end < 0 {
+		return ""
+	}
+	return strings.TrimSpace(line[start+1 : start+1+end])
+}
+
+type parsedApexSignature struct {
+	name        string
+	returnType  string
+	parameters  []string
+	constructor bool
+}
+
+func parseApexSignature(signature, typeName string) parsedApexSignature {
+	signature = strings.Join(strings.Fields(stripZeroWidth(signature)), " ")
+	open := strings.IndexByte(signature, '(')
+	close := strings.LastIndexByte(signature, ')')
+	if open <= 0 || close < open {
+		return parsedApexSignature{}
+	}
+	prefix := strings.TrimSpace(signature[:open])
+	params := parseApexParameterTypes(signature[open+1 : close])
+	fields := topLevelFields(prefix)
+	fields = dropApexModifiers(fields)
+	if len(fields) == 0 {
+		return parsedApexSignature{}
+	}
+	last := fields[len(fields)-1]
+	lastBase := genericBaseName(last)
+	typeBase := genericBaseName(typeName)
+	if lastBase == typeBase {
+		return parsedApexSignature{name: typeBase, parameters: params, constructor: true}
+	}
+	if len(fields) < 2 {
+		return parsedApexSignature{name: lastBase, parameters: params}
+	}
+	return parsedApexSignature{
+		name:       lastBase,
+		returnType: NormalizeApexDocType(fields[len(fields)-2]),
+		parameters: params,
+	}
+}
+
+func topLevelFields(value string) []string {
+	var fields []string
+	start := -1
+	depth := 0
+	for i, r := range value {
+		switch r {
+		case '<':
+			depth++
+		case '>':
+			if depth > 0 {
+				depth--
+			}
+		default:
+			if unicode.IsSpace(r) && depth == 0 {
+				if start >= 0 {
+					fields = append(fields, strings.TrimSpace(value[start:i]))
+					start = -1
+				}
+				continue
+			}
+		}
+		if start < 0 && !unicode.IsSpace(r) {
+			start = i
+		}
+	}
+	if start >= 0 {
+		fields = append(fields, strings.TrimSpace(value[start:]))
+	}
+	return fields
+}
+
+func dropApexModifiers(fields []string) []string {
+	for len(fields) > 0 {
+		switch strings.ToLower(fields[0]) {
+		case "public", "private", "protected", "global", "webservice", "static", "virtual", "override", "abstract", "testmethod":
+			fields = fields[1:]
+		default:
+			return fields
+		}
+	}
+	return fields
+}
+
+func parseApexParameterTypes(params string) []string {
+	params = strings.TrimSpace(params)
+	if params == "" {
+		return []string{}
+	}
+	parts := splitTopLevel(params, ',')
+	out := make([]string, 0, len(parts))
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		fields := strings.Fields(part)
+		if len(fields) > 1 {
+			part = strings.Join(fields[:len(fields)-1], " ")
+		}
+		out = append(out, NormalizeApexDocType(part))
+	}
+	return out
+}
+
+func NormalizeApexDocType(value string) string {
+	value = stripZeroWidth(value)
+	value = stripMarkdownInline(value)
+	value = strings.Join(strings.Fields(value), " ")
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return ""
+	}
+	for strings.HasSuffix(value, "[]") {
+		value = strings.TrimSpace(strings.TrimSuffix(value, "[]"))
+		value = "List<" + NormalizeApexDocType(value) + ">"
+	}
+	if strings.EqualFold(value, "sObject") {
+		return "SObject"
+	}
+	if open := strings.IndexByte(value, '<'); open > 0 && strings.HasSuffix(value, ">") {
+		name := NormalizeApexDocType(value[:open])
+		inner := strings.TrimSuffix(value[open+1:], ">")
+		args := splitTopLevel(inner, ',')
+		for i := range args {
+			args[i] = NormalizeApexDocType(args[i])
+		}
+		return name + "<" + strings.Join(args, ",") + ">"
+	}
+	return strings.TrimSpace(value)
+}
+
+func stripZeroWidth(value string) string {
+	replacer := strings.NewReplacer("\u200b", "", "\u200c", "", "\u200d", "", "\ufeff", "")
+	return replacer.Replace(value)
+}
+
+func stripMarkdownInline(value string) string {
+	for {
+		start := strings.IndexByte(value, '[')
+		if start < 0 {
+			break
+		}
+		end := strings.IndexByte(value[start:], ']')
+		if end < 0 {
+			break
+		}
+		end += start
+		if end+1 >= len(value) || value[end+1] != '(' {
+			break
+		}
+		close := strings.IndexByte(value[end+2:], ')')
+		if close < 0 {
+			break
+		}
+		close += end + 2
+		label := value[start+1 : end]
+		value = value[:start] + label + value[close+1:]
+	}
+	value = strings.ReplaceAll(value, "`", "")
+	return strings.TrimSpace(value)
+}
+
+func splitTopLevel(value string, sep rune) []string {
+	var parts []string
+	start := 0
+	depth := 0
+	for i, r := range value {
+		switch r {
+		case '<':
+			depth++
+		case '>':
+			if depth > 0 {
+				depth--
+			}
+		default:
+			if r == sep && depth == 0 {
+				parts = append(parts, strings.TrimSpace(value[start:i]))
+				start = i + len(string(r))
+			}
+		}
+	}
+	parts = append(parts, strings.TrimSpace(value[start:]))
+	return parts
+}
+
+func genericBaseName(value string) string {
+	value = strings.TrimSpace(value)
+	if idx := strings.IndexByte(value, '<'); idx >= 0 {
+		value = value[:idx]
+	}
+	if idx := strings.LastIndexByte(value, '.'); idx >= 0 {
+		return value[idx+1:]
+	}
+	return value
 }
 
 func isNarrativeSubsection(heading, section string) bool {

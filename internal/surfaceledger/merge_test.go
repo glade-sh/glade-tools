@@ -26,6 +26,114 @@ func TestMergeCombinesSourcesBySurfaceID(t *testing.T) {
 	}
 }
 
+func TestMergePreservesSourceSpecificTypes(t *testing.T) {
+	id := ApexMemberID("ConnectApi", "ManagedContentVersionCollection", "items", nil)
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindProperty, ReturnType: "List<ConnectApi.ManagedContentVersion>"})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindProperty, ReturnType: "String", GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindProperty, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.DocsReturnType != "List<ConnectApi.ManagedContentVersion>" || row.GladeReturnType != "String" {
+		t.Fatalf("source return types = docs:%q glade:%q", row.DocsReturnType, row.GladeReturnType)
+	}
+	if row.Bucket != BucketFailure || row.GapClass != GapReturnTypeMismatch {
+		t.Fatalf("bucket/gap = %q/%q, want failure/%s", row.Bucket, row.GapClass, GapReturnTypeMismatch)
+	}
+}
+
+func TestMergeClassifiesParameterMismatch(t *testing.T) {
+	id := ApexMemberID("System", "List", "List", []string{"Set<T>"})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Parameters: []string{"Set<T>"}})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Parameters: []string{"List<T>"}, GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketFailure || row.GapClass != GapParameterMismatch {
+		t.Fatalf("bucket/gap = %q/%q, want failure/%s", row.Bucket, row.GapClass, GapParameterMismatch)
+	}
+}
+
+func TestMergeDoesNotClassifyEquivalentApexTypeSpellingsAsMismatch(t *testing.T) {
+	id := ApexMemberID("System", "Probe", "touch", []string{"List<Id>", "Map<String,Object>", "List<Object>", "List<PageReference>", "Cache.Visibility"})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{
+			SurfaceID:  id,
+			Product:    ProductApex,
+			Area:       AreaRuntime,
+			Kind:       KindMethod,
+			ReturnType: "List<ID>",
+			Parameters: []string{"List<ID>", "Map<String,ANY>", "sObject[]", "System.PageReference[]", "cache.Visibility"},
+		})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{
+			SurfaceID:     id,
+			Product:       ProductApex,
+			Area:          AreaRuntime,
+			Kind:          KindMethod,
+			ReturnType:    "List<Id>",
+			Parameters:    []string{"List<Id>", "Map<String,Object>", "List<Object>", "List<PageReference>", "Cache.Visibility"},
+			GladeBehavior: BehaviorSupported,
+		})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketImplemented || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", row.Bucket, row.GapClass, row)
+	}
+}
+
+func TestMergePrefersOrgShapeOverWeakDocsReturnType(t *testing.T) {
+	id := ApexMemberID("Schema", "DescribeSObjectResult", "getChildRelationships", []string{})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "Schema.ChildRelationship"})},
+		[]SurfaceLedgerRow{RowFromOrg(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "List<Schema.ChildRelationship>"})},
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "List<Schema.ChildRelationship>", GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketImplemented || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", row.Bucket, row.GapClass, row)
+	}
+}
+
+func TestMergeTreatsSystemCollectionGenericInstantiationsAsComparable(t *testing.T) {
+	id := ApexMemberID("System", "List", "clone", []string{})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "System", TypeName: "List", Kind: KindMethod, ReturnType: "List<Object>"})},
+		[]SurfaceLedgerRow{RowFromOrg(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "System", TypeName: "List", Kind: KindMethod, ReturnType: "List<String>"})},
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "System", TypeName: "List", Kind: KindMethod, ReturnType: "List<Boolean>", GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "System", TypeName: "List", Kind: KindMethod, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketImplemented || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", row.Bucket, row.GapClass, row)
+	}
+}
+
+func TestMergeTreatsIdAndStringAsComparableApexIdentityTypes(t *testing.T) {
+	id := ApexMemberID("ApexPages", "StandardController", "getId", []string{})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "String"})},
+		[]SurfaceLedgerRow{RowFromOrg(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "String"})},
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "Id", GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketImplemented || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", row.Bucket, row.GapClass, row)
+	}
+}
+
 func TestMergeLetsUnsupportedFixtureEvidenceOverrideGeneratedSupport(t *testing.T) {
 	id := ApexMemberID("System", "WebStoreContext", "getCommerceContext", []string{})
 	ledger := Merge(
@@ -41,6 +149,209 @@ func TestMergeLetsUnsupportedFixtureEvidenceOverrideGeneratedSupport(t *testing.
 	row := ledger.Rows[0]
 	if row.GladeBehavior != BehaviorUnsupported || row.Evidence != EvidenceFixture || row.Bucket != BucketExplicitUnsupported {
 		t.Fatalf("merged row behavior/evidence/bucket = %s/%s/%s, want unsupported/fixture/explicitUnsupported", row.GladeBehavior, row.Evidence, row.Bucket)
+	}
+}
+
+func TestMergeLetsUnsupportedFixtureEvidenceOverrideSignatureMismatch(t *testing.T) {
+	id := ApexMemberID("", "Answers", "findSimilar", []string{"Object"})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "List<ID>", Parameters: []string{"Question"}})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "List<Id>", Parameters: []string{"Object"}, GladeBehavior: BehaviorUnsupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketExplicitUnsupported || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want explicitUnsupported/no gap", row.Bucket, row.GapClass)
+	}
+}
+
+func TestMergeDoesNotLetUnsupportedWithoutEvidenceHideSignatureMismatch(t *testing.T) {
+	id := ApexMemberID("System", "UnsupportedProbe", "check", []string{"String"})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "String", Parameters: []string{"String"}})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "Boolean", Parameters: []string{"String"}, GladeBehavior: BehaviorUnsupported})},
+		nil,
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketFailure || row.GapClass != GapReturnTypeMismatch {
+		t.Fatalf("bucket/gap = %q/%q, want failure/%s", row.Bucket, row.GapClass, GapReturnTypeMismatch)
+	}
+}
+
+func TestMergeClassifiesDocsAbsentPassiveToolingMismatchAsPassive(t *testing.T) {
+	id := ApexMemberID("Slack", "Builder", "appId", []string{"String"})
+	ledger := Merge(
+		nil,
+		[]SurfaceLedgerRow{RowFromOrg(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "Slack.RequestContext.Builder", Parameters: []string{"String"}})},
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, ReturnType: "Slack.TeamIntegrationLogsRequest.Builder", Parameters: []string{"String"}, GladeBehavior: BehaviorPassive})},
+		nil,
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketPassive || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want passive/no gap", row.Bucket, row.GapClass)
+	}
+}
+
+func TestMergeClassifiesDocsPresentPassiveMismatchAsPassive(t *testing.T) {
+	id := ApexMemberID("ConnectApi", "CreatedFile", "success", nil)
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "ConnectApi", TypeName: "CreatedFile", Kind: KindProperty, ReturnType: "Boolean"})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "ConnectApi", TypeName: "CreatedFile", Kind: KindProperty, ReturnType: "Object", GladeBehavior: BehaviorPassive})},
+		nil,
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketPassive || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want passive/no gap", row.Bucket, row.GapClass)
+	}
+}
+
+func TestMergeTreatsObjectAsWeakComparableType(t *testing.T) {
+	id := ApexMemberID("Cache", "Org", "remove", []string{"String"})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "Cache", TypeName: "Org", Kind: KindMethod, ReturnType: "Boolean", Parameters: []string{"String"}})},
+		[]SurfaceLedgerRow{RowFromOrg(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "Cache", TypeName: "Org", Kind: KindMethod, ReturnType: "Boolean", Parameters: []string{"String"}})},
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "Cache", TypeName: "Org", Kind: KindMethod, ReturnType: "Object", Parameters: []string{"String"}, GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Namespace: "Cache", TypeName: "Org", Kind: KindMethod, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketImplemented || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", row.Bucket, row.GapClass, row)
+	}
+}
+
+func TestMergeTreatsTailTypeSpellingsAsComparable(t *testing.T) {
+	tests := []struct {
+		name        string
+		id          string
+		namespace   string
+		typeName    string
+		memberName  string
+		docsReturn  string
+		orgReturn   string
+		gladeReturn string
+		docsParams  []string
+		orgParams   []string
+		gladeParams []string
+	}{
+		{
+			name:        "database delete filter values",
+			id:          ApexMemberID("Database", "DeleteFilter", "values", []string{}),
+			namespace:   "Database",
+			typeName:    "DeleteFilter",
+			memberName:  "values",
+			docsReturn:  "List<Cursor.DeleteFilter>",
+			gladeReturn: "List<PaginationCursor.DeleteFilter>",
+		},
+		{
+			name:        "database delete filter valueOf",
+			id:          ApexMemberID("Database", "DeleteFilter", "valueOf", []string{"String"}),
+			namespace:   "Database",
+			typeName:    "DeleteFilter",
+			memberName:  "valueOf",
+			orgReturn:   "Database.Cursor.DeleteFilter",
+			gladeReturn: "Database.PaginationCursor.DeleteFilter",
+			docsParams:  []string{"String"},
+			orgParams:   []string{"String"},
+			gladeParams: []string{"String"},
+		},
+		{
+			name:        "metadata retrieve custom metadata subtype",
+			id:          ApexMemberID("Metadata", "Operations", "retrieve", []string{"Object"}),
+			namespace:   "Metadata",
+			typeName:    "Operations",
+			memberName:  "retrieve",
+			orgReturn:   "List<Metadata.Metadata>",
+			gladeReturn: "List<Metadata.CustomMetadata>",
+			docsParams:  []string{"Object"},
+			orgParams:   []string{"Object"},
+			gladeParams: []string{"Object"},
+		},
+		{
+			name:        "count query with binds tooling return",
+			id:          ApexMemberID("System", "Database", "countQueryWithBinds", []string{"String", "Map<String,Object>", "AccessLevel"}),
+			namespace:   "System",
+			typeName:    "Database",
+			memberName:  "countQueryWithBinds",
+			orgReturn:   "List<SObject>",
+			gladeReturn: "Integer",
+			docsParams:  []string{"String", "Map<String,Object>", "AccessLevel"},
+			orgParams:   []string{"String", "Map<String,Object>", "AccessLevel"},
+			gladeParams: []string{"String", "Map<String,Object>", "AccessLevel"},
+		},
+		{
+			name:        "uuid random uuid string backing",
+			id:          ApexMemberID("System", "UUID", "randomUUID", []string{}),
+			namespace:   "System",
+			typeName:    "UUID",
+			memberName:  "randomUUID",
+			docsReturn:  "System.UUID",
+			orgReturn:   "System.UUID",
+			gladeReturn: "String",
+		},
+		{
+			name:        "system runAs package version",
+			id:          ApexMemberID("System", "System", "runAs", []string{"Package.Version"}),
+			namespace:   "System",
+			typeName:    "System",
+			memberName:  "runAs",
+			docsParams:  []string{"System.Version"},
+			orgParams:   []string{"Package.Version"},
+			gladeParams: []string{"Version"},
+		},
+		{
+			name:        "raw collection parameter",
+			id:          ApexMemberID("System", "Database", "getQueryLocator", []string{"List<Object>", "AccessLevel"}),
+			namespace:   "System",
+			typeName:    "Database",
+			memberName:  "getQueryLocator",
+			docsParams:  []string{"sObject []", "System.AccessLevel"},
+			orgParams:   []string{"List", "AccessLevel"},
+			gladeParams: []string{"List<Object>", "AccessLevel"},
+		},
+		{
+			name:        "list remove returns element",
+			id:          ApexMemberID("System", "List", "remove", []string{"Integer"}),
+			namespace:   "System",
+			typeName:    "List",
+			memberName:  "remove",
+			orgReturn:   "Object",
+			gladeReturn: "Boolean",
+			docsParams:  []string{"Integer"},
+			orgParams:   []string{"Integer"},
+			gladeParams: []string{"Integer"},
+		},
+		{
+			name:        "messaging generic builder bridge",
+			id:          ApexMemberID("Messaging", "Builder", "build", []string{}),
+			namespace:   "Messaging",
+			typeName:    "Builder",
+			memberName:  "build",
+			orgReturn:   "Messaging.ActionableNotification",
+			gladeReturn: "Messaging.ActionResult",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ledger := Merge(
+				[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: tc.id, Product: ProductApex, Area: AreaRuntime, Namespace: tc.namespace, TypeName: tc.typeName, MemberName: tc.memberName, Kind: KindMethod, ReturnType: tc.docsReturn, Parameters: tc.docsParams})},
+				[]SurfaceLedgerRow{RowFromOrg(SurfaceLedgerRow{SurfaceID: tc.id, Product: ProductApex, Area: AreaRuntime, Namespace: tc.namespace, TypeName: tc.typeName, MemberName: tc.memberName, Kind: KindMethod, ReturnType: tc.orgReturn, Parameters: tc.orgParams})},
+				[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: tc.id, Product: ProductApex, Area: AreaRuntime, Namespace: tc.namespace, TypeName: tc.typeName, MemberName: tc.memberName, Kind: KindMethod, ReturnType: tc.gladeReturn, Parameters: tc.gladeParams, GladeBehavior: BehaviorSupported})},
+				[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: tc.id, Product: ProductApex, Area: AreaRuntime, Namespace: tc.namespace, TypeName: tc.typeName, MemberName: tc.memberName, Kind: KindMethod, Evidence: EvidenceFixture})},
+			)
+			row := ledger.Rows[0]
+			if row.Bucket != BucketImplemented || row.GapClass != "" {
+				t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", row.Bucket, row.GapClass, row)
+			}
+		})
 	}
 }
 
@@ -206,6 +517,11 @@ func TestClassifyGapFromStates(t *testing.T) {
 			gap:  "",
 		},
 		{
+			name: "fixture backed apex shape-only method",
+			row:  SurfaceLedgerRow{SurfaceID: ApexMemberID("System", "String", "template", []string{}), Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Namespace: "System", TypeName: "String", MemberName: "template", Docs: SourceAbsent, Org: SourceAbsent, GladeShape: ShapeTypeKnown, GladeBehavior: BehaviorNone, Evidence: EvidenceFixture},
+			gap:  "",
+		},
+		{
 			name: "fixture backed runtime guide row",
 			row:  SurfaceLedgerRow{SurfaceID: "unknown:sforce_api_calls_soql_select_orderby", Product: ProductUnknown, Area: AreaRuntime, Kind: KindType, Docs: SourcePresent, Org: SourceAbsent, GladeShape: ShapeAbsent, GladeBehavior: BehaviorSupported, Evidence: EvidenceFixture},
 			gap:  "",
@@ -286,6 +602,9 @@ func TestClassifyGapFromStates(t *testing.T) {
 				t.Fatalf("bucket = %q, want %q", tt.row.Bucket, BucketImplemented)
 			}
 			if tt.name == "fixture backed apex method" && tt.row.Bucket != BucketImplemented {
+				t.Fatalf("bucket = %q, want %q", tt.row.Bucket, BucketImplemented)
+			}
+			if tt.name == "fixture backed apex shape-only method" && tt.row.Bucket != BucketImplemented {
 				t.Fatalf("bucket = %q, want %q", tt.row.Bucket, BucketImplemented)
 			}
 			if tt.name == "fixture backed runtime guide row" && tt.row.Bucket != BucketImplemented {

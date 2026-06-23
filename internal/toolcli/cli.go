@@ -65,6 +65,7 @@ Commands:
   ui-controllers     Discover Visualforce controller surfaces.
   server-examples    Probe checked server route examples.
   surface            Refresh and inspect the Salesforce surface ledger.
+  corpus             Run Glade over a public corpus and classify diagnostics.
   visualforce        Capture scratch-org Visualforce rendering evidence.
   lwc                Capture LWC shell evidence and native API parity.
   dashboard          Generate compatibility dashboard.
@@ -74,6 +75,7 @@ Commands:
   catalog            Build a capability catalog.
   reconcile          Reconcile docs inventory with the catalog.
   doc-contracts      Report Salesforce docs behavior contracts.
+  declaration-contracts  Export docs declaration shapes for generated stubs.
   salesforce-coverage  Generate Salesforce coverage manifests.
   standard-objects   Report generated standard object coverage.
   stub-contracts     Report generated stub behavioral contract policy.

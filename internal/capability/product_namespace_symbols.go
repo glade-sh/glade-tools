@@ -20,10 +20,11 @@ type productNamespaceSymbolSpec struct {
 }
 
 type productNamespaceMethodSpec struct {
-	Name       string
-	ReturnType string
-	Parameters []string
-	Static     bool
+	Name        string
+	ReturnType  string
+	Parameters  []string
+	Static      bool
+	StaticKnown bool
 }
 
 type productNamespacePropertySpec struct {
@@ -67,17 +68,17 @@ func BuildProductNamespaceSymbolSpecs(catalog Catalog, tooling *ToolingCompletio
 		memberName := cleanToolingMemberName(entry.MemberName)
 		switch strings.ToLower(entry.Kind) {
 		case "constructor":
-			spec.Constructors = appendUniqueProductNamespaceConstructors(spec.Constructors, [][]string{unknownDocParameters(entry.Signature)})
+			spec.Constructors = appendUniqueProductNamespaceConstructors(spec.Constructors, [][]string{catalogEntryParameters(entry)})
 		case "property", "member":
 			spec.Properties = appendUniqueProductNamespaceProperties(spec.Properties, []productNamespacePropertySpec{{
 				Name: memberName,
-				Type: "Object",
+				Type: catalogEntryPropertyType(entry),
 			}})
 		case "method":
 			spec.Methods = appendUniqueProductNamespaceMethods(spec.Methods, []productNamespaceMethodSpec{{
 				Name:       memberName,
-				ReturnType: "Object",
-				Parameters: unknownDocParameters(entry.Signature),
+				ReturnType: catalogEntryReturnType(entry),
+				Parameters: catalogEntryParameters(entry),
 			}})
 		}
 	}
@@ -100,10 +101,11 @@ func BuildProductNamespaceSymbolSpecs(catalog Catalog, tooling *ToolingCompletio
 				methods := make([]productNamespaceMethodSpec, 0, len(decl.Methods))
 				for _, method := range decl.Methods {
 					methods = append(methods, productNamespaceMethodSpec{
-						Name:       cleanToolingMemberName(method.Name),
-						ReturnType: normalizeProductNamespaceType(method.ReturnType),
-						Parameters: toolingMethodParameterTypes(method),
-						Static:     method.IsStatic,
+						Name:        cleanToolingMemberName(method.Name),
+						ReturnType:  normalizeProductNamespaceType(method.ReturnType),
+						Parameters:  toolingMethodParameterTypes(method),
+						Static:      method.IsStatic,
+						StaticKnown: true,
 					})
 				}
 				spec.Methods = appendUniqueProductNamespaceMethods(spec.Methods, methods)
@@ -324,6 +326,28 @@ func toolingMethodParameterTypes(method ToolingMethod) []string {
 	return out
 }
 
+func catalogEntryReturnType(entry CatalogEntry) string {
+	return normalizeProductNamespaceType(entry.ReturnType)
+}
+
+func catalogEntryPropertyType(entry CatalogEntry) string {
+	if entry.PropertyType != "" {
+		return normalizeProductNamespaceType(entry.PropertyType)
+	}
+	return normalizeProductNamespaceType(entry.ReturnType)
+}
+
+func catalogEntryParameters(entry CatalogEntry) []string {
+	if len(entry.Parameters) > 0 {
+		out := make([]string, 0, len(entry.Parameters))
+		for _, typ := range entry.Parameters {
+			out = append(out, normalizeProductNamespaceType(typ))
+		}
+		return out
+	}
+	return unknownDocParameters(entry.Signature)
+}
+
 func unknownDocParameters(signature string) []string {
 	start := strings.IndexByte(signature, '(')
 	end := strings.LastIndexByte(signature, ')')
@@ -373,6 +397,18 @@ func appendUniqueProductNamespaceMethods(values, additions []productNamespaceMet
 		if addition.ReturnType == "" {
 			addition.ReturnType = "Object"
 		}
+		merged := false
+		for i := range values {
+			if !sameProductNamespaceMethodShape(values[i], addition) {
+				continue
+			}
+			values[i] = mergeProductNamespaceMethod(values[i], addition)
+			merged = true
+			break
+		}
+		if merged {
+			continue
+		}
 		key := productNamespaceMethodKey(addition)
 		if seen[key] {
 			continue
@@ -381,6 +417,45 @@ func appendUniqueProductNamespaceMethods(values, additions []productNamespaceMet
 		values = append(values, addition)
 	}
 	return values
+}
+
+func sameProductNamespaceMethodShape(a, b productNamespaceMethodSpec) bool {
+	if !strings.EqualFold(a.Name, b.Name) || len(a.Parameters) != len(b.Parameters) {
+		return false
+	}
+	if !productNamespaceStaticCompatible(a, b) {
+		return false
+	}
+	if productNamespaceTypeListKey(a.Parameters) == productNamespaceTypeListKey(b.Parameters) {
+		return true
+	}
+	return productNamespaceAllObjectTypes(a.Parameters) || productNamespaceAllObjectTypes(b.Parameters)
+}
+
+func mergeProductNamespaceMethod(base, addition productNamespaceMethodSpec) productNamespaceMethodSpec {
+	if addition.StaticKnown {
+		base.Static = addition.Static
+		base.StaticKnown = true
+	} else if !base.StaticKnown {
+		base.Static = base.Static || addition.Static
+	}
+	if productNamespaceTypeIsObject(base.ReturnType) && !productNamespaceTypeIsObject(addition.ReturnType) {
+		base.ReturnType = addition.ReturnType
+	}
+	for i := range base.Parameters {
+		if productNamespaceTypeIsObject(base.Parameters[i]) && !productNamespaceTypeIsObject(addition.Parameters[i]) {
+			base.Parameters[i] = addition.Parameters[i]
+		}
+	}
+	return base
+}
+
+func productNamespaceStaticCompatible(a, b productNamespaceMethodSpec) bool {
+	return !a.StaticKnown || !b.StaticKnown || a.Static == b.Static
+}
+
+func productNamespaceTypeIsObject(typ string) bool {
+	return strings.EqualFold(normalizeProductNamespaceType(typ), "Object")
 }
 
 func appendUniqueProductNamespaceProperties(values, additions []productNamespacePropertySpec) []productNamespacePropertySpec {
@@ -432,12 +507,12 @@ func pruneWeakProductNamespaceMembers(spec *productNamespaceSymbolSpec) {
 	strongMethods := map[string]bool{}
 	for _, method := range spec.Methods {
 		if !strings.EqualFold(method.ReturnType, "Object") || !productNamespaceAllObjectTypes(method.Parameters) {
-			strongMethods[strings.ToLower(method.Name)+"|"+strconv.Itoa(len(method.Parameters))] = true
+			strongMethods[productNamespaceWeakMethodKey(method)] = true
 		}
 	}
 	methods := spec.Methods[:0]
 	for _, method := range spec.Methods {
-		key := strings.ToLower(method.Name) + "|" + strconv.Itoa(len(method.Parameters))
+		key := productNamespaceWeakMethodKey(method)
 		if strings.EqualFold(method.ReturnType, "Object") && productNamespaceAllObjectTypes(method.Parameters) && strongMethods[key] {
 			continue
 		}
@@ -457,6 +532,14 @@ func productNamespaceAllObjectTypes(types []string) bool {
 
 func productNamespaceMethodKey(method productNamespaceMethodSpec) string {
 	return strings.ToLower(method.Name) + "|" + strconv.FormatBool(method.Static) + "|" + productNamespaceTypeListKey(method.Parameters)
+}
+
+func productNamespaceWeakMethodKey(method productNamespaceMethodSpec) string {
+	static := "unknown"
+	if method.StaticKnown {
+		static = strconv.FormatBool(method.Static)
+	}
+	return strings.ToLower(method.Name) + "|" + static + "|" + strconv.Itoa(len(method.Parameters))
 }
 
 func productNamespacePropertyKey(prop productNamespacePropertySpec) string {

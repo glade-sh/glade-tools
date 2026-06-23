@@ -17,6 +17,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"github.com/glade-sh/glade/tools/internal/capability"
 	"github.com/glade-sh/glade/tools/internal/compat"
+	"github.com/glade-sh/glade/tools/internal/corpuscheck"
 	"github.com/glade-sh/glade/tools/internal/editorfindings"
 	"github.com/glade-sh/glade/tools/internal/examplescan"
 	"github.com/glade-sh/glade/tools/internal/lwcparity"
@@ -44,6 +45,8 @@ func runCompat(ctx context.Context, args []string, w io.Writer) error {
 		return runCompatLocalTests(args[1:], w)
 	case "surface":
 		return runCompatSurface(args[1:], w)
+	case "corpus":
+		return runCompatCorpus(ctx, args[1:], w)
 	case "visualforce":
 		return runCompatVisualforce(ctx, args[1:], w)
 	case "lwc":
@@ -72,6 +75,8 @@ func runCompat(ctx context.Context, args []string, w io.Writer) error {
 		return runCompatReconcile(args[1:], w)
 	case "doc-contracts":
 		return runCompatDocContracts(args[1:], w)
+	case "declaration-contracts":
+		return runCompatDeclarationContracts(args[1:], w)
 	case "salesforce-coverage":
 		return runCompatSalesforceCoverage(args[1:], w)
 	case "standard-objects":
@@ -164,6 +169,7 @@ func compatUsage() string {
 		"matrix|mvp [--json] [--require-ready]",
 		"local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>]",
 		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags]",
+		"corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]",
 		"visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]",
 		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
 		"visualforce diff --salesforce <json> --local <json> [--project <root>] [--phase <n>] [--out <path>] [--json]",
@@ -186,6 +192,7 @@ func compatUsage() string {
 		"catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>]",
 		"reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>]",
 		"doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>]",
+		"declaration-contracts --inventory <path> [--json|--output <path>|--check <path>]",
 		"salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>]",
 		"standard-objects [--json|--output <path>|--check <path>]",
 		"stub-contracts [--source <dir>] [--json|--output <path>|--check <path>]",
@@ -197,6 +204,68 @@ func compatUsage() string {
 	}
 	tail := strings.Join(parts, " | ")
 	return "usage: glade-tools " + tail + "\n       glade compat " + tail
+}
+
+func runCompatCorpus(ctx context.Context, args []string, w io.Writer) error {
+	if len(args) == 0 || isHelpArg(args[0]) {
+		fmt.Fprintln(w, "usage: glade-tools corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]")
+		return nil
+	}
+	if args[0] != "check" {
+		return errors.New("usage: glade-tools corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]")
+	}
+	options := corpuscheck.Options{}
+	for i := 1; i < len(args); i++ {
+		switch args[i] {
+		case "--root":
+			i++
+			value, err := argValue(args, i, "--root")
+			if err != nil {
+				return err
+			}
+			options.Root = value
+		case "--glade":
+			i++
+			value, err := argValue(args, i, "--glade")
+			if err != nil {
+				return err
+			}
+			options.Glade = value
+		case "--out":
+			i++
+			value, err := argValue(args, i, "--out")
+			if err != nil {
+				return err
+			}
+			options.OutDir = value
+		case "--fail-on-unclassified":
+			options.FailOnUnclassified = true
+		case "--fail-on-check-closure":
+			options.FailOnCheckClosure = true
+		case "--max-unclassified":
+			i++
+			value, err := parseIntArg(args, i, "--max-unclassified")
+			if err != nil {
+				return err
+			}
+			options.MaxUnclassified = value
+		default:
+			return fmt.Errorf("unknown corpus flag %q", args[i])
+		}
+	}
+	report, err := corpuscheck.Check(ctx, options)
+	if err != nil {
+		if report.Summary != (corpuscheck.ReportSummary{}) {
+			printCorpusCheckSummary(w, report, options.OutDir)
+		}
+		return err
+	}
+	printCorpusCheckSummary(w, report, options.OutDir)
+	return nil
+}
+
+func printCorpusCheckSummary(w io.Writer, report corpuscheck.Report, outDir string) {
+	fmt.Fprintf(w, "corpus check: projects=%d diagnostics=%d unclassified=%d closure_blocking=%d out=%s\n", report.Summary.ProjectCount, report.Summary.DiagnosticCount, report.Summary.UnclassifiedCount, report.Summary.ClosureBlockingCount, outDir)
 }
 
 func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {
@@ -2213,6 +2282,91 @@ func runCompatDocContracts(args []string, w io.Writer) error {
 		for _, c := range report.ByBehavior {
 			fmt.Fprintf(w, "  %s: %d\n", c.Behavior, c.Count)
 		}
+		return nil
+	}
+}
+
+const declarationContractsUsage = "usage: glade-tools declaration-contracts --inventory <path> [--json|--output <path>|--check <path>]"
+
+func runCompatDeclarationContracts(args []string, w io.Writer) error {
+	inventoryPath := ""
+	outputPath := ""
+	checkPath := ""
+	jsonOut := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--inventory":
+			i++
+			if i >= len(args) {
+				return errors.New(declarationContractsUsage)
+			}
+			inventoryPath = args[i]
+		case "--json":
+			jsonOut = true
+		case "--output":
+			i++
+			if i >= len(args) {
+				return errors.New(declarationContractsUsage)
+			}
+			outputPath = args[i]
+		case "--check":
+			i++
+			if i >= len(args) {
+				return errors.New(declarationContractsUsage)
+			}
+			checkPath = args[i]
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	if inventoryPath == "" {
+		return errors.New(declarationContractsUsage)
+	}
+	requested := 0
+	for _, set := range []bool{jsonOut, outputPath != "", checkPath != ""} {
+		if set {
+			requested++
+		}
+	}
+	if requested > 1 {
+		return errors.New("use only one of --json, --output, or --check")
+	}
+
+	inv, err := apexdocs.ReadInventory(inventoryPath)
+	if err != nil {
+		return err
+	}
+	contracts := capability.BuildDeclarationContracts(inv)
+
+	switch {
+	case jsonOut:
+		return capability.WriteDeclarationContractsJSON(w, contracts)
+	case outputPath != "":
+		var buf strings.Builder
+		if err := capability.WriteDeclarationContractsJSON(&buf, contracts); err != nil {
+			return err
+		}
+		return os.WriteFile(outputPath, []byte(buf.String()), 0o644)
+	case checkPath != "":
+		var buf strings.Builder
+		if err := capability.WriteDeclarationContractsJSON(&buf, contracts); err != nil {
+			return err
+		}
+		existing, err := os.ReadFile(checkPath)
+		if err != nil {
+			return err
+		}
+		if string(existing) != buf.String() {
+			return fmt.Errorf("declaration-contracts drift: regenerate %s", checkPath)
+		}
+		fmt.Fprintf(w, "%s: up to date\n", checkPath)
+		return nil
+	default:
+		members := 0
+		for _, doc := range contracts.Documents {
+			members += len(doc.Members)
+		}
+		fmt.Fprintf(w, "declaration contracts: documents=%d members=%d\n", len(contracts.Documents), members)
 		return nil
 	}
 }

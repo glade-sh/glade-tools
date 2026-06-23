@@ -40,6 +40,27 @@ func TestBuildGladeSnapshotIncludesApexNamespaceLanguageRules(t *testing.T) {
 	}
 }
 
+func TestBuildGladeSnapshotIncludesSurfaceClosureTailShapes(t *testing.T) {
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+	tests := []struct {
+		id       string
+		behavior BehaviorState
+	}{
+		{ApexMemberID("System", "Site", "getPrefix", nil), BehaviorUnsupported},
+		{ApexMemberID("System", "List", "List", []string{"Set<T>"}), BehaviorPassive},
+	}
+	for _, tt := range tests {
+		row, ok := byID[tt.id]
+		if !ok {
+			t.Fatalf("missing surface closure tail row %s", tt.id)
+		}
+		if row.Product != ProductApex || row.GladeShape == ShapeAbsent || row.GladeBehavior != tt.behavior {
+			t.Fatalf("%s product/shape/behavior = %s/%s/%s, want apex/non-absent/%s", tt.id, row.Product, row.GladeShape, row.GladeBehavior, tt.behavior)
+		}
+	}
+}
+
 func TestBuildGladeSnapshotUsesHTTPStdlibSignature(t *testing.T) {
 	rows := BuildGladeSnapshot()
 	byID := rowsByID(rows)

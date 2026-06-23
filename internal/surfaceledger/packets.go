@@ -1,7 +1,9 @@
 package surfaceledger
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 )
@@ -22,6 +24,20 @@ type AreaPacket struct {
 	DoneCriteria         []string `json:"doneCriteria"`
 	RatchetTarget        string   `json:"ratchetTarget"`
 	AreaRatchetCommand   string   `json:"areaRatchetCommand"`
+}
+
+type PacketManifest struct {
+	TotalOpenRows  int                    `json:"totalOpenRows"`
+	Packets        []PacketManifestPacket `json:"packets"`
+	UnassignedRows []string               `json:"unassignedRows"`
+}
+
+type PacketManifestPacket struct {
+	ID           string   `json:"id"`
+	Owner        string   `json:"owner"`
+	SourceFamily string   `json:"sourceFamily,omitempty"`
+	SourceDir    string   `json:"sourceDir,omitempty"`
+	RowIDs       []string `json:"rowIds"`
 }
 
 func AreaRegistry() []AreaPacket {
@@ -131,6 +147,190 @@ func AreaRegistry() []AreaPacket {
 		genericArea("ConnectApi.PassiveDTOs", "ConnectApi Passive DTOs", "internal/vm passive members", "product=connect-rest-api passive DTO rows", []string{"internal/vm/platform_passive_members.go", "glade-tools/internal/capability/**"}),
 	)
 	return packets
+}
+
+func OpenRows(ledger SurfaceLedger) []SurfaceLedgerRow {
+	var rows []SurfaceLedgerRow
+	for _, row := range ledger.Rows {
+		if row.Bucket == BucketGap || row.Bucket == BucketFailure {
+			rows = append(rows, row)
+		}
+	}
+	sort.Slice(rows, func(i, j int) bool {
+		if rows[i].Priority != rows[j].Priority {
+			return rows[i].Priority < rows[j].Priority
+		}
+		return rows[i].SurfaceID < rows[j].SurfaceID
+	})
+	return rows
+}
+
+func BuildPacketManifest(ledger SurfaceLedger) PacketManifest {
+	openRows := OpenRows(ledger)
+	packets := AreaRegistry()
+	byPacket := map[string][]SurfaceLedgerRow{}
+	bySourceFamily := map[string][]SurfaceLedgerRow{}
+	var unassigned []string
+	for _, row := range openRows {
+		assigned := ""
+		for _, packet := range packets {
+			if packetOwnsRow(packet, row) {
+				assigned = packet.Name
+				break
+			}
+		}
+		if assigned == "" {
+			family := sourceFamilyForManifestRow(row)
+			if family == "" {
+				unassigned = append(unassigned, row.SurfaceID)
+				continue
+			}
+			bySourceFamily[family] = append(bySourceFamily[family], row)
+			continue
+		}
+		byPacket[assigned] = append(byPacket[assigned], row)
+	}
+
+	manifest := PacketManifest{
+		TotalOpenRows:  len(openRows),
+		UnassignedRows: []string{},
+	}
+	for _, packet := range packets {
+		rows := byPacket[packet.Name]
+		if len(rows) == 0 {
+			continue
+		}
+		rowIDs := make([]string, 0, len(rows))
+		for _, row := range rows {
+			rowIDs = append(rowIDs, row.SurfaceID)
+		}
+		sort.Strings(rowIDs)
+		manifest.Packets = append(manifest.Packets, PacketManifestPacket{
+			ID:           packet.Name,
+			Owner:        packet.Owner,
+			SourceFamily: sourceFamilyForManifestRows(rows),
+			SourceDir:    sourceDirForManifestPacket(packet),
+			RowIDs:       rowIDs,
+		})
+	}
+	families := make([]string, 0, len(bySourceFamily))
+	for family := range bySourceFamily {
+		families = append(families, family)
+	}
+	sort.Strings(families)
+	for _, family := range families {
+		rows := bySourceFamily[family]
+		rowIDs := make([]string, 0, len(rows))
+		for _, row := range rows {
+			rowIDs = append(rowIDs, row.SurfaceID)
+		}
+		sort.Strings(rowIDs)
+		manifest.Packets = append(manifest.Packets, PacketManifestPacket{
+			ID:           "SourceFamily." + manifestIDPart(family),
+			Owner:        ownerForManifestRows(rows),
+			SourceFamily: family,
+			RowIDs:       rowIDs,
+		})
+	}
+	manifest.UnassignedRows = append(manifest.UnassignedRows, unassigned...)
+	sort.Strings(manifest.UnassignedRows)
+	return manifest
+}
+
+func WritePacketManifestJSON(w io.Writer, manifest PacketManifest) error {
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	return enc.Encode(manifest)
+}
+
+func sourceFamilyForManifestRows(rows []SurfaceLedgerRow) string {
+	counts := map[string]int{}
+	for _, row := range rows {
+		family := sourceFamilyForManifestRow(row)
+		counts[family]++
+	}
+	best := ""
+	bestCount := 0
+	for family, count := range counts {
+		if count > bestCount || count == bestCount && family < best {
+			best = family
+			bestCount = count
+		}
+	}
+	return best
+}
+
+func sourceFamilyForManifestRow(row SurfaceLedgerRow) string {
+	if row.SalesforceSurfaceFamily != "" && row.SalesforceSurfaceFamily != ProductUnknown {
+		return row.SalesforceSurfaceFamily
+	}
+	if sourceDir := manifestSourceDir(row.DocsSource); sourceDir != "" {
+		return sourceDir
+	}
+	if row.Product == "" || row.Product == ProductUnknown {
+		return ""
+	}
+	if family := surfaceFamilyForProduct(row.Product); family != "" && family != ProductUnknown {
+		return family
+	}
+	return row.Product
+}
+
+func manifestSourceDir(docsSource string) string {
+	docsSource = strings.TrimSpace(docsSource)
+	if docsSource == "" {
+		return ""
+	}
+	if before, _, ok := strings.Cut(docsSource, "/"); ok {
+		return before
+	}
+	return docsSource
+}
+
+func ownerForManifestRows(rows []SurfaceLedgerRow) string {
+	counts := map[string]int{}
+	for _, row := range rows {
+		owner := row.Owner
+		if owner == "" {
+			owner = row.GladeImplementationTarget
+		}
+		if owner == "" {
+			owner = "surface-family"
+		}
+		counts[owner]++
+	}
+	best := ""
+	bestCount := 0
+	for owner, count := range counts {
+		if count > bestCount || count == bestCount && owner < best {
+			best = owner
+			bestCount = count
+		}
+	}
+	return best
+}
+
+func manifestIDPart(value string) string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return ProductUnknown
+	}
+	replacer := strings.NewReplacer("/", "-", " ", "-", "_", "-", ":", "-", ".", "-")
+	return replacer.Replace(value)
+}
+
+func sourceDirForManifestPacket(packet AreaPacket) string {
+	for _, pattern := range packet.SharedFiles {
+		if strings.HasPrefix(pattern, "docs/generated/salesforce/") {
+			return "docs/generated/salesforce"
+		}
+	}
+	for _, pattern := range packet.AllowedFiles {
+		if strings.HasPrefix(pattern, "docs/") {
+			return "docs"
+		}
+	}
+	return ""
 }
 
 func genericArea(name, title, owner, filter string, allowed []string) AreaPacket {
@@ -333,13 +533,14 @@ func packetOwnsRow(packet AreaPacket, row SurfaceLedgerRow) bool {
 	case "Integration.PubSub":
 		return surfaceFamily == "pub-sub-api" || containsAnyASCIIFold(row.SurfaceID, "pubsub", "pub-sub")
 	case "Integration.BulkAPI":
-		return surfaceFamily == "bulk-api" || containsASCIIFold(row.SurfaceID, "bulk")
+		return integrationProductFamilyRow(row, surfaceFamily, "bulk-api")
 	case "Integration.MetadataAPI":
-		return surfaceFamily == "metadata-api" || containsASCIIFold(row.SurfaceID, "metadata")
+		return integrationProductFamilyRow(row, surfaceFamily, "metadata-api") ||
+			(row.Product == ProductApex && row.Namespace == "Metadata")
 	case "Integration.SOAPAPI":
-		return surfaceFamily == "soap-api" || containsASCIIFold(row.SurfaceID, "soap")
+		return integrationProductFamilyRow(row, surfaceFamily, "soap-api")
 	case "Integration.StreamingAPI":
-		return surfaceFamily == "streaming-api" || containsASCIIFold(row.SurfaceID, "streaming")
+		return integrationProductFamilyRow(row, surfaceFamily, "streaming-api")
 	case "Integration.SalesforceConnect.AmazonRDS":
 		return surfaceFamily == "sf-connect-amazon-rds" || containsASCIIFold(row.SurfaceID, "amazon-rds")
 	case "Platform.Events":
@@ -351,10 +552,15 @@ func packetOwnsRow(packet AreaPacket, row SurfaceLedgerRow) bool {
 	case "External.MarketingCloud.Handlebars":
 		return surfaceFamily == "handlebars-for-marketing-cloud-next" || containsASCIIFold(row.SurfaceID, "handlebars")
 	case "ConnectApi.PassiveDTOs":
-		return row.Product == ProductConnectAPI || surfaceFamily == ProductConnectAPI || containsASCIIFold(row.SurfaceID, "connectapi")
+		return row.Product == ProductConnectAPI || surfaceFamily == ProductConnectAPI ||
+			(row.Product == ProductApex && row.Namespace == "ConnectApi")
 	default:
 		return false
 	}
+}
+
+func integrationProductFamilyRow(row SurfaceLedgerRow, surfaceFamily, product string) bool {
+	return row.Product == product || surfaceFamily == product
 }
 
 func ownsAuraComponentRow(row SurfaceLedgerRow, surfaceFamily string) bool {

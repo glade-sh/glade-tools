@@ -1,0 +1,29 @@
+{
+  "name": "apex-core-hosted-runtime-unsupported",
+  "evidence": [
+    {"surfaceId": "apex:Answers.findSimilar(Object)", "symbol": "Answers.findSimilar", "kind": "unsupported", "notes": "Answers zone similarity search requires hosted Salesforce search and zone services."},
+    {"surfaceId": "apex:System.Crypto.signXML(String,Dom.XmlNode,String,String)", "symbol": "Crypto.signXML", "kind": "unsupported", "notes": "XML signature generation depends on hosted key and certificate material outside the local VM."},
+    {"surfaceId": "apex:System.System.movePassword(Id,Id)", "symbol": "System.movePassword", "kind": "unsupported", "notes": "Password transfer mutates hosted user authentication state."},
+    {"surfaceId": "apex:System.System.process(List,String,String,String)", "symbol": "System.process", "kind": "unsupported", "notes": "The legacy System.process helper routes through hosted approval submit/process services."},
+    {"surfaceId": "apex:System.System.resetPassword(Id,Boolean)", "symbol": "System.resetPassword", "kind": "unsupported", "notes": "Password reset mutates hosted user authentication state and email delivery."},
+    {"surfaceId": "apex:System.System.submit(List,String,String)", "symbol": "System.submit", "kind": "unsupported", "notes": "The legacy System.submit helper routes through hosted approval submit/process services."}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Answers.findSimilar(new Question(Title = 'Acme'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Answers.findSimilar(new Question(Title = 'Acme'));"
+    ]
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "unsupported call \"Answers.findSimilar local Answers zone search surface\""
+    }
+  }
+}

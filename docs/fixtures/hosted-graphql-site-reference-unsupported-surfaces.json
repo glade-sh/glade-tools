@@ -1,0 +1,51 @@
+{
+  "name": "hosted-graphql-site-reference-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "site-references:platform/graphql/graphql",
+      "symbol": "site-references:platform/graphql/graphql",
+      "kind": "unsupported",
+      "notes": "GraphQL API site-reference rows describe hosted Salesforce GraphQL HTTP services outside the local Glade runtime; local Apex callouts and mocks are separate surfaces."
+    },
+    {
+      "surfaceId": "site-references:platform/graphql/index",
+      "symbol": "site-references:platform/graphql/index",
+      "kind": "unsupported",
+      "notes": "GraphQL API site-reference rows describe hosted Salesforce GraphQL HTTP services outside the local Glade runtime; local Apex callouts and mocks are separate surfaces."
+    },
+    {
+      "surfaceId": "site-references:platform/graphql/index.Request",
+      "symbol": "site-references:platform/graphql/index.Request",
+      "kind": "unsupported",
+      "notes": "GraphQL API site-reference rows describe hosted Salesforce GraphQL HTTP services outside the local Glade runtime; local Apex callouts and mocks are separate surfaces."
+    },
+    {
+      "surfaceId": "site-references:platform/graphql/index.Response",
+      "symbol": "site-references:platform/graphql/index.Response",
+      "kind": "unsupported",
+      "notes": "GraphQL API site-reference rows describe hosted Salesforce GraphQL HTTP services outside the local Glade runtime; local Apex callouts and mocks are separate surfaces."
+    },
+    {
+      "surfaceId": "site-references:platform/graphql/index.Responses",
+      "symbol": "site-references:platform/graphql/index.Responses",
+      "kind": "unsupported",
+      "notes": "GraphQL API site-reference rows describe hosted Salesforce GraphQL HTTP services outside the local Glade runtime; local Apex callouts and mocks are separate surfaces."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/HostedGraphQLSiteReferenceUnsupportedMarker.cls",
+      "content": "public class HostedGraphQLSiteReferenceUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

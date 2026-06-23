@@ -23,9 +23,17 @@ type Options struct {
 }
 
 type Report struct {
+	Summary     ReportSummary
 	Projects    []ProjectResult
 	Diagnostics []ClassifiedDiagnostic
 	Counts      map[string]int
+}
+
+type ReportSummary struct {
+	ProjectCount         int
+	DiagnosticCount      int
+	UnclassifiedCount    int
+	ClosureBlockingCount int
 }
 
 type ProjectResult struct {
@@ -59,6 +67,9 @@ func Check(ctx context.Context, options Options) (Report, error) {
 	if strings.TrimSpace(options.OutDir) == "" {
 		return Report{}, errors.New("--out requires a value")
 	}
+	if err := rejectStaleGeneratedReports(options.OutDir); err != nil {
+		return Report{}, err
+	}
 	projects, err := discoverProjects(options.Root)
 	if err != nil {
 		return Report{}, err
@@ -76,11 +87,12 @@ func Check(ctx context.Context, options Options) (Report, error) {
 		a, b := report.Diagnostics[i], report.Diagnostics[j]
 		return strings.Join([]string{a.Project, a.Code, a.File, a.Message}, "\x00") < strings.Join([]string{b.Project, b.Code, b.File, b.Message}, "\x00")
 	})
+	report.Summary = summarizeReport(report)
 	if err := writeReport(options.OutDir, report); err != nil {
 		return Report{}, err
 	}
-	if options.FailOnUnclassified && report.Counts["unclassified"] > options.MaxUnclassified {
-		return report, fmt.Errorf("unclassified=%d exceeds max %d", report.Counts["unclassified"], options.MaxUnclassified)
+	if options.FailOnUnclassified && report.Summary.UnclassifiedCount > options.MaxUnclassified {
+		return report, fmt.Errorf("unclassified=%d exceeds max %d", report.Summary.UnclassifiedCount, options.MaxUnclassified)
 	}
 	if options.FailOnCheckClosure {
 		if disallowed := DisallowedForCheckClosure(report); len(disallowed) > 0 {
@@ -141,7 +153,7 @@ func DisallowedForCheckClosure(report Report) map[string]int {
 	disallowed := map[string]int{}
 	for class, count := range report.Counts {
 		switch class {
-		case "performance-advisory", "project-discovery-duplicate", "project-metadata-missing", "project-source-invalid":
+		case "performance-advisory", "project-discovery-duplicate", "project-metadata-missing", "project-source-invalid", "explicit-unsupported", "generated-shape-gap", "platform-shaped":
 			continue
 		default:
 			if count > 0 {
@@ -150,6 +162,58 @@ func DisallowedForCheckClosure(report Report) map[string]int {
 		}
 	}
 	return disallowed
+}
+
+func summarizeReport(report Report) ReportSummary {
+	closureBlocking := 0
+	for _, count := range DisallowedForCheckClosure(report) {
+		closureBlocking += count
+	}
+	return ReportSummary{
+		ProjectCount:         len(report.Projects),
+		DiagnosticCount:      len(report.Diagnostics),
+		UnclassifiedCount:    report.Counts["unclassified"],
+		ClosureBlockingCount: closureBlocking,
+	}
+}
+
+func rejectStaleGeneratedReports(outDir string) error {
+	info, err := os.Stat(outDir)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if !info.IsDir() {
+		return nil
+	}
+	var stale []string
+	err = filepath.WalkDir(outDir, func(path string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			return nil
+		}
+		name := entry.Name()
+		if strings.HasPrefix(name, "SURFACE_") {
+			rel, relErr := filepath.Rel(outDir, path)
+			if relErr != nil {
+				rel = path
+			}
+			stale = append(stale, rel)
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if len(stale) == 0 {
+		return nil
+	}
+	sort.Strings(stale)
+	return fmt.Errorf("stale generated report files in --out %s: %s; remove them or choose a fresh --out", outDir, strings.Join(stale, ", "))
 }
 
 func runProject(ctx context.Context, glade string, project string) (ProjectResult, []ClassifiedDiagnostic) {
@@ -254,12 +318,14 @@ func Classify(diag ClassifiedDiagnostic) string {
 		return "project-metadata-missing"
 	case diagnosticLooksLikeProjectSourceInvalid(code, text):
 		return "project-source-invalid"
-	case strings.Contains(text, "unsupported"):
-		return "explicit-unsupported"
 	case diagnosticLooksLikeDocsContractMismatch(code, text):
 		return "docs-contract-mismatch"
 	case diagnosticLooksLikeGeneratedShapeGap(code, text):
 		return "generated-shape-gap"
+	case diagnosticLooksLikeExplicitUnsupported(code, text):
+		return "explicit-unsupported"
+	case diagnosticLooksLikePlatformShaped(code, text):
+		return "platform-shaped"
 	case strings.HasPrefix(code, "GLADESEMA"):
 		return "semantic-contract-gap"
 	default:
@@ -363,10 +429,30 @@ func diagnosticLooksLikeDocsContractMismatch(code, text string) bool {
 }
 
 func diagnosticLooksLikeGeneratedShapeGap(code, text string) bool {
+	if !strings.HasPrefix(code, "GLADEGEN") {
+		return false
+	}
 	return strings.Contains(text, "generated shape") ||
 		strings.Contains(text, "generated standard symbol") ||
-		strings.Contains(text, "standard symbol") ||
 		strings.Contains(text, "shape gap")
+}
+
+func diagnosticLooksLikeExplicitUnsupported(code, text string) bool {
+	switch code {
+	case "GLADELWC050", "GLADELWC060", "GLADELWC061":
+		return strings.Contains(text, "unsupported")
+	default:
+		return false
+	}
+}
+
+func diagnosticLooksLikePlatformShaped(code, text string) bool {
+	switch code {
+	case "GLADELWC091", "GLADELWC092", "GLADELWC093", "GLADELWC094", "GLADELWC095":
+		return strings.Contains(text, "platform") || strings.Contains(text, "salesforce")
+	default:
+		return false
+	}
 }
 
 func mentionsCustomFieldPath(text string) bool {

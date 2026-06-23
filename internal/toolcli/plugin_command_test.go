@@ -67,33 +67,35 @@ func TestManifestJSONListsCompatCommands(t *testing.T) {
 	}
 
 	want := map[string]bool{
-		"compat":              true,
-		"surface":             true,
-		"matrix":              true,
-		"mvp":                 true,
-		"local-tests":         true,
-		"post-parity":         true,
-		"examples":            true,
-		"replay":              true,
-		"ui-controllers":      true,
-		"server-examples":     true,
-		"visualforce":         true,
-		"dashboard":           true,
-		"gaps":                true,
-		"stdlib":              true,
-		"docs-inventory":      true,
-		"catalog":             true,
-		"reconcile":           true,
-		"doc-contracts":       true,
-		"salesforce-coverage": true,
-		"standard-objects":    true,
-		"stub-contracts":      true,
-		"stub-behavior":       true,
-		"stub-inventory":      true,
-		"product-namespaces":  true,
-		"tooling-fixtures":    true,
-		"evidence":            true,
-		"oracle-stdlib":       true,
+		"compat":                true,
+		"surface":               true,
+		"corpus":                true,
+		"matrix":                true,
+		"mvp":                   true,
+		"local-tests":           true,
+		"post-parity":           true,
+		"examples":              true,
+		"replay":                true,
+		"ui-controllers":        true,
+		"server-examples":       true,
+		"visualforce":           true,
+		"dashboard":             true,
+		"gaps":                  true,
+		"stdlib":                true,
+		"docs-inventory":        true,
+		"catalog":               true,
+		"reconcile":             true,
+		"doc-contracts":         true,
+		"declaration-contracts": true,
+		"salesforce-coverage":   true,
+		"standard-objects":      true,
+		"stub-contracts":        true,
+		"stub-behavior":         true,
+		"stub-inventory":        true,
+		"product-namespaces":    true,
+		"tooling-fixtures":      true,
+		"evidence":              true,
+		"oracle-stdlib":         true,
 	}
 	for _, command := range manifest.Commands {
 		if len(command.Path) == 1 {
@@ -268,7 +270,7 @@ func TestPluginArchiveIndexCompatCommandsIncludeLWCRoots(t *testing.T) {
 		t.Fatal(err)
 	}
 	script := string(data)
-	for _, command := range []string{`"lwc"`, `"visualforce"`, `"oracle-stdlib"`} {
+	for _, command := range []string{`"lwc"`, `"corpus"`, `"visualforce"`, `"oracle-stdlib"`, `"declaration-contracts"`} {
 		if !strings.Contains(script, command) {
 			t.Fatalf("archive index command list omits %s", command)
 		}
@@ -402,6 +404,7 @@ func TestTopLevelHelpListsMaintenanceCommandRoots(t *testing.T) {
 		"oracle-stdlib",
 		"visualforce",
 		"lwc",
+		"declaration-contracts",
 	} {
 		if !strings.Contains(out, command) {
 			t.Fatalf("help omitted %s:\n%s", command, out)
@@ -475,6 +478,106 @@ func TestProductNamespacesRequiresSourceInput(t *testing.T) {
 	}
 	if strings.Contains(errText, "/Users/") {
 		t.Fatalf("error leaked a private fallback path:\n%s", errText)
+	}
+}
+
+func TestDeclarationContractsCommandWritesGeneratorJSON(t *testing.T) {
+	dir := t.TempDir()
+	inventoryPath := filepath.Join(dir, "inventory.json")
+	outputPath := filepath.Join(dir, "contracts.json")
+	if err := os.WriteFile(inventoryPath, []byte(`{
+  "schemaVersion": 1,
+  "documents": [
+    {
+      "sourcePath": "apex/apex_methods_system_string.md",
+      "kind": "class",
+      "namespace": "System",
+      "name": "String",
+      "members": [
+        {
+          "kind": "method",
+          "name": "format",
+          "signature": "public static String format(String stringToFormat, List<Object> formattingArguments)",
+          "returnType": "String",
+          "parameters": ["String", "List<Object>"]
+        }
+      ]
+    }
+  ]
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"declaration-contracts", "--inventory", inventoryPath, "--output", outputPath}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	data, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), `"sourcePath": "apex/apex_methods_system_string.md"`) ||
+		!strings.Contains(string(data), `"static": true`) {
+		t.Fatalf("contracts json = %s", string(data))
+	}
+}
+
+func TestCorpusCheckCommandWritesReports(t *testing.T) {
+	root := t.TempDir()
+	project := filepath.Join(root, "alpha")
+	if err := os.MkdirAll(project, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(project, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+printf '{"diagnostics":[{"code":"GLADEPERF001","message":"slow check","file":"A.cls"}]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "out")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"corpus", "check", "--root", root, "--glade", glade, "--out", out}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "corpus check: projects=1 diagnostics=1 unclassified=0 closure_blocking=0") {
+		t.Fatalf("stdout = %q", stdout.String())
+	}
+	if _, err := os.Stat(filepath.Join(out, "classified.tsv")); err != nil {
+		t.Fatalf("classified.tsv missing: %v", err)
+	}
+}
+
+func TestCorpusCheckCommandPrintsCountsBeforeClosureFailure(t *testing.T) {
+	root := t.TempDir()
+	project := filepath.Join(root, "alpha")
+	if err := os.MkdirAll(project, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(project, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+printf '{"diagnostics":[{"code":"GLADESEMA009","message":"No overload matches call","file":"A.cls"}]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "out")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"corpus", "check", "--root", root, "--glade", glade, "--out", out, "--fail-on-check-closure"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected closure failure, stdout=%q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "corpus check: projects=1 diagnostics=1 unclassified=0 closure_blocking=1") {
+		t.Fatalf("stdout missing counts: %q", stdout.String())
+	}
+	if !strings.Contains(stderr.String(), "public check closure failed") {
+		t.Fatalf("stderr missing closure error: %q", stderr.String())
 	}
 }
 

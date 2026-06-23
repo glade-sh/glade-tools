@@ -71,17 +71,120 @@ func TestReportDisallowedFindingsForPublicCheckClosure(t *testing.T) {
 		"performance-advisory":        3,
 		"project-metadata-missing":    2,
 		"project-source-invalid":      2,
+		"explicit-unsupported":        1,
+		"generated-shape-gap":         1,
+		"platform-shaped":             1,
+		"runtime-open":                1,
 		"semantic-contract-gap":       1,
 		"source-parse-error":          1,
+		"unclassified":                1,
 		"project-discovery-duplicate": 1,
 	}}
 	got := DisallowedForCheckClosure(report)
 	want := map[string]int{
+		"runtime-open":          1,
 		"semantic-contract-gap": 1,
 		"source-parse-error":    1,
+		"unclassified":          1,
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("DisallowedForCheckClosure() = %#v, want %#v", got, want)
+	}
+}
+
+func TestCheckAllowsRerunWithOwnedCorpusReportsInOutDir(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "test-results")
+
+	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out}); err != nil {
+		t.Fatalf("second corpus check should overwrite owned report files: %v", err)
+	}
+}
+
+func TestCheckRejectsStaleSurfaceReportsInOutDir(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "test-results")
+	if err := os.MkdirAll(out, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"summary.tsv", "SURFACE_DASHBOARD.md"} {
+		if err := os.WriteFile(filepath.Join(out, name), []byte("old report\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: out})
+	if err == nil {
+		t.Fatal("expected stale output rejection")
+	}
+	for _, want := range []string{"stale generated report", "SURFACE_DASHBOARD.md"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Fatalf("error missing %q: %v", want, err)
+		}
+	}
+	if strings.Contains(err.Error(), "summary.tsv") {
+		t.Fatalf("owned corpus report should not be stale: %v", err)
+	}
+}
+
+func TestCheckReportSummaryCountsClosureBlockingDiagnostics(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+printf '{"diagnostics":[{"code":"GLADEPERF001","message":"slow check","file":"A.cls"},{"code":"GLADESEMA009","message":"No overload matches return-type mismatch contract","file":"B.cls"},{"code":"UNKNOWN001","message":"unknown diagnostic","file":"C.cls"}]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	report, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Summary.ProjectCount != 1 || report.Summary.DiagnosticCount != 3 || report.Summary.UnclassifiedCount != 1 || report.Summary.ClosureBlockingCount != 2 {
+		t.Fatalf("summary = %#v", report.Summary)
+	}
+}
+
+func TestReportSummaryIsComputedByCheck(t *testing.T) {
+	report := Report{
+		Projects:    []ProjectResult{{Name: "alpha"}, {Name: "beta"}},
+		Diagnostics: []ClassifiedDiagnostic{{Class: "performance-advisory"}, {Class: "semantic-contract-gap"}, {Class: "unclassified"}},
+		Counts: map[string]int{
+			"performance-advisory":  1,
+			"semantic-contract-gap": 1,
+			"unclassified":          1,
+		},
+	}
+	if report.Summary != (ReportSummary{}) {
+		t.Fatalf("summary should not be precomputed on plain Report literals: %#v", report.Summary)
+	}
+	got := summarizeReport(report)
+	want := ReportSummary{ProjectCount: 2, DiagnosticCount: 3, UnclassifiedCount: 1, ClosureBlockingCount: 2}
+	if got != want {
+		t.Fatalf("summarizeReport() = %#v, want %#v", got, want)
 	}
 }
 
@@ -103,6 +206,52 @@ func TestDiscoverProjectsSkipsAggregateRootWhenNestedProjectsExist(t *testing.T)
 	}
 	if len(projects) != 3 {
 		t.Fatalf("projects = %#v, want 3 nested projects", projects)
+	}
+}
+
+func TestClassifyClosureAllowedDiagnosticsAreNarrow(t *testing.T) {
+	tests := []struct {
+		name string
+		diag ClassifiedDiagnostic
+		want string
+	}{
+		{
+			name: "stable explicit unsupported LWC code is allowed",
+			diag: ClassifiedDiagnostic{Code: "GLADELWC060", Message: "GLADELWC060 base component unsupported: lightning-map"},
+			want: "explicit-unsupported",
+		},
+		{
+			name: "stable generated shape code is allowed",
+			diag: ClassifiedDiagnostic{Code: "GLADEGEN_SHAPE", Message: "generated standard symbol missing: System.Address"},
+			want: "generated-shape-gap",
+		},
+		{
+			name: "stable platform LWC module code is allowed",
+			diag: ClassifiedDiagnostic{Code: "GLADELWC092", Message: "platformUtilityBarApi requires Salesforce platform shell"},
+			want: "platform-shaped",
+		},
+		{
+			name: "unsupported prose alone is not allowed",
+			diag: ClassifiedDiagnostic{Code: "UNKNOWN001", Message: "unsupported overload should be fixed"},
+			want: "unclassified",
+		},
+		{
+			name: "standard symbol prose alone is not allowed",
+			diag: ClassifiedDiagnostic{Code: "UNKNOWN001", Message: "standard symbol shape gap should be fixed"},
+			want: "unclassified",
+		},
+		{
+			name: "sema diagnostic with unsupported prose stays semantic",
+			diag: ClassifiedDiagnostic{Code: "GLADESEMA009", Message: "unsupported overload should be fixed"},
+			want: "semantic-contract-gap",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Classify(tt.diag); got != tt.want {
+				t.Fatalf("Classify() = %q, want %q", got, tt.want)
+			}
+		})
 	}
 }
 

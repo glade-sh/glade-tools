@@ -52,6 +52,20 @@ const (
 	ProductConnectAPI  = "connect-api"
 	ProductDataRef     = "data-reference"
 	ProductUnknown     = "unknown"
+
+	ProductBulkAPI                = "bulk-api"
+	ProductCLIReference           = "cli-reference"
+	ProductCommerceCLIReference   = "commerce-cli-reference"
+	ProductConnectRESTAPI         = "connect-rest-api"
+	ProductAnalyticsCLIReference  = "analytics-cli-reference"
+	ProductLightning              = "lightning"
+	ProductMetadataAPI            = "metadata-api"
+	ProductPlatformEvents         = "platform-events"
+	ProductServiceConnectorAPIRef = "service-connector-api-reference"
+	ProductSiteReferences         = "site-references"
+	ProductSOAPAPI                = "soap-api"
+	ProductStreamingAPI           = "streaming-api"
+	ProductUIAPI                  = "ui-api"
 )
 
 const (
@@ -81,6 +95,8 @@ const (
 	GapMissingEvidence    = "missing-evidence"
 	GapStaleGladeShape    = "stale-glade-shape"
 	GapDocsOrgMismatch    = "docs-org-mismatch"
+	GapReturnTypeMismatch = "return-type-mismatch"
+	GapParameterMismatch  = "parameter-mismatch"
 	GapSignatureChanged   = "signature-changed"
 	GapPassiveServiceRisk = "passive-service-risk"
 	GapAPIVersionChange   = "api-version-change"
@@ -130,6 +146,13 @@ type SurfaceLedgerRow struct {
 	ReturnType string   `json:"returnType,omitempty"`
 	Parameters []string `json:"parameters,omitempty"`
 
+	DocsReturnType  string   `json:"docsReturnType,omitempty"`
+	OrgReturnType   string   `json:"orgReturnType,omitempty"`
+	GladeReturnType string   `json:"gladeReturnType,omitempty"`
+	DocsParameters  []string `json:"docsParameters,omitempty"`
+	OrgParameters   []string `json:"orgParameters,omitempty"`
+	GladeParameters []string `json:"gladeParameters,omitempty"`
+
 	Docs          SourceState   `json:"docs"`
 	Org           SourceState   `json:"org"`
 	GladeShape    ShapeState    `json:"gladeShape"`
@@ -161,12 +184,24 @@ func RowFromDocs(row SurfaceLedgerRow) SurfaceLedgerRow {
 	if row.Org == "" {
 		row.Org = SourceAbsent
 	}
+	if row.DocsReturnType == "" {
+		row.DocsReturnType = row.ReturnType
+	}
+	if len(row.DocsParameters) == 0 && len(row.Parameters) > 0 {
+		row.DocsParameters = append([]string(nil), row.Parameters...)
+	}
 	return withDefaults(row)
 }
 
 func RowFromOrg(row SurfaceLedgerRow) SurfaceLedgerRow {
 	if row.Org == "" {
 		row.Org = SourcePresent
+	}
+	if row.OrgReturnType == "" {
+		row.OrgReturnType = row.ReturnType
+	}
+	if len(row.OrgParameters) == 0 && len(row.Parameters) > 0 {
+		row.OrgParameters = append([]string(nil), row.Parameters...)
 	}
 	return withDefaults(row)
 }
@@ -178,6 +213,12 @@ func RowFromGladeShape(row SurfaceLedgerRow) SurfaceLedgerRow {
 		} else {
 			row.GladeShape = ShapeTypeKnown
 		}
+	}
+	if row.GladeReturnType == "" {
+		row.GladeReturnType = row.ReturnType
+	}
+	if len(row.GladeParameters) == 0 && len(row.Parameters) > 0 {
+		row.GladeParameters = append([]string(nil), row.Parameters...)
 	}
 	return withDefaults(row)
 }
@@ -251,6 +292,10 @@ func surfaceFamilyForProduct(product string) string {
 		return "aura"
 	case ProductDataRef:
 		return "data-reference"
+	case ProductBulkAPI, ProductCLIReference, ProductCommerceCLIReference, ProductConnectRESTAPI, ProductAnalyticsCLIReference,
+		ProductLightning, ProductMetadataAPI, ProductPlatformEvents, ProductServiceConnectorAPIRef,
+		ProductSiteReferences, ProductSOAPAPI, ProductStreamingAPI, ProductUIAPI:
+		return product
 	default:
 		if product == "" {
 			return ProductUnknown

@@ -1,0 +1,171 @@
+{
+  "name": "hosted-tooling-run-retrieve-field-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "tooling:Retrieve.id",
+      "symbol": "tooling:Retrieve.id",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.name",
+      "symbol": "tooling:Retrieve.name",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.namespacePrefix",
+      "symbol": "tooling:Retrieve.namespacePrefix",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.testMethods",
+      "symbol": "tooling:Retrieve.testMethods",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.Category",
+      "symbol": "tooling:Run.Category",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.classId",
+      "symbol": "tooling:Run.classId",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.className",
+      "symbol": "tooling:Run.className",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.classNames",
+      "symbol": "tooling:Run.classNames",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.classids",
+      "symbol": "tooling:Run.classids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.id",
+      "symbol": "tooling:Run.id",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.maxFailedTests",
+      "symbol": "tooling:Run.maxFailedTests",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.message",
+      "symbol": "tooling:Run.message",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.methodName",
+      "symbol": "tooling:Run.methodName",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.name",
+      "symbol": "tooling:Run.name",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.namespace",
+      "symbol": "tooling:Run.namespace",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.seeAllData",
+      "symbol": "tooling:Run.seeAllData",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.skipCodeCoverage",
+      "symbol": "tooling:Run.skipCodeCoverage",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.stackTrace",
+      "symbol": "tooling:Run.stackTrace",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.suiteNames",
+      "symbol": "tooling:Run.suiteNames",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.suiteids",
+      "symbol": "tooling:Run.suiteids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.testLevel",
+      "symbol": "tooling:Run.testLevel",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.testMethods",
+      "symbol": "tooling:Run.testMethods",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.tests",
+      "symbol": "tooling:Run.tests",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.time",
+      "symbol": "tooling:Run.time",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    },
+    {
+      "surfaceId": "tooling:Run.type",
+      "symbol": "tooling:Run.type",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce Tooling API run and retrieve field rows require org Tooling services outside the local Glade runtime; local source-backed Tooling metadata objects are separate surfaces."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/HostedToolingRunRetrieveFieldUnsupportedMarker.cls",
+      "content": "public class HostedToolingRunRetrieveFieldUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

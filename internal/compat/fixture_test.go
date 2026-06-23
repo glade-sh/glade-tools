@@ -174,6 +174,40 @@ func TestValidateFixture(t *testing.T) {
 	}
 }
 
+func TestValidatePolicyEvidenceOnlyFixture(t *testing.T) {
+	fixture := Fixture{
+		Name:    "hosted-policy-evidence",
+		Command: Invocation{Kind: "policy-evidence"},
+		Evidence: []FixtureEvidence{{
+			Symbol:    "soap-api:Account.create",
+			SurfaceID: "soap-api:Account.create",
+			Kind:      "unsupported",
+		}, {
+			Symbol:    "apex:System.String",
+			SurfaceID: "apex:System.String",
+			Kind:      "shape",
+		}},
+	}
+	if err := Validate(fixture); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestValidateRejectsEvidenceOnlyRunnableFixture(t *testing.T) {
+	fixture := Fixture{
+		Name:    "hosted-policy-evidence",
+		Command: Invocation{Kind: "exec"},
+		Evidence: []FixtureEvidence{{
+			Symbol:    "soap-api:Account.create",
+			SurfaceID: "soap-api:Account.create",
+			Kind:      "unsupported",
+		}},
+	}
+	if err := Validate(fixture); err == nil {
+		t.Fatal("expected runnable evidence-only fixture to fail validation")
+	}
+}
+
 func TestRunParseFixture(t *testing.T) {
 	fixture := Fixture{
 		Name:    "parser-smoke",

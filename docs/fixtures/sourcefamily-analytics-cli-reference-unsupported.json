@@ -1,0 +1,435 @@
+{
+  "name": "sourcefamily-analytics-cli-reference-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference",
+      "symbol": "bi cli reference",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics",
+      "symbol": "bi cli reference analytics",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_app",
+      "symbol": "bi cli reference analytics app",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_app.Command",
+      "symbol": "bi cli reference analytics app Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_app.Parameters",
+      "symbol": "bi cli reference analytics app Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_app_unified",
+      "symbol": "bi cli reference analytics app unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_app_unified.Command",
+      "symbol": "bi cli reference analytics app unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_app_unified.Parameters",
+      "symbol": "bi cli reference analytics app unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_asset",
+      "symbol": "bi cli reference analytics asset",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_asset.Command",
+      "symbol": "bi cli reference analytics asset Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_asset.Parameters",
+      "symbol": "bi cli reference analytics asset Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_asset_unified",
+      "symbol": "bi cli reference analytics asset unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_asset_unified.Command",
+      "symbol": "bi cli reference analytics asset unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_asset_unified.Parameters",
+      "symbol": "bi cli reference analytics asset unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_autoinstall",
+      "symbol": "bi cli reference analytics autoinstall",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_autoinstall.Command",
+      "symbol": "bi cli reference analytics autoinstall Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_autoinstall.Parameters",
+      "symbol": "bi cli reference analytics autoinstall Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_autoinstall_unified",
+      "symbol": "bi cli reference analytics autoinstall unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_autoinstall_unified.Command",
+      "symbol": "bi cli reference analytics autoinstall unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_autoinstall_unified.Parameters",
+      "symbol": "bi cli reference analytics autoinstall unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dashboard",
+      "symbol": "bi cli reference analytics dashboard",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dashboard.Command",
+      "symbol": "bi cli reference analytics dashboard Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dashboard.Parameters",
+      "symbol": "bi cli reference analytics dashboard Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dashboard_unified",
+      "symbol": "bi cli reference analytics dashboard unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dashboard_unified.Command",
+      "symbol": "bi cli reference analytics dashboard unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dashboard_unified.Parameters",
+      "symbol": "bi cli reference analytics dashboard unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataflow",
+      "symbol": "bi cli reference analytics dataflow",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataflow.Command",
+      "symbol": "bi cli reference analytics dataflow Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataflow.Parameters",
+      "symbol": "bi cli reference analytics dataflow Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataflow_unified",
+      "symbol": "bi cli reference analytics dataflow unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataflow_unified.Command",
+      "symbol": "bi cli reference analytics dataflow unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataflow_unified.Parameters",
+      "symbol": "bi cli reference analytics dataflow unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataset",
+      "symbol": "bi cli reference analytics dataset",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataset.Command",
+      "symbol": "bi cli reference analytics dataset Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataset.Parameters",
+      "symbol": "bi cli reference analytics dataset Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataset_unified",
+      "symbol": "bi cli reference analytics dataset unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataset_unified.Command",
+      "symbol": "bi cli reference analytics dataset unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_dataset_unified.Parameters",
+      "symbol": "bi cli reference analytics dataset unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_enable",
+      "symbol": "bi cli reference analytics enable",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_enable_unified",
+      "symbol": "bi cli reference analytics enable unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_generate",
+      "symbol": "bi cli reference analytics generate",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_generate.Command",
+      "symbol": "bi cli reference analytics generate Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_generate.Parameters",
+      "symbol": "bi cli reference analytics generate Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_generate_unified",
+      "symbol": "bi cli reference analytics generate unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_generate_unified.Command",
+      "symbol": "bi cli reference analytics generate unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_generate_unified.Parameters",
+      "symbol": "bi cli reference analytics generate unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_lens",
+      "symbol": "bi cli reference analytics lens",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_lens.Command",
+      "symbol": "bi cli reference analytics lens Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_lens.Parameters",
+      "symbol": "bi cli reference analytics lens Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_lens_unified",
+      "symbol": "bi cli reference analytics lens unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_lens_unified.Command",
+      "symbol": "bi cli reference analytics lens unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_lens_unified.Parameters",
+      "symbol": "bi cli reference analytics lens unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_query",
+      "symbol": "bi cli reference analytics query",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_query_unified",
+      "symbol": "bi cli reference analytics query unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_recipe",
+      "symbol": "bi cli reference analytics recipe",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_recipe.Command",
+      "symbol": "bi cli reference analytics recipe Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_recipe.Parameters",
+      "symbol": "bi cli reference analytics recipe Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_recipe_unified",
+      "symbol": "bi cli reference analytics recipe unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_recipe_unified.Command",
+      "symbol": "bi cli reference analytics recipe unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_recipe_unified.Parameters",
+      "symbol": "bi cli reference analytics recipe unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_template",
+      "symbol": "bi cli reference analytics template",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_template.Command",
+      "symbol": "bi cli reference analytics template Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_template.Parameters",
+      "symbol": "bi cli reference analytics template Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_template_unified",
+      "symbol": "bi cli reference analytics template unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_template_unified.Command",
+      "symbol": "bi cli reference analytics template unified Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_template_unified.Parameters",
+      "symbol": "bi cli reference analytics template unified Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_analytics_unified",
+      "symbol": "bi cli reference analytics unified",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:bi_cli_reference_help",
+      "symbol": "bi cli reference help",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "analytics-cli-reference:sfdx_dev_cli_deprecation",
+      "symbol": "sfdx dev cli deprecation",
+      "kind": "unsupported",
+      "notes": "Salesforce Analytics CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/SourceFamilyAnalyticsCliReferenceUnsupportedMarker.cls",
+      "content": "public class SourceFamilyAnalyticsCliReferenceUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

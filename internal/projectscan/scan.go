@@ -478,7 +478,7 @@ func loadScanContext(absRoot string) scanContext {
 	if metadata, err := resource.LoadProject(scanProj); err == nil {
 		ctx.metadata = metadata
 	}
-	ctx.automation = resolvedAutomationFiles(proj)
+	ctx.automation = resolvedAutomationFiles(scanProj)
 	ctx.loadedFiles = make(map[string]bool)
 	for _, path := range scanProj.ObjectFiles {
 		ctx.loadedFiles[filepath.Clean(path)] = true

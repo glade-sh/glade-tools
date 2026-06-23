@@ -1,0 +1,651 @@
+{
+  "name": "sourcefamily-cli-reference-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "cli-reference:cli_reference",
+      "symbol": "cli reference",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_agent_commands_unified",
+      "symbol": "cli reference agent commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_agent_commands_unified.Description",
+      "symbol": "cli reference agent commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_agent_commands_unified.Flags",
+      "symbol": "cli reference agent commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_alias_commands_unified",
+      "symbol": "cli reference alias commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_alias_commands_unified.Aliases",
+      "symbol": "cli reference alias commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_alias_commands_unified.Description",
+      "symbol": "cli reference alias commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_alias_commands_unified.Flags",
+      "symbol": "cli reference alias commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_apex_commands_unified",
+      "symbol": "cli reference apex commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_apex_commands_unified.Aliases",
+      "symbol": "cli reference apex commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_apex_commands_unified.Description",
+      "symbol": "cli reference apex commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_apex_commands_unified.Flags",
+      "symbol": "cli reference apex commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_api_commands_unified",
+      "symbol": "cli reference api commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_api_commands_unified.Description",
+      "symbol": "cli reference api commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_api_commands_unified.Flags",
+      "symbol": "cli reference api commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_cmdt_commands_unified",
+      "symbol": "cli reference cmdt commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_cmdt_commands_unified.Aliases",
+      "symbol": "cli reference cmdt commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_cmdt_commands_unified.Description",
+      "symbol": "cli reference cmdt commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_cmdt_commands_unified.Flags",
+      "symbol": "cli reference cmdt commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_code-analyzer_commands_unified",
+      "symbol": "cli reference code analyzer commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_code-analyzer_commands_unified.Description",
+      "symbol": "cli reference code analyzer commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_code-analyzer_commands_unified.Flags",
+      "symbol": "cli reference code analyzer commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_community_commands_unified",
+      "symbol": "cli reference community commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_community_commands_unified.Aliases",
+      "symbol": "cli reference community commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_community_commands_unified.Description",
+      "symbol": "cli reference community commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_community_commands_unified.Flags",
+      "symbol": "cli reference community commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_config_commands_unified",
+      "symbol": "cli reference config commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_config_commands_unified.Aliases",
+      "symbol": "cli reference config commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_config_commands_unified.Description",
+      "symbol": "cli reference config commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_config_commands_unified.Flags",
+      "symbol": "cli reference config commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_data_commands_unified",
+      "symbol": "cli reference data commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_data_commands_unified.Aliases",
+      "symbol": "cli reference data commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_data_commands_unified.Description",
+      "symbol": "cli reference data commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_data_commands_unified.Flags",
+      "symbol": "cli reference data commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_dev_commands_unified",
+      "symbol": "cli reference dev commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_dev_commands_unified.Aliases",
+      "symbol": "cli reference dev commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_dev_commands_unified.Description",
+      "symbol": "cli reference dev commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_dev_commands_unified.Flags",
+      "symbol": "cli reference dev commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_doctor_commands_unified",
+      "symbol": "cli reference doctor commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_doctor_commands_unified.Description",
+      "symbol": "cli reference doctor commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_doctor_commands_unified.Flags",
+      "symbol": "cli reference doctor commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_flow_commands_unified",
+      "symbol": "cli reference flow commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_flow_commands_unified.Description",
+      "symbol": "cli reference flow commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_flow_commands_unified.Flags",
+      "symbol": "cli reference flow commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_force_commands_unified",
+      "symbol": "cli reference force commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_force_commands_unified.Description",
+      "symbol": "cli reference force commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_force_commands_unified.Flags",
+      "symbol": "cli reference force commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_functions_commands_unified",
+      "symbol": "cli reference functions commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_help_unified",
+      "symbol": "cli reference help unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_info_commands_unified",
+      "symbol": "cli reference info commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_info_commands_unified.Aliases",
+      "symbol": "cli reference info commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_info_commands_unified.Description",
+      "symbol": "cli reference info commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_info_commands_unified.Flags",
+      "symbol": "cli reference info commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_lightning_commands_unified",
+      "symbol": "cli reference lightning commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_lightning_commands_unified.Description",
+      "symbol": "cli reference lightning commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_lightning_commands_unified.Flags",
+      "symbol": "cli reference lightning commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_logic_commands_unified",
+      "symbol": "cli reference logic commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_logic_commands_unified.Description",
+      "symbol": "cli reference logic commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_logic_commands_unified.Flags",
+      "symbol": "cli reference logic commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_mig_bulk_data",
+      "symbol": "cli reference mig bulk data",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_mig_deploy_retrieve",
+      "symbol": "cli reference mig deploy retrieve",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_mig_env_config",
+      "symbol": "cli reference mig env config",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_mig_org",
+      "symbol": "cli reference mig org",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_mig_source_tracking",
+      "symbol": "cli reference mig source tracking",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_migrate",
+      "symbol": "cli reference migrate",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_new_old_command_mapping",
+      "symbol": "cli reference new old command mapping",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_old_new_command_mapping",
+      "symbol": "cli reference old new command mapping",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_org_commands_unified",
+      "symbol": "cli reference org commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_org_commands_unified.Aliases",
+      "symbol": "cli reference org commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_org_commands_unified.Description",
+      "symbol": "cli reference org commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_org_commands_unified.Flags",
+      "symbol": "cli reference org commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package1_commands_unified",
+      "symbol": "cli reference package1 commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package1_commands_unified.Aliases",
+      "symbol": "cli reference package1 commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package1_commands_unified.Description",
+      "symbol": "cli reference package1 commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package1_commands_unified.Flags",
+      "symbol": "cli reference package1 commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package_commands_unified",
+      "symbol": "cli reference package commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package_commands_unified.Aliases",
+      "symbol": "cli reference package commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package_commands_unified.Description",
+      "symbol": "cli reference package commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_package_commands_unified.Flags",
+      "symbol": "cli reference package commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_plugins_commands_unified",
+      "symbol": "cli reference plugins commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_plugins_commands_unified.Flags",
+      "symbol": "cli reference plugins commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_project_commands_unified",
+      "symbol": "cli reference project commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_project_commands_unified.Aliases",
+      "symbol": "cli reference project commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_project_commands_unified.Description",
+      "symbol": "cli reference project commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_project_commands_unified.Flags",
+      "symbol": "cli reference project commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_release_notes",
+      "symbol": "cli reference release notes",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_schema_commands_unified",
+      "symbol": "cli reference schema commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_schema_commands_unified.Aliases",
+      "symbol": "cli reference schema commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_schema_commands_unified.Description",
+      "symbol": "cli reference schema commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_schema_commands_unified.Flags",
+      "symbol": "cli reference schema commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_sobject_commands_unified",
+      "symbol": "cli reference sobject commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_sobject_commands_unified.Aliases",
+      "symbol": "cli reference sobject commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_sobject_commands_unified.Description",
+      "symbol": "cli reference sobject commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_sobject_commands_unified.Flags",
+      "symbol": "cli reference sobject commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_template_commands_unified",
+      "symbol": "cli reference template commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_template_commands_unified.Aliases",
+      "symbol": "cli reference template commands unified Aliases",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_template_commands_unified.Description",
+      "symbol": "cli reference template commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_template_commands_unified.Flags",
+      "symbol": "cli reference template commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_top",
+      "symbol": "cli reference top",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_ui-bundle_commands_unified",
+      "symbol": "cli reference ui bundle commands unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_ui-bundle_commands_unified.Description",
+      "symbol": "cli reference ui bundle commands unified Description",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_ui-bundle_commands_unified.Flags",
+      "symbol": "cli reference ui bundle commands unified Flags",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:cli_reference_unified",
+      "symbol": "cli reference unified",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:sfdx_dev_cli_deprecation",
+      "symbol": "sfdx dev cli deprecation",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "cli-reference:sfdx_setup_other_plugins",
+      "symbol": "sfdx setup other plugins",
+      "kind": "unsupported",
+      "notes": "Salesforce CLI command-reference pages describe Salesforce-hosted CLI behavior outside the Glade local runtime."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/SourceFamilyCliReferenceUnsupportedMarker.cls",
+      "content": "public class SourceFamilyCliReferenceUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

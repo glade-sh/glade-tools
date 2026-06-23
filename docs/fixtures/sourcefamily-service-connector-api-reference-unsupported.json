@@ -1,0 +1,567 @@
+{
+  "name": "sourcefamily-service-connector-api-reference-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_base",
+      "symbol": "service connector api base",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_get_started",
+      "symbol": "service connector api get started",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_interface",
+      "symbol": "service connector api interface",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_methods_common",
+      "symbol": "service connector api methods common",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_methods_voice",
+      "symbol": "service connector api methods voice",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_objects",
+      "symbol": "service connector api objects",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_overview",
+      "symbol": "service connector api overview",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_api_release_notes",
+      "symbol": "service connector api release notes",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_base_initializeconnector",
+      "symbol": "service connector base initializeconnector",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_base_publisherror",
+      "symbol": "service connector base publisherror",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_base_publishevent",
+      "symbol": "service connector base publishevent",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_acceptcall",
+      "symbol": "service connector interface acceptcall",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_addparticipant",
+      "symbol": "service connector interface addparticipant",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_conference",
+      "symbol": "service connector interface conference",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_declinecall",
+      "symbol": "service connector interface declinecall",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_dial",
+      "symbol": "service connector interface dial",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_downloadlogs",
+      "symbol": "service connector interface downloadlogs",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_endcall",
+      "symbol": "service connector interface endcall",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getactivecalls",
+      "symbol": "service connector interface getactivecalls",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getagentconfig",
+      "symbol": "service connector interface getagentconfig",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getagentstatus",
+      "symbol": "service connector interface getagentstatus",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getaudiodevices",
+      "symbol": "service connector interface getaudiodevices",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getcapabilities",
+      "symbol": "service connector interface getcapabilities",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getcontacts",
+      "symbol": "service connector interface getcontacts",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getphonecontacts",
+      "symbol": "service connector interface getphonecontacts",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getsharedcapabilities",
+      "symbol": "service connector interface getsharedcapabilities",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getsignedrecordingurl",
+      "symbol": "service connector interface getsignedrecordingurl",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_gettelephonyconnector",
+      "symbol": "service connector interface gettelephonyconnector",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_getvoicecapabilities",
+      "symbol": "service connector interface getvoicecapabilities",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_handlemessage",
+      "symbol": "service connector interface handlemessage",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_holdcall",
+      "symbol": "service connector interface holdcall",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_init",
+      "symbol": "service connector interface init",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_logmessagetovendor",
+      "symbol": "service connector interface logmessagetovendor",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_logout",
+      "symbol": "service connector interface logout",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_mute",
+      "symbol": "service connector interface mute",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_onagentwork",
+      "symbol": "service connector interface onagentwork",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_pauserecording",
+      "symbol": "service connector interface pauserecording",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_resume",
+      "symbol": "service connector interface resume",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_resumerecording",
+      "symbol": "service connector interface resumerecording",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_senddigits",
+      "symbol": "service connector interface senddigits",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_setagentconfig",
+      "symbol": "service connector interface setagentconfig",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_setagentstatus",
+      "symbol": "service connector interface setagentstatus",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_swap",
+      "symbol": "service connector interface swap",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_unmute",
+      "symbol": "service connector interface unmute",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_interface_wrapupcall",
+      "symbol": "service connector interface wrapupcall",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_activecallsresult",
+      "symbol": "service connector objects activecallsresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_acwinfo",
+      "symbol": "service connector objects acwinfo",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_agentconfigresult",
+      "symbol": "service connector objects agentconfigresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_agentstatusinfo",
+      "symbol": "service connector objects agentstatusinfo",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_agentvendorstatusinfo",
+      "symbol": "service connector objects agentvendorstatusinfo",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_agentwork",
+      "symbol": "service connector objects agentwork",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_audiodevicesresult",
+      "symbol": "service connector objects audiodevicesresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_audiostats",
+      "symbol": "service connector objects audiostats",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_audiostatsgroup",
+      "symbol": "service connector objects audiostatsgroup",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_callinfo",
+      "symbol": "service connector objects callinfo",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_callresult",
+      "symbol": "service connector objects callresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_capabilitiesresult",
+      "symbol": "service connector objects capabilitiesresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_conferenceresult",
+      "symbol": "service connector objects conferenceresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_contact",
+      "symbol": "service connector objects contact",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_contactsfilter",
+      "symbol": "service connector objects contactsfilter",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_contactsresult",
+      "symbol": "service connector objects contactsresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_customerror",
+      "symbol": "service connector objects customerror",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_genericresult",
+      "symbol": "service connector objects genericresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_hangupresult",
+      "symbol": "service connector objects hangupresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_hiddevice",
+      "symbol": "service connector objects hiddevice",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_holdtoggleresult",
+      "symbol": "service connector objects holdtoggleresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_initresult",
+      "symbol": "service connector objects initresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_logoutresult",
+      "symbol": "service connector objects logoutresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_mutetoggleresult",
+      "symbol": "service connector objects mutetoggleresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_participantresult",
+      "symbol": "service connector objects participantresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_phone",
+      "symbol": "service connector objects phone",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_phonecall",
+      "symbol": "service connector objects phonecall",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_phonecallattributes",
+      "symbol": "service connector objects phonecallattributes",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_phonecontactsresult",
+      "symbol": "service connector objects phonecontactsresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_recordingtoggleresult",
+      "symbol": "service connector objects recordingtoggleresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_setagentconfigresult",
+      "symbol": "service connector objects setagentconfigresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_setagentstateresult",
+      "symbol": "service connector objects setagentstateresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_sharedcapabilitiesresult",
+      "symbol": "service connector objects sharedcapabilitiesresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_showstorageaccessresult",
+      "symbol": "service connector objects showstorageaccessresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_signedrecordingurlresult",
+      "symbol": "service connector objects signedrecordingurlresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_statechangeresult",
+      "symbol": "service connector objects statechangeresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_statsinfo",
+      "symbol": "service connector objects statsinfo",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_objects_voicecapabilitiesresult",
+      "symbol": "service connector objects voicecapabilitiesresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_api_overview",
+      "symbol": "service connector supervisor api overview",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_api_supervisecall",
+      "symbol": "service connector supervisor api supervisecall",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_api_supervisorbargein",
+      "symbol": "service connector supervisor api supervisorbargein",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_api_supervisordisconnect",
+      "symbol": "service connector supervisor api supervisordisconnect",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_events",
+      "symbol": "service connector supervisor events",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_objects_supervisecallresult",
+      "symbol": "service connector supervisor objects supervisecallresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_objects_supervisedcallinfo",
+      "symbol": "service connector supervisor objects supervisedcallinfo",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "service-connector-api-reference:service_connector_supervisor_objects_supervisorhangupresult",
+      "symbol": "service connector supervisor objects supervisorhangupresult",
+      "kind": "unsupported",
+      "notes": "Service Connector API reference pages describe hosted Service Cloud connector and browser telephony behavior outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/SourceFamilyServiceConnectorAPIReferenceUnsupportedMarker.cls",
+      "content": "public class SourceFamilyServiceConnectorAPIReferenceUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}
