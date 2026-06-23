@@ -75,6 +75,8 @@ func runCompat(ctx context.Context, args []string, w io.Writer) error {
 		return runCompatReconcile(args[1:], w)
 	case "doc-contracts":
 		return runCompatDocContracts(args[1:], w)
+	case "declaration-contracts":
+		return runCompatDeclarationContracts(args[1:], w)
 	case "salesforce-coverage":
 		return runCompatSalesforceCoverage(args[1:], w)
 	case "standard-objects":
@@ -190,6 +192,7 @@ func compatUsage() string {
 		"catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>]",
 		"reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>]",
 		"doc-contracts --inventory <path> [--behavior <kind>] [--json|--output <path>|--check <path>]",
+		"declaration-contracts --inventory <path> [--json|--output <path>|--check <path>]",
 		"salesforce-coverage [--source <dir>|--inventory <path>|--catalog <path>] [--tooling-completions <path>] [--tooling-symbols <path>] [--json|--output <path>|--check <path>]",
 		"standard-objects [--json|--output <path>|--check <path>]",
 		"stub-contracts [--source <dir>] [--json|--output <path>|--check <path>]",
@@ -252,10 +255,17 @@ func runCompatCorpus(ctx context.Context, args []string, w io.Writer) error {
 	}
 	report, err := corpuscheck.Check(ctx, options)
 	if err != nil {
+		if report.Summary != (corpuscheck.ReportSummary{}) {
+			printCorpusCheckSummary(w, report, options.OutDir)
+		}
 		return err
 	}
-	fmt.Fprintf(w, "corpus check: projects=%d diagnostics=%d unclassified=%d out=%s\n", len(report.Projects), len(report.Diagnostics), report.Counts["unclassified"], options.OutDir)
+	printCorpusCheckSummary(w, report, options.OutDir)
 	return nil
+}
+
+func printCorpusCheckSummary(w io.Writer, report corpuscheck.Report, outDir string) {
+	fmt.Fprintf(w, "corpus check: projects=%d diagnostics=%d unclassified=%d closure_blocking=%d out=%s\n", report.Summary.ProjectCount, report.Summary.DiagnosticCount, report.Summary.UnclassifiedCount, report.Summary.ClosureBlockingCount, outDir)
 }
 
 func runCompatLwc(ctx context.Context, args []string, w io.Writer) error {
@@ -2272,6 +2282,91 @@ func runCompatDocContracts(args []string, w io.Writer) error {
 		for _, c := range report.ByBehavior {
 			fmt.Fprintf(w, "  %s: %d\n", c.Behavior, c.Count)
 		}
+		return nil
+	}
+}
+
+const declarationContractsUsage = "usage: glade-tools declaration-contracts --inventory <path> [--json|--output <path>|--check <path>]"
+
+func runCompatDeclarationContracts(args []string, w io.Writer) error {
+	inventoryPath := ""
+	outputPath := ""
+	checkPath := ""
+	jsonOut := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--inventory":
+			i++
+			if i >= len(args) {
+				return errors.New(declarationContractsUsage)
+			}
+			inventoryPath = args[i]
+		case "--json":
+			jsonOut = true
+		case "--output":
+			i++
+			if i >= len(args) {
+				return errors.New(declarationContractsUsage)
+			}
+			outputPath = args[i]
+		case "--check":
+			i++
+			if i >= len(args) {
+				return errors.New(declarationContractsUsage)
+			}
+			checkPath = args[i]
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	if inventoryPath == "" {
+		return errors.New(declarationContractsUsage)
+	}
+	requested := 0
+	for _, set := range []bool{jsonOut, outputPath != "", checkPath != ""} {
+		if set {
+			requested++
+		}
+	}
+	if requested > 1 {
+		return errors.New("use only one of --json, --output, or --check")
+	}
+
+	inv, err := apexdocs.ReadInventory(inventoryPath)
+	if err != nil {
+		return err
+	}
+	contracts := capability.BuildDeclarationContracts(inv)
+
+	switch {
+	case jsonOut:
+		return capability.WriteDeclarationContractsJSON(w, contracts)
+	case outputPath != "":
+		var buf strings.Builder
+		if err := capability.WriteDeclarationContractsJSON(&buf, contracts); err != nil {
+			return err
+		}
+		return os.WriteFile(outputPath, []byte(buf.String()), 0o644)
+	case checkPath != "":
+		var buf strings.Builder
+		if err := capability.WriteDeclarationContractsJSON(&buf, contracts); err != nil {
+			return err
+		}
+		existing, err := os.ReadFile(checkPath)
+		if err != nil {
+			return err
+		}
+		if string(existing) != buf.String() {
+			return fmt.Errorf("declaration-contracts drift: regenerate %s", checkPath)
+		}
+		fmt.Fprintf(w, "%s: up to date\n", checkPath)
+		return nil
+	default:
+		members := 0
+		for _, doc := range contracts.Documents {
+			members += len(doc.Members)
+		}
+		fmt.Fprintf(w, "declaration contracts: documents=%d members=%d\n", len(contracts.Documents), members)
 		return nil
 	}
 }

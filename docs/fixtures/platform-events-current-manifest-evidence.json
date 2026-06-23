@@ -1,0 +1,1383 @@
+{
+  "name": "platform-events-current-manifest-evidence",
+  "evidence": [
+    {
+      "surfaceId": "platform-events:code_sample_section",
+      "symbol": "code sample section",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:other_resources",
+      "symbol": "other resources",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_apex_tests",
+      "symbol": "platform event apex tests",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_extras",
+      "symbol": "platform event extras",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_limits",
+      "symbol": "platform event limits",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_limits.Default",
+      "symbol": "platform event limits Default",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_limits.Event",
+      "symbol": "platform event limits Event",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_limits.How",
+      "symbol": "platform event limits How",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_limits.What",
+      "symbol": "platform event limits What",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_limits.Which",
+      "symbol": "platform event limits Which",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_event_limits.Why",
+      "symbol": "platform event limits Why",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_api_considerations",
+      "symbol": "platform events api considerations",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_considerations",
+      "symbol": "platform events considerations",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_considerations_decoupled_processes",
+      "symbol": "platform events considerations decoupled processes",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_configure",
+      "symbol": "platform events custom channel configure",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_configure_em",
+      "symbol": "platform events custom channel configure em",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_list",
+      "symbol": "platform events custom channel list",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_metadata_api",
+      "symbol": "platform events custom channel metadata api",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_metadata_api_em",
+      "symbol": "platform events custom channel metadata api em",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_pe",
+      "symbol": "platform events custom channel pe",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_subscribe",
+      "symbol": "platform events custom channel subscribe",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_tooling_api",
+      "symbol": "platform events custom channel tooling api",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_custom_channel_tooling_api_em",
+      "symbol": "platform events custom channel tooling api em",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_define",
+      "symbol": "platform events define",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_define_ui",
+      "symbol": "platform events define ui",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_encryption",
+      "symbol": "platform events encryption",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_error_status_codes",
+      "symbol": "platform events error status codes",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_event_schema",
+      "symbol": "platform events event schema",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_event_schema_rest_api",
+      "symbol": "platform events event schema rest api",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_event_uuid",
+      "symbol": "platform events event uuid",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_eventbussubscriber",
+      "symbol": "platform events eventbussubscriber",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_example_printervendor",
+      "symbol": "platform events example printervendor",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_example_printervendor.Order",
+      "symbol": "platform events example printervendor Order",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_examples",
+      "symbol": "platform events examples",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_add",
+      "symbol": "platform events filter add",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_allocations",
+      "symbol": "platform events filter allocations",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_considerations",
+      "symbol": "platform events filter considerations",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_expression_format",
+      "symbol": "platform events filter expression format",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_list_channels",
+      "symbol": "platform events filter list channels",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_metadata_api_add_filter",
+      "symbol": "platform events filter metadata api add filter",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_pe",
+      "symbol": "platform events filter pe",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_section",
+      "symbol": "platform events filter section",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_subscribe",
+      "symbol": "platform events filter subscribe",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filter_tooling_api_add_filter",
+      "symbol": "platform events filter tooling api add filter",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_filters",
+      "symbol": "platform events filters",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_get_subscribers",
+      "symbol": "platform events get subscribers",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_get_subscribers_apex",
+      "symbol": "platform events get subscribers apex",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_get_subscribers_process",
+      "symbol": "platform events get subscribers process",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_intro",
+      "symbol": "platform events intro",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_intro_architecture",
+      "symbol": "platform events intro architecture",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_intro_emp",
+      "symbol": "platform events intro emp",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_intro_other_events",
+      "symbol": "platform events intro other events",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_metadata_api",
+      "symbol": "platform events metadata api",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_monitor_enhanced_usage",
+      "symbol": "platform events monitor enhanced usage",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_monitor_usage",
+      "symbol": "platform events monitor usage",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_objects_change_data_capture",
+      "symbol": "platform events objects change data capture",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_objects_list",
+      "symbol": "platform events objects list",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_objects_monitoring",
+      "symbol": "platform events objects monitoring",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_overview",
+      "symbol": "platform events overview",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_process_considerations",
+      "symbol": "platform events process considerations",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps",
+      "symbol": "platform events ps",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_choose_key",
+      "symbol": "platform events ps choose key",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_config",
+      "symbol": "platform events ps config",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_considerations",
+      "symbol": "platform events ps considerations",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_limits",
+      "symbol": "platform events ps limits",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_order_events",
+      "symbol": "platform events ps order events",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_repartition",
+      "symbol": "platform events ps repartition",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_task",
+      "symbol": "platform events ps task",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_ps_testing",
+      "symbol": "platform events ps testing",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish",
+      "symbol": "platform events publish",
+      "kind": "test",
+      "notes": "Local platform-event publish, Apex subscribe trigger, and Test.getEventBus delivery behavior is covered by EventBus and platform-event trigger fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_apex",
+      "symbol": "platform events publish apex",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_api",
+      "symbol": "platform events publish api",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_class",
+      "symbol": "platform events publish callback class",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_example_correlate",
+      "symbol": "platform events publish callback example correlate",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_example_failure",
+      "symbol": "platform events publish callback example failure",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_example_success",
+      "symbol": "platform events publish callback example success",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_invoke",
+      "symbol": "platform events publish callback invoke",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_limits",
+      "symbol": "platform events publish callback limits",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_practices",
+      "symbol": "platform events publish callback practices",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_publish",
+      "symbol": "platform events publish callback publish",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_test",
+      "symbol": "platform events publish callback test",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_user",
+      "symbol": "platform events publish callback user",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callbacks",
+      "symbol": "platform events publish callbacks",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_event_uuid",
+      "symbol": "platform events publish event uuid",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_flow",
+      "symbol": "platform events publish flow",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_process",
+      "symbol": "platform events publish process",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_reference",
+      "symbol": "platform events reference",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_standard_platform_event_objects",
+      "symbol": "platform events standard platform event objects",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe",
+      "symbol": "platform events subscribe",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_apex",
+      "symbol": "platform events subscribe apex",
+      "kind": "test",
+      "notes": "Local platform-event publish, Apex subscribe trigger, and Test.getEventBus delivery behavior is covered by EventBus and platform-event trigger fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_apex_email_notifications",
+      "symbol": "platform events subscribe apex email notifications",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_apex_exception_log",
+      "symbol": "platform events subscribe apex exception log",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_apex_refire",
+      "symbol": "platform events subscribe apex refire",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_batch_resume",
+      "symbol": "platform events subscribe batch resume",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_cometd",
+      "symbol": "platform events subscribe cometd",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_compare_checkpoint_retryable",
+      "symbol": "platform events subscribe compare checkpoint retryable",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_custom_channels",
+      "symbol": "platform events subscribe custom channels",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_debug",
+      "symbol": "platform events subscribe debug",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_debug_autoproc",
+      "symbol": "platform events subscribe debug autoproc",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_debug_config_user",
+      "symbol": "platform events subscribe debug config user",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_flow",
+      "symbol": "platform events subscribe flow",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_lc",
+      "symbol": "platform events subscribe lc",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_process",
+      "symbol": "platform events subscribe process",
+      "kind": "unsupported",
+      "notes": "This Platform Events documentation or server feature row depends on hosted Salesforce event-bus services outside local Apex execution."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_test_deliver",
+      "symbol": "platform events test deliver",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_test_events",
+      "symbol": "platform events test events",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_test_retry",
+      "symbol": "platform events test retry",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_trigger_config",
+      "symbol": "platform events trigger config",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_trigger_reco",
+      "symbol": "platform events trigger reco",
+      "kind": "test",
+      "notes": "Local platform-event publish, Apex subscribe trigger, and Test.getEventBus delivery behavior is covered by EventBus and platform-event trigger fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_academictermgpacalcevent",
+      "symbol": "sforce api objects academictermgpacalcevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_acadrgstrapplnevent",
+      "symbol": "sforce api objects acadrgstrapplnevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_acadrgstreligcritrunevent",
+      "symbol": "sforce api objects acadrgstreligcritrunevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_aijobrunstatusevent",
+      "symbol": "sforce api objects aijobrunstatusevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_aipredictionevent",
+      "symbol": "sforce api objects aipredictionevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_aiupdaterecordevent",
+      "symbol": "sforce api objects aiupdaterecordevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apianomalyevent",
+      "symbol": "sforce api objects apianomalyevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apianomalyeventstore",
+      "symbol": "sforce api objects apianomalyeventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apievent",
+      "symbol": "sforce api objects apievent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apieventstream",
+      "symbol": "sforce api objects apieventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_appointmentschedulingevent",
+      "symbol": "sforce api objects appointmentschedulingevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_appvlworkitemntfcnevent",
+      "symbol": "sforce api objects appvlworkitemntfcnevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_asgnrsrcapptschdevent",
+      "symbol": "sforce api objects asgnrsrcapptschdevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetamenderrordtlevent",
+      "symbol": "sforce api objects assetamenderrordtlevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetamendinitiatedevent",
+      "symbol": "sforce api objects assetamendinitiatedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetcancelerrordtlevent",
+      "symbol": "sforce api objects assetcancelerrordtlevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetcancelinitiatedevent",
+      "symbol": "sforce api objects assetcancelinitiatedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetrenewerrordtlevent",
+      "symbol": "sforce api objects assetrenewerrordtlevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetrenewinitiatedevent",
+      "symbol": "sforce api objects assetrenewinitiatedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assettokenevent",
+      "symbol": "sforce api objects assettokenevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_batchapexerrorevent",
+      "symbol": "sforce api objects batchapexerrorevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_billingschedulecreateddtlevent",
+      "symbol": "sforce api objects billingschedulecreateddtlevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_billingschedulecreatedevent",
+      "symbol": "sforce api objects billingschedulecreatedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_bulkapi2jobevent",
+      "symbol": "sforce api objects bulkapi2jobevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_bulkapiresultevent",
+      "symbol": "sforce api objects bulkapiresultevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_bulkapiresulteventstore",
+      "symbol": "sforce api objects bulkapiresulteventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_callcoachconfigmodifyevent",
+      "symbol": "sforce api objects callcoachconfigmodifyevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_carttoordercompletedevent",
+      "symbol": "sforce api objects carttoordercompletedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_ciinsightsevent",
+      "symbol": "sforce api objects ciinsightsevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_commercediagnosticevent",
+      "symbol": "sforce api objects commercediagnosticevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_concurlongrunapexerrevent",
+      "symbol": "sforce api objects concurlongrunapexerrevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_consentevent",
+      "symbol": "sforce api objects consentevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_consentunsubscribeallevent",
+      "symbol": "sforce api objects consentunsubscribeallevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_conversationinsightevent",
+      "symbol": "sforce api objects conversationinsightevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_createassetorderdtlevent",
+      "symbol": "sforce api objects createassetorderdtlevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_createassetorderevent",
+      "symbol": "sforce api objects createassetorderevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_credentialstuffingevent",
+      "symbol": "sforce api objects credentialstuffingevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_credentialstuffingeventstore",
+      "symbol": "sforce api objects credentialstuffingeventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_creditinvoiceprocessedevent",
+      "symbol": "sforce api objects creditinvoiceprocessedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_creditmemoprocessedevent",
+      "symbol": "sforce api objects creditmemoprocessedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_crmemoprocesserrdtlevent",
+      "symbol": "sforce api objects crmemoprocesserrdtlevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_dataobjectdatachgevent",
+      "symbol": "sforce api objects dataobjectdatachgevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_dataobjectmetadatachgevent",
+      "symbol": "sforce api objects dataobjectmetadatachgevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_datasetexportevent",
+      "symbol": "sforce api objects datasetexportevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_discoverypredictionevent",
+      "symbol": "sforce api objects discoverypredictionevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_emailcapturedmatchevent",
+      "symbol": "sforce api objects emailcapturedmatchevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_extlrecshrevent",
+      "symbol": "sforce api objects extlrecshrevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_extlrecshrresultevent",
+      "symbol": "sforce api objects extlrecshrresultevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fileevent",
+      "symbol": "sforce api objects fileevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fileeventstore",
+      "symbol": "sforce api objects fileeventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_firstbillpaymentsetupevent",
+      "symbol": "sforce api objects firstbillpaymentsetupevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_flowdebugrefreshevent",
+      "symbol": "sforce api objects flowdebugrefreshevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_flowexecutionerrorevent",
+      "symbol": "sforce api objects flowexecutionerrorevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_floworchestrationevent",
+      "symbol": "sforce api objects floworchestrationevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fostatuschangedevent",
+      "symbol": "sforce api objects fostatuschangedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fulfillorditemqtychgevent",
+      "symbol": "sforce api objects fulfillorditemqtychgevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_guestuseranomalyevent",
+      "symbol": "sforce api objects guestuseranomalyevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_guestuseranomalyeventstore",
+      "symbol": "sforce api objects guestuseranomalyeventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_identityprovidereventstore",
+      "symbol": "sforce api objects identityprovidereventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_identityverificationevent",
+      "symbol": "sforce api objects identityverificationevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_insplcyendrstatusevent",
+      "symbol": "sforce api objects insplcyendrstatusevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_inspolicyrnwlquotestatusevent",
+      "symbol": "sforce api objects inspolicyrnwlquotestatusevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_inspolicyrnwlstatusevent",
+      "symbol": "sforce api objects inspolicyrnwlstatusevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_interoptopicsubcrevent",
+      "symbol": "sforce api objects interoptopicsubcrevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceerrordetailevent",
+      "symbol": "sforce api objects invoiceerrordetailevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceprocesseddetailevent",
+      "symbol": "sforce api objects invoiceprocesseddetailevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceprocessedevent",
+      "symbol": "sforce api objects invoiceprocessedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceprocpymtexclevent",
+      "symbol": "sforce api objects invoiceprocpymtexclevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_lightningurievent",
+      "symbol": "sforce api objects lightningurievent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_lightningurieventstream",
+      "symbol": "sforce api objects lightningurieventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_listviewevent",
+      "symbol": "sforce api objects listviewevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_listvieweventstream",
+      "symbol": "sforce api objects listvieweventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginanomalyevent",
+      "symbol": "sforce api objects loginanomalyevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginanomalyeventstore",
+      "symbol": "sforce api objects loginanomalyeventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginasevent",
+      "symbol": "sforce api objects loginasevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginaseventstream",
+      "symbol": "sforce api objects loginaseventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginevent",
+      "symbol": "sforce api objects loginevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_logineventstream",
+      "symbol": "sforce api objects logineventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_logoutevent",
+      "symbol": "sforce api objects logoutevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_logouteventstream",
+      "symbol": "sforce api objects logouteventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobileemailevent",
+      "symbol": "sforce api objects mobileemailevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobileenforcedpolicyevent",
+      "symbol": "sforce api objects mobileenforcedpolicyevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobilescreenshotevent",
+      "symbol": "sforce api objects mobilescreenshotevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobiletelephonyevent",
+      "symbol": "sforce api objects mobiletelephonyevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_neginvclineprocessedevent",
+      "symbol": "sforce api objects neginvclineprocessedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_omnitrackingevent",
+      "symbol": "sforce api objects omnitrackingevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_orderstatuschangedevent",
+      "symbol": "sforce api objects orderstatuschangedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_ordersummarycreatedevent",
+      "symbol": "sforce api objects ordersummarycreatedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_ordersumstatuschangedevent",
+      "symbol": "sforce api objects ordersumstatuschangedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_paymentcreationevent",
+      "symbol": "sforce api objects paymentcreationevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_pendingordsumprocevent",
+      "symbol": "sforce api objects pendingordsumprocevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_permissionsetevent",
+      "symbol": "sforce api objects permissionsetevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_permissionseteventstore",
+      "symbol": "sforce api objects permissionseteventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_placeordercompletedevent",
+      "symbol": "sforce api objects placeordercompletedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_platformstatusalertevent",
+      "symbol": "sforce api objects platformstatusalertevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_processexceptionevent",
+      "symbol": "sforce api objects processexceptionevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_quotesaveevent",
+      "symbol": "sforce api objects quotesaveevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_quotetoordercompletedevent",
+      "symbol": "sforce api objects quotetoordercompletedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_quotetoordererrdtlevent",
+      "symbol": "sforce api objects quotetoordererrdtlevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_realtimealertevent",
+      "symbol": "sforce api objects realtimealertevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_remotekeycalloutevent",
+      "symbol": "sforce api objects remotekeycalloutevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reportanomalyevent",
+      "symbol": "sforce api objects reportanomalyevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reportanomalyeventstore",
+      "symbol": "sforce api objects reportanomalyeventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reportevent",
+      "symbol": "sforce api objects reportevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reporteventstream",
+      "symbol": "sforce api objects reporteventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_searchindexjobstatusevent",
+      "symbol": "sforce api objects searchindexjobstatusevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_serviceappointmentevent",
+      "symbol": "sforce api objects serviceappointmentevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_sessionhijackingevent",
+      "symbol": "sforce api objects sessionhijackingevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_sessionhijackingeventstore",
+      "symbol": "sforce api objects sessionhijackingeventstore",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_srcpredjobstatuschgevent",
+      "symbol": "sforce api objects srcpredjobstatuschgevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_svcapptschdevent",
+      "symbol": "sforce api objects svcapptschdevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_urievent",
+      "symbol": "sforce api objects urievent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_urieventstream",
+      "symbol": "sforce api objects urieventstream",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_videocallevent",
+      "symbol": "sforce api objects videocallevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_videocallpurgeevent",
+      "symbol": "sforce api objects videocallpurgeevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_videocallrevisedevent",
+      "symbol": "sforce api objects videocallrevisedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_voidinvoiceprocessedevent",
+      "symbol": "sforce api objects voidinvoiceprocessedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_webcartabandonedevent",
+      "symbol": "sforce api objects webcartabandonedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_webstoreusercreatedevent",
+      "symbol": "sforce api objects webstoreusercreatedevent",
+      "kind": "test",
+      "notes": "Local platform-event shape is covered by EventBus, Test.getEventBus, trigger, and generated standard-object fixtures; this source-family row is retained as fixture evidence."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/PlatformEventsCurrentManifestEvidenceMarker.cls",
+      "content": "public class PlatformEventsCurrentManifestEvidenceMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

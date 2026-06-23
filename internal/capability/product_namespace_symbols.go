@@ -20,10 +20,11 @@ type productNamespaceSymbolSpec struct {
 }
 
 type productNamespaceMethodSpec struct {
-	Name       string
-	ReturnType string
-	Parameters []string
-	Static     bool
+	Name        string
+	ReturnType  string
+	Parameters  []string
+	Static      bool
+	StaticKnown bool
 }
 
 type productNamespacePropertySpec struct {
@@ -100,10 +101,11 @@ func BuildProductNamespaceSymbolSpecs(catalog Catalog, tooling *ToolingCompletio
 				methods := make([]productNamespaceMethodSpec, 0, len(decl.Methods))
 				for _, method := range decl.Methods {
 					methods = append(methods, productNamespaceMethodSpec{
-						Name:       cleanToolingMemberName(method.Name),
-						ReturnType: normalizeProductNamespaceType(method.ReturnType),
-						Parameters: toolingMethodParameterTypes(method),
-						Static:     method.IsStatic,
+						Name:        cleanToolingMemberName(method.Name),
+						ReturnType:  normalizeProductNamespaceType(method.ReturnType),
+						Parameters:  toolingMethodParameterTypes(method),
+						Static:      method.IsStatic,
+						StaticKnown: true,
 					})
 				}
 				spec.Methods = appendUniqueProductNamespaceMethods(spec.Methods, methods)
@@ -418,11 +420,25 @@ func appendUniqueProductNamespaceMethods(values, additions []productNamespaceMet
 }
 
 func sameProductNamespaceMethodShape(a, b productNamespaceMethodSpec) bool {
-	return strings.EqualFold(a.Name, b.Name) && len(a.Parameters) == len(b.Parameters)
+	if !strings.EqualFold(a.Name, b.Name) || len(a.Parameters) != len(b.Parameters) {
+		return false
+	}
+	if !productNamespaceStaticCompatible(a, b) {
+		return false
+	}
+	if productNamespaceTypeListKey(a.Parameters) == productNamespaceTypeListKey(b.Parameters) {
+		return true
+	}
+	return productNamespaceAllObjectTypes(a.Parameters) || productNamespaceAllObjectTypes(b.Parameters)
 }
 
 func mergeProductNamespaceMethod(base, addition productNamespaceMethodSpec) productNamespaceMethodSpec {
-	base.Static = base.Static || addition.Static
+	if addition.StaticKnown {
+		base.Static = addition.Static
+		base.StaticKnown = true
+	} else if !base.StaticKnown {
+		base.Static = base.Static || addition.Static
+	}
 	if productNamespaceTypeIsObject(base.ReturnType) && !productNamespaceTypeIsObject(addition.ReturnType) {
 		base.ReturnType = addition.ReturnType
 	}
@@ -432,6 +448,10 @@ func mergeProductNamespaceMethod(base, addition productNamespaceMethodSpec) prod
 		}
 	}
 	return base
+}
+
+func productNamespaceStaticCompatible(a, b productNamespaceMethodSpec) bool {
+	return !a.StaticKnown || !b.StaticKnown || a.Static == b.Static
 }
 
 func productNamespaceTypeIsObject(typ string) bool {
@@ -487,12 +507,12 @@ func pruneWeakProductNamespaceMembers(spec *productNamespaceSymbolSpec) {
 	strongMethods := map[string]bool{}
 	for _, method := range spec.Methods {
 		if !strings.EqualFold(method.ReturnType, "Object") || !productNamespaceAllObjectTypes(method.Parameters) {
-			strongMethods[strings.ToLower(method.Name)+"|"+strconv.Itoa(len(method.Parameters))] = true
+			strongMethods[productNamespaceWeakMethodKey(method)] = true
 		}
 	}
 	methods := spec.Methods[:0]
 	for _, method := range spec.Methods {
-		key := strings.ToLower(method.Name) + "|" + strconv.Itoa(len(method.Parameters))
+		key := productNamespaceWeakMethodKey(method)
 		if strings.EqualFold(method.ReturnType, "Object") && productNamespaceAllObjectTypes(method.Parameters) && strongMethods[key] {
 			continue
 		}
@@ -512,6 +532,14 @@ func productNamespaceAllObjectTypes(types []string) bool {
 
 func productNamespaceMethodKey(method productNamespaceMethodSpec) string {
 	return strings.ToLower(method.Name) + "|" + strconv.FormatBool(method.Static) + "|" + productNamespaceTypeListKey(method.Parameters)
+}
+
+func productNamespaceWeakMethodKey(method productNamespaceMethodSpec) string {
+	static := "unknown"
+	if method.StaticKnown {
+		static = strconv.FormatBool(method.Static)
+	}
+	return strings.ToLower(method.Name) + "|" + static + "|" + strconv.Itoa(len(method.Parameters))
 }
 
 func productNamespacePropertyKey(prop productNamespacePropertySpec) string {

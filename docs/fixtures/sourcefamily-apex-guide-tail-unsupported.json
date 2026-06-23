@@ -1,0 +1,3233 @@
+{
+  "name": "sourcefamily-apex-guide-tail-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "unknown:DataCloudInApex",
+      "symbol": "unknown:DataCloudInApex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:DataWeaveInApex",
+      "symbol": "unknown:DataWeaveInApex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:DataWeaveInApex_UseCase",
+      "symbol": "unknown:DataWeaveInApex_UseCase",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:DataWeaveInApex_impl",
+      "symbol": "unknown:DataWeaveInApex_impl",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:DataWeaveInApex_limitations",
+      "symbol": "unknown:DataWeaveInApex_limitations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:Territory2",
+      "symbol": "unknown:Territory2",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_fact_map",
+      "symbol": "unknown:apex_analytics_fact_map",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_filter_reports",
+      "symbol": "unknown:apex_analytics_filter_reports",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_intro",
+      "symbol": "unknown:apex_analytics_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_limitations",
+      "symbol": "unknown:apex_analytics_limitations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_list_async_runs",
+      "symbol": "unknown:apex_analytics_list_async_runs",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_report_data",
+      "symbol": "unknown:apex_analytics_report_data",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_report_metadata",
+      "symbol": "unknown:apex_analytics_report_metadata",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_run_reports",
+      "symbol": "unknown:apex_analytics_run_reports",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_analytics_test_reports",
+      "symbol": "unknown:apex_analytics_test_reports",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_and_ajax",
+      "symbol": "unknown:apex_and_ajax",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_anonymous_block",
+      "symbol": "unknown:apex_anonymous_block",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_appendices",
+      "symbol": "unknown:apex_appendices",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_async_overview",
+      "symbol": "unknown:apex_async_overview",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_batch",
+      "symbol": "unknown:apex_batch",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_batch_interface",
+      "symbol": "unknown:apex_batch_interface",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_bulk_sharing",
+      "symbol": "unknown:apex_bulk_sharing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_bulk_sharing_creating_with_apex",
+      "symbol": "unknown:apex_bulk_sharing_creating_with_apex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_bulk_sharing_recalc",
+      "symbol": "unknown:apex_bulk_sharing_recalc",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_bulk_sharing_understanding",
+      "symbol": "unknown:apex_bulk_sharing_understanding",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_cache_namespace_overview",
+      "symbol": "unknown:apex_cache_namespace_overview",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_cache_partition_setup",
+      "symbol": "unknown:apex_cache_partition_setup",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts",
+      "symbol": "unknown:apex_callouts",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_client_certs",
+      "symbol": "unknown:apex_callouts_client_certs",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_client_certs_generate",
+      "symbol": "unknown:apex_callouts_client_certs_generate",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_client_certs_http",
+      "symbol": "unknown:apex_callouts_client_certs_http",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_http",
+      "symbol": "unknown:apex_callouts_http",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_named_credentials",
+      "symbol": "unknown:apex_callouts_named_credentials",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_named_credentials_custom_headers_bodies",
+      "symbol": "unknown:apex_callouts_named_credentials_custom_headers_bodies",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_named_credentials_merge_fields",
+      "symbol": "unknown:apex_callouts_named_credentials_merge_fields",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_remote_site_settings",
+      "symbol": "unknown:apex_callouts_remote_site_settings",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_timeouts",
+      "symbol": "unknown:apex_callouts_timeouts",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_wsdl2apex",
+      "symbol": "unknown:apex_callouts_wsdl2apex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_wsdl2apex_considerations",
+      "symbol": "unknown:apex_callouts_wsdl2apex_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_wsdl2apex_gen_code",
+      "symbol": "unknown:apex_callouts_wsdl2apex_gen_code",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_wsdl2apex_testing",
+      "symbol": "unknown:apex_callouts_wsdl2apex_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_callouts_wsdl2apex_testing_dml",
+      "symbol": "unknown:apex_callouts_wsdl2apex_testing_dml",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_chattermessage_triggers",
+      "symbol": "unknown:apex_chattermessage_triggers",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes",
+      "symbol": "unknown:apex_classes",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_access_modifiers",
+      "symbol": "unknown:apex_classes_access_modifiers",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation",
+      "symbol": "unknown:apex_classes_annotation",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_IntegrationTest",
+      "symbol": "unknown:apex_classes_annotation_IntegrationTest",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_InvocableMethod",
+      "symbol": "unknown:apex_classes_annotation_InvocableMethod",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_InvocableVariable",
+      "symbol": "unknown:apex_classes_annotation_InvocableVariable",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_JsonAccess",
+      "symbol": "unknown:apex_classes_annotation_JsonAccess",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_NamespaceAccessible",
+      "symbol": "unknown:apex_classes_annotation_NamespaceAccessible",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_ReadOnly",
+      "symbol": "unknown:apex_classes_annotation_ReadOnly",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_RemoteAction",
+      "symbol": "unknown:apex_classes_annotation_RemoteAction",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_SuppressWarnings",
+      "symbol": "unknown:apex_classes_annotation_SuppressWarnings",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_TearDown",
+      "symbol": "unknown:apex_classes_annotation_TearDown",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_deprecated",
+      "symbol": "unknown:apex_classes_annotation_deprecated",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_future",
+      "symbol": "unknown:apex_classes_annotation_future",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_http_delete",
+      "symbol": "unknown:apex_classes_annotation_http_delete",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_http_get",
+      "symbol": "unknown:apex_classes_annotation_http_get",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_http_patch",
+      "symbol": "unknown:apex_classes_annotation_http_patch",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_http_post",
+      "symbol": "unknown:apex_classes_annotation_http_post",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_http_put",
+      "symbol": "unknown:apex_classes_annotation_http_put",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_isTest",
+      "symbol": "unknown:apex_classes_annotation_isTest",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_rest_resource",
+      "symbol": "unknown:apex_classes_annotation_rest_resource",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_testsetup",
+      "symbol": "unknown:apex_classes_annotation_testsetup",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotation_testvisible",
+      "symbol": "unknown:apex_classes_annotation_testvisible",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_annotations_rest",
+      "symbol": "unknown:apex_classes_annotations_rest",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_casting",
+      "symbol": "unknown:apex_classes_casting",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_casting_collections",
+      "symbol": "unknown:apex_classes_casting_collections",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_collections",
+      "symbol": "unknown:apex_classes_collections",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_constructors",
+      "symbol": "unknown:apex_classes_constructors",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_creating",
+      "symbol": "unknown:apex_classes_creating",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_declaring_variables",
+      "symbol": "unknown:apex_classes_declaring_variables",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_defining",
+      "symbol": "unknown:apex_classes_defining",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_defining_methods",
+      "symbol": "unknown:apex_classes_defining_methods",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_email_inbound",
+      "symbol": "unknown:apex_classes_email_inbound",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_email_inbound_using",
+      "symbol": "unknown:apex_classes_email_inbound_using",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_email_inbound_what_is",
+      "symbol": "unknown:apex_classes_email_inbound_what_is",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_enforce_usermode",
+      "symbol": "unknown:apex_classes_enforce_usermode",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_example",
+      "symbol": "unknown:apex_classes_example",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_extending",
+      "symbol": "unknown:apex_classes_extending",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_field_object_describe",
+      "symbol": "unknown:apex_classes_field_object_describe",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_interfaces",
+      "symbol": "unknown:apex_classes_interfaces",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_iterable",
+      "symbol": "unknown:apex_classes_iterable",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_java_diffs",
+      "symbol": "unknown:apex_classes_java_diffs",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_keywords",
+      "symbol": "unknown:apex_classes_keywords",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_keywords_final",
+      "symbol": "unknown:apex_classes_keywords_final",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_keywords_instanceof",
+      "symbol": "unknown:apex_classes_keywords_instanceof",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_keywords_sharing",
+      "symbol": "unknown:apex_classes_keywords_sharing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_keywords_super",
+      "symbol": "unknown:apex_classes_keywords_super",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_keywords_this",
+      "symbol": "unknown:apex_classes_keywords_this",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_keywords_transient",
+      "symbol": "unknown:apex_classes_keywords_transient",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_list_sorting",
+      "symbol": "unknown:apex_classes_list_sorting",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_name_shadowing",
+      "symbol": "unknown:apex_classes_name_shadowing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_namespace_precedence",
+      "symbol": "unknown:apex_classes_namespace_precedence",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_namespace_prefix",
+      "symbol": "unknown:apex_classes_namespace_prefix",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_namespace_type_resolution",
+      "symbol": "unknown:apex_classes_namespace_type_resolution",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_namespaces_and_invoking_methods",
+      "symbol": "unknown:apex_classes_namespaces_and_invoking_methods",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_naming_conventions",
+      "symbol": "unknown:apex_classes_naming_conventions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_pattern_and_matcher_bounds",
+      "symbol": "unknown:apex_classes_pattern_and_matcher_bounds",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_pattern_and_matcher_capturing_groups",
+      "symbol": "unknown:apex_classes_pattern_and_matcher_capturing_groups",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_pattern_and_matcher_example",
+      "symbol": "unknown:apex_classes_pattern_and_matcher_example",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_pattern_and_matcher_matching",
+      "symbol": "unknown:apex_classes_pattern_and_matcher_matching",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_pattern_and_matcher_regions",
+      "symbol": "unknown:apex_classes_pattern_and_matcher_regions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_pattern_and_matcher_using",
+      "symbol": "unknown:apex_classes_pattern_and_matcher_using",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_perms_enforcing",
+      "symbol": "unknown:apex_classes_perms_enforcing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_properties",
+      "symbol": "unknown:apex_classes_properties",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_restful_http",
+      "symbol": "unknown:apex_classes_restful_http",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_restful_http_testing",
+      "symbol": "unknown:apex_classes_restful_http_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_restful_http_testing_dml",
+      "symbol": "unknown:apex_classes_restful_http_testing_dml",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_restful_http_testing_httpcalloutmock",
+      "symbol": "unknown:apex_classes_restful_http_testing_httpcalloutmock",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_restful_http_testing_static",
+      "symbol": "unknown:apex_classes_restful_http_testing_static",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_schema_namespace_using",
+      "symbol": "unknown:apex_classes_schema_namespace_using",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_security",
+      "symbol": "unknown:apex_classes_security",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_static",
+      "symbol": "unknown:apex_classes_static",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_understanding",
+      "symbol": "unknown:apex_classes_understanding",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_version_settings_api",
+      "symbol": "unknown:apex_classes_version_settings_api",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_version_settings_intro",
+      "symbol": "unknown:apex_classes_version_settings_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_version_settings_packages",
+      "symbol": "unknown:apex_classes_version_settings_packages",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_classes_with_security_stripInaccessible",
+      "symbol": "unknown:apex_classes_with_security_stripInaccessible",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_code_coverage_best_pract",
+      "symbol": "unknown:apex_code_coverage_best_pract",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_code_coverage_intro",
+      "symbol": "unknown:apex_code_coverage_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_adapter_intro",
+      "symbol": "unknown:apex_commercepayments_adapter_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_alt_payment_methods",
+      "symbol": "unknown:apex_commercepayments_alt_payment_methods",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_async_adapter_concept",
+      "symbol": "unknown:apex_commercepayments_async_adapter_concept",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_async_adapter_setup",
+      "symbol": "unknown:apex_commercepayments_async_adapter_setup",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_builder_examples",
+      "symbol": "unknown:apex_commercepayments_builder_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_idempotency_guidelines",
+      "symbol": "unknown:apex_commercepayments_idempotency_guidelines",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_process_payments",
+      "symbol": "unknown:apex_commercepayments_process_payments",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_process_refund",
+      "symbol": "unknown:apex_commercepayments_process_refund",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_ref_github_repo",
+      "symbol": "unknown:apex_commercepayments_ref_github_repo",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_rev_service_apex_imp",
+      "symbol": "unknown:apex_commercepayments_rev_service_apex_imp",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_rev_service_api",
+      "symbol": "unknown:apex_commercepayments_rev_service_api",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_rev_service_intro",
+      "symbol": "unknown:apex_commercepayments_rev_service_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_sync_adapter_concept",
+      "symbol": "unknown:apex_commercepayments_sync_adapter_concept",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_sync_adapter_setup",
+      "symbol": "unknown:apex_commercepayments_sync_adapter_setup",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_tokenization_service_apex_imp",
+      "symbol": "unknown:apex_commercepayments_tokenization_service_apex_imp",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_tokenization_service_api",
+      "symbol": "unknown:apex_commercepayments_tokenization_service_api",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_tokenization_service_intro",
+      "symbol": "unknown:apex_commercepayments_tokenization_service_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_commercepayments_use_cases",
+      "symbol": "unknown:apex_commercepayments_use_cases",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connect_api_limits",
+      "symbol": "unknown:apex_connect_api_limits",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connect_api_packaging",
+      "symbol": "unknown:apex_connect_api_packaging",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connectapi_casting",
+      "symbol": "unknown:apex_connectapi_casting",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connectapi_communities",
+      "symbol": "unknown:apex_connectapi_communities",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connectapi_differences",
+      "symbol": "unknown:apex_connectapi_differences",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connectapi_inputs_outputs",
+      "symbol": "unknown:apex_connectapi_inputs_outputs",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connectapi_public_communities",
+      "symbol": "unknown:apex_connectapi_public_communities",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connectapi_serialization",
+      "symbol": "unknown:apex_connectapi_serialization",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connectapi_versioning",
+      "symbol": "unknown:apex_connectapi_versioning",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_aggregation",
+      "symbol": "unknown:apex_connector_aggregation",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_authentication",
+      "symbol": "unknown:apex_connector_authentication",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_callouts",
+      "symbol": "unknown:apex_connector_callouts",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_concepts",
+      "symbol": "unknown:apex_connector_concepts",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_considerations",
+      "symbol": "unknown:apex_connector_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_example_github",
+      "symbol": "unknown:apex_connector_example_github",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_example_github_issues",
+      "symbol": "unknown:apex_connector_example_github_issues",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_example_google_books",
+      "symbol": "unknown:apex_connector_example_google_books",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_example_google_drive",
+      "symbol": "unknown:apex_connector_example_google_drive",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_example_loopback",
+      "symbol": "unknown:apex_connector_example_loopback",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_example_stackoverflow",
+      "symbol": "unknown:apex_connector_example_stackoverflow",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_examples",
+      "symbol": "unknown:apex_connector_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_external_id",
+      "symbol": "unknown:apex_connector_external_id",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_external_objects_writeable",
+      "symbol": "unknown:apex_connector_external_objects_writeable",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_external_tracking_package_and_test",
+      "symbol": "unknown:apex_connector_external_tracking_package_and_test",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_filters",
+      "symbol": "unknown:apex_connector_filters",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_filters_compound",
+      "symbol": "unknown:apex_connector_filters_compound",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_filters_evaluating",
+      "symbol": "unknown:apex_connector_filters_evaluating",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_oauth",
+      "symbol": "unknown:apex_connector_oauth",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_paging",
+      "symbol": "unknown:apex_connector_paging",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_querymore",
+      "symbol": "unknown:apex_connector_querymore",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_querymore_client_driven_paging",
+      "symbol": "unknown:apex_connector_querymore_client_driven_paging",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_querymore_server_driven_paging",
+      "symbol": "unknown:apex_connector_querymore_server_driven_paging",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_start",
+      "symbol": "unknown:apex_connector_start",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_start_connection_class",
+      "symbol": "unknown:apex_connector_start_connection_class",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_start_provider_class",
+      "symbol": "unknown:apex_connector_start_provider_class",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_start_setup",
+      "symbol": "unknown:apex_connector_start_setup",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_connector_top",
+      "symbol": "unknown:apex_connector_top",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_continuation_chained_callouts",
+      "symbol": "unknown:apex_continuation_chained_callouts",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_continuation_limits",
+      "symbol": "unknown:apex_continuation_limits",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_continuation_multiple_callouts",
+      "symbol": "unknown:apex_continuation_multiple_callouts",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_continuation_overview",
+      "symbol": "unknown:apex_continuation_overview",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_continuation_process",
+      "symbol": "unknown:apex_continuation_process",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_continuation_testing",
+      "symbol": "unknown:apex_continuation_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_crypto",
+      "symbol": "unknown:apex_crypto",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_cursors",
+      "symbol": "unknown:apex_cursors",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_customsettings",
+      "symbol": "unknown:apex_customsettings",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_data_intro",
+      "symbol": "unknown:apex_data_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_debug_test_deploy",
+      "symbol": "unknown:apex_debug_test_deploy",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_debugging",
+      "symbol": "unknown:apex_debugging",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_debugging_API_calls",
+      "symbol": "unknown:apex_debugging_API_calls",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_debugging_debug_log",
+      "symbol": "unknown:apex_debugging_debug_log",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_debugging_debug_log_precedence",
+      "symbol": "unknown:apex_debugging_debug_log_precedence",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_debugging_system_log_console",
+      "symbol": "unknown:apex_debugging_system_log_console",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dedupe_queueable",
+      "symbol": "unknown:apex_dedupe_queueable",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_deploying",
+      "symbol": "unknown:apex_deploying",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_deploying_DevOps",
+      "symbol": "unknown:apex_deploying_DevOps",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_deploying_changesets",
+      "symbol": "unknown:apex_deploying_changesets",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_deploying_ide",
+      "symbol": "unknown:apex_deploying_ide",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_deploying_metadataAPI",
+      "symbol": "unknown:apex_deploying_metadataAPI",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_deploying_toolingAPI",
+      "symbol": "unknown:apex_deploying_toolingAPI",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dev_guide",
+      "symbol": "unknown:apex_dev_guide",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dev_process_chapter",
+      "symbol": "unknown:apex_dev_process_chapter",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dml_bulk_exceptions",
+      "symbol": "unknown:apex_dml_bulk_exceptions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dml_non_dml_objects",
+      "symbol": "unknown:apex_dml_non_dml_objects",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dml_non_mix_sobjects",
+      "symbol": "unknown:apex_dml_non_mix_sobjects",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dml_non_mix_sobjects_test_methods",
+      "symbol": "unknown:apex_dml_non_mix_sobjects_test_methods",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_doc_constructs",
+      "symbol": "unknown:apex_doc_constructs",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_doc_examples",
+      "symbol": "unknown:apex_doc_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_doc_format",
+      "symbol": "unknown:apex_doc_format",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_doc_intro",
+      "symbol": "unknown:apex_doc_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic",
+      "symbol": "unknown:apex_dynamic",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_data_categories",
+      "symbol": "unknown:apex_dynamic_data_categories",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_describeSObject",
+      "symbol": "unknown:apex_dynamic_describeSObject",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_describeTabs",
+      "symbol": "unknown:apex_dynamic_describeTabs",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_describe_objects_understanding",
+      "symbol": "unknown:apex_dynamic_describe_objects_understanding",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_dml",
+      "symbol": "unknown:apex_dynamic_dml",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_field_tokens",
+      "symbol": "unknown:apex_dynamic_field_tokens",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_global_describe",
+      "symbol": "unknown:apex_dynamic_global_describe",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_dynamic_permissions",
+      "symbol": "unknown:apex_dynamic_permissions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_encoding",
+      "symbol": "unknown:apex_encoding",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_exception_builtin",
+      "symbol": "unknown:apex_exception_builtin",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_exception_custom",
+      "symbol": "unknown:apex_exception_custom",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_exception_definition",
+      "symbol": "unknown:apex_exception_definition",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_exception_statements",
+      "symbol": "unknown:apex_exception_statements",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_exception_trycatch_example",
+      "symbol": "unknown:apex_exception_trycatch_example",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_exception_types_catching",
+      "symbol": "unknown:apex_exception_types_catching",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_external_objects_considerations",
+      "symbol": "unknown:apex_external_objects_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_external_services",
+      "symbol": "unknown:apex_external_services",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_feedItem_triggers",
+      "symbol": "unknown:apex_feedItem_triggers",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_communities",
+      "symbol": "unknown:apex_forcecom_communities",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_email",
+      "symbol": "unknown:apex_forcecom_email",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_email_outbound",
+      "symbol": "unknown:apex_forcecom_email_outbound",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_flow_invocable_action_callout",
+      "symbol": "unknown:apex_forcecom_flow_invocable_action_callout",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_flow_invocable_action_extension_customize_input_order_example",
+      "symbol": "unknown:apex_forcecom_flow_invocable_action_extension_customize_input_order_example",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_intro",
+      "symbol": "unknown:apex_forcecom_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_kb_suggestions",
+      "symbol": "unknown:apex_forcecom_kb_suggestions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_kbmanagement",
+      "symbol": "unknown:apex_forcecom_kbmanagement",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_knowledge",
+      "symbol": "unknown:apex_forcecom_knowledge",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_promoted_search_terms",
+      "symbol": "unknown:apex_forcecom_promoted_search_terms",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_sites",
+      "symbol": "unknown:apex_forcecom_sites",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_support",
+      "symbol": "unknown:apex_forcecom_support",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_visualworkflow",
+      "symbol": "unknown:apex_forcecom_visualworkflow",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_visualworkflow_vars",
+      "symbol": "unknown:apex_forcecom_visualworkflow_vars",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_forcecom_zones_communities",
+      "symbol": "unknown:apex_forcecom_zones_communities",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_formulaeval",
+      "symbol": "unknown:apex_formulaeval",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_gov_limits",
+      "symbol": "unknown:apex_gov_limits",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_gov_limits_emails",
+      "symbol": "unknown:apex_gov_limits_emails",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_integration_intro",
+      "symbol": "unknown:apex_integration_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro",
+      "symbol": "unknown:apex_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_AppExchange",
+      "symbol": "unknown:apex_intro_AppExchange",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_apex_limitation",
+      "symbol": "unknown:apex_intro_apex_limitation",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_deploying_to_production",
+      "symbol": "unknown:apex_intro_deploying_to_production",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_deploying_to_sandbox",
+      "symbol": "unknown:apex_intro_deploying_to_sandbox",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_development_process",
+      "symbol": "unknown:apex_intro_development_process",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_get_dev_account",
+      "symbol": "unknown:apex_intro_get_dev_account",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_get_started",
+      "symbol": "unknown:apex_intro_get_started",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_how_does_apex_work",
+      "symbol": "unknown:apex_intro_how_does_apex_work",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_learning_apex",
+      "symbol": "unknown:apex_intro_learning_apex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_what_is_apex",
+      "symbol": "unknown:apex_intro_what_is_apex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_when_use_apex",
+      "symbol": "unknown:apex_intro_when_use_apex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_writing_apex",
+      "symbol": "unknown:apex_intro_writing_apex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_intro_writing_tests",
+      "symbol": "unknown:apex_intro_writing_tests",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_invoking",
+      "symbol": "unknown:apex_invoking",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_invoking_future_methods",
+      "symbol": "unknown:apex_invoking_future_methods",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_invoking_javascript_remoting",
+      "symbol": "unknown:apex_invoking_javascript_remoting",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_json_json",
+      "symbol": "unknown:apex_json_json",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_json_jsongenerator",
+      "symbol": "unknown:apex_json_jsongenerator",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_json_jsonparser",
+      "symbol": "unknown:apex_json_jsonparser",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_limits_elastic_limits",
+      "symbol": "unknown:apex_limits_elastic_limits",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_limits_intro",
+      "symbol": "unknown:apex_limits_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_limits_tips",
+      "symbol": "unknown:apex_limits_tips",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_link_ref_guide",
+      "symbol": "unknown:apex_link_ref_guide",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_list_sobject",
+      "symbol": "unknown:apex_list_sobject",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_list_sorting_sobject",
+      "symbol": "unknown:apex_list_sorting_sobject",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_agent",
+      "symbol": "unknown:apex_manpkgs_agent",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_behavior",
+      "symbol": "unknown:apex_manpkgs_behavior",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_behavior_intro",
+      "symbol": "unknown:apex_manpkgs_behavior_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_behavior_not_versioned",
+      "symbol": "unknown:apex_manpkgs_behavior_not_versioned",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_behavior_testing",
+      "symbol": "unknown:apex_manpkgs_behavior_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_chapter",
+      "symbol": "unknown:apex_manpkgs_chapter",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_deprecated",
+      "symbol": "unknown:apex_manpkgs_deprecated",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_dev",
+      "symbol": "unknown:apex_manpkgs_dev",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_global_best_practices",
+      "symbol": "unknown:apex_manpkgs_global_best_practices",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_package_versions",
+      "symbol": "unknown:apex_manpkgs_package_versions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_safe_upgrades",
+      "symbol": "unknown:apex_manpkgs_safe_upgrades",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_subscriber_considerations",
+      "symbol": "unknown:apex_manpkgs_subscriber_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_subscriber_intro",
+      "symbol": "unknown:apex_manpkgs_subscriber_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_manpkgs_subscriber_version",
+      "symbol": "unknown:apex_manpkgs_subscriber_version",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_map_sobject",
+      "symbol": "unknown:apex_map_sobject",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_map_sobject_considerations",
+      "symbol": "unknown:apex_map_sobject_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_metadata",
+      "symbol": "unknown:apex_metadata",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_metadata_retrieve_deploy",
+      "symbol": "unknown:apex_metadata_retrieve_deploy",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_metadata_security",
+      "symbol": "unknown:apex_metadata_security",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_metadata_supported_types",
+      "symbol": "unknown:apex_metadata_supported_types",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_metadata_testing",
+      "symbol": "unknown:apex_metadata_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_methods_system_json_overview",
+      "symbol": "unknown:apex_methods_system_json_overview",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_pages",
+      "symbol": "unknown:apex_pages",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_permission_set_group_testing",
+      "symbol": "unknown:apex_permission_set_group_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_best_practices",
+      "symbol": "unknown:apex_platform_cache_best_practices",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_builder",
+      "symbol": "unknown:apex_platform_cache_builder",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_features",
+      "symbol": "unknown:apex_platform_cache_features",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_global_variable",
+      "symbol": "unknown:apex_platform_cache_global_variable",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_internals",
+      "symbol": "unknown:apex_platform_cache_internals",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_limitations",
+      "symbol": "unknown:apex_platform_cache_limitations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_limits",
+      "symbol": "unknown:apex_platform_cache_limits",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_org_examples",
+      "symbol": "unknown:apex_platform_cache_org_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_platform_cache_session_examples",
+      "symbol": "unknown:apex_platform_cache_session_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_plugin_datatype_conversions",
+      "symbol": "unknown:apex_plugin_datatype_conversions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_plugin_describe_result",
+      "symbol": "unknown:apex_plugin_describe_result",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_plugin_request",
+      "symbol": "unknown:apex_plugin_request",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_plugin_result",
+      "symbol": "unknown:apex_plugin_result",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_process",
+      "symbol": "unknown:apex_process",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_process_example",
+      "symbol": "unknown:apex_process_example",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_process_plugin",
+      "symbol": "unknown:apex_process_plugin",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_process_plugin_example_lead_convert",
+      "symbol": "unknown:apex_process_plugin_example_lead_convert",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_process_plugin_using",
+      "symbol": "unknown:apex_process_plugin_using",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_HelloWorld",
+      "symbol": "unknown:apex_qs_HelloWorld",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_class",
+      "symbol": "unknown:apex_qs_class",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_conventions",
+      "symbol": "unknown:apex_qs_conventions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_core_concepts",
+      "symbol": "unknown:apex_qs_core_concepts",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_customobject",
+      "symbol": "unknown:apex_qs_customobject",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_deploy",
+      "symbol": "unknown:apex_qs_deploy",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_test",
+      "symbol": "unknown:apex_qs_test",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_qs_trigger",
+      "symbol": "unknown:apex_qs_trigger",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_queueing_jobs",
+      "symbol": "unknown:apex_queueing_jobs",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_quickaction",
+      "symbol": "unknown:apex_quickaction",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_releasenotes",
+      "symbol": "unknown:apex_releasenotes",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_reserved_words",
+      "symbol": "unknown:apex_reserved_words",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest",
+      "symbol": "unknown:apex_rest",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest_annotations_list",
+      "symbol": "unknown:apex_rest_annotations_list",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest_code_sample_basic",
+      "symbol": "unknown:apex_rest_code_sample_basic",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest_code_sample_restrequest",
+      "symbol": "unknown:apex_rest_code_sample_restrequest",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest_code_samples",
+      "symbol": "unknown:apex_rest_code_samples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest_exposing_data",
+      "symbol": "unknown:apex_rest_exposing_data",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest_intro",
+      "symbol": "unknown:apex_rest_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_rest_methods",
+      "symbol": "unknown:apex_rest_methods",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_running",
+      "symbol": "unknown:apex_running",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_salesforce_files",
+      "symbol": "unknown:apex_salesforce_files",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_salesforce_files_customize_downloads",
+      "symbol": "unknown:apex_salesforce_files_customize_downloads",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_salesforce_files_customize_downloads_examples",
+      "symbol": "unknown:apex_salesforce_files_customize_downloads_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_scheduler",
+      "symbol": "unknown:apex_scheduler",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_security_sharing_chapter",
+      "symbol": "unknown:apex_security_sharing_chapter",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_security_sharing_rules",
+      "symbol": "unknown:apex_security_sharing_rules",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_set_sobject",
+      "symbol": "unknown:apex_set_sobject",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example",
+      "symbol": "unknown:apex_shopping_cart_example",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_code",
+      "symbol": "unknown:apex_shopping_cart_example_code",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.GrandTotal",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.GrandTotal",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Name",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Name",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Price",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Price",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Quantity",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Quantity",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Shipping",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Shipping",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.ShippingDiscount",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.ShippingDiscount",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Shipping\\_invoice",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Shipping\\_invoice",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Subtotal",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Subtotal",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Tax",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Tax",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.TotalWeight",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.TotalWeight",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_shopping_cart_example_walkthru.Weight",
+      "symbol": "unknown:apex_shopping_cart_example_walkthru.Weight",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_site_urlRewriter",
+      "symbol": "unknown:apex_site_urlRewriter",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_sobject_collections",
+      "symbol": "unknown:apex_sobject_collections",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing",
+      "symbol": "unknown:apex_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_best_practices",
+      "symbol": "unknown:apex_testing_best_practices",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_data",
+      "symbol": "unknown:apex_testing_data",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_data_access",
+      "symbol": "unknown:apex_testing_data_access",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_example",
+      "symbol": "unknown:apex_testing_example",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_integration_testing",
+      "symbol": "unknown:apex_testing_integration_testing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_intro",
+      "symbol": "unknown:apex_testing_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_load_data",
+      "symbol": "unknown:apex_testing_load_data",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_seealldata_using",
+      "symbol": "unknown:apex_testing_seealldata_using",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_stub_api",
+      "symbol": "unknown:apex_testing_stub_api",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_testsetup_using",
+      "symbol": "unknown:apex_testing_testsetup_using",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_testvisible",
+      "symbol": "unknown:apex_testing_testvisible",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_tools_runas",
+      "symbol": "unknown:apex_testing_tools_runas",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_tools_start_stop_test",
+      "symbol": "unknown:apex_testing_tools_start_stop_test",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_unit_tests",
+      "symbol": "unknown:apex_testing_unit_tests",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_unit_tests_running",
+      "symbol": "unknown:apex_testing_unit_tests_running",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_utility_classes",
+      "symbol": "unknown:apex_testing_utility_classes",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_testing_what",
+      "symbol": "unknown:apex_testing_what",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_transaction",
+      "symbol": "unknown:apex_transaction",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_transaction_finalizers",
+      "symbol": "unknown:apex_transaction_finalizers",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_transaction_finalizers_error_messages",
+      "symbol": "unknown:apex_transaction_finalizers_error_messages",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers",
+      "symbol": "unknown:apex_triggers",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_bestpract",
+      "symbol": "unknown:apex_triggers_bestpract",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_bulk",
+      "symbol": "unknown:apex_triggers_bulk",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_bulk_idioms",
+      "symbol": "unknown:apex_triggers_bulk_idioms",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_context_variables",
+      "symbol": "unknown:apex_triggers_context_variables",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_context_variables_considerations",
+      "symbol": "unknown:apex_triggers_context_variables_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_defining",
+      "symbol": "unknown:apex_triggers_defining",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_exceptions",
+      "symbol": "unknown:apex_triggers_exceptions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_fields_not_updated",
+      "symbol": "unknown:apex_triggers_fields_not_updated",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_fields_not_updated_chatter",
+      "symbol": "unknown:apex_triggers_fields_not_updated_chatter",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_ignoring_operations",
+      "symbol": "unknown:apex_triggers_ignoring_operations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_knowledge_considerations",
+      "symbol": "unknown:apex_triggers_knowledge_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_merge_statements",
+      "symbol": "unknown:apex_triggers_merge_statements",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_order_of_execution",
+      "symbol": "unknown:apex_triggers_order_of_execution",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_recovered_records",
+      "symbol": "unknown:apex_triggers_recovered_records",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_triggers_syntax",
+      "symbol": "unknown:apex_triggers_syntax",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_web_services",
+      "symbol": "unknown:apex_web_services",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_web_services_methods",
+      "symbol": "unknown:apex_web_services_methods",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_web_services_methods_considerations",
+      "symbol": "unknown:apex_web_services_methods_considerations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_web_services_methods_exposing",
+      "symbol": "unknown:apex_web_services_methods_exposing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_web_services_methods_overloading",
+      "symbol": "unknown:apex_web_services_methods_overloading",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_writing",
+      "symbol": "unknown:apex_writing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_xml_dom",
+      "symbol": "unknown:apex_xml_dom",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_xml_streaming",
+      "symbol": "unknown:apex_xml_streaming",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_xml_streaming_reading",
+      "symbol": "unknown:apex_xml_streaming_reading",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_xml_streaming_writing",
+      "symbol": "unknown:apex_xml_streaming_writing",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_xml_support",
+      "symbol": "unknown:apex_xml_support",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:apex_zip",
+      "symbol": "unknown:apex_zip",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:authentication",
+      "symbol": "unknown:authentication",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:authproviderplugin",
+      "symbol": "unknown:authproviderplugin",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectAPI_TestingApex",
+      "symbol": "unknown:connectAPI_TestingApex",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectAPI_overview",
+      "symbol": "unknown:connectAPI_overview",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples",
+      "symbol": "unknown:connectapi_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_add_repository_item_binary",
+      "symbol": "unknown:connectapi_examples_add_repository_item_binary",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_add_repository_item_metadata",
+      "symbol": "unknown:connectapi_examples_add_repository_item_metadata",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_bookmark_feed_element",
+      "symbol": "unknown:connectapi_examples_bookmark_feed_element",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_commerce_cart_custom",
+      "symbol": "unknown:connectapi_examples_commerce_cart_custom",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_define_post_action_link",
+      "symbol": "unknown:connectapi_examples_define_post_action_link",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_define_post_action_link_template",
+      "symbol": "unknown:connectapi_examples_define_post_action_link_template",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_edit_comment",
+      "symbol": "unknown:connectapi_examples_edit_comment",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_edit_feed_element",
+      "symbol": "unknown:connectapi_examples_edit_feed_element",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_edit_question_title_post",
+      "symbol": "unknown:connectapi_examples_edit_question_title_post",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_follow_record",
+      "symbol": "unknown:connectapi_examples_follow_record",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_allowed_item_types",
+      "symbol": "unknown:connectapi_examples_get_allowed_item_types",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_an_authentication_url",
+      "symbol": "unknown:connectapi_examples_get_an_authentication_url",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_feed_elements",
+      "symbol": "unknown:connectapi_examples_get_feed_elements",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_feed_elements_another_user",
+      "symbol": "unknown:connectapi_examples_get_feed_elements_another_user",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_feed_elements_community_scoped",
+      "symbol": "unknown:connectapi_examples_get_feed_elements_community_scoped",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_file_preview",
+      "symbol": "unknown:connectapi_examples_get_file_preview",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_previews",
+      "symbol": "unknown:connectapi_examples_get_previews",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_repositories",
+      "symbol": "unknown:connectapi_examples_get_repositories",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_repository",
+      "symbol": "unknown:connectapi_examples_get_repository",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_repository_file_with_perms",
+      "symbol": "unknown:connectapi_examples_get_repository_file_with_perms",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_repository_file_without_perms",
+      "symbol": "unknown:connectapi_examples_get_repository_file_without_perms",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_repository_folder",
+      "symbol": "unknown:connectapi_examples_get_repository_folder",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_get_repository_folder_items",
+      "symbol": "unknown:connectapi_examples_get_repository_folder_items",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_like_feed_element",
+      "symbol": "unknown:connectapi_examples_like_feed_element",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_comment_feed_element",
+      "symbol": "unknown:connectapi_examples_post_comment_feed_element",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_comment_feed_element_2",
+      "symbol": "unknown:connectapi_examples_post_comment_feed_element_2",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_comment_feed_element_3",
+      "symbol": "unknown:connectapi_examples_post_comment_feed_element_3",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_comment_feed_element_4",
+      "symbol": "unknown:connectapi_examples_post_comment_feed_element_4",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_comment_richtext_code_snippet",
+      "symbol": "unknown:connectapi_examples_post_comment_richtext_code_snippet",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_comment_richtext_inlineimage",
+      "symbol": "unknown:connectapi_examples_post_comment_richtext_inlineimage",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element",
+      "symbol": "unknown:connectapi_examples_post_feed_element",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_batch",
+      "symbol": "unknown:connectapi_examples_post_feed_element_batch",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_batch_binary",
+      "symbol": "unknown:connectapi_examples_post_feed_element_batch_binary",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_binary",
+      "symbol": "unknown:connectapi_examples_post_feed_element_binary",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_content",
+      "symbol": "unknown:connectapi_examples_post_feed_element_content",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_direct_message",
+      "symbol": "unknown:connectapi_examples_post_feed_element_direct_message",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_mention",
+      "symbol": "unknown:connectapi_examples_post_feed_element_mention",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_richtext_code_snippet",
+      "symbol": "unknown:connectapi_examples_post_feed_element_richtext_code_snippet",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_post_feed_element_richtext_inlineimage",
+      "symbol": "unknown:connectapi_examples_post_feed_element_richtext_inlineimage",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_resolve_prompt_template",
+      "symbol": "unknown:connectapi_examples_resolve_prompt_template",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_share_feed_element",
+      "symbol": "unknown:connectapi_examples_share_feed_element",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_share_feed_element_comment",
+      "symbol": "unknown:connectapi_examples_share_feed_element_comment",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_unfollow_record",
+      "symbol": "unknown:connectapi_examples_unfollow_record",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_update_repository_item_binary",
+      "symbol": "unknown:connectapi_examples_update_repository_item_binary",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_examples_update_repository_item_metadata",
+      "symbol": "unknown:connectapi_examples_update_repository_item_metadata",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_features",
+      "symbol": "unknown:connectapi_features",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_features_action_links",
+      "symbol": "unknown:connectapi_features_action_links",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_features_action_links_overview",
+      "symbol": "unknown:connectapi_features_action_links_overview",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_features_action_links_use_cases",
+      "symbol": "unknown:connectapi_features_action_links_use_cases",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_features_cdp_dbt_validations",
+      "symbol": "unknown:connectapi_features_cdp_dbt_validations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:connectapi_features_feeds_feed_elements",
+      "symbol": "unknown:connectapi_features_feeds_feed_elements",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:intro_wildcards",
+      "symbol": "unknown:intro_wildcards",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_NullCoalescingOperator",
+      "symbol": "unknown:langCon_apex_NullCoalescingOperator",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_SObject_types",
+      "symbol": "unknown:langCon_apex_SObject_types",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_SObjects",
+      "symbol": "unknown:langCon_apex_SObjects",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_SObjects_accessing_fields",
+      "symbol": "unknown:langCon_apex_SObjects_accessing_fields",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_SObjects_field_relationships",
+      "symbol": "unknown:langCon_apex_SObjects_field_relationships",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_SObjects_field_validation",
+      "symbol": "unknown:langCon_apex_SObjects_field_validation",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_SafeNavigationOperator",
+      "symbol": "unknown:langCon_apex_SafeNavigationOperator",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_assignment_statements",
+      "symbol": "unknown:langCon_apex_assignment_statements",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_collections",
+      "symbol": "unknown:langCon_apex_collections",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_collections_iterating",
+      "symbol": "unknown:langCon_apex_collections_iterating",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_collections_lists",
+      "symbol": "unknown:langCon_apex_collections_lists",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_collections_lists_sorting",
+      "symbol": "unknown:langCon_apex_collections_lists_sorting",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_collections_maps",
+      "symbol": "unknown:langCon_apex_collections_maps",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_collections_maps_keys_userdefined",
+      "symbol": "unknown:langCon_apex_collections_maps_keys_userdefined",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_collections_sets",
+      "symbol": "unknown:langCon_apex_collections_sets",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_constants",
+      "symbol": "unknown:langCon_apex_constants",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_control_flow",
+      "symbol": "unknown:langCon_apex_control_flow",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_data_types",
+      "symbol": "unknown:langCon_apex_data_types",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_datatypes_variables_intro",
+      "symbol": "unknown:langCon_apex_datatypes_variables_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_deadlocks",
+      "symbol": "unknown:langCon_apex_deadlocks",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml",
+      "symbol": "unknown:langCon_apex_dml",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_database",
+      "symbol": "unknown:langCon_apex_dml_database",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_database_dmloptions",
+      "symbol": "unknown:langCon_apex_dml_database_dmloptions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_database_error",
+      "symbol": "unknown:langCon_apex_dml_database_error",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_database_more",
+      "symbol": "unknown:langCon_apex_dml_database_more",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_database_result_classes",
+      "symbol": "unknown:langCon_apex_dml_database_result_classes",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_examples",
+      "symbol": "unknown:langCon_apex_dml_examples",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_examples_convertlead",
+      "symbol": "unknown:langCon_apex_dml_examples_convertlead",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_examples_delete",
+      "symbol": "unknown:langCon_apex_dml_examples_delete",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_examples_insert_update",
+      "symbol": "unknown:langCon_apex_dml_examples_insert_update",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_examples_merge",
+      "symbol": "unknown:langCon_apex_dml_examples_merge",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_examples_undelete",
+      "symbol": "unknown:langCon_apex_dml_examples_undelete",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_examples_upsert",
+      "symbol": "unknown:langCon_apex_dml_examples_upsert",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_exception_handling",
+      "symbol": "unknown:langCon_apex_dml_exception_handling",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_foreign_keys",
+      "symbol": "unknown:langCon_apex_dml_foreign_keys",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_limitations",
+      "symbol": "unknown:langCon_apex_dml_limitations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_nested_object",
+      "symbol": "unknown:langCon_apex_dml_nested_object",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_operations",
+      "symbol": "unknown:langCon_apex_dml_operations",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_section",
+      "symbol": "unknown:langCon_apex_dml_section",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_dml_transactions",
+      "symbol": "unknown:langCon_apex_dml_transactions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_enums",
+      "symbol": "unknown:langCon_apex_enums",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_expressions",
+      "symbol": "unknown:langCon_apex_expressions",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_expressions_comments",
+      "symbol": "unknown:langCon_apex_expressions_comments",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_expressions_extending_SObjects",
+      "symbol": "unknown:langCon_apex_expressions_extending_SObjects",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_expressions_operators_precedence",
+      "symbol": "unknown:langCon_apex_expressions_operators_precedence",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_expressions_operators_understanding",
+      "symbol": "unknown:langCon_apex_expressions_operators_understanding",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_expressions_understanding",
+      "symbol": "unknown:langCon_apex_expressions_understanding",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_if_else",
+      "symbol": "unknown:langCon_apex_if_else",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_locking_records",
+      "symbol": "unknown:langCon_apex_locking_records",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_locking_statements",
+      "symbol": "unknown:langCon_apex_locking_statements",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_loops",
+      "symbol": "unknown:langCon_apex_loops",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_loops_do_while",
+      "symbol": "unknown:langCon_apex_loops_do_while",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_loops_for",
+      "symbol": "unknown:langCon_apex_loops_for",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_loops_for_lists",
+      "symbol": "unknown:langCon_apex_loops_for_lists",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_loops_for_traditional",
+      "symbol": "unknown:langCon_apex_loops_for_traditional",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_loops_while",
+      "symbol": "unknown:langCon_apex_loops_while",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_parameterized_types",
+      "symbol": "unknown:langCon_apex_parameterized_types",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_primitives",
+      "symbol": "unknown:langCon_apex_primitives",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_rules_of_conversion",
+      "symbol": "unknown:langCon_apex_rules_of_conversion",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_switch",
+      "symbol": "unknown:langCon_apex_switch",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_transaction_control",
+      "symbol": "unknown:langCon_apex_transaction_control",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:langCon_apex_variables",
+      "symbol": "unknown:langCon_apex_variables",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:pages_security_tips_csrf",
+      "symbol": "unknown:pages_security_tips_csrf",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:pages_security_tips_data_access_control",
+      "symbol": "unknown:pages_security_tips_data_access_control",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:pages_security_tips_intro",
+      "symbol": "unknown:pages_security_tips_intro",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:pages_security_tips_scontrols",
+      "symbol": "unknown:pages_security_tips_scontrols",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:pages_security_tips_xss",
+      "symbol": "unknown:pages_security_tips_xss",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:token_exchange_handler",
+      "symbol": "unknown:token_exchange_handler",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    },
+    {
+      "surfaceId": "unknown:versioned_behavior_changes",
+      "symbol": "unknown:versioned_behavior_changes",
+      "kind": "unsupported",
+      "notes": "Apex guide tail rows are broad guide pages or hosted Salesforce product behavior; concrete local Apex behavior remains covered by explicit apex:* fixture evidence."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/SourceFamilyApexGuideTailUnsupportedTest.cls",
+      "content": "@isTest private class SourceFamilyApexGuideTailUnsupportedTest { @isTest static void guard() { System.assertEquals(1, 1); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

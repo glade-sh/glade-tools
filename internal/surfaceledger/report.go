@@ -545,9 +545,17 @@ type CheckOptions struct {
 	MaxParserFailures     int
 	MaxReturnTypeMismatch int
 	MaxParameterMismatch  int
+	Strict                bool
 }
 
 func CheckLedger(ledger SurfaceLedger, options CheckOptions) error {
+	if options.Strict {
+		open := OpenRows(ledger)
+		if len(open) > 0 {
+			first := open[0]
+			return fmt.Errorf("open surface rows=%d first=%s gapClass=%s bucket=%s", len(open), first.SurfaceID, first.GapClass, first.Bucket)
+		}
+	}
 	if got := ledger.Summary.Gaps[GapMissingShape]; got > options.MaxMissingShape {
 		return fmt.Errorf("missing-shape=%d exceeds max %d", got, options.MaxMissingShape)
 	}
@@ -557,10 +565,10 @@ func CheckLedger(ledger SurfaceLedger, options CheckOptions) error {
 	if got := ledger.Summary.Failures["parser"]; got > options.MaxParserFailures {
 		return fmt.Errorf("parser=%d exceeds max %d", got, options.MaxParserFailures)
 	}
-	if got := ledger.Summary.Failures[GapReturnTypeMismatch]; got > options.MaxReturnTypeMismatch {
+	if got := ledger.Summary.Failures[GapReturnTypeMismatch]; options.MaxReturnTypeMismatch >= 0 && got > options.MaxReturnTypeMismatch {
 		return fmt.Errorf("return-type-mismatch=%d exceeds max %d", got, options.MaxReturnTypeMismatch)
 	}
-	if got := ledger.Summary.Failures[GapParameterMismatch]; got > options.MaxParameterMismatch {
+	if got := ledger.Summary.Failures[GapParameterMismatch]; options.MaxParameterMismatch >= 0 && got > options.MaxParameterMismatch {
 		return fmt.Errorf("parameter-mismatch=%d exceeds max %d", got, options.MaxParameterMismatch)
 	}
 	return nil

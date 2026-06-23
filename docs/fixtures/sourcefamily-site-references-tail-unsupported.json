@@ -1,0 +1,335 @@
+{
+  "name": "sourcefamily-site-references-tail-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "site-references:commerce/marketplace/marketplace-seller-bulk",
+      "symbol": "site-references:commerce/marketplace/marketplace-seller-bulk",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:data/connectapi/index",
+      "symbol": "site-references:data/connectapi/index",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:data/connectapi/index.Request",
+      "symbol": "site-references:data/connectapi/index.Request",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:data/connectapi/index.Response",
+      "symbol": "site-references:data/connectapi/index.Response",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:data/connectapi/index.Responses",
+      "symbol": "site-references:data/connectapi/index.Responses",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:data/connectapi/spec",
+      "symbol": "site-references:data/connectapi/spec",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-growth/mc-bulk-contacts",
+      "symbol": "site-references:marketing/marketing-cloud-growth/mc-bulk-contacts",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud-growth/mc-bulk-leads",
+      "symbol": "site-references:marketing/marketing-cloud-growth/mc-bulk-leads",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:marketing/marketing-cloud/mc-rest-bulk-ingest",
+      "symbol": "site-references:marketing/marketing-cloud/mc-rest-bulk-ingest",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v47-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v47-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v48-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v48-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v49-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v49-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v50-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v50-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v51-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v51-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v52-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v52-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v53-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v53-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v54-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v54-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v55-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v55-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v56-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v56-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v57-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v57-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v58-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v58-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v59-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v59-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v60-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v60-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v61-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v61-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v62-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v62-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v63-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v63-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v64-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v64-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v65-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v65-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/coverage-report/v66-0/metadata-coverage-report",
+      "symbol": "site-references:success/metadata-coverage-report/coverage-report/v66-0/metadata-coverage-report",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/index",
+      "symbol": "site-references:success/metadata-coverage-report/index",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v47-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v47-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v48-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v48-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v49-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v49-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v50-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v50-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v51-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v51-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v52-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v52-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v53-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v53-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v54-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v54-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v55-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v55-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v56-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v56-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v57-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v57-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v58-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v58-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v59-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v59-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v60-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v60-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v61-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v61-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v62-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v62-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v63-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v63-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v64-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v64-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v65-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v65-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    },
+    {
+      "surfaceId": "site-references:success/metadata-coverage-report/metadata-types/v66-0/metadata-types",
+      "symbol": "site-references:success/metadata-coverage-report/metadata-types/v66-0/metadata-types",
+      "kind": "unsupported",
+      "notes": "Site reference tail rows describe external Salesforce REST, metadata coverage, commerce, marketing, and Connect REST documentation outside local Apex-test-observable behavior."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/SourceFamilySiteReferencesTailUnsupportedTest.cls",
+      "content": "@isTest private class SourceFamilySiteReferencesTailUnsupportedTest { @isTest static void guard() { System.assertEquals(1, 1); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

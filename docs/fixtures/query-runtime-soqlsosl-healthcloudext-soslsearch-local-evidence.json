@@ -1,0 +1,29 @@
+{
+  "name": "query-runtime-soqlsosl-healthcloudext-soslsearch-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:healthcloudext.IntegratedCareManagementApexHelper.getSOSLSearch(String,String,String,String)",
+      "symbol": "healthcloudext.IntegratedCareManagementApexHelper.getSOSLSearch(String,String,String,String)",
+      "kind": "test",
+      "notes": "Generated healthcloudext helper shape is dispatched by the local VM and returns deterministic SOSL-search defaults."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/QueryRuntimeSOQLSOSLHealthCloudExtLocalEvidenceTest.cls",
+      "content": "@isTest private class QueryRuntimeSOQLSOSLHealthCloudExtLocalEvidenceTest { @isTest static void helperSOSLSearchReturnsLocalDefaultMap() { Map<String,Object> result = healthcloudext.IntegratedCareManagementApexHelper.getSOSLSearch('Account', 'Ada', '0', '10'); System.assertNotEquals(null, result); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

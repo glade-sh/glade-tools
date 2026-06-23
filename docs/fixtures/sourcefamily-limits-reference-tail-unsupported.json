@@ -1,0 +1,29 @@
+{
+  "name": "sourcefamily-limits-reference-tail-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_apexgov",
+      "symbol": "unknown:salesforce_app_limits_platform_apexgov",
+      "kind": "unsupported",
+      "notes": "The Apex governor limits reference page is a hosted Salesforce limits document; concrete local Limits methods are covered by apex:* fixture evidence instead."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/SourceFamilyLimitsReferenceTailUnsupportedTest.cls",
+      "content": "@isTest private class SourceFamilyLimitsReferenceTailUnsupportedTest { @isTest static void guard() { System.assertEquals(1, 1); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

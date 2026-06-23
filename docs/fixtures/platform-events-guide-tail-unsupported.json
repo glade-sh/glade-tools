@@ -1,0 +1,875 @@
+{
+  "name": "platform-events-guide-tail-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "platform-events:platform_event_apex_tests",
+      "symbol": "platform-events:platform_event_apex_tests",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_event_uuid",
+      "symbol": "platform-events:platform_events_event_uuid",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_eventbussubscriber",
+      "symbol": "platform-events:platform_events_eventbussubscriber",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish",
+      "symbol": "platform-events:platform_events_publish",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_apex",
+      "symbol": "platform-events:platform_events_publish_apex",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_class",
+      "symbol": "platform-events:platform_events_publish_callback_class",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_example_correlate",
+      "symbol": "platform-events:platform_events_publish_callback_example_correlate",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_example_failure",
+      "symbol": "platform-events:platform_events_publish_callback_example_failure",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_example_success",
+      "symbol": "platform-events:platform_events_publish_callback_example_success",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_invoke",
+      "symbol": "platform-events:platform_events_publish_callback_invoke",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_limits",
+      "symbol": "platform-events:platform_events_publish_callback_limits",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_practices",
+      "symbol": "platform-events:platform_events_publish_callback_practices",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_publish",
+      "symbol": "platform-events:platform_events_publish_callback_publish",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_test",
+      "symbol": "platform-events:platform_events_publish_callback_test",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callback_user",
+      "symbol": "platform-events:platform_events_publish_callback_user",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_callbacks",
+      "symbol": "platform-events:platform_events_publish_callbacks",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_publish_event_uuid",
+      "symbol": "platform-events:platform_events_publish_event_uuid",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_subscribe_apex",
+      "symbol": "platform-events:platform_events_subscribe_apex",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_test_deliver",
+      "symbol": "platform-events:platform_events_test_deliver",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_test_events",
+      "symbol": "platform-events:platform_events_test_events",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_test_retry",
+      "symbol": "platform-events:platform_events_test_retry",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_trigger_config",
+      "symbol": "platform-events:platform_events_trigger_config",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:platform_events_trigger_reco",
+      "symbol": "platform-events:platform_events_trigger_reco",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_academictermgpacalcevent",
+      "symbol": "platform-events:sforce_api_objects_academictermgpacalcevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_acadrgstrapplnevent",
+      "symbol": "platform-events:sforce_api_objects_acadrgstrapplnevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_acadrgstreligcritrunevent",
+      "symbol": "platform-events:sforce_api_objects_acadrgstreligcritrunevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_aijobrunstatusevent",
+      "symbol": "platform-events:sforce_api_objects_aijobrunstatusevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_aipredictionevent",
+      "symbol": "platform-events:sforce_api_objects_aipredictionevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_aiupdaterecordevent",
+      "symbol": "platform-events:sforce_api_objects_aiupdaterecordevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apianomalyevent",
+      "symbol": "platform-events:sforce_api_objects_apianomalyevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apianomalyeventstore",
+      "symbol": "platform-events:sforce_api_objects_apianomalyeventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apievent",
+      "symbol": "platform-events:sforce_api_objects_apievent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_apieventstream",
+      "symbol": "platform-events:sforce_api_objects_apieventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_appointmentschedulingevent",
+      "symbol": "platform-events:sforce_api_objects_appointmentschedulingevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_appvlworkitemntfcnevent",
+      "symbol": "platform-events:sforce_api_objects_appvlworkitemntfcnevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_asgnrsrcapptschdevent",
+      "symbol": "platform-events:sforce_api_objects_asgnrsrcapptschdevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetamenderrordtlevent",
+      "symbol": "platform-events:sforce_api_objects_assetamenderrordtlevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetamendinitiatedevent",
+      "symbol": "platform-events:sforce_api_objects_assetamendinitiatedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetcancelerrordtlevent",
+      "symbol": "platform-events:sforce_api_objects_assetcancelerrordtlevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetcancelinitiatedevent",
+      "symbol": "platform-events:sforce_api_objects_assetcancelinitiatedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetrenewerrordtlevent",
+      "symbol": "platform-events:sforce_api_objects_assetrenewerrordtlevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assetrenewinitiatedevent",
+      "symbol": "platform-events:sforce_api_objects_assetrenewinitiatedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_assettokenevent",
+      "symbol": "platform-events:sforce_api_objects_assettokenevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_batchapexerrorevent",
+      "symbol": "platform-events:sforce_api_objects_batchapexerrorevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_billingschedulecreateddtlevent",
+      "symbol": "platform-events:sforce_api_objects_billingschedulecreateddtlevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_billingschedulecreatedevent",
+      "symbol": "platform-events:sforce_api_objects_billingschedulecreatedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_bulkapi2jobevent",
+      "symbol": "platform-events:sforce_api_objects_bulkapi2jobevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_bulkapiresultevent",
+      "symbol": "platform-events:sforce_api_objects_bulkapiresultevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_bulkapiresulteventstore",
+      "symbol": "platform-events:sforce_api_objects_bulkapiresulteventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_callcoachconfigmodifyevent",
+      "symbol": "platform-events:sforce_api_objects_callcoachconfigmodifyevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_carttoordercompletedevent",
+      "symbol": "platform-events:sforce_api_objects_carttoordercompletedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_ciinsightsevent",
+      "symbol": "platform-events:sforce_api_objects_ciinsightsevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_commercediagnosticevent",
+      "symbol": "platform-events:sforce_api_objects_commercediagnosticevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_concurlongrunapexerrevent",
+      "symbol": "platform-events:sforce_api_objects_concurlongrunapexerrevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_consentevent",
+      "symbol": "platform-events:sforce_api_objects_consentevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_consentunsubscribeallevent",
+      "symbol": "platform-events:sforce_api_objects_consentunsubscribeallevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_conversationinsightevent",
+      "symbol": "platform-events:sforce_api_objects_conversationinsightevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_createassetorderdtlevent",
+      "symbol": "platform-events:sforce_api_objects_createassetorderdtlevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_createassetorderevent",
+      "symbol": "platform-events:sforce_api_objects_createassetorderevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_credentialstuffingevent",
+      "symbol": "platform-events:sforce_api_objects_credentialstuffingevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_credentialstuffingeventstore",
+      "symbol": "platform-events:sforce_api_objects_credentialstuffingeventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_creditinvoiceprocessedevent",
+      "symbol": "platform-events:sforce_api_objects_creditinvoiceprocessedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_creditmemoprocessedevent",
+      "symbol": "platform-events:sforce_api_objects_creditmemoprocessedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_crmemoprocesserrdtlevent",
+      "symbol": "platform-events:sforce_api_objects_crmemoprocesserrdtlevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_dataobjectdatachgevent",
+      "symbol": "platform-events:sforce_api_objects_dataobjectdatachgevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_dataobjectmetadatachgevent",
+      "symbol": "platform-events:sforce_api_objects_dataobjectmetadatachgevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_datasetexportevent",
+      "symbol": "platform-events:sforce_api_objects_datasetexportevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_discoverypredictionevent",
+      "symbol": "platform-events:sforce_api_objects_discoverypredictionevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_emailcapturedmatchevent",
+      "symbol": "platform-events:sforce_api_objects_emailcapturedmatchevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_extlrecshrevent",
+      "symbol": "platform-events:sforce_api_objects_extlrecshrevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_extlrecshrresultevent",
+      "symbol": "platform-events:sforce_api_objects_extlrecshrresultevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fileevent",
+      "symbol": "platform-events:sforce_api_objects_fileevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fileeventstore",
+      "symbol": "platform-events:sforce_api_objects_fileeventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_firstbillpaymentsetupevent",
+      "symbol": "platform-events:sforce_api_objects_firstbillpaymentsetupevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_flowdebugrefreshevent",
+      "symbol": "platform-events:sforce_api_objects_flowdebugrefreshevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_flowexecutionerrorevent",
+      "symbol": "platform-events:sforce_api_objects_flowexecutionerrorevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_floworchestrationevent",
+      "symbol": "platform-events:sforce_api_objects_floworchestrationevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fostatuschangedevent",
+      "symbol": "platform-events:sforce_api_objects_fostatuschangedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_fulfillorditemqtychgevent",
+      "symbol": "platform-events:sforce_api_objects_fulfillorditemqtychgevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_guestuseranomalyevent",
+      "symbol": "platform-events:sforce_api_objects_guestuseranomalyevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_guestuseranomalyeventstore",
+      "symbol": "platform-events:sforce_api_objects_guestuseranomalyeventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_identityprovidereventstore",
+      "symbol": "platform-events:sforce_api_objects_identityprovidereventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_identityverificationevent",
+      "symbol": "platform-events:sforce_api_objects_identityverificationevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_insplcyendrstatusevent",
+      "symbol": "platform-events:sforce_api_objects_insplcyendrstatusevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_inspolicyrnwlquotestatusevent",
+      "symbol": "platform-events:sforce_api_objects_inspolicyrnwlquotestatusevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_inspolicyrnwlstatusevent",
+      "symbol": "platform-events:sforce_api_objects_inspolicyrnwlstatusevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_interoptopicsubcrevent",
+      "symbol": "platform-events:sforce_api_objects_interoptopicsubcrevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceerrordetailevent",
+      "symbol": "platform-events:sforce_api_objects_invoiceerrordetailevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceprocesseddetailevent",
+      "symbol": "platform-events:sforce_api_objects_invoiceprocesseddetailevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceprocessedevent",
+      "symbol": "platform-events:sforce_api_objects_invoiceprocessedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_invoiceprocpymtexclevent",
+      "symbol": "platform-events:sforce_api_objects_invoiceprocpymtexclevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_lightningurievent",
+      "symbol": "platform-events:sforce_api_objects_lightningurievent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_lightningurieventstream",
+      "symbol": "platform-events:sforce_api_objects_lightningurieventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_listviewevent",
+      "symbol": "platform-events:sforce_api_objects_listviewevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_listvieweventstream",
+      "symbol": "platform-events:sforce_api_objects_listvieweventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginanomalyevent",
+      "symbol": "platform-events:sforce_api_objects_loginanomalyevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginanomalyeventstore",
+      "symbol": "platform-events:sforce_api_objects_loginanomalyeventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginasevent",
+      "symbol": "platform-events:sforce_api_objects_loginasevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginaseventstream",
+      "symbol": "platform-events:sforce_api_objects_loginaseventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_loginevent",
+      "symbol": "platform-events:sforce_api_objects_loginevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_logineventstream",
+      "symbol": "platform-events:sforce_api_objects_logineventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_logoutevent",
+      "symbol": "platform-events:sforce_api_objects_logoutevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_logouteventstream",
+      "symbol": "platform-events:sforce_api_objects_logouteventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobileemailevent",
+      "symbol": "platform-events:sforce_api_objects_mobileemailevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobileenforcedpolicyevent",
+      "symbol": "platform-events:sforce_api_objects_mobileenforcedpolicyevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobilescreenshotevent",
+      "symbol": "platform-events:sforce_api_objects_mobilescreenshotevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_mobiletelephonyevent",
+      "symbol": "platform-events:sforce_api_objects_mobiletelephonyevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_neginvclineprocessedevent",
+      "symbol": "platform-events:sforce_api_objects_neginvclineprocessedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_omnitrackingevent",
+      "symbol": "platform-events:sforce_api_objects_omnitrackingevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_orderstatuschangedevent",
+      "symbol": "platform-events:sforce_api_objects_orderstatuschangedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_ordersummarycreatedevent",
+      "symbol": "platform-events:sforce_api_objects_ordersummarycreatedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_ordersumstatuschangedevent",
+      "symbol": "platform-events:sforce_api_objects_ordersumstatuschangedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_paymentcreationevent",
+      "symbol": "platform-events:sforce_api_objects_paymentcreationevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_pendingordsumprocevent",
+      "symbol": "platform-events:sforce_api_objects_pendingordsumprocevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_permissionsetevent",
+      "symbol": "platform-events:sforce_api_objects_permissionsetevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_permissionseteventstore",
+      "symbol": "platform-events:sforce_api_objects_permissionseteventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_placeordercompletedevent",
+      "symbol": "platform-events:sforce_api_objects_placeordercompletedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_platformstatusalertevent",
+      "symbol": "platform-events:sforce_api_objects_platformstatusalertevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_processexceptionevent",
+      "symbol": "platform-events:sforce_api_objects_processexceptionevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_quotesaveevent",
+      "symbol": "platform-events:sforce_api_objects_quotesaveevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_quotetoordercompletedevent",
+      "symbol": "platform-events:sforce_api_objects_quotetoordercompletedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_quotetoordererrdtlevent",
+      "symbol": "platform-events:sforce_api_objects_quotetoordererrdtlevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_realtimealertevent",
+      "symbol": "platform-events:sforce_api_objects_realtimealertevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_remotekeycalloutevent",
+      "symbol": "platform-events:sforce_api_objects_remotekeycalloutevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reportanomalyevent",
+      "symbol": "platform-events:sforce_api_objects_reportanomalyevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reportanomalyeventstore",
+      "symbol": "platform-events:sforce_api_objects_reportanomalyeventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reportevent",
+      "symbol": "platform-events:sforce_api_objects_reportevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_reporteventstream",
+      "symbol": "platform-events:sforce_api_objects_reporteventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_searchindexjobstatusevent",
+      "symbol": "platform-events:sforce_api_objects_searchindexjobstatusevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_serviceappointmentevent",
+      "symbol": "platform-events:sforce_api_objects_serviceappointmentevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_sessionhijackingevent",
+      "symbol": "platform-events:sforce_api_objects_sessionhijackingevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_sessionhijackingeventstore",
+      "symbol": "platform-events:sforce_api_objects_sessionhijackingeventstore",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_srcpredjobstatuschgevent",
+      "symbol": "platform-events:sforce_api_objects_srcpredjobstatuschgevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_svcapptschdevent",
+      "symbol": "platform-events:sforce_api_objects_svcapptschdevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_urievent",
+      "symbol": "platform-events:sforce_api_objects_urievent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_urieventstream",
+      "symbol": "platform-events:sforce_api_objects_urieventstream",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_videocallevent",
+      "symbol": "platform-events:sforce_api_objects_videocallevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_videocallpurgeevent",
+      "symbol": "platform-events:sforce_api_objects_videocallpurgeevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_videocallrevisedevent",
+      "symbol": "platform-events:sforce_api_objects_videocallrevisedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_voidinvoiceprocessedevent",
+      "symbol": "platform-events:sforce_api_objects_voidinvoiceprocessedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_webcartabandonedevent",
+      "symbol": "platform-events:sforce_api_objects_webcartabandonedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_webstoreusercreatedevent",
+      "symbol": "platform-events:sforce_api_objects_webstoreusercreatedevent",
+      "kind": "unsupported",
+      "notes": "Platform Events guide rows describe Salesforce event bus delivery, subscription, callback, event object, or org monitoring behavior; local EventBus and Test.getEventBus Apex rows are covered separately and are not included here."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/PlatformEventsGuideTailUnsupportedTest.cls",
+      "content": "@isTest private class PlatformEventsGuideTailUnsupportedTest { @isTest static void guard() { System.assertEquals(1, 1); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

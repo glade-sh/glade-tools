@@ -1,0 +1,135 @@
+{
+  "name": "sourcefamily-commerce-cli-reference-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference",
+      "symbol": "comm cli reference",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce",
+      "symbol": "comm cli reference commerce",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_examples",
+      "symbol": "comm cli reference commerce examples",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_examples.Parameters",
+      "symbol": "comm cli reference commerce examples Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_files",
+      "symbol": "comm cli reference commerce files",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_files.Command",
+      "symbol": "comm cli reference commerce files Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_files.Parameters",
+      "symbol": "comm cli reference commerce files Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_payments",
+      "symbol": "comm cli reference commerce payments",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_payments.Command",
+      "symbol": "comm cli reference commerce payments Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_payments.Parameters",
+      "symbol": "comm cli reference commerce payments Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_products",
+      "symbol": "comm cli reference commerce products",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_products.Command",
+      "symbol": "comm cli reference commerce products Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_products.Parameters",
+      "symbol": "comm cli reference commerce products Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_store",
+      "symbol": "comm cli reference commerce store",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_store.Command",
+      "symbol": "comm cli reference commerce store Command",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_commerce_store.Parameters",
+      "symbol": "comm cli reference commerce store Parameters",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:comm_cli_reference_help",
+      "symbol": "comm cli reference help",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:sfdx_dev_cli_deprecation",
+      "symbol": "sfdx dev cli deprecation",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    },
+    {
+      "surfaceId": "commerce-cli-reference:sfdx_setup_other_plugins",
+      "symbol": "sfdx setup other plugins",
+      "kind": "unsupported",
+      "notes": "Salesforce Commerce CLI reference pages describe Salesforce plugin behavior outside the Glade local runtime."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/SourceFamilyCommerceCliReferenceUnsupportedMarker.cls",
+      "content": "public class SourceFamilyCommerceCliReferenceUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

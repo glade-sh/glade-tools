@@ -290,6 +290,23 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 					Name:       "put",
 					ReturnType: "void",
 					Parameters: []ToolingParameter{{Name: "key", Type: "System.String"}, {Name: "value", Type: "APEX_OBJECT"}},
+				}, {
+					Name:       "find",
+					ReturnType: "String",
+					Parameters: []ToolingParameter{{Name: "key", Type: "System.String"}, {Name: "limitSize", Type: "Integer"}},
+				}, {
+					Name:       "find",
+					ReturnType: "String",
+					Parameters: []ToolingParameter{{Name: "key", Type: "System.String"}, {Name: "active", Type: "Boolean"}},
+				}, {
+					Name:       "mix",
+					ReturnType: "Object",
+					IsStatic:   true,
+					Parameters: []ToolingParameter{{Name: "value", Type: "Object"}},
+				}, {
+					Name:       "mix",
+					ReturnType: "String",
+					Parameters: []ToolingParameter{{Name: "value", Type: "String"}},
 				}},
 			},
 		},
@@ -308,7 +325,11 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 	for _, want := range []string{
 		`Name: "Cache.OrgPartition"`,
 		`{Name: "docOnly", ReturnType: "String", Parameters: []string{"Object", "Object"}}`,
+		`{Name: "find", ReturnType: "String", Parameters: []string{"String", "Boolean"}}`,
+		`{Name: "find", ReturnType: "String", Parameters: []string{"String", "Integer"}}`,
 		`{Name: "get", ReturnType: "String", Parameters: []string{"String"}, Static: true}`,
+		`{Name: "mix", ReturnType: "String", Parameters: []string{"String"}}`,
+		`{Name: "mix", ReturnType: "Object", Parameters: []string{"Object"}, Static: true}`,
 		`{Name: "put", ReturnType: "void", Parameters: []string{"String", "Object"}}`,
 		`Name: "ConnectApi.WeakOutput"`,
 		`{Name: "value", Type: "ConnectApi.WeakValue"}`,
@@ -322,6 +343,12 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 	}
 	if strings.Count(goSource, `Name: "get"`) != 1 {
 		t.Fatalf("weak docs shape shadowed typed Tooling shape:\n%s", goSource)
+	}
+	if strings.Count(goSource, `Name: "find"`) != 2 {
+		t.Fatalf("same-arity typed overloads were merged:\n%s", goSource)
+	}
+	if strings.Count(goSource, `Name: "mix"`) != 2 {
+		t.Fatalf("static weak method merged with instance method:\n%s", goSource)
 	}
 	if got := normalizeProductNamespaceType("Map<System.String,ANY>"); got != "Map<String,Object>" {
 		t.Fatalf("generic weak type normalization = %q", got)

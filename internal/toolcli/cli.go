@@ -75,6 +75,7 @@ Commands:
   catalog            Build a capability catalog.
   reconcile          Reconcile docs inventory with the catalog.
   doc-contracts      Report Salesforce docs behavior contracts.
+  declaration-contracts  Export docs declaration shapes for generated stubs.
   salesforce-coverage  Generate Salesforce coverage manifests.
   standard-objects   Report generated standard object coverage.
   stub-contracts     Report generated stub behavioral contract policy.

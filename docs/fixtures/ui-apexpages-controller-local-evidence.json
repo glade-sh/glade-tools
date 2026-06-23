@@ -1,0 +1,55 @@
+{
+  "name": "ui-apexpages-controller-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:ApexPages.IdeaStandardSetController.getListViewOptions()",
+      "symbol": "ApexPages.IdeaStandardSetController.getListViewOptions()",
+      "kind": "test",
+      "notes": "Local ApexPages controller dispatch returns a typed SelectOption list for Visualforce controller flows."
+    },
+    {
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.KnowledgeArticleVersionStandardController(Object)",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController(Object)",
+      "kind": "test",
+      "notes": "Local ApexPages controller shape accepts the standard knowledge article controller constructor for Visualforce controller flows."
+    },
+    {
+      "surfaceId": "apex:ApexPages.StandardController.StandardController(Object)",
+      "symbol": "ApexPages.StandardController(Object)",
+      "kind": "test",
+      "notes": "Local Visualforce controller tests construct StandardController around an SObject record."
+    },
+    {
+      "surfaceId": "apex:ApexPages.StandardController.getId()",
+      "symbol": "ApexPages.StandardController.getId()",
+      "kind": "test",
+      "notes": "Local Visualforce controller tests use StandardController state backed by SObject Id values."
+    },
+    {
+      "surfaceId": "apex:ApexPages.StandardSetController.getListViewOptions()",
+      "symbol": "ApexPages.StandardSetController.getListViewOptions()",
+      "kind": "test",
+      "notes": "Local ApexPages StandardSetController dispatch returns a typed SelectOption list."
+    },
+    {
+      "surfaceId": "apex:ApexPages.StandardSetController.setSelected(List<Object>)",
+      "symbol": "ApexPages.StandardSetController.setSelected(List<Object>)",
+      "kind": "test",
+      "notes": "Local ApexPages StandardSetController dispatch stores selected records for Visualforce controller flows."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/VisualforcePagesTest.cls",
+      "content": "ApexPages.StandardController controller = new ApexPages.StandardController(account);\nApexPages.StandardSetController setController = new ApexPages.StandardSetController(new List<Account>{account});\nsetController.setSelected(new List<Account>{account});"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  }
+}

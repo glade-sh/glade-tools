@@ -1,0 +1,81 @@
+{
+  "name": "sourcefamily-limits-reference-evidence",
+  "evidence": [
+    {
+      "surfaceId": "unknown:platform_event_allocations",
+      "symbol": "platform event allocations",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_chatter_rest",
+      "symbol": "salesforce app limits chatter rest",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_overview",
+      "symbol": "salesforce app limits overview",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_apexgov",
+      "symbol": "salesforce app limits platform apexgov",
+      "kind": "test",
+      "notes": "Apex governor limit docs are shaped by local System.Limits getter fixtures; this reference row is not itself a product surface."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_api",
+      "symbol": "salesforce app limits platform api",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_apicalls",
+      "symbol": "salesforce app limits platform apicalls",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_apicursors",
+      "symbol": "salesforce app limits platform apicursors",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_bulkapi",
+      "symbol": "salesforce app limits platform bulkapi",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_metadata",
+      "symbol": "salesforce app limits platform metadata",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    },
+    {
+      "surfaceId": "unknown:salesforce_app_limits_platform_vf",
+      "symbol": "salesforce app limits platform vf",
+      "kind": "unsupported",
+      "notes": "Salesforce limits quick-reference pages describe hosted platform allocation or server limits outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/SourceFamilyLimitsReferenceEvidenceMarker.cls",
+      "content": "public class SourceFamilyLimitsReferenceEvidenceMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

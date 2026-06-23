@@ -1,8 +1,10 @@
 package surfaceledger
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -209,6 +211,32 @@ func TestBuildEvidenceSnapshotMarksSuccessfulApexFixtureEvidenceSupported(t *tes
 	}
 }
 
+func TestBuildEvidenceSnapshotMarksApexShapeEvidenceAsShapeOnly(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "fixture.json")
+	data := `{
+  "name": "shape-only",
+  "evidence": [{
+    "symbol": "System.Site.getPrefix",
+    "surfaceId": "apex:System.Site.getPrefix",
+    "kind": "shape"
+  }],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`
+	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(rows)["apex:System.Site.getPrefix"]
+	if row.Product != ProductApex || row.GladeShape == ShapeAbsent || row.GladeBehavior != BehaviorNone || row.Evidence != EvidenceFixture {
+		t.Fatalf("shape row = product:%s shape:%s behavior:%s evidence:%s rows:%#v", row.Product, row.GladeShape, row.GladeBehavior, row.Evidence, rows)
+	}
+}
+
 func TestBuildEvidenceSnapshotReadsTrailblazerIdentityFixture(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-trailblazer-identity-local-evidence.json")
 	rows, err := BuildEvidenceSnapshot([]string{path})
@@ -224,6 +252,208 @@ func TestBuildEvidenceSnapshotReadsTrailblazerIdentityFixture(t *testing.T) {
 		row := byID[id]
 		if row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
 			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/supported", id, row.Evidence, row.GladeBehavior)
+		}
+	}
+}
+
+func TestBuildEvidenceSnapshotReadsUIShapePacketFixtures(t *testing.T) {
+	unsupportedPath := filepath.Join("..", "..", "docs", "fixtures", "ui-front-end-hosted-unsupported-surfaces.json")
+	controllerPath := filepath.Join("..", "..", "docs", "fixtures", "ui-apexpages-controller-local-evidence.json")
+	rows, err := BuildEvidenceSnapshot([]string{unsupportedPath, controllerPath})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"ui-api:ui_api_resources_record_get",
+		"ui-api:ui_api_responses_platform_action.lwcComponent",
+		"site-references:commerce/salesforce-commerce/comm-cart-ref",
+		"lightning:ref_jsapi_AuraLocalizationService_formatDate",
+	} {
+		row, ok := byID[id]
+		if !ok {
+			t.Fatalf("missing hosted UI packet row %s", id)
+		}
+		if row.GladeBehavior != BehaviorUnsupported || row.Evidence != EvidenceFixture {
+			t.Fatalf("%s behavior/evidence = %s/%s, want unsupported/fixture", id, row.GladeBehavior, row.Evidence)
+		}
+	}
+	for _, id := range []string{
+		ApexMemberID("ApexPages", "StandardController", "getId", []string{}),
+		ApexMemberID("ApexPages", "StandardSetController", "setSelected", []string{"List<Object>"}),
+	} {
+		row, ok := byID[id]
+		if !ok {
+			t.Fatalf("missing local ApexPages packet row %s", id)
+		}
+		if row.Product != ProductApex || row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
+			t.Fatalf("%s product/behavior/evidence = %s/%s/%s, want apex/supported/fixture", id, row.Product, row.GladeBehavior, row.Evidence)
+		}
+	}
+}
+
+func TestBuildEvidenceSnapshotReadsMiscSourceFamilyEvidence(t *testing.T) {
+	fixtures := []string{
+		"sourcefamily-cli-reference-unsupported.json",
+		"sourcefamily-analytics-cli-reference-unsupported.json",
+		"sourcefamily-commerce-cli-reference-unsupported.json",
+		"sourcefamily-service-connector-api-reference-unsupported.json",
+		"sourcefamily-limits-reference-evidence.json",
+		"sourcefamily-reference-coverage-unsupported.json",
+		"integration-pubsub-current-manifest-unsupported.json",
+		"integration-salesforce-connect-amazon-rds-current-manifest-unsupported.json",
+		"ai-agentforce-current-manifest-unsupported.json",
+		"external-marketing-cloud-ampscript-current-manifest-unsupported.json",
+		"external-marketing-cloud-handlebars-current-manifest-unsupported.json",
+		"platform-events-current-manifest-evidence.json",
+	}
+	var paths []string
+	for _, fixture := range fixtures {
+		path := filepath.Join("..", "..", "docs", "fixtures", fixture)
+		assertFixtureSurfaceIDsHaveNoHiddenFormatMarks(t, path)
+		paths = append(paths, path)
+	}
+	rows, err := BuildEvidenceSnapshot(paths)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"cli-reference:cli_reference_apex_commands_unified",
+		"analytics-cli-reference:bi_cli_reference_analytics_dashboard",
+		"commerce-cli-reference:comm_cli_reference_commerce_store",
+		"service-connector-api-reference:service_connector_interface_getactivecalls",
+		"unknown:REFERENCE_COVERAGE",
+		"platform-events:platform_events_publish_pubsub_api",
+		"site-references:platform/pub-sub-api/index",
+		"streaming-api:pubsub_api_streaming_api_comparison",
+		"site-references:platform/sf-connect-amazon-rds/index",
+		"site-references:ai/agentforce/agent-api",
+		"site-references:marketing/marketing-cloud-ampscript/mc-ampscript-api/mc-ampscript-reference-api",
+		"site-references:marketing/handlebars-for-marketing-cloud-next/mcn-handlebars-string-references/mcn-handlebars-reference-string",
+	} {
+		row := byID[id]
+		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorUnsupported {
+			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/unsupported", id, row.Evidence, row.GladeBehavior)
+		}
+	}
+	for _, id := range []string{
+		"platform-events:platform_events_publish",
+		"platform-events:platform_events_subscribe_apex",
+		"platform-events:platform_events_trigger_reco",
+	} {
+		row := byID[id]
+		if row.Evidence != EvidenceFixture || row.GladeBehavior == BehaviorUnsupported {
+			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/non-unsupported", id, row.Evidence, row.GladeBehavior)
+		}
+	}
+	platformLocal := byID["platform-events:platform_events_test_deliver"]
+	if platformLocal.Evidence != EvidenceFixture || platformLocal.GladeBehavior != BehaviorNone {
+		t.Fatalf("platform local source row evidence/behavior = %s/%s, want fixture/none", platformLocal.Evidence, platformLocal.GladeBehavior)
+	}
+	limitsLocal := byID["unknown:salesforce_app_limits_platform_apexgov"]
+	if limitsLocal.Evidence != EvidenceFixture || limitsLocal.GladeBehavior != BehaviorNone {
+		t.Fatalf("limits local source row evidence/behavior = %s/%s, want fixture/none", limitsLocal.Evidence, limitsLocal.GladeBehavior)
+	}
+}
+
+func TestBuildEvidenceSnapshotReadsMiscLocalRuntimeEvidence(t *testing.T) {
+	paths := []string{
+		filepath.Join("..", "..", "docs", "fixtures", "core-runtime-context-industriescontext-local-evidence.json"),
+		filepath.Join("..", "..", "docs", "fixtures", "query-runtime-soqlsosl-healthcloudext-soslsearch-local-evidence.json"),
+	}
+	for _, path := range paths {
+		assertFixtureSurfaceIDsHaveNoHiddenFormatMarks(t, path)
+	}
+	rows, err := BuildEvidenceSnapshot(paths)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:Context.IndustriesContext.addRecordsToContext(Map<String,Object>)",
+		"apex:Context.IndustriesContext.buildContext(Map<String,Object>)",
+		"apex:Context.IndustriesContext.filteringContext(Map<String,Object>)",
+		"apex:Context.IndustriesContext.getContext(Map<String,Object>)",
+		"apex:Context.IndustriesContext.getContextTranslation(Map<String,Object>)",
+		"apex:Context.IndustriesContext.leanerQueryTags(Map<String,Object>)",
+		"apex:Context.IndustriesContext.persistContext(Map<String,Object>)",
+		"apex:Context.IndustriesContext.queryContextRecordsAndChildren(Map<String,Object>)",
+		"apex:Context.IndustriesContext.queryRecordStatus(Map<String,Object>)",
+		"apex:Context.IndustriesContext.queryTags(Map<String,Object>)",
+		"apex:Context.IndustriesContext.updateContextAttributes(Map<String,Object>)",
+		"apex:healthcloudext.IntegratedCareManagementApexHelper.getSOSLSearch(String,String,String,String)",
+	} {
+		row := byID[id]
+		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
+			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/supported", id, row.Evidence, row.GladeBehavior)
+		}
+	}
+}
+
+func TestBuildEvidenceSnapshotReadsApexTailShapeEvidence(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "apex-tail-supported-shape-evidence.json")
+	assertFixtureSurfaceIDsHaveNoHiddenFormatMarks(t, path)
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()",
+		"apex:Approval.process(List<Approval.ProcessRequest>)",
+		"apex:Approval.process(List<Approval.ProcessRequest>,Boolean)",
+		"apex:DataSource.AsyncDeleteCallback.processDelete()",
+		"apex:DataSource.AsyncSaveCallback.processSave()",
+		"apex:Messaging.SingleEmailMessage.setDocumentAttachments()",
+		"apex:Schema.DescribeFieldResult",
+		"apex:Schema.SObjectTypeFieldSets.get(String)",
+		"apex:Schema.SObjectTypeFieldSets.getMap()",
+		"apex:Schema.SObjectTypeFields.get(String)",
+		"apex:Schema.SObjectTypeFields.getMap()",
+		"apex:System.Address.getDistance()",
+		"apex:System.HttpRequest client certificate local mock metadata",
+		"apex:System.Location.getDistance()",
+		"apex:System.Location.newInstance()",
+		"apex:System.QuickAction.describeAvailableActions",
+		"apex:System.QuickAction.describeAvailableQuickActions()",
+		"apex:System.QuickAction.describeQuickActions()",
+		"apex:System.QuickAction.performQuickAction()",
+		"apex:System.QuickAction.performQuickActions()",
+		"apex:System.SObject.addError(Exception)",
+		"apex:System.Set.addAll(Set<Object>)",
+		"apex:System.Set.containsAll(Set<Object>)",
+		"apex:System.Set.removeAll(Set<Object>)",
+		"apex:System.String.template()",
+		"apex:System.System.runAs(User)",
+	} {
+		row, ok := byID[id]
+		if !ok {
+			t.Fatalf("missing Apex tail shape evidence row %s", id)
+		}
+		if row.Product != ProductApex || row.GladeShape == ShapeAbsent || row.GladeBehavior != BehaviorNone || row.Evidence != EvidenceFixture {
+			t.Fatalf("%s product/shape/behavior/evidence = %s/%s/%s/%s, want apex/non-absent/none/fixture", id, row.Product, row.GladeShape, row.GladeBehavior, row.Evidence)
+		}
+	}
+}
+
+func assertFixtureSurfaceIDsHaveNoHiddenFormatMarks(t *testing.T, path string) {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var raw struct {
+		Evidence []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"evidence"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		t.Fatal(err)
+	}
+	for _, evidence := range raw.Evidence {
+		if strings.ContainsAny(evidence.SurfaceID, "\u200b\u200c\u200d\ufeff") {
+			t.Fatalf("%s contains hidden format mark in surface id %q", path, evidence.SurfaceID)
 		}
 	}
 }

@@ -3,6 +3,7 @@ package toolcli
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -192,14 +193,16 @@ func TestCompatSurfacePacketRejectsUnknownArea(t *testing.T) {
 	}
 }
 
-func TestCompatSurfaceCheckAcceptsTypeMismatchRatchets(t *testing.T) {
+func TestCompatSurfacePacketWritesManifest(t *testing.T) {
 	root := t.TempDir()
 	ledger := filepath.Join(root, "ledger.json")
+	manifest := filepath.Join(root, "manifest", "packets.json")
 	data := `{
   "schemaVersion": 1,
   "rows": [
-    {"surfaceId":"apex:System.BadReturn","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"signature-known","docsReturnType":"String","gladeReturnType":"Object"},
-    {"surfaceId":"apex:System.BadParams","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"signature-known","docsParameters":["Set<T>"],"gladeParameters":["List<T>"]}
+    {"surfaceId":"apex:System.FeatureManagement.checkPermission(String)","product":"apex","area":"runtime","namespace":"System","typeName":"FeatureManagement","memberName":"checkPermission","kind":"method","docs":"present","gladeShape":"absent","evidence":"none","gapClass":"missing-shape","priority":10},
+    {"surfaceId":"rest:/services/data/vXX.X/sobjects","product":"rest","area":"server","kind":"resource","docs":"present","gladeShape":"signature-known","docsReturnType":"List","gladeReturnType":"Object","priority":20},
+    {"surfaceId":"apex:System.Done","product":"apex","area":"runtime","namespace":"System","typeName":"Done","kind":"type","gladeBehavior":"supported","evidence":"fixture"}
   ]
 }`
 	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
@@ -207,7 +210,88 @@ func TestCompatSurfaceCheckAcceptsTypeMismatchRatchets(t *testing.T) {
 	}
 
 	var stdout, stderr bytes.Buffer
-	code := Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--max-return-type-mismatch", "1", "--max-parameter-mismatch", "1"}, &stdout, &stderr)
+	code := Run(context.Background(), []string{"compat", "surface", "packet", "--ledger", ledger, "--manifest", manifest}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "surface packet manifest:") {
+		t.Fatalf("manifest summary missing: %q", stdout.String())
+	}
+	dataOut, err := os.ReadFile(manifest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var decoded struct {
+		TotalOpenRows int `json:"totalOpenRows"`
+		Packets       []struct {
+			ID           string   `json:"id"`
+			Owner        string   `json:"owner"`
+			SourceFamily string   `json:"sourceFamily"`
+			SourceDir    string   `json:"sourceDir"`
+			RowIDs       []string `json:"rowIds"`
+		} `json:"packets"`
+		UnassignedRows []string `json:"unassignedRows"`
+	}
+	if err := json.Unmarshal(dataOut, &decoded); err != nil {
+		t.Fatalf("manifest JSON decode: %v\n%s", err, dataOut)
+	}
+	if decoded.TotalOpenRows != 2 {
+		t.Fatalf("totalOpenRows = %d, want 2", decoded.TotalOpenRows)
+	}
+	if len(decoded.UnassignedRows) != 0 {
+		t.Fatalf("unassignedRows = %#v", decoded.UnassignedRows)
+	}
+	seen := map[string]string{}
+	for _, packet := range decoded.Packets {
+		if packet.ID == "" || packet.Owner == "" {
+			t.Fatalf("packet missing id or owner: %#v", packet)
+		}
+		if packet.SourceFamily == "" && packet.SourceDir == "" {
+			t.Fatalf("packet %s missing source family or source dir", packet.ID)
+		}
+		for _, rowID := range packet.RowIDs {
+			if previous := seen[rowID]; previous != "" {
+				t.Fatalf("row %s assigned twice: %s and %s", rowID, previous, packet.ID)
+			}
+			seen[rowID] = packet.ID
+		}
+	}
+	for _, want := range []string{
+		"apex:System.FeatureManagement.checkPermission(String)",
+		"rest:/services/data/vXX.X/sobjects",
+	} {
+		if seen[want] == "" {
+			t.Fatalf("row %s not assigned in manifest: %#v", want, decoded)
+		}
+	}
+}
+
+func TestCompatSurfaceCheckAcceptsTypeMismatchRatchets(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	data := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.BadReturn","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"signature-known","gladeBehavior":"supported","evidence":"fixture","docsReturnType":"String","gladeReturnType":"Boolean"},
+    {"surfaceId":"apex:System.BadParams","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"signature-known","gladeBehavior":"supported","evidence":"fixture","docsParameters":["Set<String>"],"gladeParameters":["List<String>"]}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--max-missing-shape", "0", "--max-missing-behavior", "0", "--max-parser-failures", "0"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("old ratchets should ignore mismatch ceilings until those flags are explicit, exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "surface check: ok") {
+		t.Fatalf("stdout = %q", stdout.String())
+	}
+
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--max-return-type-mismatch", "1", "--max-parameter-mismatch", "1"}, &stdout, &stderr)
 	if code != 0 {
 		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
 	}
@@ -220,6 +304,40 @@ func TestCompatSurfaceCheckAcceptsTypeMismatchRatchets(t *testing.T) {
 	code = Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--max-return-type-mismatch", "0", "--max-parameter-mismatch", "1"}, &stdout, &stderr)
 	if code == 0 || !strings.Contains(stderr.String(), "return-type-mismatch=1 exceeds max 0") {
 		t.Fatalf("expected return-type ratchet failure, exit=%d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+}
+
+func TestCompatSurfaceCheckStrictRejectsOpenRows(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	data := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.Missing","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"absent","priority":10},
+    {"surfaceId":"apex:System.BadReturn","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"signature-known","docsReturnType":"String","gladeReturnType":"Object","priority":20}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--strict", "--max-missing-shape", "1", "--max-return-type-mismatch", "1"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected strict failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	errText := stderr.String()
+	for _, want := range []string{"open surface rows=2", "apex:System.Missing", "missing-shape"} {
+		if !strings.Contains(errText, want) {
+			t.Fatalf("strict error missing %q: %q", want, errText)
+		}
+	}
+
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--strict"}, &stdout, &stderr)
+	if code == 0 || !strings.Contains(stderr.String(), "open surface rows=2") {
+		t.Fatalf("strict without ratchets should report open rows, exit=%d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
 	}
 }
 

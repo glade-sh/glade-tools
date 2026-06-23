@@ -128,7 +128,7 @@ if [[ -n "${PLUGIN_ASSET_BASE_URL:-}" ]]; then
           canonical="@glade/compat"
           aliases='["compat"]'
           summary="Maintainer support tools, fixtures, surface ledgers, and parity scanners."
-          commands='["compat","lwc","surface","matrix","mvp","local-tests","post-parity","examples","replay","ui-controllers","server-examples","visualforce","dashboard","gaps","stdlib","oracle-stdlib","docs-inventory","catalog","reconcile","doc-contracts","salesforce-coverage","standard-objects","stub-contracts","stub-behavior","stub-inventory","product-namespaces","tooling-fixtures","evidence"]'
+          commands='["compat","lwc","surface","corpus","matrix","mvp","local-tests","post-parity","examples","replay","ui-controllers","server-examples","visualforce","dashboard","gaps","stdlib","oracle-stdlib","docs-inventory","catalog","reconcile","doc-contracts","declaration-contracts","salesforce-coverage","standard-objects","stub-contracts","stub-behavior","stub-inventory","product-namespaces","tooling-fixtures","evidence"]'
           docs="https://glade.sh/guide/plugins/first-party"
           ;;
         orgpackage)

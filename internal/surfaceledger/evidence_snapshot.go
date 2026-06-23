@@ -25,6 +25,7 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 			if id == "" {
 				id = inferSurfaceIDFromSymbol(evidence.Symbol)
 			}
+			id = cleanIdentityPart(id)
 			if id == "" {
 				continue
 			}
@@ -38,6 +39,8 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 			} else if fixtureEvidenceRunsServerSurface(fixture, evidence, product) {
 				shape = ShapeTypeKnown
 				behavior = BehaviorSupported
+			} else if fixtureEvidenceShapesApexSurface(fixture, evidence, product) {
+				shape = ShapeTypeKnown
 			} else if fixtureEvidenceRunsApexSurface(fixture, evidence, product) {
 				behavior = BehaviorSupported
 			} else if product == ProductDataRef && fixture.Expected.Error == nil {
@@ -69,16 +72,7 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 }
 
 func evidenceAreaForProduct(product string) string {
-	switch product {
-	case ProductDataRef:
-		return AreaData
-	case ProductREST, ProductTooling:
-		return AreaServer
-	case ProductLWC, ProductAura, ProductVisualforce:
-		return AreaUI
-	default:
-		return AreaRuntime
-	}
+	return areaForProduct(product)
 }
 
 func fixtureEvidenceExpectsUnsupportedFeature(fixture compat.Fixture, evidence compat.FixtureEvidence, id string) bool {
@@ -111,6 +105,10 @@ func fixtureEvidenceRunsApexSurface(fixture compat.Fixture, evidence compat.Fixt
 	default:
 		return false
 	}
+}
+
+func fixtureEvidenceShapesApexSurface(fixture compat.Fixture, evidence compat.FixtureEvidence, product string) bool {
+	return product == ProductApex && fixture.Expected.Error == nil && strings.EqualFold(strings.TrimSpace(evidence.Kind), "shape")
 }
 
 func fixtureEvidenceRunsRuntimeGuide(fixture compat.Fixture, evidence compat.FixtureEvidence, id string) bool {
@@ -313,6 +311,32 @@ func productFromID(id string) string {
 		return ProductDataRef
 	case strings.HasPrefix(id, "rest:"):
 		return ProductREST
+	case strings.HasPrefix(id, "bulk-api:"):
+		return ProductBulkAPI
+	case strings.HasPrefix(id, "cli-reference:"):
+		return ProductCLIReference
+	case strings.HasPrefix(id, "commerce-cli-reference:"):
+		return ProductCommerceCLIReference
+	case strings.HasPrefix(id, "connect-rest-api:"):
+		return ProductConnectRESTAPI
+	case strings.HasPrefix(id, "analytics-cli-reference:"):
+		return ProductAnalyticsCLIReference
+	case strings.HasPrefix(id, "lightning:"):
+		return ProductLightning
+	case strings.HasPrefix(id, "metadata-api:"):
+		return ProductMetadataAPI
+	case strings.HasPrefix(id, "platform-events:"):
+		return ProductPlatformEvents
+	case strings.HasPrefix(id, "service-connector-api-reference:"):
+		return ProductServiceConnectorAPIRef
+	case strings.HasPrefix(id, "site-references:"):
+		return ProductSiteReferences
+	case strings.HasPrefix(id, "soap-api:"):
+		return ProductSOAPAPI
+	case strings.HasPrefix(id, "streaming-api:"):
+		return ProductStreamingAPI
+	case strings.HasPrefix(id, "ui-api:"):
+		return ProductUIAPI
 	case strings.HasPrefix(id, "visualforce:"):
 		return ProductVisualforce
 	case strings.HasPrefix(id, "lwc:"):

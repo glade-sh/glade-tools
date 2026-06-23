@@ -167,6 +167,22 @@ Creates a list from a set.
 public List<T>(Set<T> setToCopy)
 `+"```"+`
 `)
+	writeDoc(t, filepath.Join(root, "apex_class_System_CustomSettings.md"), `# CustomSettings Class
+
+## Namespace
+[System](./apex_namespace_System.md)
+
+## CustomSettings Methods
+
+### getAll()
+Returns all settings.
+
+#### Signature
+
+`+"```apex"+`
+public Map<String, CustomSetting__c> getAll()
+`+"```"+`
+`)
 
 	inv, err := BuildInventory(root)
 	if err != nil {
@@ -192,6 +208,44 @@ public List<T>(Set<T> setToCopy)
 	}
 	if got := members["List.List"].Parameters; len(got) != 1 || got[0] != "Set<T>" {
 		t.Fatalf("List constructor parameters = %#v", got)
+	}
+	if got := members["CustomSettings.getAll"].ReturnType; got != "Map<String,CustomSetting__c>" {
+		t.Fatalf("getAll return type = %q", got)
+	}
+}
+
+func TestBuildInventoryDoesNotTreatParameterTablesAsProperties(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_methods_system_object.md"), `# Object Class
+
+## Object Methods
+
+### equals(obj)
+Returns true if the two values are equal.
+
+#### Signature
+
+`+"```apex"+`
+public Boolean equals(Object obj)
+`+"```"+`
+
+#### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| obj | Object | The value to compare. |
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if inv.TotalMembers != 1 {
+		t.Fatalf("members = %#v", inv.Documents[0].Members)
+	}
+	member := inv.Documents[0].Members[0]
+	if member.Name != "equals" || member.Kind != "method" {
+		t.Fatalf("member = %#v", member)
 	}
 }
 

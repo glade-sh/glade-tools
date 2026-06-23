@@ -52,6 +52,20 @@ const (
 	ProductConnectAPI  = "connect-api"
 	ProductDataRef     = "data-reference"
 	ProductUnknown     = "unknown"
+
+	ProductBulkAPI                = "bulk-api"
+	ProductCLIReference           = "cli-reference"
+	ProductCommerceCLIReference   = "commerce-cli-reference"
+	ProductConnectRESTAPI         = "connect-rest-api"
+	ProductAnalyticsCLIReference  = "analytics-cli-reference"
+	ProductLightning              = "lightning"
+	ProductMetadataAPI            = "metadata-api"
+	ProductPlatformEvents         = "platform-events"
+	ProductServiceConnectorAPIRef = "service-connector-api-reference"
+	ProductSiteReferences         = "site-references"
+	ProductSOAPAPI                = "soap-api"
+	ProductStreamingAPI           = "streaming-api"
+	ProductUIAPI                  = "ui-api"
 )
 
 const (
@@ -278,6 +292,10 @@ func surfaceFamilyForProduct(product string) string {
 		return "aura"
 	case ProductDataRef:
 		return "data-reference"
+	case ProductBulkAPI, ProductCLIReference, ProductCommerceCLIReference, ProductConnectRESTAPI, ProductAnalyticsCLIReference,
+		ProductLightning, ProductMetadataAPI, ProductPlatformEvents, ProductServiceConnectorAPIRef,
+		ProductSiteReferences, ProductSOAPAPI, ProductStreamingAPI, ProductUIAPI:
+		return product
 	default:
 		if product == "" {
 			return ProductUnknown

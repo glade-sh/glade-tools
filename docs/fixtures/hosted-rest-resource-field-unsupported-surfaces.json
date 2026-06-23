@@ -1,0 +1,411 @@
+{
+  "name": "hosted-rest-resource-field-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "rest:resources_actions_custom_deploy_datakit.datakitcomponentsinput",
+      "symbol": "rest:resources_actions_custom_deploy_datakit.datakitcomponentsinput",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_actions_custom_deploy_datakit.datakitdataspaceinput",
+      "symbol": "rest:resources_actions_custom_deploy_datakit.datakitdataspaceinput",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_actions_custom_deploy_datakit.datakitnameinput",
+      "symbol": "rest:resources_actions_custom_deploy_datakit.datakitnameinput",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph.compositeresponse",
+      "symbol": "rest:resources_composite_graph.compositeresponse",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph.graphid",
+      "symbol": "rest:resources_composite_graph.graphid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph.graphresponse",
+      "symbol": "rest:resources_composite_graph.graphresponse",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph.graphs",
+      "symbol": "rest:resources_composite_graph.graphs",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph.issuccessful",
+      "symbol": "rest:resources_composite_graph.issuccessful",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph_composite_subrequest.body",
+      "symbol": "rest:resources_composite_graph_composite_subrequest.body",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph_composite_subrequest.method",
+      "symbol": "rest:resources_composite_graph_composite_subrequest.method",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph_composite_subrequest.referenceid",
+      "symbol": "rest:resources_composite_graph_composite_subrequest.referenceid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_graph_composite_subrequest.url",
+      "symbol": "rest:resources_composite_graph_composite_subrequest.url",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_subrequest_result.body",
+      "symbol": "rest:resources_composite_subrequest_result.body",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_subrequest_result.httpheaders",
+      "symbol": "rest:resources_composite_subrequest_result.httpheaders",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_subrequest_result.httpstatuscode",
+      "symbol": "rest:resources_composite_subrequest_result.httpstatuscode",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_composite_subrequest_result.referenceid",
+      "symbol": "rest:resources_composite_subrequest_result.referenceid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.actiontype",
+      "symbol": "rest:resources_process_approvals_post.actiontype",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.actorids",
+      "symbol": "rest:resources_process_approvals_post.actorids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.comments",
+      "symbol": "rest:resources_process_approvals_post.comments",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.contextactorid",
+      "symbol": "rest:resources_process_approvals_post.contextactorid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.contextid",
+      "symbol": "rest:resources_process_approvals_post.contextid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.entityid",
+      "symbol": "rest:resources_process_approvals_post.entityid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.errors",
+      "symbol": "rest:resources_process_approvals_post.errors",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.instanceid",
+      "symbol": "rest:resources_process_approvals_post.instanceid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.instancestatus",
+      "symbol": "rest:resources_process_approvals_post.instancestatus",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.newworkitemids",
+      "symbol": "rest:resources_process_approvals_post.newworkitemids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.nextapproverids",
+      "symbol": "rest:resources_process_approvals_post.nextapproverids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.processdefinitionnameorid",
+      "symbol": "rest:resources_process_approvals_post.processdefinitionnameorid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.skipentrycriteria",
+      "symbol": "rest:resources_process_approvals_post.skipentrycriteria",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_approvals_post.success",
+      "symbol": "rest:resources_process_approvals_post.success",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_process_rules_post.contextids",
+      "symbol": "rest:resources_process_rules_post.contextids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.cardinality",
+      "symbol": "rest:resources_query_performance_feedback.cardinality",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.fields",
+      "symbol": "rest:resources_query_performance_feedback.fields",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.leadingoperationtype",
+      "symbol": "rest:resources_query_performance_feedback.leadingoperationtype",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.notes",
+      "symbol": "rest:resources_query_performance_feedback.notes",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.relativecost",
+      "symbol": "rest:resources_query_performance_feedback.relativecost",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.sobjectcardinality",
+      "symbol": "rest:resources_query_performance_feedback.sobjectcardinality",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_query_performance_feedback.sobjecttype",
+      "symbol": "rest:resources_query_performance_feedback.sobjecttype",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.apiname",
+      "symbol": "rest:resources_relevant_items.apiname",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.key",
+      "symbol": "rest:resources_relevant_items.key",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.label",
+      "symbol": "rest:resources_relevant_items.label",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.lastupdatedid",
+      "symbol": "rest:resources_relevant_items.lastupdatedid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.newresultsetsincelastquery",
+      "symbol": "rest:resources_relevant_items.newresultsetsincelastquery",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.qualifiedapiname",
+      "symbol": "rest:resources_relevant_items.qualifiedapiname",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_relevant_items.recordids",
+      "symbol": "rest:resources_relevant_items.recordids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.color",
+      "symbol": "rest:resources_themes.color",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.colors",
+      "symbol": "rest:resources_themes.colors",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.contenttype",
+      "symbol": "rest:resources_themes.contenttype",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.context",
+      "symbol": "rest:resources_themes.context",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.height",
+      "symbol": "rest:resources_themes.height",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.icons",
+      "symbol": "rest:resources_themes.icons",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.name",
+      "symbol": "rest:resources_themes.name",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.theme",
+      "symbol": "rest:resources_themes.theme",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.url",
+      "symbol": "rest:resources_themes.url",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:resources_themes.width",
+      "symbol": "rest:resources_themes.width",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_candidates.endtime",
+      "symbol": "rest:responses_ls_candidates.endtime",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_candidates.engagementchanneltypeids",
+      "symbol": "rest:responses_ls_candidates.engagementchanneltypeids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_candidates.resources",
+      "symbol": "rest:responses_ls_candidates.resources",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_candidates.starttime",
+      "symbol": "rest:responses_ls_candidates.starttime",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_candidates.territoryid",
+      "symbol": "rest:responses_ls_candidates.territoryid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_timeslots.endtime",
+      "symbol": "rest:responses_ls_timeslots.endtime",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_timeslots.engagementchanneltypeids",
+      "symbol": "rest:responses_ls_timeslots.engagementchanneltypeids",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_timeslots.remainingappointments",
+      "symbol": "rest:responses_ls_timeslots.remainingappointments",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_timeslots.starttime",
+      "symbol": "rest:responses_ls_timeslots.starttime",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    },
+    {
+      "surfaceId": "rest:responses_ls_timeslots.territoryid",
+      "symbol": "rest:responses_ls_timeslots.territoryid",
+      "kind": "unsupported",
+      "notes": "Hosted Salesforce REST resource field rows require org HTTP services and response orchestration outside the local Glade runtime; local Apex REST handlers are separate surfaces."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/HostedRESTResourceFieldUnsupportedMarker.cls",
+      "content": "public class HostedRESTResourceFieldUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

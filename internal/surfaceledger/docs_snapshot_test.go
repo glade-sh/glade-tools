@@ -113,6 +113,141 @@ func TestBuildDocsSnapshotUsesDataReferenceObjectStemAndSkipsGuideRows(t *testin
 	}
 }
 
+func TestRowsFromDocsInventoryIdentifiesServerAndUIDTOFamiliesWithoutClosingDocsOnlyRows(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{
+		Documents: []apexdocs.Document{{
+			SourcePath: "connect-rest-api/responses_feed_items.md",
+			Name:       "FeedItemsResponse",
+			Members: []apexdocs.Member{{
+				Kind: "property",
+				Name: "items",
+			}},
+		}, {
+			SourcePath: "tooling-api/intro_rest_resources_testing_runner_sync.md",
+			Name:       "Run",
+			Members: []apexdocs.Member{{
+				Kind: "property",
+				Name: "status",
+			}},
+		}, {
+			SourcePath: "soap-api/sforce_api_calls_describesobjects_describesobjectresult.md",
+			Name:       "DescribeSObjectResult",
+			Members: []apexdocs.Member{{
+				Kind: "property",
+				Name: "fields",
+			}},
+		}, {
+			SourcePath: "metadata-api/meta_deployresult.md",
+			Name:       "DeployResult",
+			Members: []apexdocs.Member{{
+				Kind: "property",
+				Name: "done",
+			}},
+		}, {
+			SourcePath: "metadata-api/meta_retrieveresult.md",
+			Name:       "RetrieveResult",
+			Members: []apexdocs.Member{{
+				Kind: "property",
+				Name: "zipFile",
+			}},
+		}, {
+			SourcePath: "ui-api/responses_record_ui.md",
+			Name:       "RecordUiResponse",
+			Members: []apexdocs.Member{{
+				Kind: "property",
+				Name: "records",
+			}},
+		}, {
+			SourcePath: "commerce-cli-reference/commerce_cli_commands.md",
+			Name:       "CommerceCliCommand",
+			Members: []apexdocs.Member{{
+				Kind: "property",
+				Name: "flags",
+			}},
+		}},
+	})
+	ledger := Merge(rows, nil, nil, nil)
+	byID := rowsByID(ledger.Rows)
+
+	for _, tc := range []struct {
+		id     string
+		family string
+		area   string
+	}{
+		{id: "connect-rest-api:responses_feed_items.items", family: "connect-rest-api", area: AreaServer},
+		{id: ToolingFieldID("Run", "status"), family: "tooling-api", area: AreaServer},
+		{id: "soap-api:sforce_api_calls_describesobjects_describesobjectresult.fields", family: "soap-api", area: AreaServer},
+		{id: "metadata-api:meta_deployresult.done", family: "metadata-api", area: AreaServer},
+		{id: "metadata-api:meta_retrieveresult.zipFile", family: "metadata-api", area: AreaServer},
+		{id: "ui-api:responses_record_ui.records", family: "ui-api", area: AreaUI},
+		{id: "commerce-cli-reference:commerce_cli_commands.flags", family: "commerce-cli-reference", area: AreaServer},
+	} {
+		row, ok := byID[tc.id]
+		if !ok {
+			t.Fatalf("missing row %s in %#v", tc.id, ledger.Rows)
+		}
+		if row.SalesforceSurfaceFamily != tc.family || row.Area != tc.area {
+			t.Fatalf("%s family/area = %s/%s, want %s/%s", tc.id, row.SalesforceSurfaceFamily, row.Area, tc.family, tc.area)
+		}
+		if row.Bucket != BucketGap || row.GapClass != GapMissingShape || row.GladeBehavior != BehaviorNone || row.GladeShape != ShapeAbsent {
+			t.Fatalf("%s bucket/gap/behavior/shape = %s/%s/%s/%s, want gap/missing-shape/none/absent", tc.id, row.Bucket, row.GapClass, row.GladeBehavior, row.GladeShape)
+		}
+	}
+}
+
+func TestRowsFromDocsInventoryIdentifiesServiceConnectorWithoutClosingDocsOnlyRows(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{
+		Documents: []apexdocs.Document{{
+			SourcePath: "service-connector-api-reference/service_connector_methods.md",
+			Name:       "ServiceConnector",
+			Members: []apexdocs.Member{{
+				Kind: "method",
+				Name: "invoke",
+			}},
+		}},
+	})
+	ledger := Merge(rows, nil, nil, nil)
+	byID := rowsByID(ledger.Rows)
+	row, ok := byID["service-connector-api-reference:service_connector_methods.invoke"]
+	if !ok {
+		t.Fatalf("missing service connector row in %#v", ledger.Rows)
+	}
+	if row.SalesforceSurfaceFamily != "service-connector-api-reference" || row.Area != AreaServer {
+		t.Fatalf("family/area = %s/%s", row.SalesforceSurfaceFamily, row.Area)
+	}
+	if row.Bucket != BucketGap || row.GapClass != GapMissingShape || row.GladeBehavior != BehaviorNone || row.GladeShape != ShapeAbsent {
+		t.Fatalf("bucket/gap/behavior/shape = %s/%s/%s/%s, want gap/missing-shape/none/absent", row.Bucket, row.GapClass, row.GladeBehavior, row.GladeShape)
+	}
+}
+
+func TestMergeClassifiesServiceConnectorExplicitUnsupportedOnlyWithPolicyEvidence(t *testing.T) {
+	id := "service-connector-api-reference:service_connector_methods.invoke"
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{
+			SurfaceID: id,
+			Product:   ProductServiceConnectorAPIRef,
+			Area:      AreaServer,
+			Kind:      KindMethod,
+		})},
+		nil,
+		nil,
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{
+			SurfaceID:     id,
+			Product:       ProductServiceConnectorAPIRef,
+			Area:          AreaServer,
+			Kind:          KindMethod,
+			GladeBehavior: BehaviorUnsupported,
+			Evidence:      EvidenceFixture,
+			Sources:       []string{"service-connector-local-impossible-policy"},
+			Notes:         "Service Connector API invokes hosted Service Cloud connector services outside the local Glade runtime.",
+		})},
+	)
+	row := rowsByID(ledger.Rows)[id]
+	if row.Bucket != BucketExplicitUnsupported || row.GladeBehavior != BehaviorUnsupported || row.Evidence != EvidenceFixture {
+		t.Fatalf("bucket/behavior/evidence = %s/%s/%s, want explicitUnsupported/unsupported/fixture", row.Bucket, row.GladeBehavior, row.Evidence)
+	}
+}
+
 func TestBuildDocsSnapshotSkipsApexReleaseNotes(t *testing.T) {
 	root := t.TempDir()
 	writeDoc(t, root, "apex/apex_releasenotes.md", "# Apex Release Notes\n\n## Insert\n")
@@ -144,6 +279,12 @@ func TestBuildDocsSnapshotUsesApexSignatureParameterTypes(t *testing.T) {
 	}
 	if _, ok := byID[ApexMemberID("System", "Database", "executeBatch", []string{"Object"})]; !ok {
 		t.Fatalf("Database.executeBatch single-argument docs row did not use typed parameter list: %#v", rows)
+	}
+}
+
+func TestDocsSourceStemStripsHiddenFormatMarks(t *testing.T) {
+	if got := sourceStem("ui-api/picklistAtrributes\u200bValueType.md"); got != "picklistAtrributesValueType" {
+		t.Fatalf("source stem = %q", got)
 	}
 }
 

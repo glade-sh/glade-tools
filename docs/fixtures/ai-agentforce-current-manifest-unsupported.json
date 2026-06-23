@@ -1,0 +1,87 @@
+{
+  "name": "ai-agentforce-current-manifest-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "site-references:ai/agentforce/about/about-genai-api",
+      "symbol": "ai agentforce about about genai api",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/agent-api",
+      "symbol": "ai agentforce agent api",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/agent-script/agent-script-reference",
+      "symbol": "ai agentforce agent script agent script reference",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/agentforce-dx/agentforce-dx-reference",
+      "symbol": "ai agentforce agentforce dx agentforce dx reference",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/agentforce-mobile-sdk/agentforce-mobile-sdk-overview",
+      "symbol": "ai agentforce agentforce mobile sdk agentforce mobile sdk overview",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/agents-metadata-tooling/agents-metadata",
+      "symbol": "ai agentforce agents metadata tooling agents metadata",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/citations/citations-reference",
+      "symbol": "ai agentforce citations citations reference",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/index",
+      "symbol": "ai agentforce index",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/models-apex-api/models-apex-reference",
+      "symbol": "ai agentforce models apex api models apex reference",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/models-api",
+      "symbol": "ai agentforce models api",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "site-references:ai/agentforce/testing-api/testing-reference-summary",
+      "symbol": "ai agentforce testing api testing reference summary",
+      "kind": "unsupported",
+      "notes": "Agentforce reference pages describe cloud product API and agent behavior outside local Apex execution."
+    }
+  ],
+  "source": [
+    {
+      "path": "classes/AIAgentforceCurrentManifestUnsupportedMarker.cls",
+      "content": "public class AIAgentforceCurrentManifestUnsupportedMarker {}"
+    }
+  ],
+  "command": {
+    "kind": "parse"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "diagnostics": 0
+    }
+  }
+}

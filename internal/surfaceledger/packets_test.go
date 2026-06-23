@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 )
@@ -86,6 +87,169 @@ func TestPacketMarkdownIncludesAgentCloseoutRules(t *testing.T) {
 	}
 	if strings.Contains(markdown, "glade surface") {
 		t.Fatalf("packet markdown still points at old surface commands:\n%s", markdown)
+	}
+}
+
+func TestOpenRowsReturnsSortedGapAndFailureRows(t *testing.T) {
+	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{
+		{SurfaceID: "apex:System.Done", Bucket: BucketImplemented, Priority: 1},
+		{SurfaceID: "apex:System.LaterGap", Bucket: BucketGap, GapClass: GapMissingBehavior, Priority: 50},
+		{SurfaceID: "apex:System.FirstFailure", Bucket: BucketFailure, GapClass: GapReturnTypeMismatch, Priority: 5},
+		{SurfaceID: "apex:System.FirstGap", Bucket: BucketGap, GapClass: GapMissingShape, Priority: 5},
+	}}
+
+	rows := OpenRows(ledger)
+	got := make([]string, 0, len(rows))
+	for _, row := range rows {
+		got = append(got, row.SurfaceID)
+	}
+	want := []string{"apex:System.FirstFailure", "apex:System.FirstGap", "apex:System.LaterGap"}
+	if strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Fatalf("open rows = %#v, want %#v", got, want)
+	}
+}
+
+func TestPacketManifestAssignsEveryOpenRowOnce(t *testing.T) {
+	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{
+		{
+			SurfaceID: "apex:System.FeatureManagement.checkPermission(String)",
+			Product:   ProductApex,
+			Namespace: "System",
+			TypeName:  "FeatureManagement",
+			Kind:      KindMethod,
+			Bucket:    BucketGap,
+			GapClass:  GapMissingShape,
+			Priority:  10,
+		},
+		{
+			SurfaceID:               "rest:/services/data/vXX.X/sobjects",
+			Product:                 ProductREST,
+			SalesforceSurfaceFamily: "rest-api",
+			Kind:                    KindResource,
+			Bucket:                  BucketFailure,
+			GapClass:                GapDocsOrgMismatch,
+			Priority:                20,
+		},
+		{
+			SurfaceID:               "unknown:commerce-marketplaces",
+			Product:                 ProductUnknown,
+			SalesforceSurfaceFamily: "commerce-api",
+			Kind:                    KindGuide,
+			Bucket:                  BucketGap,
+			GapClass:                GapMissingShape,
+			Priority:                30,
+		},
+		{
+			SurfaceID: "apex:System.Done",
+			Product:   ProductApex,
+			Bucket:    BucketImplemented,
+		},
+		{
+			SurfaceID:               "unknown:connect-address-input",
+			Product:                 ProductUnknown,
+			SalesforceSurfaceFamily: ProductUnknown,
+			DocsSource:              "connect-rest-api/connect_requests_address_input.md",
+			Kind:                    KindGuide,
+			Bucket:                  BucketGap,
+			GapClass:                GapMissingShape,
+			Priority:                40,
+		},
+	}}
+
+	manifest := BuildPacketManifest(ledger)
+	if manifest.TotalOpenRows != 4 {
+		t.Fatalf("total open rows = %d, want 4", manifest.TotalOpenRows)
+	}
+	if len(manifest.UnassignedRows) != 0 {
+		t.Fatalf("unassigned rows = %#v", manifest.UnassignedRows)
+	}
+
+	seen := map[string]string{}
+	for _, packet := range manifest.Packets {
+		if packet.ID == "" || packet.Owner == "" {
+			t.Fatalf("packet missing id or owner: %#v", packet)
+		}
+		if packet.SourceFamily == "" && packet.SourceDir == "" {
+			t.Fatalf("packet %s is missing source family or source dir", packet.ID)
+		}
+		for _, rowID := range packet.RowIDs {
+			if previous := seen[rowID]; previous != "" {
+				t.Fatalf("row %s assigned to both %s and %s", rowID, previous, packet.ID)
+			}
+			seen[rowID] = packet.ID
+		}
+	}
+	for _, want := range []string{
+		"apex:System.FeatureManagement.checkPermission(String)",
+		"rest:/services/data/vXX.X/sobjects",
+		"unknown:commerce-marketplaces",
+		"unknown:connect-address-input",
+	} {
+		if seen[want] == "" {
+			t.Fatalf("open row %s was not assigned; manifest=%#v", want, manifest)
+		}
+	}
+	if packetID := seen["unknown:connect-address-input"]; !strings.Contains(packetID, "connect-rest-api") {
+		t.Fatalf("connect docs row assigned to %q, want connect-rest-api packet", packetID)
+	}
+
+	data, err := json.Marshal(manifest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{`"totalOpenRows":4`, `"packets"`, `"rowIds"`, `"unassignedRows"`} {
+		if !strings.Contains(string(data), want) {
+			t.Fatalf("manifest JSON missing %s: %s", want, data)
+		}
+	}
+	if !strings.Contains(string(data), `"unassignedRows":[]`) {
+		t.Fatalf("empty unassignedRows must encode as []: %s", data)
+	}
+}
+
+func TestPacketManifestLeavesTrulyUnknownRowsUnassigned(t *testing.T) {
+	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{
+		{
+			SurfaceID:               "unknown:connect-address-input",
+			Product:                 ProductUnknown,
+			SalesforceSurfaceFamily: ProductUnknown,
+			DocsSource:              "connect-rest-api/connect_requests_address_input.md",
+			Kind:                    KindGuide,
+			Bucket:                  BucketGap,
+			GapClass:                GapMissingShape,
+			Priority:                10,
+		},
+		{
+			SurfaceID: "unknown:no-source",
+			Kind:      KindGuide,
+			Bucket:    BucketGap,
+			GapClass:  GapMissingShape,
+			Priority:  20,
+		},
+	}}
+
+	manifest := BuildPacketManifest(ledger)
+	if manifest.TotalOpenRows != 2 {
+		t.Fatalf("total open rows = %d, want 2", manifest.TotalOpenRows)
+	}
+	if strings.Join(manifest.UnassignedRows, ",") != "unknown:no-source" {
+		t.Fatalf("unassigned rows = %#v, want unknown:no-source", manifest.UnassignedRows)
+	}
+
+	seen := map[string]string{}
+	for _, packet := range manifest.Packets {
+		if strings.Contains(packet.ID, "unknown") {
+			t.Fatalf("truly unknown rows should not create unknown packet: %#v", packet)
+		}
+		for _, rowID := range packet.RowIDs {
+			seen[rowID] = packet.ID
+		}
+	}
+	if packetID := seen["unknown:connect-address-input"]; !strings.Contains(packetID, "connect-rest-api") {
+		t.Fatalf("connect docs row assigned to %q, want connect-rest-api packet", packetID)
+	}
+	if seen["unknown:no-source"] != "" {
+		t.Fatalf("truly unknown row was assigned to %q", seen["unknown:no-source"])
 	}
 }
 
@@ -311,6 +475,58 @@ func TestVisualforceComponentsPacketExcludesAPIAndMetadataRows(t *testing.T) {
 	} {
 		if packetOwnsRow(packet, row) {
 			t.Fatalf("VisualforceComponents packet should not own %s", row.SurfaceID)
+		}
+	}
+}
+
+func TestIntegrationPacketsDoNotClaimPassiveDTONameMatches(t *testing.T) {
+	tests := []struct {
+		packet string
+		row    SurfaceLedgerRow
+	}{
+		{
+			packet: "Integration.BulkAPI",
+			row: SurfaceLedgerRow{
+				SurfaceID:     "apex:ConnectApi.TextClassificationsBulkResultsOutputRepresentation.resultsList",
+				Product:       ProductApex,
+				Namespace:     "ConnectApi",
+				TypeName:      "ConnectApi.TextClassificationsBulkResultsOutputRepresentation",
+				MemberName:    "resultsList",
+				Kind:          KindProperty,
+				GladeBehavior: BehaviorPassive,
+			},
+		},
+		{
+			packet: "Integration.MetadataAPI",
+			row: SurfaceLedgerRow{
+				SurfaceID:     "apex:ConnectApi.CdpQueryMetadataOutput.metadata",
+				Product:       ProductApex,
+				Namespace:     "ConnectApi",
+				TypeName:      "ConnectApi.CdpQueryMetadataOutput",
+				MemberName:    "metadata",
+				Kind:          KindProperty,
+				GladeBehavior: BehaviorPassive,
+			},
+		},
+		{
+			packet: "Integration.StreamingAPI",
+			row: SurfaceLedgerRow{
+				SurfaceID:               "connect-rest-api:connect_responses_personalization_streaming_app_data_connector",
+				Product:                 "connect-rest-api",
+				SalesforceSurfaceFamily: "connect-rest-api",
+				TypeName:                "Streaming",
+				Kind:                    KindType,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		packet, ok := AreaPacketByName(tc.packet)
+		if !ok {
+			t.Fatalf("missing packet %s", tc.packet)
+		}
+		if packetOwnsRow(packet, tc.row) {
+			t.Fatalf("%s should not claim %s", tc.packet, tc.row.SurfaceID)
 		}
 	}
 }

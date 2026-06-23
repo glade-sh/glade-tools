@@ -389,6 +389,7 @@ func runCompatSurfacePacket(args []string, w io.Writer) error {
 	ledgerPath := ""
 	area := ""
 	output := ""
+	manifestPath := ""
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--ledger":
@@ -405,6 +406,13 @@ func runCompatSurfacePacket(args []string, w io.Writer) error {
 			if err != nil {
 				return err
 			}
+		case "--manifest":
+			i++
+			var err error
+			manifestPath, err = argValue(args, i, "--manifest")
+			if err != nil {
+				return err
+			}
 		case "--out", "--output":
 			i++
 			var err error
@@ -416,13 +424,28 @@ func runCompatSurfacePacket(args []string, w io.Writer) error {
 			return fmt.Errorf("unknown flag %q", args[i])
 		}
 	}
-	packet, ok := surfaceledger.AreaPacketByName(area)
-	if !ok {
-		return fmt.Errorf("unknown surface area %q", area)
-	}
 	ledger, err := surfaceledger.ReadLedgerJSON(ledgerPath)
 	if err != nil {
 		return err
+	}
+	if manifestPath != "" {
+		manifest := surfaceledger.BuildPacketManifest(ledger)
+		var buf stringsBuilder
+		if err := surfaceledger.WritePacketManifestJSON(&buf, manifest); err != nil {
+			return err
+		}
+		if err := os.MkdirAll(filepath.Dir(manifestPath), 0o755); err != nil {
+			return err
+		}
+		if err := os.WriteFile(manifestPath, []byte(buf.String()), 0o644); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, "surface packet manifest: %s openRows=%d unassigned=%d\n", manifestPath, manifest.TotalOpenRows, len(manifest.UnassignedRows))
+		return nil
+	}
+	packet, ok := surfaceledger.AreaPacketByName(area)
+	if !ok {
+		return fmt.Errorf("unknown surface area %q", area)
 	}
 	markdown := surfaceledger.PacketMarkdown(ledger, packet)
 	if output != "" {
@@ -538,7 +561,10 @@ func runCompatSurfaceExplain(args []string, w io.Writer) error {
 
 func runCompatSurfaceCheck(args []string, w io.Writer) error {
 	ledgerPath := ""
-	options := surfaceledger.CheckOptions{}
+	options := surfaceledger.CheckOptions{
+		MaxReturnTypeMismatch: -1,
+		MaxParameterMismatch:  -1,
+	}
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--ledger":
@@ -583,6 +609,8 @@ func runCompatSurfaceCheck(args []string, w io.Writer) error {
 				return err
 			}
 			options.MaxParameterMismatch = value
+		case "--strict":
+			options.Strict = true
 		default:
 			return fmt.Errorf("unknown flag %q", args[i])
 		}

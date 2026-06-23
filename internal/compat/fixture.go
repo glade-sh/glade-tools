@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/glade-sh/glade/internal/storage"
 )
@@ -142,7 +143,9 @@ func Validate(fixture Fixture) error {
 		return fmt.Errorf("fixture %q: command.kind is required", fixture.Name)
 	}
 	if len(fixture.Source) == 0 && len(fixture.Schema) == 0 && metadataRegistryEmpty(fixture.Metadata) && len(fixture.SeedData) == 0 && len(fixture.ServerRequests) == 0 {
-		return fmt.Errorf("fixture %q: at least one source, schema, seed data, or server request entry is required", fixture.Name)
+		if !policyEvidenceOnlyFixture(fixture) {
+			return fmt.Errorf("fixture %q: at least one source, schema, seed data, or server request entry is required", fixture.Name)
+		}
 	}
 	for i, source := range fixture.Source {
 		if source.Path == "" {
@@ -176,6 +179,18 @@ func Validate(fixture Fixture) error {
 		}
 	}
 	return nil
+}
+
+func policyEvidenceOnlyFixture(fixture Fixture) bool {
+	if len(fixture.Evidence) == 0 || !strings.EqualFold(fixture.Command.Kind, "policy-evidence") {
+		return false
+	}
+	for _, evidence := range fixture.Evidence {
+		if !strings.EqualFold(evidence.Kind, "unsupported") && !strings.EqualFold(evidence.Kind, "shape") {
+			return false
+		}
+	}
+	return true
 }
 
 func metadataRegistryEmpty(metadata storage.MetadataRegistry) bool {

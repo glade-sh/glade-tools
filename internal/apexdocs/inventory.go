@@ -609,6 +609,9 @@ func collectPropertyTableMembers(lines []string) []Member {
 		if len(cells) == 0 {
 			continue
 		}
+		if !strings.Contains(strings.ToLower(section), "propert") {
+			continue
+		}
 		nameIdx, typeIdx := propertyTableIndexes(cells)
 		if nameIdx < 0 || typeIdx < 0 {
 			continue
@@ -754,7 +757,7 @@ func parseApexSignature(signature, typeName string) parsedApexSignature {
 	}
 	prefix := strings.TrimSpace(signature[:open])
 	params := parseApexParameterTypes(signature[open+1 : close])
-	fields := strings.Fields(prefix)
+	fields := topLevelFields(prefix)
 	fields = dropApexModifiers(fields)
 	if len(fields) == 0 {
 		return parsedApexSignature{}
@@ -773,6 +776,37 @@ func parseApexSignature(signature, typeName string) parsedApexSignature {
 		returnType: NormalizeApexDocType(fields[len(fields)-2]),
 		parameters: params,
 	}
+}
+
+func topLevelFields(value string) []string {
+	var fields []string
+	start := -1
+	depth := 0
+	for i, r := range value {
+		switch r {
+		case '<':
+			depth++
+		case '>':
+			if depth > 0 {
+				depth--
+			}
+		default:
+			if unicode.IsSpace(r) && depth == 0 {
+				if start >= 0 {
+					fields = append(fields, strings.TrimSpace(value[start:i]))
+					start = -1
+				}
+				continue
+			}
+		}
+		if start < 0 && !unicode.IsSpace(r) {
+			start = i
+		}
+	}
+	if start >= 0 {
+		fields = append(fields, strings.TrimSpace(value[start:]))
+	}
+	return fields
 }
 
 func dropApexModifiers(fields []string) []string {

@@ -151,6 +151,12 @@
     },
     {
       "path": [
+        "declaration-contracts"
+      ],
+      "summary": "Export docs declaration shapes for generated stubs."
+    },
+    {
+      "path": [
         "salesforce-coverage"
       ],
       "summary": "Generate Salesforce coverage manifests."

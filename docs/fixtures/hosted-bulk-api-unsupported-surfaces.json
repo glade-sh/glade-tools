@@ -1,0 +1,986 @@
+{
+  "name": "hosted-bulk-api-unsupported-surfaces",
+  "evidence": [
+    {
+      "surfaceId": "bulk-api:abort_job",
+      "symbol": "abort_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:api_asynch_bulk_ingest",
+      "symbol": "api_asynch_bulk_ingest",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:api_asynch_introduction_bulk_api",
+      "symbol": "api_asynch_introduction_bulk_api",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:api_asynch_introduction_how_bulk_api_works",
+      "symbol": "api_asynch_introduction_how_bulk_api_works",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:async_api_headers",
+      "symbol": "async_api_headers",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:async_api_headers_content_type",
+      "symbol": "async_api_headers_content_type",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:async_api_headers_disable_batch_retry",
+      "symbol": "async_api_headers_disable_batch_retry",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:async_api_headers_enable_pk_chunking",
+      "symbol": "async_api_headers_enable_pk_chunking",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:async_api_headers_line_ending",
+      "symbol": "async_api_headers_line_ending",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:async_api_headers_sforce_call_options",
+      "symbol": "async_api_headers_sforce_call_options",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:async_api_headers_warning_header",
+      "symbol": "async_api_headers_warning_header",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_basics_about_uri",
+      "symbol": "asynch_api_basics_about_uri",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_basics_intro",
+      "symbol": "asynch_api_basics_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_basics_session_header",
+      "symbol": "asynch_api_basics_session_header",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_create",
+      "symbol": "asynch_api_batches_create",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_failed_records",
+      "symbol": "asynch_api_batches_failed_records",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_get_info",
+      "symbol": "asynch_api_batches_get_info",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_get_info_all",
+      "symbol": "asynch_api_batches_get_info_all",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_get_request",
+      "symbol": "asynch_api_batches_get_request",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_get_results",
+      "symbol": "asynch_api_batches_get_results",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_interpret_status",
+      "symbol": "asynch_api_batches_interpret_status",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_intro",
+      "symbol": "asynch_api_batches_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_batches_monitor",
+      "symbol": "asynch_api_batches_monitor",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_bulk_query_intro",
+      "symbol": "asynch_api_bulk_query_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_bulk_query_processing",
+      "symbol": "asynch_api_bulk_query_processing",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_code",
+      "symbol": "asynch_api_code",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_code_curl_walkthrough",
+      "symbol": "asynch_api_code_curl_walkthrough",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_code_curl_walkthrough_pk_chunking",
+      "symbol": "asynch_api_code_curl_walkthrough_pk_chunking",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_code_set_up_client",
+      "symbol": "asynch_api_code_set_up_client",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_code_walkthrough",
+      "symbol": "asynch_api_code_walkthrough",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_concepts_limits",
+      "symbol": "asynch_api_concepts_limits",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_intro",
+      "symbol": "asynch_api_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_jobs_abort",
+      "symbol": "asynch_api_jobs_abort",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_jobs_close",
+      "symbol": "asynch_api_jobs_close",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_jobs_create",
+      "symbol": "asynch_api_jobs_create",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_jobs_get_details",
+      "symbol": "asynch_api_jobs_get_details",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_jobs_intro",
+      "symbol": "asynch_api_jobs_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_jobs_monitor",
+      "symbol": "asynch_api_jobs_monitor",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_mapping",
+      "symbol": "asynch_api_mapping",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_planning_compression",
+      "symbol": "asynch_api_planning_compression",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_planning_guidelines",
+      "symbol": "asynch_api_planning_guidelines",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_planning_intro",
+      "symbol": "asynch_api_planning_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart",
+      "symbol": "asynch_api_quickstart",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_add_batch",
+      "symbol": "asynch_api_quickstart_add_batch",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_check_status",
+      "symbol": "asynch_api_quickstart_check_status",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_close_job",
+      "symbol": "asynch_api_quickstart_close_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_create_job",
+      "symbol": "asynch_api_quickstart_create_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_login",
+      "symbol": "asynch_api_quickstart_login",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_requests_intro",
+      "symbol": "asynch_api_quickstart_requests_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_retrieve_results",
+      "symbol": "asynch_api_quickstart_retrieve_results",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_set_up_client",
+      "symbol": "asynch_api_quickstart_set_up_client",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_quickstart_set_up_org",
+      "symbol": "asynch_api_quickstart_set_up_org",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference",
+      "symbol": "asynch_api_reference",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo",
+      "symbol": "asynch_api_reference_batchinfo",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.apexProcessingTime",
+      "symbol": "asynch_api_reference_batchinfo.apexProcessingTime",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.apiActiveProcessingTime",
+      "symbol": "asynch_api_reference_batchinfo.apiActiveProcessingTime",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.batchInfo",
+      "symbol": "asynch_api_reference_batchinfo.batchInfo",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.createdDate",
+      "symbol": "asynch_api_reference_batchinfo.createdDate",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.id",
+      "symbol": "asynch_api_reference_batchinfo.id",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.jobId",
+      "symbol": "asynch_api_reference_batchinfo.jobId",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.numberRecordsFailed",
+      "symbol": "asynch_api_reference_batchinfo.numberRecordsFailed",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.numberRecordsProcessed",
+      "symbol": "asynch_api_reference_batchinfo.numberRecordsProcessed",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.state",
+      "symbol": "asynch_api_reference_batchinfo.state",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.stateMessage",
+      "symbol": "asynch_api_reference_batchinfo.stateMessage",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.systemModstamp",
+      "symbol": "asynch_api_reference_batchinfo.systemModstamp",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_batchinfo.totalProcessingTime",
+      "symbol": "asynch_api_reference_batchinfo.totalProcessingTime",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_errors",
+      "symbol": "asynch_api_reference_errors",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo",
+      "symbol": "asynch_api_reference_jobinfo",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.apexProcessingTime",
+      "symbol": "asynch_api_reference_jobinfo.apexProcessingTime",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.apiActiveProcessingTime",
+      "symbol": "asynch_api_reference_jobinfo.apiActiveProcessingTime",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.apiVersion",
+      "symbol": "asynch_api_reference_jobinfo.apiVersion",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.assignmentRuleId",
+      "symbol": "asynch_api_reference_jobinfo.assignmentRuleId",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.concurrencyMode",
+      "symbol": "asynch_api_reference_jobinfo.concurrencyMode",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.contentType",
+      "symbol": "asynch_api_reference_jobinfo.contentType",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.createdById",
+      "symbol": "asynch_api_reference_jobinfo.createdById",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.createdDate",
+      "symbol": "asynch_api_reference_jobinfo.createdDate",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.externalIdFieldName",
+      "symbol": "asynch_api_reference_jobinfo.externalIdFieldName",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.id",
+      "symbol": "asynch_api_reference_jobinfo.id",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberBatchesCompleted",
+      "symbol": "asynch_api_reference_jobinfo.numberBatchesCompleted",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberBatchesFailed",
+      "symbol": "asynch_api_reference_jobinfo.numberBatchesFailed",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberBatchesInProgress",
+      "symbol": "asynch_api_reference_jobinfo.numberBatchesInProgress",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberBatchesQueued",
+      "symbol": "asynch_api_reference_jobinfo.numberBatchesQueued",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberBatchesTotal",
+      "symbol": "asynch_api_reference_jobinfo.numberBatchesTotal",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberRecordsFailed",
+      "symbol": "asynch_api_reference_jobinfo.numberRecordsFailed",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberRecordsProcessed",
+      "symbol": "asynch_api_reference_jobinfo.numberRecordsProcessed",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.numberRetries",
+      "symbol": "asynch_api_reference_jobinfo.numberRetries",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.object",
+      "symbol": "asynch_api_reference_jobinfo.object",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.operation",
+      "symbol": "asynch_api_reference_jobinfo.operation",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.state",
+      "symbol": "asynch_api_reference_jobinfo.state",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.systemModstamp",
+      "symbol": "asynch_api_reference_jobinfo.systemModstamp",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_jobinfo.totalProcessingTime",
+      "symbol": "asynch_api_reference_jobinfo.totalProcessingTime",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_reference_schema",
+      "symbol": "asynch_api_reference_schema",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:asynch_api_using_bulk_query",
+      "symbol": "asynch_api_using_bulk_query",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:authentication",
+      "symbol": "authentication",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:binary_create_batch",
+      "symbol": "binary_create_batch",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:binary_create_job",
+      "symbol": "binary_create_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:binary_create_request_file",
+      "symbol": "binary_create_request_file",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:binary_create_zip",
+      "symbol": "binary_create_zip",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:binary_intro",
+      "symbol": "binary_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0",
+      "symbol": "bulk_api_2_0",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_content_type_header",
+      "symbol": "bulk_api_2_0_content_type_header",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_end_of_life",
+      "symbol": "bulk_api_2_0_end_of_life",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_errors",
+      "symbol": "bulk_api_2_0_errors",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_headers_intro",
+      "symbol": "bulk_api_2_0_headers_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_headers_sforce_call_options",
+      "symbol": "bulk_api_2_0_headers_sforce_call_options",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_headers_warnings",
+      "symbol": "bulk_api_2_0_headers_warnings",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_ingest",
+      "symbol": "bulk_api_2_0_ingest",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_line_ending_header",
+      "symbol": "bulk_api_2_0_line_ending_header",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_older_documentation",
+      "symbol": "bulk_api_2_0_older_documentation",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_troubleshoot_query_timeouts",
+      "symbol": "bulk_api_2_0_troubleshoot_query_timeouts",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_troubleshooting_timeouts",
+      "symbol": "bulk_api_2_0_troubleshooting_timeouts",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_0_upsert",
+      "symbol": "bulk_api_2_0_upsert",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_api_2_job_states",
+      "symbol": "bulk_api_2_job_states",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_common_api_end_of_life",
+      "symbol": "bulk_common_api_end_of_life",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_common_diff_two_versions",
+      "symbol": "bulk_common_diff_two_versions",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:bulk_common_limits",
+      "symbol": "bulk_common_limits",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:close_job",
+      "symbol": "close_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:create_job",
+      "symbol": "create_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_csv_preparing",
+      "symbol": "datafiles_csv_preparing",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_csv_rel_field_header_row",
+      "symbol": "datafiles_csv_rel_field_header_row",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_csv_sample_file",
+      "symbol": "datafiles_csv_sample_file",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_csv_samples",
+      "symbol": "datafiles_csv_samples",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_csv_valid_record_rows",
+      "symbol": "datafiles_csv_valid_record_rows",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_date_format",
+      "symbol": "datafiles_date_format",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_field_names",
+      "symbol": "datafiles_field_names",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_intro",
+      "symbol": "datafiles_intro",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_json_sample_file",
+      "symbol": "datafiles_json_sample_file",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_organize_data",
+      "symbol": "datafiles_organize_data",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_prepare_csv",
+      "symbol": "datafiles_prepare_csv",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_prepare_data",
+      "symbol": "datafiles_prepare_data",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_understanding_bulk2_ingest",
+      "symbol": "datafiles_understanding_bulk2_ingest",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_use_compression",
+      "symbol": "datafiles_use_compression",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_xml_preparing",
+      "symbol": "datafiles_xml_preparing",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_xml_rel_fields",
+      "symbol": "datafiles_xml_rel_fields",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_xml_sample_file",
+      "symbol": "datafiles_xml_sample_file",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:datafiles_xml_valid_records",
+      "symbol": "datafiles_xml_valid_records",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:delete_job",
+      "symbol": "delete_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:get_all_jobs",
+      "symbol": "get_all_jobs",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:get_job_failed_results",
+      "symbol": "get_job_failed_results",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:get_job_info",
+      "symbol": "get_job_info",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:get_job_successful_results",
+      "symbol": "get_job_successful_results",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:get_job_unprocessed_results",
+      "symbol": "get_job_unprocessed_results",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:how_requests_are_processed",
+      "symbol": "how_requests_are_processed",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:queries",
+      "symbol": "queries",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_abort_job",
+      "symbol": "query_abort_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_bulk_api_2_0",
+      "symbol": "query_bulk_api_2_0",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_compression",
+      "symbol": "query_compression",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_create_job",
+      "symbol": "query_create_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_delete_job",
+      "symbol": "query_delete_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_get_all_jobs",
+      "symbol": "query_get_all_jobs",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_get_job_results",
+      "symbol": "query_get_job_results",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_get_one_job",
+      "symbol": "query_get_one_job",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_get_parallel_job_results",
+      "symbol": "query_get_parallel_job_results",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:query_walkthrough",
+      "symbol": "query_walkthrough",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:relationship_fields_in_a_header_row__2_0",
+      "symbol": "relationship_fields_in_a_header_row__2_0",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:subscribe_platform_events_beta",
+      "symbol": "subscribe_platform_events_beta",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:upload_job_data",
+      "symbol": "upload_job_data",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:valid_date_format_in_records__2_0",
+      "symbol": "valid_date_format_in_records__2_0",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:walkthrough_upload_data",
+      "symbol": "walkthrough_upload_data",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:walkthrough_upload_multipart_data",
+      "symbol": "walkthrough_upload_multipart_data",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:walkthrough_upsert",
+      "symbol": "walkthrough_upsert",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    },
+    {
+      "surfaceId": "bulk-api:walkthrough_using_curl",
+      "symbol": "walkthrough_using_curl",
+      "kind": "unsupported",
+      "notes": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    }
+  ],
+  "command": {
+    "kind": "policy-evidence"
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "Bulk API rows describe Salesforce-hosted bulk ingest and query service behavior outside local Apex execution."
+    }
+  }
+}
