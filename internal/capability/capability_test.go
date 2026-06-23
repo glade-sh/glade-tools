@@ -552,6 +552,8 @@ func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 		"System.runAs(Package.Version)":                                                StatusSupported,
 		"Approval.process(Approval.ProcessRequest)":                                    StatusSupported,
 		"Approval.process(Approval.ProcessRequest, Boolean)":                           StatusSupported,
+		"Approval.process(List<Approval.ProcessRequest>)":                              StatusSupported,
+		"Approval.process(List<Approval.ProcessRequest>, Boolean)":                     StatusSupported,
 		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)": StatusSupported,
 		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                             StatusSupported,
 		"TrailblazerIdentity.splunkLog(String,String)":                                 StatusSupported,
