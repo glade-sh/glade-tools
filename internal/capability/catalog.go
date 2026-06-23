@@ -30,20 +30,23 @@ type Catalog struct {
 }
 
 type CatalogEntry struct {
-	ID         string        `json:"id"`
-	Area       string        `json:"area"`
-	Namespace  string        `json:"namespace,omitempty"`
-	TypeName   string        `json:"typeName,omitempty"`
-	MemberName string        `json:"memberName,omitempty"`
-	Symbol     string        `json:"symbol"`
-	Kind       string        `json:"kind"`
-	Signature  string        `json:"signature,omitempty"`
-	Target     SupportTarget `json:"target"`
-	Status     Status        `json:"status"`
-	Owner      string        `json:"owner,omitempty"`
-	DocsSource string        `json:"docsSource,omitempty"`
-	Evidence   []string      `json:"evidence,omitempty"`
-	Notes      string        `json:"notes,omitempty"`
+	ID           string        `json:"id"`
+	Area         string        `json:"area"`
+	Namespace    string        `json:"namespace,omitempty"`
+	TypeName     string        `json:"typeName,omitempty"`
+	MemberName   string        `json:"memberName,omitempty"`
+	Symbol       string        `json:"symbol"`
+	Kind         string        `json:"kind"`
+	Signature    string        `json:"signature,omitempty"`
+	ReturnType   string        `json:"returnType,omitempty"`
+	PropertyType string        `json:"propertyType,omitempty"`
+	Parameters   []string      `json:"parameters,omitempty"`
+	Target       SupportTarget `json:"target"`
+	Status       Status        `json:"status"`
+	Owner        string        `json:"owner,omitempty"`
+	DocsSource   string        `json:"docsSource,omitempty"`
+	Evidence     []string      `json:"evidence,omitempty"`
+	Notes        string        `json:"notes,omitempty"`
 }
 
 type CatalogSummary struct {
@@ -82,18 +85,21 @@ func BuildCatalog(inv apexdocs.Inventory) Catalog {
 		for _, member := range doc.Members {
 			symbol := catalogSymbol(doc.Namespace, doc.Name, member.Name)
 			entry := CatalogEntry{
-				ID:         catalogID(symbol, member.Kind, member.Signature),
-				Area:       classification.area,
-				Namespace:  emptyNone(doc.Namespace),
-				TypeName:   doc.Name,
-				MemberName: member.Name,
-				Symbol:     symbol,
-				Kind:       member.Kind,
-				Signature:  member.Signature,
-				Target:     classification.target,
-				Status:     StatusUnknown,
-				Owner:      classification.owner,
-				DocsSource: doc.SourcePath,
+				ID:           catalogID(symbol, member.Kind, member.Signature),
+				Area:         classification.area,
+				Namespace:    emptyNone(doc.Namespace),
+				TypeName:     doc.Name,
+				MemberName:   member.Name,
+				Symbol:       symbol,
+				Kind:         member.Kind,
+				Signature:    member.Signature,
+				ReturnType:   member.ReturnType,
+				PropertyType: member.PropertyType,
+				Parameters:   append([]string(nil), member.Parameters...),
+				Target:       classification.target,
+				Status:       StatusUnknown,
+				Owner:        classification.owner,
+				DocsSource:   doc.SourcePath,
 			}
 			applyCatalogTargetDefaults(&entry)
 			if match, ok := known[knownKey(doc.Name, member.Name)]; ok {

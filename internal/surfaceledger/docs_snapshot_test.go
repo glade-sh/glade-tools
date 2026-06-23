@@ -431,6 +431,42 @@ func TestRowsFromDocsInventoryUsesConstructorSignatures(t *testing.T) {
 	}
 }
 
+func TestRowsFromDocsInventoryUsesDocsContractTypes(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{
+		Documents: []apexdocs.Document{{
+			SourcePath: "apex/apex_connectapi_output_ManagedContentVersionCollection.md",
+			Kind:       "output",
+			Namespace:  "ConnectApi",
+			Name:       "ManagedContentVersionCollection",
+			Members: []apexdocs.Member{{
+				Kind:         "property",
+				Name:         "items",
+				Signature:    "items",
+				PropertyType: "List<ConnectApi.ManagedContentVersion>",
+			}, {
+				Kind:       "method",
+				Name:       "equals",
+				Signature:  "public Boolean equals(Object obj)",
+				ReturnType: "Boolean",
+				Parameters: []string{"Object"},
+			}},
+		}},
+	})
+
+	byID := rowsByID(rows)
+	propertyID := ApexMemberID("ConnectApi", "ManagedContentVersionCollection", "items", nil)
+	if got := byID[propertyID].DocsReturnType; got != "List<ConnectApi.ManagedContentVersion>" {
+		t.Fatalf("docs property return type = %q", got)
+	}
+	methodID := ApexMemberID("ConnectApi", "ManagedContentVersionCollection", "equals", []string{"Object"})
+	if got := byID[methodID].DocsReturnType; got != "Boolean" {
+		t.Fatalf("docs method return type = %q", got)
+	}
+	if got := byID[methodID].DocsParameters; len(got) != 1 || got[0] != "Object" {
+		t.Fatalf("docs method parameters = %#v", got)
+	}
+}
+
 func TestRowsFromDocsInventoryInfersApexFileIdentities(t *testing.T) {
 	rows := RowsFromDocsInventory(apexdocs.Inventory{
 		Documents: []apexdocs.Document{{

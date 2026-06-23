@@ -478,6 +478,35 @@ func TestProductNamespacesRequiresSourceInput(t *testing.T) {
 	}
 }
 
+func TestCorpusCheckCommandWritesReports(t *testing.T) {
+	root := t.TempDir()
+	project := filepath.Join(root, "alpha")
+	if err := os.MkdirAll(project, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(project, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+printf '{"diagnostics":[{"code":"GLADEPERF001","message":"slow check","file":"A.cls"}]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(root, "out")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"corpus", "check", "--root", root, "--glade", glade, "--out", out}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "corpus check: projects=1 diagnostics=1") {
+		t.Fatalf("stdout = %q", stdout.String())
+	}
+	if _, err := os.Stat(filepath.Join(out, "classified.tsv")); err != nil {
+		t.Fatalf("classified.tsv missing: %v", err)
+	}
+}
+
 func TestUnknownCommandUsageLeadsWithMaintenanceEntrypoint(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), []string{"nope"}, &stdout, &stderr)

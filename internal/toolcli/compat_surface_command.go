@@ -229,7 +229,7 @@ func runCompatSurfaceRefresh(args []string, w io.Writer) error {
 	fmt.Fprintf(w, "inputs: docs=%s org=%s glade=standard-symbols evidence=fixtures\n", options.DocsSource, orgInputName(options))
 	fmt.Fprintf(w, "implemented=%d partial=%d passive=%d stubNoOp=%d explicitUnsupported=%d\n", result.Summary.Implemented, result.Summary.Partial, result.Summary.Passive, result.Summary.StubNoOp, result.Summary.ExplicitUnsupported)
 	fmt.Fprintf(w, "gaps: missingShape=%d missingBehavior=%d missingEvidence=%d\n", result.Summary.Gaps[surfaceledger.GapMissingShape], result.Summary.Gaps[surfaceledger.GapMissingBehavior], result.Summary.Gaps[surfaceledger.GapMissingEvidence])
-	fmt.Fprintf(w, "failures: parser=%d docsOrgMismatch=%d staleGlade=%d passiveServiceRisk=%d\n", result.Summary.Failures["parser"], result.Summary.Failures[surfaceledger.GapDocsOrgMismatch], result.Summary.Failures[surfaceledger.GapStaleGladeShape], result.Summary.Failures[surfaceledger.GapPassiveServiceRisk])
+	fmt.Fprintf(w, "failures: parser=%d docsOrgMismatch=%d staleGlade=%d returnTypeMismatch=%d parameterMismatch=%d passiveServiceRisk=%d\n", result.Summary.Failures["parser"], result.Summary.Failures[surfaceledger.GapDocsOrgMismatch], result.Summary.Failures[surfaceledger.GapStaleGladeShape], result.Summary.Failures[surfaceledger.GapReturnTypeMismatch], result.Summary.Failures[surfaceledger.GapParameterMismatch], result.Summary.Failures[surfaceledger.GapPassiveServiceRisk])
 	fmt.Fprintf(w, "reports: %s\n", filepath.Join(result.OutputDir, "SURFACE_DASHBOARD.md"))
 	fmt.Fprintf(w, "progress: %s\n", filepath.Join(result.OutputDir, "SURFACE_PROGRESS.html"))
 	return nil
@@ -569,6 +569,20 @@ func runCompatSurfaceCheck(args []string, w io.Writer) error {
 				return err
 			}
 			options.MaxParserFailures = value
+		case "--max-return-type-mismatch":
+			i++
+			value, err := parseIntArg(args, i, "--max-return-type-mismatch")
+			if err != nil {
+				return err
+			}
+			options.MaxReturnTypeMismatch = value
+		case "--max-parameter-mismatch":
+			i++
+			value, err := parseIntArg(args, i, "--max-parameter-mismatch")
+			if err != nil {
+				return err
+			}
+			options.MaxParameterMismatch = value
 		default:
 			return fmt.Errorf("unknown flag %q", args[i])
 		}

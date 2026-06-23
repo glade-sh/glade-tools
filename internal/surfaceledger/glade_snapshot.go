@@ -80,8 +80,12 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 		}
 		row.GladeBehavior = mergeGladeBehavior(row.GladeBehavior, behaviorFromStubStatus(entry.Status))
 		row.ReturnType = firstNonEmpty(row.ReturnType, entry.ReturnType)
+		row.GladeReturnType = firstNonEmpty(row.GladeReturnType, entry.ReturnType)
 		if len(row.Parameters) == 0 {
 			row.Parameters = append([]string(nil), entry.Parameters...)
+		}
+		if len(row.GladeParameters) == 0 {
+			row.GladeParameters = append([]string(nil), row.Parameters...)
 		}
 		row.Notes = firstNonEmpty(row.Notes, entry.Notes)
 		row.Sources = mergeStrings(row.Sources, []string{"stub-behavior"})
@@ -505,6 +509,7 @@ func addFixtureBackedApexMirrorAliasRows(byID map[string]SurfaceLedgerRow) {
 		row.TypeName = ""
 		row.MemberName = ""
 		row.Parameters = nil
+		row.GladeParameters = nil
 		row.Sources = mergeStrings(row.Sources, []string{"apex-mirror-alias"})
 		row.Notes = "fixture-backed docs alias for " + alias.SourceID
 		if alias.Kind != "" {

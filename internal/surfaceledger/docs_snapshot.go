@@ -54,6 +54,7 @@ func applyApexDeclarationSignatures(rows []SurfaceLedgerRow, source string) {
 		}
 		row.Signature = signature
 		row.Parameters = params
+		row.DocsParameters = append([]string(nil), params...)
 		row.SurfaceID = ApexMemberID(row.Namespace, row.TypeName, row.MemberName, params)
 	}
 	sortRows(rows)
@@ -219,9 +220,11 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 			if product == ProductApex && isApexHeadingOnlySignature(member.Signature) && apexRealSignatures[member.Name] {
 				continue
 			}
+			params := docsMemberParameters(member)
+			returnType := docsMemberReturnType(member)
 			surfaceID := docsSurfaceID(product, doc, member)
 			if product == ProductApex {
-				surfaceID = ApexMemberID(namespace, typeName, member.Name, parametersFromSignature(member.Signature))
+				surfaceID = ApexMemberID(namespace, typeName, member.Name, params)
 			}
 			rows = append(rows, RowFromDocs(SurfaceLedgerRow{
 				SurfaceID:  surfaceID,
@@ -232,7 +235,8 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 				MemberName: member.Name,
 				Kind:       docsKind(product, member.Kind),
 				Signature:  member.Signature,
-				Parameters: parametersFromSignature(member.Signature),
+				ReturnType: returnType,
+				Parameters: params,
 				DocsSource: doc.SourcePath,
 				DocsTitle:  doc.Title,
 				Sources:    []string{"docs"},
@@ -241,6 +245,20 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 	}
 	sortRows(rows)
 	return rows
+}
+
+func docsMemberReturnType(member apexdocs.Member) string {
+	if member.PropertyType != "" {
+		return member.PropertyType
+	}
+	return member.ReturnType
+}
+
+func docsMemberParameters(member apexdocs.Member) []string {
+	if len(member.Parameters) > 0 {
+		return append([]string(nil), member.Parameters...)
+	}
+	return parametersFromSignature(member.Signature)
 }
 
 type apexDocsDocumentIdentity struct {

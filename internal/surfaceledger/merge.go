@@ -107,6 +107,24 @@ func fillIdentity(base, next SurfaceLedgerRow) SurfaceLedgerRow {
 	if len(base.Parameters) == 0 {
 		base.Parameters = append([]string(nil), next.Parameters...)
 	}
+	if base.DocsReturnType == "" {
+		base.DocsReturnType = next.DocsReturnType
+	}
+	if base.OrgReturnType == "" {
+		base.OrgReturnType = next.OrgReturnType
+	}
+	if base.GladeReturnType == "" {
+		base.GladeReturnType = next.GladeReturnType
+	}
+	if len(base.DocsParameters) == 0 {
+		base.DocsParameters = append([]string(nil), next.DocsParameters...)
+	}
+	if len(base.OrgParameters) == 0 {
+		base.OrgParameters = append([]string(nil), next.OrgParameters...)
+	}
+	if len(base.GladeParameters) == 0 {
+		base.GladeParameters = append([]string(nil), next.GladeParameters...)
+	}
 	return base
 }
 
@@ -123,6 +141,12 @@ func Classify(row *SurfaceLedgerRow) {
 		row.Bucket = BucketFailure
 	case row.Docs == SourcePresent && row.Org == SourcePresent && row.SignatureChanged():
 		row.GapClass = GapSignatureChanged
+		row.Bucket = BucketFailure
+	case hasReturnTypeMismatch(*row):
+		row.GapClass = GapReturnTypeMismatch
+		row.Bucket = BucketFailure
+	case hasParameterMismatch(*row):
+		row.GapClass = GapParameterMismatch
 		row.Bucket = BucketFailure
 	case row.GladeBehavior == BehaviorPassive:
 		row.Bucket = BucketPassive
@@ -175,6 +199,57 @@ func Classify(row *SurfaceLedgerRow) {
 
 func (row SurfaceLedgerRow) SignatureChanged() bool {
 	return row.Docs == SourceChanged || row.Org == SourceChanged
+}
+
+func hasReturnTypeMismatch(row SurfaceLedgerRow) bool {
+	glade := concreteComparableType(row.GladeReturnType)
+	if glade == "" {
+		return false
+	}
+	for _, source := range []string{row.DocsReturnType, row.OrgReturnType} {
+		source = concreteComparableType(source)
+		if source != "" && source != glade {
+			return true
+		}
+	}
+	return false
+}
+
+func hasParameterMismatch(row SurfaceLedgerRow) bool {
+	if len(row.GladeParameters) == 0 {
+		return false
+	}
+	for _, source := range [][]string{row.DocsParameters, row.OrgParameters} {
+		if len(source) == 0 {
+			continue
+		}
+		if !sameComparableTypes(source, row.GladeParameters) {
+			return true
+		}
+	}
+	return false
+}
+
+func sameComparableTypes(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if concreteComparableType(a[i]) != concreteComparableType(b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func concreteComparableType(value string) string {
+	value = strings.TrimSpace(value)
+	if value == "" || strings.EqualFold(value, "void") {
+		return ""
+	}
+	value = strings.ReplaceAll(value, " ", "")
+	value = strings.TrimPrefix(value, "System.")
+	return value
 }
 
 func needsBehavior(row SurfaceLedgerRow) bool {

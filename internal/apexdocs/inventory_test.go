@@ -130,6 +130,71 @@ Page values.
 	}
 }
 
+func TestBuildInventoryParsesDocsContractTypes(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_connectapi_output_ManagedContentVersionCollection.md"), `# ManagedContentVersionCollection
+
+## Properties
+
+| Property Name | Type | Available Version |
+| --- | --- | --- |
+| items | List<[`+"`"+`ConnectApi.ManagedContentVersion`+"`"+`](./apex_connectapi_output_ManagedContentVersion.md)> | 49.0 |
+| managedContentTypes | Map<[String](./apex_methods_system_string.md), [`+"`"+`ConnectApi.ManagedContentType`+"`"+`](./apex_connectapi_output_ManagedContentType.md)> | 49.0 |
+`)
+	writeDoc(t, filepath.Join(root, "apex_methods_system_object.md"), `# Object Class
+
+## Object Methods
+
+### equals(obj)
+Returns true if the two values are equal.
+
+#### Signature
+
+`+"```apex"+`
+public Boolean equals(Object obj)
+`+"```"+`
+`)
+	writeDoc(t, filepath.Join(root, "apex_methods_system_list.md"), `# List Class
+
+## List Constructors
+
+### List(setToCopy)
+Creates a list from a set.
+
+#### Signature
+
+`+"```apex"+`
+public List<T>(Set<T> setToCopy)
+`+"```"+`
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	members := map[string]Member{}
+	for _, doc := range inv.Documents {
+		for _, member := range doc.Members {
+			members[doc.Name+"."+member.Name] = member
+		}
+	}
+	if got := members["ManagedContentVersionCollection.items"].PropertyType; got != "List<ConnectApi.ManagedContentVersion>" {
+		t.Fatalf("items property type = %q", got)
+	}
+	if got := members["ManagedContentVersionCollection.managedContentTypes"].PropertyType; got != "Map<String,ConnectApi.ManagedContentType>" {
+		t.Fatalf("managedContentTypes property type = %q", got)
+	}
+	if got := members["Object.equals"].ReturnType; got != "Boolean" {
+		t.Fatalf("equals return type = %q", got)
+	}
+	if got := members["Object.equals"].Parameters; len(got) != 1 || got[0] != "Object" {
+		t.Fatalf("equals parameters = %#v", got)
+	}
+	if got := members["List.List"].Parameters; len(got) != 1 || got[0] != "Set<T>" {
+		t.Fatalf("List constructor parameters = %#v", got)
+	}
+}
+
 func TestWriteJSONIsStable(t *testing.T) {
 	root := t.TempDir()
 	writeDoc(t, filepath.Join(root, "apex_methods_system_list.md"), `# List Class

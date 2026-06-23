@@ -192,6 +192,37 @@ func TestCompatSurfacePacketRejectsUnknownArea(t *testing.T) {
 	}
 }
 
+func TestCompatSurfaceCheckAcceptsTypeMismatchRatchets(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	data := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.BadReturn","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"signature-known","docsReturnType":"String","gladeReturnType":"Object"},
+    {"surfaceId":"apex:System.BadParams","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"signature-known","docsParameters":["Set<T>"],"gladeParameters":["List<T>"]}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--max-return-type-mismatch", "1", "--max-parameter-mismatch", "1"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "surface check: ok") {
+		t.Fatalf("stdout = %q", stdout.String())
+	}
+
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"compat", "surface", "check", "--ledger", ledger, "--max-return-type-mismatch", "0", "--max-parameter-mismatch", "1"}, &stdout, &stderr)
+	if code == 0 || !strings.Contains(stderr.String(), "return-type-mismatch=1 exceeds max 0") {
+		t.Fatalf("expected return-type ratchet failure, exit=%d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+}
+
 func writeSurfaceSourceFixture(t *testing.T, docs string) {
 	t.Helper()
 	docsets := []string{

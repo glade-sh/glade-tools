@@ -26,6 +26,39 @@ func TestMergeCombinesSourcesBySurfaceID(t *testing.T) {
 	}
 }
 
+func TestMergePreservesSourceSpecificTypes(t *testing.T) {
+	id := ApexMemberID("ConnectApi", "ManagedContentVersionCollection", "items", nil)
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindProperty, ReturnType: "List<ConnectApi.ManagedContentVersion>"})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindProperty, ReturnType: "Object", GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindProperty, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.DocsReturnType != "List<ConnectApi.ManagedContentVersion>" || row.GladeReturnType != "Object" {
+		t.Fatalf("source return types = docs:%q glade:%q", row.DocsReturnType, row.GladeReturnType)
+	}
+	if row.Bucket != BucketFailure || row.GapClass != GapReturnTypeMismatch {
+		t.Fatalf("bucket/gap = %q/%q, want failure/%s", row.Bucket, row.GapClass, GapReturnTypeMismatch)
+	}
+}
+
+func TestMergeClassifiesParameterMismatch(t *testing.T) {
+	id := ApexMemberID("System", "List", "List", []string{"Set<T>"})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Parameters: []string{"Set<T>"}})},
+		nil,
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Parameters: []string{"List<T>"}, GladeBehavior: BehaviorSupported})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Evidence: EvidenceFixture})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketFailure || row.GapClass != GapParameterMismatch {
+		t.Fatalf("bucket/gap = %q/%q, want failure/%s", row.Bucket, row.GapClass, GapParameterMismatch)
+	}
+}
+
 func TestMergeLetsUnsupportedFixtureEvidenceOverrideGeneratedSupport(t *testing.T) {
 	id := ApexMemberID("System", "WebStoreContext", "getCommerceContext", []string{})
 	ledger := Merge(

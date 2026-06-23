@@ -540,9 +540,11 @@ func ExplainMarkdown(ledger SurfaceLedger, id string) string {
 }
 
 type CheckOptions struct {
-	MaxMissingShape    int
-	MaxMissingBehavior int
-	MaxParserFailures  int
+	MaxMissingShape       int
+	MaxMissingBehavior    int
+	MaxParserFailures     int
+	MaxReturnTypeMismatch int
+	MaxParameterMismatch  int
 }
 
 func CheckLedger(ledger SurfaceLedger, options CheckOptions) error {
@@ -554,6 +556,12 @@ func CheckLedger(ledger SurfaceLedger, options CheckOptions) error {
 	}
 	if got := ledger.Summary.Failures["parser"]; got > options.MaxParserFailures {
 		return fmt.Errorf("parser=%d exceeds max %d", got, options.MaxParserFailures)
+	}
+	if got := ledger.Summary.Failures[GapReturnTypeMismatch]; got > options.MaxReturnTypeMismatch {
+		return fmt.Errorf("return-type-mismatch=%d exceeds max %d", got, options.MaxReturnTypeMismatch)
+	}
+	if got := ledger.Summary.Failures[GapParameterMismatch]; got > options.MaxParameterMismatch {
+		return fmt.Errorf("parameter-mismatch=%d exceeds max %d", got, options.MaxParameterMismatch)
 	}
 	return nil
 }

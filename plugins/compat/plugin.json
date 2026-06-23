@@ -49,6 +49,12 @@
     },
     {
       "path": [
+        "corpus"
+      ],
+      "summary": "Run Glade over public corpora and classify diagnostics."
+    },
+    {
+      "path": [
         "matrix"
       ],
       "summary": "Print the full capability matrix."

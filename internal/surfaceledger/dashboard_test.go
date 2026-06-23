@@ -97,12 +97,20 @@ func TestPacketRowsCoversGenericVerticals(t *testing.T) {
 func TestCheckLedgerRatchets(t *testing.T) {
 	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{
 		{SurfaceID: "apex:System.Missing", Bucket: BucketGap, GapClass: GapMissingShape},
+		{SurfaceID: "apex:System.BadReturn", Bucket: BucketFailure, GapClass: GapReturnTypeMismatch},
+		{SurfaceID: "apex:System.BadParams", Bucket: BucketFailure, GapClass: GapParameterMismatch},
 	}}
 	ledger.Summary = Summarize(ledger.Rows)
-	if err := CheckLedger(ledger, CheckOptions{MaxMissingShape: 1}); err != nil {
+	if err := CheckLedger(ledger, CheckOptions{MaxMissingShape: 1, MaxReturnTypeMismatch: 1, MaxParameterMismatch: 1}); err != nil {
 		t.Fatalf("check with matching ratchet failed: %v", err)
 	}
-	if err := CheckLedger(ledger, CheckOptions{MaxMissingShape: 0}); err == nil {
-		t.Fatalf("check passed with too-low ratchet")
+	if err := CheckLedger(ledger, CheckOptions{MaxMissingShape: 0, MaxReturnTypeMismatch: 1, MaxParameterMismatch: 1}); err == nil {
+		t.Fatalf("check passed with too-low missing-shape ratchet")
+	}
+	if err := CheckLedger(ledger, CheckOptions{MaxMissingShape: 1, MaxReturnTypeMismatch: 0, MaxParameterMismatch: 1}); err == nil {
+		t.Fatalf("check passed with too-low return-type ratchet")
+	}
+	if err := CheckLedger(ledger, CheckOptions{MaxMissingShape: 1, MaxReturnTypeMismatch: 1, MaxParameterMismatch: 0}); err == nil {
+		t.Fatalf("check passed with too-low parameter ratchet")
 	}
 }

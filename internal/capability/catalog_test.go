@@ -240,6 +240,7 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 			Symbol:     "cache.OrgPartition.docOnly",
 			Kind:       "method",
 			Signature:  "docOnly(value, other)",
+			ReturnType: "String",
 			Target:     TargetTypedStub,
 			Status:     StatusUnknown,
 		}, {
@@ -251,6 +252,7 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 			Symbol:     "cache.OrgPartition.get",
 			Kind:       "method",
 			Signature:  "get(key)",
+			ReturnType: "String",
 			Target:     TargetTypedStub,
 			Status:     StatusUnknown,
 		}, {
@@ -263,16 +265,17 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 			Target:    TargetTypedStub,
 			Status:    StatusUnknown,
 		}, {
-			ID:         "connectapi/weakoutput/value",
-			Area:       "Product namespaces",
-			Namespace:  "ConnectApi",
-			TypeName:   "WeakOutput",
-			MemberName: "value",
-			Symbol:     "ConnectApi.WeakOutput.value",
-			Kind:       "property",
-			Signature:  "value",
-			Target:     TargetTypedStub,
-			Status:     StatusUnknown,
+			ID:           "connectapi/weakoutput/value",
+			Area:         "Product namespaces",
+			Namespace:    "ConnectApi",
+			TypeName:     "WeakOutput",
+			MemberName:   "value",
+			Symbol:       "ConnectApi.WeakOutput.value",
+			Kind:         "property",
+			Signature:    "value",
+			PropertyType: "ConnectApi.WeakValue",
+			Target:       TargetTypedStub,
+			Status:       StatusUnknown,
 		}},
 	}
 	tooling := ToolingCompletions{PublicDeclarations: map[string]map[string]ToolingClassDecl{
@@ -290,6 +293,11 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 				}},
 			},
 		},
+		"ConnectApi": {
+			"WeakOutput": {
+				Properties: []ToolingProperty{{Name: "value", Type: "Object"}},
+			},
+		},
 	}}
 
 	var out bytes.Buffer
@@ -299,11 +307,11 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 	goSource := out.String()
 	for _, want := range []string{
 		`Name: "Cache.OrgPartition"`,
-		`{Name: "docOnly", ReturnType: "Object", Parameters: []string{"Object", "Object"}}`,
-		`{Name: "get", ReturnType: "Object", Parameters: []string{"String"}, Static: true}`,
+		`{Name: "docOnly", ReturnType: "String", Parameters: []string{"Object", "Object"}}`,
+		`{Name: "get", ReturnType: "String", Parameters: []string{"String"}, Static: true}`,
 		`{Name: "put", ReturnType: "void", Parameters: []string{"String", "Object"}}`,
 		`Name: "ConnectApi.WeakOutput"`,
-		`{Name: "value", Type: "Object"}`,
+		`{Name: "value", Type: "ConnectApi.WeakValue"}`,
 	} {
 		if !strings.Contains(goSource, want) {
 			t.Fatalf("generated symbols missing %q:\n%s", want, goSource)

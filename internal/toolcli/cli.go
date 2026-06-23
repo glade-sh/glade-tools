@@ -65,6 +65,7 @@ Commands:
   ui-controllers     Discover Visualforce controller surfaces.
   server-examples    Probe checked server route examples.
   surface            Refresh and inspect the Salesforce surface ledger.
+  corpus             Run Glade over a public corpus and classify diagnostics.
   visualforce        Capture scratch-org Visualforce rendering evidence.
   lwc                Capture LWC shell evidence and native API parity.
   dashboard          Generate compatibility dashboard.
