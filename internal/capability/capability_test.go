@@ -76,7 +76,13 @@ func TestLocalMVPDXRowsAreSupportedWithCompletedFollowOnRows(t *testing.T) {
 }
 
 func TestServerRESTBreadthNotesTrackCompositeBatchEvidence(t *testing.T) {
+	var hosted Feature
+	var sawHosted bool
 	for _, feature := range MVPFeatures() {
+		if feature.ID == "server.rest-breadth.hosted-auth-live-org-deploy" {
+			hosted = feature
+			sawHosted = true
+		}
 		if feature.ID != "server.rest-breadth.local-expanded" {
 			continue
 		}
@@ -88,6 +94,15 @@ func TestServerRESTBreadthNotesTrackCompositeBatchEvidence(t *testing.T) {
 		}
 		if !strings.Contains(feature.Notes, "Bulk API v2 simple query jobs") {
 			t.Fatalf("server.rest-breadth notes missing Bulk local evidence: %s", feature.Notes)
+		}
+		if !strings.Contains(feature.Notes, "Composite Graph local requests") {
+			t.Fatalf("server.rest-breadth notes missing Graph local evidence: %s", feature.Notes)
+		}
+		if !sawHosted {
+			t.Fatal("missing server.rest-breadth.hosted-auth-live-org-deploy feature")
+		}
+		if strings.Contains(hosted.Notes, "Composite Graph execution") {
+			t.Fatalf("hosted boundary still marks Composite Graph hosted-only: %s", hosted.Notes)
 		}
 		return
 	}
