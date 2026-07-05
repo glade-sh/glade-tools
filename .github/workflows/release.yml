@@ -12,7 +12,36 @@ on:
         default: "0.2.0"
 
 jobs:
+  prepare:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Build release notes
+        shell: bash
+        run: scripts/release-notes.sh "$GITHUB_REF_NAME" > release-notes.md
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md
+          fi
+
   build:
+    needs: prepare
+    if: always() && (needs.prepare.result == 'success' || needs.prepare.result == 'skipped')
     strategy:
       fail-fast: false
       matrix:
@@ -30,6 +59,8 @@ jobs:
             target: darwin/arm64
             artifact: darwin-arm64
     runs-on: ${{ matrix.runs-on }}
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: glade-tools
@@ -72,13 +103,16 @@ jobs:
         run: scripts/build-plugin-archives.sh "${VERSION#v}"
       - name: Name platform checksums
         run: cp dist/plugins/checksums.txt dist/plugins/checksums-${{ matrix.artifact }}.txt
-      - uses: actions/upload-artifact@v7
-        with:
-          name: glade-plugin-release-${{ matrix.artifact }}
-          path: |
-            glade-tools/dist/plugins/*.tar.gz
-            glade-tools/dist/plugins/checksums-${{ matrix.artifact }}.txt
-          if-no-files-found: error
+      - name: Upload platform release assets
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" \
+            dist/plugins/*.tar.gz \
+            dist/plugins/checksums-${{ matrix.artifact }}.txt \
+            --clobber
 
   publish:
     needs: build
@@ -90,15 +124,25 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           fetch-depth: 0
-      - uses: actions/download-artifact@v8
-        with:
-          path: dist/plugins
-          merge-multiple: true
+      - name: Download platform release assets
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          rm -rf dist/plugins
+          mkdir -p dist/plugins
+          gh release download "$GITHUB_REF_NAME" \
+            --dir dist/plugins \
+            --pattern '*.tar.gz' \
+            --pattern 'checksums-*.txt' \
+            --clobber
       - name: Build release notes
         if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         run: scripts/release-notes.sh "$GITHUB_REF_NAME" > release-notes.md
       - name: Assemble plugin registry
+        if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         env:
           VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
@@ -162,11 +206,6 @@ jobs:
               json.dump(index, f, indent=2, sort_keys=True)
               f.write("\n")
           PY
-      - uses: actions/upload-artifact@v7
-        with:
-          name: glade-plugin-release-artifacts
-          path: dist/plugins/*
-          if-no-files-found: error
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         env:
