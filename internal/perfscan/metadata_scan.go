@@ -8,8 +8,8 @@ import (
 
 	"github.com/glade-sh/glade/internal/project"
 	"github.com/glade-sh/glade/internal/typesys"
-	"github.com/glade-sh/glade/internal/uicontroller"
 	"github.com/glade-sh/glade/internal/visualforce"
+	"github.com/glade-sh/glade/tools/internal/uicontroller"
 )
 
 func scanMetadata(report *Report, p project.Project, index typesys.Index) {

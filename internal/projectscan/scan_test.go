@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/glade-sh/glade/internal/uicontroller"
+	"github.com/glade-sh/glade/tools/internal/uicontroller"
 )
 
 func TestScanFindsProjectGaps(t *testing.T) {

@@ -14,14 +14,14 @@ import (
 
 	"github.com/glade-sh/glade/internal/apexast"
 	"github.com/glade-sh/glade/internal/automation"
-	metadatapkg "github.com/glade-sh/glade/internal/metadata"
 	"github.com/glade-sh/glade/internal/project"
 	"github.com/glade-sh/glade/internal/resource"
 	"github.com/glade-sh/glade/internal/schema"
 	"github.com/glade-sh/glade/internal/storage"
 	"github.com/glade-sh/glade/internal/typesys"
-	"github.com/glade-sh/glade/internal/uicontroller"
 	"github.com/glade-sh/glade/internal/visualforce"
+	metadatapkg "github.com/glade-sh/glade/tools/internal/metadata"
+	"github.com/glade-sh/glade/tools/internal/uicontroller"
 )
 
 type Report struct {

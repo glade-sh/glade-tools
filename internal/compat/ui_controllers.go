@@ -12,7 +12,7 @@ import (
 	"github.com/glade-sh/glade/internal/project"
 	"github.com/glade-sh/glade/internal/schema"
 	"github.com/glade-sh/glade/internal/typesys"
-	"github.com/glade-sh/glade/internal/uicontroller"
+	"github.com/glade-sh/glade/tools/internal/uicontroller"
 )
 
 type UIControllerReport struct {

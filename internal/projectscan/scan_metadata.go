@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	metadatapkg "github.com/glade-sh/glade/internal/metadata"
+	metadatapkg "github.com/glade-sh/glade/tools/internal/metadata"
 
 	"github.com/glade-sh/glade/internal/project"
 	"github.com/glade-sh/glade/internal/schema"
