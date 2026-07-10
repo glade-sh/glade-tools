@@ -241,6 +241,441 @@ func TestValidateLocalTestComparisonOptionsRequiresFiveRunsAndPositiveWorkers(t 
 	}
 }
 
+func TestCompareLocalTestSafetyContractsAcceptsExactContractAfterRootNormalization(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+	baseRaw := marshalLocalTestSafetyReport(t, baseReport)
+	candidateRaw := marshalLocalTestSafetyReport(t, candidateReport)
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(t, baseRaw, baseRoot, candidateRaw, candidateRoot)
+
+	comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+	if comparison.Status != "matched" || comparison.Reason != "" || comparison.ContractSHA256 == "" {
+		t.Fatalf("CompareLocalTestSafetyContracts = %#v", comparison)
+	}
+	reversed := CompareLocalTestSafetyContracts(candidateArtifact, baseArtifact)
+	if reversed.Status != "matched" || reversed.ContractSHA256 != comparison.ContractSHA256 {
+		t.Fatalf("reversed CompareLocalTestSafetyContracts = %#v, want digest %q", reversed, comparison.ContractSHA256)
+	}
+	if got, err := os.ReadFile(baseArtifact.ResultPath); err != nil || !bytes.Equal(got, baseRaw) {
+		t.Fatalf("base raw artifact changed: %q, %v", got, err)
+	}
+	if got, err := os.ReadFile(candidateArtifact.ResultPath); err != nil || !bytes.Equal(got, candidateRaw) {
+		t.Fatalf("candidate raw artifact changed: %q, %v", got, err)
+	}
+}
+
+func TestRefusedLocalTestSafetyContractsRejectUnsafeArtifactInput(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(
+		t,
+		marshalLocalTestSafetyReport(t, baseReport),
+		baseRoot,
+		marshalLocalTestSafetyReport(t, candidateReport),
+		candidateRoot,
+	)
+
+	t.Run("missing isolated root", func(t *testing.T) {
+		unsafe := baseArtifact
+		unsafe.IsolatedRoot = ""
+		comparison := CompareLocalTestSafetyContracts(unsafe, candidateArtifact)
+		if comparison.Status != "refused" || comparison.Reason != "base isolated root is required" {
+			t.Fatalf("CompareLocalTestSafetyContracts = %#v", comparison)
+		}
+	})
+
+	t.Run("unreadable raw artifact", func(t *testing.T) {
+		unsafe := baseArtifact
+		unsafe.ResultPath = filepath.Join(t.TempDir(), "missing.json")
+		comparison := CompareLocalTestSafetyContracts(unsafe, candidateArtifact)
+		if comparison.Status != "refused" || comparison.Reason != "base result artifact could not be read" {
+			t.Fatalf("CompareLocalTestSafetyContracts = %#v", comparison)
+		}
+	})
+}
+
+func TestRefusedLocalTestSafetyContractsRejectIncompleteOrInconsistentReports(t *testing.T) {
+	for _, tt := range []struct {
+		name       string
+		invalidRaw func(*testing.T, LocalTestReport) []byte
+		wantReason string
+	}{
+		{
+			name:       "empty object",
+			invalidRaw: func(_ *testing.T, _ LocalTestReport) []byte { return []byte(`{}`) },
+			wantReason: `base result is missing required field "target"`,
+		},
+		{
+			name: "wrong report target",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				report.Target = "unrelated report"
+				return marshalLocalTestSafetyReport(t, report)
+			},
+			wantReason: `base result target must be "local Apex test execution readiness"`,
+		},
+		{
+			name: "missing summary",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				return marshalLocalTestSafetyReportWithoutField(t, report, "summary")
+			},
+			wantReason: `base result is missing required field "summary"`,
+		},
+		{
+			name: "missing outcomes",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				return marshalLocalTestSafetyReportWithoutField(t, report, "outcomes")
+			},
+			wantReason: `base result is missing required field "outcomes"`,
+		},
+		{
+			name: "null summary",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				return marshalLocalTestSafetyReportWithRawField(t, report, "summary", json.RawMessage("null"))
+			},
+			wantReason: `base result field "summary" must not be null`,
+		},
+		{
+			name: "null outcomes",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				return marshalLocalTestSafetyReportWithRawField(t, report, "outcomes", json.RawMessage("null"))
+			},
+			wantReason: `base result field "outcomes" must not be null`,
+		},
+		{
+			name: "incomplete summary shape",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				return marshalLocalTestSafetyReportWithRawField(t, report, "summary", json.RawMessage(`{"total":2,"pass":1,"unsupported":1}`))
+			},
+			wantReason: `base result summary is missing required field "fail"`,
+		},
+		{
+			name: "missing project",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				return marshalLocalTestSafetyReportWithoutField(t, report, "project")
+			},
+			wantReason: `base result is missing required field "project"`,
+		},
+		{
+			name: "cases run exceeds cases discovered",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				report.CasesRun = report.CasesDiscovered + 1
+				return marshalLocalTestSafetyReport(t, report)
+			},
+			wantReason: "base result casesRun must not exceed casesDiscovered",
+		},
+		{
+			name: "summary does not describe outcomes",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				report.Summary.Pass++
+				return marshalLocalTestSafetyReport(t, report)
+			},
+			wantReason: "base result summary does not match outcomes",
+		},
+		{
+			name: "ready does not describe summary",
+			invalidRaw: func(t *testing.T, report LocalTestReport) []byte {
+				report.Ready = true
+				return marshalLocalTestSafetyReport(t, report)
+			},
+			wantReason: "base result ready does not match summary",
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+			baseRaw := tt.invalidRaw(t, baseReport)
+			candidateRaw := tt.invalidRaw(t, candidateReport)
+			baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(t, baseRaw, baseRoot, candidateRaw, candidateRoot)
+
+			comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+			if comparison.Status != "refused" || comparison.Reason != tt.wantReason || comparison.ContractSHA256 != "" {
+				t.Fatalf("CompareLocalTestSafetyContracts = %#v, want refused reason %q without digest", comparison, tt.wantReason)
+			}
+		})
+	}
+}
+
+func TestRefusedLocalTestSafetyContractsRejectNullOrNonNumericRequiredSummaryCounters(t *testing.T) {
+	for _, field := range []string{"total", "pass", "fail", "unsupported", "loadError", "compileError", "internalError"} {
+		for _, value := range []struct {
+			name string
+			raw  json.RawMessage
+		}{
+			{name: "null", raw: json.RawMessage("null")},
+			{name: "string", raw: json.RawMessage(`"not-a-number"`)},
+		} {
+			t.Run(field+"/"+value.name, func(t *testing.T) {
+				baseReport, candidateReport, baseRoot, candidateRoot := newEmptyLocalTestSafetyReports()
+				baseRaw := marshalLocalTestSafetyReportWithRawSummaryField(t, baseReport, field, value.raw)
+				candidateRaw := marshalLocalTestSafetyReportWithRawSummaryField(t, candidateReport, field, value.raw)
+				baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(t, baseRaw, baseRoot, candidateRaw, candidateRoot)
+
+				comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+				wantReason := fmt.Sprintf("base result summary field %q must be a number", field)
+				if comparison.Status != "refused" || comparison.Reason != wantReason || comparison.ContractSHA256 != "" {
+					t.Fatalf("CompareLocalTestSafetyContracts = %#v, want refused reason %q without digest", comparison, wantReason)
+				}
+			})
+		}
+	}
+}
+
+func TestCompareLocalTestSafetyContractsAllowsAdditiveUnknownFields(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newEmptyLocalTestSafetyReports()
+	baseRaw := marshalLocalTestSafetyReportWithUnknownFields(t, baseReport)
+	candidateRaw := marshalLocalTestSafetyReportWithUnknownFields(t, candidateReport)
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(t, baseRaw, baseRoot, candidateRaw, candidateRoot)
+
+	comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+	if comparison.Status != "matched" || comparison.Reason != "" || comparison.ContractSHA256 == "" {
+		t.Fatalf("CompareLocalTestSafetyContracts = %#v", comparison)
+	}
+}
+
+func TestCompareLocalTestSafetyContractsNormalizesOnlyExactInvocationRoots(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+	baseReport.Outcomes[0].CapabilityID = baseRoot + "/capability/token-base"
+	candidateReport.Outcomes[1].CapabilityID = candidateRoot + "/capability/token-candidate"
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(
+		t,
+		marshalLocalTestSafetyReport(t, baseReport),
+		baseRoot,
+		marshalLocalTestSafetyReport(t, candidateReport),
+		candidateRoot,
+	)
+
+	comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+	if comparison.Status != "refused" || comparison.Reason != `capabilityID mismatch for outcome identity "ExampleTest.passes": base="<isolated-local-test-root>/capability/token-base" candidate="<isolated-local-test-root>/capability/token-candidate"` {
+		t.Fatalf("CompareLocalTestSafetyContracts = %#v", comparison)
+	}
+}
+
+func TestCompareLocalTestSafetyContractsNormalizesDecodedExactAndChildRoots(t *testing.T) {
+	for _, tt := range []struct {
+		name           string
+		baseRoot       string
+		candidateRoot  string
+		baseValue      string
+		candidateValue string
+	}{
+		{
+			name:           "exact root",
+			baseRoot:       `/tmp/local-test-base`,
+			candidateRoot:  `/tmp/local-test-candidate`,
+			baseValue:      `/tmp/local-test-base`,
+			candidateValue: `/tmp/local-test-candidate`,
+		},
+		{
+			name:           "JSON escaped Windows child root",
+			baseRoot:       `C:\local test\"base"`,
+			candidateRoot:  `D:\local test\"candidate"`,
+			baseValue:      `C:\local test\"base"\capability\pass`,
+			candidateValue: `D:\local test\"candidate"\capability\pass`,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			baseReport, candidateReport, _, _ := newLocalTestSafetyReports()
+			baseReport.Project = tt.baseRoot + `/project`
+			candidateReport.Project = tt.candidateRoot + `/project`
+			baseReport.Outcomes[1].CapabilityID = "apex.test.unsupported"
+			candidateReport.Outcomes[0].CapabilityID = "apex.test.unsupported"
+			baseReport.Outcomes[0].CapabilityID = tt.baseValue
+			candidateReport.Outcomes[1].CapabilityID = tt.candidateValue
+			baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(
+				t,
+				marshalLocalTestSafetyReport(t, baseReport),
+				tt.baseRoot,
+				marshalLocalTestSafetyReport(t, candidateReport),
+				tt.candidateRoot,
+			)
+
+			comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+			if comparison.Status != "matched" || comparison.Reason != "" || comparison.ContractSHA256 == "" {
+				t.Fatalf("CompareLocalTestSafetyContracts = %#v", comparison)
+			}
+		})
+	}
+}
+
+func TestRefusedLocalTestSafetyContractsDoNotNormalizeNearPrefixRoots(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+	baseReport.Outcomes[0].CapabilityID = baseRoot + "-suffix/capability/pass"
+	candidateReport.Outcomes[1].CapabilityID = candidateRoot + "-suffix/capability/pass"
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(
+		t,
+		marshalLocalTestSafetyReport(t, baseReport),
+		baseRoot,
+		marshalLocalTestSafetyReport(t, candidateReport),
+		candidateRoot,
+	)
+
+	comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+	if comparison.Status != "refused" || !strings.Contains(comparison.Reason, "capabilityID mismatch") || comparison.ContractSHA256 != "" {
+		t.Fatalf("CompareLocalTestSafetyContracts = %#v, want near-prefix refusal without digest", comparison)
+	}
+}
+
+func TestRefusedLocalTestSafetyContractsNormalizeOnlyPermittedPathValues(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+	baseReport.Outcomes[0].Class = baseRoot + "/ExampleTest"
+	candidateReport.Outcomes[1].Class = candidateRoot + "/ExampleTest"
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(
+		t,
+		marshalLocalTestSafetyReport(t, baseReport),
+		baseRoot,
+		marshalLocalTestSafetyReport(t, candidateReport),
+		candidateRoot,
+	)
+
+	comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+	if comparison.Status != "refused" || !strings.Contains(comparison.Reason, "missing outcome identity") || comparison.ContractSHA256 != "" {
+		t.Fatalf("CompareLocalTestSafetyContracts = %#v, want semantic identity refusal without digest", comparison)
+	}
+}
+
+func TestRefusedLocalTestSafetyContractsRejectUnsafeMismatch(t *testing.T) {
+	for _, tt := range []struct {
+		name         string
+		edit         func(base, candidate *LocalTestReport)
+		baseRaw      []byte
+		candidateRaw []byte
+		wantReason   string
+	}{
+		{
+			name:       "cases discovered",
+			edit:       func(_, candidate *LocalTestReport) { candidate.CasesDiscovered++ },
+			wantReason: "casesDiscovered mismatch: base=2 candidate=3",
+		},
+		{
+			name:       "cases run",
+			edit:       func(_, candidate *LocalTestReport) { candidate.CasesRun-- },
+			wantReason: "casesRun mismatch: base=2 candidate=1",
+		},
+		{
+			name: "entire summary",
+			edit: func(_, candidate *LocalTestReport) {
+				candidate.Outcomes[1].Outcome = "timeout"
+				candidate.Summary.Pass--
+				candidate.Summary.Timeouts++
+			},
+			wantReason: "summary mismatch",
+		},
+		{
+			name:       "ready",
+			edit:       func(_, candidate *LocalTestReport) { candidate.Ready = true },
+			wantReason: "candidate result ready does not match summary",
+		},
+		{
+			name: "missing identity",
+			edit: func(_, candidate *LocalTestReport) {
+				candidate.Outcomes[0].Class = "OtherTest"
+			},
+			wantReason: `candidate result is missing outcome identity "ExampleTest.fails"`,
+		},
+		{
+			name: "extra identity",
+			edit: func(_, candidate *LocalTestReport) {
+				candidate.Outcomes = append(candidate.Outcomes, LocalTestOutcome{Class: "OtherTest", Method: "runs", Outcome: "pass"})
+			},
+			wantReason: "candidate result summary does not match outcomes",
+		},
+		{
+			name: "duplicate base identity",
+			edit: func(base, _ *LocalTestReport) {
+				base.Outcomes = append(base.Outcomes, base.Outcomes[0])
+			},
+			wantReason: `base result has duplicate outcome identity "ExampleTest.passes"`,
+		},
+		{
+			name: "duplicate candidate identity",
+			edit: func(_, candidate *LocalTestReport) {
+				candidate.Outcomes = append(candidate.Outcomes, candidate.Outcomes[0])
+			},
+			wantReason: `candidate result has duplicate outcome identity "ExampleTest.fails"`,
+		},
+		{
+			name: "invalid identity",
+			edit: func(_, candidate *LocalTestReport) {
+				candidate.Outcomes[0].Method = ""
+			},
+			wantReason: "candidate result has invalid outcome identity at index 0",
+		},
+		{
+			name: "outcome drift",
+			edit: func(_, candidate *LocalTestReport) {
+				candidate.Outcomes[0].Outcome = "pass"
+				candidate.Outcomes[1].Outcome = "unsupported"
+			},
+			wantReason: `outcome mismatch for outcome identity "ExampleTest.fails": base="unsupported" candidate="pass"`,
+		},
+		{
+			name: "capability drift",
+			edit: func(_, candidate *LocalTestReport) {
+				candidate.Outcomes[1].CapabilityID = candidate.Outcomes[1].CapabilityID + "-changed"
+			},
+			wantReason: `capabilityID mismatch for outcome identity "ExampleTest.passes": base="<isolated-local-test-root>/capability/pass" candidate="<isolated-local-test-root>/capability/pass-changed"`,
+		},
+		{
+			name:       "invalid base JSON",
+			baseRaw:    []byte(`{"ready":`),
+			wantReason: "base result JSON is invalid",
+		},
+		{
+			name:         "trailing candidate JSON",
+			candidateRaw: []byte(`{"ready":true} {}`),
+			wantReason:   "candidate result JSON is invalid",
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+			if tt.edit != nil {
+				tt.edit(&baseReport, &candidateReport)
+			}
+			baseRaw := tt.baseRaw
+			if baseRaw == nil {
+				baseRaw = marshalLocalTestSafetyReport(t, baseReport)
+			}
+			candidateRaw := tt.candidateRaw
+			if candidateRaw == nil {
+				candidateRaw = marshalLocalTestSafetyReport(t, candidateReport)
+			}
+			baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(t, baseRaw, baseRoot, candidateRaw, candidateRoot)
+
+			comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+			if comparison.Status != "refused" || comparison.Reason != tt.wantReason || comparison.ContractSHA256 != "" {
+				t.Fatalf("CompareLocalTestSafetyContracts = %#v, want refused reason %q", comparison, tt.wantReason)
+			}
+		})
+	}
+}
+
+func TestRefusedLocalTestSafetyComparisonRecordsReasonAndOmitsClaims(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
+	candidateReport.CasesRun--
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(
+		t,
+		marshalLocalTestSafetyReport(t, baseReport),
+		baseRoot,
+		marshalLocalTestSafetyReport(t, candidateReport),
+		candidateRoot,
+	)
+	comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+	encoded, err := json.Marshal(comparison)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := string(encoded), `{"status":"refused","reason":"casesRun mismatch: base=2 candidate=1"}`; got != want {
+		t.Fatalf("refused comparison JSON = %s, want %s", got, want)
+	}
+}
+
 func TestRunLocalTestComparisonInvocationUsesUniqueColdProjectCopies(t *testing.T) {
 	project := newLocalTestComparisonProject(t)
 	snapshot := newLocalTestComparisonSnapshot(t)
@@ -1771,6 +2206,191 @@ func TestRunLocalTestsReportsLoadError(t *testing.T) {
 	if report.Summary.LoadErrors != 1 || report.Outcomes[0].Outcome != "load_error" {
 		t.Fatalf("report = %#v", report)
 	}
+}
+
+func newLocalTestSafetyReports() (LocalTestReport, LocalTestReport, string, string) {
+	baseRoot := "/tmp/glade-local-test-compare-base"
+	candidateRoot := "/tmp/glade-local-test-compare-candidate"
+	summary := LocalTestSummary{Total: 2, Pass: 1, Unsupported: 1}
+	base := LocalTestReport{
+		Target:          "local Apex test execution readiness",
+		Ready:           false,
+		Project:         baseRoot + "/project",
+		CasesDiscovered: 2,
+		CasesRun:        2,
+		Summary:         summary,
+		Outcomes: []LocalTestOutcome{
+			{
+				Class:        "ExampleTest",
+				Method:       "passes",
+				Outcome:      "pass",
+				CapabilityID: baseRoot + "/capability/pass",
+				File:         baseRoot + "/project/classes/ExampleTest.cls",
+				Error:        "base-only diagnostic token",
+			},
+			{
+				Class:        "ExampleTest",
+				Method:       "fails",
+				Outcome:      "unsupported",
+				CapabilityID: baseRoot + "/capability/unsupported",
+				File:         baseRoot + "/project/classes/ExampleTest.cls",
+				Error:        "base-only message",
+			},
+		},
+	}
+	candidate := LocalTestReport{
+		Target:          "local Apex test execution readiness",
+		Ready:           false,
+		Project:         candidateRoot + "/project",
+		CasesDiscovered: 2,
+		CasesRun:        2,
+		Summary:         summary,
+		Outcomes: []LocalTestOutcome{
+			{
+				Class:        "ExampleTest",
+				Method:       "fails",
+				Outcome:      "unsupported",
+				CapabilityID: candidateRoot + "/capability/unsupported",
+				File:         candidateRoot + "/project/classes/ExampleTest.cls",
+				Error:        "candidate-only message",
+			},
+			{
+				Class:        "ExampleTest",
+				Method:       "passes",
+				Outcome:      "pass",
+				CapabilityID: candidateRoot + "/capability/pass",
+				File:         candidateRoot + "/project/classes/ExampleTest.cls",
+				Error:        "candidate-only diagnostic token",
+			},
+		},
+	}
+	return base, candidate, baseRoot, candidateRoot
+}
+
+func newEmptyLocalTestSafetyReports() (LocalTestReport, LocalTestReport, string, string) {
+	baseRoot := "/tmp/glade-local-test-empty-base"
+	candidateRoot := "/tmp/glade-local-test-empty-candidate"
+	base := LocalTestReport{
+		Target:   localTestSafetyTarget,
+		Ready:    true,
+		Project:  baseRoot + "/project",
+		Outcomes: []LocalTestOutcome{},
+	}
+	candidate := base
+	candidate.Project = candidateRoot + "/project"
+	return base, candidate, baseRoot, candidateRoot
+}
+
+func marshalLocalTestSafetyReport(t *testing.T, report LocalTestReport) []byte {
+	t.Helper()
+	data, err := json.Marshal(report)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return append(data, '\n')
+}
+
+func marshalLocalTestSafetyReportWithoutField(t *testing.T, report LocalTestReport, field string) []byte {
+	t.Helper()
+	data := marshalLocalTestSafetyReport(t, report)
+	var object map[string]json.RawMessage
+	if err := json.Unmarshal(data, &object); err != nil {
+		t.Fatal(err)
+	}
+	delete(object, field)
+	data, err := json.Marshal(object)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return append(data, '\n')
+}
+
+func marshalLocalTestSafetyReportWithRawField(t *testing.T, report LocalTestReport, field string, value json.RawMessage) []byte {
+	t.Helper()
+	data := marshalLocalTestSafetyReport(t, report)
+	var object map[string]json.RawMessage
+	if err := json.Unmarshal(data, &object); err != nil {
+		t.Fatal(err)
+	}
+	object[field] = value
+	data, err := json.Marshal(object)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return append(data, '\n')
+}
+
+func marshalLocalTestSafetyReportWithRawSummaryField(t *testing.T, report LocalTestReport, field string, value json.RawMessage) []byte {
+	t.Helper()
+	object := completeLocalTestSafetyReportObject(t, report)
+	var summary map[string]json.RawMessage
+	if err := json.Unmarshal(object["summary"], &summary); err != nil {
+		t.Fatal(err)
+	}
+	summary[field] = value
+	encodedSummary, err := json.Marshal(summary)
+	if err != nil {
+		t.Fatal(err)
+	}
+	object["summary"] = encodedSummary
+	data, err := json.Marshal(object)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return append(data, '\n')
+}
+
+func marshalLocalTestSafetyReportWithUnknownFields(t *testing.T, report LocalTestReport) []byte {
+	t.Helper()
+	object := completeLocalTestSafetyReportObject(t, report)
+	object["futureContractMetadata"] = json.RawMessage(`{"source":"future"}`)
+	var summary map[string]json.RawMessage
+	if err := json.Unmarshal(object["summary"], &summary); err != nil {
+		t.Fatal(err)
+	}
+	summary["futureCounter"] = json.RawMessage("99")
+	encodedSummary, err := json.Marshal(summary)
+	if err != nil {
+		t.Fatal(err)
+	}
+	object["summary"] = encodedSummary
+	data, err := json.Marshal(object)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return append(data, '\n')
+}
+
+func completeLocalTestSafetyReportObject(t *testing.T, report LocalTestReport) map[string]json.RawMessage {
+	t.Helper()
+	data := marshalLocalTestSafetyReport(t, report)
+	var object map[string]json.RawMessage
+	if err := json.Unmarshal(data, &object); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := object["casesDiscovered"]; !ok {
+		object["casesDiscovered"] = json.RawMessage("0")
+	}
+	if _, ok := object["casesRun"]; !ok {
+		object["casesRun"] = json.RawMessage("0")
+	}
+	return object
+}
+
+func writeLocalTestSafetyArtifacts(
+	t *testing.T,
+	baseRaw []byte,
+	baseRoot string,
+	candidateRaw []byte,
+	candidateRoot string,
+) (LocalTestSafetyContractArtifact, LocalTestSafetyContractArtifact) {
+	t.Helper()
+	directory := t.TempDir()
+	basePath := filepath.Join(directory, "base-result.json")
+	candidatePath := filepath.Join(directory, "candidate-result.json")
+	writeLocalTestFile(t, basePath, string(baseRaw))
+	writeLocalTestFile(t, candidatePath, string(candidateRaw))
+	return LocalTestSafetyContractArtifact{ResultPath: basePath, IsolatedRoot: baseRoot}, LocalTestSafetyContractArtifact{ResultPath: candidatePath, IsolatedRoot: candidateRoot}
 }
 
 func writeLocalTestFile(t *testing.T, path, content string) {

@@ -130,6 +130,37 @@ type LocalTestComparisonArtifactMetric struct {
 	SHA256 string `json:"sha256"`
 }
 
+type LocalTestSafetyContractArtifact struct {
+	ResultPath   string
+	IsolatedRoot string
+}
+
+type LocalTestSafetyComparison struct {
+	Status         string `json:"status"`
+	Reason         string `json:"reason,omitempty"`
+	ContractSHA256 string `json:"contractSha256,omitempty"`
+}
+
+type localTestSafetyContract struct {
+	CasesDiscovered int                      `json:"casesDiscovered"`
+	CasesRun        int                      `json:"casesRun"`
+	Summary         LocalTestSummary         `json:"summary"`
+	Ready           bool                     `json:"ready"`
+	Outcomes        []localTestSafetyOutcome `json:"outcomes"`
+}
+
+type localTestSafetyOutcome struct {
+	Class        string `json:"class"`
+	Method       string `json:"method"`
+	Outcome      string `json:"outcome"`
+	CapabilityID string `json:"capabilityId,omitempty"`
+}
+
+type localTestSafetyOutcomeKey struct {
+	Class  string
+	Method string
+}
+
 type LocalTestComparisonEnvironmentOptions struct {
 	Snapshot LocalTestComparisonBinarySnapshot
 	Workers  int
@@ -252,6 +283,239 @@ func ValidateLocalTestComparisonOptions(options LocalTestComparisonOptions) erro
 		return errors.New("manifest path is required")
 	}
 	return nil
+}
+
+const (
+	localTestSafetyLogicalRoot = "<isolated-local-test-root>"
+	localTestSafetyTarget      = "local Apex test execution readiness"
+)
+
+func CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact LocalTestSafetyContractArtifact) LocalTestSafetyComparison {
+	base, reason := readLocalTestSafetyContract("base", baseArtifact)
+	if reason != "" {
+		return refusedLocalTestSafetyComparison(reason)
+	}
+	candidate, reason := readLocalTestSafetyContract("candidate", candidateArtifact)
+	if reason != "" {
+		return refusedLocalTestSafetyComparison(reason)
+	}
+	if base.CasesDiscovered != candidate.CasesDiscovered {
+		return refusedLocalTestSafetyComparison(fmt.Sprintf("casesDiscovered mismatch: base=%d candidate=%d", base.CasesDiscovered, candidate.CasesDiscovered))
+	}
+	if base.CasesRun != candidate.CasesRun {
+		return refusedLocalTestSafetyComparison(fmt.Sprintf("casesRun mismatch: base=%d candidate=%d", base.CasesRun, candidate.CasesRun))
+	}
+	if base.Summary != candidate.Summary {
+		return refusedLocalTestSafetyComparison("summary mismatch")
+	}
+	if base.Ready != candidate.Ready {
+		return refusedLocalTestSafetyComparison(fmt.Sprintf("ready mismatch: base=%t candidate=%t", base.Ready, candidate.Ready))
+	}
+
+	candidateByIdentity := make(map[localTestSafetyOutcomeKey]localTestSafetyOutcome, len(candidate.Outcomes))
+	for _, outcome := range candidate.Outcomes {
+		candidateByIdentity[localTestSafetyOutcomeIdentity(outcome)] = outcome
+	}
+	baseByIdentity := make(map[localTestSafetyOutcomeKey]localTestSafetyOutcome, len(base.Outcomes))
+	for _, outcome := range base.Outcomes {
+		identity := localTestSafetyOutcomeIdentity(outcome)
+		baseByIdentity[identity] = outcome
+		candidateOutcome, ok := candidateByIdentity[identity]
+		if !ok {
+			return refusedLocalTestSafetyComparison(fmt.Sprintf("candidate result is missing outcome identity %q", formatLocalTestSafetyOutcomeIdentity(identity)))
+		}
+		if outcome.Outcome != candidateOutcome.Outcome {
+			return refusedLocalTestSafetyComparison(fmt.Sprintf("outcome mismatch for outcome identity %q: base=%q candidate=%q", formatLocalTestSafetyOutcomeIdentity(identity), outcome.Outcome, candidateOutcome.Outcome))
+		}
+		if outcome.CapabilityID != candidateOutcome.CapabilityID {
+			return refusedLocalTestSafetyComparison(fmt.Sprintf("capabilityID mismatch for outcome identity %q: base=%q candidate=%q", formatLocalTestSafetyOutcomeIdentity(identity), outcome.CapabilityID, candidateOutcome.CapabilityID))
+		}
+	}
+	for _, outcome := range candidate.Outcomes {
+		identity := localTestSafetyOutcomeIdentity(outcome)
+		if _, ok := baseByIdentity[identity]; !ok {
+			return refusedLocalTestSafetyComparison(fmt.Sprintf("candidate result has extra outcome identity %q", formatLocalTestSafetyOutcomeIdentity(identity)))
+		}
+	}
+
+	canonical, err := json.Marshal(base)
+	if err != nil {
+		return refusedLocalTestSafetyComparison("matched safety contract could not be recorded")
+	}
+	digest := sha256.Sum256(canonical)
+	return LocalTestSafetyComparison{Status: "matched", ContractSHA256: fmt.Sprintf("%x", digest)}
+}
+
+func readLocalTestSafetyContract(label string, artifact LocalTestSafetyContractArtifact) (localTestSafetyContract, string) {
+	if strings.TrimSpace(artifact.IsolatedRoot) == "" {
+		return localTestSafetyContract{}, fmt.Sprintf("%s isolated root is required", label)
+	}
+	raw, err := os.ReadFile(artifact.ResultPath)
+	if err != nil {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result artifact could not be read", label)
+	}
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	var encodedReport json.RawMessage
+	if err := decoder.Decode(&encodedReport); err != nil {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result JSON is invalid", label)
+	}
+	trimmed := bytes.TrimSpace(encodedReport)
+	if len(trimmed) == 0 || trimmed[0] != '{' {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result JSON is invalid", label)
+	}
+	var trailing json.RawMessage
+	if err := decoder.Decode(&trailing); !errors.Is(err, io.EOF) {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result JSON is invalid", label)
+	}
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(encodedReport, &fields); err != nil {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result JSON is invalid", label)
+	}
+	for _, field := range []string{"target", "ready", "project", "casesDiscovered", "casesRun", "summary", "outcomes"} {
+		value, ok := fields[field]
+		if !ok {
+			return localTestSafetyContract{}, fmt.Sprintf("%s result is missing required field %q", label, field)
+		}
+		if bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+			return localTestSafetyContract{}, fmt.Sprintf("%s result field %q must not be null", label, field)
+		}
+	}
+	var summaryFields map[string]json.RawMessage
+	if err := json.Unmarshal(fields["summary"], &summaryFields); err != nil {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result JSON is invalid", label)
+	}
+	for _, field := range []string{"total", "pass", "fail", "unsupported", "loadError", "compileError", "internalError"} {
+		value, ok := summaryFields[field]
+		if !ok {
+			return localTestSafetyContract{}, fmt.Sprintf("%s result summary is missing required field %q", label, field)
+		}
+		var number json.Number
+		if bytes.Equal(bytes.TrimSpace(value), []byte("null")) || json.Unmarshal(value, &number) != nil {
+			return localTestSafetyContract{}, fmt.Sprintf("%s result summary field %q must be a number", label, field)
+		}
+	}
+	var report LocalTestReport
+	if err := json.Unmarshal(encodedReport, &report); err != nil {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result JSON is invalid", label)
+	}
+	if report.Target != localTestSafetyTarget {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result target must be %q", label, localTestSafetyTarget)
+	}
+	if strings.TrimSpace(report.Project) == "" {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result project is required", label)
+	}
+	if report.CasesDiscovered < 0 {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result casesDiscovered must not be negative", label)
+	}
+	if report.CasesRun < 0 {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result casesRun must not be negative", label)
+	}
+	if report.CasesRun > report.CasesDiscovered {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result casesRun must not exceed casesDiscovered", label)
+	}
+
+	outcomes := make([]localTestSafetyOutcome, 0, len(report.Outcomes))
+	seen := make(map[localTestSafetyOutcomeKey]struct{}, len(report.Outcomes))
+	var derivedSummary LocalTestSummary
+	for index, outcome := range report.Outcomes {
+		if strings.TrimSpace(outcome.Class) == "" || strings.TrimSpace(outcome.Method) == "" {
+			return localTestSafetyContract{}, fmt.Sprintf("%s result has invalid outcome identity at index %d", label, index)
+		}
+		derivedSummary.Total++
+		switch outcome.Outcome {
+		case "pass":
+			derivedSummary.Pass++
+		case "fail":
+			derivedSummary.Fail++
+		case "unsupported":
+			derivedSummary.Unsupported++
+		case "load_error":
+			derivedSummary.LoadErrors++
+		case "compile_error":
+			derivedSummary.CompileErrors++
+		case "internal_error":
+			derivedSummary.InternalErrors++
+		case "assert_fail":
+			derivedSummary.AssertFailures++
+		case "runtime_gap":
+			derivedSummary.RuntimeGaps++
+		case "compile_gap":
+			derivedSummary.CompileGaps++
+		case "timeout":
+			derivedSummary.Timeouts++
+		default:
+			return localTestSafetyContract{}, fmt.Sprintf("%s result has invalid outcome at index %d", label, index)
+		}
+		safetyOutcome := localTestSafetyOutcome{
+			Class:        outcome.Class,
+			Method:       outcome.Method,
+			Outcome:      outcome.Outcome,
+			CapabilityID: normalizeLocalTestSafetyPath(outcome.CapabilityID, artifact.IsolatedRoot),
+		}
+		identity := localTestSafetyOutcomeIdentity(safetyOutcome)
+		if _, ok := seen[identity]; ok {
+			return localTestSafetyContract{}, fmt.Sprintf("%s result has duplicate outcome identity %q", label, formatLocalTestSafetyOutcomeIdentity(identity))
+		}
+		seen[identity] = struct{}{}
+		outcomes = append(outcomes, safetyOutcome)
+	}
+	if report.Summary != derivedSummary {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result summary does not match outcomes", label)
+	}
+	if report.Ready != localTestSafetySummaryReady(report.Summary) {
+		return localTestSafetyContract{}, fmt.Sprintf("%s result ready does not match summary", label)
+	}
+	sort.Slice(outcomes, func(i, j int) bool {
+		if outcomes[i].Class != outcomes[j].Class {
+			return outcomes[i].Class < outcomes[j].Class
+		}
+		return outcomes[i].Method < outcomes[j].Method
+	})
+	return localTestSafetyContract{
+		CasesDiscovered: report.CasesDiscovered,
+		CasesRun:        report.CasesRun,
+		Summary:         report.Summary,
+		Ready:           report.Ready,
+		Outcomes:        outcomes,
+	}, ""
+}
+
+func normalizeLocalTestSafetyPath(value, isolatedRoot string) string {
+	if value == isolatedRoot {
+		return localTestSafetyLogicalRoot
+	}
+	if !strings.HasPrefix(value, isolatedRoot) || len(value) == len(isolatedRoot) {
+		return value
+	}
+	separator := value[len(isolatedRoot)]
+	if separator != '/' && separator != '\\' {
+		return value
+	}
+	return localTestSafetyLogicalRoot + value[len(isolatedRoot):]
+}
+
+func localTestSafetySummaryReady(summary LocalTestSummary) bool {
+	return summary.Fail == 0 &&
+		summary.Unsupported == 0 &&
+		summary.LoadErrors == 0 &&
+		summary.CompileErrors == 0 &&
+		summary.InternalErrors == 0 &&
+		summary.AssertFailures == 0 &&
+		summary.RuntimeGaps == 0 &&
+		summary.CompileGaps == 0 &&
+		summary.Timeouts == 0
+}
+
+func localTestSafetyOutcomeIdentity(outcome localTestSafetyOutcome) localTestSafetyOutcomeKey {
+	return localTestSafetyOutcomeKey{Class: outcome.Class, Method: outcome.Method}
+}
+
+func formatLocalTestSafetyOutcomeIdentity(identity localTestSafetyOutcomeKey) string {
+	return identity.Class + "." + identity.Method
+}
+
+func refusedLocalTestSafetyComparison(reason string) LocalTestSafetyComparison {
+	return LocalTestSafetyComparison{Status: "refused", Reason: reason}
 }
 
 func PrepareLocalTestComparisonBinarySnapshot(ctx context.Context, binaryPath string) (LocalTestComparisonBinarySnapshot, error) {
