@@ -1,13 +1,18 @@
 package compat
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"runtime"
 	"runtime/pprof"
@@ -80,6 +85,87 @@ type LocalTestComparisonOptions struct {
 	Workers      int
 	Runs         int
 	Manifest     string
+}
+
+type LocalTestComparisonInvocationOptions struct {
+	Snapshot      LocalTestComparisonBinarySnapshot
+	SourceProject string
+	Target        LocalTestComparisonTarget
+	Workers       int
+	ArtifactDir   string
+	testHooks     *localTestComparisonInvocationTestHooks
+}
+
+type localTestComparisonInvocationTestHooks struct {
+	beforeProjectCopy            func() error
+	afterProjectFileCopy         func(relative string) error
+	afterArtifactDirectoryCreate func() error
+}
+
+type LocalTestComparisonInvocationResult struct {
+	ArtifactDir    string
+	ResultPath     string
+	PerfPath       string
+	StderrPath     string
+	MetricsPath    string
+	CPUProfilePath string
+	Metrics        LocalTestComparisonInvocationMetrics
+}
+
+type LocalTestComparisonInvocationMetrics struct {
+	WallTimeNS          int64                               `json:"wallTimeNs"`
+	UserTimeNS          int64                               `json:"userTimeNs"`
+	SystemTimeNS        int64                               `json:"systemTimeNs"`
+	MaxRSSBytes         uint64                              `json:"maxRssBytes"`
+	ExitCode            int                                 `json:"exitCode"`
+	PhysicalProjectRoot string                              `json:"physicalProjectRoot"`
+	LogicalSourceRoot   string                              `json:"logicalSourceRoot"`
+	Artifacts           []LocalTestComparisonArtifactMetric `json:"artifacts"`
+}
+
+type LocalTestComparisonArtifactMetric struct {
+	Name   string `json:"name"`
+	Path   string `json:"path"`
+	Size   int64  `json:"size"`
+	SHA256 string `json:"sha256"`
+}
+
+type LocalTestComparisonEnvironmentOptions struct {
+	Snapshot LocalTestComparisonBinarySnapshot
+	Workers  int
+	Runs     int
+}
+
+type LocalTestComparisonBinarySnapshot struct {
+	directory     string
+	directoryInfo os.FileInfo
+	binary        LocalTestComparisonBinaryFact
+	binaryInfo    os.FileInfo
+	manifest      json.RawMessage
+}
+
+type LocalTestComparisonEnvironment struct {
+	GOOS        string                               `json:"goos"`
+	GOARCH      string                               `json:"goarch"`
+	GoVersion   string                               `json:"goVersion"`
+	LogicalCPUs int                                  `json:"logicalCpus"`
+	Workers     int                                  `json:"workers"`
+	Runs        int                                  `json:"runs"`
+	Tuning      LocalTestComparisonEnvironmentTuning `json:"tuning"`
+	Binary      LocalTestComparisonBinaryFact        `json:"binary"`
+	Manifest    json.RawMessage                      `json:"manifest"`
+}
+
+type LocalTestComparisonEnvironmentTuning struct {
+	GOMAXPROCS string `json:"GOMAXPROCS"`
+	GOGC       string `json:"GOGC"`
+	GOMEMLIMIT string `json:"GOMEMLIMIT"`
+}
+
+type LocalTestComparisonBinaryFact struct {
+	Path   string `json:"path"`
+	Size   int64  `json:"size"`
+	SHA256 string `json:"sha256"`
 }
 
 const localTestComparisonTargetIDPattern = `^[a-z0-9][a-z0-9._-]{0,63}$`
@@ -166,6 +252,1045 @@ func ValidateLocalTestComparisonOptions(options LocalTestComparisonOptions) erro
 		return errors.New("manifest path is required")
 	}
 	return nil
+}
+
+func PrepareLocalTestComparisonBinarySnapshot(ctx context.Context, binaryPath string) (LocalTestComparisonBinarySnapshot, error) {
+	var snapshot LocalTestComparisonBinarySnapshot
+	if ctx == nil {
+		return snapshot, errors.New("local test comparison binary snapshot context is required")
+	}
+	if err := ctx.Err(); err != nil {
+		return snapshot, err
+	}
+	if strings.TrimSpace(binaryPath) == "" {
+		return snapshot, errors.New("local test comparison binary snapshot path is required")
+	}
+	originalPath, err := filepath.Abs(binaryPath)
+	if err != nil {
+		return snapshot, fmt.Errorf("resolve local test comparison binary snapshot source: %w", err)
+	}
+	directory, err := os.MkdirTemp("", "glade-local-test-binary-*")
+	if err != nil {
+		return snapshot, fmt.Errorf("create local test comparison binary snapshot directory: %w", err)
+	}
+	removeOnError := true
+	defer func() {
+		if removeOnError {
+			os.RemoveAll(directory)
+		}
+	}()
+	if err := os.Chmod(directory, 0o700); err != nil {
+		return snapshot, fmt.Errorf("set local test comparison binary snapshot directory mode: %w", err)
+	}
+	directory, err = filepath.EvalSymlinks(directory)
+	if err != nil {
+		return snapshot, fmt.Errorf("resolve local test comparison binary snapshot directory: %w", err)
+	}
+	snapshotPath := filepath.Join(directory, "binary")
+	if err := copyLocalTestComparisonFile(ctx, originalPath, snapshotPath, 0o500); err != nil {
+		return snapshot, fmt.Errorf("copy stable local test comparison binary snapshot: %w", err)
+	}
+	binary, err := localTestComparisonBinaryFact(snapshotPath)
+	if err != nil {
+		return snapshot, err
+	}
+	directoryInfo, err := os.Lstat(directory)
+	if err != nil {
+		return snapshot, fmt.Errorf("stat local test comparison binary snapshot directory: %w", err)
+	}
+	binaryInfo, err := os.Lstat(snapshotPath)
+	if err != nil {
+		return snapshot, fmt.Errorf("stat local test comparison binary snapshot: %w", err)
+	}
+	manifestOutput, err := executeLocalTestComparisonManifest(ctx, snapshotPath)
+	if err != nil {
+		return snapshot, fmt.Errorf("read local test comparison binary snapshot manifest: %w", err)
+	}
+	if !json.Valid(manifestOutput) {
+		return snapshot, errors.New("local test comparison binary snapshot manifest output is not valid JSON")
+	}
+	snapshot = LocalTestComparisonBinarySnapshot{
+		directory:     directory,
+		directoryInfo: directoryInfo,
+		binary:        binary,
+		binaryInfo:    binaryInfo,
+		manifest:      append(json.RawMessage(nil), manifestOutput...),
+	}
+	removeOnError = false
+	return snapshot, nil
+}
+
+func (snapshot LocalTestComparisonBinarySnapshot) Remove() error {
+	if snapshot.directory == "" {
+		return nil
+	}
+	return os.RemoveAll(snapshot.directory)
+}
+
+func validateLocalTestComparisonBinarySnapshot(snapshot LocalTestComparisonBinarySnapshot) error {
+	if snapshot.directory == "" || snapshot.directoryInfo == nil || snapshot.binary.Path == "" || snapshot.binaryInfo == nil || snapshot.binary.Size < 0 || snapshot.binary.SHA256 == "" || !json.Valid(snapshot.manifest) {
+		return errors.New("prepared local test comparison binary snapshot is required")
+	}
+	return nil
+}
+
+func revalidateLocalTestComparisonBinarySnapshot(ctx context.Context, snapshot LocalTestComparisonBinarySnapshot) error {
+	if err := validateLocalTestComparisonBinarySnapshot(snapshot); err != nil {
+		return err
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if filepath.Clean(filepath.Dir(snapshot.binary.Path)) != filepath.Clean(snapshot.directory) {
+		return errors.New("local test comparison binary snapshot drift: binary escaped private directory")
+	}
+	directoryInfo, err := os.Lstat(snapshot.directory)
+	if err != nil {
+		return fmt.Errorf("local test comparison binary snapshot drift: %w", err)
+	}
+	if !directoryInfo.IsDir() || directoryInfo.Mode().Perm() != 0o700 || !os.SameFile(snapshot.directoryInfo, directoryInfo) {
+		return errors.New("local test comparison binary snapshot drift: directory identity or mode changed")
+	}
+	if err := validateLocalTestComparisonOwner(directoryInfo); err != nil {
+		return fmt.Errorf("local test comparison binary snapshot drift: %w", err)
+	}
+	binaryInfo, err := os.Lstat(snapshot.binary.Path)
+	if err != nil {
+		return fmt.Errorf("local test comparison binary snapshot drift: %w", err)
+	}
+	if !binaryInfo.Mode().IsRegular() || binaryInfo.Mode().Perm() != 0o500 || !os.SameFile(snapshot.binaryInfo, binaryInfo) || binaryInfo.Size() != snapshot.binary.Size {
+		return errors.New("local test comparison binary snapshot drift: binary identity, mode, or size changed")
+	}
+	if err := validateLocalTestComparisonOwner(binaryInfo); err != nil {
+		return fmt.Errorf("local test comparison binary snapshot drift: %w", err)
+	}
+	digest, size, err := hashStableLocalTestComparisonSource(ctx, snapshot.binary.Path, snapshot.binaryInfo)
+	if err != nil {
+		return fmt.Errorf("local test comparison binary snapshot drift: %w", err)
+	}
+	if size != snapshot.binary.Size || fmt.Sprintf("%x", digest) != snapshot.binary.SHA256 {
+		return errors.New("local test comparison binary snapshot drift: checksum changed")
+	}
+	manifest, err := executeLocalTestComparisonManifest(ctx, snapshot.binary.Path)
+	if err != nil {
+		return fmt.Errorf("local test comparison binary snapshot drift: manifest execution failed: %w", err)
+	}
+	if !bytes.Equal(manifest, snapshot.manifest) {
+		return errors.New("local test comparison binary snapshot drift: manifest changed")
+	}
+	return nil
+}
+
+func executeLocalTestComparisonManifest(ctx context.Context, binaryPath string) ([]byte, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	homeDir, err := os.MkdirTemp("", "glade-local-test-manifest-*")
+	if err != nil {
+		return nil, err
+	}
+	defer os.RemoveAll(homeDir)
+	if err := os.Chmod(homeDir, 0o700); err != nil {
+		return nil, err
+	}
+	cmd := exec.CommandContext(ctx, binaryPath, "manifest", "--json")
+	if err := configureLocalTestComparisonProcess(cmd); err != nil {
+		return nil, err
+	}
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	cmd.Env = localTestComparisonChildEnvironment(1, homeDir)
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+	waitErr := cmd.Wait()
+	cleanupErr := cleanupLocalTestComparisonProcess(cmd)
+	if contextErr := ctx.Err(); contextErr != nil {
+		return nil, errors.Join(contextErr, waitErr, cleanupErr)
+	}
+	if waitErr != nil || cleanupErr != nil {
+		return nil, errors.Join(waitErr, cleanupErr)
+	}
+	return stdout.Bytes(), nil
+}
+
+func RunLocalTestComparisonInvocation(ctx context.Context, options LocalTestComparisonInvocationOptions) (LocalTestComparisonInvocationResult, error) {
+	var result LocalTestComparisonInvocationResult
+	if ctx == nil {
+		return result, errors.New("local test comparison invocation context is required")
+	}
+	if err := ctx.Err(); err != nil {
+		return result, err
+	}
+	if err := revalidateLocalTestComparisonBinarySnapshot(ctx, options.Snapshot); err != nil {
+		return result, err
+	}
+	if strings.TrimSpace(options.SourceProject) == "" {
+		return result, errors.New("local test comparison invocation source project is required")
+	}
+	if strings.TrimSpace(options.ArtifactDir) == "" {
+		return result, errors.New("local test comparison invocation artifact directory is required")
+	}
+	if options.Workers < 1 {
+		return result, errors.New("local test comparison invocation workers must be at least 1")
+	}
+	if err := validateLocalTestComparisonTargetManifest(LocalTestComparisonTargetManifest{
+		SchemaVersion: 1,
+		Targets:       []LocalTestComparisonTarget{options.Target},
+	}); err != nil {
+		return result, fmt.Errorf("validate local test comparison invocation target: %w", err)
+	}
+
+	binaryPath := options.Snapshot.binary.Path
+	projectPath, err := filepath.Abs(options.SourceProject)
+	if err != nil {
+		return result, fmt.Errorf("resolve local test comparison invocation source project: %w", err)
+	}
+	artifactDir, err := filepath.Abs(options.ArtifactDir)
+	if err != nil {
+		return result, fmt.Errorf("resolve local test comparison invocation artifact directory: %w", err)
+	}
+	resolvedProjectPath, err := filepath.EvalSymlinks(projectPath)
+	if err != nil {
+		return result, fmt.Errorf("resolve local test comparison invocation source project symlinks: %w", err)
+	}
+	resolvedArtifactDir, err := resolveLocalTestComparisonPath(artifactDir)
+	if err != nil {
+		return result, fmt.Errorf("resolve local test comparison invocation artifact symlinks: %w", err)
+	}
+	insideProject, err := pathIsWithin(resolvedArtifactDir, resolvedProjectPath)
+	if err != nil {
+		return result, fmt.Errorf("compare local test invocation paths: %w", err)
+	}
+	if insideProject {
+		return result, errors.New("local test comparison invocation artifact directory must be outside the source project")
+	}
+	artifactDir = resolvedArtifactDir
+	artifactParentPath := filepath.Dir(artifactDir)
+	artifactParent, err := os.Lstat(artifactParentPath)
+	if err != nil {
+		return result, fmt.Errorf("stat local test comparison invocation canonical artifact parent: %w", err)
+	}
+	if err := validateLocalTestComparisonArtifactParent(artifactParent); err != nil {
+		return result, fmt.Errorf("validate local test comparison invocation canonical artifact parent: %w", err)
+	}
+	artifactParentFile, err := os.Open(artifactParentPath)
+	if err != nil {
+		return result, fmt.Errorf("open local test comparison invocation canonical artifact parent: %w", err)
+	}
+	defer artifactParentFile.Close()
+	heldArtifactParent, err := artifactParentFile.Stat()
+	if err != nil || !os.SameFile(artifactParent, heldArtifactParent) {
+		return result, errors.New("local test comparison invocation canonical artifact parent changed while opening")
+	}
+
+	result = LocalTestComparisonInvocationResult{
+		ArtifactDir: artifactDir,
+		ResultPath:  filepath.Join(artifactDir, "result.json"),
+		PerfPath:    filepath.Join(artifactDir, "perf.json"),
+		StderrPath:  filepath.Join(artifactDir, "stderr.txt"),
+		MetricsPath: filepath.Join(artifactDir, "metrics.json"),
+	}
+	if options.Target.CPUProfile {
+		result.CPUProfilePath = filepath.Join(artifactDir, "cpu.pprof")
+	}
+
+	tempRoot, err := os.MkdirTemp("", "glade-local-test-compare-*")
+	if err != nil {
+		return result, fmt.Errorf("create local test comparison invocation temporary root: %w", err)
+	}
+	defer os.RemoveAll(tempRoot)
+	copiedProject := filepath.Join(tempRoot, "project")
+	if options.testHooks != nil && options.testHooks.beforeProjectCopy != nil {
+		if err := options.testHooks.beforeProjectCopy(); err != nil {
+			return result, err
+		}
+	}
+	if err := copyLocalTestComparisonProject(ctx, resolvedProjectPath, copiedProject, options.testHooks); err != nil {
+		return result, fmt.Errorf("copy local test comparison invocation project: %w", err)
+	}
+	if err := revalidateLocalTestComparisonBinarySnapshot(ctx, options.Snapshot); err != nil {
+		return result, err
+	}
+	homeDir := filepath.Join(tempRoot, "home")
+	if err := os.Mkdir(homeDir, 0o700); err != nil {
+		return result, fmt.Errorf("create local test comparison invocation private home: %w", err)
+	}
+
+	args := []string{
+		"local-tests",
+		"--project", copiedProject,
+		"--parallel", strconv.Itoa(options.Workers),
+		"--parallel-methods",
+		"--perf-json", result.PerfPath,
+		"--json",
+	}
+	if options.Target.Class != "" {
+		args = append(args, "--class", options.Target.Class)
+	}
+	if options.Target.Method != "" {
+		args = append(args, "--method", options.Target.Method)
+	}
+	if options.Target.CPUProfile {
+		args = append(args, "--cpu-profile", result.CPUProfilePath)
+	}
+	cmd := exec.CommandContext(ctx, binaryPath, args...)
+	if err := configureLocalTestComparisonProcess(cmd); err != nil {
+		return result, err
+	}
+	cmd.Env = localTestComparisonChildEnvironment(options.Workers, homeDir)
+
+	if err := ctx.Err(); err != nil {
+		return result, err
+	}
+	beforeMkdir, err := os.Lstat(artifactParentPath)
+	if err != nil || !os.SameFile(heldArtifactParent, beforeMkdir) {
+		return result, errors.New("local test comparison invocation canonical artifact parent changed before artifact creation")
+	}
+	if err := validateLocalTestComparisonArtifactParent(beforeMkdir); err != nil {
+		return result, err
+	}
+	artifactName := filepath.Base(artifactDir)
+	artifactDirectory, err := createLocalTestComparisonArtifactDirectory(artifactParentFile, artifactName)
+	if err != nil {
+		return result, fmt.Errorf("create local test comparison invocation artifact directory exclusively: %w", err)
+	}
+	launched := false
+	artifactDirectoryOpen := true
+	artifactFileNames := []string{"result.json", "stderr.txt", "perf.json", "metrics.json"}
+	if options.Target.CPUProfile {
+		artifactFileNames = append(artifactFileNames, "cpu.pprof")
+	}
+	defer func() {
+		if !launched {
+			_ = removeLocalTestComparisonArtifactDirectory(artifactParentFile, artifactDirectory, artifactName, artifactFileNames)
+			artifactDirectoryOpen = false
+		}
+		if artifactDirectoryOpen {
+			_ = artifactDirectory.Close()
+		}
+	}()
+	artifactDirectoryInfo, err := artifactDirectory.Stat()
+	if err != nil {
+		return result, err
+	}
+	if err := validateLocalTestComparisonArtifactParent(artifactDirectoryInfo); err != nil {
+		return result, err
+	}
+	if err := validateLocalTestComparisonArtifactDirectory(artifactParentFile, artifactDirectory, artifactName); err != nil {
+		return result, err
+	}
+	afterMkdirHeld, heldErr := artifactParentFile.Stat()
+	afterMkdirPath, pathErr := os.Lstat(artifactParentPath)
+	if heldErr != nil || pathErr != nil || !os.SameFile(heldArtifactParent, afterMkdirHeld) || !os.SameFile(heldArtifactParent, afterMkdirPath) {
+		return result, errors.New("local test comparison invocation canonical artifact parent changed during artifact creation")
+	}
+	if err := validateLocalTestComparisonArtifactParent(afterMkdirHeld); err != nil {
+		return result, err
+	}
+	if err := validateLocalTestComparisonArtifactParent(afterMkdirPath); err != nil {
+		return result, err
+	}
+	if options.testHooks != nil && options.testHooks.afterArtifactDirectoryCreate != nil {
+		if err := options.testHooks.afterArtifactDirectoryCreate(); err != nil {
+			return result, err
+		}
+	}
+	afterHookPath, err := os.Lstat(artifactParentPath)
+	if err != nil || !os.SameFile(heldArtifactParent, afterHookPath) {
+		return result, errors.New("local test comparison invocation artifact parent changed before file creation")
+	}
+	if err := validateLocalTestComparisonArtifactDirectory(artifactParentFile, artifactDirectory, artifactName); err != nil {
+		return result, err
+	}
+	perfFile, err := createLocalTestComparisonArtifactFile(artifactDirectory, "perf.json")
+	if err != nil {
+		return result, fmt.Errorf("create local test comparison invocation perf artifact: %w", err)
+	}
+	perfArtifactInfo, perfStatErr := perfFile.Stat()
+	if perfStatErr != nil {
+		perfFile.Close()
+		return result, fmt.Errorf("stat local test comparison invocation perf artifact: %w", perfStatErr)
+	}
+	if err := perfFile.Close(); err != nil {
+		return result, err
+	}
+	var cpuArtifactInfo os.FileInfo
+	if options.Target.CPUProfile {
+		cpuFile, err := createLocalTestComparisonArtifactFile(artifactDirectory, "cpu.pprof")
+		if err != nil {
+			return result, fmt.Errorf("create local test comparison invocation CPU profile artifact: %w", err)
+		}
+		cpuArtifactInfo, err = cpuFile.Stat()
+		if err != nil {
+			cpuFile.Close()
+			return result, fmt.Errorf("stat local test comparison invocation CPU profile artifact: %w", err)
+		}
+		if err := cpuFile.Close(); err != nil {
+			return result, err
+		}
+	}
+
+	stdout, err := createLocalTestComparisonArtifactFile(artifactDirectory, "result.json")
+	if err != nil {
+		return result, fmt.Errorf("create local test comparison invocation result artifact: %w", err)
+	}
+	stderr, err := createLocalTestComparisonArtifactFile(artifactDirectory, "stderr.txt")
+	if err != nil {
+		stdout.Close()
+		return result, fmt.Errorf("create local test comparison invocation stderr artifact: %w", err)
+	}
+
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+	startedAt := time.Now()
+	startErr := cmd.Start()
+	if startErr == nil {
+		launched = true
+	}
+	var waitErr error
+	var cleanupErr error
+	if startErr == nil {
+		waitErr = cmd.Wait()
+		cleanupErr = cleanupLocalTestComparisonProcess(cmd)
+	}
+	wallTime := time.Since(startedAt)
+	stdoutCloseErr := stdout.Close()
+	stderrCloseErr := stderr.Close()
+	artifactBindingErr := validateLocalTestComparisonArtifactDirectory(artifactParentFile, artifactDirectory, artifactName)
+	currentArtifactParent, currentParentErr := os.Lstat(artifactParentPath)
+	if currentParentErr != nil || !os.SameFile(heldArtifactParent, currentArtifactParent) {
+		artifactBindingErr = errors.Join(artifactBindingErr, errors.New("local test comparison invocation artifact parent changed after child exit"))
+	}
+	modeErr := setLocalTestComparisonArtifactModes(artifactDirectory, result)
+
+	metrics := LocalTestComparisonInvocationMetrics{
+		WallTimeNS:          wallTime.Nanoseconds(),
+		ExitCode:            -1,
+		PhysicalProjectRoot: copiedProject,
+		LogicalSourceRoot:   resolvedProjectPath,
+	}
+	var rssErr error
+	if cmd.ProcessState != nil {
+		metrics.ExitCode = cmd.ProcessState.ExitCode()
+		metrics.UserTimeNS = cmd.ProcessState.UserTime().Nanoseconds()
+		metrics.SystemTimeNS = cmd.ProcessState.SystemTime().Nanoseconds()
+		maxRSSBytes, err := localTestComparisonMaxRSSBytes(cmd.ProcessState)
+		if err != nil {
+			rssErr = err
+		} else {
+			metrics.MaxRSSBytes = maxRSSBytes
+		}
+	}
+
+	artifactSpecs := []struct {
+		name         string
+		displayName  string
+		file         string
+		path         string
+		required     bool
+		expectedInfo os.FileInfo
+		validate     func(io.Reader) error
+	}{
+		{name: "result", file: "result.json", path: result.ResultPath, required: true},
+		{name: "stderr", file: "stderr.txt", path: result.StderrPath, required: true},
+		{
+			name:         "perf",
+			displayName:  "perf",
+			file:         "perf.json",
+			path:         result.PerfPath,
+			required:     startErr == nil && waitErr == nil,
+			expectedInfo: perfArtifactInfo,
+			validate:     validateLocalTestComparisonPerfArtifact,
+		},
+	}
+	if options.Target.CPUProfile {
+		artifactSpecs = append(artifactSpecs, struct {
+			name         string
+			displayName  string
+			file         string
+			path         string
+			required     bool
+			expectedInfo os.FileInfo
+			validate     func(io.Reader) error
+		}{
+			name:         "cpuProfile",
+			displayName:  "CPU profile",
+			file:         "cpu.pprof",
+			path:         result.CPUProfilePath,
+			required:     startErr == nil && waitErr == nil,
+			expectedInfo: cpuArtifactInfo,
+			validate:     validateLocalTestComparisonCPUProfileArtifact,
+		})
+	}
+	var artifactErr error
+	for _, spec := range artifactSpecs {
+		artifact, metricErr := localTestComparisonArtifactMetric(
+			artifactDirectory,
+			spec.name,
+			spec.displayName,
+			spec.file,
+			spec.path,
+			spec.expectedInfo,
+			spec.validate,
+		)
+		if metricErr != nil {
+			if spec.required && artifactErr == nil {
+				artifactErr = metricErr
+			}
+			continue
+		}
+		metrics.Artifacts = append(metrics.Artifacts, artifact)
+	}
+	result.Metrics = metrics
+	if err := writeLocalTestComparisonJSONExclusiveArtifact(artifactDirectory, "metrics.json", metrics); err != nil {
+		return result, errors.Join(ctx.Err(), cleanupErr, artifactBindingErr, modeErr, rssErr, fmt.Errorf("write local test comparison invocation metrics: %w", err))
+	}
+
+	if startErr != nil {
+		return result, fmt.Errorf("start local test comparison invocation: %w", startErr)
+	}
+	if contextErr := ctx.Err(); contextErr != nil {
+		return result, errors.Join(fmt.Errorf("local test comparison invocation canceled: %w", contextErr), cleanupErr, artifactBindingErr, modeErr, rssErr, stdoutCloseErr, stderrCloseErr, artifactErr)
+	}
+	if waitErr != nil {
+		return result, errors.Join(fmt.Errorf("local test comparison invocation exited with code %d: %w", metrics.ExitCode, waitErr), cleanupErr, artifactBindingErr, modeErr, rssErr, stdoutCloseErr, stderrCloseErr, artifactErr)
+	}
+	if cleanupErr != nil {
+		return result, cleanupErr
+	}
+	if artifactBindingErr != nil {
+		return result, artifactBindingErr
+	}
+	if modeErr != nil {
+		return result, modeErr
+	}
+	if rssErr != nil {
+		return result, rssErr
+	}
+	if stdoutCloseErr != nil {
+		return result, fmt.Errorf("close local test comparison invocation result artifact: %w", stdoutCloseErr)
+	}
+	if stderrCloseErr != nil {
+		return result, fmt.Errorf("close local test comparison invocation stderr artifact: %w", stderrCloseErr)
+	}
+	if artifactErr != nil {
+		return result, artifactErr
+	}
+	return result, nil
+}
+
+func WriteLocalTestComparisonEnvironment(ctx context.Context, path string, options LocalTestComparisonEnvironmentOptions) error {
+	if ctx == nil {
+		return errors.New("local test comparison environment context is required")
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if strings.TrimSpace(path) == "" {
+		return errors.New("local test comparison environment path is required")
+	}
+	if err := revalidateLocalTestComparisonBinarySnapshot(ctx, options.Snapshot); err != nil {
+		return err
+	}
+	if options.Workers < 1 {
+		return errors.New("local test comparison environment workers must be at least 1")
+	}
+	if options.Runs < 1 {
+		return errors.New("local test comparison environment runs must be at least 1")
+	}
+
+	environment := LocalTestComparisonEnvironment{
+		GOOS:        runtime.GOOS,
+		GOARCH:      runtime.GOARCH,
+		GoVersion:   runtime.Version(),
+		LogicalCPUs: runtime.NumCPU(),
+		Workers:     options.Workers,
+		Runs:        options.Runs,
+		Tuning: LocalTestComparisonEnvironmentTuning{
+			GOMAXPROCS: strconv.Itoa(options.Workers),
+			GOGC:       os.Getenv("GOGC"),
+			GOMEMLIMIT: os.Getenv("GOMEMLIMIT"),
+		},
+		Binary:   options.Snapshot.binary,
+		Manifest: append(json.RawMessage(nil), options.Snapshot.manifest...),
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if err := writeLocalTestComparisonJSONExclusive(path, environment); err != nil {
+		return fmt.Errorf("write local test comparison environment: %w", err)
+	}
+	return nil
+}
+
+type localTestComparisonProjectEntry struct {
+	relative string
+	info     os.FileInfo
+	digest   string
+}
+
+func copyLocalTestComparisonProject(ctx context.Context, source, destination string, testHooks *localTestComparisonInvocationTestHooks) (err error) {
+	manifest, err := scanLocalTestComparisonProject(ctx, source)
+	if err != nil {
+		return err
+	}
+	complete := false
+	defer func() {
+		if !complete {
+			os.RemoveAll(destination)
+		}
+	}()
+	type copiedDirectory struct {
+		path string
+		mode os.FileMode
+	}
+	var directories []copiedDirectory
+	for _, entry := range manifest {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		sourcePath := source
+		targetPath := destination
+		if entry.relative != "." {
+			sourcePath = filepath.Join(source, entry.relative)
+			targetPath = filepath.Join(destination, entry.relative)
+		}
+		if entry.info.IsDir() {
+			if err := os.Mkdir(targetPath, 0o700); err != nil {
+				return err
+			}
+			directories = append(directories, copiedDirectory{path: targetPath, mode: entry.info.Mode().Perm()})
+			continue
+		}
+		if err := copyLocalTestComparisonFile(ctx, sourcePath, targetPath, entry.info.Mode().Perm(), entry.info); err != nil {
+			return err
+		}
+		if testHooks != nil && testHooks.afterProjectFileCopy != nil {
+			if err := testHooks.afterProjectFileCopy(entry.relative); err != nil {
+				return err
+			}
+		}
+	}
+	for i := len(directories) - 1; i >= 0; i-- {
+		if err := os.Chmod(directories[i].path, directories[i].mode); err != nil {
+			return err
+		}
+	}
+	after, err := scanLocalTestComparisonProject(ctx, source)
+	if err != nil {
+		return err
+	}
+	if !sameLocalTestComparisonProjectManifest(manifest, after) {
+		return errors.New("source project changed during stable copy")
+	}
+	complete = true
+	return nil
+}
+
+func scanLocalTestComparisonProject(ctx context.Context, source string) ([]localTestComparisonProjectEntry, error) {
+	rootInfo, err := os.Lstat(source)
+	if err != nil {
+		return nil, err
+	}
+	if rootInfo.Mode()&os.ModeSymlink != 0 {
+		return nil, errors.New("source project root is a symlink")
+	}
+	if !rootInfo.IsDir() {
+		return nil, errors.New("source project root is not a directory")
+	}
+	var manifest []localTestComparisonProjectEntry
+	err = filepath.WalkDir(source, func(path string, entry os.DirEntry, walkErr error) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.Type()&os.ModeSymlink != 0 {
+			return fmt.Errorf("reject symlink %q", filepath.Base(path))
+		}
+		if path != source && localTestComparisonSkippedDirectory(entry.Name()) {
+			if entry.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && !info.Mode().IsRegular() {
+			return fmt.Errorf("reject non-regular project entry %q", filepath.Base(path))
+		}
+		relative, err := filepath.Rel(source, path)
+		if err != nil {
+			return err
+		}
+		manifestEntry := localTestComparisonProjectEntry{relative: relative, info: info}
+		if info.Mode().IsRegular() {
+			digest, size, err := hashStableLocalTestComparisonSource(ctx, path, info)
+			if err != nil {
+				return err
+			}
+			if size != info.Size() {
+				return errors.New("source project changed while hashing manifest")
+			}
+			manifestEntry.digest = fmt.Sprintf("%x", digest)
+		}
+		manifest = append(manifest, manifestEntry)
+		return nil
+	})
+	return manifest, err
+}
+
+func sameLocalTestComparisonProjectManifest(before, after []localTestComparisonProjectEntry) bool {
+	if len(before) != len(after) {
+		return false
+	}
+	for i := range before {
+		if before[i].relative != after[i].relative || before[i].info.Mode() != after[i].info.Mode() || before[i].info.Size() != after[i].info.Size() || before[i].digest != after[i].digest || !os.SameFile(before[i].info, after[i].info) {
+			return false
+		}
+	}
+	return true
+}
+
+func localTestComparisonSkippedDirectory(name string) bool {
+	switch name {
+	case ".glade", ".git", ".sf", ".sfdx", "node_modules":
+		return true
+	default:
+		return false
+	}
+}
+
+func copyLocalTestComparisonFile(ctx context.Context, source, destination string, mode os.FileMode, expected ...os.FileInfo) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	before, err := os.Lstat(source)
+	if err != nil {
+		return err
+	}
+	if !before.Mode().IsRegular() {
+		return errors.New("source changed before stable file copy")
+	}
+	if len(expected) > 0 && !os.SameFile(expected[0], before) {
+		return errors.New("source identity changed before stable file copy")
+	}
+	sourceFile, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+	opened, err := sourceFile.Stat()
+	if err != nil {
+		return err
+	}
+	after, err := os.Lstat(source)
+	if err != nil {
+		return err
+	}
+	if !opened.Mode().IsRegular() || !after.Mode().IsRegular() || !os.SameFile(before, opened) || !os.SameFile(before, after) {
+		return errors.New("source changed during stable file copy")
+	}
+	destinationFile, err := os.OpenFile(destination, os.O_WRONLY|os.O_CREATE|os.O_EXCL, mode)
+	if err != nil {
+		return err
+	}
+	hash := sha256.New()
+	copied, copyErr := io.Copy(io.MultiWriter(destinationFile, hash), localTestComparisonContextReader{ctx: ctx, reader: sourceFile})
+	closeErr := destinationFile.Close()
+	if copyErr != nil {
+		return copyErr
+	}
+	if closeErr != nil {
+		return closeErr
+	}
+	secondHash, secondSize, err := hashStableLocalTestComparisonSource(ctx, source, before)
+	if err != nil {
+		return err
+	}
+	if copied != secondSize || !bytes.Equal(hash.Sum(nil), secondHash) {
+		return errors.New("source content changed during stable file copy")
+	}
+	return os.Chmod(destination, mode)
+}
+
+type localTestComparisonContextReader struct {
+	ctx    context.Context
+	reader io.Reader
+}
+
+func (reader localTestComparisonContextReader) Read(buffer []byte) (int, error) {
+	if err := reader.ctx.Err(); err != nil {
+		return 0, err
+	}
+	return reader.reader.Read(buffer)
+}
+
+func hashStableLocalTestComparisonSource(ctx context.Context, path string, expected os.FileInfo) ([]byte, int64, error) {
+	before, err := os.Lstat(path)
+	if err != nil {
+		return nil, 0, err
+	}
+	if !before.Mode().IsRegular() || !os.SameFile(expected, before) {
+		return nil, 0, errors.New("source identity changed before stable rehash")
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer file.Close()
+	opened, err := file.Stat()
+	if err != nil {
+		return nil, 0, err
+	}
+	after, err := os.Lstat(path)
+	if err != nil {
+		return nil, 0, err
+	}
+	if !opened.Mode().IsRegular() || !after.Mode().IsRegular() || !os.SameFile(expected, opened) || !os.SameFile(expected, after) {
+		return nil, 0, errors.New("source identity changed during stable rehash")
+	}
+	hash := sha256.New()
+	size, err := io.Copy(hash, localTestComparisonContextReader{ctx: ctx, reader: file})
+	if err != nil {
+		return nil, 0, err
+	}
+	return hash.Sum(nil), size, nil
+}
+
+func localTestComparisonChildEnvironment(workers int, homeDir string) []string {
+	var environment []string
+	for _, key := range []string{
+		"PATH", "TMPDIR", "TMP", "TEMP",
+		"LANG", "LANGUAGE", "TZ",
+		"LC_ALL", "LC_CTYPE", "LC_MESSAGES", "LC_COLLATE", "LC_MONETARY", "LC_NUMERIC", "LC_TIME",
+		"LC_PAPER", "LC_NAME", "LC_ADDRESS", "LC_TELEPHONE", "LC_MEASUREMENT", "LC_IDENTIFICATION",
+		"GOGC", "GOMEMLIMIT",
+	} {
+		if value, ok := os.LookupEnv(key); ok {
+			environment = append(environment, key+"="+value)
+		}
+	}
+	environment = append(environment, "HOME="+homeDir, "GOMAXPROCS="+strconv.Itoa(workers))
+	return environment
+}
+
+func setLocalTestComparisonArtifactModes(directory *os.File, result LocalTestComparisonInvocationResult) error {
+	files := []string{"result.json", "stderr.txt", "perf.json"}
+	if result.CPUProfilePath != "" {
+		files = append(files, "cpu.pprof")
+	}
+	var modeErr error
+	for _, name := range files {
+		file, err := openLocalTestComparisonArtifactFile(directory, name)
+		if err != nil {
+			if !os.IsNotExist(err) {
+				modeErr = errors.Join(modeErr, fmt.Errorf("open local test comparison artifact for private mode: %w", err))
+			}
+			continue
+		}
+		if err := file.Chmod(0o600); err != nil {
+			modeErr = errors.Join(modeErr, fmt.Errorf("set private mode on local test comparison artifact: %w", err))
+		}
+		if err := file.Close(); err != nil {
+			modeErr = errors.Join(modeErr, err)
+		}
+	}
+	return modeErr
+}
+
+func localTestComparisonMaxRSSBytes(state *os.ProcessState) (uint64, error) {
+	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
+		return 0, fmt.Errorf("max RSS capture is unsupported on %s", runtime.GOOS)
+	}
+	usage := reflect.ValueOf(state.SysUsage())
+	if usage.Kind() == reflect.Pointer {
+		if usage.IsNil() {
+			return 0, errors.New("max RSS process usage is nil")
+		}
+		usage = usage.Elem()
+	}
+	if usage.Kind() != reflect.Struct {
+		return 0, errors.New("max RSS process usage is not a struct")
+	}
+	field := usage.FieldByName("Maxrss")
+	if !field.IsValid() || !field.CanInt() {
+		return 0, errors.New("max RSS process usage has no integer Maxrss field")
+	}
+	value := field.Int()
+	if value < 0 {
+		return 0, errors.New("max RSS process usage is negative")
+	}
+	bytes := uint64(value)
+	if runtime.GOOS == "linux" {
+		bytes *= 1024
+	}
+	return bytes, nil
+}
+
+func localTestComparisonArtifactMetric(
+	directory *os.File,
+	name string,
+	displayName string,
+	fileName string,
+	path string,
+	expectedInfo os.FileInfo,
+	validate func(io.Reader) error,
+) (LocalTestComparisonArtifactMetric, error) {
+	file, err := openLocalTestComparisonArtifactFile(directory, fileName)
+	if err != nil {
+		return LocalTestComparisonArtifactMetric{}, fmt.Errorf("open local test comparison %s artifact: %w", name, err)
+	}
+	defer file.Close()
+	info, err := file.Stat()
+	if err != nil {
+		return LocalTestComparisonArtifactMetric{}, fmt.Errorf("stat local test comparison %s artifact: %w", name, err)
+	}
+	if !info.Mode().IsRegular() {
+		return LocalTestComparisonArtifactMetric{}, fmt.Errorf("local test comparison %s artifact is not a regular file", name)
+	}
+	if expectedInfo != nil && !os.SameFile(expectedInfo, info) {
+		return LocalTestComparisonArtifactMetric{}, fmt.Errorf("local test comparison %s artifact inode changed", displayName)
+	}
+	if validate != nil && info.Size() == 0 {
+		return LocalTestComparisonArtifactMetric{}, fmt.Errorf("local test comparison %s artifact is empty", displayName)
+	}
+	hash := sha256.New()
+	reader := io.TeeReader(file, hash)
+	if validate != nil {
+		if err := validate(reader); err != nil {
+			return LocalTestComparisonArtifactMetric{}, err
+		}
+	}
+	if _, err := io.Copy(hash, file); err != nil {
+		return LocalTestComparisonArtifactMetric{}, fmt.Errorf("checksum local test comparison %s artifact: %w", name, err)
+	}
+	return LocalTestComparisonArtifactMetric{Name: name, Path: path, Size: info.Size(), SHA256: fmt.Sprintf("%x", hash.Sum(nil))}, nil
+}
+
+func validateLocalTestComparisonPerfArtifact(reader io.Reader) error {
+	decoder := json.NewDecoder(reader)
+	var value json.RawMessage
+	if err := decoder.Decode(&value); err != nil {
+		return errors.New("local test comparison perf artifact is not valid JSON")
+	}
+	if err := decoder.Decode(&value); !errors.Is(err, io.EOF) {
+		return errors.New("local test comparison perf artifact is not valid JSON")
+	}
+	return nil
+}
+
+func validateLocalTestComparisonCPUProfileArtifact(reader io.Reader) error {
+	gzipReader, err := gzip.NewReader(reader)
+	if err != nil {
+		return errors.New("local test comparison CPU profile artifact is not a valid gzip profile")
+	}
+	uncompressedSize, readErr := io.Copy(io.Discard, gzipReader)
+	closeErr := gzipReader.Close()
+	if readErr != nil || closeErr != nil || uncompressedSize == 0 {
+		return errors.New("local test comparison CPU profile artifact is not a valid gzip profile")
+	}
+	return nil
+}
+
+func localTestComparisonBinaryFact(path string) (LocalTestComparisonBinaryFact, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return LocalTestComparisonBinaryFact{}, fmt.Errorf("stat local test comparison binary: %w", err)
+	}
+	if !info.Mode().IsRegular() {
+		return LocalTestComparisonBinaryFact{}, errors.New("local test comparison binary is not a regular file")
+	}
+	checksum, err := localTestComparisonFileSHA256(path)
+	if err != nil {
+		return LocalTestComparisonBinaryFact{}, fmt.Errorf("checksum local test comparison binary: %w", err)
+	}
+	return LocalTestComparisonBinaryFact{Path: path, Size: info.Size(), SHA256: checksum}, nil
+}
+
+func localTestComparisonFileSHA256(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
+}
+
+func writeLocalTestComparisonJSONExclusive(path string, value any) error {
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
+	if err != nil {
+		return err
+	}
+	encoder := json.NewEncoder(file)
+	encodeErr := encoder.Encode(value)
+	closeErr := file.Close()
+	if encodeErr != nil {
+		return encodeErr
+	}
+	return closeErr
+}
+
+func writeLocalTestComparisonJSONExclusiveArtifact(directory *os.File, name string, value any) error {
+	file, err := createLocalTestComparisonArtifactFile(directory, name)
+	if err != nil {
+		return err
+	}
+	encoder := json.NewEncoder(file)
+	encodeErr := encoder.Encode(value)
+	closeErr := file.Close()
+	if encodeErr != nil {
+		return encodeErr
+	}
+	return closeErr
+}
+
+func resolveLocalTestComparisonPath(path string) (string, error) {
+	current := filepath.Clean(path)
+	var suffix []string
+	for {
+		resolved, err := filepath.EvalSymlinks(current)
+		if err == nil {
+			for i := len(suffix) - 1; i >= 0; i-- {
+				resolved = filepath.Join(resolved, suffix[i])
+			}
+			return filepath.Clean(resolved), nil
+		}
+		if !os.IsNotExist(err) {
+			return "", err
+		}
+		parent := filepath.Dir(current)
+		if parent == current {
+			return "", err
+		}
+		suffix = append(suffix, filepath.Base(current))
+		current = parent
+	}
+}
+
+func validateLocalTestComparisonArtifactParent(info os.FileInfo) error {
+	if !info.IsDir() || info.Mode().Perm() != 0o700 {
+		return errors.New("local test comparison invocation canonical artifact parent must be a private 0700 directory")
+	}
+	return validateLocalTestComparisonOwner(info)
+}
+
+func pathIsWithin(path, directory string) (bool, error) {
+	relative, err := filepath.Rel(directory, path)
+	if err != nil {
+		return false, err
+	}
+	return relative == "." || (relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator))), nil
 }
 
 type LocalTestPhaseTiming struct {
