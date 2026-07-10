@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"runtime/pprof"
 	"sort"
@@ -57,6 +58,114 @@ type LocalTestOptions struct {
 	AutoShardCount      bool
 	AutoShardIndex      bool
 	NoDiskCache         bool
+}
+
+type LocalTestComparisonTargetManifest struct {
+	SchemaVersion int                         `json:"schemaVersion"`
+	Targets       []LocalTestComparisonTarget `json:"targets"`
+}
+
+type LocalTestComparisonTarget struct {
+	ID         string `json:"id"`
+	Class      string `json:"class,omitempty"`
+	Method     string `json:"method,omitempty"`
+	CPUProfile bool   `json:"cpuProfile"`
+}
+
+type LocalTestComparisonOptions struct {
+	BaseBin      string
+	CandidateBin string
+	Project      string
+	Out          string
+	Workers      int
+	Runs         int
+	Manifest     string
+}
+
+const localTestComparisonTargetIDPattern = `^[a-z0-9][a-z0-9._-]{0,63}$`
+
+var localTestComparisonTargetID = regexp.MustCompile(localTestComparisonTargetIDPattern)
+
+func LoadLocalTestComparisonTargetManifest(path string) (LocalTestComparisonTargetManifest, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return LocalTestComparisonTargetManifest{}, fmt.Errorf("open local test comparison target manifest: %w", err)
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	decoder.DisallowUnknownFields()
+	var manifest LocalTestComparisonTargetManifest
+	if err := decoder.Decode(&manifest); err != nil {
+		return LocalTestComparisonTargetManifest{}, fmt.Errorf("decode local test comparison target manifest: %w", err)
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		if err == nil {
+			return LocalTestComparisonTargetManifest{}, errors.New("decode local test comparison target manifest: trailing JSON data")
+		}
+		return LocalTestComparisonTargetManifest{}, fmt.Errorf("decode local test comparison target manifest: %w", err)
+	}
+	if err := validateLocalTestComparisonTargetManifest(manifest); err != nil {
+		return LocalTestComparisonTargetManifest{}, err
+	}
+	return manifest, nil
+}
+
+func validateLocalTestComparisonTargetManifest(manifest LocalTestComparisonTargetManifest) error {
+	if manifest.SchemaVersion != 1 {
+		return errors.New("local test comparison target manifest schemaVersion must be 1")
+	}
+	if len(manifest.Targets) == 0 {
+		return errors.New("local test comparison target manifest requires at least one target")
+	}
+	seen := make(map[string]struct{}, len(manifest.Targets))
+	for _, target := range manifest.Targets {
+		if !localTestComparisonTargetID.MatchString(target.ID) {
+			return fmt.Errorf("target id %q must match %s", target.ID, localTestComparisonTargetIDPattern)
+		}
+		if _, ok := seen[target.ID]; ok {
+			return fmt.Errorf("duplicate target id %q", target.ID)
+		}
+		seen[target.ID] = struct{}{}
+		class := strings.TrimSpace(target.Class)
+		method := strings.TrimSpace(target.Method)
+		if target.Class != "" && class == "" {
+			return fmt.Errorf("target %q class must not be blank", target.ID)
+		}
+		if target.Method != "" && method == "" {
+			return fmt.Errorf("target %q method must not be blank", target.ID)
+		}
+		if method != "" && class == "" {
+			return fmt.Errorf("target %q method requires class", target.ID)
+		}
+	}
+	return nil
+}
+
+func ValidateLocalTestComparisonOptions(options LocalTestComparisonOptions) error {
+	if strings.TrimSpace(options.BaseBin) == "" {
+		return errors.New("base binary path is required")
+	}
+	if strings.TrimSpace(options.CandidateBin) == "" {
+		return errors.New("candidate binary path is required")
+	}
+	if strings.TrimSpace(options.Project) == "" {
+		return errors.New("project path is required")
+	}
+	if strings.TrimSpace(options.Out) == "" {
+		return errors.New("output path is required")
+	}
+	if options.Workers < 1 {
+		return errors.New("workers must be at least 1")
+	}
+	if options.Runs != 5 {
+		return errors.New("runs must be exactly 5")
+	}
+	if strings.TrimSpace(options.Manifest) == "" {
+		return errors.New("manifest path is required")
+	}
+	return nil
 }
 
 type LocalTestPhaseTiming struct {

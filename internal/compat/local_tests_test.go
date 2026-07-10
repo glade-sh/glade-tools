@@ -23,6 +23,218 @@ type localTestReadyFixture struct {
 	total int
 }
 
+func TestLoadLocalTestComparisonTargetManifestAcceptsFullAndFocusedTargets(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "targets.json")
+	writeLocalTestFile(t, path, `{
+  "schemaVersion": 1,
+  "targets": [
+    {"id":"full","cpuProfile":false},
+    {"id":"focused","class":"ExampleTest","method":"runs","cpuProfile":true}
+  ]
+}`)
+
+	manifest, err := LoadLocalTestComparisonTargetManifest(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if manifest.SchemaVersion != 1 || len(manifest.Targets) != 2 {
+		t.Fatalf("manifest = %#v", manifest)
+	}
+	if got := manifest.Targets[0]; got.ID != "full" || got.Class != "" || got.Method != "" || got.CPUProfile {
+		t.Fatalf("full target = %#v", got)
+	}
+	if got := manifest.Targets[1]; got.ID != "focused" || got.Class != "ExampleTest" || got.Method != "runs" || !got.CPUProfile {
+		t.Fatalf("focused target = %#v", got)
+	}
+}
+
+func TestLoadLocalTestComparisonTargetManifestRejectsUnknownFields(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		data string
+	}{
+		{
+			name: "manifest field",
+			data: `{"schemaVersion":1,"targets":[{"id":"full","cpuProfile":false}],"unknown":true}`,
+		},
+		{
+			name: "target field",
+			data: `{"schemaVersion":1,"targets":[{"id":"focused","cpuProfile":false,"unknown":true}]}`,
+		},
+		{
+			name: "trailing JSON",
+			data: `{"schemaVersion":1,"targets":[{"id":"full","cpuProfile":false}]} {}`,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "targets.json")
+			writeLocalTestFile(t, path, tt.data)
+			if _, err := LoadLocalTestComparisonTargetManifest(path); err == nil {
+				t.Fatal("LoadLocalTestComparisonTargetManifest error = nil")
+			}
+		})
+	}
+}
+
+func TestLoadLocalTestComparisonTargetManifestRejectsInvalidSchema(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		data string
+		want string
+	}{
+		{
+			name: "missing schema version",
+			data: `{"targets":[{"id":"full","cpuProfile":false}]}`,
+			want: "schemaVersion must be 1",
+		},
+		{
+			name: "future schema version",
+			data: `{"schemaVersion":2,"targets":[{"id":"full","cpuProfile":false}]}`,
+			want: "schemaVersion must be 1",
+		},
+		{
+			name: "missing targets",
+			data: `{"schemaVersion":1,"targets":[]}`,
+			want: "requires at least one target",
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "targets.json")
+			writeLocalTestFile(t, path, tt.data)
+			_, err := LoadLocalTestComparisonTargetManifest(path)
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("LoadLocalTestComparisonTargetManifest error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestLoadLocalTestComparisonTargetManifestRejectsDuplicateOrUnsafeTargetID(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		data string
+		want string
+	}{
+		{
+			name: "duplicate",
+			data: `{"schemaVersion":1,"targets":[{"id":"full","cpuProfile":false},{"id":"full","cpuProfile":true}]}`,
+			want: `duplicate target id "full"`,
+		},
+		{
+			name: "unsafe",
+			data: `{"schemaVersion":1,"targets":[{"id":"focused!","cpuProfile":false}]}`,
+			want: `target id "focused!" must match`,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "targets.json")
+			writeLocalTestFile(t, path, tt.data)
+			_, err := LoadLocalTestComparisonTargetManifest(path)
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("LoadLocalTestComparisonTargetManifest error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestLoadLocalTestComparisonTargetManifestRejectsMethodWithoutClass(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		data string
+		want string
+	}{
+		{
+			name: "missing class",
+			data: `{"schemaVersion":1,"targets":[{"id":"focused","method":"runs","cpuProfile":true}]}`,
+			want: `target "focused" method requires class`,
+		},
+		{
+			name: "whitespace class",
+			data: `{"schemaVersion":1,"targets":[{"id":"focused","class":"   ","method":"runs","cpuProfile":true}]}`,
+			want: `target "focused" class must not be blank`,
+		},
+		{
+			name: "whitespace method",
+			data: `{"schemaVersion":1,"targets":[{"id":"focused","class":"ExampleTest","method":"   ","cpuProfile":true}]}`,
+			want: `target "focused" method must not be blank`,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "targets.json")
+			writeLocalTestFile(t, path, tt.data)
+			_, err := LoadLocalTestComparisonTargetManifest(path)
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("LoadLocalTestComparisonTargetManifest error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestValidateLocalTestComparisonOptionsRequiresEveryExplicitInput(t *testing.T) {
+	valid := LocalTestComparisonOptions{
+		BaseBin:      "/base/glade",
+		CandidateBin: "/candidate/glade",
+		Project:      "/source/project",
+		Out:          "/output",
+		Workers:      1,
+		Runs:         5,
+		Manifest:     "/targets.json",
+	}
+	if err := ValidateLocalTestComparisonOptions(valid); err != nil {
+		t.Fatalf("ValidateLocalTestComparisonOptions(valid) error = %v", err)
+	}
+
+	for _, tt := range []struct {
+		name string
+		edit func(*LocalTestComparisonOptions)
+		want string
+	}{
+		{name: "base binary", edit: func(options *LocalTestComparisonOptions) { options.BaseBin = " " }, want: "base binary path is required"},
+		{name: "candidate binary", edit: func(options *LocalTestComparisonOptions) { options.CandidateBin = " " }, want: "candidate binary path is required"},
+		{name: "project", edit: func(options *LocalTestComparisonOptions) { options.Project = " " }, want: "project path is required"},
+		{name: "output", edit: func(options *LocalTestComparisonOptions) { options.Out = " " }, want: "output path is required"},
+		{name: "manifest", edit: func(options *LocalTestComparisonOptions) { options.Manifest = " " }, want: "manifest path is required"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			options := valid
+			tt.edit(&options)
+			if err := ValidateLocalTestComparisonOptions(options); err == nil || err.Error() != tt.want {
+				t.Fatalf("ValidateLocalTestComparisonOptions error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestValidateLocalTestComparisonOptionsRequiresFiveRunsAndPositiveWorkers(t *testing.T) {
+	valid := LocalTestComparisonOptions{
+		BaseBin:      "/base/glade",
+		CandidateBin: "/candidate/glade",
+		Project:      "/source/project",
+		Out:          "/output",
+		Workers:      1,
+		Runs:         5,
+		Manifest:     "/targets.json",
+	}
+	for _, tt := range []struct {
+		name string
+		edit func(*LocalTestComparisonOptions)
+		want string
+	}{
+		{name: "zero workers", edit: func(options *LocalTestComparisonOptions) { options.Workers = 0 }, want: "workers must be at least 1"},
+		{name: "negative workers", edit: func(options *LocalTestComparisonOptions) { options.Workers = -1 }, want: "workers must be at least 1"},
+		{name: "too few runs", edit: func(options *LocalTestComparisonOptions) { options.Runs = 4 }, want: "runs must be exactly 5"},
+		{name: "too many runs", edit: func(options *LocalTestComparisonOptions) { options.Runs = 6 }, want: "runs must be exactly 5"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			options := valid
+			tt.edit(&options)
+			if err := ValidateLocalTestComparisonOptions(options); err == nil || err.Error() != tt.want {
+				t.Fatalf("ValidateLocalTestComparisonOptions error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
 func TestLocalTestFixtureExecutionSelection(t *testing.T) {
 	t.Setenv(fullLocalTestFixturesEnv, "")
 	if shouldRunLocalTestFixture("platform-apis") {
