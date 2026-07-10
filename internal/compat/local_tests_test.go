@@ -1499,6 +1499,607 @@ func TestLocalTestComparisonBinarySnapshotRejectsDriftBeforeEveryUse(t *testing.
 	}
 }
 
+func TestLocalTestComparisonDistributionUsesPureIntegerMedianMADAndNearestRankP95(t *testing.T) {
+	samples := []uint64{100, 1, 4, 2, 3}
+	original := append([]uint64(nil), samples...)
+
+	got, err := localTestComparisonDistribution(samples)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fmt.Sprint(got.Samples) != fmt.Sprint(original) || got.Median != 3 || got.MAD != 1 || got.P95 != 100 {
+		t.Fatalf("distribution = %#v, want samples=%v median=3 MAD=1 p95=100", got, original)
+	}
+	if fmt.Sprint(samples) != fmt.Sprint(original) {
+		t.Fatalf("input mutated: got %v, want %v", samples, original)
+	}
+	if _, err := localTestComparisonDistribution([]uint64{1, 2, 3, 4}); err == nil {
+		t.Fatal("four samples unexpectedly accepted")
+	}
+}
+
+func TestLocalTestComparisonAllocationDeltaUsesFirstAndLastOrderedPerfPhases(t *testing.T) {
+	got, err := readLocalTestComparisonAllocationDelta(strings.NewReader(`{
+  "phases": [
+    {"event":"start","totalAllocBytes":100},
+    {"event":"middle","totalAllocBytes":125},
+    {"event":"end","totalAllocBytes":180}
+  ]
+}`))
+	if err != nil || got != 80 {
+		t.Fatalf("allocation delta = %d, %v; want 80", got, err)
+	}
+
+	for _, tt := range []struct {
+		name string
+		data string
+		want string
+	}{
+		{name: "invalid JSON", data: `{`, want: "invalid perf JSON"},
+		{name: "missing phases", data: `{}`, want: "at least two ordered phases"},
+		{name: "one phase", data: `{"phases":[{"totalAllocBytes":1}]}`, want: "at least two ordered phases"},
+		{name: "decreasing", data: `{"phases":[{"totalAllocBytes":9},{"totalAllocBytes":8}]}`, want: "decreased"},
+		{name: "intermediate decrease", data: `{"phases":[{"totalAllocBytes":100},{"totalAllocBytes":90},{"totalAllocBytes":180}]}`, want: "decreased"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if _, err := readLocalTestComparisonAllocationDelta(strings.NewReader(tt.data)); err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("readLocalTestComparisonAllocationDelta error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestRunLocalTestComparisonAlternatesFiveSerialColdPairs(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "matched")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err != nil {
+		t.Fatal(err)
+	}
+
+	lines := readLocalTestComparisonHarnessLog(t, fixture.logPath)
+	want := []string{
+		"base|timed", "candidate|timed",
+		"candidate|timed", "base|timed",
+		"base|timed", "candidate|timed",
+		"candidate|timed", "base|timed",
+		"base|timed", "candidate|timed",
+	}
+	if fmt.Sprint(lines) != fmt.Sprint(want) {
+		t.Fatalf("execution order = %v, want %v", lines, want)
+	}
+	for run := 1; run <= 5; run++ {
+		for _, side := range []string{"base", "candidate"} {
+			path := filepath.Join(fixture.options.Out, "targets", "generic", "runs", fmt.Sprintf("%03d", run), side, "result.json")
+			if _, err := os.Stat(path); err != nil {
+				t.Fatalf("missing raw artifact %q: %v", path, err)
+			}
+		}
+	}
+	object, _ := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if object["status"] != "matched" || int(object["runs"].(float64)) != 5 {
+		t.Fatalf("summary = %#v", object)
+	}
+	target := object["targets"].([]any)[0].(map[string]any)
+	pairs := target["pairs"].([]any)
+	wantOrder := []string{"AB", "BA", "AB", "BA", "AB"}
+	for index, raw := range pairs {
+		pair := raw.(map[string]any)
+		if int(pair["run"].(float64)) != index+1 || pair["order"] != wantOrder[index] {
+			t.Fatalf("pair %d = %#v", index, pair)
+		}
+	}
+}
+
+func TestRunLocalTestComparisonProfilesAreDiagnosticAndExcludedFromFiveSamples(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, true, "matched", "matched")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err != nil {
+		t.Fatal(err)
+	}
+	lines := readLocalTestComparisonHarnessLog(t, fixture.logPath)
+	if len(lines) != 12 || lines[10] != "base|profile" || lines[11] != "candidate|profile" {
+		t.Fatalf("profile execution log = %v", lines)
+	}
+
+	object, _ := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	target := object["targets"].([]any)[0].(map[string]any)
+	for _, side := range []string{"base", "candidate"} {
+		aggregate := target[side].(map[string]any)
+		for _, metric := range []string{"wallTimeNs", "userTimeNs", "systemTimeNs", "maxRssBytes", "totalAllocBytes"} {
+			distribution := aggregate[metric].(map[string]any)
+			if got := len(distribution["samples"].([]any)); got != 5 {
+				t.Fatalf("%s %s sample count = %d, want 5", side, metric, got)
+			}
+		}
+	}
+	for _, side := range []string{"base", "candidate"} {
+		path := filepath.Join(fixture.options.Out, "targets", "generic", "profile", side, "cpu.pprof")
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("missing diagnostic profile %q: %v", path, err)
+		}
+	}
+}
+
+func TestRunLocalTestComparisonSafetyMismatchRefusesWithoutClaimsAndPreservesRawArtifacts(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "safety-mismatch")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err == nil {
+		t.Fatal("safety mismatch unexpectedly succeeded")
+	}
+	object, data := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if object["status"] != "refused" {
+		t.Fatalf("summary status = %#v", object["status"])
+	}
+	assertLocalTestComparisonSummaryHasNoClaims(t, data)
+	assertLocalTestComparisonNonmatchedSummaryKeepsOrderAndArtifactRefs(t, object)
+	for _, side := range []string{"base", "candidate"} {
+		path := filepath.Join(fixture.options.Out, "targets", "generic", "runs", "001", side, "result.json")
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("raw artifact missing after refusal: %v", err)
+		}
+	}
+	if got := len(readLocalTestComparisonHarnessLog(t, fixture.logPath)); got != 2 {
+		t.Fatalf("invocations after first refusal = %d, want 2", got)
+	}
+}
+
+func TestRunLocalTestComparisonCrossRunOracleDriftRefuses(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "cross-run-drift", "cross-run-drift")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err == nil {
+		t.Fatal("cross-run drift unexpectedly succeeded")
+	}
+	object, data := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if object["status"] != "refused" || len(readLocalTestComparisonHarnessLog(t, fixture.logPath)) != 4 {
+		t.Fatalf("cross-run refusal summary=%#v log=%v", object, readLocalTestComparisonHarnessLog(t, fixture.logPath))
+	}
+	assertLocalTestComparisonSummaryHasNoClaims(t, data)
+	assertLocalTestComparisonNonmatchedSummaryKeepsOrderAndArtifactRefs(t, object)
+}
+
+func TestRunLocalTestComparisonProfileDriftRefuses(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, true, "matched", "profile-drift")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err == nil {
+		t.Fatal("profile drift unexpectedly succeeded")
+	}
+	object, data := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if object["status"] != "refused" || len(readLocalTestComparisonHarnessLog(t, fixture.logPath)) != 12 {
+		t.Fatalf("profile refusal summary=%#v log=%v", object, readLocalTestComparisonHarnessLog(t, fixture.logPath))
+	}
+	assertLocalTestComparisonSummaryHasNoClaims(t, data)
+	assertLocalTestComparisonNonmatchedSummaryKeepsOrderAndArtifactRefs(t, object)
+}
+
+func TestRunLocalTestComparisonWritesPrivateDeterministicOrderedRelativeSummary(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixtureWithTargets(t, []LocalTestComparisonTarget{
+		{ID: "first", Class: "DO_NOT_EMIT_CLASS", Method: "DO_NOT_EMIT_METHOD"},
+		{ID: "second"},
+	}, "matched", "matched")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err != nil {
+		t.Fatal(err)
+	}
+	object, data := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if !bytes.HasSuffix(data, []byte("\n")) || !bytes.Contains(data, []byte("\n  \"schemaVersion\"")) {
+		t.Fatalf("summary is not indented JSON with trailing newline:\n%s", data)
+	}
+	for _, forbidden := range []string{"DO_NOT_EMIT_CLASS", "DO_NOT_EMIT_METHOD", `"timestamp"`, `"createdAt"`, `"conclusion"`, `"KEEP"`, `"REJECT"`} {
+		if bytes.Contains(data, []byte(forbidden)) {
+			t.Fatalf("summary contains forbidden %q:\n%s", forbidden, data)
+		}
+	}
+	targets := object["targets"].([]any)
+	if targets[0].(map[string]any)["id"] != "first" || targets[1].(map[string]any)["id"] != "second" {
+		t.Fatalf("target order = %#v", targets)
+	}
+	assertLocalTestComparisonStringsArePublicRelative(t, object)
+	if info, err := os.Stat(fixture.options.Out); err != nil || info.Mode().Perm() != 0o700 {
+		t.Fatalf("output mode = %v, %v", info, err)
+	}
+	if info, err := os.Stat(filepath.Join(fixture.options.Out, "summary.json")); err != nil || info.Mode().Perm() != 0o600 {
+		t.Fatalf("summary mode = %v, %v", info, err)
+	}
+}
+
+func TestRunLocalTestComparisonRequiresOutNotToExist(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "matched")
+	if err := os.Mkdir(fixture.options.Out, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeLocalTestFile(t, filepath.Join(fixture.options.Out, "sentinel"), "preserve\n")
+	summary, err := RunLocalTestComparison(context.Background(), fixture.options)
+	if err == nil || !strings.Contains(err.Error(), "must not exist") {
+		t.Fatalf("RunLocalTestComparison error = %v, want output must not exist", err)
+	}
+	if summary.SummaryPath != "" {
+		t.Fatalf("rejected comparison reported current-run summary path %q", summary.SummaryPath)
+	}
+	if data, err := os.ReadFile(filepath.Join(fixture.options.Out, "sentinel")); err != nil || string(data) != "preserve\n" {
+		t.Fatalf("existing output mutated: %q, %v", data, err)
+	}
+}
+
+func TestRunLocalTestComparisonPreservesSourceProject(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "matched")
+	statePath := filepath.Join(fixture.options.Project, ".glade", "source-state")
+	writeLocalTestFile(t, statePath, "source-only\n")
+	before, err := localTestComparisonFileSHA256(statePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err != nil {
+		t.Fatal(err)
+	}
+	after, err := localTestComparisonFileSHA256(statePath)
+	if err != nil || after != before {
+		t.Fatalf("source .glade state changed: before=%s after=%s err=%v", before, after, err)
+	}
+}
+
+func TestRunLocalTestComparisonPinsFilteredSourceAcrossBetweenInvocationLiveMutation(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "mutate-live-source", "matched")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err != nil {
+		t.Fatal(err)
+	}
+	liveData, err := os.ReadFile(filepath.Join(fixture.options.Project, "project.txt"))
+	if err != nil || string(liveData) != "mutated live source\n" {
+		t.Fatalf("live source mutation = %q, %v", liveData, err)
+	}
+	for run := 1; run <= 5; run++ {
+		for _, side := range []string{"base", "candidate"} {
+			path := filepath.Join(fixture.options.Out, "targets", "generic", "runs", fmt.Sprintf("%03d", run), side, "result.json")
+			var result struct {
+				SourceContent string `json:"sourceContent"`
+			}
+			decodeLocalTestComparisonJSON(t, path, &result)
+			if result.SourceContent != "generic project" {
+				t.Fatalf("%s run %d source content = %q, want pinned original", side, run, result.SourceContent)
+			}
+		}
+	}
+	_, summaryData := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	for _, forbidden := range []string{fixture.options.Project, "generic project", "mutated live source"} {
+		if bytes.Contains(summaryData, []byte(forbidden)) {
+			t.Fatalf("summary leaked live source path/content %q:\n%s", forbidden, summaryData)
+		}
+	}
+}
+
+func TestRunLocalTestComparisonSourceSnapshotIsFilteredImmutableAndCleaned(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "matched")
+	writeLocalTestFile(t, filepath.Join(fixture.options.Project, ".glade", "source-state"), "excluded\n")
+	var snapshotRoot string
+	fixture.options.testHooks = &localTestComparisonTestHooks{
+		afterSourceSnapshotPrepare: func(root, project string) error {
+			snapshotRoot = root
+			assertLocalTestComparisonMode(t, root, 0o700)
+			assertLocalTestComparisonMode(t, project, 0o500)
+			assertLocalTestComparisonMode(t, filepath.Join(project, "project.txt"), 0o400)
+			assertLocalTestComparisonMode(t, filepath.Join(project, "bin"), 0o500)
+			assertLocalTestComparisonMode(t, filepath.Join(project, "bin", "tool"), 0o500)
+			for _, excluded := range []string{".glade", ".git", ".sf", ".sfdx", "node_modules"} {
+				if _, err := os.Stat(filepath.Join(project, excluded)); !os.IsNotExist(err) {
+					return fmt.Errorf("filtered snapshot retained %s: %v", excluded, err)
+				}
+			}
+			return nil
+		},
+	}
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err != nil {
+		t.Fatal(err)
+	}
+	if snapshotRoot == "" {
+		t.Fatal("source snapshot hook was not called")
+	}
+	if _, err := os.Stat(snapshotRoot); !os.IsNotExist(err) {
+		t.Fatalf("source snapshot was not cleaned: %v", err)
+	}
+}
+
+func TestRunLocalTestComparisonSourceSnapshotDriftStopsWithoutClaims(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "matched")
+	var snapshotRoot string
+	fixture.options.testHooks = &localTestComparisonTestHooks{
+		afterSourceSnapshotPrepare: func(root, _ string) error {
+			snapshotRoot = root
+			return nil
+		},
+		beforeSourceSnapshotRevalidate: func(invocation int, _ string, project string) error {
+			if invocation != 2 {
+				return nil
+			}
+			path := filepath.Join(project, "project.txt")
+			if err := os.Chmod(path, 0o600); err != nil {
+				return err
+			}
+			return os.WriteFile(path, []byte("snapshot drift\n"), 0o600)
+		},
+	}
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err == nil || !strings.Contains(err.Error(), "source snapshot drift") {
+		t.Fatalf("RunLocalTestComparison error = %v, want source snapshot drift", err)
+	}
+	if got := len(readLocalTestComparisonHarnessLog(t, fixture.logPath)); got != 1 {
+		t.Fatalf("invocations after snapshot drift = %d, want 1", got)
+	}
+	object, data := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if object["status"] != "error" {
+		t.Fatalf("snapshot drift summary status = %#v", object["status"])
+	}
+	assertLocalTestComparisonSummaryHasNoClaims(t, data)
+	assertLocalTestComparisonNonmatchedSummaryKeepsOrderAndArtifactRefs(t, object)
+	if snapshotRoot == "" {
+		t.Fatal("source snapshot hook was not called")
+	}
+	if _, err := os.Stat(snapshotRoot); !os.IsNotExist(err) {
+		t.Fatalf("drifted source snapshot was not cleaned: %v", err)
+	}
+}
+
+func TestRunLocalTestComparisonInvocationErrorStopsAndOmitsClaims(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "error-third")
+	if _, err := RunLocalTestComparison(context.Background(), fixture.options); err == nil || !strings.Contains(err.Error(), "code 7") {
+		t.Fatalf("RunLocalTestComparison error = %v, want exit code 7", err)
+	}
+	object, data := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if object["status"] != "error" || len(readLocalTestComparisonHarnessLog(t, fixture.logPath)) != 6 {
+		t.Fatalf("error summary=%#v log=%v", object, readLocalTestComparisonHarnessLog(t, fixture.logPath))
+	}
+	assertLocalTestComparisonSummaryHasNoClaims(t, data)
+	assertLocalTestComparisonNonmatchedSummaryKeepsOrderAndArtifactRefs(t, object)
+	if _, err := os.Stat(filepath.Join(fixture.options.Out, "targets", "generic", "runs", "003", "candidate", "result.json")); err != nil {
+		t.Fatalf("failing invocation artifacts not preserved: %v", err)
+	}
+}
+
+func TestRunLocalTestComparisonCancellationStopsAndPreservesCompletedArtifactsWithoutClaims(t *testing.T) {
+	fixture := newLocalTestComparisonHarnessFixture(t, false, "matched", "block-third")
+	var snapshotRoot string
+	fixture.options.testHooks = &localTestComparisonTestHooks{
+		afterSourceSnapshotPrepare: func(root, _ string) error {
+			snapshotRoot = root
+			return nil
+		},
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+	done := make(chan error, 1)
+	go func() {
+		_, err := RunLocalTestComparison(ctx, fixture.options)
+		done <- err
+	}()
+	deadline := time.Now().Add(5 * time.Second)
+	for len(readLocalTestComparisonHarnessLogIfPresent(t, fixture.logPath)) < 6 {
+		if time.Now().After(deadline) {
+			t.Fatal("blocking invocation did not start")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	cancel()
+	select {
+	case err := <-done:
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("RunLocalTestComparison error = %v, want context.Canceled", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("canceled comparison did not return")
+	}
+	object, data := readLocalTestComparisonSummaryObject(t, fixture.options.Out)
+	if object["status"] != "error" {
+		t.Fatalf("canceled summary status = %#v", object["status"])
+	}
+	assertLocalTestComparisonSummaryHasNoClaims(t, data)
+	assertLocalTestComparisonNonmatchedSummaryKeepsOrderAndArtifactRefs(t, object)
+	if _, err := os.Stat(filepath.Join(fixture.options.Out, "targets", "generic", "runs", "002", "base", "result.json")); err != nil {
+		t.Fatalf("completed artifact missing after cancellation: %v", err)
+	}
+	if snapshotRoot == "" {
+		t.Fatal("source snapshot hook was not called")
+	}
+	if _, err := os.Stat(snapshotRoot); !os.IsNotExist(err) {
+		t.Fatalf("canceled source snapshot was not cleaned: %v", err)
+	}
+}
+
+type localTestComparisonHarnessFixture struct {
+	options LocalTestComparisonOptions
+	logPath string
+}
+
+func newLocalTestComparisonHarnessFixture(t *testing.T, cpuProfile bool, baseBehavior, candidateBehavior string) localTestComparisonHarnessFixture {
+	t.Helper()
+	return newLocalTestComparisonHarnessFixtureWithTargets(t, []LocalTestComparisonTarget{{ID: "generic", CPUProfile: cpuProfile}}, baseBehavior, candidateBehavior)
+}
+
+func newLocalTestComparisonHarnessFixtureWithTargets(t *testing.T, targets []LocalTestComparisonTarget, baseBehavior, candidateBehavior string) localTestComparisonHarnessFixture {
+	t.Helper()
+	directory := t.TempDir()
+	logPath := filepath.Join(directory, "invocations.log")
+	lockPath := filepath.Join(directory, "active-invocation")
+	manifestPath := filepath.Join(directory, "targets.json")
+	data, err := json.Marshal(LocalTestComparisonTargetManifest{SchemaVersion: 1, Targets: targets})
+	if err != nil {
+		t.Fatal(err)
+	}
+	writeLocalTestFile(t, manifestPath, string(data)+"\n")
+	project := newLocalTestComparisonProject(t)
+	return localTestComparisonHarnessFixture{
+		logPath: logPath,
+		options: LocalTestComparisonOptions{
+			BaseBin:      newLocalTestComparisonHarnessExecutable(t, "base", logPath, lockPath, filepath.Join(project, "project.txt"), baseBehavior),
+			CandidateBin: newLocalTestComparisonHarnessExecutable(t, "candidate", logPath, lockPath, filepath.Join(project, "project.txt"), candidateBehavior),
+			Project:      project,
+			Out:          filepath.Join(directory, "comparison"),
+			Workers:      2,
+			Runs:         5,
+			Manifest:     manifestPath,
+		},
+	}
+}
+
+func newLocalTestComparisonHarnessExecutable(t *testing.T, label, logPath, lockPath, liveSourcePath, behavior string) string {
+	t.Helper()
+	directory := t.TempDir()
+	path := filepath.Join(directory, "generic-harness")
+	statePath := filepath.Join(directory, "count")
+	script := fmt.Sprintf(`#!/bin/sh
+set -eu
+label=%q
+log=%q
+state=%q
+behavior=%q
+live_source=%q
+if [ "${1:-}" = "manifest" ]; then
+  printf '{"schemaVersion":1,"name":"generic-harness"}\n'
+  exit 0
+fi
+[ "${1:-}" = "local-tests" ]
+shift
+if ! mkdir %q; then exit 88; fi
+trap 'rmdir %q' EXIT HUP INT TERM
+project=""
+perf=""
+cpu=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --project) project=$2; shift 2 ;;
+    --parallel) shift 2 ;;
+    --parallel-methods|--json) shift ;;
+    --perf-json) perf=$2; shift 2 ;;
+    --class|--method) shift 2 ;;
+    --cpu-profile) cpu=$2; shift 2 ;;
+    *) exit 42 ;;
+  esac
+done
+count=0
+if [ -f "$state" ]; then count=$(cat "$state"); fi
+count=$((count + 1))
+printf '%%s\n' "$count" > "$state"
+kind=timed
+if [ -n "$cpu" ]; then kind=profile; fi
+printf '%%s|%%s\n' "$label" "$kind" >> "$log"
+if [ "$behavior" = "block-third" ] && [ "$count" -eq 3 ]; then sleep 30; fi
+capability="$project/capability/pass"
+outcome=pass
+pass=1
+unsupported=0
+ready=true
+if [ "$behavior" = "safety-mismatch" ]; then
+  capability="$project/capability/mismatch"
+fi
+if [ "$behavior" = "cross-run-drift" ] && [ "$count" -ge 2 ]; then
+  capability="$project/capability/drift"
+fi
+if [ "$behavior" = "profile-drift" ] && [ -n "$cpu" ]; then
+  capability="$project/capability/profile-drift"
+fi
+source_content=$(cat "$project/project.txt")
+if [ "$behavior" = "mutate-live-source" ] && [ "$count" -eq 1 ]; then
+  printf 'mutated live source\n' > "$live_source"
+fi
+printf '{"phases":[{"event":"start","totalAllocBytes":100},{"event":"end","totalAllocBytes":%%d}]}\n' "$((100 + count))" > "$perf"
+if [ -n "$cpu" ]; then printf 'generic profile\n' | gzip -c > "$cpu"; fi
+printf '{"target":"local Apex test execution readiness","ready":%%s,"project":"%%s","casesDiscovered":1,"casesRun":1,"summary":{"total":1,"pass":%%d,"fail":0,"unsupported":%%d,"loadError":0,"compileError":0,"internalError":0},"outcomes":[{"class":"GenericTest","method":"runs","outcome":"%%s","capabilityId":"%%s"}],"sourceContent":"%%s"}\n' "$ready" "$project" "$pass" "$unsupported" "$outcome" "$capability" "$source_content"
+if [ "$behavior" = "error-third" ] && [ "$count" -eq 3 ]; then exit 7; fi
+`, label, logPath, statePath, behavior, liveSourcePath, lockPath, lockPath)
+	writeLocalTestFile(t, path, script)
+	if err := os.Chmod(path, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	return path
+}
+
+func assertLocalTestComparisonMode(t *testing.T, path string, want os.FileMode) {
+	t.Helper()
+	info, err := os.Stat(path)
+	if err != nil || info.Mode().Perm() != want {
+		t.Fatalf("mode for %q = %v, %v; want %04o", path, info, err, want)
+	}
+}
+
+func readLocalTestComparisonHarnessLog(t *testing.T, path string) []string {
+	t.Helper()
+	lines := readLocalTestComparisonHarnessLogIfPresent(t, path)
+	if lines == nil {
+		t.Fatalf("read harness log %q", path)
+	}
+	return lines
+}
+
+func readLocalTestComparisonHarnessLogIfPresent(t *testing.T, path string) []string {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	trimmed := strings.TrimSpace(string(data))
+	if trimmed == "" {
+		return []string{}
+	}
+	return strings.Split(trimmed, "\n")
+}
+
+func readLocalTestComparisonSummaryObject(t *testing.T, output string) (map[string]any, []byte) {
+	t.Helper()
+	data, err := os.ReadFile(filepath.Join(output, "summary.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var object map[string]any
+	if err := json.Unmarshal(data, &object); err != nil {
+		t.Fatalf("summary JSON: %v\n%s", err, data)
+	}
+	return object, data
+}
+
+func assertLocalTestComparisonSummaryHasNoClaims(t *testing.T, data []byte) {
+	t.Helper()
+	for _, key := range []string{
+		`"wallTimeNs"`, `"userTimeNs"`, `"systemTimeNs"`, `"maxRssBytes"`, `"totalAllocBytes"`,
+		`"contractSha256"`, `"samples"`, `"median"`, `"mad"`, `"p95"`, `"delta"`, `"conclusion"`,
+	} {
+		if bytes.Contains(data, []byte(key)) {
+			t.Fatalf("non-matched summary contains claim %s:\n%s", key, data)
+		}
+	}
+}
+
+func assertLocalTestComparisonNonmatchedSummaryKeepsOrderAndArtifactRefs(t *testing.T, object map[string]any) {
+	t.Helper()
+	targets, ok := object["targets"].([]any)
+	if !ok || len(targets) == 0 {
+		t.Fatalf("non-matched summary omitted ordered targets: %#v", object)
+	}
+	pairs, ok := targets[0].(map[string]any)["pairs"].([]any)
+	if !ok || len(pairs) == 0 {
+		t.Fatalf("non-matched summary omitted ordered pairs: %#v", targets[0])
+	}
+	encoded, err := json.Marshal(pairs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, required := range []string{`"run"`, `"order"`, `result.json`, `perf.json`, `metrics.json`, `stderr.txt`} {
+		if !bytes.Contains(encoded, []byte(required)) {
+			t.Fatalf("non-matched pair omitted %q artifact/order reference: %s", required, encoded)
+		}
+	}
+}
+
+func assertLocalTestComparisonStringsArePublicRelative(t *testing.T, value any) {
+	t.Helper()
+	switch typed := value.(type) {
+	case map[string]any:
+		for _, child := range typed {
+			assertLocalTestComparisonStringsArePublicRelative(t, child)
+		}
+	case []any:
+		for _, child := range typed {
+			assertLocalTestComparisonStringsArePublicRelative(t, child)
+		}
+	case string:
+		if filepath.IsAbs(typed) || strings.Contains(typed, `\`) {
+			t.Fatalf("summary contains absolute or platform-specific path %q", typed)
+		}
+	}
+}
+
 func TestLocalTestFixtureExecutionSelection(t *testing.T) {
 	t.Setenv(fullLocalTestFixturesEnv, "")
 	if shouldRunLocalTestFixture("platform-apis") {

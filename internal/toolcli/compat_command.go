@@ -42,7 +42,7 @@ func runCompat(ctx context.Context, args []string, w io.Writer) error {
 	case "post-parity":
 		return runCompatPostParity(args[1:], w)
 	case "local-tests":
-		return runCompatLocalTests(args[1:], w)
+		return runCompatLocalTests(ctx, args[1:], w)
 	case "surface":
 		return runCompatSurface(args[1:], w)
 	case "corpus":
@@ -168,6 +168,7 @@ func compatUsage() string {
 		"validate|run <fixture.json...>",
 		"matrix|mvp [--json] [--require-ready]",
 		"local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>]",
+		"local-tests compare --base-bin <path> --candidate-bin <path> --project <root> --out <new-dir> --workers <n> --runs 5 --manifest <path> [--json]",
 		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags]",
 		"corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]",
 		"visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]",
@@ -833,7 +834,10 @@ type postParityReadiness struct {
 	TopBlockers  []projectscan.TopBlocker `json:"topBlockers"`
 }
 
-func runCompatLocalTests(args []string, w io.Writer) error {
+func runCompatLocalTests(ctx context.Context, args []string, w io.Writer) error {
+	if len(args) > 0 && args[0] == "compare" {
+		return runCompatLocalTestsCompare(ctx, args[1:], w)
+	}
 	if len(args) > 0 && isHelpArg(args[0]) {
 		printCompatLocalTestsHelp(w)
 		return nil
@@ -1080,6 +1084,98 @@ func runCompatLocalTests(args []string, w io.Writer) error {
 		return fmt.Errorf("local test load errors: %d", report.Summary.LoadErrors)
 	}
 	return nil
+}
+
+func runCompatLocalTestsCompare(ctx context.Context, args []string, w io.Writer) error {
+	if len(args) > 0 && isHelpArg(args[0]) {
+		printCompatLocalTestsCompareHelp(w)
+		return nil
+	}
+	options := compat.LocalTestComparisonOptions{}
+	jsonOut := false
+	seen := make(map[string]bool)
+	value := func(index *int, flag string) (string, error) {
+		if seen[flag] {
+			return "", fmt.Errorf("duplicate %s", flag)
+		}
+		seen[flag] = true
+		if *index+1 >= len(args) || strings.TrimSpace(args[*index+1]) == "" {
+			return "", fmt.Errorf("%s value is required", flag)
+		}
+		*index++
+		return args[*index], nil
+	}
+	for index := 0; index < len(args); index++ {
+		flag := args[index]
+		switch flag {
+		case "--base-bin", "--candidate-bin", "--project", "--out", "--workers", "--runs", "--manifest":
+			parsed, err := value(&index, flag)
+			if err != nil {
+				return err
+			}
+			switch flag {
+			case "--base-bin":
+				options.BaseBin = parsed
+			case "--candidate-bin":
+				options.CandidateBin = parsed
+			case "--project":
+				options.Project = parsed
+			case "--out":
+				options.Out = parsed
+			case "--workers":
+				workers, err := strconv.Atoi(parsed)
+				if err != nil || workers < 1 {
+					return errors.New("workers must be at least 1")
+				}
+				options.Workers = workers
+			case "--runs":
+				runs, err := strconv.Atoi(parsed)
+				if err != nil || runs != 5 {
+					return errors.New("runs must be exactly 5")
+				}
+				options.Runs = runs
+			case "--manifest":
+				options.Manifest = parsed
+			}
+		case "--json":
+			if seen[flag] {
+				return fmt.Errorf("duplicate %s", flag)
+			}
+			seen[flag] = true
+			jsonOut = true
+		case "--class", "--method", "--cpu-profile":
+			return errors.New("target selectors and profiles are accepted only through the external manifest")
+		default:
+			return fmt.Errorf("unknown local-tests compare flag %q", flag)
+		}
+	}
+	for _, required := range []string{"--base-bin", "--candidate-bin", "--project", "--out", "--workers", "--runs", "--manifest"} {
+		if !seen[required] {
+			return fmt.Errorf("%s is required", required)
+		}
+	}
+	if err := compat.ValidateLocalTestComparisonOptions(options); err != nil {
+		return err
+	}
+	summary, runErr := compat.RunLocalTestComparison(ctx, options)
+	if summary.SummaryPath == "" {
+		if runErr != nil {
+			return runErr
+		}
+		return errors.New("local test comparison did not record a current-run summary")
+	}
+	if jsonOut {
+		data, readErr := os.ReadFile(summary.SummaryPath)
+		if readErr != nil {
+			return errors.Join(runErr, fmt.Errorf("read local test comparison summary: %w", readErr))
+		}
+		if _, writeErr := w.Write(data); writeErr != nil {
+			return errors.Join(runErr, writeErr)
+		}
+	} else {
+		fmt.Fprintf(w, "local-tests compare: status=%s summary=%s\n", summary.Status, summary.SummaryPath)
+	}
+	return runErr
 }
 
 func validateCompatLocalTestSelection(options compat.LocalTestOptions, report compat.LocalTestReport) error {

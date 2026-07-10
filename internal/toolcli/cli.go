@@ -50,6 +50,7 @@ Entrypoints:
 Help:
   glade-tools <command> --help
   glade compat local-tests --help
+  glade compat local-tests compare --help
   glade compat visualforce --help
   glade compat lwc --help
 
@@ -143,5 +144,34 @@ Examples:
   glade compat local-tests --project . --json
   glade compat local-tests --project . --class AccountServiceTest
   glade compat local-tests --project . --class-file tests.txt --top-failures 10
+
+Comparison:
+  glade-tools local-tests compare --help
+  glade compat local-tests compare --help
+`)+"\n")
+}
+
+func printCompatLocalTestsCompareHelp(w io.Writer) {
+	fmt.Fprint(w, strings.TrimSpace(`
+Compare local Apex test performance with an external target manifest.
+
+Usage:
+  glade-tools local-tests compare --base-bin <path> --candidate-bin <path> --project <root> --out <new-dir> --workers <n> --runs 5 --manifest <path> [--json]
+  glade compat local-tests compare --base-bin <path> --candidate-bin <path> --project <root> --out <new-dir> --workers <n> --runs 5 --manifest <path> [--json]
+
+Required flags:
+  --base-bin <path>       Base glade-tools compat executable.
+  --candidate-bin <path>  Candidate glade-tools compat executable.
+  --project <root>        Source project copied for every cold invocation.
+  --out <new-dir>         New private output directory; it must not exist.
+  --workers <n>           Explicit local-test worker count.
+  --runs 5                Exactly five cold alternating pairs per target.
+  --manifest <path>       External target manifest containing any selectors.
+
+Optional flags:
+  --json                   Mirror deterministic summary.json to stdout.
+
+Each target runs five cold alternating pairs in AB, BA, AB, BA, AB order.
+Requested profiles run afterward as diagnostics; profiles are excluded from timing samples.
 `)+"\n")
 }
