@@ -1,0 +1,26 @@
+{
+  "summary": {"fixture": true},
+  "describes": {
+    "Zulu": {
+      "name": "Zulu",
+      "label": null,
+      "queryable": false,
+      "fields": [
+        {"name": "Choice", "type": "picklist", "referenceTo": [], "picklistValues": [{"value": "B"}, {"value": "A"}]},
+        {"name": "ParentId", "type": "reference", "referenceTo": ["Zulu", "Alpha"]}
+      ],
+      "childRelationships": [],
+      "recordTypeInfos": [{"developerName": "Secondary", "recordTypeId": "013"}, {"developerName": "Master", "recordTypeId": "012"}]
+    },
+    "Alpha": {
+      "name": "Alpha",
+      "fields": [{"name": "ZuluId", "type": "reference", "referenceTo": ["Zulu"]}],
+      "childRelationships": [
+        {"childSObject": "Zulu", "field": "ParentId", "relationshipName": "First", "cascadeDelete": true, "restrictedDelete": false, "deprecatedAndHidden": false},
+        {"childSObject": "Zulu", "field": "ParentId", "relationshipName": "Second", "cascadeDelete": false, "restrictedDelete": true, "deprecatedAndHidden": false},
+        {"childSObject": "Zulu", "field": "ParentId", "relationshipName": "First", "cascadeDelete": false, "restrictedDelete": false, "deprecatedAndHidden": false}
+      ],
+      "recordTypeInfos": []
+    }
+  }
+}
