@@ -1460,10 +1460,14 @@ func TestLocalTestComparisonBinarySnapshotRejectsDriftBeforeEveryUse(t *testing.
 					t.Fatal(err)
 				}
 			case "replace":
-				if err := os.Remove(snapshot.binary.Path); err != nil {
+				replacementPath := snapshot.binary.Path + ".replacement"
+				if err := os.WriteFile(replacementPath, originalSnapshot, 0o500); err != nil {
 					t.Fatal(err)
 				}
-				if err := os.WriteFile(snapshot.binary.Path, originalSnapshot, 0o500); err != nil {
+				// Create the replacement while the original inode is still
+				// linked. An unlink followed by create can immediately reuse
+				// the freed inode on Linux and fail to exercise replacement.
+				if err := os.Rename(replacementPath, snapshot.binary.Path); err != nil {
 					t.Fatal(err)
 				}
 			}
