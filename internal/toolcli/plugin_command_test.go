@@ -449,6 +449,261 @@ func TestLocalTestsHelpListsMaintenanceAndPluginEntrypoints(t *testing.T) {
 	}
 }
 
+func TestLocalTestsCompareHelpListsBothEntrypointsRequiredFlagsAndMeasurementRules(t *testing.T) {
+	for _, args := range [][]string{
+		{"local-tests", "compare", "--help"},
+		{"compat", "local-tests", "compare", "--help"},
+	} {
+		var stdout, stderr bytes.Buffer
+		code := Run(context.Background(), args, &stdout, &stderr)
+		if code != 0 {
+			t.Fatalf("Run(%v) returned %d, stderr=%s", args, code, stderr.String())
+		}
+		out := stdout.String()
+		for _, required := range []string{
+			"glade-tools local-tests compare",
+			"glade compat local-tests compare",
+			"--base-bin", "--candidate-bin", "--project", "--out", "--workers", "--runs 5", "--manifest",
+			"five cold alternating pairs", "profiles are excluded", "compat executable",
+		} {
+			if !strings.Contains(out, required) {
+				t.Fatalf("compare help omitted %q:\n%s", required, out)
+			}
+		}
+		if strings.Contains(out, "Glade or compat binary") {
+			t.Fatalf("compare help promises unsupported product Glade binary mode:\n%s", out)
+		}
+	}
+}
+
+func TestLocalTestsCompareRejectsMissingUnknownDuplicateBlankAndDirectSelectorFlags(t *testing.T) {
+	valid := []string{
+		"local-tests", "compare",
+		"--base-bin", "/generic/base",
+		"--candidate-bin", "/generic/candidate",
+		"--project", "/generic/project",
+		"--out", "/generic/out",
+		"--workers", "1",
+		"--runs", "5",
+		"--manifest", "/generic/targets.json",
+	}
+	for _, flag := range []string{"--base-bin", "--candidate-bin", "--project", "--out", "--workers", "--runs", "--manifest"} {
+		t.Run("missing "+flag, func(t *testing.T) {
+			args := removeLocalTestsCompareFlag(valid, flag)
+			assertLocalTestsCompareCLIError(t, args, "required")
+		})
+		t.Run("blank "+flag, func(t *testing.T) {
+			args := append([]string(nil), valid...)
+			for index := range args {
+				if args[index] == flag {
+					args[index+1] = " "
+					break
+				}
+			}
+			assertLocalTestsCompareCLIError(t, args, "required")
+		})
+		t.Run("duplicate "+flag, func(t *testing.T) {
+			args := append(append([]string(nil), valid...), flag, "duplicate")
+			assertLocalTestsCompareCLIError(t, args, "duplicate")
+		})
+	}
+	for _, tt := range []struct {
+		name string
+		args []string
+		want string
+	}{
+		{name: "unknown", args: append(append([]string(nil), valid...), "--unknown"), want: "unknown"},
+		{name: "duplicate json", args: append(append([]string(nil), valid...), "--json", "--json"), want: "duplicate"},
+		{name: "class selector", args: append(append([]string(nil), valid...), "--class", "GenericTest"), want: "external manifest"},
+		{name: "method selector", args: append(append([]string(nil), valid...), "--method", "runs"), want: "external manifest"},
+		{name: "CPU profile selector", args: append(append([]string(nil), valid...), "--cpu-profile", "/generic/cpu.pprof"), want: "external manifest"},
+		{name: "zero workers", args: replaceLocalTestsCompareFlag(valid, "--workers", "0"), want: "workers must be at least 1"},
+		{name: "wrong run count", args: replaceLocalTestsCompareFlag(valid, "--runs", "4"), want: "runs must be exactly 5"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			assertLocalTestsCompareCLIError(t, tt.args, tt.want)
+		})
+	}
+}
+
+func TestLocalTestsCompareWritesSummaryAndJSONMirrorsItExactly(t *testing.T) {
+	args, out := newLocalTestsCompareCLIArgs(t)
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), append(args, "--json"), &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
+	}
+	summaryPath := filepath.Join(out, "summary.json")
+	data, err := os.ReadFile(summaryPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(stdout.Bytes(), data) {
+		t.Fatalf("stdout does not mirror summary.json exactly:\nstdout=%s\nfile=%s", stdout.Bytes(), data)
+	}
+	var summary struct {
+		SchemaVersion int    `json:"schemaVersion"`
+		Status        string `json:"status"`
+		Runs          int    `json:"runs"`
+	}
+	if err := json.Unmarshal(data, &summary); err != nil || summary.SchemaVersion != 1 || summary.Status != "matched" || summary.Runs != 5 {
+		t.Fatalf("summary = %#v, %v\n%s", summary, err, data)
+	}
+	if info, err := os.Stat(out); err != nil || info.Mode().Perm() != 0o700 {
+		t.Fatalf("output mode = %v, %v", info, err)
+	}
+	if info, err := os.Stat(summaryPath); err != nil || info.Mode().Perm() != 0o600 {
+		t.Fatalf("summary mode = %v, %v", info, err)
+	}
+
+	textArgs, textOut := newLocalTestsCompareCLIArgs(t)
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), textArgs, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("text Run returned %d, stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "matched") || !strings.Contains(stdout.String(), filepath.Join(textOut, "summary.json")) {
+		t.Fatalf("text output omitted status/path: %q", stdout.String())
+	}
+}
+
+func TestLocalTestsCompareDoesNotPrintOrAdvertiseStaleSummaryFromExistingOutput(t *testing.T) {
+	for _, jsonOut := range []bool{false, true} {
+		t.Run(map[bool]string{false: "text", true: "json"}[jsonOut], func(t *testing.T) {
+			args, out := newLocalTestsCompareCLIArgs(t)
+			if err := os.Mkdir(out, 0o700); err != nil {
+				t.Fatal(err)
+			}
+			stale := []byte(`{"schemaVersion":1,"status":"matched","stale":true}` + "\n")
+			if err := os.WriteFile(filepath.Join(out, "summary.json"), stale, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if jsonOut {
+				args = append(args, "--json")
+			}
+			var stdout, stderr bytes.Buffer
+			code := Run(context.Background(), args, &stdout, &stderr)
+			if code == 0 || !strings.Contains(stderr.String(), "must not exist") {
+				t.Fatalf("Run code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+			}
+			if stdout.Len() != 0 {
+				t.Fatalf("rejected comparison emitted stale/advisory output: %q", stdout.String())
+			}
+			if data, err := os.ReadFile(filepath.Join(out, "summary.json")); err != nil || !bytes.Equal(data, stale) {
+				t.Fatalf("stale summary changed: %q, %v", data, err)
+			}
+		})
+	}
+}
+
+func TestLocalTestsCompareLeavesOrdinaryLocalTestsHelpAndValidationUnchanged(t *testing.T) {
+	for _, prefix := range [][]string{{"local-tests"}, {"compat", "local-tests"}} {
+		var stdout, stderr bytes.Buffer
+		code := Run(context.Background(), append(append([]string(nil), prefix...), "--help"), &stdout, &stderr)
+		if code != 0 || !strings.Contains(stdout.String(), "--class <name>") || !strings.Contains(stdout.String(), "--check <path>") {
+			t.Fatalf("ordinary help changed for %v: code=%d stdout=%s stderr=%s", prefix, code, stdout.String(), stderr.String())
+		}
+		stdout.Reset()
+		stderr.Reset()
+		code = Run(context.Background(), append(append([]string(nil), prefix...), "--method", "runs"), &stdout, &stderr)
+		if code == 0 || !strings.Contains(stderr.String(), "--method requires --class") {
+			t.Fatalf("ordinary validation changed for %v: code=%d stderr=%s", prefix, code, stderr.String())
+		}
+	}
+}
+
+func assertLocalTestsCompareCLIError(t *testing.T, args []string, want string) {
+	t.Helper()
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), args, &stdout, &stderr)
+	if code == 0 || !strings.Contains(stderr.String(), want) {
+		t.Fatalf("Run(%v) code=%d stdout=%q stderr=%q, want error containing %q", args, code, stdout.String(), stderr.String(), want)
+	}
+}
+
+func removeLocalTestsCompareFlag(args []string, flag string) []string {
+	result := make([]string, 0, len(args)-2)
+	for index := 0; index < len(args); index++ {
+		if args[index] == flag {
+			index++
+			continue
+		}
+		result = append(result, args[index])
+	}
+	return result
+}
+
+func replaceLocalTestsCompareFlag(args []string, flag, value string) []string {
+	result := append([]string(nil), args...)
+	for index := range result {
+		if result[index] == flag {
+			result[index+1] = value
+			return result
+		}
+	}
+	return result
+}
+
+func newLocalTestsCompareCLIArgs(t *testing.T) ([]string, string) {
+	t.Helper()
+	directory := t.TempDir()
+	project := filepath.Join(directory, "project")
+	if err := os.Mkdir(project, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(project, "project.txt"), []byte("generic project\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	manifest := filepath.Join(directory, "targets.json")
+	if err := os.WriteFile(manifest, []byte(`{"schemaVersion":1,"targets":[{"id":"generic","cpuProfile":false}]}`+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(directory, "comparison")
+	return []string{
+		"local-tests", "compare",
+		"--base-bin", newLocalTestsCompareCLIExecutable(t),
+		"--candidate-bin", newLocalTestsCompareCLIExecutable(t),
+		"--project", project,
+		"--out", out,
+		"--workers", "1",
+		"--runs", "5",
+		"--manifest", manifest,
+	}, out
+}
+
+func newLocalTestsCompareCLIExecutable(t *testing.T) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "generic-compat")
+	script := `#!/bin/sh
+set -eu
+if [ "${1:-}" = "manifest" ]; then
+  printf '{"schemaVersion":1,"name":"generic-cli"}\n'
+  exit 0
+fi
+[ "${1:-}" = "local-tests" ]
+shift
+project=""
+perf=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --project) project=$2; shift 2 ;;
+    --parallel) shift 2 ;;
+    --parallel-methods|--json) shift ;;
+    --perf-json) perf=$2; shift 2 ;;
+    --class|--method) shift 2 ;;
+    *) exit 42 ;;
+  esac
+done
+printf '{"phases":[{"event":"start","totalAllocBytes":100},{"event":"end","totalAllocBytes":110}]}\n' > "$perf"
+printf '{"target":"local Apex test execution readiness","ready":true,"project":"%s","casesDiscovered":1,"casesRun":1,"summary":{"total":1,"pass":1,"fail":0,"unsupported":0,"loadError":0,"compileError":0,"internalError":0},"outcomes":[{"class":"GenericTest","method":"runs","outcome":"pass","capabilityId":"%s/capability/pass"}]}\n' "$project" "$project"
+`
+	if err := os.WriteFile(path, []byte(script), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	return path
+}
+
 func TestSalesforceCoverageRequiresSourceInput(t *testing.T) {
 	t.Setenv("GLADE_SALESFORCE_DOCS_SOURCE", "")
 	var stdout, stderr bytes.Buffer
