@@ -19,3 +19,11 @@ func TestValidateRejectsIncompleteAndDuplicateSupportedRules(t *testing.T) {
 		t.Fatal("incomplete supported rule accepted")
 	}
 }
+
+func TestCompareUsesOutcomeRatherThanCompilerWording(t *testing.T) {
+	rules := []Rule{{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported}, {ID: "APEX-002", Oracle: OutcomeAccept, Status: StatusSupported}}
+	results := Compare(rules, map[string]Outcome{"APEX-001": OutcomeReject, "APEX-002": OutcomeReject})
+	if len(results) != 2 || !results[0].Matched || results[1].Matched {
+		t.Fatalf("results = %#v", results)
+	}
+}
