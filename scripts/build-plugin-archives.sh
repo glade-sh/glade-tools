@@ -26,8 +26,6 @@ mkdir -p "$OUT_DIR"
 rm -f "$OUT_DIR/checksums.txt"
 rm -f "$OUT_DIR/index.json"
 
-INDEX_ROWS=()
-
 sha256_file() {
   if command -v sha256sum >/dev/null 2>&1; then
     sha256sum "$1" | awk '{print $1}'
@@ -102,14 +100,36 @@ build_archive() {
       printf "%s  %s\n" "$(sha256_file "bin/$binary")" "bin/$binary"
       printf "%s  %s\n" "$(sha256_file "plugin.json")" "plugin.json"
     } > checksums.txt
-    COPYFILE_DISABLE=1 tar -czf "$archive" bin plugin.json checksums.txt
+    TZ=UTC touch -t 197001010000 "bin" "bin/$binary" plugin.json checksums.txt
+    COPYFILE_DISABLE=1 python3 - "$archive" "$binary" <<'PY'
+import gzip
+import os
+import sys
+import tarfile
+
+archive_path, binary = sys.argv[1:]
+with open(archive_path, "wb") as raw:
+    with gzip.GzipFile(fileobj=raw, mode="wb", filename="", mtime=0) as compressed:
+        with tarfile.open(fileobj=compressed, mode="w", format=tarfile.USTAR_FORMAT) as archive:
+            directory = tarfile.TarInfo("bin/")
+            directory.type = tarfile.DIRTYPE
+            directory.mode = 0o755
+            directory.uid = directory.gid = directory.mtime = 0
+            archive.addfile(directory)
+            for name in (f"bin/{binary}", "plugin.json", "checksums.txt"):
+                info = archive.gettarinfo(name, arcname=name)
+                info.uid = info.gid = info.mtime = 0
+                info.uname = info.gname = ""
+                info.pax_headers = {}
+                with open(name, "rb") as source:
+                    archive.addfile(info, source)
+PY
   )
   validate_archive "$archive" "$binary"
 
   local archive_sum
   archive_sum="$(sha256_file "$archive")"
   printf "%s  %s\n" "$archive_sum" "$(basename "$archive")" >> "$OUT_DIR/checksums.txt"
-  INDEX_ROWS+=("$name|$VERSION|$goos|$goarch|$(basename "$archive")|$archive_sum")
   rm -rf "$stage"
 }
 
@@ -118,60 +138,15 @@ for target in $TARGETS; do
   build_archive orgpackage "$target"
   build_archive performance "$target"
 done
+LC_ALL=C sort "$OUT_DIR/checksums.txt" -o "$OUT_DIR/checksums.txt"
 
 if [[ -n "${PLUGIN_ASSET_BASE_URL:-}" ]]; then
-  {
-    printf '{\n  "version": 1,\n  "plugins": [\n'
-    for plugin_name in compat orgpackage performance; do
-      case "$plugin_name" in
-        compat)
-          canonical="@glade/compat"
-          aliases='["compat"]'
-          summary="Maintainer support tools, fixtures, surface ledgers, and parity scanners."
-          commands='["compat","lwc","surface","corpus","matrix","mvp","local-tests","post-parity","examples","replay","ui-controllers","server-examples","visualforce","dashboard","gaps","stdlib","oracle-stdlib","docs-inventory","catalog","reconcile","doc-contracts","declaration-contracts","salesforce-coverage","standard-objects","stub-contracts","stub-behavior","stub-inventory","product-namespaces","tooling-fixtures","evidence"]'
-          docs="https://glade.sh/guide/plugins/first-party"
-          ;;
-        orgpackage)
-          canonical="@glade/orgpackage"
-          aliases='["orgpackage"]'
-          summary="Capture installed Salesforce package artifacts from an org."
-          commands='["orgpackage"]'
-          docs="https://glade.sh/guide/rich-local-workflows"
-          ;;
-        performance)
-          canonical="@glade/performance"
-          aliases='["performance"]'
-          summary="Advisory Salesforce performance scanner."
-          commands='["performance"]'
-          docs="https://glade.sh/guide/plugins/first-party"
-          ;;
-      esac
-      [[ "$plugin_name" == "compat" ]] || printf ',\n'
-      printf '    {\n'
-      printf '      "name": "%s",\n' "$canonical"
-      printf '      "aliases": %s,\n' "$aliases"
-      printf '      "version": "%s",\n' "$VERSION"
-      printf '      "publisher": "glade",\n'
-      printf '      "trust": "first-party",\n'
-      printf '      "summary": "%s",\n' "$summary"
-      printf '      "commands": %s,\n' "$commands"
-      printf '      "docsURL": "%s",\n' "$docs"
-      printf '      "sourceURL": "https://github.com/glade-sh/glade-tools",\n'
-      printf '      "minimumGladeVersion": "0.1.0",\n'
-      printf '      "assets": [\n'
-      first_asset=1
-      for row in "${INDEX_ROWS[@]}"; do
-        IFS='|' read -r row_name row_version row_goos row_goarch row_archive row_sum <<< "$row"
-        [[ "$row_name" == "$plugin_name" ]] || continue
-        [[ "$first_asset" -eq 1 ]] || printf ',\n'
-        first_asset=0
-        printf '        {"os":"%s","arch":"%s","url":"%s/%s","sha256":"%s"}' "$row_goos" "$row_goarch" "${PLUGIN_ASSET_BASE_URL%/}" "$row_archive" "$row_sum"
-      done
-      printf '\n      ]\n'
-      printf '    }'
-    done
-    printf '\n  ]\n}\n'
-  } > "$OUT_DIR/index.json"
+  python3 "$ROOT/scripts/build-plugin-registry.py" \
+    --version "$VERSION" \
+    --asset-base-url "$PLUGIN_ASSET_BASE_URL" \
+    --archive-dir "$OUT_DIR" \
+    --checksums "$OUT_DIR/checksums.txt" \
+    --output "$OUT_DIR/index.json"
 fi
 
 if [[ "$CHECK" == "1" ]]; then
