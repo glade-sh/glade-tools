@@ -18,3 +18,11 @@ func TestRunApexRulesValidate(t *testing.T) {
 		t.Fatalf("code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
 	}
 }
+
+func TestRunApexRulesCompareRequiresAllOracleInputs(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"apex-rules", "compare", "--catalog", "catalog.json"}, &stdout, &stderr)
+	if code != 1 || stdout.Len() != 0 || !bytes.Contains(stderr.Bytes(), []byte("usage: glade-tools apex-rules compare")) {
+		t.Fatalf("code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}

@@ -208,6 +208,12 @@
         "oracle-stdlib"
       ],
       "summary": "Run scratch-org standard-library oracle probes."
+    },
+    {
+      "path": [
+        "apex-rules"
+      ],
+      "summary": "Compare checked Apex language-rule probes with Salesforce."
     }
   ],
   "editor": {

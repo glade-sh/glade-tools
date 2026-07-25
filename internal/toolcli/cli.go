@@ -27,7 +27,7 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		return RunOrgPackage(ctx, args, stdout, stderr)
 	}
 	if args[0] == "apex-rules" {
-		if err := runApexRules(args[1:], stdout); err != nil {
+		if err := runApexRules(ctx, args[1:], stdout); err != nil {
 			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
 			return 1
 		}
@@ -93,6 +93,7 @@ Commands:
   tooling-fixtures   Summarize tooling fixture reports.
   evidence           Compare fixture evidence with a catalog.
   oracle-stdlib      Run scratch-org standard-library oracle probes.
+  apex-rules         Compare checked Apex language-rule probes with Salesforce.
   orgpackage         Capture installed package artifacts from a Salesforce org.
 
 Compatibility:

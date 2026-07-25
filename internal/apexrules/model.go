@@ -45,4 +45,5 @@ type Result struct {
 	Oracle  Outcome `json:"oracle"`
 	Glade   Outcome `json:"glade"`
 	Matched bool    `json:"matched"`
+	Status  string  `json:"status"`
 }
