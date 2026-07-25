@@ -98,6 +98,9 @@ esac
 	if string(log) == "" || !contains(string(log), "--method DELETE") {
 		t.Fatalf("accepted probe was not deleted: %s", log)
 	}
+	if !contains(string(log), "request rest /services/data/v66.0/tooling/sobjects/ApexClass --method POST") || contains(string(log), "--url") {
+		t.Fatalf("Tooling API request did not use Salesforce CLI positional URL syntax: %s", log)
+	}
 }
 
 func contains(haystack, needle string) bool {
