@@ -26,6 +26,13 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if args[0] == "orgpackage" {
 		return RunOrgPackage(ctx, args, stdout, stderr)
 	}
+	if args[0] == "apex-rules" {
+		if err := runApexRules(args[1:], stdout); err != nil {
+			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+			return 1
+		}
+		return 0
+	}
 	if args[0] == "compat" {
 		args = args[1:]
 	}
