@@ -25,6 +25,28 @@ func TestValidateRejectsIncompleteAndDuplicateSupportedRules(t *testing.T) {
 	}
 }
 
+func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing.T) {
+	catalog, err := LoadCatalog(filepath.Join("..", "..", "docs", "fixtures", "apex-language-rules.json"))
+	if err != nil {
+		t.Fatalf("load checked catalog: %v", err)
+	}
+	if got := len(catalog.Rules); got != 121 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes", got)
+	}
+	seen := make(map[string]bool, len(catalog.Rules))
+	for _, rule := range catalog.Rules {
+		if rule.Status != StatusSupported || rule.Oracle != OutcomeReject {
+			t.Fatalf("reserved row %s = %#v", rule.ID, rule)
+		}
+		seen[rule.ID] = true
+	}
+	for _, word := range []string{"CURRENCY", "VOID", "TRIGGER", "WEBSERVICE"} {
+		if !seen["APEX-RESERVED-"+word] {
+			t.Fatalf("missing reserved-word probe %s", word)
+		}
+	}
+}
+
 func TestCompareUsesOutcomeRatherThanCompilerWording(t *testing.T) {
 	rules := []Rule{{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported}, {ID: "APEX-002", Oracle: OutcomeAccept, Status: StatusSupported}}
 	results := Compare(rules, map[string]Outcome{"APEX-001": OutcomeReject, "APEX-002": OutcomeReject})
