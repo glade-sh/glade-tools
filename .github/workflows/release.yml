@@ -112,7 +112,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           VERSION: ${{ github.ref_name }}
         run: |
-          gh release upload "$GITHUB_REF_NAME" \
+          scripts/release-asset-upload.sh "$GITHUB_REF_NAME" \
             dist/plugins/glade-plugin-compat_${VERSION#v}_${{ matrix.asset_suffix }}.tar.gz \
             dist/plugins/glade-plugin-orgpackage_${VERSION#v}_${{ matrix.asset_suffix }}.tar.gz \
             dist/plugins/glade-plugin-performance_${VERSION#v}_${{ matrix.asset_suffix }}.tar.gz \
@@ -124,6 +124,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v6
       - name: Download platform release assets
         if: startsWith(github.ref, 'refs/tags/')
         env:
@@ -144,70 +145,20 @@ jobs:
           VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
           PLUGIN_ASSET_BASE_URL: https://plugins.glade.sh/${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
         run: |
-          cd dist/plugins
-          cat checksums-*.txt > checksums.txt
-          python3 <<'PY'
-          import glob
-          import json
-          import os
-          import re
-
-          version = os.environ["VERSION"].removeprefix("v")
-          base_url = os.environ["PLUGIN_ASSET_BASE_URL"].rstrip("/")
-          sums = {}
-          with open("checksums.txt", "r", encoding="utf-8") as f:
-              for line in f:
-                  parts = line.strip().split()
-                  if len(parts) == 2:
-                      sums[parts[1]] = parts[0]
-
-          metadata = {
-              "compat": {
-                  "name": "@glade/compat",
-                  "aliases": ["compat"],
-                  "summary": "Maintainer support tools, fixtures, surface ledgers, and parity scanners.",
-                  "commands": ["compat", "surface", "local-tests", "post-parity", "dashboard", "gaps", "stdlib"],
-                  "docsURL": "https://glade.sh/maintainer/glade-tools",
-              },
-              "orgpackage": {
-                  "name": "@glade/orgpackage",
-                  "aliases": ["orgpackage"],
-                  "summary": "Capture installed Salesforce package artifacts from an org.",
-                  "commands": ["orgpackage"],
-                  "docsURL": "https://glade.sh/guide/rich-local-workflows",
-              },
-              "performance": {
-                  "name": "@glade/performance",
-                  "aliases": ["performance"],
-                  "summary": "Advisory Salesforce performance scanner.",
-                  "commands": ["performance"],
-                  "docsURL": "https://glade.sh/guide/plugins/first-party",
-              },
-          }
-          rows = {name: {**data, "version": version, "publisher": "glade", "trust": "first-party", "sourceURL": "https://github.com/glade-sh/glade-tools", "minimumGladeVersion": "0.1.0", "assets": []} for name, data in metadata.items()}
-          pattern = re.compile(r"glade-plugin-(compat|orgpackage|performance)_(.+)_([^_]+)_([^_]+)\.tar\.gz$")
-          for archive in sorted(glob.glob("*.tar.gz")):
-              match = pattern.match(archive)
-              if not match:
-                  raise SystemExit(f"unexpected archive name: {archive}")
-              plugin, _, goos, goarch = match.groups()
-              rows[plugin]["assets"].append({
-                  "os": goos,
-                  "arch": goarch,
-                  "url": f"{base_url}/{archive}",
-                  "sha256": sums[archive],
-              })
-          index = {"version": 1, "plugins": [rows["compat"], rows["orgpackage"], rows["performance"]]}
-          with open("index.json", "w", encoding="utf-8") as f:
-              json.dump(index, f, indent=2, sort_keys=True)
-              f.write("\n")
-          PY
+          cat dist/plugins/checksums-*.txt > dist/plugins/checksums.txt
+          LC_ALL=C sort dist/plugins/checksums.txt -o dist/plugins/checksums.txt
+          python3 scripts/build-plugin-registry.py \
+            --version "$VERSION" \
+            --asset-base-url "$PLUGIN_ASSET_BASE_URL" \
+            --archive-dir dist/plugins \
+            --checksums dist/plugins/checksums.txt \
+            --output dist/plugins/index.json
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          gh release upload "$GITHUB_REF_NAME" \
+          scripts/release-asset-upload.sh "$GITHUB_REF_NAME" \
             dist/plugins/checksums.txt \
             dist/plugins/index.json

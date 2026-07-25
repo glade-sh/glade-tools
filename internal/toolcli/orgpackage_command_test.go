@@ -202,15 +202,23 @@ func TestRunRoutesOrgPackageRootAndKeepsCompatRoot(t *testing.T) {
 }
 
 func TestPluginArchiveIndexIncludesOrgPackage(t *testing.T) {
-	data, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-plugin-archives.sh"))
+	scriptData, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-plugin-archives.sh"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	script := string(data)
-	for _, want := range []string{"build_archive orgpackage", "@glade/orgpackage", `"orgpackage"`} {
+	script := string(scriptData)
+	for _, want := range []string{"build_archive orgpackage", "scripts/build-plugin-registry.py"} {
 		if !strings.Contains(script, want) {
 			t.Fatalf("archive script missing %q", want)
 		}
+	}
+
+	builderData, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-plugin-registry.py"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(builderData), `"name": "@glade/orgpackage"`) {
+		t.Fatal("registry builder is missing the canonical @glade/orgpackage coordinate")
 	}
 }
 

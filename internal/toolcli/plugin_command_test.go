@@ -264,15 +264,22 @@ func TestRunCompatLWCCaptureDoesNotPrintPreparedTextWhenReportWriteFails(t *test
 	}
 }
 
-func TestPluginArchiveIndexCompatCommandsIncludeLWCRoots(t *testing.T) {
-	data, err := os.ReadFile(filepath.Join("..", "..", "scripts", "build-plugin-archives.sh"))
+func TestCompatPluginManifestIncludesLWCAndMaintainerCommands(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join("..", "..", "plugins", "compat", "plugin.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	script := string(data)
-	for _, command := range []string{`"lwc"`, `"corpus"`, `"visualforce"`, `"oracle-stdlib"`, `"declaration-contracts"`} {
-		if !strings.Contains(script, command) {
-			t.Fatalf("archive index command list omits %s", command)
+	var manifest pluginManifestFile
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		t.Fatalf("decode compat plugin manifest: %v", err)
+	}
+	paths := make(map[string]bool, len(manifest.Commands))
+	for _, command := range manifest.Commands {
+		paths[strings.Join(command.Path, " ")] = true
+	}
+	for _, command := range []string{"compat lwc", "corpus", "visualforce", "oracle-stdlib", "declaration-contracts"} {
+		if !paths[command] {
+			t.Fatalf("compat plugin manifest omits %q", command)
 		}
 	}
 }

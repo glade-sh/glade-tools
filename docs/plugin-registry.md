@@ -16,19 +16,21 @@ The default endpoint in `glade` is:
 https://plugins.glade.sh/index.json
 ```
 
-That host must serve static JSON and tarballs before plain coordinate installs
-work:
+The endpoint is live and serves the three first-party plugin packages. Plain
+coordinate installs use it by default:
 
 ```bash
 glade plugins available
 glade plugins install @glade/compat
 glade plugins install @glade/performance
+glade plugins install @glade/orgpackage
 ```
 
-Until that endpoint exists, use a direct archive or local link:
+Direct archives and local links remain available for offline, private, and
+development use:
 
 ```bash
-glade plugins install ./dist/plugins/glade-plugin-compat_0.1.0_darwin_arm64.tar.gz --yes
+glade plugins install ./dist/plugins/glade-plugin-compat_X.Y.Z_darwin_arm64.tar.gz --yes
 glade plugins link --exec ./glade-plugin-compat
 ```
 
@@ -60,13 +62,15 @@ tarballs, `checksums.txt`, and `index.json` under `dist/plugins`.
 ```bash
 OUT_DIR=dist/plugins \
 TARGETS="darwin/arm64 darwin/amd64 linux/arm64 linux/amd64" \
-PLUGIN_ASSET_BASE_URL="https://plugins.glade.sh/v0.2.0" \
-scripts/build-plugin-archives.sh 0.2.0
+PLUGIN_ASSET_BASE_URL="https://plugins.glade.sh/vX.Y.Z" \
+scripts/build-plugin-archives.sh X.Y.Z
 ```
 
 The generated `index.json` is the registry catalog. Each row names the plugin,
 aliases, version, trust label, docs URL, source URL, commands, platform assets,
-and archive SHA-256.
+and archive SHA-256. Command roots come from the `plugin.json` packaged in the
+archives; the registry build rejects platform archives whose manifests
+disagree.
 
 `dist/` is ignored. Do not commit release tarballs or generated registry output
 to the source repo.
@@ -86,15 +90,27 @@ Use one of these setups:
 - End-to-end private endpoint: add authenticated registry and asset downloads to
   `glade`, then host `index.json` and tarballs behind that auth layer.
 
-For the first public endpoint cut, upload this shape:
+The public endpoint uses this shape:
 
 ```text
 https://plugins.glade.sh/index.json
-https://plugins.glade.sh/v0.2.0/glade-plugin-compat_0.2.0_darwin_arm64.tar.gz
-https://plugins.glade.sh/v0.2.0/glade-plugin-performance_0.2.0_darwin_arm64.tar.gz
+https://plugins.glade.sh/vX.Y.Z/glade-plugin-compat_X.Y.Z_darwin_arm64.tar.gz
+https://plugins.glade.sh/vX.Y.Z/glade-plugin-performance_X.Y.Z_darwin_arm64.tar.gz
+https://plugins.glade.sh/vX.Y.Z/glade-plugin-orgpackage_X.Y.Z_darwin_arm64.tar.gz
 ```
 
 The `index.json` asset URLs must match their hosted paths and SHA-256 values.
+Create versioned objects only when absent, verify their bytes, and update the
+mutable root `index.json` last.
+
+Plugin archives use fixed member order and metadata. A clean rerun for the same
+source, version, and target must produce byte-identical archive assets.
+
+GitHub plugin release metadata, notes, and asset names are immutable. A workflow
+rerun reuses an existing release, skips an existing asset only when its bytes
+match, and fails if the published and candidate bytes differ. It does not edit
+release notes. Cut a new version when published plugin bytes or metadata need
+correction.
 
 ## Smoke Test
 
@@ -102,7 +118,7 @@ Use a clean `GLADE_HOME` before pointing normal installs at the endpoint:
 
 ```bash
 tmp="$(mktemp -d)"
-GLADE_HOME="$tmp" glade plugins install ./dist/plugins/glade-plugin-compat_0.1.0_darwin_arm64.tar.gz --yes
+GLADE_HOME="$tmp" glade plugins install ./dist/plugins/glade-plugin-compat_X.Y.Z_darwin_arm64.tar.gz --yes
 GLADE_HOME="$tmp" glade plugins list
 GLADE_HOME="$tmp" glade plugins which compat
 ```

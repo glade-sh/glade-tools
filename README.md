@@ -81,6 +81,62 @@ Checked Salesforce coverage output needs an explicit docs input. Use
 GLADE_SALESFORCE_DOCS_SOURCE=/path/to/salesforce-docs go run ./cmd/glade-tools salesforce-coverage --check docs/generated/SALESFORCE_COVERAGE_MANIFEST.json
 ```
 
+## Compare local-test candidates
+
+`glade compat local-tests compare` compares two compat plugin executables
+against the same copied Salesforce project and an external target manifest. It
+runs exactly five cold pairs for every target in `AB, BA, AB, BA, AB` order,
+requires the base and candidate safety contracts to match, and writes a
+deterministic `summary.json` plus the raw result, performance, metrics, and
+stderr artifacts beneath a new private output directory.
+
+```bash
+glade compat local-tests compare \
+  --base-bin ./base/glade-plugin-compat \
+  --candidate-bin ./candidate/glade-plugin-compat \
+  --project path/to/sfdx-project \
+  --out /tmp/glade-local-test-compare \
+  --workers 2 \
+  --runs 5 \
+  --manifest targets.json \
+  --json
+```
+
+The output directory must not exist. The worker count is explicit, and
+`--runs` must be `5`. A schema-1 target manifest supplies unique target IDs and
+optional class/method selectors:
+
+```json
+{
+  "schemaVersion": 1,
+  "targets": [
+    {"id": "whole-project", "cpuProfile": false},
+    {"id": "focused-class", "class": "RefinementServiceTest", "cpuProfile": true}
+  ]
+}
+```
+
+Requested CPU profiles run after the timed samples. They are diagnostic only
+and are excluded from comparison timings.
+
+## Generate standard describe packs
+
+Generate the product's deterministic standard-describe catalog, reverse pack,
+and Go index from a plain or gzip-compressed describe JSON response:
+
+```bash
+mkdir -p ../glade/internal/storage
+node scripts/generate-standard-describe-pack.mjs \
+  INPUT \
+  CATALOG_PACK \
+  REVERSE_PACK \
+  GO_INDEX
+```
+
+Create every output parent first. The generator canonicalizes the input and
+publishes all three outputs as one rollback-protected set. Do not hand-edit the
+generated files.
+
 ## Plugin release rail
 
 `glade-tools` is the source for first-party plugin binaries. Product release
@@ -94,6 +150,7 @@ than first-run user setup.
 ```bash
 glade plugins install @glade/compat
 glade plugins install @glade/performance
+glade plugins install @glade/orgpackage
 glade compat local-tests --project . --json
 glade performance scan --project . --json
 ```
@@ -116,6 +173,7 @@ The short aliases still resolve for first-party installs:
 ```bash
 glade plugins install compat
 glade plugins install performance
+glade plugins install orgpackage
 ```
 
 During local development, link built binaries instead:
@@ -133,19 +191,30 @@ Release archives come from:
 
 ```bash
 scripts/release-check.sh
-scripts/build-plugin-archives.sh 0.2.0
+scripts/build-plugin-archives.sh X.Y.Z
 ```
 
 The version argument is written into each archive name, archived `plugin.json`,
 binary `manifest --json` response, and registry row.
+Archive entry order and metadata are fixed so clean reruns for the same source,
+version, and target produce identical bytes.
 
 Set `PLUGIN_ASSET_BASE_URL` to write a registry `index.json` next to the
 archives. The index uses canonical `@glade/*` names, first-party trust metadata,
 platform asset URLs, and archive SHA-256 values.
 
 ```bash
-OUT_DIR=dist/plugins TARGETS="darwin/arm64 linux/amd64" PLUGIN_ASSET_BASE_URL="https://plugins.glade.sh/v0.2.0" scripts/build-plugin-archives.sh 0.2.0
+OUT_DIR=dist/plugins TARGETS="darwin/arm64 linux/amd64" PLUGIN_ASSET_BASE_URL="https://plugins.glade.sh/vX.Y.Z" scripts/build-plugin-archives.sh X.Y.Z
 ```
+
+The default public registry is live at
+`https://plugins.glade.sh/index.json`. Direct archives and linked executables
+remain available for offline, private, and development use.
+
+Published plugin release metadata, notes, and asset names are immutable.
+Workflow reruns reuse the existing release, skip an existing asset only when
+its bytes match, and fail if the published and candidate bytes differ. Cut a
+new version when published plugin bytes or metadata need correction.
 
 See [`docs/plugin-registry.md`](docs/plugin-registry.md) for the private source
 and registry endpoint setup.
