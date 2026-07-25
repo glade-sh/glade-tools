@@ -37,6 +37,9 @@ func runApexRules(ctx context.Context, args []string, w io.Writer) error {
 		observed[index].Oracle = salesforce[observed[index].ID].Outcome
 	}
 	results := apexrules.Compare(observed, glade)
+	for index := range results {
+		results[index].Problems = salesforce[results[index].ID].Problems
+	}
 	report := struct {
 		Results             []apexrules.Result `json:"results"`
 		SupportedMismatches int                `json:"supportedMismatches"`
