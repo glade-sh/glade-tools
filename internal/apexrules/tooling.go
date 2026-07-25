@@ -34,7 +34,7 @@ func RunSalesforce(ctx context.Context, targetOrg string, rules []Rule) (map[str
 		if err != nil {
 			return nil, fmt.Errorf("prepare Salesforce probe %s: %w", rule.ID, err)
 		}
-		out, err := runSF(ctx, "api", "request", "rest", "--method", "POST", "--url", toolingURL(rule.APIVersion, object), "--body", payload, "--target-org", targetOrg, "--json")
+		out, err := runSF(ctx, "api", "request", "rest", "--method", "POST", "--url", toolingURL(rule.APIVersion, object), "--body", payload, "--target-org", targetOrg)
 		if err != nil {
 			results[rule.ID] = SalesforceResult{Outcome: OutcomeReject, Problems: compilerProblems(out)}
 			continue
@@ -43,7 +43,7 @@ func RunSalesforce(ctx context.Context, targetOrg string, rules []Rule) (map[str
 		if id == "" {
 			return nil, fmt.Errorf("Salesforce accepted %s without a Tooling API record id", rule.ID)
 		}
-		if _, err := runSF(ctx, "api", "request", "rest", "--method", "DELETE", "--url", toolingURL(rule.APIVersion, object)+"/"+id, "--target-org", targetOrg, "--json"); err != nil {
+		if _, err := runSF(ctx, "api", "request", "rest", "--method", "DELETE", "--url", toolingURL(rule.APIVersion, object)+"/"+id, "--target-org", targetOrg); err != nil {
 			return nil, fmt.Errorf("delete accepted Salesforce probe %s: %w", rule.ID, err)
 		}
 		results[rule.ID] = SalesforceResult{Outcome: OutcomeAccept}
