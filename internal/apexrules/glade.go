@@ -62,19 +62,19 @@ func writeGladeRuleProject(project string, rule Rule) error {
 	if err := os.WriteFile(filepath.Join(project, "sfdx-project.json"), []byte(projectJSON), 0o600); err != nil {
 		return err
 	}
-	for _, dep := range rule.Dependencies {
-		if filepath.IsAbs(dep.Path) || dep.Path == "" || filepath.Clean(dep.Path) != dep.Path || filepath.Dir(dep.Path) == "." && filepath.Base(dep.Path) == ".." {
-			return fmt.Errorf("unsafe dependency path %q", dep.Path)
+	for _, file := range append(append([]SourceFile(nil), rule.Dependencies...), rule.ProjectFiles...) {
+		if filepath.IsAbs(file.Path) || file.Path == "" || filepath.Clean(file.Path) != file.Path || filepath.Dir(file.Path) == "." && filepath.Base(file.Path) == ".." {
+			return fmt.Errorf("unsafe dependency path %q", file.Path)
 		}
-		path := filepath.Join(project, dep.Path)
+		path := filepath.Join(project, file.Path)
 		rel, err := filepath.Rel(project, path)
 		if err != nil || rel == ".." || len(rel) > 3 && rel[:3] == ".."+string(filepath.Separator) {
-			return fmt.Errorf("unsafe dependency path %q", dep.Path)
+			return fmt.Errorf("unsafe dependency path %q", file.Path)
 		}
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 			return err
 		}
-		if err := os.WriteFile(path, []byte(dep.Content), 0o600); err != nil {
+		if err := os.WriteFile(path, []byte(file.Content), 0o600); err != nil {
 			return err
 		}
 	}

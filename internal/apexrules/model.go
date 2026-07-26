@@ -30,6 +30,7 @@ type Rule struct {
 	SourceKind   string       `json:"sourceKind"`
 	Source       string       `json:"source"`
 	Dependencies []SourceFile `json:"dependencies,omitempty"`
+	ProjectFiles []SourceFile `json:"projectFiles,omitempty"`
 	Oracle       Outcome      `json:"oracle"`
 	Owner        string       `json:"owner"`
 	Status       string       `json:"status"`
