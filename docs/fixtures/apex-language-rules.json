@@ -1572,7 +1572,70 @@
       "owner": "parser",
       "status": "supported",
       "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+    },
+    {
+      "id": "APEX-QUERY-SECURITY-ENFORCED-API67",
+      "area": "versioning",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/versioned_behavior_changes.md",
+      "docsLines": "Version 67.0",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleSecurityEnforced { public static void run() { List<Account> rows = [SELECT Id FROM Account WITH SECURITY_ENFORCED]; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater"
+    },
+    {
+      "id": "APEX-SOQL-COLLECTION-EQUALITY-BIND",
+      "area": "soql-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "collection binds",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleCollectionEquality { public static void run() { Set<Id> ids = new Set<Id>(); List<Account> rows = [SELECT Id FROM Account WHERE Id = :ids]; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsAcceptsCollectionBindInEqualityAndValidatesElementType"
+    },
+    {
+      "id": "APEX-OVERRIDE-GLOBAL-TO-PUBLIC",
+      "area": "inheritance",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_extending.md",
+      "docsLines": "Versioned Behavior Changes",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OraclePublicChild extends OracleGlobalBase { public override String value() { return 'child'; } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/OracleGlobalBase.cls",
+          "content": "global virtual class OracleGlobalBase { global virtual String value() { return 'base'; } }"
+        }
+      ],
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestOverrideMayUsePublicVisibilityForGlobalProjectMethod"
+    },
+    {
+      "id": "APEX-OVERRIDE-GLOBAL-TO-PROTECTED",
+      "area": "inheritance",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_extending.md",
+      "docsLines": "Versioned Behavior Changes",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleProtectedChild extends OracleGlobalBase { protected override String value() { return 'child'; } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/OracleGlobalBase.cls",
+          "content": "global virtual class OracleGlobalBase { global virtual String value() { return 'base'; } }"
+        }
+      ],
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestOverrideRejectsProtectedVisibilityForGlobalProjectMethod"
     }
   ]
 }
-

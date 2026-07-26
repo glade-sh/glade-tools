@@ -31,15 +31,23 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 121 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes", got)
+	if got := len(catalog.Rules); got != 125 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 4 oracle-backed language rules", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
+	reservedCount := 0
 	for _, rule := range catalog.Rules {
+		if !strings.HasPrefix(rule.ID, "APEX-RESERVED-") {
+			continue
+		}
+		reservedCount++
 		if rule.Status != StatusSupported || rule.Oracle != OutcomeReject {
 			t.Fatalf("reserved row %s = %#v", rule.ID, rule)
 		}
 		seen[rule.ID] = true
+	}
+	if reservedCount != 121 {
+		t.Fatalf("reserved row count = %d, want 121", reservedCount)
 	}
 	for _, word := range []string{"CURRENCY", "VOID", "TRIGGER", "WEBSERVICE"} {
 		if !seen["APEX-RESERVED-"+word] {
