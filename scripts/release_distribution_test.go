@@ -611,6 +611,14 @@ func TestResolveSiblingRefScript(t *testing.T) {
 	if got := runResolveSiblingRef(t, remoteWithTag, "v9.9.9", "main"); got != "v9.9.9" {
 		t.Fatalf("tagged remote resolved %q, want v9.9.9", got)
 	}
+	commitOutput, err := exec.Command("git", "--git-dir", remoteWithTag, "rev-parse", "refs/heads/main").Output()
+	if err != nil {
+		t.Fatalf("resolve remote main commit: %v", err)
+	}
+	commit := strings.TrimSpace(string(commitOutput))
+	if got := runResolveSiblingRef(t, remoteWithTag, commit, "main"); got != commit {
+		t.Fatalf("pinned commit resolved %q, want %q", got, commit)
+	}
 
 	remoteWithoutTag := makeGitRemote(t, "")
 	if got := runResolveSiblingRef(t, remoteWithoutTag, "v9.9.9", "main"); got != "main" {

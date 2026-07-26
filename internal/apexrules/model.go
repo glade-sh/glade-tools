@@ -22,23 +22,25 @@ type SourceFile struct {
 }
 
 type Rule struct {
-	ID           string       `json:"id"`
-	Area         string       `json:"area"`
-	DocsPath     string       `json:"docsPath"`
-	DocsLines    string       `json:"docsLines"`
-	APIVersion   float64      `json:"apiVersion"`
-	SourceKind   string       `json:"sourceKind"`
-	Source       string       `json:"source"`
-	Dependencies []SourceFile `json:"dependencies,omitempty"`
-	ProjectFiles []SourceFile `json:"projectFiles,omitempty"`
-	Oracle       Outcome      `json:"oracle"`
-	Owner        string       `json:"owner"`
-	Status       string       `json:"status"`
-	ProductTest  string       `json:"productTest,omitempty"`
+	ID                 string       `json:"id"`
+	Area               string       `json:"area"`
+	DocsPath           string       `json:"docsPath"`
+	DocsLines          string       `json:"docsLines"`
+	APIVersion         float64      `json:"apiVersion"`
+	SourceKind         string       `json:"sourceKind"`
+	Source             string       `json:"source"`
+	Dependencies       []SourceFile `json:"dependencies,omitempty"`
+	ProjectFiles       []SourceFile `json:"projectFiles,omitempty"`
+	Oracle             Outcome      `json:"oracle"`
+	Owner              string       `json:"owner"`
+	Status             string       `json:"status"`
+	ProductTest        string       `json:"productTest,omitempty"`
+	ProductTestAliasOf string       `json:"productTestAliasOf,omitempty"`
 }
 
 type Catalog struct {
-	Rules []Rule `json:"rules"`
+	GladeCommit string `json:"gladeCommit"`
+	Rules       []Rule `json:"rules"`
 }
 
 type Result struct {

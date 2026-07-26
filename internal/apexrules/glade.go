@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var unsafeFilename = regexp.MustCompile(`[^A-Za-z0-9_]`)
@@ -42,18 +43,37 @@ func RunGlade(ctx context.Context, binary string, rules []Rule) (map[string]Outc
 }
 
 func runGladeRule(ctx context.Context, binary, project string, rule Rule) (Outcome, error) {
-	if err := writeGladeRuleProject(project, rule); err != nil {
-		return "", fmt.Errorf("write project for %s: %w", rule.ID, err)
+	if err := writeGladeRuleSetup(project, rule); err != nil {
+		return "", fmt.Errorf("write project setup for %s: %w", rule.ID, err)
 	}
+	if len(rule.Dependencies) > 0 || len(rule.ProjectFiles) > 0 {
+		if _, err := runGladeCheck(ctx, binary, project, rule, ""); err != nil {
+			return "", fmt.Errorf("run glade setup for %s: %w", rule.ID, err)
+		}
+	}
+	probePath, err := gladeProbePath(rule)
+	if err != nil {
+		return "", err
+	}
+	if err := writeGladeRuleProbe(project, rule, probePath); err != nil {
+		return "", fmt.Errorf("write project probe for %s: %w", rule.ID, err)
+	}
+	return runGladeCheck(ctx, binary, project, rule, probePath)
+}
+
+func runGladeCheck(ctx context.Context, binary, project string, rule Rule, probePath string) (Outcome, error) {
 	cmd := exec.CommandContext(ctx, binary, "check", "--project", project, "--json", "--no-progress")
 	output, err := cmd.CombinedOutput()
 	if ctx.Err() != nil {
 		return "", fmt.Errorf("run glade for %s: %w", rule.ID, ctx.Err())
 	}
 	var report struct {
-		Status      string            `json:"status"`
-		ExitCode    int               `json:"exitCode"`
-		Diagnostics []json.RawMessage `json:"diagnostics"`
+		Status      string `json:"status"`
+		ExitCode    int    `json:"exitCode"`
+		Diagnostics []struct {
+			Severity string `json:"severity"`
+			File     string `json:"file"`
+		} `json:"diagnostics"`
 	}
 	start, end := bytes.IndexByte(output, '{'), bytes.LastIndexByte(output, '}')
 	if start < 0 || end < start || json.Unmarshal(output[start:end+1], &report) != nil {
@@ -64,8 +84,17 @@ func runGladeRule(ctx context.Context, binary, project string, rule Rule) (Outco
 		if !ok {
 			return "", fmt.Errorf("run glade for %s: %w", rule.ID, err)
 		}
-		if exitErr.ExitCode() == 1 && report.ExitCode == 1 && report.Status == "failed" && len(report.Diagnostics) > 0 {
-			return OutcomeReject, nil
+		if exitErr.ExitCode() == 1 && report.ExitCode == 1 && report.Status == "failed" {
+			if probePath == "" {
+				return "", fmt.Errorf("run glade for %s rejected project setup", rule.ID)
+			}
+			for _, diag := range report.Diagnostics {
+				if strings.EqualFold(diag.Severity, "error") &&
+					filepath.Clean(filepath.FromSlash(diag.File)) == filepath.Clean(probePath) {
+					return OutcomeReject, nil
+				}
+			}
+			return "", fmt.Errorf("run glade for %s failed without an error diagnostic for probe source %s", rule.ID, filepath.ToSlash(probePath))
 		}
 		return "", fmt.Errorf("run glade for %s failed operationally with exit code %d", rule.ID, exitErr.ExitCode())
 	}
@@ -76,6 +105,17 @@ func runGladeRule(ctx context.Context, binary, project string, rule Rule) (Outco
 }
 
 func writeGladeRuleProject(project string, rule Rule) error {
+	if err := writeGladeRuleSetup(project, rule); err != nil {
+		return err
+	}
+	probePath, err := gladeProbePath(rule)
+	if err != nil {
+		return err
+	}
+	return writeGladeRuleProbe(project, rule, probePath)
+}
+
+func writeGladeRuleSetup(project string, rule Rule) error {
 	apiVersion := rule.APIVersion
 	if apiVersion == 0 {
 		apiVersion = 66
@@ -100,22 +140,28 @@ func writeGladeRuleProject(project string, rule Rule) error {
 			return err
 		}
 	}
-	name := unsafeFilename.ReplaceAllString(rule.ID, "_")
-	if name == "" {
-		name = "Probe"
-	}
-	var directory, extension string
-	switch rule.SourceKind {
-	case "class":
-		directory, extension = "classes", ".cls"
-	case "trigger":
-		directory, extension = "triggers", ".trigger"
-	default:
-		return fmt.Errorf("unsupported source kind %q", rule.SourceKind)
-	}
-	path := filepath.Join(project, "force-app", "main", "default", directory, name+extension)
+	return nil
+}
+
+func writeGladeRuleProbe(project string, rule Rule, relativePath string) error {
+	path := filepath.Join(project, relativePath)
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 		return err
 	}
 	return os.WriteFile(path, []byte(rule.Source), 0o600)
+}
+
+func gladeProbePath(rule Rule) (string, error) {
+	name := unsafeFilename.ReplaceAllString(rule.ID, "_")
+	if name == "" {
+		name = "Probe"
+	}
+	switch rule.SourceKind {
+	case "class":
+		return filepath.Join("force-app", "main", "default", "classes", name+".cls"), nil
+	case "trigger":
+		return filepath.Join("force-app", "main", "default", "triggers", name+".trigger"), nil
+	default:
+		return "", fmt.Errorf("unsupported source kind %q", rule.SourceKind)
+	}
 }

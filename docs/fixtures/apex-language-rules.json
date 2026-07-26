@@ -1,4 +1,5 @@
 {
+  "gladeCommit": "e11446bd6dfc5cc898be2132768982268cb6c0ef",
   "rules": [
     {
       "id": "APEX-ABSTRACT-IMPLEMENTATION-MISSING-OVERRIDE",
@@ -17,7 +18,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRequireOverrideModifier"
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRequireOverrideModifier/Base.cls"
     },
     {
       "id": "APEX-ANNOTATION-SUPPRESSWARNINGS",
@@ -43,7 +44,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65"
+      "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65/64.0"
     },
     {
       "id": "APEX-API65-ABSTRACT-DEFAULT-ACCESS",
@@ -56,7 +57,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65"
+      "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65/65.0"
     },
     {
       "id": "APEX-AUDIT-ABSTRACT-METHOD-WITH-BODY",
@@ -69,7 +70,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractMethodBodyConsistency",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractMethodBodyConsistency/abstract method",
       "owner": "sema"
     },
     {
@@ -83,7 +84,8 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65/65.0",
+      "productTestAliasOf": "APEX-API65-ABSTRACT-DEFAULT-ACCESS",
       "owner": "sema"
     },
     {
@@ -97,7 +99,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractIllegalMethodModifierCombinations/abstract and static",
       "owner": "sema"
     },
     {
@@ -111,7 +113,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractIllegalClassModifiers/AbstractVirtual.cls",
       "owner": "sema"
     },
     {
@@ -125,7 +127,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractAccessorVisibilityAndDuplicates/accessor visibility",
       "owner": "sema"
     },
     {
@@ -139,7 +141,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-AGGREGATE-FUNCTION-IN-WHERE",
       "owner": "sema"
     },
     {
@@ -153,7 +155,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes/limited",
       "owner": "sema"
     },
     {
@@ -167,7 +169,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-AGGREGATE-NON-GROUPED-FIELD",
       "owner": "sema"
     },
     {
@@ -181,7 +183,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-AGGREGATE-QUERY-WRONG-TYPE",
       "owner": "sema"
     },
     {
@@ -195,7 +197,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsAggregateOnStandardTextField",
       "owner": "sema"
     },
     {
@@ -209,7 +211,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsAlwaysTrueNestedIterableInstanceofAtAPIVersion60",
       "owner": "sema"
     },
     {
@@ -223,7 +225,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractAmbiguousNullOverload",
       "owner": "sema"
     },
     {
@@ -237,21 +239,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
-      "owner": "sema"
-    },
-    {
-      "id": "APEX-AUDIT-AURA-ENABLED-OVERLOAD",
-      "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_AuraEnabled.md",
-      "docsLines": "22-25",
-      "apiVersion": 66,
-      "sourceKind": "class",
-      "source": "public class ProbeAuraOverload { @AuraEnabled public static void run(String value) {} @AuraEnabled public static void run(Integer value) {} }",
-      "dependencies": [],
-      "oracle": "reject",
-      "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedTypeRuleRegressions/APEX-AUDIT-ANYTYPE-PSEUDO-TYPE-PARAMETER",
       "owner": "sema"
     },
     {
@@ -265,7 +253,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestAuraEnabledGlobalScopeVersionGate",
+      "productTest": "internal/sema/version_contracts_test.go:TestAuraEnabledGlobalScopeVersionGate/54.0",
       "owner": "sema"
     },
     {
@@ -279,7 +267,21 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestAuraEnabledGlobalScopeVersionGate",
+      "productTest": "internal/sema/version_contracts_test.go:TestAuraEnabledGlobalScopeVersionGate/55.0",
+      "owner": "sema"
+    },
+    {
+      "id": "APEX-AUDIT-AURA-ENABLED-OVERLOAD",
+      "area": "annotations",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_AuraEnabled.md",
+      "docsLines": "22-25",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "public class ProbeAuraOverload { @AuraEnabled public static void run(String value) {} @AuraEnabled public static void run(Integer value) {} }",
+      "dependencies": [],
+      "oracle": "reject",
+      "status": "supported",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/aura enabled overload",
       "owner": "sema"
     },
     {
@@ -293,7 +295,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogRejectsUnknownAnnotationsAndProperties",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogRejectsUnknownAnnotationsAndProperties/unknown property",
       "owner": "sema"
     },
     {
@@ -307,7 +309,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-BARE-RETURN-FROM-NONVOID",
       "owner": "sema"
     },
     {
@@ -321,7 +323,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRequireVisibleBatchableMethods",
       "owner": "sema"
     },
     {
@@ -335,7 +337,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsAllowBatchableScopeVariance"
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedInheritanceRuleRegressions/APEX-AUDIT-BATCHABLE-NARROWER-EXECUTE-SCOPE"
     },
     {
       "id": "APEX-AUDIT-BATCHABLE-WIDER-EXECUTE-SCOPE",
@@ -348,7 +350,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsAllowBatchableScopeVariance"
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsAllowBatchableScopeVariance/sobject scope"
     },
     {
       "id": "APEX-AUDIT-BREAK-OUTSIDE-LOOP",
@@ -361,7 +363,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContextRejectsIllegalBreakAndContinue/break outside loop or switch",
       "owner": "sema"
     },
     {
@@ -375,7 +377,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes/catch non-exception",
       "owner": "sema"
     },
     {
@@ -389,7 +391,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDuplicateDeclarationSameOwnerClassAndInterface",
       "owner": "sema"
     },
     {
@@ -408,7 +410,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRejectInvalidInheritanceTargets/class extends interface",
       "owner": "sema"
     },
     {
@@ -427,7 +429,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRejectInvalidInheritanceTargets/class implements class",
       "owner": "sema"
     },
     {
@@ -441,7 +443,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/collection depth",
       "owner": "sema"
     },
     {
@@ -455,7 +457,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractParameterLimit/constructor over limit",
       "owner": "sema"
     },
     {
@@ -474,7 +476,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining/first statement",
       "owner": "sema"
     },
     {
@@ -488,7 +490,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-CONSTRUCTOR-THIS-NOT-FIRST",
       "owner": "sema"
     },
     {
@@ -502,7 +504,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerBodyRejectsUnknownCallAndLocalType",
+      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerObjectAcceptsContentVersionDelete",
       "owner": "sema"
     },
     {
@@ -516,7 +518,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContextRejectsIllegalBreakAndContinue/continue outside loop",
       "owner": "sema"
     },
     {
@@ -530,7 +532,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/currency source type",
       "owner": "sema"
     },
     {
@@ -544,7 +546,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectElseOrderingAndInvalidCustomExceptionName/Bad.cls",
       "owner": "sema"
     },
     {
@@ -558,7 +560,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-DIAMOND-LIST-CONSTRUCTION",
       "owner": "sema"
     },
     {
@@ -572,7 +574,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedStatementRuleRegressions/APEX-AUDIT-DUPLICATE-CATCH-TYPE",
       "owner": "sema"
     },
     {
@@ -586,7 +588,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDuplicateMemberConstructors",
       "owner": "sema"
     },
     {
@@ -600,7 +602,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scope_contracts_test.go:TestDuplicateLocalsAreRejected",
       "owner": "sema"
     },
     {
@@ -614,7 +616,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDuplicateMemberCaseInsensitiveFields",
       "owner": "sema"
     },
     {
@@ -628,7 +630,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDuplicateMemberMethods",
       "owner": "sema"
     },
     {
@@ -642,7 +644,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scope_contracts_test.go:TestDuplicateParametersAreRejected",
       "owner": "sema"
     },
     {
@@ -656,7 +658,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractAccessorVisibilityAndDuplicates/duplicate getter",
       "owner": "sema"
     },
     {
@@ -670,7 +672,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsRejectUnsupportedSelectorsAndDuplicateValues/duplicate branch",
       "owner": "sema"
     },
     {
@@ -684,7 +686,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseEnumUserMethodSyntax",
       "owner": "sema"
     },
     {
@@ -717,7 +719,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsFieldsAllInApexEvenWithLimit",
       "owner": "sema"
     },
     {
@@ -731,7 +733,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractIllegalClassModifiers/FinalClass.cls",
       "owner": "sema"
     },
     {
@@ -745,7 +747,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-FINAL-LOCAL-REASSIGNMENT",
       "owner": "sema"
     },
     {
@@ -759,7 +761,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsAdditionalStaticAndAccessContracts/explicit final method",
       "owner": "sema"
     },
     {
@@ -773,7 +775,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedTypeRuleRegressions/APEX-AUDIT-FINAL-PROPERTY",
       "owner": "sema"
     },
     {
@@ -787,7 +789,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsStaticAndFinalFieldMisuse/final static reassignment",
       "owner": "sema"
     },
     {
@@ -801,7 +803,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-FOR-NON-BOOLEAN-CONDITION",
       "owner": "sema"
     },
     {
@@ -815,7 +817,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-FUTURE-CALLS-FUTURE",
       "owner": "sema"
     },
     {
@@ -829,7 +831,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-FUTURE-METHOD-IN-BATCHABLE-CLASS",
       "owner": "sema"
     },
     {
@@ -857,7 +859,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-FUTURE-UNKNOWN-PROPERTY",
       "owner": "sema"
     },
     {
@@ -871,7 +873,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectAlreadyCoveredCatch",
       "owner": "sema"
     },
     {
@@ -885,7 +887,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractUserGenericClass",
       "owner": "sema"
     },
     {
@@ -899,7 +901,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/version_contracts_test.go:TestPropertyGetterMutationRemainsAcceptedAtTestedAPIVersions/41.0",
       "owner": "sema"
     },
     {
@@ -913,7 +915,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/version_contracts_test.go:TestPropertyGetterMutationRemainsAcceptedAtTestedAPIVersions/42.0",
       "owner": "sema"
     },
     {
@@ -927,7 +929,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-GETTER-WITHOUT-RETURN",
       "owner": "sema"
     },
     {
@@ -941,7 +943,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsAdditionalStaticAndAccessContracts/global interface explicit public method",
       "owner": "sema"
     },
     {
@@ -955,7 +957,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsAdditionalStaticAndAccessContracts/global member in public owner",
       "owner": "sema"
     },
     {
@@ -969,7 +971,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-GROUP-BY-NON-GROUPABLE-FIELD",
       "owner": "sema"
     },
     {
@@ -983,7 +985,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/method must be static",
       "owner": "sema"
     },
     {
@@ -997,7 +999,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/get is no argument",
       "owner": "sema"
     },
     {
@@ -1011,7 +1013,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/method must be global",
       "owner": "sema"
     },
     {
@@ -1025,7 +1027,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-IF-NON-BOOLEAN-CONDITION",
       "owner": "sema"
     },
     {
@@ -1044,7 +1046,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining/implicit super()",
       "owner": "sema"
     },
     {
@@ -1058,7 +1060,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidOperators/casts incompatible types",
       "owner": "sema"
     },
     {
@@ -1072,7 +1074,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidOperators/incompatible coalesce",
       "owner": "sema"
     },
     {
@@ -1086,7 +1088,8 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/inner",
+      "productTestAliasOf": "APEX-RESERVED-INNER",
       "owner": "sema"
     },
     {
@@ -1100,7 +1103,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-INNER-AS-NESTED-TYPE-IDENTIFIER",
       "owner": "sema"
     },
     {
@@ -1114,7 +1117,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractNestingDepth/nests deeper",
       "owner": "sema"
     },
     {
@@ -1128,7 +1131,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestInnerTypeEqualToAncestor",
       "owner": "sema"
     },
     {
@@ -1142,7 +1145,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/dml_contracts_test.go:TestDMLContractsRejectNonSObjectOperands/insert string",
       "owner": "sema"
     },
     {
@@ -1161,7 +1164,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRejectInvalidInheritanceTargets/interface extends class",
       "owner": "sema"
     },
     {
@@ -1175,7 +1178,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractMethodBodyConsistency/cannot have a body",
       "owner": "sema"
     },
     {
@@ -1189,7 +1192,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/InvocableMethod allows no annotation mix",
       "owner": "sema"
     },
     {
@@ -1203,7 +1206,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-INVOCABLE-METHOD-INNER-CLASS",
       "owner": "sema"
     },
     {
@@ -1217,7 +1220,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-INVOCABLE-METHOD-MAP-PARAMETER",
       "owner": "sema"
     },
     {
@@ -1231,7 +1234,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-INVOCABLE-METHOD-MAP-RETURN",
       "owner": "sema"
     },
     {
@@ -1245,7 +1248,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-INVOCABLE-METHOD-TWO-PARAMETERS",
       "owner": "sema"
     },
     {
@@ -1259,7 +1262,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-INVOCABLE-METHOD-UNKNOWN-PROPERTY",
       "owner": "sema"
     },
     {
@@ -1273,7 +1276,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-INVOCABLE-VARIABLE-FINAL",
       "owner": "sema"
     },
     {
@@ -1287,7 +1290,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/InvocableVariable cannot use Object",
       "owner": "sema"
     },
     {
@@ -1301,7 +1304,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-INVOCABLE-VARIABLE-UNKNOWN-PROPERTY",
       "owner": "sema"
     },
     {
@@ -1315,7 +1318,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-CRITICAL-ON-METHOD",
       "owner": "sema"
     },
     {
@@ -1329,7 +1332,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-ENUM",
       "owner": "sema"
     },
     {
@@ -1343,7 +1346,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-GLOBAL-CLASS",
       "owner": "sema"
     },
     {
@@ -1357,7 +1360,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-INTERFACE",
       "owner": "sema"
     },
     {
@@ -1371,7 +1374,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/test method outside test class",
       "owner": "sema"
     },
     {
@@ -1385,7 +1388,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/test method requires no args",
       "owner": "sema"
     },
     {
@@ -1399,7 +1402,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-NESTED-CLASS",
       "owner": "sema"
     },
     {
@@ -1413,7 +1416,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/test method requires static",
       "owner": "sema"
     },
     {
@@ -1427,7 +1430,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-PARALLEL-SEE-ALL-DATA",
       "owner": "sema"
     },
     {
@@ -1441,7 +1444,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-TESTFOR-ON-METHOD",
       "owner": "sema"
     },
     {
@@ -1455,7 +1458,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-IS-TEST-UNKNOWN-PROPERTY",
       "owner": "sema"
     },
     {
@@ -1469,7 +1472,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsAllowValueReturningTestMethod",
       "owner": "sema"
     },
     {
@@ -1509,7 +1512,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-ITERATOR-METHODS-WITHOUT-ACCESS",
       "owner": "sema"
     },
     {
@@ -1523,7 +1526,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-JSON-ACCESS-INVALID-VALUE",
       "owner": "sema"
     },
     {
@@ -1537,7 +1540,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/JsonAccess cannot annotate a method",
       "owner": "sema"
     },
     {
@@ -1551,7 +1554,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/JsonAccess requires a parameter",
       "owner": "sema"
     },
     {
@@ -1565,7 +1568,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsIterableInstanceofAtAllTestedAPIVersions/59.0",
       "owner": "sema"
     },
     {
@@ -1579,7 +1582,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsIterableInstanceofAtAllTestedAPIVersions/60.0",
       "owner": "sema"
     },
     {
@@ -1593,7 +1596,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/list generic arity",
       "owner": "sema"
     },
     {
@@ -1607,7 +1610,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/map generic arity",
       "owner": "sema"
     },
     {
@@ -1621,7 +1624,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/dml_contracts_test.go:TestDMLContractsRejectNonSObjectOperands/merge different sobjects",
       "owner": "sema"
     },
     {
@@ -1635,7 +1638,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractParameterLimit/method over limit",
       "owner": "sema"
     },
     {
@@ -1649,7 +1652,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDuplicateMemberCaseOnlyMethodNames",
       "owner": "sema"
     },
     {
@@ -1668,7 +1671,8 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRequireOverrideModifier/Base.cls",
+      "productTestAliasOf": "APEX-ABSTRACT-IMPLEMENTATION-MISSING-OVERRIDE",
       "owner": "sema"
     },
     {
@@ -1695,7 +1699,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractInnerStaticInitializerAndSharing/sharing",
       "owner": "sema"
     },
     {
@@ -1709,7 +1713,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/NamespaceAccessible cannot be AuraEnabled",
       "owner": "sema"
     },
     {
@@ -1723,7 +1727,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-NAMESPACE-ACCESSIBLE-INTERFACE-MEMBER",
       "owner": "sema"
     },
     {
@@ -1737,7 +1741,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-NAMESPACE-ACCESSIBLE-INVOCABLE",
       "owner": "sema"
     },
     {
@@ -1751,7 +1755,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/NamespaceAccessible member needs owner",
       "owner": "sema"
     },
     {
@@ -1770,7 +1774,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/namespace_precedence_test.go:TestAnalyzeProjectDatabaseDoesNotFallBackToSystemDatabase",
       "owner": "sema"
     },
     {
@@ -1784,7 +1788,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidOperators/orders booleans",
       "owner": "sema"
     },
     {
@@ -1798,7 +1802,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidOperators/negates integer",
       "owner": "sema"
     },
     {
@@ -1812,7 +1816,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidOperators/multiplies string",
       "owner": "sema"
     },
     {
@@ -1826,7 +1830,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes/locked",
       "owner": "sema"
     },
     {
@@ -1840,7 +1844,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDuplicateMemberMethodsDifferOnlyByReturnType",
       "owner": "sema"
     },
     {
@@ -1859,7 +1863,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-OVERRIDE-METHOD-WITHOUT-ACCESS-V65",
       "owner": "sema"
     },
     {
@@ -1878,7 +1882,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRejectNonVirtualMethodOverride",
       "owner": "sema"
     },
     {
@@ -1897,7 +1901,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractIllegalMethodModifierCombinations/override and static",
       "owner": "sema"
     },
     {
@@ -1911,7 +1915,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scope_contracts_test.go:TestParentBlockRedeclarationIsRejected",
       "owner": "sema"
     },
     {
@@ -1925,7 +1929,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-PRIVATE-INVOCABLE-METHOD",
       "owner": "sema"
     },
     {
@@ -1939,7 +1943,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-PRIVATE-INVOCABLE-VARIABLE",
       "owner": "sema"
     },
     {
@@ -1953,7 +1957,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractTopLevelVisibility",
       "owner": "sema"
     },
     {
@@ -1967,7 +1971,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-PROPERTY-INVOCABLE-VARIABLE",
       "owner": "sema"
     },
     {
@@ -1981,7 +1985,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedTypeRuleRegressions/APEX-AUDIT-PROPERTY-ON-INTERFACE",
       "owner": "sema"
     },
     {
@@ -1995,7 +1999,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsAdditionalStaticAndAccessContracts/protected static method",
       "owner": "sema"
     },
     {
@@ -2009,7 +2013,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-QUEUEABLE-EXECUTE-WITHOUT-ACCESS",
       "owner": "sema"
     },
     {
@@ -2023,7 +2027,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRejectRawDatabaseBatchable",
       "owner": "sema"
     },
     {
@@ -2037,7 +2041,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/raw list construction",
       "owner": "sema"
     },
     {
@@ -2051,7 +2055,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/raw map construction",
       "owner": "sema"
     },
     {
@@ -2065,7 +2069,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse/reads set-only property",
       "owner": "sema"
     },
     {
@@ -2079,7 +2083,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures"
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/ReadOnly static method needs a web owner"
     },
     {
       "id": "APEX-AUDIT-READONLY-REST-PRE49-WITHOUT-REMOTE-ACTION",
@@ -2092,7 +2096,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestReadOnlyRESTMethodRemoteActionVersionGate",
+      "productTest": "internal/sema/version_contracts_test.go:TestReadOnlyRESTMethodRemoteActionVersionGate/48.0",
       "owner": "sema"
     },
     {
@@ -2106,7 +2110,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestReadOnlyRESTMethodRemoteActionVersionGate",
+      "productTest": "internal/sema/version_contracts_test.go:TestReadOnlyRESTMethodRemoteActionVersionGate/49.0",
       "owner": "sema"
     },
     {
@@ -2120,7 +2124,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/remote action requires static",
       "owner": "sema"
     },
     {
@@ -2134,7 +2138,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/remote action requires public",
       "owner": "sema"
     },
     {
@@ -2148,7 +2152,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-REST-BLOB-PARAMETER",
       "owner": "sema"
     },
     {
@@ -2162,7 +2166,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/mapping wildcard slash delimited",
       "owner": "sema"
     },
     {
@@ -2176,7 +2180,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-REST-MAPPING-MISSING",
       "owner": "sema"
     },
     {
@@ -2190,7 +2194,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/mapping has 255 character limit",
       "owner": "sema"
     },
     {
@@ -2204,7 +2208,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/mapping must lead slash",
       "owner": "sema"
     },
     {
@@ -2218,7 +2222,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-REST-NON-STRING-MAP-KEY",
       "owner": "sema"
     },
     {
@@ -2232,7 +2236,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/owner must be global",
       "owner": "sema"
     },
     {
@@ -2246,7 +2250,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-REST-RESOURCE-INNER-CLASS",
       "owner": "sema"
     },
     {
@@ -2260,7 +2264,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-REST-RESOURCE-UNKNOWN-PROPERTY",
       "owner": "sema"
     },
     {
@@ -2274,7 +2278,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/reject set signature",
       "owner": "sema"
     },
     {
@@ -2288,7 +2292,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-RETURN-VALUE-FROM-VOID",
       "owner": "sema"
     },
     {
@@ -2302,7 +2306,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes/rollup",
       "owner": "sema"
     },
     {
@@ -2329,7 +2333,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse/safe navigation assignment target",
       "owner": "sema"
     },
     {
@@ -2343,7 +2347,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse/safe navigation static receiver",
       "owner": "sema"
     },
     {
@@ -2357,7 +2361,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRequireVisibleInterfaceImplementation",
       "owner": "sema"
     },
     {
@@ -2371,7 +2375,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/scientific notation",
       "owner": "sema"
     },
     {
@@ -2385,7 +2389,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater/66.0",
       "owner": "sema"
     },
     {
@@ -2399,7 +2403,8 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater",
+      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater/67.0",
+      "productTestAliasOf": "APEX-QUERY-SECURITY-ENFORCED-API67",
       "owner": "sema"
     },
     {
@@ -2413,7 +2418,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-SOQL-FOR-WRONG-VARIABLE-TYPE",
       "owner": "sema"
     },
     {
@@ -2427,7 +2432,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsIncompatibleFieldBindType",
       "owner": "sema"
     },
     {
@@ -2441,7 +2446,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsMissingInlineBind",
       "owner": "sema"
     },
     {
@@ -2455,7 +2460,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsSelfSemiJoin",
       "owner": "sema"
     },
     {
@@ -2469,7 +2474,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-SOQL-WRONG-ASSIGNMENT-TYPE",
       "owner": "sema"
     },
     {
@@ -2483,7 +2488,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-SOSL-DUPLICATE-RETURNING-OBJECT",
       "owner": "sema"
     },
     {
@@ -2497,7 +2502,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-SOSL-WITHOUT-RETURNING",
       "owner": "sema"
     },
     {
@@ -2511,7 +2516,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsWrongSOSLAssignmentType",
       "owner": "sema"
     },
     {
@@ -2525,7 +2530,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractIllegalClassModifiers/StaticClass.cls",
       "owner": "sema"
     },
     {
@@ -2539,7 +2544,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractInnerStaticInitializerAndSharing/static initializer",
       "owner": "sema"
     },
     {
@@ -2558,7 +2563,7 @@
       ],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsAllowStaticPublicInterfaceImplementation",
       "owner": "sema"
     },
     {
@@ -2572,7 +2577,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/invocable variable cannot be static",
       "owner": "sema"
     },
     {
@@ -2586,7 +2591,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsStaticAndFinalFieldMisuse/static field through instance",
       "owner": "sema"
     },
     {
@@ -2600,7 +2605,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsStaticAndFinalFieldMisuse/instance field from static method",
       "owner": "sema"
     },
     {
@@ -2614,7 +2619,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsAdditionalStaticAndAccessContracts/inner static method",
       "owner": "sema"
     },
     {
@@ -2633,7 +2638,7 @@
       ],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-SUPER-OUTSIDE-OVERRIDE",
       "owner": "sema"
     },
     {
@@ -2647,7 +2652,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsRejectUnsupportedSelectorsAndDuplicateValues/Boolean selector",
       "owner": "sema"
     },
     {
@@ -2661,7 +2666,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsRejectUnsupportedSelectorsAndDuplicateValues/Date selector",
       "owner": "sema"
     },
     {
@@ -2675,7 +2680,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsRejectUnsupportedSelectorsAndDuplicateValues/Decimal selector",
       "owner": "sema"
     },
     {
@@ -2689,7 +2694,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedStatementRuleRegressions/APEX-AUDIT-SWITCH-MULTIPLE-SOBJECT-TYPES-ONE-WHEN",
       "owner": "sema"
     },
     {
@@ -2703,7 +2708,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectElseOrderingAndInvalidCustomExceptionName/Probe.cls",
       "owner": "sema"
     },
     {
@@ -2717,7 +2722,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-TEST-SETUP-WITH-SEE-ALL-DATA",
       "owner": "sema"
     },
     {
@@ -2731,7 +2736,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsStaticAndFinalFieldMisuse/this from static method",
       "owner": "sema"
     },
     {
@@ -2745,7 +2750,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes/throw primitive",
       "owner": "sema"
     },
     {
@@ -2759,7 +2764,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsOmittedTopLevelVisibility/class",
       "owner": "sema"
     },
     {
@@ -2773,7 +2778,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractRejectsOmittedTopLevelVisibility/interface",
       "owner": "sema"
     },
     {
@@ -2787,7 +2792,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-TRANSIENT-LOCAL-VARIABLE",
       "owner": "sema"
     },
     {
@@ -2801,7 +2806,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-TRANSIENT-STATIC-FIELD",
       "owner": "sema"
     },
     {
@@ -2824,7 +2829,7 @@
       ],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRequireTransitiveInterfaceMethods",
       "owner": "sema"
     },
     {
@@ -2838,7 +2843,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerBodyRejectsUnknownCallAndLocalType",
+      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerBodyAcceptsStaticTriggerLocal",
       "owner": "sema"
     },
     {
@@ -2852,7 +2857,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerBodyRejectsUnknownCallAndLocalType",
+      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerBodyRejectsIncompatibleAssignment",
       "owner": "sema"
     },
     {
@@ -2880,7 +2885,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerBodyRejectsUnknownCallAndLocalType",
+      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerEventRejectsDuplicateEvents",
       "owner": "sema"
     },
     {
@@ -2907,7 +2912,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureContracts/one method per verb",
       "owner": "sema"
     },
     {
@@ -2921,7 +2926,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectMultipleInvocableMethods",
       "owner": "sema"
     },
     {
@@ -2935,7 +2940,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/duplicate test setup",
       "owner": "sema"
     },
     {
@@ -2949,7 +2954,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedQueryRuleRegressions/APEX-AUDIT-TYPEOF-WITH-GROUP-BY",
       "owner": "sema"
     },
     {
@@ -2963,7 +2968,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-UNINITIALIZED-LOCAL-READ",
       "owner": "sema"
     },
     {
@@ -2977,7 +2982,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogRejectsUnknownAnnotationsAndProperties/unknown annotation",
       "owner": "sema"
     },
     {
@@ -2991,7 +2996,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-UNKNOWN-METHOD-ANNOTATION",
       "owner": "sema"
     },
     {
@@ -3005,7 +3010,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsAllowInstructionsAfterThrow",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedStatementRuleRegressions/APEX-AUDIT-UNREACHABLE-AFTER-THROW-API40-CONTROL",
       "owner": "sema"
     },
     {
@@ -3019,7 +3024,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsAllowInstructionsAfterThrow",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedStatementRuleRegressions/APEX-AUDIT-UNREACHABLE-AFTER-THROW-API41",
       "owner": "sema"
     },
     {
@@ -3033,7 +3038,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/integer overflow",
       "owner": "sema"
     },
     {
@@ -3047,7 +3052,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/dml_contracts_test.go:TestDMLContractsRejectNonSObjectOperands/update string list",
       "owner": "sema"
     },
     {
@@ -3061,7 +3066,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
+      "productTest": "internal/sema/dml_contracts_test.go:TestDMLContractsRequireUpsertExternalIDOrIDLookupField",
       "owner": "sema"
     },
     {
@@ -3075,7 +3080,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsInvalidIdentifierShapesAndLengths/consecutive underscores",
       "owner": "sema"
     },
     {
@@ -3089,7 +3094,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsInvalidIdentifierShapesAndLengths/leading underscore",
       "owner": "sema"
     },
     {
@@ -3103,7 +3108,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsInvalidIdentifierShapesAndLengths/256 characters",
       "owner": "sema"
     },
     {
@@ -3117,7 +3122,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsInvalidIdentifierShapesAndLengths/trailing underscore",
       "owner": "sema"
     },
     {
@@ -3131,7 +3136,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractMethodBodyConsistency/must have a body",
       "owner": "sema"
     },
     {
@@ -3145,7 +3150,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractIllegalMethodModifierCombinations/virtual and static",
       "owner": "sema"
     },
     {
@@ -3159,7 +3164,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureContracts/owner cannot be inner",
       "owner": "sema"
     },
     {
@@ -3173,7 +3178,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-WEBSERVICE-INTERFACE-METHOD",
       "owner": "sema"
     },
     {
@@ -3187,7 +3192,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-WEBSERVICE-MAP-PARAMETER",
       "owner": "sema"
     },
     {
@@ -3201,7 +3206,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureContracts/method must be static",
       "owner": "sema"
     },
     {
@@ -3215,7 +3220,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureContracts",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureContracts/reject overload",
       "owner": "sema"
     },
     {
@@ -3229,7 +3234,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureContracts/owner must be global",
       "owner": "sema"
     },
     {
@@ -3243,7 +3248,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedAnnotationRuleRegressions/APEX-AUDIT-WEBSERVICE-SET-RETURN",
       "owner": "sema"
     },
     {
@@ -3257,7 +3262,7 @@
       "dependencies": [],
       "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureAllowsLoggingLevel",
       "owner": "sema"
     },
     {
@@ -3271,7 +3276,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestScratchBackedDeclarationRuleRegressions/APEX-AUDIT-WHILE-NON-BOOLEAN-CONDITION",
       "owner": "sema"
     },
     {
@@ -3285,7 +3290,8 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse/writes get-only property",
+      "productTestAliasOf": "APEX-GET-ONLY-PROPERTY-WRITE",
       "owner": "sema"
     },
     {
@@ -3299,7 +3305,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse"
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse/writes get-only property"
     },
     {
       "id": "APEX-INTERFACE-BATCHABLE-CONTEXT",
@@ -3312,7 +3318,7 @@
       "oracle": "accept",
       "owner": "typesys",
       "status": "supported",
-      "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations"
+      "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations/Database.BatchableContext"
     },
     {
       "id": "APEX-INTERFACE-COMPARABLE",
@@ -3325,7 +3331,7 @@
       "oracle": "accept",
       "owner": "typesys",
       "status": "supported",
-      "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations"
+      "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations/Comparable"
     },
     {
       "id": "APEX-OVERRIDE-GLOBAL-TO-PROTECTED",
@@ -3408,7 +3414,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater"
+      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater/67.0"
     },
     {
       "id": "APEX-RESERVED-ABSTRACT",
@@ -3421,7 +3427,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/abstract"
     },
     {
       "id": "APEX-RESERVED-ACTIVATE",
@@ -3434,7 +3440,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/activate"
     },
     {
       "id": "APEX-RESERVED-AND",
@@ -3447,7 +3453,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/and"
     },
     {
       "id": "APEX-RESERVED-ANY",
@@ -3460,7 +3466,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/any"
     },
     {
       "id": "APEX-RESERVED-ARRAY",
@@ -3473,7 +3479,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/array"
     },
     {
       "id": "APEX-RESERVED-AS",
@@ -3486,7 +3492,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/as"
     },
     {
       "id": "APEX-RESERVED-ASC",
@@ -3499,7 +3505,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/asc"
     },
     {
       "id": "APEX-RESERVED-AUTONOMOUS",
@@ -3512,7 +3518,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/autonomous"
     },
     {
       "id": "APEX-RESERVED-BEGIN",
@@ -3525,7 +3531,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/begin"
     },
     {
       "id": "APEX-RESERVED-BIGDECIMAL",
@@ -3538,7 +3544,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/bigdecimal"
     },
     {
       "id": "APEX-RESERVED-BLOB",
@@ -3551,7 +3557,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/blob"
     },
     {
       "id": "APEX-RESERVED-BOOLEAN",
@@ -3564,7 +3570,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/boolean"
     },
     {
       "id": "APEX-RESERVED-BREAK",
@@ -3577,7 +3583,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/break"
     },
     {
       "id": "APEX-RESERVED-BULK",
@@ -3590,7 +3596,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/bulk"
     },
     {
       "id": "APEX-RESERVED-BY",
@@ -3603,7 +3609,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/by"
     },
     {
       "id": "APEX-RESERVED-BYTE",
@@ -3616,7 +3622,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/byte"
     },
     {
       "id": "APEX-RESERVED-CASE",
@@ -3629,7 +3635,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/case"
     },
     {
       "id": "APEX-RESERVED-CAST",
@@ -3642,7 +3648,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/cast"
     },
     {
       "id": "APEX-RESERVED-CATCH",
@@ -3655,7 +3661,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/catch"
     },
     {
       "id": "APEX-RESERVED-CHAR",
@@ -3668,7 +3674,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/char"
     },
     {
       "id": "APEX-RESERVED-CLASS",
@@ -3681,7 +3687,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/class"
     },
     {
       "id": "APEX-RESERVED-COLLECT",
@@ -3694,7 +3700,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/collect"
     },
     {
       "id": "APEX-RESERVED-COMMIT",
@@ -3707,7 +3713,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/commit"
     },
     {
       "id": "APEX-RESERVED-CONST",
@@ -3720,7 +3726,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/const"
     },
     {
       "id": "APEX-RESERVED-CONTINUE",
@@ -3733,7 +3739,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/continue"
     },
     {
       "id": "APEX-RESERVED-CURRENCY",
@@ -3746,7 +3752,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/currency"
     },
     {
       "id": "APEX-RESERVED-DATE",
@@ -3759,7 +3765,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/date"
     },
     {
       "id": "APEX-RESERVED-DATETIME",
@@ -3772,7 +3778,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/datetime"
     },
     {
       "id": "APEX-RESERVED-DECIMAL",
@@ -3785,7 +3791,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/decimal"
     },
     {
       "id": "APEX-RESERVED-DEFAULT",
@@ -3798,7 +3804,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/default"
     },
     {
       "id": "APEX-RESERVED-DELETE",
@@ -3811,7 +3817,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/delete"
     },
     {
       "id": "APEX-RESERVED-DESC",
@@ -3824,7 +3830,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/desc"
     },
     {
       "id": "APEX-RESERVED-DO",
@@ -3837,7 +3843,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/do"
     },
     {
       "id": "APEX-RESERVED-DOUBLE",
@@ -3850,7 +3856,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/double"
     },
     {
       "id": "APEX-RESERVED-ELSE",
@@ -3863,7 +3869,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/else"
     },
     {
       "id": "APEX-RESERVED-END",
@@ -3876,7 +3882,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/end"
     },
     {
       "id": "APEX-RESERVED-ENUM",
@@ -3889,7 +3895,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/enum"
     },
     {
       "id": "APEX-RESERVED-EXCEPTION",
@@ -3902,7 +3908,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/exception"
     },
     {
       "id": "APEX-RESERVED-EXIT",
@@ -3915,7 +3921,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/exit"
     },
     {
       "id": "APEX-RESERVED-EXPORT",
@@ -3928,7 +3934,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/export"
     },
     {
       "id": "APEX-RESERVED-EXTENDS",
@@ -3941,7 +3947,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/extends"
     },
     {
       "id": "APEX-RESERVED-FALSE",
@@ -3954,7 +3960,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/false"
     },
     {
       "id": "APEX-RESERVED-FINAL",
@@ -3967,7 +3973,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/final"
     },
     {
       "id": "APEX-RESERVED-FINALLY",
@@ -3980,7 +3986,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/finally"
     },
     {
       "id": "APEX-RESERVED-FLOAT",
@@ -3993,7 +3999,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/float"
     },
     {
       "id": "APEX-RESERVED-FOR",
@@ -4006,7 +4012,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/for"
     },
     {
       "id": "APEX-RESERVED-FROM",
@@ -4019,7 +4025,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/from"
     },
     {
       "id": "APEX-RESERVED-GLOBAL",
@@ -4032,7 +4038,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/global"
     },
     {
       "id": "APEX-RESERVED-GOTO",
@@ -4045,7 +4051,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/goto"
     },
     {
       "id": "APEX-RESERVED-GROUP",
@@ -4058,7 +4064,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/group"
     },
     {
       "id": "APEX-RESERVED-HAVING",
@@ -4071,7 +4077,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/having"
     },
     {
       "id": "APEX-RESERVED-HINT",
@@ -4084,7 +4090,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/hint"
     },
     {
       "id": "APEX-RESERVED-IF",
@@ -4097,7 +4103,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/if"
     },
     {
       "id": "APEX-RESERVED-IMPLEMENTS",
@@ -4110,7 +4116,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/implements"
     },
     {
       "id": "APEX-RESERVED-IMPORT",
@@ -4123,7 +4129,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/import"
     },
     {
       "id": "APEX-RESERVED-IN",
@@ -4136,7 +4142,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/in"
     },
     {
       "id": "APEX-RESERVED-INNER",
@@ -4149,7 +4155,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/inner"
     },
     {
       "id": "APEX-RESERVED-INSERT",
@@ -4162,7 +4168,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/insert"
     },
     {
       "id": "APEX-RESERVED-INSTANCEOF",
@@ -4175,7 +4181,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/instanceof"
     },
     {
       "id": "APEX-RESERVED-INT",
@@ -4188,7 +4194,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/int"
     },
     {
       "id": "APEX-RESERVED-INTEGER",
@@ -4201,7 +4207,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/integer"
     },
     {
       "id": "APEX-RESERVED-INTERFACE",
@@ -4214,7 +4220,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/interface"
     },
     {
       "id": "APEX-RESERVED-INTO",
@@ -4227,7 +4233,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/into"
     },
     {
       "id": "APEX-RESERVED-JOIN",
@@ -4240,7 +4246,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/join"
     },
     {
       "id": "APEX-RESERVED-LIKE",
@@ -4253,7 +4259,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/like"
     },
     {
       "id": "APEX-RESERVED-LIMIT",
@@ -4266,7 +4272,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/limit"
     },
     {
       "id": "APEX-RESERVED-LIST",
@@ -4279,7 +4285,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/list"
     },
     {
       "id": "APEX-RESERVED-LONG",
@@ -4292,7 +4298,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/long"
     },
     {
       "id": "APEX-RESERVED-LOOP",
@@ -4305,7 +4311,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/loop"
     },
     {
       "id": "APEX-RESERVED-MAP",
@@ -4318,7 +4324,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/map"
     },
     {
       "id": "APEX-RESERVED-MERGE",
@@ -4331,7 +4337,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/merge"
     },
     {
       "id": "APEX-RESERVED-NEW",
@@ -4344,7 +4350,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/new"
     },
     {
       "id": "APEX-RESERVED-NOT",
@@ -4357,7 +4363,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/not"
     },
     {
       "id": "APEX-RESERVED-NULL",
@@ -4370,7 +4376,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/null"
     },
     {
       "id": "APEX-RESERVED-NULLS",
@@ -4383,7 +4389,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/nulls"
     },
     {
       "id": "APEX-RESERVED-NUMBER",
@@ -4396,7 +4402,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/number"
     },
     {
       "id": "APEX-RESERVED-OBJECT",
@@ -4409,7 +4415,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/object"
     },
     {
       "id": "APEX-RESERVED-OF",
@@ -4422,7 +4428,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/of"
     },
     {
       "id": "APEX-RESERVED-ON",
@@ -4435,7 +4441,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/on"
     },
     {
       "id": "APEX-RESERVED-OR",
@@ -4448,7 +4454,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/or"
     },
     {
       "id": "APEX-RESERVED-OUTER",
@@ -4461,7 +4467,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/outer"
     },
     {
       "id": "APEX-RESERVED-OVERRIDE",
@@ -4474,7 +4480,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/override"
     },
     {
       "id": "APEX-RESERVED-PACKAGE",
@@ -4487,7 +4493,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/package"
     },
     {
       "id": "APEX-RESERVED-PARALLEL",
@@ -4500,7 +4506,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/parallel"
     },
     {
       "id": "APEX-RESERVED-PRAGMA",
@@ -4513,7 +4519,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/pragma"
     },
     {
       "id": "APEX-RESERVED-PRIVATE",
@@ -4526,7 +4532,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/private"
     },
     {
       "id": "APEX-RESERVED-PROTECTED",
@@ -4539,7 +4545,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/protected"
     },
     {
       "id": "APEX-RESERVED-PUBLIC",
@@ -4552,7 +4558,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/public"
     },
     {
       "id": "APEX-RESERVED-RETRIEVE",
@@ -4565,7 +4571,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/retrieve"
     },
     {
       "id": "APEX-RESERVED-RETURN",
@@ -4578,7 +4584,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/return"
     },
     {
       "id": "APEX-RESERVED-ROLLBACK",
@@ -4591,7 +4597,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/rollback"
     },
     {
       "id": "APEX-RESERVED-SELECT",
@@ -4604,7 +4610,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/select"
     },
     {
       "id": "APEX-RESERVED-SET",
@@ -4617,7 +4623,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/set"
     },
     {
       "id": "APEX-RESERVED-SHORT",
@@ -4630,7 +4636,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/short"
     },
     {
       "id": "APEX-RESERVED-SOBJECT",
@@ -4643,7 +4649,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/sObject"
     },
     {
       "id": "APEX-RESERVED-SORT",
@@ -4656,7 +4662,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/sort"
     },
     {
       "id": "APEX-RESERVED-STATIC",
@@ -4669,7 +4675,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/static"
     },
     {
       "id": "APEX-RESERVED-STRING",
@@ -4682,7 +4688,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/string"
     },
     {
       "id": "APEX-RESERVED-SUPER",
@@ -4695,7 +4701,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/super"
     },
     {
       "id": "APEX-RESERVED-SWITCH",
@@ -4708,7 +4714,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/switch"
     },
     {
       "id": "APEX-RESERVED-SYNCHRONIZED",
@@ -4721,7 +4727,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/synchronized"
     },
     {
       "id": "APEX-RESERVED-SYSTEM",
@@ -4734,7 +4740,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/system"
     },
     {
       "id": "APEX-RESERVED-TESTMETHOD",
@@ -4747,7 +4753,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/testmethod"
     },
     {
       "id": "APEX-RESERVED-THEN",
@@ -4760,7 +4766,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/then"
     },
     {
       "id": "APEX-RESERVED-THIS",
@@ -4773,7 +4779,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/this"
     },
     {
       "id": "APEX-RESERVED-THROW",
@@ -4786,7 +4792,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/throw"
     },
     {
       "id": "APEX-RESERVED-TIME",
@@ -4799,7 +4805,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/time"
     },
     {
       "id": "APEX-RESERVED-TRANSACTION",
@@ -4812,7 +4818,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/transaction"
     },
     {
       "id": "APEX-RESERVED-TRIGGER",
@@ -4825,7 +4831,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/trigger"
     },
     {
       "id": "APEX-RESERVED-TRUE",
@@ -4838,7 +4844,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/true"
     },
     {
       "id": "APEX-RESERVED-TRY",
@@ -4851,7 +4857,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/try"
     },
     {
       "id": "APEX-RESERVED-UNDELETE",
@@ -4864,7 +4870,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/undelete"
     },
     {
       "id": "APEX-RESERVED-UPDATE",
@@ -4877,7 +4883,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/update"
     },
     {
       "id": "APEX-RESERVED-UPSERT",
@@ -4890,7 +4896,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/upsert"
     },
     {
       "id": "APEX-RESERVED-USING",
@@ -4903,7 +4909,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/using"
     },
     {
       "id": "APEX-RESERVED-VIRTUAL",
@@ -4916,7 +4922,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/virtual"
     },
     {
       "id": "APEX-RESERVED-VOID",
@@ -4929,7 +4935,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/void"
     },
     {
       "id": "APEX-RESERVED-WEBSERVICE",
@@ -4942,7 +4948,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/webservice"
     },
     {
       "id": "APEX-RESERVED-WHEN",
@@ -4955,7 +4961,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/when"
     },
     {
       "id": "APEX-RESERVED-WHERE",
@@ -4968,7 +4974,7 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/where"
     },
     {
       "id": "APEX-RESERVED-WHILE",
@@ -4981,7 +4987,371 @@
       "oracle": "reject",
       "owner": "parser",
       "status": "supported",
-      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName"
+      "productTest": "third_party/glade-apex-parser/parser_test.go:TestParseRejectsEverySalesforceReservedVariableName/while"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-HTTP-GET-POSITIONAL-ARGUMENT",
+      "area": "annotations",
+      "docsLines": "@HttpGet does not accept positional arguments",
+      "source": "@RestResource(urlMapping='/probe') global class Probe { @HttpGet('unexpected') global static void run() {} }",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogRejectsUnknownAnnotationsAndProperties/unexpected positional argument"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-HTTP-VERB-WITHOUT-REST-RESOURCE",
+      "area": "annotations",
+      "docsLines": "HTTP verb method requires a RestResource owner",
+      "source": "global class Probe { @HttpGet global static void get() {} }",
+      "oracle": "reject",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestVerbRequiresRestResourceOwner"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-ISTEST-CRITICAL-CLASS",
+      "area": "annotations",
+      "docsLines": "250-274",
+      "source": "@IsTest(critical=true) private class Probe {}",
+      "oracle": "accept",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestIsTestClassAllowsCriticalAndTestForAtAPIVersion66/critical"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-ISTEST-TESTFOR-CLASS",
+      "area": "annotations",
+      "docsLines": "277-310",
+      "source": "@IsTest(testFor='ApexClass:Probe') private class Probe {}",
+      "oracle": "accept",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestIsTestClassAllowsCriticalAndTestForAtAPIVersion66/testFor"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
+      "apiVersion": 65,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-ISTEST-CRITICAL-BEFORE-API66",
+      "area": "annotations",
+      "docsLines": "263-264",
+      "source": "@IsTest(critical=true) private class Probe {}",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestIsTestClassRejectsCriticalAndTestForBeforeAPIVersion66/critical"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
+      "apiVersion": 65,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-ISTEST-TESTFOR-BEFORE-API66",
+      "area": "annotations",
+      "docsLines": "291-293",
+      "source": "@IsTest(testFor='ApexClass:Probe') private class Probe {}",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestIsTestClassRejectsCriticalAndTestForBeforeAPIVersion66/testFor"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-INVOCABLE-METHOD-DOCUMENTED-PROPERTIES",
+      "area": "annotations",
+      "docsLines": "227-257; capabilityType and configurationEditor require org-owned dependencies",
+      "source": "public class Probe { @InvocableMethod(iconName='slds:standard:account') public static void run(List<String> values) {} }",
+      "oracle": "accept",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogAllowsDocumentedInvocableMethodProperties/icon property"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-INVOCABLE-VARIABLE-DOCUMENTED-PROPERTIES",
+      "area": "annotations",
+      "docsLines": "149-218; scratch API 67 also accepts Boolean, Decimal, and Long placeholder text",
+      "source": "public class Probe { @InvocableVariable(defaultValue='hello' placeholderText='Enter a value') public String value; @InvocableVariable(placeholderText='true') public Boolean booleanValue; @InvocableVariable(placeholderText='1.5') public Decimal decimalValue; @InvocableVariable(placeholderText='10L') public Long longValue; }",
+      "oracle": "accept",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogAllowsDocumentedInvocableVariableProperties"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-INVOCABLE-METHOD-CAPABILITY-FORMAT",
+      "area": "annotations",
+      "docsLines": "243-246",
+      "source": "public class Probe { @InvocableMethod(capabilityType='not a capability') public static void run(List<String> values) {} }",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestInvocableMethodCapabilityTypeFormat"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-INVOCABLE-VARIABLE-DEFAULT-WITH-REQUIRED",
+      "area": "annotations",
+      "docsLines": "217-224",
+      "source": "public class Probe { @InvocableVariable(defaultValue='value' required=true) public String value; }",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestInvocableVariablePropertyContracts/default with required"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-INVOCABLE-VARIABLE-BOOLEAN-DEFAULT",
+      "area": "annotations",
+      "docsLines": "159-168",
+      "source": "public class Probe { @InvocableVariable(defaultValue='sometimes') public Boolean value; }",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestInvocableVariablePropertyContracts/Boolean default"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-INVOCABLE-VARIABLE-PLACEHOLDER-TYPE",
+      "area": "annotations",
+      "docsLines": "207-216; scratch API 67 rejects Date",
+      "source": "public class Probe { @InvocableVariable(placeholderText='2026-01-01') public Date value; }",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestInvocableVariablePropertyContracts/placeholder unsupported"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_primitives.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-MINIMUM-INTEGER-LITERAL",
+      "area": "types",
+      "docsLines": "22; scratch API 67 reports Illegal integer",
+      "source": "public class Probe { public Integer value() { return -2147483648; } }",
+      "oracle": "reject",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/minimum integer magnitude"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_primitives.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-CAST-MINIMUM-INTEGER-LITERAL",
+      "area": "types",
+      "docsLines": "22; scratch API 67 reports Illegal integer",
+      "source": "public class Probe { public Integer value() { return (Integer) -2147483648; } }",
+      "oracle": "reject",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/cast minimum magnitude"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_primitives.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-POSTFIX-BINARY-INTEGER-OVERFLOW",
+      "area": "types",
+      "docsLines": "22-23",
+      "source": "public class Probe { public void run() { Integer value = 0; System.debug(value++ - 2147483648); } }",
+      "oracle": "reject",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsInvalidSourceTypesAndLiterals/postfix binary overflow"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_primitives.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-LONG-SUFFIX-LITERAL",
+      "area": "types",
+      "docsLines": "23",
+      "source": "public class Probe { public Long value() { return 2147483648L; } }",
+      "oracle": "accept",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsLongSuffixLiteral"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-NESTED-ENUM-SWITCH-FROM-GENERIC-RETURN",
+      "area": "statements",
+      "docsLines": "82-104",
+      "source": "public class Probe { public enum Choice { One, Two } private static Map<String, Choice> choices = new Map<String, Choice>{'one' => Choice.One}; public void run() { Choice value = choices.get('one'); switch on value { when One {} when else {} } } }",
+      "oracle": "accept",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsResolveNestedEnumFromGenericReturn"
+    },
+    {
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-CLASSIC-FOR-ENUM-SWITCH",
+      "area": "statements",
+      "docsLines": "82-104",
+      "source": "public class Probe { public enum Choice { One, Two } public void run() { for (Choice value = Choice.One; false; value = Choice.Two) { switch on value { when One {} when else {} } } } }",
+      "oracle": "accept",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsResolveClassicForInitializerEnum"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-LARGE-DECIMAL-LITERAL",
+      "area": "types",
+      "docsLines": "decimal literal beyond Integer range remains valid with decimal suffix",
+      "source": "public class Probe { public Decimal value() { return 2147483648.0; } }",
+      "oracle": "accept",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsLargeDecimalLiteral"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-RAW-LIST-MIXED-CASE",
+      "area": "types",
+      "docsLines": "raw collection constructor rejection is case insensitive",
+      "source": "public class Probe { public void run() { System.debug(new lIsT()); } }",
+      "oracle": "reject",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsRawCollectionConstructorsCaseInsensitively/lIsT"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-REST-NONTERMINAL-SLASH-WILDCARD",
+      "area": "annotations",
+      "docsLines": "slash-delimited wildcard may appear before the final REST mapping segment",
+      "source": "@RestResource(urlMapping='/items/*/detail') global class Probe { @HttpGet global static void run() {} }",
+      "oracle": "accept",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureAllowsSlashDelimitedNonterminalWildcard"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-SOQL-LOCAL-SHADOWS-FIELD",
+      "area": "query",
+      "docsLines": "local bind shadows an identically named class field",
+      "source": "public class Probe { private String value; public void run() { Integer value = 1; List<Account> rows = [SELECT Id FROM Account WHERE Name = :value]; } }",
+      "oracle": "reject",
+      "productTest": "internal/sema/query_semantics_test.go:TestSemaBindingResolverLexicalBindingsShadowFields/local"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-SOQL-PARAMETER-SHADOWS-FIELD",
+      "area": "query",
+      "docsLines": "method parameter bind shadows an identically named class field",
+      "source": "public class Probe { private Integer value; public void run(String value) { List<Account> rows = [SELECT Id FROM Account WHERE Name = :value]; } }",
+      "oracle": "accept",
+      "productTest": "internal/sema/query_semantics_test.go:TestSemaBindingResolverLexicalBindingsShadowFields/parameter"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-SUPPRESSWARNINGS-MULTIPLE-ARGUMENTS",
+      "area": "annotations",
+      "docsLines": "SuppressWarnings requires exactly one positional argument",
+      "source": "@SuppressWarnings('PMD.One', 'PMD.Two') public class Probe {}",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestSuppressWarningsRequiresSingleStringArgument/multiple arguments"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-SUPPRESSWARNINGS-NONSTRING-ARGUMENT",
+      "area": "annotations",
+      "docsLines": "SuppressWarnings positional argument must be a string",
+      "source": "@SuppressWarnings(123) public class Probe {}",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestSuppressWarningsRequiresSingleStringArgument/non-string argument"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-SWITCH-DATETIME-SELECTOR",
+      "area": "statements",
+      "docsLines": "Datetime is not a supported switch selector",
+      "source": "public class Probe { public void run() { switch on Datetime.now() { when else {} } } }",
+      "oracle": "reject",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsRejectUnsupportedSelectorsAndDuplicateValues/Datetime selector"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-SWITCH-MISMATCHED-BRANCH",
+      "area": "statements",
+      "docsLines": "switch branch literal must be compatible with the selector",
+      "source": "public class Probe { public void run() { switch on 'value' { when 1 {} } } }",
+      "oracle": "reject",
+      "productTest": "internal/sema/statement_contracts_test.go:TestSwitchContractsRejectUnsupportedSelectorsAndDuplicateValues/mismatched branch"
+    },
+    {
+      "docsPath": "salesforce-scratch-oracle",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "owner": "sema",
+      "status": "supported",
+      "id": "APEX-REVIEW-WEBSERVICE-ANNOTATION-SYNTAX",
+      "area": "annotations",
+      "docsLines": "webservice is a method modifier, not an annotation",
+      "source": "@webservice public class Probe {}",
+      "oracle": "reject",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogRejectsUnknownAnnotationsAndProperties/webservice modifier"
     },
     {
       "id": "APEX-SOQL-COLLECTION-EQUALITY-BIND",
@@ -5020,7 +5390,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers"
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers/declared receiver"
     },
     {
       "id": "APEX-SOQL-DOTTED-BIND-MISSING-RECEIVER",
@@ -5033,7 +5403,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers"
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers/missing receiver"
     },
     {
       "id": "APEX-SOQL-DOTTED-BIND-WRONG-TYPE",
@@ -5046,7 +5416,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers"
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers/different field type"
     },
     {
       "id": "APEX-SOSL-DIVISION-INTEGER-BIND",
@@ -5117,7 +5487,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresNumericSOSLReturningLimitAndOffsetBinds"
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresNumericSOSLReturningLimitAndOffsetBinds/returningLimit"
     },
     {
       "id": "APEX-SOSL-RETURNING-OFFSET-STRING-BIND",
@@ -5130,7 +5500,7 @@
       "oracle": "reject",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresNumericSOSLReturningLimitAndOffsetBinds"
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresNumericSOSLReturningLimitAndOffsetBinds/offsetValue"
     },
     {
       "id": "APEX-SOSL-WHERE-STRING-BIND",

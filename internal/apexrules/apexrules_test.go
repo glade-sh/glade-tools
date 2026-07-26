@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestToolingPayloadCarriesRuleAPIVersion(t *testing.T) {
@@ -66,7 +67,7 @@ func TestToolingPayloadAcceptsEnums(t *testing.T) {
 }
 
 func TestValidateRejectsIncompleteAndDuplicateSupportedRules(t *testing.T) {
-	valid := Catalog{Rules: []Rule{{
+	valid := Catalog{GladeCommit: strings.Repeat("a", 40), Rules: []Rule{{
 		ID: "APEX-001", Area: "identifiers", DocsPath: "apex_ref", DocsLines: "1", SourceKind: "class", Source: "public class Probe {}", Oracle: OutcomeReject, Owner: "parser", Status: StatusSupported, ProductTest: "internal/apexast/parser_test.go:TestReserved",
 	}}}
 	if err := valid.Validate(); err != nil {
@@ -86,6 +87,12 @@ func TestValidateRejectsIncompleteAndDuplicateSupportedRules(t *testing.T) {
 	if err := invalid.Validate(); err == nil {
 		t.Fatal("Salesforce docs path without a docset directory was accepted")
 	}
+	valid.Rules[0].DocsPath = "apex_ref"
+	invalid = valid
+	invalid.GladeCommit = "main"
+	if err := invalid.Validate(); err == nil {
+		t.Fatal("catalog without a pinned Glade commit was accepted")
+	}
 }
 
 func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing.T) {
@@ -93,8 +100,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 372 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 25 prior and 226 recovered oracle-backed language rules", got)
+	if got := len(catalog.Rules); got != 400 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes, 25 prior contracts, 226 recovered oracle-backed rules, and 12 final-review controls", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
 	reservedCount := 0
@@ -162,7 +169,7 @@ func TestToolingIDAcceptsSalesforceCLIWarningPreamble(t *testing.T) {
 }
 
 func TestCompilerProblemsRejectsOperationalSalesforceErrors(t *testing.T) {
-	for _, code := range []string{"INVALID_SESSION_ID", "REQUEST_LIMIT_EXCEEDED", "NOT_FOUND", "DUPLICATE_VALUE"} {
+	for _, code := range []string{"INVALID_SESSION_ID", "REQUEST_LIMIT_EXCEEDED", "NOT_FOUND", "DUPLICATE_VALUE", "SERVER_UNAVAILABLE", "UNKNOWN_EXCEPTION", "API_DISABLED_FOR_ORG", "INSUFFICIENT_ACCESS"} {
 		t.Run(code, func(t *testing.T) {
 			output := []byte(`[{"message":"request failed","errorCode":"` + code + `"}]`)
 			if got := compilerProblems(output); len(got) != 0 {
@@ -170,9 +177,16 @@ func TestCompilerProblemsRejectsOperationalSalesforceErrors(t *testing.T) {
 			}
 		})
 	}
+	if got := compilerProblems([]byte(`{"message":"request failed without an API error code"}`)); len(got) != 0 {
+		t.Fatalf("compilerProblems(message only) = %#v, want operational failure", got)
+	}
 	compiler := []byte(`[{"message":"Unexpected token 'currency'","errorCode":"INVALID_FIELD_FOR_INSERT_UPDATE"}]`)
 	if got := compilerProblems(compiler); len(got) != 1 || got[0] != "Unexpected token 'currency'" {
 		t.Fatalf("compilerProblems(compiler) = %#v", got)
+	}
+	multiple := []byte(`[{"message":"first problem","errorCode":"INVALID_FIELD_FOR_INSERT_UPDATE"},{"message":"second problem","errorCode":"INVALID_FIELD_FOR_INSERT_UPDATE"}]`)
+	if got := compilerProblems(multiple); len(got) != 2 || got[0] != "first problem" || got[1] != "second problem" {
+		t.Fatalf("compilerProblems(multiple) = %#v", got)
 	}
 }
 
@@ -187,7 +201,7 @@ while [ "$#" -gt 0 ]; do
 done
 test -f "$project/sfdx-project.json"
 if grep -R "REJECT_ME" "$project/force-app/main/default" >/dev/null; then
-  printf '{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"GLADESEMA","message":"rejected"}]}\n'
+  printf '{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"GLADESEMA","message":"rejected","file":"force-app/main/default/triggers/APEX_002.trigger"}]}\n'
   exit 1
 fi
 printf '{"status":"passed","exitCode":0,"diagnostics":[]}\n'
@@ -215,8 +229,11 @@ func TestRunGladeClassifiesOnlyCompletedDiagnosticFailuresAsRejects(t *testing.T
 		want      Outcome
 		wantError bool
 	}{
-		{name: "diagnostic rejection", output: `{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"APEXPARSE002","message":"bad"}]}`, exitCode: 1, want: OutcomeReject},
-		{name: "diagnostic rejection with warning preamble", output: "warning: cache disabled\n" + `{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"APEXPARSE002","message":"bad"}]}`, exitCode: 1, want: OutcomeReject},
+		{name: "diagnostic rejection", output: `{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"APEXPARSE002","message":"bad","file":"force-app/main/default/classes/Probe.cls"}]}`, exitCode: 1, want: OutcomeReject},
+		{name: "diagnostic rejection with warning preamble", output: "warning: cache disabled\n" + `{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"APEXPARSE002","message":"bad","file":"force-app/main/default/classes/Probe.cls"}]}`, exitCode: 1, want: OutcomeReject},
+		{name: "dependency diagnostic", output: `{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"GLADESEMA","message":"bad dependency","file":"force-app/main/default/classes/Dependency.cls"}]}`, exitCode: 1, wantError: true},
+		{name: "missing diagnostic source", output: `{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","code":"GLADESEMA","message":"bad"}]}`, exitCode: 1, wantError: true},
+		{name: "warning only", output: `{"status":"failed","exitCode":1,"diagnostics":[{"severity":"warning","code":"GLADESEMA","message":"warning","file":"force-app/main/default/classes/Probe.cls"}]}`, exitCode: 1, wantError: true},
 		{name: "operational exit", output: `{"status":"failed","exitCode":2,"diagnostics":[]}`, exitCode: 2, wantError: true},
 		{name: "missing report", output: `glade crashed`, exitCode: 1, wantError: true},
 	} {
@@ -231,6 +248,76 @@ func TestRunGladeClassifiesOnlyCompletedDiagnosticFailuresAsRejects(t *testing.T
 				t.Fatalf("runGladeRule() = %q, %v; want %q error=%v", outcome, err, test.want, test.wantError)
 			}
 		})
+	}
+}
+
+func TestRunGladeRejectsBrokenSetupEvenWhenProbeAlsoRejects(t *testing.T) {
+	bin := filepath.Join(t.TempDir(), "fake-glade")
+	if err := os.WriteFile(bin, []byte(`#!/bin/sh
+set -eu
+project=""
+while [ "$#" -gt 0 ]; do
+  if [ "$1" = "--project" ]; then project="$2"; shift 2; continue; fi
+  shift
+done
+if grep -R "BROKEN_DEPENDENCY" "$project/force-app/main/default" >/dev/null; then
+  if grep -R "REJECT_ME" "$project/force-app/main/default" >/dev/null; then
+    printf '{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","message":"bad dependency","file":"force-app/main/default/classes/Dependency.cls"},{"severity":"error","message":"bad probe","file":"force-app/main/default/classes/Probe.cls"}]}\n'
+  else
+    printf '{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","message":"bad dependency","file":"force-app/main/default/classes/Dependency.cls"}]}\n'
+  fi
+  exit 1
+fi
+printf '{"status":"passed","exitCode":0,"diagnostics":[]}\n'
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	outcome, err := runGladeRule(context.Background(), bin, t.TempDir(), Rule{
+		ID:         "Probe",
+		SourceKind: "class",
+		Source:     "public class Probe { REJECT_ME; }",
+		Dependencies: []SourceFile{{
+			Path:    "force-app/main/default/classes/Dependency.cls",
+			Content: "public class Dependency { BROKEN_DEPENDENCY; }",
+		}},
+	})
+	if err == nil || outcome != "" || !strings.Contains(err.Error(), "setup") {
+		t.Fatalf("runGladeRule() = %q, %v; want setup error", outcome, err)
+	}
+}
+
+func TestRunGladeRejectsBrokenProjectMetadataBeforeProbe(t *testing.T) {
+	bin := filepath.Join(t.TempDir(), "fake-glade")
+	if err := os.WriteFile(bin, []byte(`#!/bin/sh
+set -eu
+project=""
+while [ "$#" -gt 0 ]; do
+  if [ "$1" = "--project" ]; then project="$2"; shift 2; continue; fi
+  shift
+done
+if grep -R "BROKEN_METADATA" "$project/force-app/main/default" >/dev/null; then
+  printf '{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","message":"bad metadata","file":"force-app/main/default/objects/Account/fields/Broken.field-meta.xml"}]}\n'
+  exit 1
+fi
+if grep -R "REJECT_ME" "$project/force-app/main/default" >/dev/null; then
+  printf '{"status":"failed","exitCode":1,"diagnostics":[{"severity":"error","message":"bad probe","file":"force-app/main/default/classes/Probe.cls"}]}\n'
+  exit 1
+fi
+printf '{"status":"passed","exitCode":0,"diagnostics":[]}\n'
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	outcome, err := runGladeRule(context.Background(), bin, t.TempDir(), Rule{
+		ID:         "Probe",
+		SourceKind: "class",
+		Source:     "public class Probe { REJECT_ME; }",
+		ProjectFiles: []SourceFile{{
+			Path:    "force-app/main/default/objects/Account/fields/Broken.field-meta.xml",
+			Content: "BROKEN_METADATA",
+		}},
+	})
+	if err == nil || outcome != "" || !strings.Contains(err.Error(), "setup") {
+		t.Fatalf("runGladeRule() = %q, %v; want setup error", outcome, err)
 	}
 }
 
@@ -266,7 +353,7 @@ func TestRunSalesforceRecordsProblemsAndDeletesAcceptedProbes(t *testing.T) {
 set -eu
 printf '%s\n' "$*" >> "$APEX_RULE_SF_LOG"
 case "$*" in
-  *BadProbe*) printf '{"message":"Unexpected token REJECT_ME"}\n' >&2; exit 1 ;;
+  *BadProbe*) printf '{"message":"Unexpected token REJECT_ME","errorCode":"INVALID_FIELD_FOR_INSERT_UPDATE"}\n' >&2; exit 1 ;;
   *delete*) printf '{"status":0}\n' ;;
   *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
 esac
@@ -381,6 +468,21 @@ esac
 	}
 }
 
+func TestToolingRecordIsGoneRecognizesNotFound(t *testing.T) {
+	dir := t.TempDir()
+	sf := filepath.Join(dir, "sf")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+printf '[{"message":"record is gone","errorCode":"NOT_FOUND"}]\n' >&2
+exit 1
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	if !toolingRecordIsGone(context.Background(), "scratch", "/services/data/v66.0/tooling/sobjects/ApexClass/missing") {
+		t.Fatal("NOT_FOUND response did not confirm that the Tooling record is gone")
+	}
+}
+
 func TestRunSalesforceReturnsTransportFailuresInsteadOfCallingThemCompilerRejects(t *testing.T) {
 	dir := t.TempDir()
 	sf := filepath.Join(dir, "sf")
@@ -449,7 +551,7 @@ func TestRunSalesforceReturnsDependencyCompilerFailuresInsteadOfClassifyingProbe
 set -eu
 printf '%s\n' "$*" >> "$APEX_RULE_SF_LOG"
 case "$*" in
-  *BadBase*) printf '{"message":"dependency does not compile"}\n' >&2; exit 1 ;;
+  *BadBase*) printf '{"message":"dependency does not compile","errorCode":"INVALID_FIELD_FOR_INSERT_UPDATE"}\n' >&2; exit 1 ;;
   *DependentProbe*) printf '%s\n' 'probe must not be compiled' >&2; exit 9 ;;
   *delete*) printf '{"status":0}\n' ;;
   *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
@@ -521,6 +623,63 @@ esac
 	}
 	if got := strings.Count(string(log), "glade-apex-rule-delete-"); got != 1 {
 		t.Fatalf("cleanup calls = %d, want accepted dependency cleanup: %s", got, log)
+	}
+}
+
+func TestRunSalesforceCleansAcceptedDependenciesAfterCancellation(t *testing.T) {
+	dir := t.TempDir()
+	logPath := filepath.Join(dir, "sf.log")
+	sf := filepath.Join(dir, "sf")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+set -eu
+printf '%s\n' "$*" >> "$APEX_RULE_SF_LOG"
+case "$*" in
+  *DependentProbe*) sleep 1 ;;
+  *delete*) printf '{"status":0}\n' ;;
+  *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
+esac
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	t.Setenv("APEX_RULE_SF_LOG", logPath)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	cancelled := make(chan struct{})
+	go func() {
+		defer close(cancelled)
+		deadline := time.Now().Add(5 * time.Second)
+		for time.Now().Before(deadline) {
+			log, _ := os.ReadFile(logPath)
+			if strings.Contains(string(log), "DependentProbe") {
+				cancel()
+				return
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	}()
+
+	_, err := RunSalesforce(ctx, "scratch", []Rule{{
+		ID:         "DependentProbe",
+		SourceKind: "class",
+		Source:     "public class DependentProbe {}",
+		APIVersion: 66,
+		Dependencies: []SourceFile{{
+			Path:    "force-app/main/default/classes/GoodBase.cls",
+			Content: "public class GoodBase {}",
+		}},
+	}})
+	<-cancelled
+	if err == nil || !strings.Contains(err.Error(), "Salesforce compiler request") {
+		t.Fatalf("RunSalesforce error = %v, want canceled compiler request", err)
+	}
+	log, readErr := os.ReadFile(logPath)
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	if got := strings.Count(string(log), "glade-apex-rule-delete-"); got != 1 {
+		t.Fatalf("cleanup calls = %d, want accepted dependency cleanup after cancellation: %s", got, log)
 	}
 }
 

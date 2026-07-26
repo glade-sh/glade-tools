@@ -25,7 +25,10 @@ var (
 	triggerNamePattern = regexp.MustCompile(`(?is)\btrigger\s+([A-Za-z_][A-Za-z0-9_]*)\s+on\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)`)
 )
 
-const acceptedToolingDeleteAttempts = 3
+const (
+	acceptedToolingDeleteAttempts = 3
+	acceptedToolingCleanupTimeout = 30 * time.Second
+)
 
 // RunSalesforce compiles disposable Tooling API records in the target org.
 // Accepted records are deleted before this call returns. Command output stays
@@ -77,7 +80,9 @@ func runSalesforceRule(ctx context.Context, targetOrg string, rule Rule) (Salesf
 			}
 		}
 	}
-	cleanupErr := deleteToolingRecords(ctx, targetOrg, rule.APIVersion, created)
+	cleanupCtx, cancelCleanup := context.WithTimeout(context.WithoutCancel(ctx), acceptedToolingCleanupTimeout)
+	defer cancelCleanup()
+	cleanupErr := deleteToolingRecords(cleanupCtx, targetOrg, rule.APIVersion, created)
 	if cleanupErr != nil {
 		cleanupErr = fmt.Errorf("delete accepted Salesforce probe %s: %w", rule.ID, cleanupErr)
 	}
@@ -185,7 +190,8 @@ func toolingRecordIsGone(ctx context.Context, targetOrg, url string) bool {
 	if err == nil {
 		return false
 	}
-	return toolingHasErrorCode(out, "INVALID_CROSS_REFERENCE_KEY")
+	return toolingHasErrorCode(out, "INVALID_CROSS_REFERENCE_KEY") ||
+		toolingHasErrorCode(out, "NOT_FOUND")
 }
 
 func runSF(ctx context.Context, args ...string) ([]byte, error) {
@@ -280,17 +286,15 @@ func compilerProblems(output []byte) []string {
 	if !ok {
 		return nil
 	}
-	operationalCodes := map[string]bool{
-		"duplicate_value":             true,
-		"invalid_cross_reference_key": true,
-		"invalid_session_id":          true,
-		"not_found":                   true,
-		"request_limit_exceeded":      true,
-	}
+	compilerFailure := false
 	for _, code := range collectJSONFields(value, map[string]bool{"errorcode": true}) {
-		if operationalCodes[strings.ToLower(code)] {
-			return nil
+		if strings.EqualFold(code, "INVALID_FIELD_FOR_INSERT_UPDATE") {
+			compilerFailure = true
+			break
 		}
+	}
+	if !compilerFailure {
+		return nil
 	}
 	problems := collectJSONFields(value, map[string]bool{"message": true, "problem": true})
 	return uniqueStrings(problems)
@@ -310,16 +314,16 @@ func toolingHasErrorCode(output []byte, expected string) bool {
 }
 
 func toolingJSON(output []byte) (any, bool) {
-	start := bytes.IndexByte(output, '{')
-	end := bytes.LastIndexByte(output, '}')
-	if start < 0 || end < start {
-		return nil, false
+	for start, marker := range output {
+		if marker != '{' && marker != '[' {
+			continue
+		}
+		var value any
+		if err := json.NewDecoder(bytes.NewReader(output[start:])).Decode(&value); err == nil {
+			return value, true
+		}
 	}
-	var value any
-	if err := json.Unmarshal(output[start:end+1], &value); err != nil {
-		return nil, false
-	}
-	return value, true
+	return nil, false
 }
 
 func findJSONField(value any, name string) string {

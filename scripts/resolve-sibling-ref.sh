@@ -12,7 +12,9 @@ fallback_ref="${3:-main}"
 resolved_ref="${fallback_ref}"
 
 if [[ -n "${requested_ref}" ]]; then
-	if git ls-remote --exit-code --tags "${remote}" "refs/tags/${requested_ref}" >/dev/null 2>&1; then
+	if [[ "${requested_ref}" =~ ^[0-9a-f]{40}$ ]]; then
+		resolved_ref="${requested_ref}"
+	elif git ls-remote --exit-code --tags "${remote}" "refs/tags/${requested_ref}" >/dev/null 2>&1; then
 		resolved_ref="${requested_ref}"
 	elif git ls-remote --exit-code --heads "${remote}" "refs/heads/${requested_ref}" >/dev/null 2>&1; then
 		resolved_ref="${requested_ref}"

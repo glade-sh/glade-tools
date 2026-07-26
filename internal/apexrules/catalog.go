@@ -20,6 +20,9 @@ func LoadCatalog(path string) (Catalog, error) {
 }
 
 func (catalog Catalog) Validate() error {
+	if !IsFullGitSHA(catalog.GladeCommit) {
+		return fmt.Errorf("catalog gladeCommit must be a full 40-character lowercase Git SHA")
+	}
 	seen := map[string]bool{}
 	for _, rule := range catalog.Rules {
 		if strings.TrimSpace(rule.ID) == "" || strings.TrimSpace(rule.Area) == "" || strings.TrimSpace(rule.DocsPath) == "" || strings.TrimSpace(rule.DocsLines) == "" || strings.TrimSpace(rule.SourceKind) == "" || strings.TrimSpace(rule.Source) == "" || strings.TrimSpace(rule.Owner) == "" {
@@ -46,4 +49,18 @@ func (catalog Catalog) Validate() error {
 		}
 	}
 	return nil
+}
+
+func IsFullGitSHA(value string) bool {
+	if len(value) != 40 {
+		return false
+	}
+	for _, char := range value {
+		if char < '0' || char > '9' {
+			if char < 'a' || char > 'f' {
+				return false
+			}
+		}
+	}
+	return true
 }
