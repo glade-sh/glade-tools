@@ -1785,6 +1785,19 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/sema_test.go:TestAnalyzeProjectStandardSObjectStaticGetSObjectType"
+    },
+    {
+      "id": "APEX-SOSL-LIMIT-STRING-BIND",
+      "area": "sosl-binds",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "SOSL LIMIT bind type",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static void run() { String limitValue = '1'; List<List<SObject>> rows = [FIND 'acme' RETURNING Account(Id) LIMIT :limitValue]; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresNumericSOSLLimitBindInOneLineMethod"
     }
   ]
 }
