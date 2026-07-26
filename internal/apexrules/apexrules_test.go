@@ -118,6 +118,30 @@ if grep -R "REJECT_ME" "$project/force-app/main/default" >/dev/null; then exit 1
 	}
 }
 
+func TestWriteGladeRuleProjectWritesProjectFilesWithoutToolingDependencies(t *testing.T) {
+	project := t.TempDir()
+	rule := Rule{
+		ID:         "ProjectFilesProbe",
+		SourceKind: "class",
+		Source:     "public class ProjectFilesProbe {}",
+		ProjectFiles: []SourceFile{{
+			Path:    "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+			Content: "<CustomField xmlns=\"http://soap.sforce.com/2006/04/metadata\"><fullName>Name</fullName></CustomField>",
+		}},
+	}
+	if err := writeGladeRuleProject(project, rule); err != nil {
+		t.Fatalf("writeGladeRuleProject: %v", err)
+	}
+	path := filepath.Join(project, rule.ProjectFiles[0].Path)
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read project file: %v", err)
+	}
+	if string(content) != rule.ProjectFiles[0].Content {
+		t.Fatalf("project file = %q, want %q", content, rule.ProjectFiles[0].Content)
+	}
+}
+
 func TestRunSalesforceRecordsProblemsAndDeletesAcceptedProbes(t *testing.T) {
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "sf.log")
