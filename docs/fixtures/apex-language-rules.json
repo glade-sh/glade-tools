@@ -1675,6 +1675,32 @@
       "owner": "typesys",
       "status": "supported",
       "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations"
+    },
+    {
+      "id": "APEX-API64-ABSTRACT-DEFAULT-ACCESS",
+      "area": "versioning",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/versioned_behavior_changes.md",
+      "docsLines": "Version 65.0",
+      "apiVersion": 64,
+      "sourceKind": "class",
+      "source": "public abstract class OracleAbstract64 { abstract String value(); }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65"
+    },
+    {
+      "id": "APEX-API65-ABSTRACT-DEFAULT-ACCESS",
+      "area": "versioning",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/versioned_behavior_changes.md",
+      "docsLines": "Version 65.0",
+      "apiVersion": 65,
+      "sourceKind": "class",
+      "source": "public abstract class OracleAbstract65 { abstract String value(); }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65"
     }
   ]
 }

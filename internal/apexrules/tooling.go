@@ -159,7 +159,11 @@ func toolingURL(apiVersion float64, object string) string {
 }
 
 func toolingPayload(rule Rule) (string, string, error) {
-	payload := map[string]any{"Body": rule.Source}
+	apiVersion := rule.APIVersion
+	if apiVersion == 0 {
+		apiVersion = 66
+	}
+	payload := map[string]any{"Body": rule.Source, "ApiVersion": apiVersion}
 	switch rule.SourceKind {
 	case "class":
 		match := classNamePattern.FindStringSubmatch(rule.Source)

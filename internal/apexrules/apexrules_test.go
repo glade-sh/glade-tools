@@ -2,11 +2,31 @@ package apexrules
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+func TestToolingPayloadCarriesRuleAPIVersion(t *testing.T) {
+	_, payload, err := toolingPayload(Rule{
+		ID:         "APEX-API-VERSION",
+		APIVersion: 65,
+		SourceKind: "class",
+		Source:     "public class Probe {}",
+	})
+	if err != nil {
+		t.Fatalf("toolingPayload: %v", err)
+	}
+	var body map[string]any
+	if err := json.Unmarshal([]byte(payload), &body); err != nil {
+		t.Fatalf("decode tooling payload: %v", err)
+	}
+	if got := body["ApiVersion"]; got != float64(65) {
+		t.Fatalf("ApiVersion = %#v, want 65", got)
+	}
+}
 
 func TestValidateRejectsIncompleteAndDuplicateSupportedRules(t *testing.T) {
 	valid := Catalog{Rules: []Rule{{
@@ -31,8 +51,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 128 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 7 oracle-backed language rules", got)
+	if got := len(catalog.Rules); got != 130 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 9 oracle-backed language rules", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
 	reservedCount := 0
