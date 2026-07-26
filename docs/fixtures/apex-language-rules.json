@@ -1649,6 +1649,19 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogAllowsSuppressWarnings"
+    },
+    {
+      "id": "APEX-INTERFACE-COMPARABLE",
+      "area": "inheritance",
+      "docsPath": "nu corpus",
+      "docsLines": "observed use",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleComparable implements Comparable { public Integer compareTo(Object other) { return 0; } }",
+      "oracle": "accept",
+      "owner": "typesys",
+      "status": "supported",
+      "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations"
     }
   ]
 }
