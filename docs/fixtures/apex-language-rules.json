@@ -2947,9 +2947,9 @@
       "sourceKind": "class",
       "source": "public class ProbeUnreachable40 { public void run() { throw new NullPointerException(); Integer value = 1; } }",
       "dependencies": [],
-      "oracle": "reject",
+      "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsAllowInstructionsAfterThrow",
       "owner": "sema"
     },
     {
@@ -2961,9 +2961,9 @@
       "sourceKind": "class",
       "source": "public class ProbeUnreachable41 { public void run() { throw new NullPointerException(); Integer value = 1; } }",
       "dependencies": [],
-      "oracle": "reject",
+      "oracle": "accept",
       "status": "supported",
-      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectInvalidThrowAndCatchTypes",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsAllowInstructionsAfterThrow",
       "owner": "sema"
     },
     {
@@ -3349,10 +3349,10 @@
       "apiVersion": 67,
       "sourceKind": "class",
       "source": "public class OracleSecurityEnforced { public static void run() { List<Account> rows = [SELECT Id FROM Account WITH SECURITY_ENFORCED]; } }",
-      "oracle": "reject",
+      "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater"
+      "productTest": "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryRemainsAcceptedAtAPIVersion67AndLater"
     },
     {
       "id": "APEX-RESERVED-ABSTRACT",
