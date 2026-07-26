@@ -28,6 +28,24 @@ func TestToolingPayloadCarriesRuleAPIVersion(t *testing.T) {
 	}
 }
 
+func TestToolingPayloadAcceptsInterfaceDependencies(t *testing.T) {
+	object, payload, err := toolingPayload(Rule{
+		ID:         "APEX-INTERFACE-DEPENDENCY",
+		APIVersion: 66,
+		SourceKind: "class",
+		Source:     "public interface ProbeDependency {}",
+	})
+	if err != nil {
+		t.Fatalf("toolingPayload: %v", err)
+	}
+	if object != "ApexClass" {
+		t.Fatalf("object = %q, want ApexClass", object)
+	}
+	if !strings.Contains(payload, `"Name":"ProbeDependency"`) {
+		t.Fatalf("payload = %s, want interface name", payload)
+	}
+}
+
 func TestValidateRejectsIncompleteAndDuplicateSupportedRules(t *testing.T) {
 	valid := Catalog{Rules: []Rule{{
 		ID: "APEX-001", Area: "identifiers", DocsPath: "apex_ref", DocsLines: "1", SourceKind: "class", Source: "public class Probe {}", Oracle: OutcomeReject, Owner: "parser", Status: StatusSupported, ProductTest: "internal/apexast/parser_test.go:TestReserved",

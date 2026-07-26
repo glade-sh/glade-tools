@@ -20,7 +20,7 @@ type SalesforceResult struct {
 }
 
 var (
-	classNamePattern   = regexp.MustCompile(`(?i)\bclass\s+([A-Za-z_][A-Za-z0-9_]*)`)
+	classNamePattern   = regexp.MustCompile(`(?i)\b(?:class|interface)\s+([A-Za-z_][A-Za-z0-9_]*)`)
 	triggerNamePattern = regexp.MustCompile(`(?is)\btrigger\s+([A-Za-z_][A-Za-z0-9_]*)\s+on\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)`)
 )
 
