@@ -1662,6 +1662,19 @@
       "owner": "typesys",
       "status": "supported",
       "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations"
+    },
+    {
+      "id": "APEX-INTERFACE-BATCHABLE-CONTEXT",
+      "area": "inheritance",
+      "docsPath": "nu corpus",
+      "docsLines": "observed test mock",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleBatchableContext implements Database.BatchableContext { public Id getChildJobId() { return null; } public Id getJobId() { return null; } }",
+      "oracle": "accept",
+      "owner": "typesys",
+      "status": "supported",
+      "productTest": "internal/typesys/standard_symbols_test.go:TestStandardPlatformSymbolsMergeProductNamespaceDeclarations"
     }
   ]
 }
