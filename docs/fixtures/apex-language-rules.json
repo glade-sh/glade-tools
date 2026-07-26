@@ -1636,6 +1636,19 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/declaration_contracts_test.go:TestOverrideRejectsProtectedVisibilityForGlobalProjectMethod"
+    },
+    {
+      "id": "APEX-ANNOTATION-SUPPRESSWARNINGS",
+      "area": "annotations",
+      "docsPath": "nu corpus",
+      "docsLines": "observed use",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "@SuppressWarnings('PMD.EmptyStatementBlock') public class OracleSuppressWarnings { public static void run() {} }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogAllowsSuppressWarnings"
     }
   ]
 }
