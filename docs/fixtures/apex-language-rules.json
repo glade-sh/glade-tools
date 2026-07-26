@@ -1740,6 +1740,38 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers"
+    },
+    {
+      "id": "APEX-PLATFORM-NESTED-TYPE-PRECEDENCE",
+      "area": "platform-members",
+      "docsPath": "nu corpus",
+      "docsLines": "nested class named Limits",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public Integer run() { return Limits.getLimitCallouts(); } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/OracleNestedLimits.cls",
+          "content": "public class OracleNestedLimits { public virtual class Limits { public Integer getLimits() { return 0; } } }"
+        }
+      ],
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/namespace_precedence_test.go:TestAnalyzeNestedProjectTypeDoesNotShadowSystemLimits"
+    },
+    {
+      "id": "APEX-PLATFORM-TOP-LEVEL-TYPE-SHADOW",
+      "area": "platform-members",
+      "docsPath": "nu corpus",
+      "docsLines": "top-level class named Limits",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Limits { public static Integer run() { return Limits.getLimitCallouts(); } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/namespace_precedence_test.go:TestAnalyzeTopLevelProjectTypeShadowsSystemLimits"
     }
   ]
 }
