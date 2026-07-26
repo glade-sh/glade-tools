@@ -51,8 +51,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 146 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 25 oracle-backed language rules", got)
+	if got := len(catalog.Rules); got != 360 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 25 prior and 214 recovered oracle-backed language rules", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
 	reservedCount := 0
@@ -73,6 +73,15 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 		if !seen["APEX-RESERVED-"+word] {
 			t.Fatalf("missing reserved-word probe %s", word)
 		}
+	}
+	recovered := 0
+	for _, rule := range catalog.Rules {
+		if strings.HasPrefix(rule.ID, "APEX-AUDIT-") {
+			recovered++
+		}
+	}
+	if recovered != 214 {
+		t.Fatalf("recovered audit rows = %d, want 214", recovered)
 	}
 }
 
