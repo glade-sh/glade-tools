@@ -185,6 +185,24 @@ esac
 	}
 }
 
+func TestRunSalesforceReturnsTransportFailuresInsteadOfCallingThemCompilerRejects(t *testing.T) {
+	dir := t.TempDir()
+	sf := filepath.Join(dir, "sf")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+printf '%s\n' 'Error (1): HTTP response contains html content.' >&2
+exit 1
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	_, err := RunSalesforce(context.Background(), "scratch", []Rule{{
+		ID: "TransportFailure", SourceKind: "class", Source: "public class TransportFailure {}", APIVersion: 66,
+	}})
+	if err == nil || !strings.Contains(err.Error(), "Salesforce compiler request") {
+		t.Fatalf("RunSalesforce error = %v, want transport failure", err)
+	}
+}
+
 func TestRunSalesforceCompilesAndDeletesRuleDependencies(t *testing.T) {
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "sf.log")

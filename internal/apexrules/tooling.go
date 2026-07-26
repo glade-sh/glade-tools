@@ -92,7 +92,11 @@ func compileToolingRule(ctx context.Context, targetOrg string, rule Rule) (tooli
 	}
 	out, err := runSF(ctx, "api", "request", "rest", toolingURL(rule.APIVersion, object), "--method", "POST", "--body", payload, "--target-org", targetOrg)
 	if err != nil {
-		return toolingRecord{}, SalesforceResult{Outcome: OutcomeReject, Problems: compilerProblems(out)}, nil
+		problems := compilerProblems(out)
+		if len(problems) == 0 {
+			return toolingRecord{}, SalesforceResult{}, fmt.Errorf("Salesforce compiler request %s: %w", rule.ID, err)
+		}
+		return toolingRecord{}, SalesforceResult{Outcome: OutcomeReject, Problems: problems}, nil
 	}
 	id := toolingID(out)
 	if id == "" {
