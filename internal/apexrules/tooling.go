@@ -1,9 +1,11 @@
 package apexrules
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -30,25 +32,112 @@ func RunSalesforce(ctx context.Context, targetOrg string, rules []Rule) (map[str
 	}
 	results := make(map[string]SalesforceResult, len(rules))
 	for _, rule := range rules {
-		object, payload, err := toolingPayload(rule)
-		if err != nil {
-			return nil, fmt.Errorf("prepare Salesforce probe %s: %w", rule.ID, err)
+		var created []toolingRecord
+		result := SalesforceResult{Outcome: OutcomeAccept}
+		for _, dependency := range rule.Dependencies {
+			dependencyRule, err := toolingDependencyRule(rule, dependency)
+			if err != nil {
+				return nil, fmt.Errorf("prepare Salesforce dependency for %s: %w", rule.ID, err)
+			}
+			record, dependencyResult, err := compileToolingRule(ctx, targetOrg, dependencyRule)
+			if err != nil {
+				return nil, err
+			}
+			if dependencyResult.Outcome == OutcomeReject {
+				result = dependencyResult
+				break
+			}
+			created = append(created, record)
 		}
-		out, err := runSF(ctx, "api", "request", "rest", toolingURL(rule.APIVersion, object), "--method", "POST", "--body", payload, "--target-org", targetOrg)
-		if err != nil {
-			results[rule.ID] = SalesforceResult{Outcome: OutcomeReject, Problems: compilerProblems(out)}
-			continue
+		if result.Outcome == OutcomeAccept {
+			record, probeResult, err := compileToolingRule(ctx, targetOrg, rule)
+			if err != nil {
+				return nil, err
+			}
+			result = probeResult
+			if result.Outcome == OutcomeAccept {
+				created = append(created, record)
+			}
 		}
-		id := toolingID(out)
-		if id == "" {
-			return nil, fmt.Errorf("Salesforce accepted %s without a Tooling API record id", rule.ID)
-		}
-		if _, err := runSF(ctx, "api", "request", "rest", toolingURL(rule.APIVersion, object)+"/"+id, "--method", "DELETE", "--target-org", targetOrg); err != nil {
+		if err := deleteToolingRecords(ctx, targetOrg, rule.APIVersion, created); err != nil {
 			return nil, fmt.Errorf("delete accepted Salesforce probe %s: %w", rule.ID, err)
 		}
-		results[rule.ID] = SalesforceResult{Outcome: OutcomeAccept}
+		results[rule.ID] = result
 	}
 	return results, nil
+}
+
+type toolingRecord struct {
+	object string
+	id     string
+}
+
+func toolingDependencyRule(rule Rule, dependency SourceFile) (Rule, error) {
+	sourceKind := ""
+	switch {
+	case strings.HasSuffix(strings.ToLower(dependency.Path), ".cls"):
+		sourceKind = "class"
+	case strings.HasSuffix(strings.ToLower(dependency.Path), ".trigger"):
+		sourceKind = "trigger"
+	default:
+		return Rule{}, fmt.Errorf("unsupported dependency path %q", dependency.Path)
+	}
+	return Rule{ID: rule.ID + " dependency", APIVersion: rule.APIVersion, SourceKind: sourceKind, Source: dependency.Content}, nil
+}
+
+func compileToolingRule(ctx context.Context, targetOrg string, rule Rule) (toolingRecord, SalesforceResult, error) {
+	object, payload, err := toolingPayload(rule)
+	if err != nil {
+		return toolingRecord{}, SalesforceResult{}, fmt.Errorf("prepare Salesforce probe %s: %w", rule.ID, err)
+	}
+	out, err := runSF(ctx, "api", "request", "rest", toolingURL(rule.APIVersion, object), "--method", "POST", "--body", payload, "--target-org", targetOrg)
+	if err != nil {
+		return toolingRecord{}, SalesforceResult{Outcome: OutcomeReject, Problems: compilerProblems(out)}, nil
+	}
+	id := toolingID(out)
+	if id == "" {
+		return toolingRecord{}, SalesforceResult{}, fmt.Errorf("Salesforce accepted %s without a Tooling API record id", rule.ID)
+	}
+	return toolingRecord{object: object, id: id}, SalesforceResult{Outcome: OutcomeAccept}, nil
+}
+
+func deleteToolingRecords(ctx context.Context, targetOrg string, apiVersion float64, records []toolingRecord) error {
+	for index := len(records) - 1; index >= 0; index-- {
+		record := records[index]
+		if err := deleteToolingRecord(ctx, targetOrg, toolingURL(apiVersion, record.object)+"/"+record.id); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func deleteToolingRecord(ctx context.Context, targetOrg, url string) error {
+	payload, err := json.Marshal(map[string]any{
+		"url":    url,
+		"method": "DELETE",
+		"body": map[string]any{
+			"mode": "raw",
+			"raw":  "",
+		},
+	})
+	if err != nil {
+		return err
+	}
+	file, err := os.CreateTemp("", "glade-apex-rule-delete-*.json")
+	if err != nil {
+		return err
+	}
+	path := file.Name()
+	defer os.Remove(path)
+	if _, err := file.Write(payload); err != nil {
+		file.Close()
+		return err
+	}
+	if err := file.Close(); err != nil {
+		return err
+	}
+	_, err = runSF(ctx, "api", "request", "rest", "--file", path, "--target-org", targetOrg)
+	return err
 }
 
 func runSF(ctx context.Context, args ...string) ([]byte, error) {
@@ -127,20 +216,33 @@ func triggerUsageFlag(event string) string {
 }
 
 func toolingID(output []byte) string {
-	var value any
-	if json.Unmarshal(output, &value) != nil {
+	value, ok := toolingJSON(output)
+	if !ok {
 		return ""
 	}
 	return findJSONField(value, "id")
 }
 
 func compilerProblems(output []byte) []string {
-	var value any
-	if json.Unmarshal(output, &value) != nil {
+	value, ok := toolingJSON(output)
+	if !ok {
 		return nil
 	}
 	problems := collectJSONFields(value, map[string]bool{"message": true, "problem": true})
 	return uniqueStrings(problems)
+}
+
+func toolingJSON(output []byte) (any, bool) {
+	start := bytes.IndexByte(output, '{')
+	end := bytes.LastIndexByte(output, '}')
+	if start < 0 || end < start {
+		return nil, false
+	}
+	var value any
+	if err := json.Unmarshal(output[start:end+1], &value); err != nil {
+		return nil, false
+	}
+	return value, true
 }
 
 func findJSONField(value any, name string) string {

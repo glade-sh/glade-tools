@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -52,6 +53,13 @@ func TestCompareUsesOutcomeRatherThanCompilerWording(t *testing.T) {
 	results := Compare(rules, map[string]Outcome{"APEX-001": OutcomeReject, "APEX-002": OutcomeReject})
 	if len(results) != 2 || !results[0].Matched || results[1].Matched {
 		t.Fatalf("results = %#v", results)
+	}
+}
+
+func TestToolingIDAcceptsSalesforceCLIWarningPreamble(t *testing.T) {
+	output := []byte("Warning: This command is currently in beta.\n{\n  \"id\": \"01p000000000001AAA\",\n  \"success\": true\n}\n")
+	if got := toolingID(output); got != "01p000000000001AAA" {
+		t.Fatalf("toolingID() = %q", got)
 	}
 }
 
@@ -117,11 +125,53 @@ esac
 	if err != nil {
 		t.Fatal(err)
 	}
-	if string(log) == "" || !contains(string(log), "--method DELETE") {
+	if string(log) == "" || !contains(string(log), "--file") || !contains(string(log), "glade-apex-rule-delete-") {
 		t.Fatalf("accepted probe was not deleted: %s", log)
 	}
 	if !contains(string(log), "request rest /services/data/v66.0/tooling/sobjects/ApexClass --method POST") || contains(string(log), "--url") {
 		t.Fatalf("Tooling API request did not use Salesforce CLI positional URL syntax: %s", log)
+	}
+}
+
+func TestRunSalesforceCompilesAndDeletesRuleDependencies(t *testing.T) {
+	dir := t.TempDir()
+	logPath := filepath.Join(dir, "sf.log")
+	sf := filepath.Join(dir, "sf")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+set -eu
+printf '%s\n' "$*" >> "$APEX_RULE_SF_LOG"
+case "$*" in
+  *delete*) printf '{"status":0}\n' ;;
+  *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
+esac
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	t.Setenv("APEX_RULE_SF_LOG", logPath)
+	rules := []Rule{{
+		ID: "DependentProbe", SourceKind: "class", Source: "public class DependentProbe extends ProbeBase {}", APIVersion: 66,
+		Dependencies: []SourceFile{{Path: "force-app/main/default/classes/ProbeBase.cls", Content: "public virtual class ProbeBase {}"}},
+	}}
+	results, err := RunSalesforce(context.Background(), "scratch", rules)
+	if err != nil {
+		t.Fatalf("RunSalesforce: %v", err)
+	}
+	if results["DependentProbe"].Outcome != OutcomeAccept {
+		t.Fatalf("results = %#v", results)
+	}
+	log, err := os.ReadFile(logPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(log)
+	base := strings.Index(text, "ProbeBase")
+	probe := strings.Index(text, "DependentProbe")
+	if base < 0 || probe < 0 || base > probe {
+		t.Fatalf("dependency was not compiled before probe: %s", text)
+	}
+	if got := strings.Count(text, "glade-apex-rule-delete-"); got != 2 {
+		t.Fatalf("delete calls = %d, want dependency and probe cleanup: %s", got, text)
 	}
 }
 
