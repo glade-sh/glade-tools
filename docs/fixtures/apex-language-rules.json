@@ -1914,6 +1914,19 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse"
+    },
+    {
+      "id": "APEX-SOQL-DOCUMENTED-LITERAL-METHOD-BIND",
+      "area": "soql-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "A bind with expressions",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleLiteralMethodBind { public static void run() { List<Account> rows = [SELECT Id FROM Account WHERE Name = :'XXXX'.substring(0, 3)]; } }",
+      "oracle": "accept",
+      "owner": "soql",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsAcceptsDocumentedLiteralMethodBind"
     }
   ]
 }
