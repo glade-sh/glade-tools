@@ -1814,6 +1814,74 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsIncompatibleSOSLWhereBind"
+    },
+    {
+      "id": "APEX-SOSL-DOCUMENTED-BIND-CLAUSES",
+      "area": "sosl-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "SOSL query with binds in all possible clauses",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleSOSLDocumentedBinds { public static void run() { String term = 'aaa'; String name = 'bbb'; Integer returningLimit = 1; Integer returningOffset = 0; String division = 'Global'; Integer limitValue = 2; List<List<SObject>> rows = [FIND :term IN ALL FIELDS RETURNING Account(Id, Name WHERE Name LIKE :name LIMIT :returningLimit OFFSET :returningOffset) WITH DIVISION = :division LIMIT :limitValue]; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsAcceptsDocumentedSOSLBindClauses"
+    },
+    {
+      "id": "APEX-SOSL-RETURNING-LIMIT-STRING-BIND",
+      "area": "sosl-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "numeric value in LIMIT clauses",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleSOSLReturningLimitString { public static void run() { String returningLimit = '1'; List<List<SObject>> rows = [FIND 'acme' RETURNING Account(Id LIMIT :returningLimit)]; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresNumericSOSLReturningLimitAndOffsetBinds"
+    },
+    {
+      "id": "APEX-SOSL-RETURNING-OFFSET-STRING-BIND",
+      "area": "sosl-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "numeric value in OFFSET clauses",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleSOSLReturningOffsetString { public static void run() { String offsetValue = '0'; List<List<SObject>> rows = [FIND 'acme' RETURNING Account(Id OFFSET :offsetValue)]; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresNumericSOSLReturningLimitAndOffsetBinds"
+    },
+    {
+      "id": "APEX-SOSL-DIVISION-INTEGER-BIND",
+      "area": "sosl-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "division names in WITH DIVISION clauses",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleSOSLDivisionInteger { public static void run() { Integer division = 1; List<List<SObject>> rows = [FIND 'acme' RETURNING Account(Id) WITH DIVISION = :division]; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRequiresStringSOSLDivisionBind"
+    },
+    {
+      "id": "APEX-SOSL-LIKE-INTEGER-BIND",
+      "area": "sosl-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "filter literals in WHERE clauses",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleSOSLLikeInteger { public static void run() { Integer value = 1; List<List<SObject>> rows = [FIND 'acme' RETURNING Account(Id, Name WHERE Name LIKE :value)]; } }",
+      "projectFiles": [
+        {"path": "force-app/main/default/objects/Account/Account.object-meta.xml", "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CustomObject xmlns=\"http://soap.sforce.com/2006/04/metadata\"><fields><fullName>Name</fullName><type>Text</type></fields></CustomObject>"}
+      ],
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsIncompatibleSOSLLikeBind"
     }
   ]
 }
