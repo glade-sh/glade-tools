@@ -77,6 +77,9 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("local-tests-corpus") {
 		t.Fatal("focused compat baseline fixture should stay out of documented fixture execution")
 	}
+	if shouldRunDocumentedFixture("apex-language-rules") {
+		t.Fatal("Apex language rule catalog should stay out of documented fixture execution")
+	}
 }
 
 func TestDocumentedFixtureJSONLoadAndValidate(t *testing.T) {
@@ -137,7 +140,8 @@ func documentedFixturePaths(t *testing.T) []string {
 
 func skipDocumentedFixture(name string) bool {
 	switch name {
-	case "async-test-harness-local-evidence",
+	case "apex-language-rules",
+		"async-test-harness-local-evidence",
 		"core-runtime-json-dto-lwc-evidence",
 		"data-platform-schema-lwc-record-wire-evidence",
 		"local-tests-corpus",

@@ -42,10 +42,13 @@ type Catalog struct {
 }
 
 type Result struct {
-	ID       string   `json:"id"`
-	Oracle   Outcome  `json:"oracle"`
-	Glade    Outcome  `json:"glade"`
-	Matched  bool     `json:"matched"`
-	Status   string   `json:"status"`
-	Problems []string `json:"salesforceProblems,omitempty"`
+	ID            string   `json:"id"`
+	Oracle        Outcome  `json:"oracle"`
+	CatalogOracle Outcome  `json:"catalogOracle,omitempty"`
+	Salesforce    Outcome  `json:"salesforce,omitempty"`
+	OracleMatched bool     `json:"oracleMatched"`
+	Glade         Outcome  `json:"glade"`
+	Matched       bool     `json:"matched"`
+	Status        string   `json:"status"`
+	Problems      []string `json:"salesforceProblems,omitempty"`
 }

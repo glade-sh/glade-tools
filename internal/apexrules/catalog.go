@@ -29,6 +29,10 @@ func (catalog Catalog) Validate() error {
 			return fmt.Errorf("duplicate rule ID %q", rule.ID)
 		}
 		seen[rule.ID] = true
+		const expandedDocsRoot = "salesforce-docs-expanded-run/"
+		if _, remainder, found := strings.Cut(rule.DocsPath, expandedDocsRoot); found && !strings.Contains(remainder, "/") {
+			return fmt.Errorf("rule %q docsPath is missing its Salesforce docset directory", rule.ID)
+		}
 		if rule.Oracle != OutcomeAccept && rule.Oracle != OutcomeReject {
 			return fmt.Errorf("rule %q has unknown oracle outcome %q", rule.ID, rule.Oracle)
 		}

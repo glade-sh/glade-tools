@@ -1,7 +1,9 @@
 package apexrules
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -44,11 +46,31 @@ func runGladeRule(ctx context.Context, binary, project string, rule Rule) (Outco
 		return "", fmt.Errorf("write project for %s: %w", rule.ID, err)
 	}
 	cmd := exec.CommandContext(ctx, binary, "check", "--project", project, "--json", "--no-progress")
-	if err := cmd.Run(); err != nil {
-		if _, ok := err.(*exec.ExitError); ok {
+	output, err := cmd.CombinedOutput()
+	if ctx.Err() != nil {
+		return "", fmt.Errorf("run glade for %s: %w", rule.ID, ctx.Err())
+	}
+	var report struct {
+		Status      string            `json:"status"`
+		ExitCode    int               `json:"exitCode"`
+		Diagnostics []json.RawMessage `json:"diagnostics"`
+	}
+	start, end := bytes.IndexByte(output, '{'), bytes.LastIndexByte(output, '}')
+	if start < 0 || end < start || json.Unmarshal(output[start:end+1], &report) != nil {
+		return "", fmt.Errorf("run glade for %s produced no valid JSON report", rule.ID)
+	}
+	if err != nil {
+		exitErr, ok := err.(*exec.ExitError)
+		if !ok {
+			return "", fmt.Errorf("run glade for %s: %w", rule.ID, err)
+		}
+		if exitErr.ExitCode() == 1 && report.ExitCode == 1 && report.Status == "failed" && len(report.Diagnostics) > 0 {
 			return OutcomeReject, nil
 		}
-		return "", fmt.Errorf("run glade for %s: %w", rule.ID, err)
+		return "", fmt.Errorf("run glade for %s failed operationally with exit code %d", rule.ID, exitErr.ExitCode())
+	}
+	if report.ExitCode != 0 || report.Status != "passed" {
+		return "", fmt.Errorf("run glade for %s returned an inconsistent success report", rule.ID)
 	}
 	return OutcomeAccept, nil
 }

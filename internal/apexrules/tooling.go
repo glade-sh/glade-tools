@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -35,39 +36,52 @@ func RunSalesforce(ctx context.Context, targetOrg string, rules []Rule) (map[str
 	}
 	results := make(map[string]SalesforceResult, len(rules))
 	for _, rule := range rules {
-		var created []toolingRecord
-		result := SalesforceResult{Outcome: OutcomeAccept}
-		for _, dependency := range rule.Dependencies {
-			dependencyRule, err := toolingDependencyRule(rule, dependency)
-			if err != nil {
-				return nil, fmt.Errorf("prepare Salesforce dependency for %s: %w", rule.ID, err)
-			}
-			record, dependencyResult, err := compileToolingRule(ctx, targetOrg, dependencyRule)
-			if err != nil {
-				return nil, err
-			}
-			if dependencyResult.Outcome == OutcomeReject {
-				result = dependencyResult
-				break
-			}
-			created = append(created, record)
+		result, err := runSalesforceRule(ctx, targetOrg, rule)
+		if err != nil {
+			return nil, err
 		}
-		if result.Outcome == OutcomeAccept {
-			record, probeResult, err := compileToolingRule(ctx, targetOrg, rule)
-			if err != nil {
-				return nil, err
-			}
+		results[rule.ID] = result
+	}
+	return results, nil
+}
+
+func runSalesforceRule(ctx context.Context, targetOrg string, rule Rule) (SalesforceResult, error) {
+	var created []toolingRecord
+	var primaryErr error
+	result := SalesforceResult{Outcome: OutcomeAccept}
+	for _, dependency := range rule.Dependencies {
+		dependencyRule, err := toolingDependencyRule(rule, dependency)
+		if err != nil {
+			primaryErr = fmt.Errorf("prepare Salesforce dependency for %s: %w", rule.ID, err)
+			break
+		}
+		record, dependencyResult, err := compileToolingRule(ctx, targetOrg, dependencyRule)
+		if err != nil {
+			primaryErr = err
+			break
+		}
+		if dependencyResult.Outcome == OutcomeReject {
+			primaryErr = fmt.Errorf("Salesforce dependency for %s was rejected: %s", rule.ID, strings.Join(dependencyResult.Problems, "; "))
+			break
+		}
+		created = append(created, record)
+	}
+	if primaryErr == nil {
+		record, probeResult, err := compileToolingRule(ctx, targetOrg, rule)
+		if err != nil {
+			primaryErr = err
+		} else {
 			result = probeResult
 			if result.Outcome == OutcomeAccept {
 				created = append(created, record)
 			}
 		}
-		if err := deleteToolingRecords(ctx, targetOrg, rule.APIVersion, created); err != nil {
-			return nil, fmt.Errorf("delete accepted Salesforce probe %s: %w", rule.ID, err)
-		}
-		results[rule.ID] = result
 	}
-	return results, nil
+	cleanupErr := deleteToolingRecords(ctx, targetOrg, rule.APIVersion, created)
+	if cleanupErr != nil {
+		cleanupErr = fmt.Errorf("delete accepted Salesforce probe %s: %w", rule.ID, cleanupErr)
+	}
+	return result, errors.Join(primaryErr, cleanupErr)
 }
 
 type toolingRecord struct {
@@ -109,13 +123,14 @@ func compileToolingRule(ctx context.Context, targetOrg string, rule Rule) (tooli
 }
 
 func deleteToolingRecords(ctx context.Context, targetOrg string, apiVersion float64, records []toolingRecord) error {
+	var cleanupErr error
 	for index := len(records) - 1; index >= 0; index-- {
 		record := records[index]
 		if err := deleteToolingRecord(ctx, targetOrg, toolingURL(apiVersion, record.object)+"/"+record.id); err != nil {
-			return err
+			cleanupErr = errors.Join(cleanupErr, fmt.Errorf("delete %s %s: %w", record.object, record.id, err))
 		}
 	}
-	return nil
+	return cleanupErr
 }
 
 func deleteToolingRecord(ctx context.Context, targetOrg, url string) error {
@@ -264,6 +279,18 @@ func compilerProblems(output []byte) []string {
 	value, ok := toolingJSON(output)
 	if !ok {
 		return nil
+	}
+	operationalCodes := map[string]bool{
+		"duplicate_value":             true,
+		"invalid_cross_reference_key": true,
+		"invalid_session_id":          true,
+		"not_found":                   true,
+		"request_limit_exceeded":      true,
+	}
+	for _, code := range collectJSONFields(value, map[string]bool{"errorcode": true}) {
+		if operationalCodes[strings.ToLower(code)] {
+			return nil
+		}
 	}
 	problems := collectJSONFields(value, map[string]bool{"message": true, "problem": true})
 	return uniqueStrings(problems)

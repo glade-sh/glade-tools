@@ -32,21 +32,18 @@ func runApexRules(ctx context.Context, args []string, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	observed := append([]apexrules.Rule(nil), catalog.Rules...)
-	for index := range observed {
-		observed[index].Oracle = salesforce[observed[index].ID].Outcome
-	}
-	results := apexrules.Compare(observed, glade)
-	for index := range results {
-		results[index].Problems = salesforce[results[index].ID].Problems
-	}
+	results := apexrules.CompareObserved(catalog.Rules, salesforce, glade)
 	report := struct {
 		Results             []apexrules.Result `json:"results"`
 		SupportedMismatches int                `json:"supportedMismatches"`
+		OracleDrifts        int                `json:"oracleDrifts"`
 	}{Results: results}
 	for _, result := range results {
 		if result.Status == apexrules.StatusSupported && !result.Matched {
 			report.SupportedMismatches++
+		}
+		if !result.OracleMatched {
+			report.OracleDrifts++
 		}
 	}
 	encoded, err := json.Marshal(report)
@@ -56,6 +53,9 @@ func runApexRules(ctx context.Context, args []string, w io.Writer) error {
 	fmt.Fprintln(w, string(encoded))
 	if report.SupportedMismatches != 0 {
 		return fmt.Errorf("%d supported Apex rule mismatches", report.SupportedMismatches)
+	}
+	if report.OracleDrifts != 0 {
+		return fmt.Errorf("%d Apex rule catalog oracle drifts", report.OracleDrifts)
 	}
 	return nil
 }

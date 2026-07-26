@@ -61,7 +61,7 @@
     {
       "id": "APEX-AUDIT-ABSTRACT-METHOD-WITH-BODY",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "60-62",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -69,13 +69,13 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
+      "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractMethodBodyConsistency",
       "owner": "sema"
     },
     {
       "id": "APEX-AUDIT-ABSTRACT-METHOD-WITHOUT-ACCESS-V65",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "83-89",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -89,7 +89,7 @@
     {
       "id": "APEX-AUDIT-ABSTRACT-STATIC-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -103,7 +103,7 @@
     {
       "id": "APEX-AUDIT-ABSTRACT-VIRTUAL-CLASS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -117,7 +117,7 @@
     {
       "id": "APEX-AUDIT-ACCESSOR-MORE-VISIBLE-THAN-PROPERTY",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "159-162",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -131,7 +131,7 @@
     {
       "id": "APEX-AUDIT-AGGREGATE-FUNCTION-IN-WHERE",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_having.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_having.md",
       "docsLines": "6-9",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -145,7 +145,7 @@
     {
       "id": "APEX-AUDIT-AGGREGATE-LIMIT-WITHOUT-GROUP-BY",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_agg_functions.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_agg_functions.md",
       "docsLines": "45-50",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -159,7 +159,7 @@
     {
       "id": "APEX-AUDIT-AGGREGATE-NON-GROUPED-FIELD",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_groupby.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_groupby.md",
       "docsLines": "15-17",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -173,7 +173,7 @@
     {
       "id": "APEX-AUDIT-AGGREGATE-QUERY-WRONG-TYPE",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_SOQL_agg_fns.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_agg_fns.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -187,7 +187,7 @@
     {
       "id": "APEX-AUDIT-AGGREGATE-WRONG-FIELD-TYPE",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_agg_functions_field_types.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_agg_functions_field_types.md",
       "docsLines": "10-20",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -201,7 +201,7 @@
     {
       "id": "APEX-AUDIT-ALWAYS-TRUE-INSTANCEOF-API60",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_instanceof.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_instanceof.md",
       "docsLines": "42-56",
       "apiVersion": 60,
       "sourceKind": "class",
@@ -215,7 +215,7 @@
     {
       "id": "APEX-AUDIT-AMBIGUOUS-NULL-OVERLOAD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "58-69",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -229,7 +229,7 @@
     {
       "id": "APEX-AUDIT-ANYTYPE-PSEUDO-TYPE-PARAMETER",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_primitives.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_primitives.md",
       "docsLines": "28-39",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -243,7 +243,7 @@
     {
       "id": "APEX-AUDIT-AURA-ENABLED-OVERLOAD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_AuraEnabled.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_AuraEnabled.md",
       "docsLines": "22-25",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -255,9 +255,37 @@
       "owner": "sema"
     },
     {
+      "id": "APEX-AUDIT-AURA-ENABLED-GLOBAL-SCOPE-PRE55",
+      "area": "annotations",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_AuraEnabled.md",
+      "docsLines": "15-16",
+      "apiVersion": 54,
+      "sourceKind": "class",
+      "source": "public class ProbeAuraScopePre55 { @AuraEnabled(cacheable=true scope='global') public static String run() { return 'ok'; } }",
+      "dependencies": [],
+      "oracle": "reject",
+      "status": "supported",
+      "productTest": "internal/sema/version_contracts_test.go:TestAuraEnabledGlobalScopeVersionGate",
+      "owner": "sema"
+    },
+    {
+      "id": "APEX-AUDIT-AURA-ENABLED-GLOBAL-SCOPE-V55",
+      "area": "annotations",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_AuraEnabled.md",
+      "docsLines": "15-16",
+      "apiVersion": 55,
+      "sourceKind": "class",
+      "source": "public class ProbeAuraScopeV55 { @AuraEnabled(cacheable=true scope='global') public static String run() { return 'ok'; } }",
+      "dependencies": [],
+      "oracle": "accept",
+      "status": "supported",
+      "productTest": "internal/sema/version_contracts_test.go:TestAuraEnabledGlobalScopeVersionGate",
+      "owner": "sema"
+    },
+    {
       "id": "APEX-AUDIT-AURA-ENABLED-UNKNOWN-PROPERTY",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_AuraEnabled.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_AuraEnabled.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -265,13 +293,13 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationCatalogRejectsUnknownAnnotationsAndProperties",
       "owner": "sema"
     },
     {
       "id": "APEX-AUDIT-BARE-RETURN-FROM-NONVOID",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_return.md",
+      "docsPath": "salesforce-scratch-oracle",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -285,7 +313,7 @@
     {
       "id": "APEX-AUDIT-BATCHABLE-METHODS-WITHOUT-ACCESS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_batch_interface.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_batch_interface.md",
       "docsLines": "838-841",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -299,7 +327,7 @@
     {
       "id": "APEX-AUDIT-BATCHABLE-NARROWER-EXECUTE-SCOPE",
       "area": "inheritance",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_batch_interface.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_batch_interface.md",
       "docsLines": "48-61",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -312,7 +340,7 @@
     {
       "id": "APEX-AUDIT-BATCHABLE-WIDER-EXECUTE-SCOPE",
       "area": "inheritance",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_batch_interface.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_batch_interface.md",
       "docsLines": "48-61",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -325,7 +353,7 @@
     {
       "id": "APEX-AUDIT-BREAK-OUTSIDE-LOOP",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_control_flow.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_control_flow.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -339,7 +367,7 @@
     {
       "id": "APEX-AUDIT-CATCH-NON-EXCEPTION-TYPE",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_exception_statements.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_exception_statements.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -353,7 +381,7 @@
     {
       "id": "APEX-AUDIT-CLASS-AND-INTERFACE-SAME-NESTED-NAME",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_naming_conventions.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_naming_conventions.md",
       "docsLines": "4-7",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -367,7 +395,7 @@
     {
       "id": "APEX-AUDIT-CLASS-EXTENDS-INTERFACE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_extending.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_extending.md",
       "docsLines": "12-14",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -386,7 +414,7 @@
     {
       "id": "APEX-AUDIT-CLASS-IMPLEMENTS-CLASS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_interfaces.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_interfaces.md",
       "docsLines": "60-69",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -405,7 +433,7 @@
     {
       "id": "APEX-AUDIT-COLLECTION-NESTING-NINE-LEVELS",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_collections_lists.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_collections_lists.md",
       "docsLines": "15-18",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -419,7 +447,7 @@
     {
       "id": "APEX-AUDIT-CONSTRUCTOR-MORE-THAN-32-PARAMETERS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "13-16",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -433,7 +461,7 @@
     {
       "id": "APEX-AUDIT-CONSTRUCTOR-SUPER-NOT-FIRST",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_constructors.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_constructors.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -452,7 +480,7 @@
     {
       "id": "APEX-AUDIT-CONSTRUCTOR-THIS-NOT-FIRST",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_this.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_this.md",
       "docsLines": "41-44",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -466,7 +494,7 @@
     {
       "id": "APEX-AUDIT-CONTENTVERSION-DELETE-TRIGGER",
       "area": "trigger",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_triggers_ignoring_operations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_triggers_ignoring_operations.md",
       "docsLines": "74-77",
       "apiVersion": 66,
       "sourceKind": "trigger",
@@ -480,7 +508,7 @@
     {
       "id": "APEX-AUDIT-CONTINUE-OUTSIDE-LOOP",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_loops.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_loops.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -494,7 +522,7 @@
     {
       "id": "APEX-AUDIT-CURRENCY-PSEUDO-TYPE-FIELD",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_primitives.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_primitives.md",
       "docsLines": "28-39",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -508,7 +536,7 @@
     {
       "id": "APEX-AUDIT-CUSTOM-EXCEPTION-WRONG-SUFFIX",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_exception_custom.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_exception_custom.md",
       "docsLines": "9-11",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -522,7 +550,7 @@
     {
       "id": "APEX-AUDIT-DIAMOND-LIST-CONSTRUCTION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_parameterized_types.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_parameterized_types.md",
       "docsLines": "19-21",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -536,7 +564,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-CATCH-TYPE",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_exception_statements.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_exception_statements.md",
       "docsLines": "24-32",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -550,7 +578,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-CONSTRUCTOR-SIGNATURE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_constructors.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_constructors.md",
       "docsLines": "74",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -564,7 +592,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-LOCAL-SAME-SCOPE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_variables.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -578,7 +606,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-MEMBER-CASE-INSENSITIVE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_variables.md",
       "docsLines": "89-100",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -592,7 +620,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-METHOD-SIGNATURE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "55-65",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -606,7 +634,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-PARAMETER-NAME",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -620,7 +648,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-PROPERTY-GETTER",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "10-18",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -634,7 +662,7 @@
     {
       "id": "APEX-AUDIT-DUPLICATE-SWITCH-WHEN-LITERAL",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_switch.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
       "docsLines": "75-76",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -648,7 +676,7 @@
     {
       "id": "APEX-AUDIT-ENUM-USER-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_enums.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_enums.md",
       "docsLines": "116-120",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -662,7 +690,7 @@
     {
       "id": "APEX-AUDIT-EXTEND-NONVIRTUAL-CLASS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_extending.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_extending.md",
       "docsLines": "5-14",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -681,7 +709,7 @@
     {
       "id": "APEX-AUDIT-FIELDS-ALL-IN-APEX",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_fields.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_fields.md",
       "docsLines": "103-117",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -695,7 +723,7 @@
     {
       "id": "APEX-AUDIT-FINAL-CLASS-DECLARATION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_final.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_final.md",
       "docsLines": "12-13",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -709,7 +737,7 @@
     {
       "id": "APEX-AUDIT-FINAL-LOCAL-REASSIGNMENT",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_final.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_final.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -723,7 +751,7 @@
     {
       "id": "APEX-AUDIT-FINAL-METHOD-DECLARATION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_final.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_final.md",
       "docsLines": "12-13",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -737,7 +765,7 @@
     {
       "id": "APEX-AUDIT-FINAL-PROPERTY",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_final.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_final.md",
       "docsLines": "14-15",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -751,7 +779,7 @@
     {
       "id": "APEX-AUDIT-FINAL-STATIC-REASSIGNMENT",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_final.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_final.md",
       "docsLines": "6-8",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -765,7 +793,7 @@
     {
       "id": "APEX-AUDIT-FOR-NON-BOOLEAN-CONDITION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_loops_for.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_loops_for.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -779,7 +807,7 @@
     {
       "id": "APEX-AUDIT-FUTURE-CALLS-FUTURE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_invoking_future_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_invoking_future_methods.md",
       "docsLines": "122-123",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -793,7 +821,7 @@
     {
       "id": "APEX-AUDIT-FUTURE-METHOD-IN-BATCHABLE-CLASS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_batch_interface.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_batch_interface.md",
       "docsLines": "818-821",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -807,7 +835,7 @@
     {
       "id": "APEX-AUDIT-FUTURE-NON-PRIMITIVE-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_future.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_future.md",
       "docsLines": "21-24",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -815,13 +843,13 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestFutureParametersRequirePrimitiveValues",
       "owner": "sema"
     },
     {
       "id": "APEX-AUDIT-FUTURE-UNKNOWN-PROPERTY",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_future.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_future.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -835,7 +863,7 @@
     {
       "id": "APEX-AUDIT-GENERIC-CATCH-BEFORE-SPECIFIC",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_exception_statements.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_exception_statements.md",
       "docsLines": "55-59",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -849,7 +877,7 @@
     {
       "id": "APEX-AUDIT-GENERIC-USER-CLASS",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "31-40",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -863,7 +891,7 @@
     {
       "id": "APEX-AUDIT-GETTER-MUTATION-API41-CONTROL",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "79-80",
       "apiVersion": 41,
       "sourceKind": "class",
@@ -877,7 +905,7 @@
     {
       "id": "APEX-AUDIT-GETTER-MUTATION-API42",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "79-80",
       "apiVersion": 42,
       "sourceKind": "class",
@@ -891,7 +919,7 @@
     {
       "id": "APEX-AUDIT-GETTER-WITHOUT-RETURN",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "70-73",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -905,7 +933,7 @@
     {
       "id": "APEX-AUDIT-GLOBAL-INTERFACE-EXPLICIT-PUBLIC-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_access_modifiers.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_access_modifiers.md",
       "docsLines": "12-14",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -919,7 +947,7 @@
     {
       "id": "APEX-AUDIT-GLOBAL-MEMBER-IN-PUBLIC-CLASS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_access_modifiers.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_access_modifiers.md",
       "docsLines": "47-53",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -933,7 +961,7 @@
     {
       "id": "APEX-AUDIT-GROUP-BY-NON-GROUPABLE-FIELD",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_group_by_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_group_by_considerations.md",
       "docsLines": "5-15",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -947,7 +975,7 @@
     {
       "id": "APEX-AUDIT-HTTP-GET-NONSTATIC",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_http_get.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_http_get.md",
       "docsLines": "8-10",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -961,7 +989,7 @@
     {
       "id": "APEX-AUDIT-HTTP-GET-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_rest_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_rest_methods.md",
       "docsLines": "29-30",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -975,7 +1003,7 @@
     {
       "id": "APEX-AUDIT-HTTP-METHOD-NOT-GLOBAL",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_http_get.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_http_get.md",
       "docsLines": "8",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -989,7 +1017,7 @@
     {
       "id": "APEX-AUDIT-IF-NON-BOOLEAN-CONDITION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_if_else.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_if_else.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1003,7 +1031,7 @@
     {
       "id": "APEX-AUDIT-IMPLICIT-SUPER-WITHOUT-NOARG-CONSTRUCTOR",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_constructors.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_constructors.md",
       "docsLines": "3-6,36-39",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1022,7 +1050,7 @@
     {
       "id": "APEX-AUDIT-INCOMPATIBLE-CAST",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_casting.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_casting.md",
       "docsLines": "3-6,55-56",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1036,7 +1064,7 @@
     {
       "id": "APEX-AUDIT-INCOMPATIBLE-NULL-COALESCE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_NullCoalescingOperator.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_NullCoalescingOperator.md",
       "docsLines": "13-16",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1050,7 +1078,7 @@
     {
       "id": "APEX-AUDIT-INNER-AS-LOCAL-IDENTIFIER",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_reserved_words.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
       "docsLines": "9",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1064,7 +1092,7 @@
     {
       "id": "APEX-AUDIT-INNER-AS-NESTED-TYPE-IDENTIFIER",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_reserved_words.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
       "docsLines": "9",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1078,7 +1106,7 @@
     {
       "id": "APEX-AUDIT-INNER-CLASS-DEPTH-TWO",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "4",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1092,7 +1120,7 @@
     {
       "id": "APEX-AUDIT-INNER-CLASS-SAME-NAME-AS-OUTER",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_naming_conventions.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_naming_conventions.md",
       "docsLines": "6-8",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1106,7 +1134,7 @@
     {
       "id": "APEX-AUDIT-INSERT-PRIMITIVE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_dml.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_dml.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1120,7 +1148,7 @@
     {
       "id": "APEX-AUDIT-INTERFACE-EXTENDS-CLASS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_interfaces.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_interfaces.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1139,7 +1167,7 @@
     {
       "id": "APEX-AUDIT-INTERFACE-METHOD-WITH-BODY",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_interfaces.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_interfaces.md",
       "docsLines": "3-6,58-60",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1153,7 +1181,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-METHOD-ANNOTATION-COMBO",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "266-267",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1167,7 +1195,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-METHOD-INNER-CLASS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "264-266",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1181,7 +1209,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-METHOD-MAP-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "270-286",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1195,7 +1223,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-METHOD-MAP-RETURN",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "289-305",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1209,7 +1237,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-METHOD-TWO-PARAMETERS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "270",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1223,7 +1251,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-METHOD-UNKNOWN-PROPERTY",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1237,7 +1265,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-VARIABLE-FINAL",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableVariable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
       "docsLines": "245-253",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1251,7 +1279,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-VARIABLE-OBJECT",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableVariable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
       "docsLines": "253-257",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1265,7 +1293,7 @@
     {
       "id": "APEX-AUDIT-INVOCABLE-VARIABLE-UNKNOWN-PROPERTY",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableVariable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1279,7 +1307,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-CRITICAL-ON-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "250-264",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1293,7 +1321,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-ENUM",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "61-62",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1307,7 +1335,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-GLOBAL-CLASS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "13-15",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1321,7 +1349,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-INTERFACE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "61-62",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1335,7 +1363,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-METHOD-IN-NON-TEST-CLASS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_testing_unit_tests.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_testing_unit_tests.md",
       "docsLines": "8-9,153-155",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1349,7 +1377,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-METHOD-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1363,7 +1391,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-NESTED-CLASS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "13-15",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1377,7 +1405,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-NONSTATIC-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1391,7 +1419,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-PARALLEL-SEE-ALL-DATA",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "91-93",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1405,7 +1433,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-TESTFOR-ON-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "277-300",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1419,7 +1447,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-UNKNOWN-PROPERTY",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1433,7 +1461,7 @@
     {
       "id": "APEX-AUDIT-IS-TEST-VALUE-RETURN",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_isTest.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_isTest.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1447,7 +1475,7 @@
     {
       "id": "APEX-AUDIT-ITERABLE-GENERIC-RETURN-MISMATCH",
       "area": "inheritance",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_iterable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_iterable.md",
       "docsLines": "27-40",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1460,7 +1488,7 @@
     {
       "id": "APEX-AUDIT-ITERATOR-GENERIC-RETURN-MISMATCH",
       "area": "inheritance",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_iterable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_iterable.md",
       "docsLines": "27-40",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1473,7 +1501,7 @@
     {
       "id": "APEX-AUDIT-ITERATOR-METHODS-WITHOUT-ACCESS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_iterable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_iterable.md",
       "docsLines": "27-40",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1487,7 +1515,7 @@
     {
       "id": "APEX-AUDIT-JSON-ACCESS-INVALID-VALUE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_JsonAccess.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_JsonAccess.md",
       "docsLines": "7-17",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1501,7 +1529,7 @@
     {
       "id": "APEX-AUDIT-JSON-ACCESS-ON-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_JsonAccess.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_JsonAccess.md",
       "docsLines": "3-5",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1515,7 +1543,7 @@
     {
       "id": "APEX-AUDIT-JSON-ACCESS-WITHOUT-PARAMETERS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_JsonAccess.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_JsonAccess.md",
       "docsLines": "3-10",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1529,7 +1557,7 @@
     {
       "id": "APEX-AUDIT-LIST-ITERABLE-INSTANCEOF-API59-CONTROL",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_instanceof.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_instanceof.md",
       "docsLines": "42-56",
       "apiVersion": 59,
       "sourceKind": "class",
@@ -1543,7 +1571,7 @@
     {
       "id": "APEX-AUDIT-LIST-ITERABLE-INSTANCEOF-API60",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_instanceof.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_instanceof.md",
       "docsLines": "42-56",
       "apiVersion": 60,
       "sourceKind": "class",
@@ -1557,7 +1585,7 @@
     {
       "id": "APEX-AUDIT-LIST-WRONG-GENERIC-ARITY",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_parameterized_types.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_parameterized_types.md",
       "docsLines": "19-21",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1571,7 +1599,7 @@
     {
       "id": "APEX-AUDIT-MAP-WRONG-GENERIC-ARITY",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_parameterized_types.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_parameterized_types.md",
       "docsLines": "19-21",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1585,7 +1613,7 @@
     {
       "id": "APEX-AUDIT-MERGE-INCOMPATIBLE-SOBJECT-TYPES",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_dml_examples_merge.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_dml_examples_merge.md",
       "docsLines": "3-7,139-145",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1599,7 +1627,7 @@
     {
       "id": "APEX-AUDIT-METHOD-MORE-THAN-32-PARAMETERS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "13-16",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1613,7 +1641,7 @@
     {
       "id": "APEX-AUDIT-METHOD-NAMES-CASE-INSENSITIVE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_naming_conventions.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_naming_conventions.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1627,7 +1655,7 @@
     {
       "id": "APEX-AUDIT-MISSING-OVERRIDE-MODIFIER",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_java_diffs.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_java_diffs.md",
       "docsLines": "32-36",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1646,7 +1674,7 @@
     {
       "id": "APEX-AUDIT-MULTIPLE-HTTP-ANNOTATIONS-ON-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_rest_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_rest_methods.md",
       "docsLines": "35-37",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1659,7 +1687,7 @@
     {
       "id": "APEX-AUDIT-MULTIPLE-SHARING-MODIFIERS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_sharing.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_sharing.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1673,7 +1701,7 @@
     {
       "id": "APEX-AUDIT-NAMESPACE-ACCESSIBLE-AURA-ENABLED",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_NamespaceAccessible.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_NamespaceAccessible.md",
       "docsLines": "16",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1687,7 +1715,7 @@
     {
       "id": "APEX-AUDIT-NAMESPACE-ACCESSIBLE-INTERFACE-MEMBER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_NamespaceAccessible.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_NamespaceAccessible.md",
       "docsLines": "26-27",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1701,7 +1729,7 @@
     {
       "id": "APEX-AUDIT-NAMESPACE-ACCESSIBLE-INVOCABLE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_NamespaceAccessible.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_NamespaceAccessible.md",
       "docsLines": "16",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1715,7 +1743,7 @@
     {
       "id": "APEX-AUDIT-NAMESPACE-ACCESSIBLE-MEMBER-OWNER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_NamespaceAccessible.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_NamespaceAccessible.md",
       "docsLines": "28-31",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1729,7 +1757,7 @@
     {
       "id": "APEX-AUDIT-NAMESPACE-CLASS-SHADOW-NO-FALLBACK",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_namespace_precedence.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_namespace_precedence.md",
       "docsLines": "19-29",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1748,7 +1776,7 @@
     {
       "id": "APEX-AUDIT-OPERATOR-BOOLEAN-ORDERING",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_expressions_operators_understanding.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_expressions_operators_understanding.md",
       "docsLines": "25-46",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1762,7 +1790,7 @@
     {
       "id": "APEX-AUDIT-OPERATOR-NOT-INTEGER",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_expressions_operators_understanding.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_expressions_operators_understanding.md",
       "docsLines": "10-22",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1776,7 +1804,7 @@
     {
       "id": "APEX-AUDIT-OPERATOR-STRING-MULTIPLY",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_expressions_operators_understanding.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_expressions_operators_understanding.md",
       "docsLines": "25-46",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1790,7 +1818,7 @@
     {
       "id": "APEX-AUDIT-ORDER-BY-WITH-FOR-UPDATE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_for_update.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_for_update.md",
       "docsLines": "11-14",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1804,7 +1832,7 @@
     {
       "id": "APEX-AUDIT-OVERLOAD-DIFFERS-ONLY-RETURN-TYPE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "55-65",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1818,7 +1846,7 @@
     {
       "id": "APEX-AUDIT-OVERRIDE-METHOD-WITHOUT-ACCESS-V65",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "83-89",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1837,7 +1865,7 @@
     {
       "id": "APEX-AUDIT-OVERRIDE-NONVIRTUAL-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_extending.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_extending.md",
       "docsLines": "5-8",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1856,7 +1884,7 @@
     {
       "id": "APEX-AUDIT-OVERRIDE-STATIC-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "31-35",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1875,7 +1903,7 @@
     {
       "id": "APEX-AUDIT-PARENT-BLOCK-VARIABLE-REDEFINITION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_variables.md",
       "docsLines": "76-82",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1889,7 +1917,7 @@
     {
       "id": "APEX-AUDIT-PRIVATE-INVOCABLE-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "264-265",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1903,7 +1931,7 @@
     {
       "id": "APEX-AUDIT-PRIVATE-INVOCABLE-VARIABLE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableVariable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
       "docsLines": "243-253",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1917,7 +1945,7 @@
     {
       "id": "APEX-AUDIT-PRIVATE-TOP-LEVEL-NON-TEST",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "43-46",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1931,7 +1959,7 @@
     {
       "id": "APEX-AUDIT-PROPERTY-INVOCABLE-VARIABLE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableVariable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
       "docsLines": "243-253",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1945,7 +1973,7 @@
     {
       "id": "APEX-AUDIT-PROPERTY-ON-INTERFACE",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "84",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1959,7 +1987,7 @@
     {
       "id": "APEX-AUDIT-PROTECTED-STATIC-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_access_modifiers.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_access_modifiers.md",
       "docsLines": "26-30",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1973,7 +2001,7 @@
     {
       "id": "APEX-AUDIT-QUEUEABLE-EXECUTE-WITHOUT-ACCESS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_queueing_jobs.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_queueing_jobs.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -1987,7 +2015,7 @@
     {
       "id": "APEX-AUDIT-RAW-BATCHABLE-INTERFACE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_parameterized_types.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_parameterized_types.md",
       "docsLines": "19-21",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2001,7 +2029,7 @@
     {
       "id": "APEX-AUDIT-RAW-LIST-CONSTRUCTION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_parameterized_types.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_parameterized_types.md",
       "docsLines": "19-21",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2015,7 +2043,7 @@
     {
       "id": "APEX-AUDIT-RAW-MAP-CONSTRUCTION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_parameterized_types.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_parameterized_types.md",
       "docsLines": "19-21",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2029,7 +2057,7 @@
     {
       "id": "APEX-AUDIT-READ-SET-ONLY-PROPERTY",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "16-18,91-115",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2043,7 +2071,7 @@
     {
       "id": "APEX-AUDIT-READONLY-ON-PLAIN-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_ReadOnly.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_ReadOnly.md",
       "docsLines": "8-27",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2054,9 +2082,37 @@
       "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures"
     },
     {
+      "id": "APEX-AUDIT-READONLY-REST-PRE49-WITHOUT-REMOTE-ACTION",
+      "area": "annotations",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_ReadOnly.md",
+      "docsLines": "24-27",
+      "apiVersion": 48,
+      "sourceKind": "class",
+      "source": "@RestResource(urlMapping='/probe') global class ProbeReadOnlyPre49 { @ReadOnly @HttpGet global static void run() {} }",
+      "dependencies": [],
+      "oracle": "reject",
+      "status": "supported",
+      "productTest": "internal/sema/version_contracts_test.go:TestReadOnlyRESTMethodRemoteActionVersionGate",
+      "owner": "sema"
+    },
+    {
+      "id": "APEX-AUDIT-READONLY-REST-V49-WITHOUT-REMOTE-ACTION",
+      "area": "annotations",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_ReadOnly.md",
+      "docsLines": "24-27",
+      "apiVersion": 49,
+      "sourceKind": "class",
+      "source": "@RestResource(urlMapping='/probe') global class ProbeReadOnlyV49 { @ReadOnly @HttpGet global static void run() {} }",
+      "dependencies": [],
+      "oracle": "accept",
+      "status": "supported",
+      "productTest": "internal/sema/version_contracts_test.go:TestReadOnlyRESTMethodRemoteActionVersionGate",
+      "owner": "sema"
+    },
+    {
       "id": "APEX-AUDIT-REMOTE-ACTION-NONSTATIC",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_RemoteAction.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_RemoteAction.md",
       "docsLines": "9-10",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2070,7 +2126,7 @@
     {
       "id": "APEX-AUDIT-REMOTE-ACTION-PRIVATE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_RemoteAction.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_RemoteAction.md",
       "docsLines": "9-10",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2084,7 +2140,7 @@
     {
       "id": "APEX-AUDIT-REST-BLOB-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_rest_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_rest_methods.md",
       "docsLines": "11-19",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2098,7 +2154,7 @@
     {
       "id": "APEX-AUDIT-REST-MAPPING-BAD-WILDCARD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_rest_resource.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_rest_resource.md",
       "docsLines": "15-23",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2112,7 +2168,7 @@
     {
       "id": "APEX-AUDIT-REST-MAPPING-MISSING",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_rest_resource.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_rest_resource.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2126,7 +2182,7 @@
     {
       "id": "APEX-AUDIT-REST-MAPPING-OVER-255",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_rest_resource.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_rest_resource.md",
       "docsLines": "15-23",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2140,7 +2196,7 @@
     {
       "id": "APEX-AUDIT-REST-MAPPING-WITHOUT-LEADING-SLASH",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_rest_resource.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_rest_resource.md",
       "docsLines": "15-23",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2154,7 +2210,7 @@
     {
       "id": "APEX-AUDIT-REST-NON-STRING-MAP-KEY",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_rest_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_rest_methods.md",
       "docsLines": "11-19",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2168,7 +2224,7 @@
     {
       "id": "APEX-AUDIT-REST-RESOURCE-CLASS-NOT-GLOBAL",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_rest_resource.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_rest_resource.md",
       "docsLines": "8",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2182,7 +2238,7 @@
     {
       "id": "APEX-AUDIT-REST-RESOURCE-INNER-CLASS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_rest_resource.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_rest_resource.md",
       "docsLines": "3-13",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2196,7 +2252,7 @@
     {
       "id": "APEX-AUDIT-REST-RESOURCE-UNKNOWN-PROPERTY",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_rest_resource.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_rest_resource.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2210,7 +2266,7 @@
     {
       "id": "APEX-AUDIT-REST-SET-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_rest_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_rest_methods.md",
       "docsLines": "11-19",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2224,7 +2280,7 @@
     {
       "id": "APEX-AUDIT-RETURN-VALUE-FROM-VOID",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_return.md",
+      "docsPath": "salesforce-scratch-oracle",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2238,7 +2294,7 @@
     {
       "id": "APEX-AUDIT-ROLLUP-MORE-THAN-THREE-FIELDS",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_groupby_rollup.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_groupby_rollup.md",
       "docsLines": "13-16",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2252,7 +2308,7 @@
     {
       "id": "APEX-AUDIT-RUNAS-OUTSIDE-TEST-METHOD",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_testing_tools_runas.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_testing_tools_runas.md",
       "docsLines": "32-33",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2265,7 +2321,7 @@
     {
       "id": "APEX-AUDIT-SAFE-NAVIGATION-ASSIGNMENT",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_SafeNavigationOperator.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SafeNavigationOperator.md",
       "docsLines": "93-127",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2279,7 +2335,7 @@
     {
       "id": "APEX-AUDIT-SAFE-NAVIGATION-STATIC-ACCESS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_SafeNavigationOperator.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SafeNavigationOperator.md",
       "docsLines": "93-127",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2293,7 +2349,7 @@
     {
       "id": "APEX-AUDIT-SCHEDULABLE-EXECUTE-WITHOUT-ACCESS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_scheduler.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_scheduler.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2307,7 +2363,7 @@
     {
       "id": "APEX-AUDIT-SCIENTIFIC-NOTATION-LITERAL",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_primitives.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_primitives.md",
       "docsLines": "20",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2321,7 +2377,7 @@
     {
       "id": "APEX-AUDIT-SECURITY-ENFORCED-API66-CONTROL",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/versioned_behavior_changes.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/versioned_behavior_changes.md",
       "docsLines": "29-32",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2335,7 +2391,7 @@
     {
       "id": "APEX-AUDIT-SECURITY-ENFORCED-API67",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/versioned_behavior_changes.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/versioned_behavior_changes.md",
       "docsLines": "29-32",
       "apiVersion": 67,
       "sourceKind": "class",
@@ -2349,7 +2405,7 @@
     {
       "id": "APEX-AUDIT-SOQL-FOR-WRONG-VARIABLE-TYPE",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_loops_for_SOQL.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_loops_for_SOQL.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2363,7 +2419,7 @@
     {
       "id": "APEX-AUDIT-SOQL-INCOMPATIBLE-BIND-TYPE",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_SOQL_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
       "docsLines": "3-17",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2377,7 +2433,7 @@
     {
       "id": "APEX-AUDIT-SOQL-MISSING-BIND",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_SOQL_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
       "docsLines": "3-17",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2391,7 +2447,7 @@
     {
       "id": "APEX-AUDIT-SOQL-SELF-SEMIJOIN",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_comparisonoperators.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_comparisonoperators.md",
       "docsLines": "203-215",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2405,7 +2461,7 @@
     {
       "id": "APEX-AUDIT-SOQL-WRONG-ASSIGNMENT-TYPE",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_SOQL_working_with_results.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_working_with_results.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2419,7 +2475,7 @@
     {
       "id": "APEX-AUDIT-SOSL-DUPLICATE-RETURNING-OBJECT",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_sosl_returning.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_sosl_returning.md",
       "docsLines": "40-45",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2433,7 +2489,7 @@
     {
       "id": "APEX-AUDIT-SOSL-WITHOUT-RETURNING",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_sosl_syntax.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_sosl_syntax.md",
       "docsLines": "31-40",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2447,7 +2503,7 @@
     {
       "id": "APEX-AUDIT-SOSL-WRONG-ASSIGNMENT-TYPE",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_SOSL.md",
+      "docsPath": "salesforce-scratch-oracle",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2461,7 +2517,7 @@
     {
       "id": "APEX-AUDIT-STATIC-CLASS-DECLARATION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_static.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_static.md",
       "docsLines": "3-6",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2475,7 +2531,7 @@
     {
       "id": "APEX-AUDIT-STATIC-INITIALIZER-IN-INNER-CLASS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_static.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_static.md",
       "docsLines": "10-14",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2489,7 +2545,7 @@
     {
       "id": "APEX-AUDIT-STATIC-INTERFACE-IMPLEMENTATION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_interfaces.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_interfaces.md",
       "docsLines": "61-64",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2508,7 +2564,7 @@
     {
       "id": "APEX-AUDIT-STATIC-INVOCABLE-VARIABLE",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableVariable.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableVariable.md",
       "docsLines": "243-253",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2522,7 +2578,7 @@
     {
       "id": "APEX-AUDIT-STATIC-MEMBER-ACCESS-THROUGH-INSTANCE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_static.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_static.md",
       "docsLines": "102-110",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2536,7 +2592,7 @@
     {
       "id": "APEX-AUDIT-STATIC-METHOD-ACCESSES-INSTANCE-MEMBER",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_static.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_static.md",
       "docsLines": "52-54",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2550,7 +2606,7 @@
     {
       "id": "APEX-AUDIT-STATIC-METHOD-IN-INNER-CLASS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_static.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_static.md",
       "docsLines": "42-45",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2564,7 +2620,7 @@
     {
       "id": "APEX-AUDIT-SUPER-OUTSIDE-OVERRIDE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_super.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_super.md",
       "docsLines": "66-70",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2583,7 +2639,7 @@
     {
       "id": "APEX-AUDIT-SWITCH-BOOLEAN",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_switch.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
       "docsLines": "65-70",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2597,7 +2653,7 @@
     {
       "id": "APEX-AUDIT-SWITCH-DATE",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_switch.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
       "docsLines": "65-70",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2611,7 +2667,7 @@
     {
       "id": "APEX-AUDIT-SWITCH-DECIMAL",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_switch.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
       "docsLines": "65-70",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2625,7 +2681,7 @@
     {
       "id": "APEX-AUDIT-SWITCH-MULTIPLE-SOBJECT-TYPES-ONE-WHEN",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_switch.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
       "docsLines": "217-220",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2639,7 +2695,7 @@
     {
       "id": "APEX-AUDIT-SWITCH-WHEN-ELSE-NOT-LAST",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_switch.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_switch.md",
       "docsLines": "93-96",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2653,7 +2709,7 @@
     {
       "id": "APEX-AUDIT-TEST-SETUP-WITH-SEE-ALL-DATA",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_testsetup.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_testsetup.md",
       "docsLines": "29-34",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2667,7 +2723,7 @@
     {
       "id": "APEX-AUDIT-THIS-IN-STATIC-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_this.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_this.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2681,7 +2737,7 @@
     {
       "id": "APEX-AUDIT-THROW-NON-EXCEPTION",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_exception_statements.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_exception_statements.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2695,7 +2751,7 @@
     {
       "id": "APEX-AUDIT-TOP-LEVEL-CLASS-WITHOUT-ACCESS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "19-20",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2709,7 +2765,7 @@
     {
       "id": "APEX-AUDIT-TOP-LEVEL-INTERFACE-WITHOUT-ACCESS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining.md",
       "docsLines": "19-20",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2723,7 +2779,7 @@
     {
       "id": "APEX-AUDIT-TRANSIENT-LOCAL-VARIABLE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_transient.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_transient.md",
       "docsLines": "3-5",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2737,7 +2793,7 @@
     {
       "id": "APEX-AUDIT-TRANSIENT-STATIC-FIELD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_keywords_transient.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_keywords_transient.md",
       "docsLines": "3-5",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2751,7 +2807,7 @@
     {
       "id": "APEX-AUDIT-TRANSITIVE-INTERFACE-REQUIREMENT",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_extending.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_extending.md",
       "docsLines": "100-102",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2774,7 +2830,7 @@
     {
       "id": "APEX-AUDIT-TRIGGER-BODY-STATIC-KEYWORD",
       "area": "trigger",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_triggers_syntax.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_triggers_syntax.md",
       "docsLines": "24-25",
       "apiVersion": 66,
       "sourceKind": "trigger",
@@ -2788,7 +2844,7 @@
     {
       "id": "APEX-AUDIT-TRIGGER-BODY-TYPE-ERROR",
       "area": "trigger",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_triggers_syntax.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_triggers_syntax.md",
       "docsLines": "7-9",
       "apiVersion": 66,
       "sourceKind": "trigger",
@@ -2802,7 +2858,7 @@
     {
       "id": "APEX-AUDIT-TRIGGER-BODY-UNKNOWN-CALL",
       "area": "trigger",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_triggers_syntax.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_triggers_syntax.md",
       "docsLines": "7-9",
       "apiVersion": 66,
       "sourceKind": "trigger",
@@ -2816,7 +2872,7 @@
     {
       "id": "APEX-AUDIT-TRIGGER-DUPLICATE-EVENT",
       "area": "trigger",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_triggers_syntax.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_triggers_syntax.md",
       "docsLines": "12-20",
       "apiVersion": 66,
       "sourceKind": "trigger",
@@ -2830,7 +2886,7 @@
     {
       "id": "APEX-AUDIT-TRIGGER-ON-APEXCLASS",
       "area": "trigger",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_triggers.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_triggers.md",
       "docsLines": "22-23",
       "apiVersion": 66,
       "sourceKind": "trigger",
@@ -2843,7 +2899,7 @@
     {
       "id": "APEX-AUDIT-TWO-HTTP-GET-METHODS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_rest_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_rest_methods.md",
       "docsLines": "35-37",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2857,7 +2913,7 @@
     {
       "id": "APEX-AUDIT-TWO-INVOCABLE-METHODS",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_InvocableMethod.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_InvocableMethod.md",
       "docsLines": "264-267",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2871,7 +2927,7 @@
     {
       "id": "APEX-AUDIT-TWO-TEST-SETUP-METHODS",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_testsetup.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation_testsetup.md",
       "docsLines": "25-27",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2885,7 +2941,7 @@
     {
       "id": "APEX-AUDIT-TYPEOF-WITH-GROUP-BY",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/sforce_api_calls_soql_select_typeof.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/soql-sosl/sforce_api_calls_soql_select_typeof.md",
       "docsLines": "124-126",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2899,7 +2955,7 @@
     {
       "id": "APEX-AUDIT-UNINITIALIZED-LOCAL-READ",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_static.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_static.md",
       "docsLines": "25-28",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2913,7 +2969,7 @@
     {
       "id": "APEX-AUDIT-UNKNOWN-CLASS-ANNOTATION",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation.md",
       "docsLines": "19-70",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2927,7 +2983,7 @@
     {
       "id": "APEX-AUDIT-UNKNOWN-METHOD-ANNOTATION",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_annotation.md",
       "docsLines": "19-70",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2941,7 +2997,7 @@
     {
       "id": "APEX-AUDIT-UNREACHABLE-AFTER-THROW-API40-CONTROL",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_exception_statements.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_exception_statements.md",
       "docsLines": "118-129",
       "apiVersion": 40,
       "sourceKind": "class",
@@ -2955,7 +3011,7 @@
     {
       "id": "APEX-AUDIT-UNREACHABLE-AFTER-THROW-API41",
       "area": "statements",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_exception_statements.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_exception_statements.md",
       "docsLines": "118-129",
       "apiVersion": 41,
       "sourceKind": "class",
@@ -2969,7 +3025,7 @@
     {
       "id": "APEX-AUDIT-UNSUFFIXED-INTEGER-OUT-OF-RANGE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_rules_of_conversion.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_rules_of_conversion.md",
       "docsLines": "37-48",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2983,7 +3039,7 @@
     {
       "id": "APEX-AUDIT-UPDATE-STRING-LIST",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_dml.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_dml.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -2997,7 +3053,7 @@
     {
       "id": "APEX-AUDIT-UPSERT-NON-EXTERNAL-ID-FIELD",
       "area": "query",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_dml_examples_upsert.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_dml_examples_upsert.md",
       "docsLines": "3-7",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3011,7 +3067,7 @@
     {
       "id": "APEX-AUDIT-VARIABLE-CONSECUTIVE-UNDERSCORES",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_variables.md",
       "docsLines": "33",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3025,7 +3081,7 @@
     {
       "id": "APEX-AUDIT-VARIABLE-LEADING-UNDERSCORE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_variables.md",
       "docsLines": "30-31",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3039,7 +3095,7 @@
     {
       "id": "APEX-AUDIT-VARIABLE-NAME-OVER-255",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_variables.md",
       "docsLines": "36",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3053,7 +3109,7 @@
     {
       "id": "APEX-AUDIT-VARIABLE-TRAILING-UNDERSCORE",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_variables.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_variables.md",
       "docsLines": "32",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3067,7 +3123,7 @@
     {
       "id": "APEX-AUDIT-VIRTUAL-METHOD-WITHOUT-BODY",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "13-17",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3081,7 +3137,7 @@
     {
       "id": "APEX-AUDIT-VIRTUAL-STATIC-METHOD",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_defining_methods.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_defining_methods.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3095,7 +3151,7 @@
     {
       "id": "APEX-AUDIT-WEBSERVICE-INNER-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_considerations.md",
       "docsLines": "6-14",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3109,7 +3165,7 @@
     {
       "id": "APEX-AUDIT-WEBSERVICE-INTERFACE-METHOD",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_considerations.md",
       "docsLines": "8-10",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3123,7 +3179,7 @@
     {
       "id": "APEX-AUDIT-WEBSERVICE-MAP-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_considerations.md",
       "docsLines": "22-27",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3137,7 +3193,7 @@
     {
       "id": "APEX-AUDIT-WEBSERVICE-NONSTATIC",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_considerations.md",
       "docsLines": "15-20",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3151,21 +3207,21 @@
     {
       "id": "APEX-AUDIT-WEBSERVICE-OVERLOAD-SAME-NAME",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_overloading.md",
-      "docsLines": "3-6",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_overloading.md",
+      "docsLines": "3-5",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "global class ProbeWebOverload { webservice static void run(String value) {} webservice static void run(Integer value) {} }",
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureContracts",
       "owner": "sema"
     },
     {
       "id": "APEX-AUDIT-WEBSERVICE-PUBLIC-OUTER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_considerations.md",
       "docsLines": "13-14",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3179,7 +3235,7 @@
     {
       "id": "APEX-AUDIT-WEBSERVICE-SET-RETURN",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_considerations.md",
       "docsLines": "22-28",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3193,7 +3249,7 @@
     {
       "id": "APEX-AUDIT-WEBSERVICE-SYSTEM-ENUM-PARAMETER",
       "area": "annotations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_web_services_methods_considerations.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_web_services_methods_considerations.md",
       "docsLines": "8-12",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3207,7 +3263,7 @@
     {
       "id": "APEX-AUDIT-WHILE-NON-BOOLEAN-CONDITION",
       "area": "declarations",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_loops_while.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_loops_while.md",
       "docsLines": "scratch-backed probe",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3221,7 +3277,7 @@
     {
       "id": "APEX-AUDIT-WRITE-GET-ONLY-PROPERTY",
       "area": "types",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_properties.md",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/apex_classes_properties.md",
       "docsLines": "16-18,91-115",
       "apiVersion": 66,
       "sourceKind": "class",
@@ -3357,8 +3413,8 @@
     {
       "id": "APEX-RESERVED-ABSTRACT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String abstract = 'x'; } }",
@@ -3370,8 +3426,8 @@
     {
       "id": "APEX-RESERVED-ACTIVATE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String activate = 'x'; } }",
@@ -3383,8 +3439,8 @@
     {
       "id": "APEX-RESERVED-AND",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String and = 'x'; } }",
@@ -3396,8 +3452,8 @@
     {
       "id": "APEX-RESERVED-ANY",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String any = 'x'; } }",
@@ -3409,8 +3465,8 @@
     {
       "id": "APEX-RESERVED-ARRAY",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String array = 'x'; } }",
@@ -3422,8 +3478,8 @@
     {
       "id": "APEX-RESERVED-AS",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String as = 'x'; } }",
@@ -3435,8 +3491,8 @@
     {
       "id": "APEX-RESERVED-ASC",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String asc = 'x'; } }",
@@ -3448,8 +3504,8 @@
     {
       "id": "APEX-RESERVED-AUTONOMOUS",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String autonomous = 'x'; } }",
@@ -3461,8 +3517,8 @@
     {
       "id": "APEX-RESERVED-BEGIN",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String begin = 'x'; } }",
@@ -3474,8 +3530,8 @@
     {
       "id": "APEX-RESERVED-BIGDECIMAL",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String bigdecimal = 'x'; } }",
@@ -3487,8 +3543,8 @@
     {
       "id": "APEX-RESERVED-BLOB",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String blob = 'x'; } }",
@@ -3500,8 +3556,8 @@
     {
       "id": "APEX-RESERVED-BOOLEAN",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String boolean = 'x'; } }",
@@ -3513,8 +3569,8 @@
     {
       "id": "APEX-RESERVED-BREAK",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String break = 'x'; } }",
@@ -3526,8 +3582,8 @@
     {
       "id": "APEX-RESERVED-BULK",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String bulk = 'x'; } }",
@@ -3539,8 +3595,8 @@
     {
       "id": "APEX-RESERVED-BY",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String by = 'x'; } }",
@@ -3552,8 +3608,8 @@
     {
       "id": "APEX-RESERVED-BYTE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String byte = 'x'; } }",
@@ -3565,8 +3621,8 @@
     {
       "id": "APEX-RESERVED-CASE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String case = 'x'; } }",
@@ -3578,8 +3634,8 @@
     {
       "id": "APEX-RESERVED-CAST",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String cast = 'x'; } }",
@@ -3591,8 +3647,8 @@
     {
       "id": "APEX-RESERVED-CATCH",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String catch = 'x'; } }",
@@ -3604,8 +3660,8 @@
     {
       "id": "APEX-RESERVED-CHAR",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String char = 'x'; } }",
@@ -3617,8 +3673,8 @@
     {
       "id": "APEX-RESERVED-CLASS",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String class = 'x'; } }",
@@ -3630,8 +3686,8 @@
     {
       "id": "APEX-RESERVED-COLLECT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String collect = 'x'; } }",
@@ -3643,8 +3699,8 @@
     {
       "id": "APEX-RESERVED-COMMIT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String commit = 'x'; } }",
@@ -3656,8 +3712,8 @@
     {
       "id": "APEX-RESERVED-CONST",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String const = 'x'; } }",
@@ -3669,8 +3725,8 @@
     {
       "id": "APEX-RESERVED-CONTINUE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String continue = 'x'; } }",
@@ -3682,8 +3738,8 @@
     {
       "id": "APEX-RESERVED-CURRENCY",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String currency = 'x'; } }",
@@ -3695,8 +3751,8 @@
     {
       "id": "APEX-RESERVED-DATE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String date = 'x'; } }",
@@ -3708,8 +3764,8 @@
     {
       "id": "APEX-RESERVED-DATETIME",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String datetime = 'x'; } }",
@@ -3721,8 +3777,8 @@
     {
       "id": "APEX-RESERVED-DECIMAL",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String decimal = 'x'; } }",
@@ -3734,8 +3790,8 @@
     {
       "id": "APEX-RESERVED-DEFAULT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String default = 'x'; } }",
@@ -3747,8 +3803,8 @@
     {
       "id": "APEX-RESERVED-DELETE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String delete = 'x'; } }",
@@ -3760,8 +3816,8 @@
     {
       "id": "APEX-RESERVED-DESC",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String desc = 'x'; } }",
@@ -3773,8 +3829,8 @@
     {
       "id": "APEX-RESERVED-DO",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String do = 'x'; } }",
@@ -3786,8 +3842,8 @@
     {
       "id": "APEX-RESERVED-DOUBLE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String double = 'x'; } }",
@@ -3799,8 +3855,8 @@
     {
       "id": "APEX-RESERVED-ELSE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String else = 'x'; } }",
@@ -3812,8 +3868,8 @@
     {
       "id": "APEX-RESERVED-END",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String end = 'x'; } }",
@@ -3825,8 +3881,8 @@
     {
       "id": "APEX-RESERVED-ENUM",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String enum = 'x'; } }",
@@ -3838,8 +3894,8 @@
     {
       "id": "APEX-RESERVED-EXCEPTION",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String exception = 'x'; } }",
@@ -3851,8 +3907,8 @@
     {
       "id": "APEX-RESERVED-EXIT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String exit = 'x'; } }",
@@ -3864,8 +3920,8 @@
     {
       "id": "APEX-RESERVED-EXPORT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String export = 'x'; } }",
@@ -3877,8 +3933,8 @@
     {
       "id": "APEX-RESERVED-EXTENDS",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String extends = 'x'; } }",
@@ -3890,8 +3946,8 @@
     {
       "id": "APEX-RESERVED-FALSE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String false = 'x'; } }",
@@ -3903,8 +3959,8 @@
     {
       "id": "APEX-RESERVED-FINAL",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String final = 'x'; } }",
@@ -3916,8 +3972,8 @@
     {
       "id": "APEX-RESERVED-FINALLY",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String finally = 'x'; } }",
@@ -3929,8 +3985,8 @@
     {
       "id": "APEX-RESERVED-FLOAT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String float = 'x'; } }",
@@ -3942,8 +3998,8 @@
     {
       "id": "APEX-RESERVED-FOR",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String for = 'x'; } }",
@@ -3955,8 +4011,8 @@
     {
       "id": "APEX-RESERVED-FROM",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String from = 'x'; } }",
@@ -3968,8 +4024,8 @@
     {
       "id": "APEX-RESERVED-GLOBAL",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String global = 'x'; } }",
@@ -3981,8 +4037,8 @@
     {
       "id": "APEX-RESERVED-GOTO",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String goto = 'x'; } }",
@@ -3994,8 +4050,8 @@
     {
       "id": "APEX-RESERVED-GROUP",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String group = 'x'; } }",
@@ -4007,8 +4063,8 @@
     {
       "id": "APEX-RESERVED-HAVING",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String having = 'x'; } }",
@@ -4020,8 +4076,8 @@
     {
       "id": "APEX-RESERVED-HINT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String hint = 'x'; } }",
@@ -4033,8 +4089,8 @@
     {
       "id": "APEX-RESERVED-IF",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String if = 'x'; } }",
@@ -4046,8 +4102,8 @@
     {
       "id": "APEX-RESERVED-IMPLEMENTS",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String implements = 'x'; } }",
@@ -4059,8 +4115,8 @@
     {
       "id": "APEX-RESERVED-IMPORT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String import = 'x'; } }",
@@ -4072,8 +4128,8 @@
     {
       "id": "APEX-RESERVED-IN",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String in = 'x'; } }",
@@ -4085,8 +4141,8 @@
     {
       "id": "APEX-RESERVED-INNER",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String inner = 'x'; } }",
@@ -4098,8 +4154,8 @@
     {
       "id": "APEX-RESERVED-INSERT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String insert = 'x'; } }",
@@ -4111,8 +4167,8 @@
     {
       "id": "APEX-RESERVED-INSTANCEOF",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String instanceof = 'x'; } }",
@@ -4124,8 +4180,8 @@
     {
       "id": "APEX-RESERVED-INT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String int = 'x'; } }",
@@ -4137,8 +4193,8 @@
     {
       "id": "APEX-RESERVED-INTEGER",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String integer = 'x'; } }",
@@ -4150,8 +4206,8 @@
     {
       "id": "APEX-RESERVED-INTERFACE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String interface = 'x'; } }",
@@ -4163,8 +4219,8 @@
     {
       "id": "APEX-RESERVED-INTO",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String into = 'x'; } }",
@@ -4176,8 +4232,8 @@
     {
       "id": "APEX-RESERVED-JOIN",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String join = 'x'; } }",
@@ -4189,8 +4245,8 @@
     {
       "id": "APEX-RESERVED-LIKE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String like = 'x'; } }",
@@ -4202,8 +4258,8 @@
     {
       "id": "APEX-RESERVED-LIMIT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String limit = 'x'; } }",
@@ -4215,8 +4271,8 @@
     {
       "id": "APEX-RESERVED-LIST",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String list = 'x'; } }",
@@ -4228,8 +4284,8 @@
     {
       "id": "APEX-RESERVED-LONG",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String long = 'x'; } }",
@@ -4241,8 +4297,8 @@
     {
       "id": "APEX-RESERVED-LOOP",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String loop = 'x'; } }",
@@ -4254,8 +4310,8 @@
     {
       "id": "APEX-RESERVED-MAP",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String map = 'x'; } }",
@@ -4267,8 +4323,8 @@
     {
       "id": "APEX-RESERVED-MERGE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String merge = 'x'; } }",
@@ -4280,8 +4336,8 @@
     {
       "id": "APEX-RESERVED-NEW",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String new = 'x'; } }",
@@ -4293,8 +4349,8 @@
     {
       "id": "APEX-RESERVED-NOT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String not = 'x'; } }",
@@ -4306,8 +4362,8 @@
     {
       "id": "APEX-RESERVED-NULL",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String null = 'x'; } }",
@@ -4319,8 +4375,8 @@
     {
       "id": "APEX-RESERVED-NULLS",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String nulls = 'x'; } }",
@@ -4332,8 +4388,8 @@
     {
       "id": "APEX-RESERVED-NUMBER",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String number = 'x'; } }",
@@ -4345,8 +4401,8 @@
     {
       "id": "APEX-RESERVED-OBJECT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String object = 'x'; } }",
@@ -4358,8 +4414,8 @@
     {
       "id": "APEX-RESERVED-OF",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String of = 'x'; } }",
@@ -4371,8 +4427,8 @@
     {
       "id": "APEX-RESERVED-ON",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String on = 'x'; } }",
@@ -4384,8 +4440,8 @@
     {
       "id": "APEX-RESERVED-OR",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String or = 'x'; } }",
@@ -4397,8 +4453,8 @@
     {
       "id": "APEX-RESERVED-OUTER",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String outer = 'x'; } }",
@@ -4410,8 +4466,8 @@
     {
       "id": "APEX-RESERVED-OVERRIDE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String override = 'x'; } }",
@@ -4423,8 +4479,8 @@
     {
       "id": "APEX-RESERVED-PACKAGE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String package = 'x'; } }",
@@ -4436,8 +4492,8 @@
     {
       "id": "APEX-RESERVED-PARALLEL",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String parallel = 'x'; } }",
@@ -4449,8 +4505,8 @@
     {
       "id": "APEX-RESERVED-PRAGMA",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String pragma = 'x'; } }",
@@ -4462,8 +4518,8 @@
     {
       "id": "APEX-RESERVED-PRIVATE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String private = 'x'; } }",
@@ -4475,8 +4531,8 @@
     {
       "id": "APEX-RESERVED-PROTECTED",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String protected = 'x'; } }",
@@ -4488,8 +4544,8 @@
     {
       "id": "APEX-RESERVED-PUBLIC",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String public = 'x'; } }",
@@ -4501,8 +4557,8 @@
     {
       "id": "APEX-RESERVED-RETRIEVE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String retrieve = 'x'; } }",
@@ -4514,8 +4570,8 @@
     {
       "id": "APEX-RESERVED-RETURN",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String return = 'x'; } }",
@@ -4527,8 +4583,8 @@
     {
       "id": "APEX-RESERVED-ROLLBACK",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String rollback = 'x'; } }",
@@ -4540,8 +4596,8 @@
     {
       "id": "APEX-RESERVED-SELECT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String select = 'x'; } }",
@@ -4553,8 +4609,8 @@
     {
       "id": "APEX-RESERVED-SET",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String set = 'x'; } }",
@@ -4566,8 +4622,8 @@
     {
       "id": "APEX-RESERVED-SHORT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String short = 'x'; } }",
@@ -4579,8 +4635,8 @@
     {
       "id": "APEX-RESERVED-SOBJECT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String sobject = 'x'; } }",
@@ -4592,8 +4648,8 @@
     {
       "id": "APEX-RESERVED-SORT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String sort = 'x'; } }",
@@ -4605,8 +4661,8 @@
     {
       "id": "APEX-RESERVED-STATIC",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String static = 'x'; } }",
@@ -4618,8 +4674,8 @@
     {
       "id": "APEX-RESERVED-STRING",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String string = 'x'; } }",
@@ -4631,8 +4687,8 @@
     {
       "id": "APEX-RESERVED-SUPER",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String super = 'x'; } }",
@@ -4644,8 +4700,8 @@
     {
       "id": "APEX-RESERVED-SWITCH",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String switch = 'x'; } }",
@@ -4657,8 +4713,8 @@
     {
       "id": "APEX-RESERVED-SYNCHRONIZED",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String synchronized = 'x'; } }",
@@ -4670,8 +4726,8 @@
     {
       "id": "APEX-RESERVED-SYSTEM",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String system = 'x'; } }",
@@ -4683,8 +4739,8 @@
     {
       "id": "APEX-RESERVED-TESTMETHOD",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String testmethod = 'x'; } }",
@@ -4696,8 +4752,8 @@
     {
       "id": "APEX-RESERVED-THEN",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String then = 'x'; } }",
@@ -4709,8 +4765,8 @@
     {
       "id": "APEX-RESERVED-THIS",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String this = 'x'; } }",
@@ -4722,8 +4778,8 @@
     {
       "id": "APEX-RESERVED-THROW",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String throw = 'x'; } }",
@@ -4735,8 +4791,8 @@
     {
       "id": "APEX-RESERVED-TIME",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String time = 'x'; } }",
@@ -4748,8 +4804,8 @@
     {
       "id": "APEX-RESERVED-TRANSACTION",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String transaction = 'x'; } }",
@@ -4761,8 +4817,8 @@
     {
       "id": "APEX-RESERVED-TRIGGER",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String trigger = 'x'; } }",
@@ -4774,8 +4830,8 @@
     {
       "id": "APEX-RESERVED-TRUE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String true = 'x'; } }",
@@ -4787,8 +4843,8 @@
     {
       "id": "APEX-RESERVED-TRY",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String try = 'x'; } }",
@@ -4800,8 +4856,8 @@
     {
       "id": "APEX-RESERVED-UNDELETE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String undelete = 'x'; } }",
@@ -4813,8 +4869,8 @@
     {
       "id": "APEX-RESERVED-UPDATE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String update = 'x'; } }",
@@ -4826,8 +4882,8 @@
     {
       "id": "APEX-RESERVED-UPSERT",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String upsert = 'x'; } }",
@@ -4839,8 +4895,8 @@
     {
       "id": "APEX-RESERVED-USING",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String using = 'x'; } }",
@@ -4852,8 +4908,8 @@
     {
       "id": "APEX-RESERVED-VIRTUAL",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String virtual = 'x'; } }",
@@ -4865,8 +4921,8 @@
     {
       "id": "APEX-RESERVED-VOID",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String void = 'x'; } }",
@@ -4878,8 +4934,8 @@
     {
       "id": "APEX-RESERVED-WEBSERVICE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String webservice = 'x'; } }",
@@ -4891,8 +4947,8 @@
     {
       "id": "APEX-RESERVED-WHEN",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String when = 'x'; } }",
@@ -4904,8 +4960,8 @@
     {
       "id": "APEX-RESERVED-WHERE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String where = 'x'; } }",
@@ -4917,8 +4973,8 @@
     {
       "id": "APEX-RESERVED-WHILE",
       "area": "identifiers",
-      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_ref_guide.md",
-      "docsLines": "reserved words",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex/apex_reserved_words.md",
+      "docsLines": "3-9",
       "apiVersion": 66,
       "sourceKind": "class",
       "source": "public class Probe { void run() { String while = 'x'; } }",
