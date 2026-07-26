@@ -1882,6 +1882,38 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsIncompatibleSOSLLikeBind"
+    },
+    {
+      "id": "APEX-ABSTRACT-IMPLEMENTATION-MISSING-OVERRIDE",
+      "area": "inheritance-contracts",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "abstract method implementation requires override",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleAbstractChild extends OracleAbstractBase { public String value() { return 'value'; } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/OracleAbstractBase.cls",
+          "content": "public abstract class OracleAbstractBase { public abstract String value(); }"
+        }
+      ],
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsRequireOverrideModifier"
+    },
+    {
+      "id": "APEX-GET-ONLY-PROPERTY-WRITE",
+      "area": "property-contracts",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "get-only property write",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleGetOnlyProperty { public String Value { get { return 'value'; } } public void run() { Value = 'next'; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractRejectsPropertyCapabilityAndSafeNavigationMisuse"
     }
   ]
 }
