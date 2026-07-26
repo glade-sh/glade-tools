@@ -46,6 +46,24 @@ func TestToolingPayloadAcceptsInterfaceDependencies(t *testing.T) {
 	}
 }
 
+func TestToolingPayloadAcceptsEnums(t *testing.T) {
+	object, payload, err := toolingPayload(Rule{
+		ID:         "APEX-ENUM-PROBE",
+		APIVersion: 66,
+		SourceKind: "class",
+		Source:     "public enum ProbeEnumeration { One }",
+	})
+	if err != nil {
+		t.Fatalf("toolingPayload: %v", err)
+	}
+	if object != "ApexClass" {
+		t.Fatalf("object = %q, want ApexClass", object)
+	}
+	if !strings.Contains(payload, `"Name":"ProbeEnumeration"`) {
+		t.Fatalf("payload = %s, want enum name", payload)
+	}
+}
+
 func TestValidateRejectsIncompleteAndDuplicateSupportedRules(t *testing.T) {
 	valid := Catalog{Rules: []Rule{{
 		ID: "APEX-001", Area: "identifiers", DocsPath: "apex_ref", DocsLines: "1", SourceKind: "class", Source: "public class Probe {}", Oracle: OutcomeReject, Owner: "parser", Status: StatusSupported, ProductTest: "internal/apexast/parser_test.go:TestReserved",
