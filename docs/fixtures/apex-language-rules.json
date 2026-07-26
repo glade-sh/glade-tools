@@ -1701,6 +1701,45 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/version_contracts_test.go:TestAbstractMethodRequiresExplicitAccessAtAPIVersion65"
+    },
+    {
+      "id": "APEX-SOQL-DOTTED-BIND-ACCEPT",
+      "area": "soql-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "bind expressions",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleDottedBindAccept { public static void run(Account account) { List<Account> rows = [SELECT Id FROM Account WHERE Id = :account.Id]; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers"
+    },
+    {
+      "id": "APEX-SOQL-DOTTED-BIND-MISSING-RECEIVER",
+      "area": "soql-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "bind expressions",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleDottedBindMissing { public static void run() { List<Account> rows = [SELECT Id FROM Account WHERE Id = :missing.Id]; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers"
+    },
+    {
+      "id": "APEX-SOQL-DOTTED-BIND-WRONG-TYPE",
+      "area": "soql-binds",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex-guide/langCon_apex_SOQL_variables.md",
+      "docsLines": "bind expressions",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class OracleDottedBindWrongType { public static void run(Account account) { List<Account> rows = [SELECT Id FROM Account WHERE Name = :account.Id]; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsValidatesDottedBindReceivers"
     }
   ]
 }

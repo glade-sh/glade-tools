@@ -51,8 +51,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 130 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 9 oracle-backed language rules", got)
+	if got := len(catalog.Rules); got != 133 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 12 oracle-backed language rules", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
 	reservedCount := 0
