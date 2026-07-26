@@ -1772,6 +1772,19 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/namespace_precedence_test.go:TestAnalyzeTopLevelProjectTypeShadowsSystemLimits"
+    },
+    {
+      "id": "APEX-STANDARD-SOBJECT-STATIC-TYPE",
+      "area": "sobject-members",
+      "docsPath": "nu corpus",
+      "docsLines": "standard object metadata overlay",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Schema.SObjectType run() { return Account.getSObjectType(); } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/sema_test.go:TestAnalyzeProjectStandardSObjectStaticGetSObjectType"
     }
   ]
 }
