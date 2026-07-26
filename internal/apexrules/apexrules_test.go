@@ -51,8 +51,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 360 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 25 prior and 214 recovered oracle-backed language rules", got)
+	if got := len(catalog.Rules); got != 368 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes plus 25 prior and 222 recovered oracle-backed language rules", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
 	reservedCount := 0
@@ -80,8 +80,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 			recovered++
 		}
 	}
-	if recovered != 214 {
-		t.Fatalf("recovered audit rows = %d, want 214", recovered)
+	if recovered != 222 {
+		t.Fatalf("recovered audit rows = %d, want 222", recovered)
 	}
 }
 
@@ -191,6 +191,86 @@ esac
 	}
 	if !contains(string(log), "request rest /services/data/v66.0/tooling/sobjects/ApexClass --method POST") || contains(string(log), "--url") {
 		t.Fatalf("Tooling API request did not use Salesforce CLI positional URL syntax: %s", log)
+	}
+}
+
+func TestRunSalesforceRetriesTransientAcceptedProbeCleanup(t *testing.T) {
+	dir := t.TempDir()
+	logPath := filepath.Join(dir, "sf.log")
+	deleteCountPath := filepath.Join(dir, "delete-count")
+	sf := filepath.Join(dir, "sf")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+set -eu
+printf '%s\n' "$*" >> "$APEX_RULE_SF_LOG"
+case "$*" in
+  *glade-apex-rule-delete-*)
+    count=0
+    if [ -f "$APEX_RULE_DELETE_COUNT" ]; then count=$(cat "$APEX_RULE_DELETE_COUNT"); fi
+    count=$((count + 1))
+    printf '%s' "$count" > "$APEX_RULE_DELETE_COUNT"
+    if [ "$count" -eq 1 ]; then exit 1; fi
+    printf '{"status":0}\n'
+    ;;
+  *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
+esac
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	t.Setenv("APEX_RULE_SF_LOG", logPath)
+	t.Setenv("APEX_RULE_DELETE_COUNT", deleteCountPath)
+	results, err := RunSalesforce(context.Background(), "scratch", []Rule{{
+		ID: "TransientCleanup", SourceKind: "class", Source: "public class TransientCleanup {}", APIVersion: 66,
+	}})
+	if err != nil {
+		t.Fatalf("RunSalesforce: %v", err)
+	}
+	if results["TransientCleanup"].Outcome != OutcomeAccept {
+		t.Fatalf("results = %#v", results)
+	}
+	count, err := os.ReadFile(deleteCountPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(count) != "2" {
+		t.Fatalf("delete attempts = %s, want 2", count)
+	}
+}
+
+func TestRunSalesforceAcceptsCleanupErrorWhenToolingRecordIsGone(t *testing.T) {
+	dir := t.TempDir()
+	logPath := filepath.Join(dir, "sf.log")
+	sf := filepath.Join(dir, "sf")
+	if err := os.WriteFile(sf, []byte(`#!/bin/sh
+set -eu
+printf '%s\n' "$*" >> "$APEX_RULE_SF_LOG"
+case "$*" in
+  *glade-apex-rule-delete-*|*/ApexClass/01p000000000001AAA*)
+    printf '[{"message":"invalid cross reference id","errorCode":"INVALID_CROSS_REFERENCE_KEY"}]\n' >&2
+    exit 1
+    ;;
+  *) printf '{"id":"01p000000000001AAA","success":true}\n' ;;
+esac
+`), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+	t.Setenv("APEX_RULE_SF_LOG", logPath)
+	results, err := RunSalesforce(context.Background(), "scratch", []Rule{{
+		ID: "AlreadyDeleted", SourceKind: "class", Source: "public class AlreadyDeleted {}", APIVersion: 66,
+	}})
+	if err != nil {
+		t.Fatalf("RunSalesforce: %v", err)
+	}
+	if results["AlreadyDeleted"].Outcome != OutcomeAccept {
+		t.Fatalf("results = %#v", results)
+	}
+	log, err := os.ReadFile(logPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := strings.Count(string(log), "glade-apex-rule-delete-"); got != 1 {
+		t.Fatalf("delete attempts = %d, want one confirmed-gone cleanup", got)
 	}
 }
 

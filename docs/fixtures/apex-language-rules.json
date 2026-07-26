@@ -297,6 +297,32 @@
       "owner": "sema"
     },
     {
+      "id": "APEX-AUDIT-BATCHABLE-NARROWER-EXECUTE-SCOPE",
+      "area": "inheritance",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_batch_interface.md",
+      "docsLines": "48-61",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "public class ProbeBatchNarrowScope implements Database.Batchable<SObject> { public Database.QueryLocator start(Database.BatchableContext context) { return Database.getQueryLocator([SELECT Id FROM Account]); } public void execute(Database.BatchableContext context, List<Account> scope) {} public void finish(Database.BatchableContext context) {} }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsAllowBatchableScopeVariance"
+    },
+    {
+      "id": "APEX-AUDIT-BATCHABLE-WIDER-EXECUTE-SCOPE",
+      "area": "inheritance",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_batch_interface.md",
+      "docsLines": "48-61",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "public class ProbeBatchWideScope implements Database.Batchable<Account> { public Iterable<Account> start(Database.BatchableContext context) { return new List<Account>(); } public void execute(Database.BatchableContext context, List<SObject> scope) {} public void finish(Database.BatchableContext context) {} }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsAllowBatchableScopeVariance"
+    },
+    {
       "id": "APEX-AUDIT-BREAK-OUTSIDE-LOOP",
       "area": "statements",
       "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/langCon_apex_control_flow.md",
@@ -1419,6 +1445,32 @@
       "owner": "sema"
     },
     {
+      "id": "APEX-AUDIT-ITERABLE-GENERIC-RETURN-MISMATCH",
+      "area": "inheritance",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_iterable.md",
+      "docsLines": "27-40",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "public class ProbeIterableGeneric implements Iterable<String> { public Iterator<Integer> iterator() { return new List<Integer>().iterator(); } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsSubstituteIterableTypeArguments"
+    },
+    {
+      "id": "APEX-AUDIT-ITERATOR-GENERIC-RETURN-MISMATCH",
+      "area": "inheritance",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_iterable.md",
+      "docsLines": "27-40",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "public class ProbeIteratorGeneric implements Iterator<String> { public Boolean hasNext() { return false; } public Integer next() { return 1; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/inheritance_contracts_test.go:TestInheritanceContractsSubstituteIteratorTypeArguments"
+    },
+    {
       "id": "APEX-AUDIT-ITERATOR-METHODS-WITHOUT-ACCESS",
       "area": "declarations",
       "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_iterable.md",
@@ -1590,6 +1642,19 @@
       "status": "supported",
       "productTest": "internal/sema/declaration_contracts_test.go:TestDeclarationContractConstructorChaining",
       "owner": "sema"
+    },
+    {
+      "id": "APEX-AUDIT-MULTIPLE-HTTP-ANNOTATIONS-ON-METHOD",
+      "area": "annotations",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_rest_methods.md",
+      "docsLines": "35-37",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "@RestResource(urlMapping='/pass2-multi-verb/*') global class ProbeRestMultiVerb { @HttpGet @HttpPost global static void run() {} }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestRestExposureAllowsMultipleMethodAnnotations"
     },
     {
       "id": "APEX-AUDIT-MULTIPLE-SHARING-MODIFIERS",
@@ -1976,6 +2041,19 @@
       "owner": "sema"
     },
     {
+      "id": "APEX-AUDIT-READONLY-ON-PLAIN-METHOD",
+      "area": "annotations",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_ReadOnly.md",
+      "docsLines": "8-27",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "public class ProbeReadOnlyPlacement { @ReadOnly public static void run() {} }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures"
+    },
+    {
       "id": "APEX-AUDIT-REMOTE-ACTION-NONSTATIC",
       "area": "annotations",
       "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_classes_annotation_RemoteAction.md",
@@ -2170,6 +2248,19 @@
       "status": "supported",
       "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsRejectsInvalidQueryShapes",
       "owner": "sema"
+    },
+    {
+      "id": "APEX-AUDIT-RUNAS-OUTSIDE-TEST-METHOD",
+      "area": "statements",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_testing_tools_runas.md",
+      "docsLines": "32-33",
+      "apiVersion": 66,
+      "sourceKind": "class",
+      "source": "public class ProbeRunAsContext { public void run(User value) { System.runAs(value) {} } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsAllowLoopAndExceptionControls"
     },
     {
       "id": "APEX-AUDIT-SAFE-NAVIGATION-ASSIGNMENT",
@@ -2735,6 +2826,19 @@
       "status": "supported",
       "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerBodyRejectsUnknownCallAndLocalType",
       "owner": "sema"
+    },
+    {
+      "id": "APEX-AUDIT-TRIGGER-ON-APEXCLASS",
+      "area": "trigger",
+      "docsPath": "example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/apex_triggers.md",
+      "docsLines": "22-23",
+      "apiVersion": 66,
+      "sourceKind": "trigger",
+      "source": "trigger ProbeApexClassTrigger on ApexClass (before insert) {}",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/trigger_contracts_test.go:TestAnalyzeTriggerObjectRejectsNonTriggerableObject"
     },
     {
       "id": "APEX-AUDIT-TWO-HTTP-GET-METHODS",

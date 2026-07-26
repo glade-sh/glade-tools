@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // SalesforceResult preserves compiler problems for the ledger while keeping
@@ -22,6 +23,8 @@ var (
 	classNamePattern   = regexp.MustCompile(`(?i)\bclass\s+([A-Za-z_][A-Za-z0-9_]*)`)
 	triggerNamePattern = regexp.MustCompile(`(?is)\btrigger\s+([A-Za-z_][A-Za-z0-9_]*)\s+on\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)`)
 )
+
+const acceptedToolingDeleteAttempts = 3
 
 // RunSalesforce compiles disposable Tooling API records in the target org.
 // Accepted records are deleted before this call returns. Command output stays
@@ -140,8 +143,34 @@ func deleteToolingRecord(ctx context.Context, targetOrg, url string) error {
 	if err := file.Close(); err != nil {
 		return err
 	}
-	_, err = runSF(ctx, "api", "request", "rest", "--file", path, "--target-org", targetOrg)
+	for attempt := 0; attempt < acceptedToolingDeleteAttempts; attempt++ {
+		_, err = runSF(ctx, "api", "request", "rest", "--file", path, "--target-org", targetOrg)
+		if err == nil {
+			return nil
+		}
+		if toolingRecordIsGone(ctx, targetOrg, url) {
+			return nil
+		}
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		if attempt+1 < acceptedToolingDeleteAttempts {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(time.Duration(attempt+1) * time.Second):
+			}
+		}
+	}
 	return err
+}
+
+func toolingRecordIsGone(ctx context.Context, targetOrg, url string) bool {
+	out, err := runSF(ctx, "api", "request", "rest", url, "--target-org", targetOrg)
+	if err == nil {
+		return false
+	}
+	return toolingHasErrorCode(out, "INVALID_CROSS_REFERENCE_KEY")
 }
 
 func runSF(ctx context.Context, args ...string) ([]byte, error) {
@@ -238,6 +267,19 @@ func compilerProblems(output []byte) []string {
 	}
 	problems := collectJSONFields(value, map[string]bool{"message": true, "problem": true})
 	return uniqueStrings(problems)
+}
+
+func toolingHasErrorCode(output []byte, expected string) bool {
+	value, ok := toolingJSON(output)
+	if !ok {
+		return false
+	}
+	for _, code := range collectJSONFields(value, map[string]bool{"errorcode": true}) {
+		if strings.EqualFold(code, expected) {
+			return true
+		}
+	}
+	return false
 }
 
 func toolingJSON(output []byte) (any, bool) {
