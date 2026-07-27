@@ -18,24 +18,37 @@ sha256_file() {
   fi
 }
 
-declare -A seen_assets=()
+seen_asset_names=("")
 for asset in "$@"; do
   if [[ ! -f "$asset" ]]; then
     echo "release asset does not exist or is not a regular file: $asset" >&2
     exit 1
   fi
-  name="$(basename "$asset")"
-  if [[ -n "${seen_assets[$name]:-}" ]]; then
-    echo "duplicate release asset basename: $name" >&2
+  name="${asset##*/}"
+  if [[ "$name" == *$'\n'* || "$name" == *$'\r'* ]]; then
+    echo "release asset basename contains a line break: $name" >&2
     exit 1
   fi
-  seen_assets["$name"]=1
+  for seen_name in "${seen_asset_names[@]}"; do
+    if [[ -n "$seen_name" && "$seen_name" == "$name" ]]; then
+      echo "duplicate release asset basename: $name" >&2
+      exit 1
+    fi
+  done
+  seen_asset_names[${#seen_asset_names[@]}]="$name"
 done
 
 existing_assets="$("$GH_BIN" release view "$TAG" --json assets --jq '.assets[].name')"
 for asset in "$@"; do
-  name="$(basename "$asset")"
-  if grep -Fqx "$name" <<<"$existing_assets"; then
+  name="${asset##*/}"
+  asset_exists=false
+  while IFS= read -r existing_name; do
+    if [[ "$existing_name" == "$name" ]]; then
+      asset_exists=true
+      break
+    fi
+  done <<<"$existing_assets"
+  if [[ "$asset_exists" == true ]]; then
     existing_dir="$(mktemp -d "${TMPDIR:-/tmp}/glade-release-asset.XXXXXX")"
     existing_path="$existing_dir/$name"
     if ! "$GH_BIN" release download "$TAG" --pattern "$name" --dir "$existing_dir"; then
