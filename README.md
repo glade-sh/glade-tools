@@ -23,6 +23,10 @@ Current Salesforce surface expansion work is tracked in
 [`docs/CAPABILITY_WORK_QUEUE.md`](docs/CAPABILITY_WORK_QUEUE.md). Checked
 generated reports live under `docs/generated/`.
 
+The checked Apex compiler catalog and scratch-org comparison workflow are
+documented in
+[Apex language-rule evidence](docs/apex-language-rules.md).
+
 ## Build
 
 ```bash
