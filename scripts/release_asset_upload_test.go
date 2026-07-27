@@ -50,6 +50,43 @@ func TestReleaseAssetUploadRejectsExistingDifferentBytes(t *testing.T) {
 	}
 }
 
+func TestReleaseAssetUploadHandlesExistingOptionLikeName(t *testing.T) {
+	for _, test := range []struct {
+		name      string
+		candidate string
+		published string
+		want      string
+	}{
+		{name: "identical", candidate: "same bytes", published: "same bytes", want: "already has identical bytes; skipping"},
+		{name: "different", candidate: "candidate bytes", published: "published bytes", want: "published asset differs"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			asset := writeReleaseAssetUploadFile(t, root, "-e", test.candidate)
+			existing := filepath.Join(root, "existing")
+			if err := os.Mkdir(existing, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			writeReleaseAssetUploadFile(t, existing, "-e", test.published)
+			log := filepath.Join(root, "gh.log")
+			command := releaseAssetUploadCommand(t, root, asset, existing, "-e", log)
+			output, err := command.CombinedOutput()
+			if test.name == "identical" && err != nil {
+				t.Fatalf("release asset upload: %v\n%s", err, output)
+			}
+			if test.name == "different" && err == nil {
+				t.Fatalf("release asset upload should reject different bytes:\n%s", output)
+			}
+			if !strings.Contains(string(output), test.want) {
+				t.Fatalf("output = %q, want %q", output, test.want)
+			}
+			if strings.Contains(readReleaseAssetUploadFile(t, log), "release upload") {
+				t.Fatalf("existing option-like asset must not be uploaded:\n%s", readReleaseAssetUploadFile(t, log))
+			}
+		})
+	}
+}
+
 func TestReleaseAssetUploadUploadsMissingAssetWithoutClobber(t *testing.T) {
 	root := t.TempDir()
 	asset := writeReleaseAssetUploadFile(t, root, "plugin.tar.gz", "new bytes")
@@ -65,6 +102,45 @@ func TestReleaseAssetUploadUploadsMissingAssetWithoutClobber(t *testing.T) {
 	}
 	if strings.Contains(contents, "--clobber") {
 		t.Fatalf("asset upload must not permit overwrite:\n%s", contents)
+	}
+}
+
+func TestReleaseAssetUploadRejectsDuplicateBasenames(t *testing.T) {
+	for _, name := range []string{"plugin.tar.gz", "-e"} {
+		t.Run(name, func(t *testing.T) {
+			root := t.TempDir()
+			firstDir := filepath.Join(root, "first")
+			secondDir := filepath.Join(root, "second")
+			if err := os.MkdirAll(firstDir, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.MkdirAll(secondDir, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			first := writeReleaseAssetUploadFile(t, firstDir, name, "first")
+			second := writeReleaseAssetUploadFile(t, secondDir, name, "second")
+			command := exec.Command("bash", "release-asset-upload.sh", "v9.9.9", first, second)
+			command.Dir = "."
+			output, err := command.CombinedOutput()
+			if err == nil || !strings.Contains(string(output), "duplicate release asset basename: "+name) {
+				t.Fatalf("release asset upload should reject duplicate basenames; err=%v\n%s", err, output)
+			}
+		})
+	}
+}
+
+func TestReleaseAssetUploadRejectsLineBreakInBasename(t *testing.T) {
+	for _, name := range []string{"plugin\narchive.tar.gz", "plugin\n"} {
+		t.Run(name, func(t *testing.T) {
+			root := t.TempDir()
+			asset := writeReleaseAssetUploadFile(t, root, name, "bytes")
+			command := exec.Command("bash", "release-asset-upload.sh", "v9.9.9", asset)
+			command.Dir = "."
+			output, err := command.CombinedOutput()
+			if err == nil || !strings.Contains(string(output), "release asset basename contains a line break") {
+				t.Fatalf("release asset upload should reject line breaks; err=%v\n%s", err, output)
+			}
+		})
 	}
 }
 
