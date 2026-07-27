@@ -41,8 +41,8 @@ func cleanupLocalTestComparisonProcess(cmd *exec.Cmd) error {
 	}
 	deadline := time.Now().Add(2 * time.Second)
 	for {
-		err := syscall.Kill(processGroup, 0)
-		if errors.Is(err, syscall.ESRCH) {
+		gone, err := localTestComparisonProcessGroupGone(syscall.Kill(processGroup, 0))
+		if gone {
 			return nil
 		}
 		if err != nil {
@@ -53,6 +53,16 @@ func cleanupLocalTestComparisonProcess(cmd *exec.Cmd) error {
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
+}
+
+func localTestComparisonProcessGroupGone(err error) (bool, error) {
+	if errors.Is(err, syscall.ESRCH) {
+		return true, nil
+	}
+	if err == nil || errors.Is(err, syscall.EPERM) {
+		return false, nil
+	}
+	return false, err
 }
 
 func validateLocalTestComparisonOwner(info os.FileInfo) error {
