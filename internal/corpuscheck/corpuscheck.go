@@ -307,6 +307,7 @@ func collectDiagnosticObjects(value any) []map[string]any {
 func Classify(diag ClassifiedDiagnostic) string {
 	code := strings.ToUpper(diag.Code)
 	text := strings.ToLower(diag.Project + " " + diag.Message + " " + diag.File)
+	messageText := strings.ToLower(diag.Message)
 	switch {
 	case strings.Contains(code, "APEXPARSE"):
 		return "source-parse-error"
@@ -314,7 +315,7 @@ func Classify(diag ClassifiedDiagnostic) string {
 		return "performance-advisory"
 	case code == "GLADETYPE001" || strings.Contains(text, "duplicate declaration"):
 		return "project-discovery-duplicate"
-	case diagnosticLooksLikeMissingMetadata(code, text):
+	case diagnosticLooksLikeMissingMetadata(code, messageText):
 		return "project-metadata-missing"
 	case diagnosticLooksLikeProjectSourceInvalid(code, text):
 		return "project-source-invalid"
@@ -340,7 +341,7 @@ func diagnosticLooksLikeMissingMetadata(code, text string) bool {
 	if code == "GLADESEMA_QUERY_RELATIONSHIP" {
 		return true
 	}
-	if strings.Contains(text, "metadata") || strings.Contains(text, "custom field") {
+	if strings.Contains(text, "custom field") {
 		return true
 	}
 	if diagnosticTextMentionsMissingPackageSource(text) {
@@ -556,6 +557,7 @@ func diagnosticNameLooksMissingPackageSource(name string) bool {
 
 func diagnosticTextMentionsMissingPackageSource(text string) bool {
 	if strings.Contains(text, "fflib_") || strings.Contains(text, "di_") || strings.Contains(text, "usf3.") || strings.Contains(text, "metadataservice.") ||
+		strings.Contains(text, "metadataserviceexamples.") ||
 		strings.Contains(text, "sfab_") {
 		return true
 	}

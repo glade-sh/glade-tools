@@ -427,6 +427,64 @@ func TestClassifyPrivateCorpusMetadataDiagnostics(t *testing.T) {
 	}
 }
 
+func TestClassifyMissingPackageSourceUsesDiagnosticMessageNotSourcePath(t *testing.T) {
+	pathOnly := ClassifiedDiagnostic{
+		Code:    "GLADESEMA008",
+		File:    "force-app/main/default/classes/fflib_SObjectSelector.cls",
+		Message: `method "select" calls unknown method "QueryFactory.execute"`,
+	}
+	if got := Classify(pathOnly); got != "semantic-contract-gap" {
+		t.Fatalf("Classify(path-only fflib marker) = %q, want semantic-contract-gap", got)
+	}
+
+	projectOnly := ClassifiedDiagnostic{
+		Code:    "GLADESEMA008",
+		Project: "fflib-apex-mocks",
+		Message: `method "select" calls unknown method "QueryFactory.execute"`,
+	}
+	if got := Classify(projectOnly); got != "semantic-contract-gap" {
+		t.Fatalf("Classify(project-only fflib marker) = %q, want semantic-contract-gap", got)
+	}
+
+	messageMarker := ClassifiedDiagnostic{
+		Code:    "GLADESEMA002",
+		File:    "force-app/main/default/classes/Selector.cls",
+		Message: `method "select" references unknown type "fflib_QueryFactory"`,
+	}
+	if got := Classify(messageMarker); got != "project-metadata-missing" {
+		t.Fatalf("Classify(message fflib marker) = %q, want project-metadata-missing", got)
+	}
+}
+
+func TestClassifyMetadataIdentifierDoesNotImplyMissingProjectMetadata(t *testing.T) {
+	for name, diag := range map[string]ClassifiedDiagnostic{
+		"method name": {
+			Code:    "GLADESEMA030",
+			Message: `method "getActionMetadata" has invalid statement: switch branch must be a literal or enum constant`,
+		},
+		"test name": {
+			Code:    "GLADESEMA019",
+			Message: `method "test_buildMetadataDeployContainer" has invalid expression: cast is incompatible with its operand`,
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if got := Classify(diag); got != "semantic-contract-gap" {
+				t.Fatalf("Classify() = %q, want semantic-contract-gap", got)
+			}
+		})
+	}
+}
+
+func TestClassifyMissingMetadataServiceExamplesSource(t *testing.T) {
+	diag := ClassifiedDiagnostic{
+		Code:    "GLADESEMA008",
+		Message: `method "execute" calls unknown method "MetadataServiceExamples.createService"`,
+	}
+	if got := Classify(diag); got != "project-metadata-missing" {
+		t.Fatalf("Classify() = %q, want project-metadata-missing", got)
+	}
+}
+
 func TestClassifyPublicCorpusProjectSourceInvalidDiagnostics(t *testing.T) {
 	tests := []struct {
 		name string
