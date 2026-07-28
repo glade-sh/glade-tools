@@ -341,7 +341,7 @@ func diagnosticLooksLikeMissingMetadata(code, text string) bool {
 	if code == "GLADESEMA_QUERY_RELATIONSHIP" {
 		return true
 	}
-	if strings.Contains(text, "metadata") || strings.Contains(text, "custom field") {
+	if strings.Contains(text, "custom field") {
 		return true
 	}
 	if diagnosticTextMentionsMissingPackageSource(text) {
@@ -557,6 +557,7 @@ func diagnosticNameLooksMissingPackageSource(name string) bool {
 
 func diagnosticTextMentionsMissingPackageSource(text string) bool {
 	if strings.Contains(text, "fflib_") || strings.Contains(text, "di_") || strings.Contains(text, "usf3.") || strings.Contains(text, "metadataservice.") ||
+		strings.Contains(text, "metadataserviceexamples.") ||
 		strings.Contains(text, "sfab_") {
 		return true
 	}
