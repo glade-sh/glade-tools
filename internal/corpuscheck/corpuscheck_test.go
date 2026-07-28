@@ -427,6 +427,26 @@ func TestClassifyPrivateCorpusMetadataDiagnostics(t *testing.T) {
 	}
 }
 
+func TestClassifyMissingPackageSourceUsesDiagnosticMessageNotSourcePath(t *testing.T) {
+	pathOnly := ClassifiedDiagnostic{
+		Code:    "GLADESEMA008",
+		File:    "force-app/main/default/classes/fflib_SObjectSelector.cls",
+		Message: `method "select" calls unknown method "QueryFactory.execute"`,
+	}
+	if got := Classify(pathOnly); got != "semantic-contract-gap" {
+		t.Fatalf("Classify(path-only fflib marker) = %q, want semantic-contract-gap", got)
+	}
+
+	messageMarker := ClassifiedDiagnostic{
+		Code:    "GLADESEMA002",
+		File:    "force-app/main/default/classes/Selector.cls",
+		Message: `method "select" references unknown type "fflib_QueryFactory"`,
+	}
+	if got := Classify(messageMarker); got != "project-metadata-missing" {
+		t.Fatalf("Classify(message fflib marker) = %q, want project-metadata-missing", got)
+	}
+}
+
 func TestClassifyPublicCorpusProjectSourceInvalidDiagnostics(t *testing.T) {
 	tests := []struct {
 		name string

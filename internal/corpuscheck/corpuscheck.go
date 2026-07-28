@@ -307,6 +307,7 @@ func collectDiagnosticObjects(value any) []map[string]any {
 func Classify(diag ClassifiedDiagnostic) string {
 	code := strings.ToUpper(diag.Code)
 	text := strings.ToLower(diag.Project + " " + diag.Message + " " + diag.File)
+	messageText := strings.ToLower(diag.Message)
 	switch {
 	case strings.Contains(code, "APEXPARSE"):
 		return "source-parse-error"
@@ -314,7 +315,7 @@ func Classify(diag ClassifiedDiagnostic) string {
 		return "performance-advisory"
 	case code == "GLADETYPE001" || strings.Contains(text, "duplicate declaration"):
 		return "project-discovery-duplicate"
-	case diagnosticLooksLikeMissingMetadata(code, text):
+	case diagnosticLooksLikeMissingMetadata(code, messageText):
 		return "project-metadata-missing"
 	case diagnosticLooksLikeProjectSourceInvalid(code, text):
 		return "project-source-invalid"
