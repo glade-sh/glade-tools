@@ -13,12 +13,16 @@ test("Apex language-rule evidence is documented and discoverable", () => {
   const acceptCount = catalog.rules.filter((rule) => rule.oracle === "accept").length;
   const rejectCount = catalog.rules.filter((rule) => rule.oracle === "reject").length;
   const supportedCount = catalog.rules.filter((rule) => rule.status === "supported").length;
+  const gapCount = catalog.rules.filter((rule) => rule.status === "confirmed-gap").length;
+  const pendingCount = catalog.rules.filter((rule) => rule.status === "oracle-pending").length;
 
-  assert.equal(catalog.rules.length, 400);
+  assert.equal(catalog.rules.length, 422);
   assert.equal(reservedCount, 121);
-  assert.equal(acceptCount, 51);
-  assert.equal(rejectCount, 349);
-  assert.equal(supportedCount, catalog.rules.length);
+  assert.equal(acceptCount, 68);
+  assert.equal(rejectCount, 354);
+  assert.equal(supportedCount, 410);
+  assert.equal(gapCount, 3);
+  assert.equal(pendingCount, 9);
   assert.ok(catalog.rules.some((rule) => rule.id === "APEX-RESERVED-CURRENCY"));
 
   assert.match(readme, /\[Apex language-rule evidence\]\(docs\/apex-language-rules\.md\)/);
@@ -27,7 +31,9 @@ test("Apex language-rule evidence is documented and discoverable", () => {
   assert.match(guide, new RegExp(`${reservedCount} reserved identifiers`));
   assert.match(guide, new RegExp(`${acceptCount} accept controls`));
   assert.match(guide, new RegExp(`${rejectCount} rejection controls`));
-  assert.match(guide, new RegExp("All " + supportedCount + " rows currently have `supported` status"));
+  assert.match(guide, new RegExp(`${supportedCount} supported rows`));
+  assert.match(guide, new RegExp(`${gapCount} confirmed Glade gaps`));
+  assert.match(guide, new RegExp(`${pendingCount} oracle-pending rows`));
   assert.match(guide, /`currency`/);
   assert.match(guide, /glade-tools apex-rules validate/);
   assert.match(guide, /glade-tools apex-rules compare/);

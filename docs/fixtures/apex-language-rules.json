@@ -1,5 +1,5 @@
 {
-  "gladeCommit": "e11446bd6dfc5cc898be2132768982268cb6c0ef",
+  "gladeCommit": "a38a36e68d91097dc74bc3e1a38cb3e6ba3cc165",
   "rules": [
     {
       "id": "APEX-ABSTRACT-IMPLEMENTATION-MISSING-OVERRIDE",
@@ -1713,7 +1713,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/NamespaceAccessible cannot be AuraEnabled",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestNamespaceAccessibleRejectsInvalidOwnersAtAPIVersion50/member mixed with AuraEnabled",
       "owner": "sema"
     },
     {
@@ -1755,7 +1755,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/NamespaceAccessible member needs owner",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestNamespaceAccessibleRejectsInvalidOwnersAtAPIVersion50/member no owner",
       "owner": "sema"
     },
     {
@@ -5595,7 +5595,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/SObject"
     },
     {
       "id": "APEX-RELEASE-QUERYLOCATOR-ITERABLE-ACCOUNT",
@@ -5608,7 +5608,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/Account"
     },
     {
       "id": "APEX-RELEASE-QUERYLOCATOR-SYSTEM-ITERABLE",
@@ -5621,7 +5621,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/System Iterable Object"
     },
     {
       "id": "APEX-RELEASE-QUERYLOCATOR-ITERABLE-STRING",
@@ -5634,7 +5634,7 @@
       "oracle": "accept",
       "owner": "sema",
       "status": "supported",
-      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/String"
     },
     {
       "id": "APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION",
