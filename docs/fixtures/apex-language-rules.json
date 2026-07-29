@@ -5646,7 +5646,7 @@
       "source": "public class Probe {\n    @InvocableVariable(\n        Required=false\n        Label='Email From Org-Wide Id'\n        Description='The Salesforce Id of the Organization-Wide email address to use as the \"From\" in emails. If this isn\\'t set, the email address of the user sending the email is used instead.'\n    )\n    public String emailFromOrgWideId;\n}",
       "oracle": "accept",
       "owner": "parser",
-      "status": "oracle-pending"
+      "status": "confirmed-gap"
     },
     {
       "id": "APEX-RELEASE-NESTED-WEBSERVICE-PROPERTY",

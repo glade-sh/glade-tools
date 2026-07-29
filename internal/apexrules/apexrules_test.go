@@ -144,7 +144,7 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-ACCOUNT":       {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-QUERYLOCATOR-SYSTEM-ITERABLE":        {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-STRING":        {OutcomeAccept, StatusSupported},
-		"APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION":        {OutcomeAccept, StatusOraclePending},
+		"APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION":        {OutcomeAccept, StatusConfirmedGap},
 		"APEX-RELEASE-NESTED-WEBSERVICE-PROPERTY":          {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-MERGE-SOBJECT-COLLECTION":            {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-UNGROUPED-COUNT-LIMIT":               {OutcomeAccept, StatusSupported},
