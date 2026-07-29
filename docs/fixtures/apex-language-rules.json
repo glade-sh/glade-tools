@@ -5568,7 +5568,8 @@
       "source": "public class Probe { public String configure(Account value) { return ''; } public static String configure(Contact value) { return ''; } public static void run() { Probe.configure(null); new Probe().configure(null); } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/sema_test.go:TestAnalyzeReceiverQualifiedNullOverloadsUseOnlyReceiverModeCandidates"
     },
     {
       "id": "APEX-RELEASE-QUERYLOCATOR-RUNTIME-CAST",
@@ -5580,7 +5581,7 @@
       "source": "public class Probe { public static Database.QueryLocator run(Iterable<Object> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap",
+      "status": "supported",
       "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeCasts"
     },
     {
@@ -5593,7 +5594,8 @@
       "source": "public class Probe { public static Database.QueryLocator run(Iterable<SObject> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
     },
     {
       "id": "APEX-RELEASE-QUERYLOCATOR-ITERABLE-ACCOUNT",
@@ -5605,7 +5607,8 @@
       "source": "public class Probe { public static Database.QueryLocator run(Iterable<Account> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
     },
     {
       "id": "APEX-RELEASE-QUERYLOCATOR-SYSTEM-ITERABLE",
@@ -5617,7 +5620,8 @@
       "source": "public class Probe { public static Database.QueryLocator run(System.Iterable<Object> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
     },
     {
       "id": "APEX-RELEASE-QUERYLOCATOR-ITERABLE-STRING",
@@ -5629,7 +5633,8 @@
       "source": "public class Probe { public static Database.QueryLocator run(Iterable<String> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement"
     },
     {
       "id": "APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION",
@@ -5653,7 +5658,7 @@
       "source": "global class Probe { global class Payload { webservice String message { get; set; } } webservice static Payload run() { return new Payload(); } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap",
+      "status": "supported",
       "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureAllowsNestedGlobalWrapperProperties"
     },
     {
@@ -5666,7 +5671,7 @@
       "source": "public class Probe { public static void run(Account masterValue, List<Account> duplicates) { merge masterValue duplicates; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap",
+      "status": "supported",
       "productTest": "internal/sema/dml_contracts_test.go:TestDMLContractsAllowMergeOfSObjectAndSameSObjectCollection"
     },
     {
@@ -5679,7 +5684,7 @@
       "source": "public class Probe { public static Boolean run() { return [SELECT COUNT() FROM Account LIMIT 1] > 0; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap",
+      "status": "supported",
       "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsAllowsUngroupedScalarCountWithLimit"
     },
     {
