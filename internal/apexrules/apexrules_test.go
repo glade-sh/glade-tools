@@ -100,8 +100,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 400 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes, 25 prior contracts, 226 recovered oracle-backed rules, and 12 final-review controls", got)
+	if got := len(catalog.Rules); got != 415 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes, 25 prior contracts, 226 recovered oracle-backed rules, 12 final-review controls, and 15 release-corpus controls", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
 	reservedCount := 0
@@ -131,6 +131,42 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	}
 	if recovered != 226 {
 		t.Fatalf("recovered audit rows = %d, want 226", recovered)
+	}
+	controls := map[string]struct {
+		outcome Outcome
+		status  string
+	}{
+		"APEX-RELEASE-GETTER-SELF-ASSIGNMENT":         {OutcomeReject, StatusOraclePending},
+		"APEX-RELEASE-GETTER-EXTERNAL-ASSIGNMENT":     {OutcomeReject, StatusOraclePending},
+		"APEX-RELEASE-RECEIVER-QUALIFIED-OVERLOAD":    {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-QUERYLOCATOR-RUNTIME-CAST":      {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-SOBJECT":  {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-ACCOUNT":  {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-QUERYLOCATOR-SYSTEM-ITERABLE":   {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-STRING":   {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION":   {OutcomeAccept, StatusOraclePending},
+		"APEX-RELEASE-NESTED-WEBSERVICE-PROPERTY":     {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-MERGE-SOBJECT-COLLECTION":       {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-UNGROUPED-COUNT-LIMIT":          {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-SIBLING-FOR-INITIALIZER-SCOPES": {OutcomeAccept, StatusOraclePending},
+		"APEX-RELEASE-STATIC-METHOD-HIDING":           {OutcomeAccept, StatusOraclePending},
+		"APEX-RELEASE-UNREACHABLE-AFTER-RETURN":       {OutcomeReject, StatusSupported},
+	}
+	byID := make(map[string]Rule, len(catalog.Rules))
+	for _, rule := range catalog.Rules {
+		byID[rule.ID] = rule
+	}
+	for id, want := range controls {
+		rule, ok := byID[id]
+		if !ok {
+			t.Fatalf("missing release-corpus control %s", id)
+		}
+		if rule.Oracle != want.outcome {
+			t.Fatalf("release-corpus control %s oracle = %q, want %q", id, rule.Oracle, want.outcome)
+		}
+		if rule.Status != want.status {
+			t.Fatalf("release-corpus control %s status = %q, want %q", id, rule.Status, want.status)
+		}
 	}
 }
 
