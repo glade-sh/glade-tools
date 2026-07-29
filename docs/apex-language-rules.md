@@ -1,15 +1,17 @@
 # Apex language-rule evidence
 
 `docs/fixtures/apex-language-rules.json` is the checked compiler compatibility
-catalog for Glade. It contains 400 checked rows:
+catalog for Glade. It contains 422 checked rows:
 
 - 121 reserved identifiers;
-- 279 other compiler controls;
-- 51 accept controls; and
-- 349 rejection controls.
+- 301 other compiler controls;
+- 68 accept controls; and
+- 354 rejection controls.
 
-All 400 rows currently have `supported` status. A supported row must point to an
-exact Glade product regression test.
+The current status breakdown is 410 supported rows, 3 confirmed Glade gaps, and
+9 oracle-pending rows. A supported row must point to an exact Glade product
+regression test. The remaining release controls keep their non-supported status
+explicit instead of overstating product compatibility.
 
 The catalog includes `APEX-RESERVED-CURRENCY`, which proves that Salesforce and
 Glade reject `currency` as a variable name. Reserved identifier matching is

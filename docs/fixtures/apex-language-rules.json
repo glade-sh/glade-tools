@@ -1,5 +1,5 @@
 {
-  "gladeCommit": "e11446bd6dfc5cc898be2132768982268cb6c0ef",
+  "gladeCommit": "a38a36e68d91097dc74bc3e1a38cb3e6ba3cc165",
   "rules": [
     {
       "id": "APEX-ABSTRACT-IMPLEMENTATION-MISSING-OVERRIDE",
@@ -1713,7 +1713,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/NamespaceAccessible cannot be AuraEnabled",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestNamespaceAccessibleRejectsInvalidOwnersAtAPIVersion50/member mixed with AuraEnabled",
       "owner": "sema"
     },
     {
@@ -1755,7 +1755,7 @@
       "dependencies": [],
       "oracle": "reject",
       "status": "supported",
-      "productTest": "internal/sema/annotation_contracts_test.go:TestAnnotationContractsRejectInvalidOwnersAndSignatures/NamespaceAccessible member needs owner",
+      "productTest": "internal/sema/annotation_contracts_test.go:TestNamespaceAccessibleRejectsInvalidOwnersAtAPIVersion50/member no owner",
       "owner": "sema"
     },
     {
@@ -5533,6 +5533,298 @@
       "owner": "sema",
       "status": "supported",
       "productTest": "internal/sema/sema_test.go:TestAnalyzeProjectStandardSObjectStaticGetSObjectType"
+    },
+    {
+      "id": "APEX-RELEASE-GETTER-SELF-ASSIGNMENT",
+      "area": "properties",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a getter-only property cannot assign itself without a setter",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public Integer Value { get { Value = 1; return Value; } } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-GETTER-EXTERNAL-ASSIGNMENT",
+      "area": "properties",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a caller cannot assign a getter-only property",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public Integer Value { get { return 1; } } public static void run() { new Probe().Value = 2; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-RECEIVER-QUALIFIED-OVERLOAD",
+      "area": "methods",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "receiver kind selects the static or instance candidate before null-overload resolution",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public String configure(Account value) { return ''; } public static String configure(Contact value) { return ''; } public static void run() { Probe.configure(null); new Probe().configure(null); } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/sema_test.go:TestAnalyzeReceiverQualifiedNullOverloadsUseOnlyReceiverModeCandidates"
+    },
+    {
+      "id": "APEX-RELEASE-QUERYLOCATOR-RUNTIME-CAST",
+      "area": "runtime-types",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "Database.QueryLocator is valid in an Iterable runtime type test and cast",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Database.QueryLocator run(Iterable<Object> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeCasts"
+    },
+    {
+      "id": "APEX-RELEASE-QUERYLOCATOR-ITERABLE-SOBJECT",
+      "area": "runtime-types",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "Database.QueryLocator supports an Iterable<SObject> runtime type test and cast",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Database.QueryLocator run(Iterable<SObject> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/SObject"
+    },
+    {
+      "id": "APEX-RELEASE-QUERYLOCATOR-ITERABLE-ACCOUNT",
+      "area": "runtime-types",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "Database.QueryLocator supports an Iterable<Account> runtime type test and cast",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Database.QueryLocator run(Iterable<Account> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/Account"
+    },
+    {
+      "id": "APEX-RELEASE-QUERYLOCATOR-SYSTEM-ITERABLE",
+      "area": "runtime-types",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "Database.QueryLocator supports a System.Iterable<Object> runtime type test and cast",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Database.QueryLocator run(System.Iterable<Object> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/System Iterable Object"
+    },
+    {
+      "id": "APEX-RELEASE-QUERYLOCATOR-ITERABLE-STRING",
+      "area": "runtime-types",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "Database.QueryLocator supports an Iterable<String> runtime type test and cast",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Database.QueryLocator run(Iterable<String> candidates) { if (candidates instanceof Database.QueryLocator) { return (Database.QueryLocator)candidates; } return null; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/type_contracts_test.go:TestTypeContractAllowsQueryLocatorRuntimeTypesForAnyIterableElement/String"
+    },
+    {
+      "id": "APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION",
+      "area": "annotations",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a multiline named annotation accepts an embedded double quote and a backslash-escaped apostrophe",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe {\n    @InvocableVariable(\n        Required=false\n        Label='Email From Org-Wide Id'\n        Description='The Salesforce Id of the Organization-Wide email address to use as the \"From\" in emails. If this isn\\'t set, the email address of the user sending the email is used instead.'\n    )\n    public String emailFromOrgWideId;\n}",
+      "oracle": "accept",
+      "owner": "parser",
+      "status": "confirmed-gap"
+    },
+    {
+      "id": "APEX-RELEASE-NESTED-WEBSERVICE-PROPERTY",
+      "area": "webservice",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a global SOAP response wrapper may expose a webservice property",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "global class Probe { global class Payload { webservice String message { get; set; } } webservice static Payload run() { return new Payload(); } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/web_exposure_contracts_test.go:TestSOAPExposureAllowsNestedGlobalWrapperProperties"
+    },
+    {
+      "id": "APEX-RELEASE-MERGE-SOBJECT-COLLECTION",
+      "area": "dml",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "merge accepts a same-type SObject master and duplicate collection",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static void run(Account masterValue, List<Account> duplicates) { merge masterValue duplicates; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/dml_contracts_test.go:TestDMLContractsAllowMergeOfSObjectAndSameSObjectCollection"
+    },
+    {
+      "id": "APEX-RELEASE-UNGROUPED-COUNT-LIMIT",
+      "area": "soql",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "an ungrouped COUNT query may include LIMIT",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Boolean run() { return [SELECT COUNT() FROM Account LIMIT 1] > 0; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/query_semantics_test.go:TestQuerySemanticsAllowsUngroupedScalarCountWithLimit"
+    },
+    {
+      "id": "APEX-RELEASE-SIBLING-FOR-INITIALIZER-SCOPES",
+      "area": "statements",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "enhanced-for initializer variables are scoped to each sibling loop even after earlier loops and statements",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static void run(Map<Id, Integer> firstById, Map<Id, Integer> secondById) { for (Integer index = 0; index < firstById.size(); index++) { Integer ignored = index; } for (Id cartId : firstById.keySet()) { Integer firstValue = firstById.get(cartId); if (firstValue != null) { System.debug(firstValue); } } Integer dmlOperations = Limits.getQueries(); for (Id cartId : secondById.keySet()) { Integer secondValue = secondById.get(cartId); if (secondValue != null) { System.debug(secondValue); } } System.debug(dmlOperations); } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-STATIC-METHOD-HIDING",
+      "area": "inheritance",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a child top-level class may hide an inherited static method with the same signature",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class ProbeStaticChild extends ProbeStaticBase { public static Integer size() { return 2; } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/ProbeStaticBase.cls",
+          "content": "public virtual class ProbeStaticBase { public static Integer size() { return 1; } }"
+        }
+      ],
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-STATIC-GETTER-SELF-ASSIGNMENT",
+      "area": "properties",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a static getter-only property cannot assign itself without a setter",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static Probe Instance { get { if (Instance == null) { Instance = new Probe(); } return Instance; } } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-NESTED-INTERFACE-INSTANCEOF",
+      "area": "type-contracts",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a private nested implementation assigned to its interface type supports instanceof",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { private class Implementation implements ProbeContract { public void calculate() { } } public static Boolean run() { ProbeContract calculator = new Implementation(); return calculator instanceof Implementation; } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/ProbeContract.cls",
+          "content": "public interface ProbeContract { void calculate(); }"
+        }
+      ],
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-STANDARD-RELATIONSHIP-TRAVERSAL",
+      "area": "soql",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a standard parent relationship field is valid in a SELECT list",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static void run() { List<Contact> rows = [SELECT Account.Name FROM Contact]; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-STATIC-INHERITED-INSTANCE-NAME",
+      "area": "inheritance",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a child private static method may use an inherited instance method name",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class ProbeStaticChild extends ProbeInstanceBase { private static Integer size() { return 2; } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/ProbeInstanceBase.cls",
+          "content": "public virtual class ProbeInstanceBase { public virtual Integer size() { return 1; } }"
+        }
+      ],
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "confirmed-gap"
+    },
+    {
+      "id": "APEX-RELEASE-INTERFACE-INSTANCEOF-IMPLEMENTATION",
+      "area": "type-contracts",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "an interface-typed value may use instanceof with its implementing type",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public interface Contract { } public class Implementation implements Contract { } public static Boolean run(Contract value) { return value instanceof Implementation; } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-MERGE-ACCOUNT-ID-COLLECTION",
+      "area": "dml",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "merge accepts an Account master and a List<Id> duplicate collection",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static void run(Id masterId, List<Id> duplicateIds) { merge new Account(Id = masterId) new List<Id>(duplicateIds); } }",
+      "oracle": "accept",
+      "owner": "sema",
+      "status": "confirmed-gap"
+    },
+    {
+      "id": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY",
+      "area": "statements",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a return after try-catch returns and a finally block is unreachable",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static String run() { try { return 'try'; } catch (Exception ex) { return 'catch'; } finally { System.debug('flush'); } return 'fallback'; } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-UNREACHABLE-AFTER-RETURN",
+      "area": "statements",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a statement after return is rejected as unreachable",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { public static void run() { return; System.debug('unreachable'); } }",
+      "oracle": "reject",
+      "owner": "sema",
+      "status": "supported",
+      "productTest": "internal/sema/statement_contracts_test.go:TestStatementContractsRejectUnreachableInstructions"
     }
   ]
 }
