@@ -100,8 +100,8 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 	if err != nil {
 		t.Fatalf("load checked catalog: %v", err)
 	}
-	if got := len(catalog.Rules); got != 421 {
-		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes, 25 prior contracts, 226 recovered oracle-backed rules, 12 final-review controls, and 21 release-corpus controls", got)
+	if got := len(catalog.Rules); got != 422 {
+		t.Fatalf("catalog rows = %d, want 121 reserved identifier probes, 25 prior contracts, 226 recovered oracle-backed rules, 12 final-review controls, and 22 release-corpus controls", got)
 	}
 	seen := make(map[string]bool, len(catalog.Rules))
 	reservedCount := 0
@@ -151,6 +151,7 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 		"APEX-RELEASE-SIBLING-FOR-INITIALIZER-SCOPES":      {OutcomeAccept, StatusOraclePending},
 		"APEX-RELEASE-STATIC-METHOD-HIDING":                {OutcomeAccept, StatusOraclePending},
 		"APEX-RELEASE-STATIC-GETTER-SELF-ASSIGNMENT":       {OutcomeReject, StatusOraclePending},
+		"APEX-RELEASE-NESTED-INTERFACE-INSTANCEOF":         {OutcomeAccept, StatusOraclePending},
 		"APEX-RELEASE-STANDARD-RELATIONSHIP-TRAVERSAL":     {OutcomeAccept, StatusOraclePending},
 		"APEX-RELEASE-STATIC-INHERITED-INSTANCE-NAME":      {OutcomeAccept, StatusConfirmedGap},
 		"APEX-RELEASE-INTERFACE-INSTANCEOF-IMPLEMENTATION": {OutcomeAccept, StatusOraclePending},

@@ -5640,10 +5640,10 @@
       "id": "APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION",
       "area": "annotations",
       "docsPath": "salesforce-scratch-oracle",
-      "docsLines": "a backslash-escaped apostrophe remains within a named annotation string argument",
+      "docsLines": "a multiline named annotation accepts an embedded double quote and a backslash-escaped apostrophe",
       "apiVersion": 67,
       "sourceKind": "class",
-      "source": "public class Probe { @InvocableVariable(Required=false Label='Value' Description='If this isn\\'t set') public String value; }",
+      "source": "public class Probe {\n    @InvocableVariable(\n        Required=false\n        Label='Email From Org-Wide Id'\n        Description='The Salesforce Id of the Organization-Wide email address to use as the \"From\" in emails. If this isn\\'t set, the email address of the user sending the email is used instead.'\n    )\n    public String emailFromOrgWideId;\n}",
       "oracle": "accept",
       "owner": "parser",
       "status": "oracle-pending"
@@ -5691,10 +5691,10 @@
       "id": "APEX-RELEASE-SIBLING-FOR-INITIALIZER-SCOPES",
       "area": "statements",
       "docsPath": "salesforce-scratch-oracle",
-      "docsLines": "enhanced-for initializer variables are scoped to each sibling loop",
+      "docsLines": "enhanced-for initializer variables are scoped to each sibling loop even after earlier loops and statements",
       "apiVersion": 67,
       "sourceKind": "class",
-      "source": "public class Probe { public static void run(List<Id> values) { for (Id value : values) {} for (Id value : values) {} } }",
+      "source": "public class Probe { public static void run(Map<Id, Integer> firstById, Map<Id, Integer> secondById) { for (Integer index = 0; index < firstById.size(); index++) { Integer ignored = index; } for (Id cartId : firstById.keySet()) { Integer firstValue = firstById.get(cartId); if (firstValue != null) { System.debug(firstValue); } } Integer dmlOperations = Limits.getQueries(); for (Id cartId : secondById.keySet()) { Integer secondValue = secondById.get(cartId); if (secondValue != null) { System.debug(secondValue); } } System.debug(dmlOperations); } }",
       "oracle": "accept",
       "owner": "sema",
       "status": "oracle-pending"
@@ -5726,6 +5726,24 @@
       "sourceKind": "class",
       "source": "public class Probe { public static Probe Instance { get { if (Instance == null) { Instance = new Probe(); } return Instance; } } }",
       "oracle": "reject",
+      "owner": "sema",
+      "status": "oracle-pending"
+    },
+    {
+      "id": "APEX-RELEASE-NESTED-INTERFACE-INSTANCEOF",
+      "area": "type-contracts",
+      "docsPath": "salesforce-scratch-oracle",
+      "docsLines": "a private nested implementation assigned to its interface type supports instanceof",
+      "apiVersion": 67,
+      "sourceKind": "class",
+      "source": "public class Probe { private class Implementation implements ProbeContract { public void calculate() { } } public static Boolean run() { ProbeContract calculator = new Implementation(); return calculator instanceof Implementation; } }",
+      "dependencies": [
+        {
+          "path": "force-app/main/default/classes/ProbeContract.cls",
+          "content": "public interface ProbeContract { void calculate(); }"
+        }
+      ],
+      "oracle": "accept",
       "owner": "sema",
       "status": "oracle-pending"
     },
