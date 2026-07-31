@@ -153,10 +153,9 @@ func (f *fakeCmdRunner) RunContext(ctx context.Context, name string, arg ...stri
 	copy(args, arg)
 	f.calls = append(f.calls, fakeCmdCall{Name: name, Args: args})
 	f.mu.Unlock()
-	if f.err != nil {
-		return nil, f.err
-	}
-	return f.output, nil
+	// Return output alongside error — mirrors real exec behaviour where
+	// a command can write stdout before exiting nonzero.
+	return f.output, f.err
 }
 
 func TestGladeCommandArgsSourceFinalNoShell(t *testing.T) {
