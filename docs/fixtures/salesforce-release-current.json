@@ -2,10 +2,14 @@
   "schemaVersion": 1,
   "release": "Summer '26",
   "apiVersion": "67.0",
-  "digest": "0000000000000000000000000000000000000000000000000000000000000000",
-  "acquisition": "glade-tools sf-08i-inventory",
+  "digest": "a0b3d7cb6bde10acdd719ee93cb54d5daed6facb0b34a34377d0d42697f81d7c",
+  "acquisition": "glade-tools owned six-family docs scrape, Atlas Summer 262.0",
   "sourceFamilies": [
     "apex-reference",
-    "connectapi-reference"
+    "aura-reference",
+    "lwc-reference",
+    "rest-api-reference",
+    "tooling-api-reference",
+    "visualforce-reference"
   ]
 }
