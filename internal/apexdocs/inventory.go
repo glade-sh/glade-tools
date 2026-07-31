@@ -2,6 +2,8 @@ package apexdocs
 
 import (
 	"bufio"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -1095,4 +1097,140 @@ func memberSet(members []Member) map[string]struct{} {
 		out[member.Kind+"|"+member.Name+"|"+member.Signature] = struct{}{}
 	}
 	return out
+}
+
+// ReleaseManifest records the canonical digest together with enough acquisition
+// provenance to reproduce the normalized inventory from the same Salesforce
+// release.  It contains no credentials, org identity, or session data.
+type ReleaseManifest struct {
+	SchemaVersion  int      `json:"schemaVersion"`
+	Release        string   `json:"release"`
+	APIVersion     string   `json:"apiVersion"`
+	Digest         string   `json:"digest"`
+	Acquisition    string   `json:"acquisition"`
+	SourceFamilies []string `json:"sourceFamilies"`
+}
+
+// NewReleaseManifest creates a ReleaseManifest with SchemaVersion pinned to
+// InventorySchemaVersion.
+func NewReleaseManifest(release, apiVersion, digest, acquisition string, sourceFamilies []string) ReleaseManifest {
+	return ReleaseManifest{
+		SchemaVersion:  InventorySchemaVersion,
+		Release:        release,
+		APIVersion:     apiVersion,
+		Digest:         digest,
+		Acquisition:    acquisition,
+		SourceFamilies: sourceFamilies,
+	}
+}
+
+// CanonicalDigest returns the lowercase hexadecimal SHA-256 digest of a
+// deep-copied, order-normalized encoding of inv.  Two logical inventories that
+// differ only in slice order produce the same digest.  Any contract-bearing
+// content change (member signature, description, behavior, heading, example)
+// produces a different digest.  The caller's inventory is not mutated.
+func CanonicalDigest(inv Inventory) string {
+	cp := deepCopyInventory(inv)
+	normalizeInventory(&cp)
+	data, err := json.Marshal(cp)
+	if err != nil {
+		// json.Marshal on a pure-struct tree with no channels/funcs should never error.
+		panic("cannot marshal canonical inventory: " + err.Error())
+	}
+	h := sha256.Sum256(data)
+	return hex.EncodeToString(h[:])
+}
+
+func deepCopyInventory(inv Inventory) Inventory {
+	cp := inv
+	// Documents
+	if inv.Documents != nil {
+		cp.Documents = make([]Document, len(inv.Documents))
+		for i, d := range inv.Documents {
+			cp.Documents[i] = deepCopyDocument(d)
+		}
+	} else {
+		cp.Documents = nil
+	}
+	// Namespaces
+	if inv.Namespaces != nil {
+		cp.Namespaces = make([]NamespaceSummary, len(inv.Namespaces))
+		copy(cp.Namespaces, inv.Namespaces)
+	} else {
+		cp.Namespaces = nil
+	}
+	return cp
+}
+
+func deepCopyDocument(doc Document) Document {
+	cp := doc
+	if doc.Headings != nil {
+		cp.Headings = make([]string, len(doc.Headings))
+		copy(cp.Headings, doc.Headings)
+	}
+	if doc.Members != nil {
+		cp.Members = make([]Member, len(doc.Members))
+		for i, m := range doc.Members {
+			cp.Members[i] = deepCopyMember(m)
+		}
+	}
+	if doc.Examples != nil {
+		cp.Examples = make([]Example, len(doc.Examples))
+		copy(cp.Examples, doc.Examples)
+	}
+	if doc.Behaviors != nil {
+		cp.Behaviors = make([]DocBehavior, len(doc.Behaviors))
+		copy(cp.Behaviors, doc.Behaviors)
+	}
+	return cp
+}
+
+func deepCopyMember(m Member) Member {
+	cp := m
+	if m.Parameters != nil {
+		cp.Parameters = make([]string, len(m.Parameters))
+		copy(cp.Parameters, m.Parameters)
+	}
+	return cp
+}
+
+func normalizeInventory(inv *Inventory) {
+	// Sort documents by SourcePath.
+	sort.Slice(inv.Documents, func(i, j int) bool {
+		return inv.Documents[i].SourcePath < inv.Documents[j].SourcePath
+	})
+	for i := range inv.Documents {
+		normalizeDocument(&inv.Documents[i])
+	}
+	// Sort namespaces by Namespace name.
+	sort.Slice(inv.Namespaces, func(i, j int) bool {
+		return inv.Namespaces[i].Namespace < inv.Namespaces[j].Namespace
+	})
+}
+
+func normalizeDocument(doc *Document) {
+	// Stable sort headings.
+	sort.Strings(doc.Headings)
+	// Stable sort members by (Kind, Name, Signature).
+	sort.SliceStable(doc.Members, func(i, j int) bool {
+		if doc.Members[i].Kind != doc.Members[j].Kind {
+			return doc.Members[i].Kind < doc.Members[j].Kind
+		}
+		if doc.Members[i].Name != doc.Members[j].Name {
+			return doc.Members[i].Name < doc.Members[j].Name
+		}
+		return doc.Members[i].Signature < doc.Members[j].Signature
+	})
+	// Stable sort examples by Heading.
+	sort.SliceStable(doc.Examples, func(i, j int) bool {
+		return doc.Examples[i].Heading < doc.Examples[j].Heading
+	})
+	// Stable sort behaviors by Kind.
+	sort.SliceStable(doc.Behaviors, func(i, j int) bool {
+		return doc.Behaviors[i].Kind < doc.Behaviors[j].Kind
+	})
+	// Sort member Parameters so that parameter order differences are detected.
+	for i := range doc.Members {
+		sort.Strings(doc.Members[i].Parameters)
+	}
 }
