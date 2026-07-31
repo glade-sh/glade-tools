@@ -628,3 +628,98 @@ func TestRedactCredentials(t *testing.T) {
 		t.Errorf("results altered")
 	}
 }
+
+// --- SF-10: Observation shape tests ---
+
+func TestObservationShapesOrderedList(t *testing.T) {
+	cases := StdlibCases()
+
+	shapeIDs := map[string]bool{
+		"pattern-grapheme-crlf-span":                  true,
+		"pattern-grapheme-zwj-family-span":            true,
+		"matcher-find-thumbs-up-skin-tone-span":       true,
+		"string-fromchararray-utf16-surrogate-pair":   true,
+		"string-fromchararray-scalar-out-of-bmp":      true,
+		"string-fromchararray-utf16-truncated-scalar": true,
+		"json-deserialize-string-key-map":             true,
+	}
+	var shapeCases []Case
+	for _, c := range cases {
+		if shapeIDs[c.ID] {
+			shapeCases = append(shapeCases, c)
+		}
+	}
+	if len(shapeCases) != 7 {
+		t.Fatalf("shape cases count = %d, want 7", len(shapeCases))
+	}
+
+	source := RenderAnonymous(shapeCases)
+	if !strings.Contains(source, "new List<") {
+		t.Error("observation-shape cases missing ordered list serialization")
+	}
+
+	// None of the seven cases may serialize a Map variable directly.
+	directMapPatterns := []string{
+		"JSON.serialize(gladeCRLFSpan)",
+		"JSON.serialize(gladeFamilySpan)",
+		"JSON.serialize(gladeThumbsSpan)",
+		"JSON.serialize(gladeSurrogatePairShape)",
+		"JSON.serialize(gladeScalarShape)",
+		"JSON.serialize(gladeTruncatedScalarShape)",
+	}
+	for _, pat := range directMapPatterns {
+		if strings.Contains(source, pat) {
+			t.Errorf("shape case must not serialize Map variable directly: %s", pat)
+		}
+	}
+}
+
+func TestJSONStrictDuplicateFieldsShape(t *testing.T) {
+	cases := StdlibCases()
+	var strictDup Case
+	for _, c := range cases {
+		if c.ID == "json-strict-duplicate-fields" {
+			strictDup = c
+			break
+		}
+	}
+	if strictDup.ID == "" {
+		t.Fatal("json-strict-duplicate-fields case not found")
+	}
+
+	if strictDup.ExpectThrow {
+		t.Error("json-strict-duplicate-fields must observe value, not expect throw")
+	}
+	if strictDup.ValueType != "String" {
+		t.Errorf("json-strict-duplicate-fields ValueType = %q, want String", strictDup.ValueType)
+	}
+
+	source := RenderAnonymous([]Case{strictDup})
+	if !strings.Contains(source, "(Account)") {
+		t.Error("json-strict-duplicate-fields must cast to Account before reading .Name")
+	}
+	if !strings.Contains(source, ".Name") {
+		t.Error("json-strict-duplicate-fields must access .Name field")
+	}
+}
+
+func TestMapSerializeCasesUnchanged(t *testing.T) {
+	cases := StdlibCases()
+	var primMap, prettyMap Case
+	for _, c := range cases {
+		switch c.ID {
+		case "json-serialize-primitive-map":
+			primMap = c
+		case "json-serialize-pretty-map":
+			prettyMap = c
+		}
+	}
+
+	source := RenderAnonymous([]Case{primMap, prettyMap})
+	if !strings.Contains(source, "JSON.serialize(new Map<String,Object>") {
+		t.Error("json-serialize-primitive-map must still serialize Map directly")
+	}
+	if !strings.Contains(source, "JSON.serializePretty(new Map<String,Object>") {
+		t.Error("json-serialize-pretty-map must still serialize Map directly")
+	}
+}
