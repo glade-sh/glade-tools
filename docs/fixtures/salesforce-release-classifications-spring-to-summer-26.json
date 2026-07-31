@@ -1028,24 +1028,6 @@
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api"
-    },
-    {
-      "surfaceId": "apex:commercetax.TaxEngineAdapter.Response",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-TAX-RESPONSE"
-    },
-    {
-      "surfaceId": "apex:ConnectApi.BatchResult",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:Messaging.PushNotificationPayload.apple",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-MESSAGING-PUSH-PAYLOAD"
     }
   ]
 }

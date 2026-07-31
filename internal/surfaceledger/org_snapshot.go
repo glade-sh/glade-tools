@@ -129,7 +129,7 @@ func toolingParameterTypes(parameters []capability.ToolingParameter, argTypes []
 }
 
 func sortRows(rows []SurfaceLedgerRow) {
-	sort.Slice(rows, func(i, j int) bool {
+	sort.SliceStable(rows, func(i, j int) bool {
 		return rows[i].SurfaceID < rows[j].SurfaceID
 	})
 }

@@ -220,6 +220,11 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 			if product == ProductApex && isApexHeadingOnlySignature(member.Signature) && apexRealSignatures[member.Name] {
 				continue
 			}
+			if product == ProductApex && member.Kind == "member" && member.ReturnType == "" && member.PropertyType == "" && !isApexRealSignature(member.Signature) {
+				if rest := strings.TrimSpace(strings.TrimPrefix(member.Signature, member.Name)); rest != "" {
+					continue
+				}
+			}
 			params := docsMemberParameters(member)
 			returnType := docsMemberReturnType(member)
 			surfaceID := docsSurfaceID(product, doc, member)
