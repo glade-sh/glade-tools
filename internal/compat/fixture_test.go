@@ -89,6 +89,18 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("salesforce-release-current") {
 		t.Fatal("Salesforce release current should stay out of documented fixture execution")
 	}
+	if shouldRunDocumentedFixture("salesforce-docs-inventory-spring-26") {
+		t.Fatal("Salesforce docs inventory spring 26 should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-docs-inventory-summer-26") {
+		t.Fatal("Salesforce docs inventory summer 26 should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-release-classifications-spring-to-summer-26") {
+		t.Fatal("Salesforce release classifications should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-release-previous") {
+		t.Fatal("Salesforce release previous should stay out of documented fixture execution")
+	}
 }
 
 func TestDocumentedFixtureJSONLoadAndValidate(t *testing.T) {
@@ -156,8 +168,12 @@ func skipDocumentedFixture(name string) bool {
 		"local-tests-corpus",
 		documentedFixtureExampleProjectsName,
 		"query-runtime-local-search-sosl-evidence",
-		"salesforce-release-next",
+		"salesforce-docs-inventory-spring-26",
+		"salesforce-docs-inventory-summer-26",
+		"salesforce-release-classifications-spring-to-summer-26",
 		"salesforce-release-current",
+		"salesforce-release-next",
+		"salesforce-release-previous",
 		"salesforce-runtime-correctness",
 		"ui-controller-discovery",
 		"ui-lwc-vf-local-bridge-evidence",
