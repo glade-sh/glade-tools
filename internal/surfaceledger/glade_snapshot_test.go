@@ -569,3 +569,32 @@ func TestMergeGladeBehaviorKeepsSupportedOverGenericUnsupported(t *testing.T) {
 		t.Fatalf("behavior = %q, want %q", got, BehaviorPartial)
 	}
 }
+
+func TestBuildGladeSnapshotIncludesSummer26ReleaseAliases(t *testing.T) {
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+	for _, tc := range []struct {
+		id   string
+		kind string
+	}{
+		{id: "apex:System.Database.convertLead(leadsToConvert,accessLevel)", kind: KindMethod},
+		{id: "apex:System.Database.convertLead(leadToConvert,accessLevel)", kind: KindMethod},
+		{id: "apex:System.EventBus.publishWithAccessLevel(event,callback,accesslevel)", kind: KindMethod},
+		{id: "apex:System.String.template(valueMap)", kind: KindMethod},
+		{id: "apex:System.System.attachFinalizer(finalizer)", kind: KindMethod},
+	} {
+		row, ok := byID[tc.id]
+		if !ok {
+			t.Fatalf("missing Summer '26 release alias row %s", tc.id)
+		}
+		if row.GladeShape != ShapeSignatureKnown || row.GladeBehavior != BehaviorSupported {
+			t.Fatalf("%s shape/behavior = %s/%s, want %s/%s", tc.id, row.GladeShape, row.GladeBehavior, ShapeSignatureKnown, BehaviorSupported)
+		}
+		if row.Kind != tc.kind {
+			t.Fatalf("%s kind = %s, want %s", tc.id, row.Kind, tc.kind)
+		}
+		if !hasSource(row.Sources, "apex-mirror-alias") && !hasSource(row.Sources, "apex-fixture-alias") {
+			t.Fatalf("%s sources = %#v, want release alias source", tc.id, row.Sources)
+		}
+	}
+}

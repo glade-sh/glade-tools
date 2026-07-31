@@ -393,6 +393,7 @@ var fixtureBackedApexAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:Database.DmlOptions.EmailHeader.triggerAutoResponseEmail", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed exact docs property id for Database.DmlOptions.EmailHeader.triggerAutoResponseEmail local storage"},
 	{SurfaceID: "apex:Database.DmlOptions.EmailHeader.triggerOtherEmail", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed exact docs property id for Database.DmlOptions.EmailHeader.triggerOtherEmail local storage"},
 	{SurfaceID: "apex:Database.DmlOptions.EmailHeader.triggerUserEmail", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed exact docs property id for Database.DmlOptions.EmailHeader.triggerUserEmail local storage"},
+	{SurfaceID: "apex:System.EventBus.publishWithAccessLevel(event,callback,accesslevel)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed Summer '26 docs shorthand for the local EventBus.publishWithAccessLevel(Object,Object,AccessLevel) overload"},
 	{SurfaceID: "apex:Messaging.SingleEmailMessage.setFileAttachments(List<EmailFileAttachment>)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for SingleEmailMessage.setFileAttachments(List<Messaging.EmailFileAttachment>)"},
 	{SurfaceID: "apex:Support.EmailTemplateSelector.getDefaultTemplateId(Id)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed selector alias returning the nullable local default email template Id result"},
 	{SurfaceID: "apex:TxnSecurity.Event.Event()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed exact TxnSecurity docs constructor for the local passive transaction-security event record"},
@@ -496,6 +497,10 @@ var fixtureBackedApexMirrorAliasRows = []fixtureBackedApexMirrorAliasRow{
 	{SurfaceID: "apex:sfdc.LearningItemSerializeDeserializer.serialize(String)", SourceID: "apex:sfdc_enablement.LearningItemSerializeDeserializer.serialize(String)"},
 	{SurfaceID: "apex:sfdc.SurveyInvitationLinkShortener", SourceID: "apex:sfdc_surveys.SurveyInvitationLinkShortener"},
 	{SurfaceID: "apex:sfdc.SurveyInvitationLinkShortener.getShortenedURL(String)", SourceID: "apex:sfdc_surveys.SurveyInvitationLinkShortener.getShortenedURL(String)"},
+	{SurfaceID: "apex:System.Database.convertLead(leadsToConvert,accessLevel)", SourceID: "apex:System.Database.convertLead(List<Database.LeadConvert>,AccessLevel)"},
+	{SurfaceID: "apex:System.Database.convertLead(leadToConvert,accessLevel)", SourceID: "apex:System.Database.convertLead(Database.LeadConvert,AccessLevel)"},
+	{SurfaceID: "apex:System.String.template(valueMap)", SourceID: "apex:System.String.template(Map<String,Object>)"},
+	{SurfaceID: "apex:System.System.attachFinalizer(finalizer)", SourceID: "apex:System.System.attachFinalizer(Object)"},
 }
 
 func addFixtureBackedApexMirrorAliasRows(byID map[string]SurfaceLedgerRow) {
