@@ -80,6 +80,9 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("apex-language-rules") {
 		t.Fatal("Apex language rule catalog should stay out of documented fixture execution")
 	}
+	if shouldRunDocumentedFixture("salesforce-runtime-correctness") {
+		t.Fatal("Salesforce runtime correctness catalog should stay out of documented fixture execution")
+	}
 }
 
 func TestDocumentedFixtureJSONLoadAndValidate(t *testing.T) {
@@ -147,6 +150,7 @@ func skipDocumentedFixture(name string) bool {
 		"local-tests-corpus",
 		documentedFixtureExampleProjectsName,
 		"query-runtime-local-search-sosl-evidence",
+		"salesforce-runtime-correctness",
 		"ui-controller-discovery",
 		"ui-lwc-vf-local-bridge-evidence",
 		"post-parity-trace-events":
