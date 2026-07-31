@@ -36,6 +36,9 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if args[0] == "compat" {
 		args = args[1:]
 	}
+	if args[0] == "salesforce" {
+		return runSalesforceVerify(ctx, args[1:], stdout, stderr)
+	}
 	if err := runCompat(ctx, args, stdout); err != nil {
 		fmt.Fprintf(stderr, "glade-tools: %v\n", err)
 		return 1
@@ -95,6 +98,7 @@ Commands:
   oracle-stdlib      Run scratch-org standard-library oracle probes.
   apex-rules         Compare checked Apex language-rule probes with Salesforce.
   orgpackage         Capture installed package artifacts from a Salesforce org.
+  salesforce verify  Run unified Salesforce correctness verification.
 
 Compatibility:
   glade-tools compat <command> is accepted for old scripts.

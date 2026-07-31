@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "release": "Summer '26",
+  "apiVersion": "66.0",
+  "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "acquisition": "glade-tools sf-08i-inventory",
+  "sourceFamilies": [
+    "apex-reference",
+    "connectapi-reference"
+  ]
+}
