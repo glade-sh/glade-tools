@@ -1,0 +1,123 @@
+name: Salesforce Correctness
+
+on:
+  workflow_dispatch:
+    inputs:
+      glade_sha:
+        description: Full 40-hex glade commit to gate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  salesforce-correctness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: glade-tools
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          path: glade-tools
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare evidence directory
+        run: |
+          mkdir -p "$RUNNER_TEMP/salesforce-correctness-evidence"
+          printf '%s\n' "Salesforce correctness workflow started." \
+            > "$RUNNER_TEMP/salesforce-correctness-evidence/workflow-started.txt"
+      - name: Validate glade commit input
+        env:
+          GLADE_SHA: ${{ inputs.glade_sha }}
+        run: |
+          if [[ ! "$GLADE_SHA" =~ ^([0-9a-fA-F]{40})$ ]]; then
+            echo "glade_sha must be a full 40-hex commit" >&2
+            exit 1
+          fi
+          GLADE_SHA="${GLADE_SHA,,}"
+          echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ vars.GLADE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GLADE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            glade
+            glade-tools
+          permission-contents: read
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: glade-sh/glade
+          path: glade
+          ref: ${{ inputs.glade_sha }}
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+      - name: Verify glade checkout identity
+        run: test "$(git -C ../glade rev-parse HEAD)" = "$GLADE_SHA"
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version: "1.26.5"
+          cache-dependency-path: glade-tools/go.sum
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "22"
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli@2.145.6
+      - name: Build release-shaped Linux candidate
+        working-directory: glade
+        run: |
+          set -euo pipefail
+          VERSION="sf-correctness-${GLADE_SHA:0:12}"
+          VERSION="$VERSION" scripts/release-build.sh shared-payload
+          VERSION="$VERSION" \
+            RELEASE_SHARED_PAYLOAD_ARCHIVE="$PWD/dist/glade-shared-payload.tar.gz" \
+            RELEASE_SHARED_PAYLOAD_SHA256="$PWD/dist/glade-shared-payload.tar.gz.sha256" \
+            scripts/release-build.sh platform
+          archive="dist/glade_${VERSION}_linux_amd64.tar.gz"
+          extract_dir="$RUNNER_TEMP/glade-candidate"
+          mkdir -p "$extract_dir"
+          tar -xzf "$archive" -C "$extract_dir" glade
+          test -x "$extract_dir/glade"
+          echo "GLADE_CANDIDATE=$extract_dir/glade" >> "$GITHUB_ENV"
+      - name: Authenticate Salesforce
+        env:
+          AUTH_URL: ${{ secrets.SF_SFDX_AUTH_URL }}
+        run: |
+          set -euo pipefail
+          AUTH_FILE="$RUNNER_TEMP/sfdx-auth-url.txt"
+          LOGIN_RESULT="$RUNNER_TEMP/sf-login.json"
+          LOGIN_ERROR="$RUNNER_TEMP/sf-login.stderr"
+          trap 'rm -f "$AUTH_FILE" "$LOGIN_RESULT" "$LOGIN_ERROR"' EXIT
+          umask 077
+          printf '%s' "$AUTH_URL" > "$AUTH_FILE"
+          chmod 600 "$AUTH_FILE"
+          if ! sf org login sfdx-url \
+            --sfdx-url-file "$AUTH_FILE" \
+            --alias glade-salesforce-correctness \
+            --json > "$LOGIN_RESULT" 2> "$LOGIN_ERROR"; then
+            echo "Salesforce authentication failed." >&2
+            exit 1
+          fi
+      - name: Build glade-tools
+        run: |
+          go build -o "$RUNNER_TEMP/glade-tools" ./cmd/glade-tools
+          echo "TOOLS_BIN=$RUNNER_TEMP/glade-tools" >> "$GITHUB_ENV"
+      - name: Run correctness gate
+        run: |
+          scripts/salesforce-correctness-gate.sh \
+            "$TOOLS_BIN" \
+            "$(realpath ../glade)" \
+            "$GLADE_CANDIDATE" \
+            glade-salesforce-correctness \
+            "$RUNNER_TEMP/salesforce-correctness-evidence/gate"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: salesforce-correctness-evidence
+          path: ${{ runner.temp }}/salesforce-correctness-evidence
+          if-no-files-found: error
+          retention-days: 90
