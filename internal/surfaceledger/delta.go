@@ -136,26 +136,26 @@ func ComputeReleaseDelta(prev, current []SurfaceLedgerRow, classifications []Rel
 	for _, key := range addedKeys {
 		c, ok := classByKey[key]
 		if !ok {
-			return nil, nil, nil, nil, fmt.Errorf("missing classification for added row: %s", key)
+			return added, removed, changed, unchanged, fmt.Errorf("missing classification for added row: %s", key)
 		}
 		if err := validateClassification(c); err != nil {
-			return nil, nil, nil, nil, err
+			return added, removed, changed, unchanged, err
 		}
 	}
 	for _, key := range changedKeys {
 		c, ok := classByKey[key]
 		if !ok {
-			return nil, nil, nil, nil, fmt.Errorf("missing classification for changed row: %s", key)
+			return added, removed, changed, unchanged, fmt.Errorf("missing classification for changed row: %s", key)
 		}
 		if err := validateClassification(c); err != nil {
-			return nil, nil, nil, nil, err
+			return added, removed, changed, unchanged, err
 		}
 	}
 
 	// Validate: no stale classifications (must match added or changed row).
 	for key := range classByKey {
 		if !stringSliceContains(addedKeys, key) && !stringSliceContains(changedKeys, key) {
-			return nil, nil, nil, nil, fmt.Errorf("classification for row not in added or changed: %s", key)
+			return added, removed, changed, unchanged, fmt.Errorf("classification for row not in added or changed: %s", key)
 		}
 	}
 

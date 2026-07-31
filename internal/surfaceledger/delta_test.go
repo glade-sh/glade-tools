@@ -581,6 +581,86 @@ func TestReleaseDelta_WhitespaceOnlySurfaceIDInClassificationFails(t *testing.T)
 	}
 }
 
+func TestReleaseDelta_ClassificationFailurePreservesComputedLists(t *testing.T) {
+	row := func(id, signature string) SurfaceLedgerRow {
+		return SurfaceLedgerRow{SurfaceID: id, Signature: signature}
+	}
+	prev := []SurfaceLedgerRow{
+		row("apex:Unchanged.Z", "v1"), row("apex:Removed.Z", "v1"),
+		row("apex:Changed.Z", "v1"), row("apex:Changed.A", "v1"),
+		row("apex:Removed.A", "v1"), row("apex:Unchanged.A", "v1"),
+	}
+	current := []SurfaceLedgerRow{
+		row("apex:Added.Z", "v1"), row("apex:Unchanged.Z", "v1"),
+		row("apex:Changed.Z", "v2"), row("apex:Changed.A", "v2"),
+		row("apex:Unchanged.A", "v1"), row("apex:Added.A", "v1"),
+	}
+	valid := stdClassifyAll("apex:Added.A", "apex:Added.Z", "apex:Changed.A", "apex:Changed.Z")
+	tests := []struct {
+		name            string
+		classifications []ReleaseClassification
+	}{
+		{"missing", valid[1:]},
+		{"invalid", append([]ReleaseClassification{{
+			SurfaceID: "apex:Added.A", Scope: "bogus-scope", Disposition: DispoExistingCase, CaseID: "CASE-001",
+		}}, valid[1:]...)},
+		{"stale", append(valid, stdClassification("apex:Unchanged.A"))},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotAdded, gotRemoved, gotChanged, gotUnchanged, err := ComputeReleaseDelta(prev, current, tt.classifications)
+			if err == nil {
+				t.Fatal("expected classification error")
+			}
+			if gotAdded == nil || gotRemoved == nil || gotChanged == nil || gotUnchanged == nil {
+				t.Fatalf("computed lists must be non-nil: added=%v removed=%v changed=%v unchanged=%v",
+					gotAdded, gotRemoved, gotChanged, gotUnchanged)
+			}
+			want := [][]string{
+				{"apex:Added.A", "apex:Added.Z"},
+				{"apex:Removed.A", "apex:Removed.Z"},
+				{"apex:Changed.A", "apex:Changed.Z"},
+				{"apex:Unchanged.A", "apex:Unchanged.Z"},
+			}
+			for i, got := range [][]string{
+				surfaceIDs(gotAdded), surfaceIDs(gotRemoved), surfaceIDs(gotChanged), surfaceIDs(gotUnchanged),
+			} {
+				if !equalStrings(got, want[i]) {
+					t.Errorf("list %d = %v, want %v", i, got, want[i])
+				}
+			}
+		})
+	}
+}
+
+func TestReleaseDelta_StructuralFailureReturnsNilLists(t *testing.T) {
+	duplicate := SurfaceLedgerRow{SurfaceID: "apex:Dup.Class", Signature: "a"}
+	valid := SurfaceLedgerRow{SurfaceID: "apex:Valid.Class", Signature: "a"}
+	tests := []struct {
+		name            string
+		prev, current   []SurfaceLedgerRow
+		classifications []ReleaseClassification
+	}{
+		{"duplicate prev", []SurfaceLedgerRow{duplicate, duplicate}, []SurfaceLedgerRow{duplicate}, nil},
+		{"empty prev ID", []SurfaceLedgerRow{{}}, []SurfaceLedgerRow{valid}, nil},
+		{"empty current ID", []SurfaceLedgerRow{valid}, []SurfaceLedgerRow{{}}, nil},
+		{"empty classification ID", nil, []SurfaceLedgerRow{valid}, []ReleaseClassification{{}}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			added, removed, changed, unchanged, err := ComputeReleaseDelta(tt.prev, tt.current, tt.classifications)
+			if err == nil {
+				t.Fatal("expected structural error")
+			}
+			if added != nil || removed != nil || changed != nil || unchanged != nil {
+				t.Fatalf("structural failure returned usable lists: added=%v removed=%v changed=%v unchanged=%v",
+					added, removed, changed, unchanged)
+			}
+		})
+	}
+}
+
 // --- helpers ---
 
 func equalStrings(a, b []string) bool {
