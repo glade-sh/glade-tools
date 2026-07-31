@@ -36,17 +36,17 @@ func Compare(sf, glade *Result, c Case) CaseComparison {
 	if sf == nil || glade == nil {
 		cc.Status = StatusInconclusive
 		if sf != nil {
-			cc.SFObservation = observationText(sf, c.UnstableValue != "")
+			cc.SFObservation = observationText(sf, c.UnstableValue != "", c.ExceptionMessageContractual)
 		}
 		if glade != nil {
-			cc.GladeObservation = observationText(glade, c.UnstableValue != "")
+			cc.GladeObservation = observationText(glade, c.UnstableValue != "", c.ExceptionMessageContractual)
 		}
 		return cc
 	}
 
 	normalize := c.UnstableValue != ""
-	sfObs := observationText(sf, normalize)
-	gladeObs := observationText(glade, normalize)
+	sfObs := observationText(sf, normalize, c.ExceptionMessageContractual)
+	gladeObs := observationText(glade, normalize, c.ExceptionMessageContractual)
 
 	cc.SFObservation = sfObs
 	cc.GladeObservation = gladeObs
@@ -63,9 +63,13 @@ func Compare(sf, glade *Result, c Case) CaseComparison {
 // observationText renders a human-readable observation from a result.
 // When normalize is true the concrete value is replaced with <UNSTABLE>
 // so that case-declared unstable values do not cause false mismatches.
-func observationText(r *Result, normalize bool) string {
+// The exception message is included only when msgContractual is true.
+func observationText(r *Result, normalize bool, msgContractual bool) string {
 	if r.ExceptionType != "" {
-		return fmt.Sprintf("throws %s: %s", r.ExceptionType, r.ExceptionMessage)
+		if msgContractual {
+			return fmt.Sprintf("throws %s: %s", r.ExceptionType, r.ExceptionMessage)
+		}
+		return fmt.Sprintf("throws %s", r.ExceptionType)
 	}
 	if r.HasValue {
 		if normalize {

@@ -257,6 +257,32 @@ func TestCompareFailException(t *testing.T) {
 	}
 }
 
+func TestCompareExceptionMessageNotContractual(t *testing.T) {
+	// Equal exception types with different messages pass when the
+	// case does not declare the message contractual.
+	sf := &Result{ID: "x", ExceptionType: "System.MathException", ExceptionMessage: "divide by zero"}
+	glade := &Result{ID: "x", ExceptionType: "System.MathException", ExceptionMessage: "Division by zero"}
+	c := Case{ID: "x", ExpectThrow: true}
+
+	cc := Compare(sf, glade, c)
+	if cc.Status != StatusPass {
+		t.Errorf("status = %s, want pass; sf=%q glade=%q", cc.Status, cc.SFObservation, cc.GladeObservation)
+	}
+}
+
+func TestCompareExceptionMessageContractual(t *testing.T) {
+	// Same exception type but different messages must fail when the
+	// case declares the message contractual.
+	sf := &Result{ID: "x", ExceptionType: "System.MathException", ExceptionMessage: "divide by zero"}
+	glade := &Result{ID: "x", ExceptionType: "System.MathException", ExceptionMessage: "Division by zero"}
+	c := Case{ID: "x", ExpectThrow: true, ExceptionMessageContractual: true}
+
+	cc := Compare(sf, glade, c)
+	if cc.Status != StatusFail {
+		t.Errorf("status = %s, want fail; sf=%q glade=%q", cc.Status, cc.SFObservation, cc.GladeObservation)
+	}
+}
+
 func TestCompareNormalized(t *testing.T) {
 	sfV := "abc-123-def"
 	gladeV := "abc-456-def"

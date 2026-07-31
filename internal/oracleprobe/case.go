@@ -19,7 +19,8 @@ type Case struct {
 	Expression    string   `json:"expression"`
 	ValueType     string   `json:"valueType,omitempty"`
 	ExpectThrow   bool     `json:"expectThrow,omitempty"`
-	UnstableValue string   `json:"unstableValue,omitempty"`
+	UnstableValue               string `json:"unstableValue,omitempty"`
+	ExceptionMessageContractual bool   `json:"exceptionMessageContractual,omitempty"`
 }
 
 type Result struct {
