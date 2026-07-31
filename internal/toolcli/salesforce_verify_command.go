@@ -4,12 +4,14 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/apexrules"
@@ -36,14 +38,14 @@ type salesforceVerifyOptions struct {
 // salesforceVerifyDeps holds all external operations the verifier needs.
 // Tests inject fakes; production populates real exec-based implementations.
 type salesforceVerifyDeps struct {
-	gitHead         func(ctx context.Context, dir string) (string, error)
-	gitIsDirty      func(ctx context.Context, dir string) (bool, error)
-	runSFCompiler   func(ctx context.Context, targetOrg string, rules []apexrules.Rule) (map[string]apexrules.SalesforceResult, error)
+	gitHead          func(ctx context.Context, dir string) (string, error)
+	gitIsDirty       func(ctx context.Context, dir string) (bool, error)
+	runSFCompiler    func(ctx context.Context, targetOrg string, rules []apexrules.Rule) (map[string]apexrules.SalesforceResult, error)
 	runGladeCompiler func(ctx context.Context, binary string, rules []apexrules.Rule) (map[string]apexrules.Outcome, error)
-	runSFStdlib     func(ctx context.Context, targetOrg, workDir string, cases []oracleprobe.Case) (oracleprobe.Report, error)
-	runGladeStdlib  func(ctx context.Context, gladeBin, projectDir string, cases []oracleprobe.Case) (oracleprobe.Report, error)
-	runSFProject    func(ctx context.Context, projectDir, targetOrg string, cases []oracleprobe.Case) (oracleprobe.Report, error)
-	runGladeProject func(ctx context.Context, gladeBin, projectDir string, cases []oracleprobe.Case) (oracleprobe.Report, error)
+	runSFStdlib      func(ctx context.Context, targetOrg, workDir string, cases []oracleprobe.Case) (oracleprobe.Report, error)
+	runGladeStdlib   func(ctx context.Context, gladeBin, projectDir string, cases []oracleprobe.Case) (oracleprobe.Report, error)
+	runSFProject     func(ctx context.Context, projectDir, targetOrg string, cases []oracleprobe.Case) (oracleprobe.Report, error)
+	runGladeProject  func(ctx context.Context, gladeBin, projectDir string, cases []oracleprobe.Case) (oracleprobe.Report, error)
 }
 
 func realGitHead(ctx context.Context, dir string) (string, error) {
@@ -66,9 +68,9 @@ func realGitIsDirty(ctx context.Context, dir string) (bool, error) {
 
 func realDeps() *salesforceVerifyDeps {
 	return &salesforceVerifyDeps{
-		gitHead:         realGitHead,
-		gitIsDirty:      realGitIsDirty,
-		runSFCompiler:   apexrules.RunSalesforce,
+		gitHead:          realGitHead,
+		gitIsDirty:       realGitIsDirty,
+		runSFCompiler:    apexrules.RunSalesforce,
 		runGladeCompiler: apexrules.RunGlade,
 		runSFStdlib: func(ctx context.Context, targetOrg, workDir string, cases []oracleprobe.Case) (oracleprobe.Report, error) {
 			report, err := oracleprobe.RunAnonymous(ctx, cases, oracleprobe.Options{TargetOrg: targetOrg, WorkDir: workDir})
@@ -94,18 +96,18 @@ func realDeps() *salesforceVerifyDeps {
 const verifyReportSchemaVersion = 1
 
 type verifyReport struct {
-	SchemaVersion int              `json:"schemaVersion"`
-	Release       string           `json:"release"`
-	APIVersion    string           `json:"apiVersion"`
-	Status        string           `json:"status"`
+	SchemaVersion int                 `json:"schemaVersion"`
+	Release       string              `json:"release"`
+	APIVersion    string              `json:"apiVersion"`
+	Status        string              `json:"status"`
 	Glade         verifyGitProvenance `json:"glade"`
 	GladeTools    verifyGitProvenance `json:"gladeTools"`
-	Candidate     verifyCandidate  `json:"candidate"`
-	Inputs        []verifyInput    `json:"inputs"`
-	Compiler      verifySection    `json:"compiler"`
-	Runtime       verifySection    `json:"runtime"`
-	Lifecycle     verifySection    `json:"lifecycle"`
-	Summary       verifySummary    `json:"summary"`
+	Candidate     verifyCandidate     `json:"candidate"`
+	Inputs        []verifyInput       `json:"inputs"`
+	Compiler      verifySection       `json:"compiler"`
+	Runtime       verifySection       `json:"runtime"`
+	Lifecycle     verifySection       `json:"lifecycle"`
+	Summary       verifySummary       `json:"summary"`
 }
 
 type verifyGitProvenance struct {
@@ -125,11 +127,11 @@ type verifyInput struct {
 }
 
 type verifySection struct {
-	Status            string          `json:"status"`
-	OracleDrift       bool            `json:"oracleDrift"`
-	NormalizerChanged bool            `json:"normalizerChanged"`
-	Summary           verifySummary   `json:"summary"`
-	Cases             []verifyCase    `json:"cases"`
+	Status            string        `json:"status"`
+	OracleDrift       bool          `json:"oracleDrift"`
+	NormalizerChanged bool          `json:"normalizerChanged"`
+	Summary           verifySummary `json:"summary"`
+	Cases             []verifyCase  `json:"cases"`
 }
 
 type verifyCase struct {
@@ -298,9 +300,9 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 	report.Release = rm.Release
 	report.APIVersion = rm.APIVersion
 
-	// 3. Validate runtime fixture is decodable JSON with cases
-	if err := validateRuntimeFixture(opts.RuntimeCases); err != nil {
-		return report, fmt.Errorf("runtime fixture: %v", err)
+	// 3. Validate all release/API inputs before any Salesforce or Glade runner.
+	if err := checkAPIVersionProvenance(rm, opts); err != nil {
+		return report, err
 	}
 
 	// 4. Git provenance
@@ -899,9 +901,15 @@ func validateSection(s verifySection) error {
 }
 
 func validateRuntimeFixture(path string) error {
+	_, err := parseRuntimeFixture(path)
+	return err
+}
+
+// parseRuntimeFixture reads and validates the runtime fixture, returning its apiVersion.
+func parseRuntimeFixture(path string) (string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return err
+		return "", err
 	}
 	var fixture struct {
 		APIVersion  string `json:"apiVersion"`
@@ -910,18 +918,109 @@ func validateRuntimeFixture(path string) error {
 		} `json:"comparisons"`
 	}
 	if err := json.Unmarshal(data, &fixture); err != nil {
-		return fmt.Errorf("invalid runtime fixture JSON: %w", err)
+		return "", fmt.Errorf("invalid runtime fixture JSON: %w", err)
 	}
 	if strings.TrimSpace(fixture.APIVersion) == "" {
-		return fmt.Errorf("runtime fixture missing apiVersion")
+		return "", fmt.Errorf("runtime fixture missing apiVersion")
 	}
 	if fixture.Comparisons == nil {
-		return fmt.Errorf("runtime fixture missing comparisons array")
+		return "", fmt.Errorf("runtime fixture missing comparisons array")
 	}
 	for _, c := range fixture.Comparisons {
 		if strings.TrimSpace(c.CaseID) == "" {
-			return fmt.Errorf("runtime fixture comparison missing caseId")
+			return "", fmt.Errorf("runtime fixture comparison missing caseId")
 		}
+	}
+	return fixture.APIVersion, nil
+}
+
+func checkAPIVersionProvenance(rm releaseManifest, opts salesforceVerifyOptions) error {
+	manifestVersion, err := parseAPIVersion("release manifest", rm.APIVersion)
+	if err != nil {
+		return err
+	}
+	rtVersion, err := parseRuntimeFixture(opts.RuntimeCases)
+	if err != nil {
+		return fmt.Errorf("runtime fixture: %w", err)
+	}
+	if err := requireAPIVersion("runtime fixture", rtVersion, manifestVersion, rm.APIVersion); err != nil {
+		return err
+	}
+
+	projectData, err := os.ReadFile(filepath.Join(opts.TestProject, "sfdx-project.json"))
+	if err != nil {
+		return fmt.Errorf("read lifecycle project sfdx-project.json: %w", err)
+	}
+	var project struct {
+		SourceAPIVersion string `json:"sourceApiVersion"`
+	}
+	if err := json.Unmarshal(projectData, &project); err != nil {
+		return fmt.Errorf("invalid lifecycle project sfdx-project.json: %w", err)
+	}
+	if err := requireAPIVersion("lifecycle project sourceApiVersion", project.SourceAPIVersion, manifestVersion, rm.APIVersion); err != nil {
+		return err
+	}
+
+	metaCount := 0
+	err = filepath.WalkDir(filepath.Join(opts.TestProject, "force-app"), func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".cls-meta.xml") {
+			return nil
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		var metadata struct {
+			APIVersion string `xml:"apiVersion"`
+		}
+		if err := xml.Unmarshal(data, &metadata); err != nil {
+			return fmt.Errorf("invalid Apex class metadata %s: %w", filepath.Base(path), err)
+		}
+		metaCount++
+		return requireAPIVersion("Apex class metadata "+filepath.Base(path), metadata.APIVersion, manifestVersion, rm.APIVersion)
+	})
+	if err != nil {
+		return err
+	}
+	if metaCount == 0 {
+		return fmt.Errorf("lifecycle project has no Apex class metadata")
+	}
+
+	catalog, err := apexrules.LoadCatalog(opts.Catalog)
+	if err != nil {
+		return fmt.Errorf("compiler catalog: %w", err)
+	}
+	hasCurrentVersion := false
+	for _, rule := range catalog.Rules {
+		if rule.APIVersion > manifestVersion {
+			return fmt.Errorf("compiler rule %s apiVersion %.1f is newer than release manifest %s", rule.ID, rule.APIVersion, rm.APIVersion)
+		}
+		hasCurrentVersion = hasCurrentVersion || rule.APIVersion == manifestVersion
+	}
+	if !hasCurrentVersion {
+		return fmt.Errorf("compiler catalog has no rule for release manifest apiVersion %s", rm.APIVersion)
+	}
+	return nil
+}
+
+func parseAPIVersion(label, value string) (float64, error) {
+	version, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
+	if err != nil || version <= 0 {
+		return 0, fmt.Errorf("%s has invalid apiVersion %q", label, value)
+	}
+	return version, nil
+}
+
+func requireAPIVersion(label, value string, want float64, wantText string) error {
+	version, err := parseAPIVersion(label, value)
+	if err != nil {
+		return err
+	}
+	if version != want {
+		return fmt.Errorf("%s %q does not match release manifest %q", label, value, wantText)
 	}
 	return nil
 }

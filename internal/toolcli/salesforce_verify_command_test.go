@@ -67,7 +67,9 @@ func allPassProjectReport(cases []oracleprobe.Case) oracleprobe.Report {
 
 func allPassDeps() *fakeSalesforceVerifyDeps {
 	return &fakeSalesforceVerifyDeps{
-		gitHeadFn: func(ctx context.Context, dir string) (string, error) { return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", nil },
+		gitHeadFn: func(ctx context.Context, dir string) (string, error) {
+			return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", nil
+		},
 		gitIsDirtyFn: func(ctx context.Context, dir string) (bool, error) { return false, nil },
 		sfCompilerFn: func(ctx context.Context, targetOrg string, rules []apexrules.Rule) (map[string]apexrules.SalesforceResult, error) {
 			results := make(map[string]apexrules.SalesforceResult, len(rules))
@@ -132,7 +134,7 @@ func makeCatalog(t *testing.T, dir string) string {
       "area": "Compilation",
       "docsPath": "salesforce-docs-expanded-run/apex/apex_ref.md",
       "docsLines": "6-10",
-      "apiVersion": 66.0,
+      "apiVersion": 67,
       "sourceKind": "class",
       "source": "public class Test { int x }",
       "oracle": "reject",
@@ -150,7 +152,7 @@ func makeReleaseManifest(t *testing.T, dir string) string {
 	content := []byte(`{
   "schemaVersion": 1,
   "release": "Summer '26",
-  "apiVersion": "66.0",
+  "apiVersion": "67.0",
   "digest": "0000000000000000000000000000000000000000000000000000000000000000",
   "acquisition": "test",
   "sourceFamilies": ["apex-reference"]
@@ -160,7 +162,7 @@ func makeReleaseManifest(t *testing.T, dir string) string {
 
 func makeRuntimeFixture(t *testing.T, dir string) string {
 	t.Helper()
-	content := []byte(`{"apiVersion":"66.0","comparisons":[{"caseId":"decimal-round-default-positive-tie","status":"inconclusive"}]}`)
+	content := []byte(`{"apiVersion":"67.0","comparisons":[{"caseId":"decimal-round-default-positive-tie","status":"inconclusive"}]}`)
 	return writeTempFile(t, dir, "runtime-fixture.json", content)
 }
 
@@ -170,10 +172,17 @@ func makeTestProject(t *testing.T, dir string) string {
 	if err := os.MkdirAll(filepath.Join(projectDir, "force-app", "main", "default", "classes"), 0755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(projectDir, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}]}`), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(projectDir, "sfdx-project.json"), []byte(`{"packageDirectories":[{"path":"force-app","default":true}],"sourceApiVersion":"67.0"}`), 0644); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(projectDir, "force-app", "main", "default", "classes", "CorrectnessProbeTest.cls"), []byte("public class CorrectnessProbeTest {}"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(projectDir, "force-app", "main", "default", "classes", "CorrectnessProbeTest.cls-meta.xml"), []byte(`<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <status>Active</status>
+</ApexClass>`), 0644); err != nil {
 		t.Fatal(err)
 	}
 	return projectDir
@@ -1718,18 +1727,18 @@ func TestSalesforceVerify_ValidationRejectsPassWithoutDualObservations(t *testin
 	r := verifyReport{
 		SchemaVersion: 1, Status: "pass", Release: "t", APIVersion: "v",
 		Compiler: verifySection{
-			Status: "pass",
-			Cases:  []verifyCase{{ID: "c1", Status: "pass"}},
+			Status:  "pass",
+			Cases:   []verifyCase{{ID: "c1", Status: "pass"}},
 			Summary: verifySummary{Pass: 1},
 		},
 		Runtime: verifySection{
-			Status: "pass",
-			Cases:  []verifyCase{{ID: "r1", Status: "pass"}},
+			Status:  "pass",
+			Cases:   []verifyCase{{ID: "r1", Status: "pass"}},
 			Summary: verifySummary{Pass: 1},
 		},
 		Lifecycle: verifySection{
-			Status: "pass",
-			Cases:  []verifyCase{{ID: "l1", Status: "pass"}},
+			Status:  "pass",
+			Cases:   []verifyCase{{ID: "l1", Status: "pass"}},
 			Summary: verifySummary{Pass: 1},
 		},
 		Summary: verifySummary{Pass: 3},
@@ -1745,18 +1754,18 @@ func TestSalesforceVerify_InconclusiveCaseMayOmitDualObservations(t *testing.T) 
 	r := verifyReport{
 		SchemaVersion: 1, Status: "inconclusive", Release: "t", APIVersion: "v",
 		Compiler: verifySection{
-			Status: "inconclusive",
-			Cases:  []verifyCase{{ID: "c1", Status: "inconclusive"}},
+			Status:  "inconclusive",
+			Cases:   []verifyCase{{ID: "c1", Status: "inconclusive"}},
 			Summary: verifySummary{Inconclusive: 1},
 		},
 		Runtime: verifySection{
-			Status: "inconclusive",
-			Cases:  []verifyCase{{ID: "r1", Status: "inconclusive"}},
+			Status:  "inconclusive",
+			Cases:   []verifyCase{{ID: "r1", Status: "inconclusive"}},
 			Summary: verifySummary{Inconclusive: 1},
 		},
 		Lifecycle: verifySection{
-			Status: "inconclusive",
-			Cases:  []verifyCase{{ID: "l1", Status: "inconclusive"}},
+			Status:  "inconclusive",
+			Cases:   []verifyCase{{ID: "l1", Status: "inconclusive"}},
 			Summary: verifySummary{Inconclusive: 1},
 		},
 		Summary: verifySummary{Inconclusive: 3},
@@ -1839,6 +1848,126 @@ func TestSalesforceVerify_LifecycleFixtureFailureBlocked(t *testing.T) {
 	if report.Status == "pass" {
 		t.Fatal("overall report must not be pass when lifecycle fixture has an assertion failure")
 	}
+}
+
+func TestSalesforceVerify_RejectsAPIProvenanceBeforeExecution(t *testing.T) {
+	tests := []struct {
+		name    string
+		prepare func(t *testing.T, opts salesforceVerifyOptions)
+		want    string
+	}{
+		{"runtime mismatch", func(t *testing.T, opts salesforceVerifyOptions) {
+			writeFile(t, opts.RuntimeCases, `{"apiVersion":"66.0","comparisons":[]}`)
+		}, "runtime fixture"},
+		{"project mismatch", func(t *testing.T, opts salesforceVerifyOptions) {
+			writeFile(t, filepath.Join(opts.TestProject, "sfdx-project.json"), `{"sourceApiVersion":"66.0"}`)
+		}, "sourceApiVersion"},
+		{"project version missing", func(t *testing.T, opts salesforceVerifyOptions) {
+			writeFile(t, filepath.Join(opts.TestProject, "sfdx-project.json"), `{}`)
+		}, "invalid apiVersion"},
+		{"class metadata mismatch", func(t *testing.T, opts salesforceVerifyOptions) {
+			writeFile(t, filepath.Join(opts.TestProject, "force-app/main/default/classes/CorrectnessProbeTest.cls-meta.xml"),
+				`<ApexClass><apiVersion>66.0</apiVersion></ApexClass>`)
+		}, "Apex class metadata"},
+		{"class metadata version missing", func(t *testing.T, opts salesforceVerifyOptions) {
+			writeFile(t, filepath.Join(opts.TestProject, "force-app/main/default/classes/CorrectnessProbeTest.cls-meta.xml"),
+				`<ApexClass/>`)
+		}, "invalid apiVersion"},
+		{"catalog newer", func(t *testing.T, opts salesforceVerifyOptions) {
+			replaceFile(t, opts.Catalog, `"apiVersion": 67`, `"apiVersion": 68`)
+		}, "newer than"},
+		{"catalog missing current", func(t *testing.T, opts salesforceVerifyOptions) {
+			replaceFile(t, opts.Catalog, `"apiVersion": 67`, `"apiVersion": 66`)
+		}, "no rule"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			opts := salesforceVerifyOptions{
+				ReleaseManifest: makeReleaseManifest(t, dir),
+				Catalog:         makeCatalog(t, dir),
+				RuntimeCases:    makeRuntimeFixture(t, dir),
+				TestProject:     makeTestProject(t, dir),
+				TargetOrg:       "test-org",
+				GladeBin:        makeCandidate(t, dir),
+				GladeRoot:       dir,
+				Out:             filepath.Join(dir, "report.json"),
+			}
+			tt.prepare(t, opts)
+			_, err := executeSalesforceVerify(context.Background(), opts, failOnExternalRunner(t))
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestSalesforceVerify_AllowsHistoricalRulesAndNumericCurrentVersion(t *testing.T) {
+	dir := t.TempDir()
+	opts := salesforceVerifyOptions{
+		ReleaseManifest: makeReleaseManifest(t, dir), // "67.0"
+		Catalog:         makeCatalog(t, dir),         // rules 66 and 67
+		RuntimeCases:    makeRuntimeFixture(t, dir),
+		TestProject:     makeTestProject(t, dir),
+		TargetOrg:       "test-org",
+		GladeBin:        makeCandidate(t, dir),
+		GladeRoot:       dir,
+		Out:             filepath.Join(dir, "report.json"),
+	}
+	report, err := executeSalesforceVerify(context.Background(), opts, toRealDeps(allPassDeps()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Status != "pass" {
+		t.Fatalf("status = %q, want pass", report.Status)
+	}
+}
+
+func failOnExternalRunner(t *testing.T) *salesforceVerifyDeps {
+	t.Helper()
+	deps := toRealDeps(allPassDeps())
+	deps.runSFCompiler = func(context.Context, string, []apexrules.Rule) (map[string]apexrules.SalesforceResult, error) {
+		t.Fatal("Salesforce compiler ran before provenance passed")
+		return nil, nil
+	}
+	deps.runGladeCompiler = func(context.Context, string, []apexrules.Rule) (map[string]apexrules.Outcome, error) {
+		t.Fatal("Glade compiler ran before provenance passed")
+		return nil, nil
+	}
+	deps.runSFStdlib = func(context.Context, string, string, []oracleprobe.Case) (oracleprobe.Report, error) {
+		t.Fatal("Salesforce runtime ran before provenance passed")
+		return oracleprobe.Report{}, nil
+	}
+	deps.runGladeStdlib = func(context.Context, string, string, []oracleprobe.Case) (oracleprobe.Report, error) {
+		t.Fatal("Glade runtime ran before provenance passed")
+		return oracleprobe.Report{}, nil
+	}
+	deps.runSFProject = func(context.Context, string, string, []oracleprobe.Case) (oracleprobe.Report, error) {
+		t.Fatal("Salesforce lifecycle ran before provenance passed")
+		return oracleprobe.Report{}, nil
+	}
+	deps.runGladeProject = func(context.Context, string, string, []oracleprobe.Case) (oracleprobe.Report, error) {
+		t.Fatal("Glade lifecycle ran before provenance passed")
+		return oracleprobe.Report{}, nil
+	}
+	return deps
+}
+
+func writeFile(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func replaceFile(t *testing.T, path, old, new string) {
+	t.Helper()
+	content := string(mustReadFile(t, path))
+	if !strings.Contains(content, old) {
+		t.Fatalf("%s does not contain %q", path, old)
+	}
+	writeFile(t, path, strings.Replace(content, old, new, 1))
 }
 
 func mustReadFile(t *testing.T, path string) []byte {
