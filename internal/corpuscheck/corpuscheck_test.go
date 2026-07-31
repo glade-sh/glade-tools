@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestCheckWritesClassifiedTSVs(t *testing.T) {
@@ -538,6 +539,83 @@ func TestClassifyPublicCorpusProjectSourceInvalidDiagnostics(t *testing.T) {
 				t.Fatalf("Classify() = %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestCheckRejectsZeroDiscoveredProjects(t *testing.T) {
+	root := t.TempDir()
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '{}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out")})
+	if err == nil {
+		t.Fatal("expected error for zero discovered projects, got nil")
+	}
+}
+
+func TestCheckRejectsMissingCandidateLaunchFailure(t *testing.T) {
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	missing := filepath.Join(root, "nonexistent", "glade")
+	_, err := Check(context.Background(), Options{Root: root, Glade: missing, OutDir: filepath.Join(root, "out")})
+	if err == nil {
+		t.Fatal("expected error for missing candidate, got nil")
+	}
+}
+
+func TestCheckRejectsNonzeroExitWithEmptyOutput(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nexit 7\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	_, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out")})
+	if err == nil {
+		t.Fatal("expected error for nonzero exit with empty output, got nil")
+	}
+}
+
+func TestCheckRejectsContextTimeout(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nsleep 10\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+	_, err := Check(ctx, Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out")})
+	if err == nil {
+		t.Fatal("expected error for context timeout, got nil")
+	}
+}
+
+func TestCheckValidProjectPreservesClassifiedDiagnostics(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+printf '{"diagnostics":[{"code":"APEXPARSE001","message":"Unexpected token","file":"force-app/main/default/classes/A.cls","line":3,"column":4}]}'
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	report, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Summary.ProjectCount != 1 || report.Summary.DiagnosticCount != 1 || report.Counts["source-parse-error"] != 1 {
+		t.Fatalf("report = %#v", report)
 	}
 }
 
