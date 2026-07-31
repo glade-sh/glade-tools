@@ -1286,6 +1286,12 @@ Required flags:
   --out <path>                Output JSON artifact path.
 
 Optional flags:
-  --developer                 Permit dirty source roots (recorded in artifact).
+  --developer                       Permit dirty source roots (recorded in artifact).
+  --previous-release-manifest <path>  Previous release manifest for delta mode.
+  --previous-inventory <path>         Previous docs inventory for delta mode.
+  --current-inventory <path>          Current docs inventory for delta mode.
+  --release-classifications <path>    Added/changed surface classifications.
+
+All four delta-mode flags must be supplied together.
 `)
 }

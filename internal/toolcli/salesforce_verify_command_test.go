@@ -1190,7 +1190,7 @@ func TestSalesforceVerify_HelpExposesCommand(t *testing.T) {
 	if !strings.Contains(out, "salesforce verify") {
 		t.Fatalf("help should mention 'salesforce verify':\n%s", out)
 	}
-	for _, flag := range []string{"--release-manifest", "--catalog", "--runtime-cases", "--test-project", "--target-org", "--glade-bin", "--glade-root", "--out"} {
+	for _, flag := range []string{"--release-manifest", "--catalog", "--runtime-cases", "--test-project", "--target-org", "--glade-bin", "--glade-root", "--out", "--previous-release-manifest", "--previous-inventory", "--current-inventory", "--release-classifications"} {
 		if !strings.Contains(out, flag) {
 			t.Fatalf("help should include %s:\n%s", flag, out)
 		}
