@@ -21,7 +21,7 @@ type RealProjectRunner struct{}
 func (RealProjectRunner) RunDir(ctx context.Context, dir, name string, arg ...string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, name, arg...)
 	cmd.Dir = dir
-	return cmd.CombinedOutput()
+	return cmd.Output()
 }
 
 // ProjectOracleCases returns the twelve lifecycle probe cases in

@@ -570,6 +570,38 @@ func TestRunGladeRawMarkerStillParses(t *testing.T) {
 	}
 }
 
+// --- SF-07: stdout / stderr separation ---
+
+func TestOSExecRunnerStdoutSeparateFromStderr(t *testing.T) {
+	runner := OSExecRunner{}
+	out, err := runner.RunContext(context.Background(),
+		"sh", "-c", `printf '{"status":"passed"}\n'; printf 'Warning: update available\n' >&2`)
+	if err != nil {
+		t.Fatalf("unexpected error (command exit 0): %v", err)
+	}
+	if !strings.Contains(string(out), `"status":"passed"`) {
+		t.Errorf("missing JSON in stdout: %s", out)
+	}
+	if strings.Contains(string(out), "Warning") {
+		t.Errorf("stderr leaked into stdout: %s", out)
+	}
+}
+
+func TestOSExecRunnerStdoutWithStderrAndNonzeroExit(t *testing.T) {
+	runner := OSExecRunner{}
+	out, err := runner.RunContext(context.Background(),
+		"sh", "-c", `printf '{"status":"passed"}\n'; printf 'Warning: update available\n' >&2; exit 1`)
+	if err == nil {
+		t.Fatal("expected error for exit 1")
+	}
+	if !strings.Contains(string(out), `"status":"passed"`) {
+		t.Errorf("missing JSON in stdout: %s", out)
+	}
+	if strings.Contains(string(out), "Warning") {
+		t.Errorf("stderr leaked into stdout: %s", out)
+	}
+}
+
 func TestRedactCredentials(t *testing.T) {
 	r := Report{
 		TargetOrg:  "my-dev-hub",

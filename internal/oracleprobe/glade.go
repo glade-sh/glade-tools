@@ -20,7 +20,7 @@ type OSExecRunner struct{}
 
 func (OSExecRunner) RunContext(ctx context.Context, name string, arg ...string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, name, arg...)
-	return cmd.CombinedOutput()
+	return cmd.Output()
 }
 
 // GladeOptions holds the configuration needed to run Glade probes.

@@ -828,6 +828,42 @@ func TestProjectOracleLifecycleFixtureStructure(t *testing.T) {
 	}
 }
 
+// --- Test 22: RealProjectRunner stdout is not contaminated by stderr ---
+
+func TestRealProjectRunnerStdoutSeparateFromStderr(t *testing.T) {
+	runner := RealProjectRunner{}
+	// sh -c writes JSON to stdout and a warning to stderr, then exits 0.
+	out, err := runner.RunDir(context.Background(), t.TempDir(),
+		"sh", "-c", `printf '{"status":0,"result":{"status":"Succeeded"}}\n'; printf 'Warning: update available\n' >&2`)
+	if err != nil {
+		t.Fatalf("unexpected error (command exit 0): %v", err)
+	}
+	if !strings.Contains(string(out), `"status":0`) {
+		t.Errorf("missing JSON in stdout: %s", out)
+	}
+	if strings.Contains(string(out), "Warning") {
+		t.Errorf("stderr leaked into stdout: %s", out)
+	}
+}
+
+// --- Test 23: RealProjectRunner returns clean stdout alongside error on nonzero exit ---
+
+func TestRealProjectRunnerStdoutWithStderrAndNonzeroExit(t *testing.T) {
+	runner := RealProjectRunner{}
+	// Command writes valid JSON to stdout, warning to stderr, exits 1.
+	out, err := runner.RunDir(context.Background(), t.TempDir(),
+		"sh", "-c", `printf '{"status":0}\n'; printf 'Warning: update available\n' >&2; exit 1`)
+	if err == nil {
+		t.Fatal("expected error for exit 1")
+	}
+	if !strings.Contains(string(out), `"status":0`) {
+		t.Errorf("missing JSON in stdout: %s", out)
+	}
+	if strings.Contains(string(out), "Warning") {
+		t.Errorf("stderr leaked into stdout: %s", out)
+	}
+}
+
 // --- helper ---
 
 func findComp(ccs []CaseComparison, id string) *CaseComparison {
