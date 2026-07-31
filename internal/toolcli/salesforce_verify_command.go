@@ -133,10 +133,12 @@ type verifySection struct {
 }
 
 type verifyCase struct {
-	ID          string `json:"id"`
-	Status      string `json:"status"`
-	Observation string `json:"observation,omitempty"`
-	Category    string `json:"category,omitempty"`
+	ID                    string `json:"id"`
+	Status                string `json:"status"`
+	Observation           string `json:"observation,omitempty"`
+	Category              string `json:"category,omitempty"`
+	SalesforceObservation string `json:"salesforceObservation,omitempty"`
+	GladeObservation      string `json:"gladeObservation,omitempty"`
 }
 
 type verifySummary struct {
@@ -472,11 +474,20 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 		} else {
 			obs = string(r.Glade)
 		}
+		sfObs := string(r.Salesforce)
+		glObs := string(r.Glade)
 		cat := r.Status
 		if !r.OracleMatched {
 			oracleDrift = true
 		}
-		cases[i] = verifyCase{ID: r.ID, Status: status, Observation: obs, Category: cat}
+		cases[i] = verifyCase{
+			ID:                    r.ID,
+			Status:                status,
+			Observation:           obs,
+			Category:              cat,
+			SalesforceObservation: sfObs,
+			GladeObservation:      glObs,
+		}
 		switch status {
 		case "pass":
 			pass++
@@ -526,10 +537,12 @@ func runRuntimeSection(ctx context.Context, opts salesforceVerifyOptions, deps *
 	pass, fail, inconclusive := 0, 0, 0
 	for i, cmp := range comparisons {
 		verCases[i] = verifyCase{
-			ID:          cmp.CaseID,
-			Status:      string(cmp.Status),
-			Observation: cmp.SFObservation,
-			Category:    cmp.ExpectedObservation,
+			ID:                    cmp.CaseID,
+			Status:                string(cmp.Status),
+			Observation:           cmp.SFObservation,
+			Category:              cmp.ExpectedObservation,
+			SalesforceObservation: cmp.SFObservation,
+			GladeObservation:      cmp.GladeObservation,
 		}
 		switch cmp.Status {
 		case oracleprobe.StatusPass:
@@ -579,10 +592,12 @@ func runLifecycleSection(ctx context.Context, opts salesforceVerifyOptions, deps
 	pass, fail, inconclusive := 0, 0, 0
 	for i, cmp := range comparisons {
 		verCases[i] = verifyCase{
-			ID:          cmp.CaseID,
-			Status:      string(cmp.Status),
-			Observation: cmp.SFObservation,
-			Category:    cmp.ExpectedObservation,
+			ID:                    cmp.CaseID,
+			Status:                string(cmp.Status),
+			Observation:           cmp.SFObservation,
+			Category:              cmp.ExpectedObservation,
+			SalesforceObservation: cmp.SFObservation,
+			GladeObservation:      cmp.GladeObservation,
 		}
 		switch cmp.Status {
 		case oracleprobe.StatusPass:
@@ -828,6 +843,11 @@ func validateSection(s verifySection) error {
 		seen[c.ID] = true
 		if !validStatuses[c.Status] {
 			return fmt.Errorf("invalid case status %q for %q", c.Status, c.ID)
+		}
+		if c.Status == "pass" || c.Status == "fail" {
+			if c.SalesforceObservation == "" || c.GladeObservation == "" {
+				return fmt.Errorf("pass/fail case %q missing dual observations: salesforce=%q glade=%q", c.ID, c.SalesforceObservation, c.GladeObservation)
+			}
 		}
 		switch c.Status {
 		case "pass":

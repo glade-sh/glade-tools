@@ -1410,9 +1410,9 @@ func TestSalesforceVerify_WriteFailureNoArtifact(t *testing.T) {
 
 	minimal := verifyReport{
 		SchemaVersion: 1, Status: "pass", Release: "t", APIVersion: "v",
-		Compiler:  verifySection{Status: "pass", Cases: []verifyCase{{ID: "c1", Status: "pass"}}, Summary: verifySummary{Pass: 1}},
-		Runtime:   verifySection{Status: "pass", Cases: []verifyCase{{ID: "r1", Status: "pass"}}, Summary: verifySummary{Pass: 1}},
-		Lifecycle: verifySection{Status: "pass", Cases: []verifyCase{{ID: "l1", Status: "pass"}}, Summary: verifySummary{Pass: 1}},
+		Compiler:  verifySection{Status: "pass", Cases: []verifyCase{{ID: "c1", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"}}, Summary: verifySummary{Pass: 1}},
+		Runtime:   verifySection{Status: "pass", Cases: []verifyCase{{ID: "r1", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"}}, Summary: verifySummary{Pass: 1}},
+		Lifecycle: verifySection{Status: "pass", Cases: []verifyCase{{ID: "l1", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"}}, Summary: verifySummary{Pass: 1}},
 		Summary:   verifySummary{Pass: 3},
 	}
 	err := writeReport(outPath, minimal)
@@ -1437,13 +1437,15 @@ func TestSalesforceVerify_WriteReportRejectsInvalidReports(t *testing.T) {
 			Compiler: verifySection{Status: "pass", Cases: []verifyCase{}}}},
 		{"duplicate IDs", verifyReport{SchemaVersion: 1, Status: "pass", Release: "t", APIVersion: "66.0",
 			Compiler: verifySection{Status: "pass", Cases: []verifyCase{
-				{ID: "dup", Status: "pass"}, {ID: "dup", Status: "pass"}}, Summary: verifySummary{Pass: 2}}}},
+				{ID: "dup", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"},
+				{ID: "dup", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"},
+			}, Summary: verifySummary{Pass: 2}}}},
 		{"invalid status", verifyReport{SchemaVersion: 1, Status: "bogus", Release: "t", APIVersion: "66.0",
-			Compiler: verifySection{Status: "pass", Cases: []verifyCase{{ID: "c1", Status: "pass"}}, Summary: verifySummary{Pass: 1}}}},
+			Compiler: verifySection{Status: "pass", Cases: []verifyCase{{ID: "c1", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"}}, Summary: verifySummary{Pass: 1}}}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			// Minimal sections to pass the section-level checks for other sections
-			minSection := verifySection{Status: "pass", Cases: []verifyCase{{ID: "x", Status: "pass"}}, Summary: verifySummary{Pass: 1}}
+			minSection := verifySection{Status: "pass", Cases: []verifyCase{{ID: "x", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"}}, Summary: verifySummary{Pass: 1}}
 			if tt.report.Compiler.Cases == nil {
 				tt.report.Compiler = minSection
 			}
@@ -1540,7 +1542,7 @@ func TestSalesforceVerify_AcquiredResultIdentityBlocksPass(t *testing.T) {
 
 // Table-drive the malformed-report validation checks
 func TestSalesforceVerify_ReportValidationTable(t *testing.T) {
-	minSection := verifySection{Status: "pass", Cases: []verifyCase{{ID: "x", Status: "pass"}}, Summary: verifySummary{Pass: 1}}
+	minSection := verifySection{Status: "pass", Cases: []verifyCase{{ID: "x", Status: "pass", SalesforceObservation: "sf-obs", GladeObservation: "gl-obs"}}, Summary: verifySummary{Pass: 1}}
 	for _, tt := range []struct {
 		name string
 		r    verifyReport
@@ -1549,7 +1551,10 @@ func TestSalesforceVerify_ReportValidationTable(t *testing.T) {
 		{"zero cases", verifyReport{SchemaVersion: 1, Status: "pass", Release: "t", APIVersion: "v",
 			Compiler: verifySection{Status: "pass", Cases: []verifyCase{}}}, "zero"},
 		{"duplicate IDs", verifyReport{SchemaVersion: 1, Status: "pass", Release: "t", APIVersion: "v",
-			Compiler: verifySection{Status: "pass", Cases: []verifyCase{{ID: "d", Status: "pass"}, {ID: "d", Status: "pass"}}, Summary: verifySummary{Pass: 2}}}, "duplicate"},
+			Compiler: verifySection{Status: "pass", Cases: []verifyCase{
+				{ID: "d", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"},
+				{ID: "d", Status: "pass", SalesforceObservation: "sf", GladeObservation: "gl"},
+			}, Summary: verifySummary{Pass: 2}}}, "duplicate"},
 		{"invalid status", verifyReport{SchemaVersion: 1, Status: "nope", Release: "t", APIVersion: "v",
 			Compiler: minSection}, "invalid"},
 		{"summary mismatch", verifyReport{SchemaVersion: 1, Status: "pass", Release: "t", APIVersion: "v",
@@ -1618,6 +1623,149 @@ func TestSalesforceVerify_RealRuntimeFixtureIsValid(t *testing.T) {
 }
 
 // ============ Helpers ============
+
+// ============ SF-08: Dual observations in every conclusive case ============
+
+func TestSalesforceVerify_DualObservationsInPassingCompilerCase(t *testing.T) {
+	dir := t.TempDir()
+	releasePath := makeReleaseManifest(t, dir)
+	catalogPath := makeCatalog(t, dir)
+	runtimePath := makeRuntimeFixture(t, dir)
+	projectPath := makeTestProject(t, dir)
+	candidatePath := makeCandidate(t, dir)
+	outPath := filepath.Join(dir, "out", "report.json")
+
+	deps := allPassDeps()
+	opts := salesforceVerifyOptions{
+		ReleaseManifest: releasePath, Catalog: catalogPath, RuntimeCases: runtimePath,
+		TestProject: projectPath, TargetOrg: "test-org", GladeBin: candidatePath,
+		GladeRoot: dir, Out: outPath,
+	}
+	report := runVerifyWithDeps(t, opts, deps)
+
+	for _, c := range report.Compiler.Cases {
+		if c.Status == "pass" || c.Status == "fail" {
+			if c.SalesforceObservation == "" {
+				t.Fatalf("compiler pass/fail case %q missing salesforceObservation", c.ID)
+			}
+			if c.GladeObservation == "" {
+				t.Fatalf("compiler pass/fail case %q missing gladeObservation", c.ID)
+			}
+		}
+	}
+}
+
+func TestSalesforceVerify_DualObservationsInPassingRuntimeCase(t *testing.T) {
+	dir := t.TempDir()
+	releasePath := makeReleaseManifest(t, dir)
+	catalogPath := makeCatalog(t, dir)
+	runtimePath := makeRuntimeFixture(t, dir)
+	projectPath := makeTestProject(t, dir)
+	candidatePath := makeCandidate(t, dir)
+	outPath := filepath.Join(dir, "out", "report.json")
+
+	deps := allPassDeps()
+	opts := salesforceVerifyOptions{
+		ReleaseManifest: releasePath, Catalog: catalogPath, RuntimeCases: runtimePath,
+		TestProject: projectPath, TargetOrg: "test-org", GladeBin: candidatePath,
+		GladeRoot: dir, Out: outPath,
+	}
+	report := runVerifyWithDeps(t, opts, deps)
+
+	for _, c := range report.Runtime.Cases {
+		if c.Status == "pass" || c.Status == "fail" {
+			if c.SalesforceObservation == "" {
+				t.Fatalf("runtime pass/fail case %q missing salesforceObservation", c.ID)
+			}
+			if c.GladeObservation == "" {
+				t.Fatalf("runtime pass/fail case %q missing gladeObservation", c.ID)
+			}
+		}
+	}
+}
+
+func TestSalesforceVerify_DualObservationsInPassingLifecycleCase(t *testing.T) {
+	dir := t.TempDir()
+	releasePath := makeReleaseManifest(t, dir)
+	catalogPath := makeCatalog(t, dir)
+	runtimePath := makeRuntimeFixture(t, dir)
+	projectPath := makeTestProject(t, dir)
+	candidatePath := makeCandidate(t, dir)
+	outPath := filepath.Join(dir, "out", "report.json")
+
+	deps := allPassDeps()
+	opts := salesforceVerifyOptions{
+		ReleaseManifest: releasePath, Catalog: catalogPath, RuntimeCases: runtimePath,
+		TestProject: projectPath, TargetOrg: "test-org", GladeBin: candidatePath,
+		GladeRoot: dir, Out: outPath,
+	}
+	report := runVerifyWithDeps(t, opts, deps)
+
+	for _, c := range report.Lifecycle.Cases {
+		if c.Status == "pass" || c.Status == "fail" {
+			if c.SalesforceObservation == "" {
+				t.Fatalf("lifecycle pass/fail case %q missing salesforceObservation", c.ID)
+			}
+			if c.GladeObservation == "" {
+				t.Fatalf("lifecycle pass/fail case %q missing gladeObservation", c.ID)
+			}
+		}
+	}
+}
+
+func TestSalesforceVerify_ValidationRejectsPassWithoutDualObservations(t *testing.T) {
+	// A pass case missing either salesforceObservation or gladeObservation must fail validation.
+	r := verifyReport{
+		SchemaVersion: 1, Status: "pass", Release: "t", APIVersion: "v",
+		Compiler: verifySection{
+			Status: "pass",
+			Cases:  []verifyCase{{ID: "c1", Status: "pass"}},
+			Summary: verifySummary{Pass: 1},
+		},
+		Runtime: verifySection{
+			Status: "pass",
+			Cases:  []verifyCase{{ID: "r1", Status: "pass"}},
+			Summary: verifySummary{Pass: 1},
+		},
+		Lifecycle: verifySection{
+			Status: "pass",
+			Cases:  []verifyCase{{ID: "l1", Status: "pass"}},
+			Summary: verifySummary{Pass: 1},
+		},
+		Summary: verifySummary{Pass: 3},
+	}
+	err := validateReport(r)
+	if err == nil {
+		t.Fatal("expected validation to reject pass case without dual observations")
+	}
+}
+
+func TestSalesforceVerify_InconclusiveCaseMayOmitDualObservations(t *testing.T) {
+	// Inconclusive cases are operationally inconclusive — they may omit both sides.
+	r := verifyReport{
+		SchemaVersion: 1, Status: "inconclusive", Release: "t", APIVersion: "v",
+		Compiler: verifySection{
+			Status: "inconclusive",
+			Cases:  []verifyCase{{ID: "c1", Status: "inconclusive"}},
+			Summary: verifySummary{Inconclusive: 1},
+		},
+		Runtime: verifySection{
+			Status: "inconclusive",
+			Cases:  []verifyCase{{ID: "r1", Status: "inconclusive"}},
+			Summary: verifySummary{Inconclusive: 1},
+		},
+		Lifecycle: verifySection{
+			Status: "inconclusive",
+			Cases:  []verifyCase{{ID: "l1", Status: "inconclusive"}},
+			Summary: verifySummary{Inconclusive: 1},
+		},
+		Summary: verifySummary{Inconclusive: 3},
+	}
+	err := validateReport(r)
+	if err != nil {
+		t.Fatalf("inconclusive cases should be allowed to omit dual observations: %v", err)
+	}
+}
 
 func mustReadFile(t *testing.T, path string) []byte {
 	t.Helper()
