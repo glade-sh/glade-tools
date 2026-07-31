@@ -22,6 +22,18 @@ func WriteRowsJSON(w io.Writer, rows []SurfaceLedgerRow) error {
 	return enc.Encode(rows)
 }
 
+// WriteStrictCurrentBaseJSON writes a StrictCurrentBase view as indented
+// JSON with a trailing newline, mirroring the pretty pattern used by the
+// ledger and rows writers.
+func WriteStrictCurrentBaseJSON(w io.Writer, base StrictCurrentBase) error {
+	data, err := marshalPretty(base)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(data)
+	return err
+}
+
 func ReadRowsJSON(path string) ([]SurfaceLedgerRow, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {

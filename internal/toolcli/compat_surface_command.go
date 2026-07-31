@@ -45,13 +45,15 @@ func runCompatSurface(args []string, w io.Writer) error {
 		return runCompatSurfaceExplain(args[1:], w)
 	case "check":
 		return runCompatSurfaceCheck(args[1:], w)
+	case "strict-current-base":
+		return runCompatSurfaceStrictCurrentBase(args[1:], w)
 	default:
 		return errors.New(surfaceUsage())
 	}
 }
 
 func surfaceUsage() string {
-	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check [flags]"
+	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base [flags]"
 }
 
 func runCompatSurfaceSources(args []string, w io.Writer) error {
@@ -623,6 +625,84 @@ func runCompatSurfaceCheck(args []string, w io.Writer) error {
 		return err
 	}
 	fmt.Fprintln(w, "surface check: ok")
+	return nil
+}
+
+func runCompatSurfaceStrictCurrentBase(args []string, w io.Writer) error {
+	ledgerPath := ""
+	output := ""
+	jsonOut := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--ledger":
+			i++
+			var err error
+			ledgerPath, err = argValue(args, i, "--ledger")
+			if err != nil {
+				return err
+			}
+		case "--output":
+			i++
+			var err error
+			output, err = argValue(args, i, "--output")
+			if err != nil {
+				return err
+			}
+		case "--json":
+			jsonOut = true
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	if ledgerPath == "" {
+		return errors.New("--ledger is required")
+	}
+	if output != "" && jsonOut {
+		return errors.New("use only one of --output or --json")
+	}
+	ledger, err := surfaceledger.ReadLedgerJSON(ledgerPath)
+	if err != nil {
+		return err
+	}
+	base := surfaceledger.ComputeStrictCurrentBase(ledger.Rows)
+	if output != "" {
+		var buf stringsBuilder
+		if err := surfaceledger.WriteStrictCurrentBaseJSON(&buf, base); err != nil {
+			return err
+		}
+		if err := atomicWriteFile(output, buf.data); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, "surface strict-current-base: %s\n", output)
+		return nil
+	}
+	return surfaceledger.WriteStrictCurrentBaseJSON(w, base)
+}
+
+// atomicWriteFile writes data to outPath via a temp file in the same
+// directory and renames it into place, mirroring the atomic write pattern
+// used by the verify report writer.
+func atomicWriteFile(outPath string, data []byte) error {
+	dir := filepath.Dir(outPath)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return fmt.Errorf("create output directory: %w", err)
+	}
+	tmpFile, err := os.CreateTemp(dir, ".strict-current-base-*.tmp")
+	if err != nil {
+		return fmt.Errorf("create temp file: %w", err)
+	}
+	tmpPath := tmpFile.Name()
+	defer os.Remove(tmpPath)
+	if _, err := tmpFile.Write(data); err != nil {
+		tmpFile.Close()
+		return fmt.Errorf("write temp file: %w", err)
+	}
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("close temp file: %w", err)
+	}
+	if err := os.Rename(tmpPath, outPath); err != nil {
+		return fmt.Errorf("rename temp to output: %w", err)
+	}
 	return nil
 }
 

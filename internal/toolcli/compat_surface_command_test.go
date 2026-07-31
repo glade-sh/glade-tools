@@ -403,3 +403,113 @@ func writeSurfaceSourceFixture(t *testing.T, docs string) {
 		t.Fatal(err)
 	}
 }
+
+func TestCompatSurfaceStrictCurrentBasePrintsJSON(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	// One strict-closed supported+evidenced row, one open missing-shape row.
+	data := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.Done.doIt","product":"apex","area":"runtime","kind":"method","namespace":"System","typeName":"Done","memberName":"doIt","signature":"String doIt()","returnType":"String","gladeReturnType":"String","gladeShape":"signature-known","gladeBehavior":"supported","evidence":"fixture"},
+    {"surfaceId":"apex:System.Missing.kind","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"absent","priority":10}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--ledger", ledger, "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+
+	var decoded struct {
+		Total        int `json:"total"`
+		StrictClosed int `json:"strictClosed"`
+		StrictOpen   int `json:"strictOpen"`
+		OpenRows     []struct {
+			SurfaceID string   `json:"surfaceId"`
+			Reasons   []string `json:"reasons"`
+		} `json:"openRows"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+		t.Fatalf("decode JSON: %v\n%s", err, stdout.String())
+	}
+	if decoded.Total != 2 || decoded.StrictClosed != 1 || decoded.StrictOpen != 1 {
+		t.Fatalf("counts: total=%d closed=%d open=%d", decoded.Total, decoded.StrictClosed, decoded.StrictOpen)
+	}
+	if len(decoded.OpenRows) != 1 || decoded.OpenRows[0].SurfaceID != "apex:System.Missing.kind" {
+		t.Fatalf("openRows: %#v", decoded.OpenRows)
+	}
+	if len(decoded.OpenRows[0].Reasons) == 0 || decoded.OpenRows[0].Reasons[0] != "missing-shape" {
+		t.Fatalf("open reasons: %#v", decoded.OpenRows[0].Reasons)
+	}
+}
+
+func TestCompatSurfaceStrictCurrentBaseWritesOutputAtomically(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	out := filepath.Join(root, "nested", "strict-current-base.json")
+	data := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.Done.doIt","product":"apex","area":"runtime","kind":"method","namespace":"System","typeName":"Done","memberName":"doIt","signature":"String doIt()","returnType":"String","gladeReturnType":"String","gladeShape":"signature-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--ledger", ledger, "--output", out}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "surface strict-current-base: ") {
+		t.Fatalf("summary missing: %q", stdout.String())
+	}
+	written, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("read output: %v", err)
+	}
+	var decoded struct {
+		Total        int `json:"total"`
+		StrictClosed int `json:"strictClosed"`
+	}
+	if err := json.Unmarshal(written, &decoded); err != nil {
+		t.Fatalf("decode output: %v\n%s", err, written)
+	}
+	if decoded.Total != 1 || decoded.StrictClosed != 1 {
+		t.Fatalf("counts: total=%d closed=%d", decoded.Total, decoded.StrictClosed)
+	}
+}
+
+func TestCompatSurfaceStrictCurrentBaseRejectsOutputAndJSON(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--ledger", ledger, "--output", filepath.Join(root, "out.json"), "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "use only one of --output or --json") {
+		t.Fatalf("missing mutual-exclusion error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceStrictCurrentBaseRequiresLedger(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "--ledger is required") {
+		t.Fatalf("missing ledger-required error: %q", stderr.String())
+	}
+}
