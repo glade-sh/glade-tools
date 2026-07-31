@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"github.com/glade-sh/glade/tools/internal/apexrules"
 	"github.com/glade-sh/glade/tools/internal/oracleprobe"
 )
@@ -19,6 +20,7 @@ import (
 // fakeSalesforceVerifyDeps replaces all external I/O with controlled results
 // so tests never touch a real Salesforce org, Glade binary, or Git repo.
 type fakeSalesforceVerifyDeps struct {
+	calls           int
 	gitHeadFn       func(ctx context.Context, dir string) (string, error)
 	gitIsDirtyFn    func(ctx context.Context, dir string) (bool, error)
 	sfCompilerFn    func(ctx context.Context, targetOrg string, rules []apexrules.Rule) (map[string]apexrules.SalesforceResult, error)
@@ -285,21 +287,27 @@ func runVerifyWithDeps(t *testing.T, opts salesforceVerifyOptions, deps *fakeSal
 		gitHead:    deps.gitHeadFn,
 		gitIsDirty: deps.gitIsDirtyFn,
 		runSFCompiler: func(ctx context.Context, targetOrg string, rules []apexrules.Rule) (map[string]apexrules.SalesforceResult, error) {
+			deps.calls++
 			return deps.sfCompilerFn(ctx, targetOrg, rules)
 		},
 		runGladeCompiler: func(ctx context.Context, binary string, rules []apexrules.Rule) (map[string]apexrules.Outcome, error) {
+			deps.calls++
 			return deps.gladeCompilerFn(ctx, binary, rules)
 		},
 		runSFStdlib: func(ctx context.Context, targetOrg, workDir string, cases []oracleprobe.Case) (oracleprobe.Report, error) {
+			deps.calls++
 			return deps.sfStdlibFn(ctx, targetOrg, workDir, cases)
 		},
 		runGladeStdlib: func(ctx context.Context, gladeBin, projectDir string, cases []oracleprobe.Case) (oracleprobe.Report, error) {
+			deps.calls++
 			return deps.gladeStdlibFn(ctx, gladeBin, projectDir, cases)
 		},
 		runSFProject: func(ctx context.Context, projectDir, targetOrg string, cases []oracleprobe.Case) (oracleprobe.Report, error) {
+			deps.calls++
 			return deps.sfProjectFn(ctx, projectDir, targetOrg, cases)
 		},
 		runGladeProject: func(ctx context.Context, gladeBin, projectDir string, cases []oracleprobe.Case) (oracleprobe.Report, error) {
+			deps.calls++
 			return deps.gladeProjectFn(ctx, gladeBin, projectDir, cases)
 		},
 	})
@@ -1977,4 +1985,142 @@ func mustReadFile(t *testing.T, path string) []byte {
 		t.Fatal(err)
 	}
 	return data
+}
+
+func writeTempJSON(t *testing.T, dir, name string, v any) string {
+	t.Helper()
+	data, err := json.Marshal(v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return writeTempFile(t, dir, name, data)
+}
+
+func makeDeltaInventory(t *testing.T, dir, name string, docs []apexdocs.Document) (string, string) {
+	t.Helper()
+	inv := apexdocs.Inventory{SchemaVersion: 1, Documents: docs}
+	return writeTempJSON(t, dir, name, inv), apexdocs.CanonicalDigest(inv)
+}
+
+func apexDoc(path, name, kind string) apexdocs.Document {
+	return apexdocs.Document{SourcePath: "apex/" + path, Kind: kind, Namespace: "System", Name: name}
+}
+
+func makeDeltaManifest(t *testing.T, dir, name, release, api, digest string, families []string) string {
+	t.Helper()
+	return writeTempJSON(t, dir, name, map[string]any{
+		"schemaVersion": 1, "release": release, "apiVersion": api,
+		"digest": digest, "acquisition": "test", "sourceFamilies": families,
+	})
+}
+
+func deltaVerifyOpts(t *testing.T, dir string, classified bool) salesforceVerifyOptions {
+	t.Helper()
+	prevDocs := []apexdocs.Document{
+		apexDoc("Old.md", "Old", "class"), apexDoc("Changed.md", "Changed", "class"),
+		apexDoc("Same.md", "Same", "class"),
+	}
+	prevDocs[1].Members = []apexdocs.Member{{Kind: "method", Name: "foo", Signature: "String foo()", ReturnType: "String"}}
+	currDocs := []apexdocs.Document{
+		apexDoc("New.md", "New", "class"), apexDoc("NewAlias.md", "New", "class"),
+		apexDoc("Changed.md", "Changed", "class"), apexDoc("Same.md", "Same", "class"),
+	}
+	currDocs[2].Members = []apexdocs.Member{{Kind: "method", Name: "foo", Signature: "Integer foo()", ReturnType: "Integer"}}
+	prevInv, prevDigest := makeDeltaInventory(t, dir, "prev-inventory.json", prevDocs)
+	currInv, currDigest := makeDeltaInventory(t, dir, "current-inventory.json", currDocs)
+	entries := []map[string]any{}
+	if classified {
+		entries = []map[string]any{
+			{"surfaceId": "apex:System.New", "scope": "t0", "disposition": "new-case", "caseId": "NEW"},
+			{"surfaceId": "apex:System.Changed.foo()", "scope": "t0", "disposition": "new-case", "caseId": "CHANGED"},
+		}
+	}
+	opts := salesforceVerifyOptions{
+		ReleaseManifest: makeDeltaManifest(t, dir, "current.json", "Summer 26", "67.0", currDigest, []string{"apex"}),
+		Catalog:         makeCatalog(t, dir), RuntimeCases: makeRuntimeFixture(t, dir),
+		TestProject: makeTestProject(t, dir), TargetOrg: "test-org",
+		GladeBin: makeCandidate(t, dir), GladeRoot: dir, Out: filepath.Join(dir, "report.json"),
+		PreviousReleaseManifest: makeDeltaManifest(t, dir, "previous.json", "Spring 26", "66.0", prevDigest, []string{"apex"}),
+		PreviousInventory:       prevInv, CurrentInventory: currInv,
+		ReleaseClassifications: writeTempJSON(t, dir, "classifications.json", map[string]any{
+			"schemaVersion": 1, "previousRelease": "Spring 26", "currentRelease": "Summer 26",
+			"classifications": entries,
+		}),
+	}
+	return opts
+}
+
+func TestSalesforceVerify_DeltaPartialFlagsReject(t *testing.T) {
+	_, err := parseSalesforceVerifyFlags(append(allVerifyFlags(t), "--previous-inventory", "previous.json"))
+	if err == nil || !strings.Contains(err.Error(), "all four") {
+		t.Fatalf("error = %v, want all-four rejection", err)
+	}
+}
+
+func TestSalesforceVerify_NoDeltaOmitsReleaseDeltaField(t *testing.T) {
+	if data, _ := json.Marshal(verifyReport{}); bytes.Contains(data, []byte("releaseDelta")) {
+		t.Fatal("report JSON must not contain releaseDelta when no delta flags given")
+	}
+}
+
+func TestSalesforceVerify_DeltaStructuralErrorsReject(t *testing.T) {
+	for _, tt := range []struct {
+		name, want, file, old, new string
+	}{
+		{"digest", "digest", "inventory", `"kind":"class"`, `"kind":"enum"`},
+		{"release", "release names mismatch", "classifications", `"currentRelease":"Summer 26"`, `"currentRelease":"Fall 26"`},
+		{"API", "not lower", "manifest", `"apiVersion":"66.0"`, `"apiVersion":"67.0"`},
+		{"families", "source families differ", "manifest", `"sourceFamilies":["apex"]`, `"sourceFamilies":["other"]`},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			opts := deltaVerifyOpts(t, dir, true)
+			path := map[string]string{"inventory": opts.CurrentInventory, "classifications": opts.ReleaseClassifications, "manifest": opts.PreviousReleaseManifest}[tt.file]
+			replaceFile(t, path, tt.old, tt.new)
+			_, err := executeSalesforceVerify(context.Background(), opts, failOnExternalRunner(t))
+			if err == nil || !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("error = %v, want %q", err, tt.want)
+			}
+		})
+	}
+}
+
+func TestSalesforceVerify_UnclassifiedDeltaFails(t *testing.T) {
+	for i, entries := range []string{
+		`[]`,
+		`[{"surfaceId":"","scope":"t0","disposition":"new-case","caseId":"BLANK"}]`,
+		`[{"surfaceId":"apex:System.New"},{"surfaceId":"apex:System.New"}]`,
+	} {
+		t.Run(fmt.Sprint(i), func(t *testing.T) {
+			dir := t.TempDir()
+			opts, deps := deltaVerifyOpts(t, dir, false), allPassDeps()
+			replaceFile(t, opts.ReleaseClassifications, `"classifications":[]`, `"classifications":`+entries)
+			report := runVerifyWithDeps(t, opts, deps)
+			d := report.ReleaseDelta
+			if deps.calls != 6 || d == nil || d.Status != "fail" || d.Error == "" || report.Status != "fail" {
+				t.Fatalf("unexpected failure report or runner count %d: %+v", deps.calls, report)
+			}
+			got := strings.Join(append(append(append(d.Added, d.Removed...), d.Changed...), d.Unchanged...), ",")
+			if got != "apex:System.New,apex:System.Old,apex:System.Changed.foo(),apex:System.Changed,apex:System.Same" {
+				t.Fatalf("unexpected exact delta lists: %s", got)
+			}
+		})
+	}
+}
+
+func TestSalesforceVerify_ClassifiedDeltaPasses(t *testing.T) {
+	dir := t.TempDir()
+	report := runVerifyWithDeps(t, deltaVerifyOpts(t, dir, true), allPassDeps())
+	if report.ReleaseDelta == nil || report.ReleaseDelta.Status != "pass" || report.Status != "pass" {
+		t.Fatalf("unexpected pass report: delta=%+v status=%s", report.ReleaseDelta, report.Status)
+	}
+	for i, kind := range []string{
+		"previous-release-manifest", "previous-inventory",
+		"current-inventory", "release-classifications",
+	} {
+		in := report.Inputs[i+4]
+		if in.Kind != kind || in.SHA256 == "" {
+			t.Fatalf("delta input = %+v, want kind %s and hash", in, kind)
+		}
+	}
 }

@@ -10,27 +10,30 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"github.com/glade-sh/glade/tools/internal/apexrules"
 	"github.com/glade-sh/glade/tools/internal/oracleprobe"
+	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
 // ----- options -----
 
 // salesforceVerifyOptions holds the parsed CLI arguments for salesforce verify.
 type salesforceVerifyOptions struct {
-	ReleaseManifest string
-	Catalog         string
-	RuntimeCases    string
-	TestProject     string
-	TargetOrg       string
-	GladeBin        string
-	GladeRoot       string
-	Out             string
-	Developer       bool
+	ReleaseManifest, Catalog, RuntimeCases, TestProject                                  string
+	TargetOrg, GladeBin, GladeRoot, Out                                                  string
+	Developer                                                                            bool
+	PreviousReleaseManifest, PreviousInventory, CurrentInventory, ReleaseClassifications string
+}
+
+func (o salesforceVerifyOptions) deltaMode() bool {
+	return o.PreviousReleaseManifest != "" || o.PreviousInventory != "" ||
+		o.CurrentInventory != "" || o.ReleaseClassifications != ""
 }
 
 // ----- dependency seam -----
@@ -104,10 +107,41 @@ type verifyReport struct {
 	GladeTools    verifyGitProvenance `json:"gladeTools"`
 	Candidate     verifyCandidate     `json:"candidate"`
 	Inputs        []verifyInput       `json:"inputs"`
+	ReleaseDelta  *verifyReleaseDelta `json:"releaseDelta,omitempty"`
 	Compiler      verifySection       `json:"compiler"`
 	Runtime       verifySection       `json:"runtime"`
 	Lifecycle     verifySection       `json:"lifecycle"`
 	Summary       verifySummary       `json:"summary"`
+}
+
+type verifyReleaseDelta struct {
+	Status             string   `json:"status"`
+	PreviousRelease    string   `json:"previousRelease"`
+	PreviousApiVersion string   `json:"previousApiVersion"`
+	PreviousDigest     string   `json:"previousDigest"`
+	CurrentRelease     string   `json:"currentRelease"`
+	CurrentApiVersion  string   `json:"currentApiVersion"`
+	CurrentDigest      string   `json:"currentDigest"`
+	Added              []string `json:"added"`
+	Removed            []string `json:"removed"`
+	Changed            []string `json:"changed"`
+	Unchanged          []string `json:"unchanged"`
+	Error              string   `json:"error"`
+}
+
+type releaseClassificationsFile struct {
+	SchemaVersion   int                          `json:"schemaVersion"`
+	PreviousRelease string                       `json:"previousRelease"`
+	CurrentRelease  string                       `json:"currentRelease"`
+	Classifications []releaseClassificationEntry `json:"classifications"`
+}
+
+type releaseClassificationEntry struct {
+	SurfaceID   string `json:"surfaceId"`
+	Scope       string `json:"scope"`
+	Disposition string `json:"disposition"`
+	CaseID      string `json:"caseId,omitempty"`
+	ReasonRef   string `json:"reasonRef,omitempty"`
 }
 
 type verifyGitProvenance struct {
@@ -223,7 +257,9 @@ func parseSalesforceVerifyFlags(args []string) (salesforceVerifyOptions, error) 
 		flag := args[i]
 		switch flag {
 		case "--release-manifest", "--catalog", "--runtime-cases", "--test-project",
-			"--target-org", "--glade-bin", "--glade-root", "--out":
+			"--target-org", "--glade-bin", "--glade-root", "--out",
+			"--previous-release-manifest", "--previous-inventory",
+			"--current-inventory", "--release-classifications":
 			if seen[flag] {
 				return opts, fmt.Errorf("duplicate flag: %s", flag)
 			}
@@ -248,6 +284,14 @@ func parseSalesforceVerifyFlags(args []string) (salesforceVerifyOptions, error) 
 				opts.GladeRoot = val
 			case "--out":
 				opts.Out = val
+			case "--previous-release-manifest":
+				opts.PreviousReleaseManifest = val
+			case "--previous-inventory":
+				opts.PreviousInventory = val
+			case "--current-inventory":
+				opts.CurrentInventory = val
+			case "--release-classifications":
+				opts.ReleaseClassifications = val
 			}
 			seen[flag] = true
 			i += 2
@@ -267,6 +311,11 @@ func parseSalesforceVerifyFlags(args []string) (salesforceVerifyOptions, error) 
 		if !seen[required] {
 			return opts, fmt.Errorf("required flag missing: %s", required)
 		}
+	}
+
+	if opts.deltaMode() && (opts.PreviousReleaseManifest == "" || opts.PreviousInventory == "" ||
+		opts.CurrentInventory == "" || opts.ReleaseClassifications == "") {
+		return opts, fmt.Errorf("release-delta requires all four flags: --previous-release-manifest, --previous-inventory, --current-inventory, --release-classifications")
 	}
 
 	return opts, nil
@@ -299,6 +348,16 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 	}
 	report.Release = rm.Release
 	report.APIVersion = rm.APIVersion
+
+	var releaseDelta *verifyReleaseDelta
+	if opts.deltaMode() {
+		delta, err := computeReleaseDelta(opts, rm)
+		if err != nil {
+			return report, err
+		}
+		releaseDelta = delta
+	}
+	report.ReleaseDelta = releaseDelta
 
 	// 3. Validate all release/API inputs before any Salesforce or Glade runner.
 	if err := checkAPIVersionProvenance(rm, opts); err != nil {
@@ -366,6 +425,20 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 		{Kind: "runtime-cases", SHA256: rtSha},
 		{Kind: "test-project", SHA256: projSha},
 	}
+	if opts.deltaMode() {
+		for _, p := range [][2]string{
+			{"previous-release-manifest", opts.PreviousReleaseManifest},
+			{"previous-inventory", opts.PreviousInventory},
+			{"current-inventory", opts.CurrentInventory},
+			{"release-classifications", opts.ReleaseClassifications},
+		} {
+			h, err := sha256File(p[1])
+			if err != nil {
+				return report, fmt.Errorf("%s hash: %w", p[0], err)
+			}
+			report.Inputs = append(report.Inputs, verifyInput{Kind: p[0], SHA256: h})
+		}
+	}
 
 	// 7. Compiler section
 	compilerSection := runCompilerSection(ctx, opts, deps)
@@ -401,6 +474,10 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 		report.Status = "fail"
 	} else {
 		report.Status = "pass"
+	}
+
+	if releaseDelta != nil && releaseDelta.Status == "fail" {
+		report.Status = "fail"
 	}
 
 	// 12. Validate the final report before it can pass or be renamed
@@ -790,6 +867,117 @@ func isLowerHex64(s string) bool {
 		}
 	}
 	return true
+}
+
+func computeReleaseDelta(opts salesforceVerifyOptions, curr releaseManifest) (*verifyReleaseDelta, error) {
+	prev, err := loadReleaseManifest(opts.PreviousReleaseManifest)
+	if err != nil {
+		return nil, fmt.Errorf("previous release manifest: %w", err)
+	}
+	if prev.Digest == strings.Repeat("0", 64) {
+		return nil, fmt.Errorf("previous manifest digest is all zeros")
+	}
+	if curr.Digest == strings.Repeat("0", 64) {
+		return nil, fmt.Errorf("current manifest digest is all zeros")
+	}
+	if !setsEqual(prev.SourceFamilies, curr.SourceFamilies) {
+		return nil, fmt.Errorf("source families differ between releases")
+	}
+	prevAPI, err := parseAPIVersion("previous", prev.APIVersion)
+	if err != nil {
+		return nil, err
+	}
+	currAPI, err := parseAPIVersion("current", curr.APIVersion)
+	if err != nil {
+		return nil, err
+	}
+	if prevAPI >= currAPI {
+		return nil, fmt.Errorf("prev API %s not lower than current %s", prev.APIVersion, curr.APIVersion)
+	}
+	prevInv, err := apexdocs.ReadInventory(opts.PreviousInventory)
+	if err != nil {
+		return nil, fmt.Errorf("previous inventory: %w", err)
+	}
+	currInv, err := apexdocs.ReadInventory(opts.CurrentInventory)
+	if err != nil {
+		return nil, fmt.Errorf("current inventory: %w", err)
+	}
+	if d := apexdocs.CanonicalDigest(prevInv); d != prev.Digest {
+		return nil, fmt.Errorf("prev inventory digest != manifest")
+	}
+	if d := apexdocs.CanonicalDigest(currInv); d != curr.Digest {
+		return nil, fmt.Errorf("current inventory digest != manifest")
+	}
+	prevRows := surfaceledger.Merge(surfaceledger.RowsFromDocsInventory(prevInv), nil, nil, nil).Rows
+	currRows := surfaceledger.Merge(surfaceledger.RowsFromDocsInventory(currInv), nil, nil, nil).Rows
+	classFile, err := loadClassificationsFile(opts.ReleaseClassifications)
+	if err != nil {
+		return nil, err
+	}
+	if classFile.SchemaVersion != 1 {
+		return nil, fmt.Errorf("classifications schemaVersion must be 1")
+	}
+	if classFile.PreviousRelease != prev.Release || classFile.CurrentRelease != curr.Release {
+		return nil, fmt.Errorf("classifications release names mismatch")
+	}
+	classifications := make([]surfaceledger.ReleaseClassification, len(classFile.Classifications))
+	for i, e := range classFile.Classifications {
+		classifications[i] = surfaceledger.ReleaseClassification{
+			SurfaceID: e.SurfaceID, Scope: surfaceledger.ReleaseScope(e.Scope),
+			Disposition: surfaceledger.ReleaseDisposition(e.Disposition),
+			CaseID:      e.CaseID, ReasonRef: e.ReasonRef,
+		}
+	}
+	added, removed, changed, unchanged, deltaErr := surfaceledger.ComputeReleaseDelta(prevRows, currRows, nil)
+	if added == nil || removed == nil || changed == nil || unchanged == nil {
+		return nil, deltaErr
+	}
+	if len(classifications) > 0 {
+		a, r, c, u, err := surfaceledger.ComputeReleaseDelta(prevRows, currRows, classifications)
+		if a != nil {
+			added, removed, changed, unchanged = a, r, c, u
+		}
+		deltaErr = err
+	}
+	delta := &verifyReleaseDelta{
+		Status: "pass", PreviousRelease: prev.Release, PreviousApiVersion: prev.APIVersion,
+		PreviousDigest: prev.Digest, CurrentRelease: curr.Release, CurrentApiVersion: curr.APIVersion,
+		CurrentDigest: curr.Digest,
+		Added:         deltaIDs(added), Removed: deltaIDs(removed),
+		Changed: deltaIDs(changed), Unchanged: deltaIDs(unchanged),
+	}
+	if deltaErr != nil {
+		delta.Status = "fail"
+		delta.Error = deltaErr.Error()
+	}
+	return delta, nil
+}
+
+func setsEqual(a, b []string) bool {
+	a, b = append([]string(nil), a...), append([]string(nil), b...)
+	slices.Sort(a)
+	slices.Sort(b)
+	return slices.Equal(a, b)
+}
+
+func deltaIDs(entries []surfaceledger.DeltaEntry) []string {
+	ids := make([]string, len(entries))
+	for i, e := range entries {
+		ids[i] = e.SurfaceID
+	}
+	return ids
+}
+
+func loadClassificationsFile(path string) (releaseClassificationsFile, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return releaseClassificationsFile{}, err
+	}
+	var f releaseClassificationsFile
+	if err := json.Unmarshal(data, &f); err != nil {
+		return releaseClassificationsFile{}, fmt.Errorf("invalid classifications JSON: %w", err)
+	}
+	return f, nil
 }
 
 // ----- atomic write -----
