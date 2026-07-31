@@ -204,6 +204,82 @@ func TestCompareObservedReportsCatalogOracleDriftSeparatelyFromGladeParity(t *te
 	}
 }
 
+func TestCompareObservedMarksMissingSalesforceResultInconclusive(t *testing.T) {
+	rules := []Rule{{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported}}
+	results := CompareObserved(
+		rules,
+		map[string]SalesforceResult{},
+		map[string]Outcome{"APEX-001": OutcomeReject},
+	)
+	if len(results) != 1 {
+		t.Fatalf("len(results) = %d, want 1", len(results))
+	}
+	result := results[0]
+	if result.ExecStatus != "inconclusive" {
+		t.Fatalf("ExecStatus = %q, want inconclusive", result.ExecStatus)
+	}
+	if result.Matched {
+		t.Fatalf("Matched = true, want false (missing Salesforce is not a behavioral match)")
+	}
+}
+
+func TestCompareObservedMarksMissingGladeResultInconclusive(t *testing.T) {
+	rules := []Rule{{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported}}
+	results := CompareObserved(
+		rules,
+		map[string]SalesforceResult{"APEX-001": {Outcome: OutcomeReject}},
+		map[string]Outcome{},
+	)
+	if len(results) != 1 {
+		t.Fatalf("len(results) = %d, want 1", len(results))
+	}
+	result := results[0]
+	if result.ExecStatus != "inconclusive" {
+		t.Fatalf("ExecStatus = %q, want inconclusive", result.ExecStatus)
+	}
+	if result.Matched {
+		t.Fatalf("Matched = true, want false (missing Glade is not a behavioral match)")
+	}
+}
+
+func TestCompareObservedPreservesCompleteBehavioralComparison(t *testing.T) {
+	rules := []Rule{
+		{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported},
+		{ID: "APEX-002", Oracle: OutcomeAccept, Status: StatusSupported},
+	}
+	results := CompareObserved(
+		rules,
+		map[string]SalesforceResult{
+			"APEX-001": {Outcome: OutcomeReject},
+			"APEX-002": {Outcome: OutcomeAccept},
+		},
+		map[string]Outcome{
+			"APEX-001": OutcomeReject,
+			"APEX-002": OutcomeReject,
+		},
+	)
+	if len(results) != 2 {
+		t.Fatalf("len(results) = %d, want 2", len(results))
+	}
+	matched := results[0]
+	if matched.ExecStatus != "" {
+		t.Fatalf("ExecStatus = %q, want empty for complete result", matched.ExecStatus)
+	}
+	if !matched.Matched {
+		t.Fatalf("Matched = false, want true (both reject)")
+	}
+	if !matched.OracleMatched {
+		t.Fatalf("OracleMatched = false, want true (catalog matches Salesforce)")
+	}
+	mismatched := results[1]
+	if mismatched.ExecStatus != "" {
+		t.Fatalf("ExecStatus = %q, want empty for complete result", mismatched.ExecStatus)
+	}
+	if mismatched.Matched {
+		t.Fatalf("Matched = true, want false (Salesforce accepts, Glade rejects)")
+	}
+}
+
 func TestToolingIDAcceptsSalesforceCLIWarningPreamble(t *testing.T) {
 	output := []byte("Warning: This command is currently in beta.\n{\n  \"id\": \"01p000000000001AAA\",\n  \"success\": true\n}\n")
 	if got := toolingID(output); got != "01p000000000001AAA" {

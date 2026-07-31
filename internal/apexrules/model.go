@@ -53,4 +53,5 @@ type Result struct {
 	Matched       bool     `json:"matched"`
 	Status        string   `json:"status"`
 	Problems      []string `json:"salesforceProblems,omitempty"`
+	ExecStatus    string   `json:"execStatus,omitempty"`
 }
