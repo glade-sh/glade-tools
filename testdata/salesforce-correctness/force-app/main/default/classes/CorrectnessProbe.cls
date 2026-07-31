@@ -25,19 +25,6 @@ public class CorrectnessProbe {
         }
     }
 
-    // ── Batchable ───────────────────────────────────────────────────────
-
-    public class BatchJob implements Database.Batchable<SObject> {
-        public Database.QueryLocator start(Database.BatchableContext bc) {
-            return Database.getQueryLocator([SELECT Id FROM Account LIMIT 1]);
-        }
-        public void execute(Database.BatchableContext bc, List<SObject> scope) {
-            insert new Account(Name = 'batch-side-effect');
-        }
-        public void finish(Database.BatchableContext bc) {
-        }
-    }
-
     // ── Schedulable ─────────────────────────────────────────────────────
 
     public class ScheduledJob implements Schedulable {
@@ -76,7 +63,7 @@ public class CorrectnessProbe {
     }
 
     public static void executeBatch() {
-        Database.executeBatch(new BatchJob(), 1);
+        Database.executeBatch(new CorrectnessProbeBatch(), 1);
     }
 
     public static String scheduleJob() {

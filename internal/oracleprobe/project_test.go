@@ -3,6 +3,7 @@ package oracleprobe
 import (
 	"context"
 	"errors"
+	"os"
 	"strings"
 	"sync"
 	"testing"
@@ -777,6 +778,53 @@ func TestProjectOracleLifecycleFullPipeline(t *testing.T) {
 		if cc.Status != StatusPass {
 			t.Errorf("%s = %s", cc.CaseID, cc.Status)
 		}
+	}
+}
+
+// --- Test 21: fixture structure — top-level batch class and no nested Batchable ---
+
+func TestProjectOracleLifecycleFixtureStructure(t *testing.T) {
+	batchPath := "../../testdata/salesforce-correctness/force-app/main/default/classes/CorrectnessProbeBatch.cls"
+	metaPath := "../../testdata/salesforce-correctness/force-app/main/default/classes/CorrectnessProbeBatch.cls-meta.xml"
+	probePath := "../../testdata/salesforce-correctness/force-app/main/default/classes/CorrectnessProbe.cls"
+
+	batch, err := os.ReadFile(batchPath)
+	if err != nil {
+		t.Fatalf("CorrectnessProbeBatch.cls missing: %v", err)
+	}
+	if !strings.Contains(string(batch), "implements Database.Batchable<SObject>") {
+		t.Error("CorrectnessProbeBatch.cls missing Batchable implementation declaration")
+	}
+	if !strings.Contains(string(batch), "Database.QueryLocator start") {
+		t.Error("CorrectnessProbeBatch.cls missing start method")
+	}
+	if !strings.Contains(string(batch), "batch-side-effect") {
+		t.Error("CorrectnessProbeBatch.cls missing batch-side-effect insert")
+	}
+	if !strings.Contains(string(batch), "void finish(Database.BatchableContext") {
+		t.Error("CorrectnessProbeBatch.cls missing finish method")
+	}
+
+	meta, err := os.ReadFile(metaPath)
+	if err != nil {
+		t.Fatalf("CorrectnessProbeBatch.cls-meta.xml missing: %v", err)
+	}
+	if !strings.Contains(string(meta), "<ApexClass") {
+		t.Error("CorrectnessProbeBatch.cls-meta.xml missing ApexClass element")
+	}
+
+	probe, err := os.ReadFile(probePath)
+	if err != nil {
+		t.Fatalf("CorrectnessProbe.cls missing: %v", err)
+	}
+	if strings.Contains(string(probe), "class BatchJob implements Database.Batchable") {
+		t.Error("CorrectnessProbe.cls still contains nested Batchable — must be removed")
+	}
+	if !strings.Contains(string(probe), "new CorrectnessProbeBatch()") {
+		t.Error("CorrectnessProbe.executeBatch() must instantiate CorrectnessProbeBatch")
+	}
+	if !strings.Contains(string(probe), "Database.executeBatch(new CorrectnessProbeBatch(), 1)") {
+		t.Error("CorrectnessProbe.executeBatch() must pass scope size 1 to Database.executeBatch")
 	}
 }
 

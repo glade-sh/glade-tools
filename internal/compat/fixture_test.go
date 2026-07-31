@@ -86,6 +86,9 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("salesforce-release-next") {
 		t.Fatal("Salesforce release inventory should stay out of documented fixture execution")
 	}
+	if shouldRunDocumentedFixture("salesforce-release-current") {
+		t.Fatal("Salesforce release current should stay out of documented fixture execution")
+	}
 }
 
 func TestDocumentedFixtureJSONLoadAndValidate(t *testing.T) {
@@ -154,6 +157,7 @@ func skipDocumentedFixture(name string) bool {
 		documentedFixtureExampleProjectsName,
 		"query-runtime-local-search-sosl-evidence",
 		"salesforce-release-next",
+		"salesforce-release-current",
 		"salesforce-runtime-correctness",
 		"ui-controller-discovery",
 		"ui-lwc-vf-local-bridge-evidence",
