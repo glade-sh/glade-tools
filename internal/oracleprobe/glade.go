@@ -2,9 +2,11 @@ package oracleprobe
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 // CmdRunner abstracts command execution so fake runners can be
@@ -27,6 +29,42 @@ type GladeOptions struct {
 	ProjectDir string // temp project directory (created if empty)
 }
 
+// gladeExecEnvelope is the minimum shape needed to extract the oracle
+// marker from a Glade exec --json response.  data.debug is an array of
+// debug log strings; data.debugEvents[].message carries debug event
+// messages.
+type gladeExecEnvelope struct {
+	Data struct {
+		Debug       []string                 `json:"debug"`
+		DebugEvents []gladeExecDebugEvent    `json:"debugEvents"`
+	} `json:"data"`
+}
+
+type gladeExecDebugEvent struct {
+	Message string `json:"message"`
+}
+
+// extractEnvelopedOutput tries to decode the raw output as a Glade
+// exec --json envelope.  When successful, it returns the joined
+// contents of data.debug and data.debugEvents[].message for
+// parseResults.  When the output is not a valid envelope, it returns
+// the original text so existing raw-marker callers keep working.
+func extractEnvelopedOutput(raw []byte) string {
+	var env gladeExecEnvelope
+	if err := json.Unmarshal(raw, &env); err != nil {
+		// Not a valid JSON envelope — pass through as raw text.
+		return string(raw)
+	}
+	var lines []string
+	lines = append(lines, env.Data.Debug...)
+	for _, de := range env.Data.DebugEvents {
+		if de.Message != "" {
+			lines = append(lines, de.Message)
+		}
+	}
+	return strings.Join(lines, "\n")
+}
+
 // RunGlade executes anonymous Apex cases through the Glade CLI and
 // returns a parsed report.  The Apex source is passed as the final
 // positional argument — the caller never invokes a shell.
@@ -46,10 +84,13 @@ func RunGlade(ctx context.Context, runner CmdRunner, opts GladeOptions, cases []
 	args := []string{"exec", "--project", dir, "--json", source}
 	out, err := runner.RunContext(ctx, opts.GladeBin, args...)
 	if err != nil {
-		return Report{}, fmt.Errorf("glade exec failed: %w\noutput:\n%s", err, string(out))
+		return Report{}, fmt.Errorf("glade exec failed: %w", err)
 	}
 
-	results, err := parseResults(string(out))
+	// Decode the JSON envelope first, then pass the extracted
+	// debug lines to the existing marker parser.
+	text := extractEnvelopedOutput(out)
+	results, err := parseResults(text)
 	if err != nil {
 		return Report{}, fmt.Errorf("glade parse results: %w", err)
 	}

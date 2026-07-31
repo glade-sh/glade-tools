@@ -2,6 +2,7 @@ package oracleprobe
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 	"sync"
@@ -364,6 +365,208 @@ func TestMalformedInconclusive(t *testing.T) {
 	_, err = RunGlade(ctx, fakeSlow, opts, cases)
 	if err == nil {
 		t.Errorf("expected timeout error, got nil")
+	}
+}
+
+// --- SF-05: Glade exec --json envelope transport tests ---
+
+// gladeExecEnvelopeDebug builds a minimal real Glade exec --json
+// envelope with the oracle marker in data.debug.  The marker text
+// must be a raw (unescaped) line — the function JSON-escapes it
+// so the envelope is valid.
+func gladeExecEnvelopeDebug(markerLine string) []byte {
+	env := map[string]any{
+		"schemaVersion": "1.0",
+		"command":       "exec",
+		"status":        "passed",
+		"exitCode":      0,
+		"data": map[string]any{
+			"debug": []string{markerLine},
+		},
+	}
+	b, _ := json.Marshal(env)
+	return b
+}
+
+// gladeExecEnvelopeDebugEvents builds the envelope with the marker in
+// data.debugEvents[].message.
+func gladeExecEnvelopeDebugEvents(markerLine string) []byte {
+	env := map[string]any{
+		"schemaVersion": "1.0",
+		"command":       "exec",
+		"status":        "passed",
+		"exitCode":      0,
+		"data": map[string]any{
+			"debugEvents": []map[string]any{
+				{"message": markerLine},
+			},
+		},
+	}
+	b, _ := json.Marshal(env)
+	return b
+}
+
+func TestRunGladeParsesDebugEnvelope(t *testing.T) {
+	marker := `GLADE_STDLIB_ORACLE:[{"id":"t","area":"Test","api":"Test","mode":"anonymous","value":"2","valueType":"Integer"}]`
+	fake := &fakeCmdRunner{output: gladeExecEnvelopeDebug(marker)}
+	cases := []Case{{
+		ID: "t", Area: "Test", API: "Test", Mode: ModeAnonymous,
+		Expression: "1+1",
+	}}
+	opts := GladeOptions{
+		GladeBin:   "/opt/glade/bin/glade",
+		ProjectDir: t.TempDir(),
+	}
+
+	report, err := RunGlade(context.Background(), fake, opts, cases)
+	if err != nil {
+		t.Fatalf("RunGlade: %v", err)
+	}
+	if len(report.Results) != 1 || report.Results[0].ID != "t" {
+		t.Fatalf("results = %#v", report.Results)
+	}
+	r := report.Results[0]
+	if r.Value == nil || *r.Value != "2" {
+		t.Errorf("value = %v, want 2", r.Value)
+	}
+}
+
+func TestRunGladeParsesDebugEventsEnvelope(t *testing.T) {
+	marker := `GLADE_STDLIB_ORACLE:[{"id":"t","area":"Test","api":"Test","mode":"anonymous","value":"3","valueType":"Integer"}]`
+	fake := &fakeCmdRunner{output: gladeExecEnvelopeDebugEvents(marker)}
+	cases := []Case{{
+		ID: "t", Area: "Test", API: "Test", Mode: ModeAnonymous,
+		Expression: "1+1",
+	}}
+	opts := GladeOptions{
+		GladeBin:   "/opt/glade/bin/glade",
+		ProjectDir: t.TempDir(),
+	}
+
+	report, err := RunGlade(context.Background(), fake, opts, cases)
+	if err != nil {
+		t.Fatalf("RunGlade: %v", err)
+	}
+	if len(report.Results) != 1 || report.Results[0].ID != "t" {
+		t.Fatalf("results = %#v", report.Results)
+	}
+	r := report.Results[0]
+	if r.Value == nil || *r.Value != "3" {
+		t.Errorf("value = %v, want 3", r.Value)
+	}
+}
+
+func TestRunGladeEnvelopeReturnsAllCaseIDsOnce(t *testing.T) {
+	marker := `GLADE_STDLIB_ORACLE:[` +
+		`{"id":"a","area":"Decimal","api":"Decimal.round","mode":"anonymous","value":"1","valueType":"Integer"},` +
+		`{"id":"b","area":"String","api":"String.split","mode":"anonymous","value":"2","valueType":"Integer"},` +
+		`{"id":"c","area":"JSON","api":"JSON.serialize","mode":"anonymous","value":"3","valueType":"Integer"}]`
+	fake := &fakeCmdRunner{output: gladeExecEnvelopeDebug(marker)}
+	cases := []Case{
+		{ID: "a", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, Expression: "a"},
+		{ID: "b", Area: "String", API: "String.split", Mode: ModeAnonymous, Expression: "b"},
+		{ID: "c", Area: "JSON", API: "JSON.serialize", Mode: ModeAnonymous, Expression: "c"},
+	}
+	opts := GladeOptions{
+		GladeBin:   "/opt/glade/bin/glade",
+		ProjectDir: t.TempDir(),
+	}
+
+	report, err := RunGlade(context.Background(), fake, opts, cases)
+	if err != nil {
+		t.Fatalf("RunGlade: %v", err)
+	}
+	if len(report.Results) != 3 {
+		t.Fatalf("results count = %d, want 3", len(report.Results))
+	}
+	seen := map[string]bool{}
+	for _, r := range report.Results {
+		if seen[r.ID] {
+			t.Errorf("duplicate ID: %s", r.ID)
+		}
+		seen[r.ID] = true
+	}
+	for _, id := range []string{"a", "b", "c"} {
+		if !seen[id] {
+			t.Errorf("missing ID: %s", id)
+		}
+	}
+}
+
+func TestRunGladeEnvelopeMissingMarker(t *testing.T) {
+	// Valid JSON envelope with no oracle marker in debug or debugEvents.
+	output := []byte(`{"schemaVersion":"1.0","command":"exec","status":"passed","exitCode":0,"data":{"debug":["line1","line2"]}}`)
+	fake := &fakeCmdRunner{output: output}
+	cases := []Case{{ID: "t", Area: "Test", API: "Test", Mode: ModeAnonymous, Expression: "1+1"}}
+	opts := GladeOptions{
+		GladeBin:   "/opt/glade/bin/glade",
+		ProjectDir: t.TempDir(),
+	}
+	_, err := RunGlade(context.Background(), fake, opts, cases)
+	if err == nil {
+		t.Fatal("expected error for missing marker")
+	}
+	if strings.Contains(err.Error(), `"line1"`) || strings.Contains(err.Error(), "line2") {
+		t.Errorf("error leaks raw debug output: %v", err)
+	}
+}
+
+func TestRunGladeEnvelopeMalformedJSON(t *testing.T) {
+	fake := &fakeCmdRunner{output: []byte("{bad json")}
+	cases := []Case{{ID: "t", Area: "Test", API: "Test", Mode: ModeAnonymous, Expression: "1+1"}}
+	opts := GladeOptions{
+		GladeBin:   "/opt/glade/bin/glade",
+		ProjectDir: t.TempDir(),
+	}
+	_, err := RunGlade(context.Background(), fake, opts, cases)
+	if err == nil {
+		t.Fatal("expected error for malformed JSON")
+	}
+	if !strings.Contains(err.Error(), "glade parse results") && !strings.Contains(err.Error(), "malform") {
+		t.Errorf("error = %v, want parse-or-malformed category", err)
+	}
+}
+
+func TestRunGladeEnvelopeCommandFailureNoRawLeak(t *testing.T) {
+	fake := &fakeCmdRunner{
+		output: []byte(`{"schemaVersion":"1.0","command":"exec","status":"failed","exitCode":1,"data":{"debug":["GLADE_STDLIB_ORACLE:[{\"id\":\"t\",\"area\":\"Test\",\"api\":\"Test\",\"mode\":\"anonymous\",\"value\":\"2\",\"valueType\":\"Integer\"}]"]}}`),
+		err:    errors.New("exit status 1"),
+	}
+	cases := []Case{{ID: "t", Area: "Test", API: "Test", Mode: ModeAnonymous, Expression: "1+1"}}
+	opts := GladeOptions{
+		GladeBin:   "/opt/glade/bin/glade",
+		ProjectDir: t.TempDir(),
+	}
+	_, err := RunGlade(context.Background(), fake, opts, cases)
+	if err == nil {
+		t.Fatal("expected error for command failure")
+	}
+	errStr := err.Error()
+	if strings.Contains(errStr, `"id":"t"`) || strings.Contains(errStr, "GLADE_STDLIB_ORACLE:") {
+		t.Errorf("error leaks raw output: %s", errStr)
+	}
+}
+
+// Existing raw-marker fixtures must still work.
+func TestRunGladeRawMarkerStillParses(t *testing.T) {
+	output := `USER_DEBUG|DEBUG|GLADE_STDLIB_ORACLE:[{"id":"t","area":"Test","api":"Test","mode":"anonymous","value":"2","valueType":"Integer"}]`
+	fake := &fakeCmdRunner{output: []byte(output)}
+	cases := []Case{{ID: "t", Area: "Test", API: "Test", Mode: ModeAnonymous, Expression: "1+1"}}
+	opts := GladeOptions{
+		GladeBin:   "/opt/glade/bin/glade",
+		ProjectDir: t.TempDir(),
+	}
+
+	report, err := RunGlade(context.Background(), fake, opts, cases)
+	if err != nil {
+		t.Fatalf("RunGlade: %v", err)
+	}
+	if len(report.Results) != 1 || report.Results[0].ID != "t" {
+		t.Fatalf("results = %#v", report.Results)
+	}
+	r := report.Results[0]
+	if r.Value == nil || *r.Value != "2" {
+		t.Errorf("value = %v, want 2", r.Value)
 	}
 }
 
