@@ -1767,6 +1767,80 @@ func TestSalesforceVerify_InconclusiveCaseMayOmitDualObservations(t *testing.T) 
 	}
 }
 
+// ============ SF-16: Lifecycle fixture failure guard ============
+
+func TestSalesforceVerify_LifecycleFixtureFailureBlocked(t *testing.T) {
+	dir := t.TempDir()
+	releasePath := makeReleaseManifest(t, dir)
+	catalogPath := makeCatalog(t, dir)
+	runtimePath := makeRuntimeFixture(t, dir)
+	projectPath := makeTestProject(t, dir)
+	candidatePath := makeCandidate(t, dir)
+	outPath := filepath.Join(dir, "out", "report.json")
+
+	lifecycleCases := oracleprobe.ProjectOracleCases()
+
+	// A single normal normalized assertion failure among otherwise passing results.
+	// This is an assertion failure, not a deploy or compile failure.
+	// A single failed result is sufficient to prove any failure blocks the whole fixture.
+	sfFailedReport := allPassProjectReport(lifecycleCases)
+	if len(sfFailedReport.Results) > 0 {
+		failVal := "fail"
+		sfFailedReport.Results[0].Value = &failVal
+		// HasValue and ValueType are already correct from allPassProjectReport.
+	}
+
+	// If Glade were called, it would return the identical assertion failure report
+	// and the general comparator would match — yielding a lifecycle pass.
+	// The verifier must stop before that can happen.
+	gladeFailedReport := sfFailedReport
+
+	gladeProjectCalled := false
+	deps := allPassDeps()
+	deps.sfProjectFn = func(ctx context.Context, projectDir, targetOrg string, cases []oracleprobe.Case) (oracleprobe.Report, error) {
+		return sfFailedReport, nil
+	}
+	deps.gladeProjectFn = func(ctx context.Context, gladeBin, projectDir string, cases []oracleprobe.Case) (oracleprobe.Report, error) {
+		gladeProjectCalled = true
+		return gladeFailedReport, nil
+	}
+
+	opts := salesforceVerifyOptions{
+		ReleaseManifest: releasePath, Catalog: catalogPath, RuntimeCases: runtimePath,
+		TestProject: projectPath, TargetOrg: "test-org", GladeBin: candidatePath,
+		GladeRoot: dir, Out: outPath,
+	}
+	report := runVerifyWithDeps(t, opts, deps)
+
+	// Glade lifecycle probe must NOT have been called.
+	if gladeProjectCalled {
+		t.Fatal("Glade lifecycle probe was called despite SF fixture assertion failure — should have been skipped")
+	}
+
+	// All twelve lifecycle cases must be inconclusive with category "fixture-failed".
+	if len(report.Lifecycle.Cases) != len(lifecycleCases) {
+		t.Fatalf("lifecycle cases: got %d, want %d", len(report.Lifecycle.Cases), len(lifecycleCases))
+	}
+	for _, c := range report.Lifecycle.Cases {
+		if c.Status != "inconclusive" {
+			t.Fatalf("lifecycle case %q: expected inconclusive, got %s", c.ID, c.Status)
+		}
+		if c.Category != "fixture-failed" {
+			t.Fatalf("lifecycle case %q: expected category fixture-failed, got %q", c.ID, c.Category)
+		}
+	}
+
+	// Lifecycle section must be inconclusive.
+	if report.Lifecycle.Status != "inconclusive" {
+		t.Fatalf("lifecycle section status: got %s, want inconclusive", report.Lifecycle.Status)
+	}
+
+	// Overall report must NOT be pass — identical assertion failures must not sneak through.
+	if report.Status == "pass" {
+		t.Fatal("overall report must not be pass when lifecycle fixture has an assertion failure")
+	}
+}
+
 func mustReadFile(t *testing.T, path string) []byte {
 	t.Helper()
 	data, err := os.ReadFile(path)

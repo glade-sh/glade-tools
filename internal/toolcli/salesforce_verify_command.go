@@ -563,6 +563,19 @@ func runRuntimeSection(ctx context.Context, opts salesforceVerifyOptions, deps *
 	return section
 }
 
+// lifecycleFixturePassing checks that every Salesforce lifecycle result
+// is a passing assertion: HasValue==true, non-nil Value, *Value=="pass",
+// ValueType=="assertion". If any result fails this contract, the fixture itself
+// is broken and the section must be blocked.
+func lifecycleFixturePassing(sfReport oracleprobe.Report) bool {
+	for _, r := range sfReport.Results {
+		if !r.HasValue || r.Value == nil || *r.Value != "pass" || r.ValueType != "assertion" {
+			return false
+		}
+	}
+	return true
+}
+
 func runLifecycleSection(ctx context.Context, opts salesforceVerifyOptions, deps *salesforceVerifyDeps) verifySection {
 	section := verifySection{Status: "pass"}
 	cases := oracleprobe.ProjectOracleCases()
@@ -575,6 +588,27 @@ func runLifecycleSection(ctx context.Context, opts salesforceVerifyOptions, deps
 	if err := validateAcquiredReport(sfReport, cases); err != nil {
 		section = inconclusiveSection(cases)
 		return section
+	}
+
+	// SF-16: Fail closed if the lifecycle fixture itself did not pass.
+	if !lifecycleFixturePassing(sfReport) {
+		ids := make([]string, len(cases))
+		for i, c := range cases {
+			ids[i] = c.ID
+		}
+		fixtureCases := make([]verifyCase, len(ids))
+		for i, id := range ids {
+			fixtureCases[i] = verifyCase{
+				ID:       id,
+				Status:   "inconclusive",
+				Category: "fixture-failed",
+			}
+		}
+		return verifySection{
+			Status:  "inconclusive",
+			Cases:   fixtureCases,
+			Summary: verifySummary{Inconclusive: len(cases)},
+		}
 	}
 
 	gladeReport, gladeErr := deps.runGladeProject(ctx, opts.GladeBin, opts.TestProject, cases)
