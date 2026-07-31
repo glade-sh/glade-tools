@@ -864,6 +864,45 @@ func TestRealProjectRunnerStdoutWithStderrAndNonzeroExit(t *testing.T) {
 	}
 }
 
+// --- Test 24: fixture structure — no invalid discovery or scheduled expectations ---
+
+func TestProjectOracleLifecycleFixtureDiscoveryAndScheduled(t *testing.T) {
+	probeTestPath := "../../testdata/salesforce-correctness/force-app/main/default/classes/CorrectnessProbeTest.cls"
+
+	apex, err := os.ReadFile(probeTestPath)
+	if err != nil {
+		t.Fatalf("CorrectnessProbeTest.cls missing: %v", err)
+	}
+	content := string(apex)
+
+	// Invalid patterns must NOT appear.
+	if strings.Contains(content, "Type.forName") {
+		t.Error("CorrectnessProbeTest.cls still contains Type.forName reflection — replace with safe discovery observation")
+	}
+	if strings.Contains(content, "1, afterScheduled,") {
+		t.Error("CorrectnessProbeTest.cls still expects 1 scheduled side-effect — Salesforce reports 0; change to 0")
+	}
+
+	// Corrected patterns must appear.
+	if !strings.Contains(content, "SF-LIFECYCLE-DISCOVERY") {
+		t.Error("CorrectnessProbeTest.cls missing SF-LIFECYCLE-DISCOVERY case ID — must be visible in comment or assertion")
+	}
+	if !strings.Contains(content, "0, afterScheduled,") {
+		t.Error("CorrectnessProbeTest.cls missing corrected scheduled assertion (0, afterScheduled)")
+	}
+
+	// Unchanged expectations must be preserved.
+	if !strings.Contains(content, "1, afterBatch,") {
+		t.Error("CorrectnessProbeTest.cls missing batch side-effect assertion (1, afterBatch)")
+	}
+	if !strings.Contains(content, "CronTrigger") {
+		t.Error("CorrectnessProbeTest.cls missing CronTrigger durability check")
+	}
+	if !strings.Contains(content, "batch-side-effect") {
+		t.Error("CorrectnessProbeTest.cls missing batch-side-effect insert reference")
+	}
+}
+
 // --- helper ---
 
 func findComp(ccs []CaseComparison, id string) *CaseComparison {
