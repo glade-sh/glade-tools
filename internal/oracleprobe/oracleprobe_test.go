@@ -658,18 +658,19 @@ func TestObservationShapesOrderedList(t *testing.T) {
 		t.Error("observation-shape cases missing ordered list serialization")
 	}
 
-	// None of the seven cases may serialize a Map variable directly.
-	directMapPatterns := []string{
-		"JSON.serialize(gladeCRLFSpan)",
-		"JSON.serialize(gladeFamilySpan)",
-		"JSON.serialize(gladeThumbsSpan)",
-		"JSON.serialize(gladeSurrogatePairShape)",
-		"JSON.serialize(gladeScalarShape)",
-		"JSON.serialize(gladeTruncatedScalarShape)",
+	// The six grapheme/character cases must call find()/methods directly
+	// inside the list constructor — no intermediate Map variable.
+	compactPatterns := []string{
+		"gladeCRLFMatcher.find()",
+		"gladeFamilyMatcher.find()",
+		"gladeThumbsMatcher.find()",
+		"gladeSurrogatePair.length()",
+		"gladeScalar.length()",
+		"gladeTruncatedScalar.length()",
 	}
-	for _, pat := range directMapPatterns {
-		if strings.Contains(source, pat) {
-			t.Errorf("shape case must not serialize Map variable directly: %s", pat)
+	for _, pat := range compactPatterns {
+		if !strings.Contains(source, pat) {
+			t.Errorf("compact observation shape missing: %s", pat)
 		}
 	}
 }
