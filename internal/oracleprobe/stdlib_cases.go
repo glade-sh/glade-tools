@@ -2,7 +2,7 @@ package oracleprobe
 
 func StdlibCases() []Case {
 	return []Case{
-		{ID: "decimal-round-default-positive-tie", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, Expression: "Decimal.valueOf('2.5').round()", ValueType: "Integer"},
+		{ID: "decimal-round-default-positive-tie", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, SurfaceIDs: []string{"apex:System.Decimal.round()"}, Expression: "Decimal.valueOf('2.5').round()", ValueType: "Integer"},
 		{ID: "decimal-round-default-negative-tie", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, Expression: "Decimal.valueOf('-2.5').round()", ValueType: "Integer"},
 		{ID: "decimal-round-half-up-positive", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, Expression: "Decimal.valueOf('2.5').round(RoundingMode.HALF_UP)", ValueType: "Integer"},
 		{ID: "decimal-round-half-even-down", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, Expression: "Decimal.valueOf('12.5').round(RoundingMode.HALF_EVEN)", ValueType: "Integer"},

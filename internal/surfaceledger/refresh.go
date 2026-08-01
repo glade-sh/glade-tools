@@ -14,6 +14,7 @@ type RefreshOptions struct {
 	Release             string
 	DiffFrom            string
 	EvidenceFixtureGlob []string
+	OracleEvidenceGlob  []string
 }
 
 type RefreshResult struct {
@@ -57,6 +58,13 @@ func Refresh(options RefreshOptions) (RefreshResult, error) {
 	evidenceRows, err := BuildEvidenceSnapshot(defaultEvidenceFixtures(options.EvidenceFixtureGlob))
 	if err != nil {
 		return RefreshResult{}, err
+	}
+	if len(options.OracleEvidenceGlob) > 0 {
+		oracleRows, err := BuildOracleEvidenceSnapshot(defaultEvidenceFixtures(options.OracleEvidenceGlob))
+		if err != nil {
+			return RefreshResult{}, err
+		}
+		evidenceRows = append(evidenceRows, oracleRows...)
 	}
 	ledger := Merge(docsRows, orgRows, gladeRows, evidenceRows)
 	AssignPriorities(ledger.Rows)

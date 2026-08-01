@@ -18,6 +18,7 @@ const (
 type CaseComparison struct {
 	CaseID              string           `json:"caseId"`
 	Status              ComparisonStatus `json:"status"`
+	SurfaceIDs          []string         `json:"surfaceIds,omitempty"`
 	ExpectedObservation string           `json:"expectedObservation,omitempty"`
 	SFObservation       string           `json:"sfObservation,omitempty"`
 	GladeObservation    string           `json:"gladeObservation,omitempty"`
@@ -30,6 +31,7 @@ type CaseComparison struct {
 func Compare(sf, glade *Result, c Case) CaseComparison {
 	cc := CaseComparison{
 		CaseID:              c.ID,
+		SurfaceIDs:          append([]string(nil), c.SurfaceIDs...),
 		ExpectedObservation: expectedObservation(c),
 	}
 

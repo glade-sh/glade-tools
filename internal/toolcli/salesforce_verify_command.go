@@ -169,12 +169,13 @@ type verifySection struct {
 }
 
 type verifyCase struct {
-	ID                    string `json:"id"`
-	Status                string `json:"status"`
-	Observation           string `json:"observation,omitempty"`
-	Category              string `json:"category,omitempty"`
-	SalesforceObservation string `json:"salesforceObservation,omitempty"`
-	GladeObservation      string `json:"gladeObservation,omitempty"`
+	ID                    string   `json:"id"`
+	Status                string   `json:"status"`
+	SurfaceIDs            []string `json:"surfaceIds,omitempty"`
+	Observation           string   `json:"observation,omitempty"`
+	Category              string   `json:"category,omitempty"`
+	SalesforceObservation string   `json:"salesforceObservation,omitempty"`
+	GladeObservation      string   `json:"gladeObservation,omitempty"`
 }
 
 type verifySummary struct {
@@ -618,6 +619,7 @@ func runRuntimeSection(ctx context.Context, opts salesforceVerifyOptions, deps *
 		verCases[i] = verifyCase{
 			ID:                    cmp.CaseID,
 			Status:                string(cmp.Status),
+			SurfaceIDs:            append([]string(nil), cmp.SurfaceIDs...),
 			Observation:           cmp.SFObservation,
 			Category:              cmp.ExpectedObservation,
 			SalesforceObservation: cmp.SFObservation,
@@ -671,16 +673,13 @@ func runLifecycleSection(ctx context.Context, opts salesforceVerifyOptions, deps
 
 	// SF-16: Fail closed if the lifecycle fixture itself did not pass.
 	if !lifecycleFixturePassing(sfReport) {
-		ids := make([]string, len(cases))
+		fixtureCases := make([]verifyCase, len(cases))
 		for i, c := range cases {
-			ids[i] = c.ID
-		}
-		fixtureCases := make([]verifyCase, len(ids))
-		for i, id := range ids {
 			fixtureCases[i] = verifyCase{
-				ID:       id,
-				Status:   "inconclusive",
-				Category: "fixture-failed",
+				ID:         c.ID,
+				Status:     "inconclusive",
+				Category:   "fixture-failed",
+				SurfaceIDs: append([]string(nil), c.SurfaceIDs...),
 			}
 		}
 		return verifySection{
@@ -707,6 +706,7 @@ func runLifecycleSection(ctx context.Context, opts salesforceVerifyOptions, deps
 		verCases[i] = verifyCase{
 			ID:                    cmp.CaseID,
 			Status:                string(cmp.Status),
+			SurfaceIDs:            append([]string(nil), cmp.SurfaceIDs...),
 			Observation:           cmp.SFObservation,
 			Category:              cmp.ExpectedObservation,
 			SalesforceObservation: cmp.SFObservation,
@@ -1224,13 +1224,13 @@ func errorCases(ids []string) []verifyCase {
 // inconclusiveSection returns a verifySection where every required case is
 // inconclusive. Used when an acquired report fails identity validation.
 func inconclusiveSection(required []oracleprobe.Case) verifySection {
-	ids := make([]string, len(required))
+	cases := make([]verifyCase, len(required))
 	for i, c := range required {
-		ids[i] = c.ID
+		cases[i] = verifyCase{ID: c.ID, Status: "inconclusive", Observation: "execution-error", Category: "operational", SurfaceIDs: append([]string(nil), c.SurfaceIDs...)}
 	}
 	return verifySection{
 		Status:  "inconclusive",
-		Cases:   errorCases(ids),
+		Cases:   cases,
 		Summary: verifySummary{Inconclusive: len(required)},
 	}
 }

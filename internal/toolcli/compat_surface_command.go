@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
@@ -193,6 +194,12 @@ func runCompatSurfaceRefresh(args []string, w io.Writer) error {
 				return errors.New("--diff-from requires a value")
 			}
 			options.DiffFrom = args[i]
+		case "--oracle-evidence":
+			i++
+			if i >= len(args) {
+				return errors.New("--oracle-evidence requires a value")
+			}
+			options.OracleEvidenceGlob = append(options.OracleEvidenceGlob, args[i])
 		case "--json":
 			jsonOut = true
 		case "--dry-run":
@@ -232,7 +239,11 @@ func runCompatSurfaceRefresh(args []string, w io.Writer) error {
 	if dryRun {
 		fmt.Fprintf(w, "dryRunOut=%s\n", result.OutputDir)
 	}
-	fmt.Fprintf(w, "inputs: docs=%s org=%s glade=standard-symbols evidence=fixtures\n", options.DocsSource, orgInputName(options))
+	inputs := fmt.Sprintf("inputs: docs=%s org=%s glade=standard-symbols evidence=fixtures", options.DocsSource, orgInputName(options))
+	if len(options.OracleEvidenceGlob) > 0 {
+		inputs += fmt.Sprintf(" oracle=%s", oracleInputName(options))
+	}
+	fmt.Fprintln(w, inputs)
 	fmt.Fprintf(w, "implemented=%d partial=%d passive=%d stubNoOp=%d explicitUnsupported=%d\n", result.Summary.Implemented, result.Summary.Partial, result.Summary.Passive, result.Summary.StubNoOp, result.Summary.ExplicitUnsupported)
 	fmt.Fprintf(w, "gaps: missingShape=%d missingBehavior=%d missingEvidence=%d\n", result.Summary.Gaps[surfaceledger.GapMissingShape], result.Summary.Gaps[surfaceledger.GapMissingBehavior], result.Summary.Gaps[surfaceledger.GapMissingEvidence])
 	fmt.Fprintf(w, "failures: parser=%d docsOrgMismatch=%d staleGlade=%d returnTypeMismatch=%d parameterMismatch=%d passiveServiceRisk=%d\n", result.Summary.Failures["parser"], result.Summary.Failures[surfaceledger.GapDocsOrgMismatch], result.Summary.Failures[surfaceledger.GapStaleGladeShape], result.Summary.Failures[surfaceledger.GapReturnTypeMismatch], result.Summary.Failures[surfaceledger.GapParameterMismatch], result.Summary.Failures[surfaceledger.GapPassiveServiceRisk])
@@ -247,6 +258,13 @@ func orgInputName(options surfaceledger.RefreshOptions) string {
 	}
 	if options.ToolingCompletions != "" {
 		return filepath.Base(options.ToolingCompletions)
+	}
+	return "not-queried"
+}
+
+func oracleInputName(options surfaceledger.RefreshOptions) string {
+	if len(options.OracleEvidenceGlob) > 0 {
+		return strings.Join(options.OracleEvidenceGlob, ",")
 	}
 	return "not-queried"
 }

@@ -38,6 +38,94 @@ func TestCompatSurfaceRefreshWritesReports(t *testing.T) {
 	}
 }
 
+func TestCompatSurfaceRefreshOracleEvidenceIsOptIn(t *testing.T) {
+	root := t.TempDir()
+	docs := filepath.Join(root, "docs")
+	if err := os.MkdirAll(filepath.Join(docs, "apex"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(docs, "apex", "system_label.md"), []byte("# Label Class\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	oracle := filepath.Join(root, "oracle.json")
+	if err := os.WriteFile(oracle, []byte(`[{"caseId":"cb41-synthetic","status":"pass","sfObservation":"sf","gladeObservation":"gl","surfaceIds":["apex:System.CB41Synthetic.probe()"]}]`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	withoutOut := filepath.Join(root, "without")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "refresh", "--docs", docs, "--out", withoutOut}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("without oracle exit %d stderr=%q", code, stderr.String())
+	}
+	without := readRefreshLedger(t, filepath.Join(withoutOut, "SURFACE_LEDGER.json"))
+	if hasSurface(without, "apex:System.CB41Synthetic.probe()") {
+		t.Fatal("oracle row appeared without --oracle-evidence")
+	}
+
+	withOut := filepath.Join(root, "with")
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"compat", "surface", "refresh", "--docs", docs, "--out", withOut, "--oracle-evidence", oracle, "--oracle-evidence", oracle}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("with oracle exit %d stderr=%q", code, stderr.String())
+	}
+	with := readRefreshLedger(t, filepath.Join(withOut, "SURFACE_LEDGER.json"))
+	row := findSurface(with, "apex:System.CB41Synthetic.probe()")
+	if row == nil || row.Evidence != "oracle" {
+		t.Fatalf("oracle row = %#v", row)
+	}
+}
+
+func readRefreshLedger(t *testing.T, path string) struct {
+	Rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	} `json:"rows"`
+} {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ledger struct {
+		Rows []struct {
+			SurfaceID string `json:"surfaceId"`
+			Evidence  string `json:"evidence"`
+		} `json:"rows"`
+	}
+	if err := json.Unmarshal(data, &ledger); err != nil {
+		t.Fatal(err)
+	}
+	return ledger
+}
+
+func hasSurface(ledger struct {
+	Rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	} `json:"rows"`
+}, id string) bool {
+	return findSurface(ledger, id) != nil
+}
+
+func findSurface(ledger struct {
+	Rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	} `json:"rows"`
+}, id string) *struct {
+	SurfaceID string `json:"surfaceId"`
+	Evidence  string `json:"evidence"`
+} {
+	for i := range ledger.Rows {
+		if ledger.Rows[i].SurfaceID == id {
+			return &ledger.Rows[i]
+		}
+	}
+	return nil
+}
+
 func TestCompatSurfaceDryRunPrintsTempDir(t *testing.T) {
 	root := t.TempDir()
 	docs := filepath.Join(root, "docs")
@@ -1027,8 +1115,8 @@ func TestCompatSurfaceSupportProfileWithCorpusUsage(t *testing.T) {
 	}
 }
 
-// 9. an invalid support profile is written atomically by --output but the CLI
-//    still exits nonzero.
+//  9. an invalid support profile is written atomically by --output but the CLI
+//     still exits nonzero.
 func TestCompatSurfaceSupportProfileAtomicWriteOnInvalid(t *testing.T) {
 	root := t.TempDir()
 	ledger := filepath.Join(root, "ledger.json")

@@ -567,6 +567,32 @@ func TestSalesforceVerify_AllCasesPresentExactlyOnce(t *testing.T) {
 	}
 }
 
+func TestSalesforceVerify_EmitsLinkedSurfaceIDsForRuntimeAndLifecycleCases(t *testing.T) {
+	// The catalog contains one intentionally small linked case mapping; all other
+	// catalog cases remain unlinked until their dedicated packet is mapped.
+	dir := t.TempDir()
+	opts := salesforceVerifyOptions{
+		ReleaseManifest: makeReleaseManifest(t, dir),
+		Catalog:         makeCatalog(t, dir),
+		RuntimeCases:    makeRuntimeFixture(t, dir),
+		TestProject:     makeTestProject(t, dir),
+		TargetOrg:       "test-org",
+		GladeBin:        makeCandidate(t, dir),
+		GladeRoot:       dir,
+		Out:             filepath.Join(dir, "out", "report.json"),
+	}
+	report := runVerifyWithDeps(t, opts, allPassDeps())
+	linked := findCase(report.Runtime.Cases, "decimal-round-default-positive-tie")
+	if linked == nil || len(linked.SurfaceIDs) != 1 || linked.SurfaceIDs[0] != "apex:System.Decimal.round()" {
+		t.Fatalf("linked runtime case = %#v", linked)
+	}
+	for _, c := range report.Lifecycle.Cases {
+		if len(c.SurfaceIDs) != 0 {
+			t.Fatalf("unexpected bulk lifecycle mapping in %q: %#v", c.ID, c.SurfaceIDs)
+		}
+	}
+}
+
 // ============ Scenario 4: One section's behavioral failure does not stop later sections ============
 
 func TestSalesforceVerify_CompilerFailureDoesNotStopRuntime(t *testing.T) {
