@@ -106,7 +106,7 @@ func TestSupportProfileFourDispositions(t *testing.T) {
 		apexRow("apex:Slack.Conversation", "Slack", "Conversation"),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	if profile.Total != 4 {
 		t.Fatalf("total: want 4 got %d", profile.Total)
@@ -149,7 +149,7 @@ func TestSupportProfileUnclassifiedApexRow(t *testing.T) {
 		apexRow("apex:UnknownNS.SomeType", "UnknownNS", "SomeType"),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	if len(profile.UnclassifiedRows) != 1 {
 		t.Fatalf("unclassified rows: want 1 got %d", len(profile.UnclassifiedRows))
@@ -183,7 +183,7 @@ func TestSupportProfileOverlappingPolicyRules(t *testing.T) {
 		}(),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	if len(profile.Rows) != 1 {
 		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
@@ -216,7 +216,7 @@ func TestSupportProfileStaleMemberException(t *testing.T) {
 	}
 
 	// Should still classify the row as hosted-deferred, and report the stale exception.
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	if len(profile.Rows) != 1 {
 		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
@@ -258,7 +258,7 @@ func TestSupportProfileNonApexRowsExcluded(t *testing.T) {
 		},
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	// Only the Apex row should be classified.
 	if profile.Total != 1 {
@@ -283,11 +283,11 @@ func TestSupportProfileDeterministicJSONOrdering(t *testing.T) {
 
 	// Run twice and verify identical JSON output.
 	var buf1, buf2 bytes.Buffer
-	profile1 := ComputeSupportProfile(rows, policy)
+	profile1 := ComputeSupportProfile(rows, policy, nil)
 	if err := WriteSupportProfileJSON(&buf1, profile1); err != nil {
 		t.Fatalf("first write: %v", err)
 	}
-	profile2 := ComputeSupportProfile(rows, policy)
+	profile2 := ComputeSupportProfile(rows, policy, nil)
 	if err := WriteSupportProfileJSON(&buf2, profile2); err != nil {
 		t.Fatalf("second write: %v", err)
 	}
@@ -325,7 +325,7 @@ func TestSupportProfileJSONAndMarkdownOutput(t *testing.T) {
 		apexRow("apex:Reports.ReportManager", "Reports", "ReportManager"),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	// Test JSON output.
 	var jsonBuf bytes.Buffer
@@ -375,7 +375,7 @@ func TestSupportProfileValidationRejectsUnclassified(t *testing.T) {
 		apexRow("apex:UnknownNS.SomeType", "UnknownNS", "SomeType"),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	if len(profile.UnclassifiedRows) == 0 {
 		t.Fatalf("expected unclassified rows")
@@ -416,7 +416,7 @@ func TestSupportProfileValidationRejectsOverlappingRules(t *testing.T) {
 		apexRow("apex:System.String", "System", "String"),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	// The overlapping detection should be flagged.
 	foundOverlap := false
@@ -440,7 +440,7 @@ func TestSupportProfileConnectApiMemberExceptions(t *testing.T) {
 		apexRow("apex:ConnectApi.SomeDTO", "ConnectApi", "SomeDTO"),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	// Organization.getSettings should be deterministic-mock-required.
 	// UserProfiles.setPhoto should be deterministic-mock-required.
@@ -479,12 +479,99 @@ func TestSupportProfileTypeFamilyMatch(t *testing.T) {
 		}(),
 	}
 
-	profile := ComputeSupportProfile(rows, policy)
+	profile := ComputeSupportProfile(rows, policy, nil)
 
 	if len(profile.Rows) != 1 {
 		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
 	}
 	if profile.Rows[0].Disposition != DispositionHostedDeferred {
 		t.Fatalf("disposition: want hosted-deferred got %s", profile.Rows[0].Disposition)
+	}
+}
+
+// 8. support-profile requires and joins the corpus-usage input
+func TestSupportProfileJoinsCorpusUsage(t *testing.T) {
+	policy := buildSeedPolicy()
+	rows := []SurfaceLedgerRow{
+		apexMemberRow("apex:ConnectApi.ChatterUsers.getFollowings", "ConnectApi", "ChatterUsers", "getFollowings"),
+		apexRow("apex:ConnectApi.SomeDTO", "ConnectApi", "SomeDTO"),
+		apexRow("apex:System.String", "System", "String"),
+	}
+
+	cu := CorpusUsage{
+		Usage: []CorpusUsageEntry{
+			{
+				UsageKey:  "ConnectApi.ChatterUsers.getFollowings",
+				Namespace: "ConnectApi",
+				TypeName:  "ChatterUsers",
+				MemberName: "getFollowings",
+				PubProdRefs: 5,
+				PubProdFiles: 3,
+				PubProdProjects: 2,
+			},
+			{
+				UsageKey:  "ConnectApi.SomeDTO",
+				Namespace: "ConnectApi",
+				TypeName:  "SomeDTO",
+				PubProdRefs: 1,
+			},
+			{
+				UsageKey:  "System.String",
+				Namespace: "System",
+				TypeName:  "String",
+				PubTestRefs: 10,
+			},
+		},
+	}
+
+	profile := ComputeSupportProfile(rows, policy, &cu)
+
+	// Every row must have a UsageKey.
+	for _, row := range profile.Rows {
+		if row.UsageKey == "" {
+			t.Fatalf("row %s has empty UsageKey", row.SurfaceID)
+		}
+	}
+
+	// Profile must include the corpus usage.
+	if len(profile.CorpusUsage) != 3 {
+		t.Fatalf("corpus usage entries: want 3 got %d", len(profile.CorpusUsage))
+	}
+
+	// Verify specific keys.
+	keys := map[string]CorpusUsageEntry{}
+	for _, e := range profile.CorpusUsage {
+		keys[e.UsageKey] = e
+	}
+	if e, ok := keys["ConnectApi.ChatterUsers.getFollowings"]; !ok {
+		t.Fatalf("missing ConnectApi.ChatterUsers.getFollowings in corpusUsage")
+	} else if e.PubProdRefs != 5 {
+		t.Fatalf("ChatterUsers.getFollowings PubProdRefs: want 5 got %d", e.PubProdRefs)
+	}
+
+	// Verify row keys match.
+	byID := map[string]string{}
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row.UsageKey
+	}
+	if byID["apex:ConnectApi.ChatterUsers.getFollowings"] != "ConnectApi.ChatterUsers.getFollowings" {
+		t.Fatalf("wrong usage key for getFollowings: %q", byID["apex:ConnectApi.ChatterUsers.getFollowings"])
+	}
+	if byID["apex:ConnectApi.SomeDTO"] != "ConnectApi.SomeDTO" {
+		t.Fatalf("wrong usage key for SomeDTO: %q", byID["apex:ConnectApi.SomeDTO"])
+	}
+	if byID["apex:System.String"] != "System.String" {
+		t.Fatalf("wrong usage key for System.String: %q", byID["apex:System.String"])
+	}
+
+	// Compute without corpus usage — UsageKey must be empty but profile works.
+	profileNoCU := ComputeSupportProfile(rows, policy, nil)
+	for _, row := range profileNoCU.Rows {
+		if row.UsageKey != "" {
+			t.Fatalf("row %s should have empty UsageKey without corpus input", row.SurfaceID)
+		}
+	}
+	if len(profileNoCU.CorpusUsage) != 0 {
+		t.Fatalf("corpusUsage should be empty without corpus input")
 	}
 }

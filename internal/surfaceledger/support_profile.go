@@ -56,6 +56,7 @@ type SupportProfileRow struct {
 	MatchRule   string             `json:"matchRule"`
 	Reason      string             `json:"reason"`
 	Obligation  string             `json:"obligation"`
+	UsageKey    string             `json:"usageKey,omitempty"`
 }
 
 // SupportProfile is the computed result over a Surface Ledger.
@@ -67,13 +68,16 @@ type SupportProfile struct {
 	HostedDeferred   []SupportProfileRow        `json:"hostedDeferred,omitempty"`
 	Rows             []SupportProfileRow        `json:"rows"`
 	ValidationErrors []string                   `json:"validationErrors,omitempty"`
+	CorpusUsage      []CorpusUsageEntry         `json:"corpusUsage,omitempty"`
 }
 
-// ComputeSupportProfile computes a SupportProfile from ledger rows and a policy.
-// Only Apex rows (product=apex) are classified. Non-Apex rows are ignored.
-// Rules are matched in order — first match wins. Member exceptions within a
-// matched rule can override the parent disposition for specific type.member pairs.
-func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy) SupportProfile {
+// ComputeSupportProfile computes a SupportProfile from ledger rows, a policy,
+// and an optional corpus usage. Only Apex rows (product=apex) are classified.
+// Non-Apex rows are ignored. Rules are matched in order — first match wins.
+// Member exceptions within a matched rule can override the parent disposition
+// for specific type.member pairs. If corpusUsage is non-nil, every row receives
+// a stable UsageKey and the profile includes the full corpus usage breakdown.
+func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpusUsage *CorpusUsage) SupportProfile {
 	// Validate policy for overlaps.
 	seenNS := map[string]int{}
 	seenTF := map[string]int{}
@@ -150,6 +154,20 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy) Suppor
 	}
 
 	profile.Total = len(profile.Rows)
+
+	// Join corpus usage if provided.
+	if corpusUsage != nil {
+		for i := range profile.Rows {
+			// Determine the source row to extract namespace/type/member.
+			for _, ar := range apexRows {
+				if ar.SurfaceID == profile.Rows[i].SurfaceID {
+					profile.Rows[i].UsageKey = usageKeyForSurface(ar.Namespace, ar.TypeName, ar.MemberName)
+					break
+				}
+			}
+		}
+		profile.CorpusUsage = corpusUsage.Usage
+	}
 
 	// Detect stale member exceptions.
 	for _, rule := range policy.Rules {
@@ -403,4 +421,18 @@ func WriteSupportProfileMarkdown(w io.Writer, profile SupportProfile) error {
 
 	_, err := fmt.Fprint(w, b.String())
 	return err
+}
+
+// usageKeyForSurface returns a stable join key for a namespace/type/member.
+func usageKeyForSurface(namespace, typeName, memberName string) string {
+	if namespace == "" {
+		return ""
+	}
+	if typeName == "" {
+		return namespace
+	}
+	if memberName == "" {
+		return namespace + "." + typeName
+	}
+	return namespace + "." + typeName + "." + memberName
 }

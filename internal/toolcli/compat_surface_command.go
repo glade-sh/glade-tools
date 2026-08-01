@@ -49,13 +49,15 @@ func runCompatSurface(args []string, w io.Writer) error {
 		return runCompatSurfaceStrictCurrentBase(args[1:], w)
 	case "support-profile":
 		return runCompatSurfaceSupportProfile(args[1:], w)
+	case "corpus-usage":
+		return runCompatSurfaceCorpusUsage(args[1:], w)
 	default:
 		return errors.New(surfaceUsage())
 	}
 }
 
 func surfaceUsage() string {
-	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile [flags]"
+	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage [flags]"
 }
 
 func runCompatSurfaceSources(args []string, w io.Writer) error {
@@ -708,9 +710,87 @@ func atomicWriteFile(outPath string, data []byte) error {
 	return nil
 }
 
+func runCompatSurfaceCorpusUsage(args []string, w io.Writer) error {
+	ledgerPath := ""
+	publicRoot := ""
+	publicFailRoot := ""
+	privateRoot := ""
+	output := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--ledger":
+			i++
+			var err error
+			ledgerPath, err = argValue(args, i, "--ledger")
+			if err != nil {
+				return err
+			}
+		case "--public-root":
+			i++
+			var err error
+			publicRoot, err = argValue(args, i, "--public-root")
+			if err != nil {
+				return err
+			}
+		case "--public-fail-root":
+			i++
+			var err error
+			publicFailRoot, err = argValue(args, i, "--public-fail-root")
+			if err != nil {
+				return err
+			}
+		case "--private-root":
+			i++
+			var err error
+			privateRoot, err = argValue(args, i, "--private-root")
+			if err != nil {
+				return err
+			}
+		case "--output":
+			i++
+			var err error
+			output, err = argValue(args, i, "--output")
+			if err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	if ledgerPath == "" {
+		return errors.New("--ledger is required")
+	}
+	if output == "" {
+		return errors.New("--output is required")
+	}
+
+	ledger, err := surfaceledger.ReadLedgerJSON(ledgerPath)
+	if err != nil {
+		return err
+	}
+
+	cu, err := surfaceledger.BuildCorpusUsage(ledger.Rows, publicRoot, publicFailRoot, privateRoot)
+	if err != nil {
+		return err
+	}
+
+	var buf stringsBuilder
+	enc := json.NewEncoder(&buf)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(cu); err != nil {
+		return err
+	}
+	if err := atomicWriteFile(output, buf.data); err != nil {
+		return err
+	}
+	fmt.Fprintf(w, "surface corpus-usage: %s\n", output)
+	return nil
+}
+
 func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	ledgerPath := ""
 	policyPath := ""
+	corpusUsagePath := ""
 	output := ""
 	jsonOut := false
 	markdownOut := false
@@ -727,6 +807,13 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 			i++
 			var err error
 			policyPath, err = argValue(args, i, "--policy")
+			if err != nil {
+				return err
+			}
+		case "--corpus-usage":
+			i++
+			var err error
+			corpusUsagePath, err = argValue(args, i, "--corpus-usage")
 			if err != nil {
 				return err
 			}
@@ -767,15 +854,24 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 		return err
 	}
 
-	profile := surfaceledger.ComputeSupportProfile(ledger.Rows, policy)
-
-	// Fail if there are validation errors on any output path.
-	if len(profile.ValidationErrors) > 0 {
-		return fmt.Errorf("support profile validation failed with %d error(s):\n%s",
-			len(profile.ValidationErrors),
-			stringsBuilderFromErrors(profile.ValidationErrors))
+	var cu *surfaceledger.CorpusUsage
+	if corpusUsagePath != "" {
+		data, err := os.ReadFile(corpusUsagePath)
+		if err != nil {
+			return fmt.Errorf("read corpus-usage: %w", err)
+		}
+		var parsed surfaceledger.CorpusUsage
+		if err := json.Unmarshal(data, &parsed); err != nil {
+			return fmt.Errorf("parse corpus-usage: %w", err)
+		}
+		cu = &parsed
 	}
 
+	profile := surfaceledger.ComputeSupportProfile(ledger.Rows, policy, cu)
+
+	// When --output is used, write the profile atomically even when
+	// validation errors exist. Then exit nonzero so the evidence is
+	// preserved for repair.
 	if output != "" {
 		var buf stringsBuilder
 		if err := surfaceledger.WriteSupportProfileJSON(&buf, profile); err != nil {
@@ -785,7 +881,19 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 			return err
 		}
 		fmt.Fprintf(w, "surface support-profile: %s\n", output)
+		if len(profile.ValidationErrors) > 0 {
+			return fmt.Errorf("support profile validation failed with %d error(s):\n%s",
+				len(profile.ValidationErrors),
+				stringsBuilderFromErrors(profile.ValidationErrors))
+		}
 		return nil
+	}
+
+	// Fail if there are validation errors on any output path.
+	if len(profile.ValidationErrors) > 0 {
+		return fmt.Errorf("support profile validation failed with %d error(s):\n%s",
+			len(profile.ValidationErrors),
+			stringsBuilderFromErrors(profile.ValidationErrors))
 	}
 
 	if markdownOut {
