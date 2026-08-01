@@ -1124,32 +1124,8 @@
       "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
     },
     {
-      "surfaceId": "apex:ConnectApi.getTextClassificationsBulkResults(ids)",
-      "symbol": "getTextClassificationsBulkResults",
-      "kind": "unsupported",
-      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
-    },
-    {
       "surfaceId": "apex:ConnectApi.isSuccess()",
       "symbol": "isSuccess",
-      "kind": "unsupported",
-      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.productsExpand(scope,",
-      "symbol": "productsExpand",
-      "kind": "unsupported",
-      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.productsReturnRate(pageParam,",
-      "symbol": "productsReturnRate",
-      "kind": "unsupported",
-      "notes": "Commerce ConnectApi catalog, pricing, delivery, search, and tax behavior depends on Salesforce-hosted Commerce services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.submitTextClassificationsRequest(textClassificationsRequestInput,",
-      "symbol": "submitTextClassificationsRequest",
       "kind": "unsupported",
       "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
     }
