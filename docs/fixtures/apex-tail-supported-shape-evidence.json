@@ -25,7 +25,6 @@
     {"surfaceId": "apex:System.Set.addAll(Set<Object>)", "symbol": "Set.addAll(Set<Object>)", "kind": "shape", "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally."},
     {"surfaceId": "apex:System.Set.containsAll(Set<Object>)", "symbol": "Set.containsAll(Set<Object>)", "kind": "shape", "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally."},
     {"surfaceId": "apex:System.Set.removeAll(Set<Object>)", "symbol": "Set.removeAll(Set<Object>)", "kind": "shape", "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally."},
-    {"surfaceId": "apex:System.String.template()", "symbol": "String.template", "kind": "shape", "notes": "Local String support exposes the template helper shape."},
     {"surfaceId": "apex:System.System.runAs(User)", "symbol": "System.runAs(User)", "kind": "shape", "notes": "Local test isolation support exposes the runAs(User) shape."}
   ],
   "source": [
