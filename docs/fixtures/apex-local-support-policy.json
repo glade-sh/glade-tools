@@ -1,0 +1,211 @@
+{
+  "rules": [
+    {
+      "namespace": "System",
+      "disposition": "local-runtime-required",
+      "reason": "language/compiler behavior; System is the Apex runtime foundation"
+    },
+    {
+      "namespace": "Schema",
+      "disposition": "local-runtime-required",
+      "reason": "Schema describe is core runtime metadata"
+    },
+    {
+      "namespace": "Database",
+      "disposition": "local-runtime-required",
+      "reason": "Database DML, query locator, and result types"
+    },
+    {
+      "typeFamily": "soql-sosl",
+      "disposition": "local-runtime-required",
+      "reason": "SOQL/SOSL query surface"
+    },
+    {
+      "namespace": "ApexPages",
+      "disposition": "local-runtime-required",
+      "reason": "ApexPages controller and message surface"
+    },
+    {
+      "namespace": "Site",
+      "disposition": "local-runtime-required",
+      "reason": "Site context and URL rewriter"
+    },
+    {
+      "namespace": "Dom",
+      "disposition": "local-runtime-required",
+      "reason": "Dom XML document surface"
+    },
+    {
+      "namespace": "EventBus",
+      "disposition": "local-runtime-required",
+      "reason": "EventBus publish and trigger surface"
+    },
+    {
+      "namespace": "Messaging",
+      "disposition": "deterministic-mock-required",
+      "reason": "Messaging email send and render — deterministic mock"
+    },
+    {
+      "namespace": "Cache",
+      "disposition": "deterministic-mock-required",
+      "reason": "Cache partition and session — deterministic mock"
+    },
+    {
+      "namespace": "ConnectApi",
+      "disposition": "hosted-deferred",
+      "reason": "ConnectApi DTOs — mostly passive, hosted-deferred",
+      "memberExceptions": [
+        {
+          "typeName": "Organization",
+          "memberName": "getSettings",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed corpus usage"
+        },
+        {
+          "typeName": "UserProfiles",
+          "memberName": "setPhoto",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed corpus usage"
+        },
+        {
+          "typeName": "UserProfiles",
+          "memberName": "deletePhoto",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed corpus usage"
+        },
+        {
+          "typeName": "Communities",
+          "memberName": "getCommunity",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed corpus usage"
+        },
+        {
+          "typeName": "ChatterUsers",
+          "memberName": "getFollowings",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed corpus usage"
+        }
+      ]
+    },
+    {
+      "namespace": "Metadata",
+      "disposition": "deterministic-mock-required",
+      "reason": "shallow Metadata operations — deterministic mock"
+    },
+    {
+      "namespace": "Auth",
+      "disposition": "deterministic-mock-required",
+      "reason": "shallow Auth session — deterministic mock"
+    },
+    {
+      "namespace": "Flow",
+      "disposition": "deterministic-mock-required",
+      "reason": "Flow interview contracts — deterministic mock"
+    },
+    {
+      "namespace": "Datacloud",
+      "disposition": "deterministic-mock-required",
+      "reason": "Datacloud — deterministic mock"
+    },
+    {
+      "namespace": "IsvPartners",
+      "disposition": "deterministic-mock-required",
+      "reason": "ISV partners surface — deterministic mock"
+    },
+    {
+      "namespace": "Reports",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "DataSource",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "VisualEditor",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "DataWeave",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "Approval",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "Invocable",
+      "disposition": "compile-shape-required",
+      "reason": "Invocable.Action — compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "Slack",
+      "disposition": "hosted-deferred",
+      "reason": "Slack hosted deferred"
+    },
+    {
+      "namespace": "CartExtension",
+      "disposition": "hosted-deferred",
+      "reason": "CartExtension hosted deferred"
+    },
+    {
+      "typeFamily": "healthcloudext",
+      "disposition": "hosted-deferred",
+      "reason": "healthcloudext hosted deferred"
+    },
+    {
+      "typeFamily": "commerce*",
+      "disposition": "hosted-deferred",
+      "reason": "commerce hosted deferred"
+    },
+    {
+      "typeFamily": "runtime_*",
+      "disposition": "hosted-deferred",
+      "reason": "runtime_ hosted deferred"
+    },
+    {
+      "namespace": "RichMessaging",
+      "disposition": "hosted-deferred",
+      "reason": "RichMessaging hosted deferred"
+    },
+    {
+      "namespace": "AppFramework",
+      "disposition": "hosted-deferred",
+      "reason": "AppFramework hosted deferred"
+    },
+    {
+      "typeFamily": "service_*",
+      "disposition": "hosted-deferred",
+      "reason": "service_ hosted deferred"
+    },
+    {
+      "namespace": "QuickAction",
+      "disposition": "hosted-deferred",
+      "reason": "QuickAction hosted deferred"
+    },
+    {
+      "typeFamily": "sfdatakit",
+      "disposition": "hosted-deferred",
+      "reason": "sfdatakit hosted deferred"
+    },
+    {
+      "namespace": "LoyaltyManagement",
+      "disposition": "hosted-deferred",
+      "reason": "LoyaltyManagement hosted deferred"
+    },
+    {
+      "namespace": "ProductConfig",
+      "disposition": "hosted-deferred",
+      "reason": "ProductConfig hosted deferred"
+    },
+    {
+      "typeFamily": "omni*",
+      "disposition": "hosted-deferred",
+      "reason": "OmniStudio hosted deferred"
+    }
+  ]
+}

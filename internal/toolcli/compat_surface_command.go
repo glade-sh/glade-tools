@@ -47,13 +47,15 @@ func runCompatSurface(args []string, w io.Writer) error {
 		return runCompatSurfaceCheck(args[1:], w)
 	case "strict-current-base":
 		return runCompatSurfaceStrictCurrentBase(args[1:], w)
+	case "support-profile":
+		return runCompatSurfaceSupportProfile(args[1:], w)
 	default:
 		return errors.New(surfaceUsage())
 	}
 }
 
 func surfaceUsage() string {
-	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base [flags]"
+	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile [flags]"
 }
 
 func runCompatSurfaceSources(args []string, w io.Writer) error {
@@ -704,6 +706,107 @@ func atomicWriteFile(outPath string, data []byte) error {
 		return fmt.Errorf("rename temp to output: %w", err)
 	}
 	return nil
+}
+
+func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
+	ledgerPath := ""
+	policyPath := ""
+	output := ""
+	jsonOut := false
+	markdownOut := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--ledger":
+			i++
+			var err error
+			ledgerPath, err = argValue(args, i, "--ledger")
+			if err != nil {
+				return err
+			}
+		case "--policy":
+			i++
+			var err error
+			policyPath, err = argValue(args, i, "--policy")
+			if err != nil {
+				return err
+			}
+		case "--output":
+			i++
+			var err error
+			output, err = argValue(args, i, "--output")
+			if err != nil {
+				return err
+			}
+		case "--json":
+			jsonOut = true
+		case "--markdown":
+			markdownOut = true
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	if ledgerPath == "" {
+		return errors.New("--ledger is required")
+	}
+	if policyPath == "" {
+		return errors.New("--policy is required")
+	}
+	if jsonOut && markdownOut {
+		return errors.New("use only one of --json or --markdown")
+	}
+	if output != "" && (jsonOut || markdownOut) {
+		return errors.New("use only one of --output or --json/--markdown")
+	}
+
+	ledger, err := surfaceledger.ReadLedgerJSON(ledgerPath)
+	if err != nil {
+		return err
+	}
+	policy, err := surfaceledger.LoadSupportPolicy(policyPath)
+	if err != nil {
+		return err
+	}
+
+	profile := surfaceledger.ComputeSupportProfile(ledger.Rows, policy)
+
+	// Fail if there are validation errors on any output path.
+	if len(profile.ValidationErrors) > 0 {
+		return fmt.Errorf("support profile validation failed with %d error(s):\n%s",
+			len(profile.ValidationErrors),
+			stringsBuilderFromErrors(profile.ValidationErrors))
+	}
+
+	if output != "" {
+		var buf stringsBuilder
+		if err := surfaceledger.WriteSupportProfileJSON(&buf, profile); err != nil {
+			return err
+		}
+		if err := atomicWriteFile(output, buf.data); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, "surface support-profile: %s\n", output)
+		return nil
+	}
+
+	if markdownOut {
+		return surfaceledger.WriteSupportProfileMarkdown(w, profile)
+	}
+
+	// Default to JSON output.
+	if err := surfaceledger.WriteSupportProfileJSON(w, profile); err != nil {
+		return err
+	}
+	return nil
+}
+
+func stringsBuilderFromErrors(errors []string) string {
+	var buf stringsBuilder
+	for _, e := range errors {
+		buf.data = append(buf.data, "  - "...)
+		buf.data = append(buf.data, e...)
+		buf.data = append(buf.data, '\n')
+	}
+	return buf.String()
 }
 
 func parseSourceOutputJSON(args []string, sourceFlag string) (string, string, bool, error) {
