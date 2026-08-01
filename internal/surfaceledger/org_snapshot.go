@@ -60,11 +60,12 @@ func RowsFromToolingCompletions(completions capability.ToolingCompletions) []Sur
 	var rows []SurfaceLedgerRow
 	for namespace, classes := range completions.PublicDeclarations {
 		for typeName, decl := range classes {
+			rowNamespace := canonicalToolingApexNamespace(namespace, typeName)
 			rows = append(rows, RowFromOrg(SurfaceLedgerRow{
-				SurfaceID: ApexTypeID(namespace, typeName),
+				SurfaceID: ApexTypeID(rowNamespace, typeName),
 				Product:   ProductApex,
 				Area:      AreaRuntime,
-				Namespace: namespace,
+				Namespace: rowNamespace,
 				TypeName:  typeName,
 				Kind:      KindType,
 				Sources:   []string{"tooling-completions"},
@@ -72,10 +73,10 @@ func RowsFromToolingCompletions(completions capability.ToolingCompletions) []Sur
 			for _, method := range decl.Methods {
 				params := toolingParameterTypes(method.Parameters, method.ArgTypes)
 				rows = append(rows, RowFromOrg(SurfaceLedgerRow{
-					SurfaceID:  ApexMemberID(namespace, typeName, method.Name, params),
+					SurfaceID:  ApexMemberID(rowNamespace, typeName, method.Name, params),
 					Product:    ProductApex,
 					Area:       AreaRuntime,
-					Namespace:  namespace,
+					Namespace:  rowNamespace,
 					TypeName:   typeName,
 					MemberName: method.Name,
 					Kind:       KindMethod,
@@ -86,10 +87,10 @@ func RowsFromToolingCompletions(completions capability.ToolingCompletions) []Sur
 			}
 			for _, property := range decl.Properties {
 				rows = append(rows, RowFromOrg(SurfaceLedgerRow{
-					SurfaceID:  ApexMemberID(namespace, typeName, property.Name, nil),
+					SurfaceID:  ApexMemberID(rowNamespace, typeName, property.Name, nil),
 					Product:    ProductApex,
 					Area:       AreaRuntime,
-					Namespace:  namespace,
+					Namespace:  rowNamespace,
 					TypeName:   typeName,
 					MemberName: property.Name,
 					Kind:       KindProperty,
@@ -100,10 +101,10 @@ func RowsFromToolingCompletions(completions capability.ToolingCompletions) []Sur
 			for _, ctor := range decl.Constructors {
 				params := toolingParameterTypes(ctor.Parameters, nil)
 				rows = append(rows, RowFromOrg(SurfaceLedgerRow{
-					SurfaceID:  ApexMemberID(namespace, typeName, typeName, params),
+					SurfaceID:  ApexMemberID(rowNamespace, typeName, typeName, params),
 					Product:    ProductApex,
 					Area:       AreaRuntime,
-					Namespace:  namespace,
+					Namespace:  rowNamespace,
 					TypeName:   typeName,
 					MemberName: typeName,
 					Kind:       KindMethod,
@@ -115,6 +116,18 @@ func RowsFromToolingCompletions(completions capability.ToolingCompletions) []Sur
 	}
 	sortRows(rows)
 	return rows
+}
+
+func canonicalToolingApexNamespace(namespace, typeName string) string {
+	if namespace != "Invocable" {
+		return namespace
+	}
+	switch typeName {
+	case "AdditionalAttribute", "DescribeResult", "GenericType", "InputParameter", "OutputParameter", "PicklistValue":
+		return "Invocable.Action"
+	default:
+		return namespace
+	}
 }
 
 func toolingParameterTypes(parameters []capability.ToolingParameter, argTypes []string) []string {
