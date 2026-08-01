@@ -75,6 +75,7 @@ type SupportProfileInputs struct {
 
 type SupportProfileInput struct {
 	Name   string `json:"name"`
+	Path   string `json:"path,omitempty"`
 	SHA256 string `json:"sha256"`
 }
 

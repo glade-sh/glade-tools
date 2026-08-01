@@ -811,6 +811,7 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	corpusUsagePath := ""
 	snapshotDir := ""
 	output := ""
+	htmlOutput := ""
 	jsonOut := false
 	markdownOut := false
 	for i := 0; i < len(args); i++ {
@@ -850,6 +851,13 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 			if err != nil {
 				return err
 			}
+		case "--html-output":
+			i++
+			var err error
+			htmlOutput, err = argValue(args, i, "--html-output")
+			if err != nil {
+				return err
+			}
 		case "--json":
 			jsonOut = true
 		case "--markdown":
@@ -867,8 +875,14 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	if jsonOut && markdownOut {
 		return errors.New("use only one of --json or --markdown")
 	}
-	if output != "" && (jsonOut || markdownOut) {
-		return errors.New("use only one of --output or --json/--markdown")
+	if htmlOutput != "" && output == "" {
+		return errors.New("--html-output requires --output")
+	}
+	if (output != "" || htmlOutput != "") && (jsonOut || markdownOut) {
+		return errors.New("use only one of --output/--html-output or --json/--markdown")
+	}
+	if output != "" && htmlOutput != "" && filepath.Clean(output) == filepath.Clean(htmlOutput) {
+		return errors.New("--output and --html-output must be different paths")
 	}
 
 	ledger, err := surfaceledger.ReadLedgerJSON(ledgerPath)
@@ -900,18 +914,31 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	}
 	profile.Inputs = inputs
 
-	// When --output is used, write the profile atomically even when
+	// When file outputs are used, materialize both reports from the one
+	// computed profile and write each atomically even when
 	// validation errors exist. Then exit nonzero so the evidence is
 	// preserved for repair.
 	if output != "" {
-		var buf stringsBuilder
-		if err := surfaceledger.WriteSupportProfileJSON(&buf, profile); err != nil {
+		var jsonBuf stringsBuilder
+		if err := surfaceledger.WriteSupportProfileJSON(&jsonBuf, profile); err != nil {
 			return err
 		}
-		if err := atomicWriteFile(output, buf.data); err != nil {
+		var htmlBuf stringsBuilder
+		if htmlOutput != "" {
+			if err := surfaceledger.WriteSupportProfileHTML(&htmlBuf, profile, ledger); err != nil {
+				return err
+			}
+		}
+		if err := atomicWriteFile(output, jsonBuf.data); err != nil {
 			return err
 		}
 		fmt.Fprintf(w, "surface support-profile: %s\n", output)
+		if htmlOutput != "" {
+			if err := atomicWriteFile(htmlOutput, htmlBuf.data); err != nil {
+				return err
+			}
+			fmt.Fprintf(w, "surface support-profile html: %s\n", htmlOutput)
+		}
 		if len(profile.ValidationErrors) > 0 {
 			return fmt.Errorf("support profile validation failed with %d error(s):\n%s",
 				len(profile.ValidationErrors),
@@ -967,7 +994,7 @@ func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshot
 		if err != nil {
 			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
 		}
-		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, SHA256: digest})
+		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, Path: input.path, SHA256: digest})
 	}
 	return inputs, nil
 }
