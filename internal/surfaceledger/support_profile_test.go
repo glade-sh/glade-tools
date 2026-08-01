@@ -887,3 +887,420 @@ func TestSupportProfileSurfacePrefixDistinctExceptionKeys(t *testing.T) {
 		}
 	}
 }
+
+// --- SF-CB15 obligation queue tests ---
+
+// RED 1: compile-shape row with known shape is closed; absent shape is a gap.
+func TestGapClassCompileShapeClosedWhenShapePresent(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "Reports", Disposition: DispositionCompileShapeRequired, Reason: "compile shape"},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		apexRow("apex:Reports.ReportManager", "Reports", "ReportManager"), // type-known shape
+		func() SurfaceLedgerRow {
+			r := apexRow("apex:Reports.Broken", "Reports", "Broken")
+			r.GladeShape = ShapeAbsent
+			return r
+		}(),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 2 {
+		t.Fatalf("total: want 2 got %d", profile.Total)
+	}
+
+	// Known shape → closed (no gap).
+	byID := map[string]SupportProfileRow{}
+	for _, r := range profile.Rows {
+		byID[r.SurfaceID] = r
+	}
+	if byID["apex:Reports.ReportManager"].GapClass != "" {
+		t.Fatalf("Reports.ReportManager with type-known shape should be closed, got gapClass=%q", byID["apex:Reports.ReportManager"].GapClass)
+	}
+	// Absent shape → missing-shape gap.
+	if byID["apex:Reports.Broken"].GapClass != "missing-shape" {
+		t.Fatalf("Reports.Broken with absent shape should be missing-shape gap, got gapClass=%q", byID["apex:Reports.Broken"].GapClass)
+	}
+
+	// NonDeferredGaps should only contain the broken row.
+	if len(profile.NonDeferredGaps) != 1 {
+		t.Fatalf("NonDeferredGaps: want 1 got %d", len(profile.NonDeferredGaps))
+	}
+	if profile.NonDeferredGaps[0].SurfaceID != "apex:Reports.Broken" {
+		t.Fatalf("NonDeferredGaps[0]: want apex:Reports.Broken got %q", profile.NonDeferredGaps[0].SurfaceID)
+	}
+
+	// byGapClass counts.
+	if profile.ByGapClass["missing-shape"] != 1 {
+		t.Fatalf("byGapClass[missing-shape]: want 1 got %d", profile.ByGapClass["missing-shape"])
+	}
+}
+
+// RED 2: passive mock/runtime row with known shape is closed.
+func TestGapClassPassiveBehaviorClosedWhenShapePresent(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		func() SurfaceLedgerRow {
+			r := apexRow("apex:System.PassiveHelper", "System", "PassiveHelper")
+			r.GladeShape = ShapeTypeKnown
+			r.GladeBehavior = BehaviorPassive
+			r.Evidence = EvidenceNone
+			return r
+		}(),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 1 {
+		t.Fatalf("total: want 1 got %d", profile.Total)
+	}
+	if len(profile.NonDeferredGaps) != 0 {
+		t.Fatalf("passive+typeKnown should be closed, got %d gaps", len(profile.NonDeferredGaps))
+	}
+	if profile.Rows[0].GapClass != "" {
+		t.Fatalf("passive row gapClass should be empty, got %q", profile.Rows[0].GapClass)
+	}
+}
+
+// RED 3: none, stub-noop, unsupported, and partial runtime/mock rows are behavior gaps.
+func TestGapClassBehaviorGaps(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+		},
+	}
+	behaviors := []BehaviorState{BehaviorNone, BehaviorStubNoOp, BehaviorUnsupported, BehaviorPartial}
+	for _, bh := range behaviors {
+		t.Run(string(bh), func(t *testing.T) {
+			r := apexRow("apex:System.Test", "System", "Test")
+			r.GladeShape = ShapeTypeKnown
+			r.GladeBehavior = bh
+			r.Evidence = EvidenceNone
+
+			profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
+
+			if profile.Total != 1 {
+				t.Fatalf("total: want 1 got %d", profile.Total)
+			}
+			if len(profile.NonDeferredGaps) != 1 {
+				t.Fatalf("NonDeferredGaps: want 1 got %d for behavior %q", len(profile.NonDeferredGaps), bh)
+			}
+			if profile.Rows[0].GapClass != "missing-behavior" {
+				t.Fatalf("gapClass: want missing-behavior got %q for behavior %q", profile.Rows[0].GapClass, bh)
+			}
+			if profile.ByGapClass["missing-behavior"] != 1 {
+				t.Fatalf("byGapClass[missing-behavior]: want 1 got %d", profile.ByGapClass["missing-behavior"])
+			}
+		})
+	}
+}
+
+// RED 4: supported behavior with fixture/oracle/fixture-and-oracle evidence closes.
+func TestGapClassSupportedWithExecutableEvidenceCloses(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+		},
+	}
+	evidences := []EvidenceState{EvidenceFixture, EvidenceOracle, EvidenceFixtureAndOracle}
+	for _, ev := range evidences {
+		t.Run(string(ev), func(t *testing.T) {
+			r := apexRow("apex:System.Test", "System", "Test")
+			r.GladeShape = ShapeTypeKnown
+			r.GladeBehavior = BehaviorSupported
+			r.Evidence = ev
+
+			profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
+
+			if profile.Total != 1 {
+				t.Fatalf("total: want 1 got %d", profile.Total)
+			}
+			if len(profile.NonDeferredGaps) != 0 {
+				t.Fatalf("supported+%s should be closed, got %d gaps", ev, len(profile.NonDeferredGaps))
+			}
+			if profile.Rows[0].GapClass != "" {
+				t.Fatalf("gapClass should be empty for supported+%s, got %q", ev, profile.Rows[0].GapClass)
+			}
+		})
+	}
+}
+
+// RED 5: supported behavior with none/docs/corpus evidence is an evidence gap.
+func TestGapClassSupportedWithNonExecutableEvidenceIsEvidenceGap(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+		},
+	}
+	nonExecEvidence := []EvidenceState{EvidenceNone, EvidenceDocs, EvidenceCorpus}
+	// fixture-based rows may have empty evidence defaulting to none
+	for _, ev := range nonExecEvidence {
+		t.Run(string(ev), func(t *testing.T) {
+			r := apexRow("apex:System.Test", "System", "Test")
+			r.GladeShape = ShapeTypeKnown
+			r.GladeBehavior = BehaviorSupported
+			r.Evidence = ev
+
+			profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
+
+			if profile.Total != 1 {
+				t.Fatalf("total: want 1 got %d", profile.Total)
+			}
+			if len(profile.NonDeferredGaps) != 1 {
+				t.Fatalf("supported+%s should be an evidence gap, got %d gaps", ev, len(profile.NonDeferredGaps))
+			}
+			if profile.Rows[0].GapClass != "missing-evidence" {
+				t.Fatalf("gapClass: want missing-evidence got %q for evidence %q", profile.Rows[0].GapClass, ev)
+			}
+			if profile.ByGapClass["missing-evidence"] != 1 {
+				t.Fatalf("byGapClass[missing-evidence]: want 1 got %d", profile.ByGapClass["missing-evidence"])
+			}
+		})
+	}
+}
+
+// RED 6: hosted-deferred rows never enter the gap queue.
+func TestGapClassHostedDeferredNeverInGaps(t *testing.T) {
+	policy := buildSeedPolicy()
+	// ConnectApi.SomeDTO is hosted-deferred; give it absent shape — still must NOT be in gaps.
+	rows := []SurfaceLedgerRow{
+		func() SurfaceLedgerRow {
+			r := apexRow("apex:ConnectApi.SomeDTO", "ConnectApi", "SomeDTO")
+			r.GladeShape = ShapeAbsent
+			r.GladeBehavior = BehaviorNone
+			r.Evidence = EvidenceNone
+			return r
+		}(),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 1 {
+		t.Fatalf("total: want 1 got %d", profile.Total)
+	}
+	if len(profile.NonDeferredGaps) != 0 {
+		t.Fatalf("hosted-deferred row must not enter NonDeferredGaps, got %d", len(profile.NonDeferredGaps))
+	}
+	if len(profile.HostedDeferred) != 1 {
+		t.Fatalf("hosted-deferred row must be in HostedDeferred, got %d", len(profile.HostedDeferred))
+	}
+	if profile.Rows[0].GapClass != "" {
+		t.Fatalf("hosted-deferred gapClass should be empty, got %q", profile.Rows[0].GapClass)
+	}
+}
+
+// RED 8: queue ordering follows the four ranking keys.
+func TestGapClassCorpusBackedOrdering(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+		},
+	}
+
+	rows := []SurfaceLedgerRow{
+		func() SurfaceLedgerRow {
+			r := apexMemberRow("apex:System.A.alpha", "System", "A", "alpha")
+			r.GladeShape = ShapeAbsent
+			r.GladeBehavior = BehaviorNone
+			r.Evidence = EvidenceNone
+			return r
+		}(),
+		func() SurfaceLedgerRow {
+			r := apexMemberRow("apex:System.B.beta", "System", "B", "beta")
+			r.GladeShape = ShapeAbsent
+			r.GladeBehavior = BehaviorNone
+			r.Evidence = EvidenceNone
+			return r
+		}(),
+		func() SurfaceLedgerRow {
+			r := apexMemberRow("apex:System.C.gamma", "System", "C", "gamma")
+			r.GladeShape = ShapeAbsent
+			r.GladeBehavior = BehaviorNone
+			r.Evidence = EvidenceNone
+			return r
+		}(),
+	}
+
+	cu := &CorpusUsage{
+		Usage: []CorpusUsageEntry{
+			{UsageKey: "System.A.alpha", Namespace: "System", TypeName: "A", MemberName: "alpha",
+				PubProdRefs: 10, PubTestRefs: 5, PubFailRefs: 0, PrivProdRefs: 2, PrivTestRefs: 1,
+				PubProdProjects: 2, PubTestProjects: 1},
+			{UsageKey: "System.B.beta", Namespace: "System", TypeName: "B", MemberName: "beta",
+				PubProdRefs: 10, PubTestRefs: 5, PubFailRefs: 3, PrivProdRefs: 2, PrivTestRefs: 1,
+				PubProdProjects: 2, PubTestProjects: 1},
+			{UsageKey: "System.C.gamma", Namespace: "System", TypeName: "C", MemberName: "gamma",
+				PubProdRefs: 5, PubTestRefs: 0, PubFailRefs: 0, PrivProdRefs: 0, PrivTestRefs: 0,
+				PubProdProjects: 1, PubTestProjects: 0},
+		},
+	}
+
+	profile := ComputeSupportProfile(rows, policy, cu)
+
+	if len(profile.NonDeferredGaps) != 3 {
+		t.Fatalf("NonDeferredGaps: want 3 got %d", len(profile.NonDeferredGaps))
+	}
+
+	// Ordering: corpusPassingRefs desc, corpusPassingProjects desc, corpusFailureRefs desc, surfaceId asc
+	// A.alpha: passingRefs=10+5+2+1=18, passingProjects=2+1=3, failureRefs=0
+	// B.beta:  passingRefs=10+5+2+1=18, passingProjects=2+1=3, failureRefs=3
+	// C.gamma: passingRefs=5+0+0+0=5,  passingProjects=1+0=1, failureRefs=0
+	// A.alpha and B.beta tie on passingRefs and passingProjects → B.beta comes first due to higher failureRefs
+	// Then A.alpha, then C.gamma.
+	expectedOrder := []string{
+		"apex:System.B.beta",
+		"apex:System.A.alpha",
+		"apex:System.C.gamma",
+	}
+	for i, want := range expectedOrder {
+		if profile.NonDeferredGaps[i].SurfaceID != want {
+			t.Fatalf("NonDeferredGaps[%d]: want %q got %q", i, want, profile.NonDeferredGaps[i].SurfaceID)
+		}
+	}
+
+	// rows must remain surfaceId ordered.
+	for i := 1; i < len(profile.Rows); i++ {
+		if profile.Rows[i-1].SurfaceID >= profile.Rows[i].SurfaceID {
+			t.Fatalf("Rows not sorted by surfaceId: [%d]=%q >= [%d]=%q",
+				i-1, profile.Rows[i-1].SurfaceID, i, profile.Rows[i].SurfaceID)
+		}
+	}
+}
+
+// RED 9: profile without corpus usage keeps usage and aggregate fields empty/zero.
+func TestGapClassNoCorpusUsageKeepsFieldsEmpty(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+		},
+	}
+	r := apexRow("apex:System.Test", "System", "Test")
+	r.GladeShape = ShapeAbsent
+	r.GladeBehavior = BehaviorNone
+	r.Evidence = EvidenceNone
+
+	profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
+
+	if profile.Total != 1 {
+		t.Fatalf("total: want 1 got %d", profile.Total)
+	}
+	if profile.Rows[0].UsageKey != "" {
+		t.Fatalf("UsageKey should be empty without corpus, got %q", profile.Rows[0].UsageKey)
+	}
+	if profile.Rows[0].CorpusPassingRefs != 0 {
+		t.Fatalf("CorpusPassingRefs should be 0, got %d", profile.Rows[0].CorpusPassingRefs)
+	}
+	if profile.Rows[0].CorpusFailureRefs != 0 {
+		t.Fatalf("CorpusFailureRefs should be 0, got %d", profile.Rows[0].CorpusFailureRefs)
+	}
+	if profile.Rows[0].CorpusPassingProjects != 0 {
+		t.Fatalf("CorpusPassingProjects should be 0, got %d", profile.Rows[0].CorpusPassingProjects)
+	}
+	if len(profile.CorpusUsage) != 0 {
+		t.Fatalf("CorpusUsage should be empty, got %d entries", len(profile.CorpusUsage))
+	}
+}
+
+// RED 7: aggregate corpus fields use no private identity data (no project names, paths, source excerpts).
+func TestGapClassCorpusFieldsDoNotLeakIdentity(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+		},
+	}
+	r := apexRow("apex:System.Test", "System", "Test")
+	r.GladeShape = ShapeAbsent
+	r.GladeBehavior = BehaviorNone
+	r.Evidence = EvidenceNone
+
+	cu := &CorpusUsage{
+		Usage: []CorpusUsageEntry{
+			{UsageKey: "System.Test", Namespace: "System", TypeName: "Test",
+				PubProdRefs: 3, PubTestRefs: 2, PubFailRefs: 1, PrivProdRefs: 1, PrivTestRefs: 1,
+				PubProdProjects: 1, PubTestProjects: 1, PubFailProjects: 1, PrivProdProjects: 1, PrivTestProjects: 1},
+		},
+	}
+
+	profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, cu)
+
+	// Row-level fields must be privacy-safe aggregates.
+	row := profile.Rows[0]
+	// corpusPassingRefs = pubProd + pubTest + privProd + privTest = 3+2+1+1 = 7
+	if row.CorpusPassingRefs != 7 {
+		t.Fatalf("CorpusPassingRefs: want 7 got %d", row.CorpusPassingRefs)
+	}
+	// corpusFailureRefs = pubFail = 1
+	if row.CorpusFailureRefs != 1 {
+		t.Fatalf("CorpusFailureRefs: want 1 got %d", row.CorpusFailureRefs)
+	}
+	// corpusPassingProjects = pubProdProj + pubTestProj + privProdProj + privTestProj = 1+1+1+1 = 4
+	if row.CorpusPassingProjects != 4 {
+		t.Fatalf("CorpusPassingProjects: want 4 got %d", row.CorpusPassingProjects)
+	}
+
+	// Row JSON must NOT contain project names, paths, or source excerpts.
+	// The corpusUsage section may contain aggregate counts — that's expected.
+	// We only check that row-level fields are privacy-safe.
+	var buf bytes.Buffer
+	if err := WriteSupportProfileJSON(&buf, profile); err != nil {
+		t.Fatalf("write JSON: %v", err)
+	}
+	// Only the row's own JSON fields must not contain identity data.
+	// Serialize just one row to verify.
+	rowJSON, err := json.Marshal(row)
+	if err != nil {
+		t.Fatalf("marshal row: %v", err)
+	}
+	rowStr := string(rowJSON)
+	if strings.Contains(rowStr, "privProdFiles") {
+		t.Fatalf("row JSON must not expose privProdFiles")
+	}
+	if strings.Contains(rowStr, "projectName") {
+		t.Fatalf("row JSON must not expose project names")
+	}
+}
+
+// RED 10: existing support-profile test still works with new fields.
+func TestGapClassDeterministicJSONStillWorks(t *testing.T) {
+	// This verifies the new fields serialize/deserialize cleanly and don't break existing tests.
+	policy := buildSeedPolicy()
+	rows := []SurfaceLedgerRow{
+		apexRow("apex:System.String", "System", "String"),
+		apexRow("apex:Reports.ReportManager", "Reports", "ReportManager"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	// ByGapClass must be initialized (not nil).
+	if profile.ByGapClass == nil {
+		t.Fatalf("ByGapClass must be initialized")
+	}
+
+	// All rows must have empty gapClass for these fixtures (closed with type-known+supported+fixture).
+	for _, r := range profile.Rows {
+		if r.GapClass != "" {
+			t.Fatalf("row %s gapClass should be empty, got %q", r.SurfaceID, r.GapClass)
+		}
+	}
+
+	// Deterministic JSON.
+	var buf1, buf2 bytes.Buffer
+	profile1 := ComputeSupportProfile(rows, policy, nil)
+	if err := WriteSupportProfileJSON(&buf1, profile1); err != nil {
+		t.Fatalf("first write: %v", err)
+	}
+	profile2 := ComputeSupportProfile(rows, policy, nil)
+	if err := WriteSupportProfileJSON(&buf2, profile2); err != nil {
+		t.Fatalf("second write: %v", err)
+	}
+	if buf1.String() != buf2.String() {
+		t.Fatalf("JSON output not deterministic")
+	}
+}

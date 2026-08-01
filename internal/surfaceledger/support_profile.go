@@ -48,23 +48,28 @@ type SupportPolicy struct {
 
 // SupportProfileRow is one Apex surface with its assigned disposition.
 type SupportProfileRow struct {
-	SurfaceID   string             `json:"surfaceId"`
-	Namespace   string             `json:"namespace,omitempty"`
-	TypeFamily  string             `json:"typeFamily,omitempty"`
-	LedgerShape ShapeState         `json:"ledgerShape"`
-	Behavior    BehaviorState      `json:"behavior"`
-	Evidence    EvidenceState      `json:"evidence"`
-	Disposition SupportDisposition `json:"disposition"`
-	MatchRule   string             `json:"matchRule"`
-	Reason      string             `json:"reason"`
-	Obligation  string             `json:"obligation"`
-	UsageKey    string             `json:"usageKey,omitempty"`
+	SurfaceID            string             `json:"surfaceId"`
+	Namespace            string             `json:"namespace,omitempty"`
+	TypeFamily           string             `json:"typeFamily,omitempty"`
+	LedgerShape          ShapeState         `json:"ledgerShape"`
+	Behavior             BehaviorState      `json:"behavior"`
+	Evidence             EvidenceState      `json:"evidence"`
+	Disposition          SupportDisposition `json:"disposition"`
+	MatchRule            string             `json:"matchRule"`
+	Reason               string             `json:"reason"`
+	Obligation           string             `json:"obligation"`
+	GapClass             string             `json:"gapClass,omitempty"`
+	UsageKey             string             `json:"usageKey,omitempty"`
+	CorpusPassingRefs    int                `json:"corpusPassingRefs,omitempty"`
+	CorpusFailureRefs    int                `json:"corpusFailureRefs,omitempty"`
+	CorpusPassingProjects int               `json:"corpusPassingProjects,omitempty"`
 }
 
 // SupportProfile is the computed result over a Surface Ledger.
 type SupportProfile struct {
 	Total            int                        `json:"total"`
 	ByDisposition    map[SupportDisposition]int `json:"byDisposition"`
+	ByGapClass       map[string]int             `json:"byGapClass"`
 	UnclassifiedRows []SupportProfileRow        `json:"unclassifiedRows,omitempty"`
 	NonDeferredGaps  []SupportProfileRow        `json:"nonDeferredGaps,omitempty"`
 	HostedDeferred   []SupportProfileRow        `json:"hostedDeferred,omitempty"`
@@ -149,6 +154,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 
 	profile := SupportProfile{
 		ByDisposition: make(map[SupportDisposition]int),
+		ByGapClass:    make(map[string]int),
 	}
 
 	var apexRows []SurfaceLedgerRow
@@ -158,33 +164,56 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 		}
 	}
 
+	// Build corpus usage lookup maps if usage is provided.
+	var surfaceKey map[string]string
+	var usageIdx map[string]*CorpusUsageEntry
+	if corpusUsage != nil {
+		surfaceKey = make(map[string]string, len(apexRows))
+		for _, ar := range apexRows {
+			surfaceKey[ar.SurfaceID] = usageKeyForSurface(ar.Namespace, ar.TypeName, ar.MemberName)
+		}
+		usageIdx = make(map[string]*CorpusUsageEntry, len(corpusUsage.Usage))
+		for i := range corpusUsage.Usage {
+			usageIdx[corpusUsage.Usage[i].UsageKey] = &corpusUsage.Usage[i]
+		}
+	}
+
 	for _, row := range apexRows {
 		pr := classifyRow(row, policy, exceptionMatched)
+		pr.GapClass = classifyGap(pr)
+
+		// Populate corpus fields if usage is supplied.
+		if corpusUsage != nil {
+			if key, ok := surfaceKey[row.SurfaceID]; ok && key != "" {
+				pr.UsageKey = key
+				if entry, ok := usageIdx[key]; ok {
+					pr.CorpusPassingRefs = entry.PubProdRefs + entry.PubTestRefs + entry.PrivProdRefs + entry.PrivTestRefs
+					pr.CorpusFailureRefs = entry.PubFailRefs
+					pr.CorpusPassingProjects = entry.PubProdProjects + entry.PubTestProjects + entry.PrivProdProjects + entry.PrivTestProjects
+				}
+			}
+		}
+
 		profile.Rows = append(profile.Rows, pr)
 		profile.ByDisposition[pr.Disposition]++
+
+		if pr.GapClass != "" {
+			profile.ByGapClass[pr.GapClass]++
+		}
 
 		if pr.Disposition == "" {
 			profile.UnclassifiedRows = append(profile.UnclassifiedRows, pr)
 		} else if pr.Disposition == DispositionHostedDeferred {
 			profile.HostedDeferred = append(profile.HostedDeferred, pr)
-		} else {
+		} else if pr.GapClass != "" {
 			profile.NonDeferredGaps = append(profile.NonDeferredGaps, pr)
 		}
 	}
 
 	profile.Total = len(profile.Rows)
 
-	// Join corpus usage if provided.
+	// Include full corpus usage in the profile.
 	if corpusUsage != nil {
-		for i := range profile.Rows {
-			// Determine the source row to extract namespace/type/member.
-			for _, ar := range apexRows {
-				if ar.SurfaceID == profile.Rows[i].SurfaceID {
-					profile.Rows[i].UsageKey = usageKeyForSurface(ar.Namespace, ar.TypeName, ar.MemberName)
-					break
-				}
-			}
-		}
 		profile.CorpusUsage = corpusUsage.Usage
 	}
 
@@ -215,9 +244,25 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	sort.Slice(profile.UnclassifiedRows, func(i, j int) bool {
 		return profile.UnclassifiedRows[i].SurfaceID < profile.UnclassifiedRows[j].SurfaceID
 	})
-	sort.Slice(profile.NonDeferredGaps, func(i, j int) bool {
-		return profile.NonDeferredGaps[i].SurfaceID < profile.NonDeferredGaps[j].SurfaceID
-	})
+	if corpusUsage != nil {
+		sort.Slice(profile.NonDeferredGaps, func(i, j int) bool {
+			a, b := &profile.NonDeferredGaps[i], &profile.NonDeferredGaps[j]
+			if a.CorpusPassingRefs != b.CorpusPassingRefs {
+				return a.CorpusPassingRefs > b.CorpusPassingRefs
+			}
+			if a.CorpusPassingProjects != b.CorpusPassingProjects {
+				return a.CorpusPassingProjects > b.CorpusPassingProjects
+			}
+			if a.CorpusFailureRefs != b.CorpusFailureRefs {
+				return a.CorpusFailureRefs > b.CorpusFailureRefs
+			}
+			return a.SurfaceID < b.SurfaceID
+		})
+	} else {
+		sort.Slice(profile.NonDeferredGaps, func(i, j int) bool {
+			return profile.NonDeferredGaps[i].SurfaceID < profile.NonDeferredGaps[j].SurfaceID
+		})
+	}
 	sort.Slice(profile.HostedDeferred, func(i, j int) bool {
 		return profile.HostedDeferred[i].SurfaceID < profile.HostedDeferred[j].SurfaceID
 	})
@@ -302,6 +347,50 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 	pr.Reason = "no matching policy rule"
 	pr.Obligation = "unclassified"
 	return pr
+}
+
+// classifyGap assigns a gap class (missing-shape, missing-behavior, missing-evidence)
+// to a classified row, or returns "" when the row is closed under its disposition.
+func classifyGap(row SupportProfileRow) string {
+	// Hosted-deferred rows never enter the gap queue.
+	if row.Disposition == DispositionHostedDeferred {
+		return ""
+	}
+
+	// Every non-deferred disposition requires a non-absent shape.
+	if row.LedgerShape == ShapeAbsent || row.LedgerShape == "" {
+		return GapMissingShape
+	}
+
+	// compile-shape-required closes when shape is present.
+	if row.Disposition == DispositionCompileShapeRequired {
+		return ""
+	}
+
+	// local-runtime-required and deterministic-mock-required:
+	// passive behavior closes when shape is present.
+	if row.Behavior == BehaviorPassive {
+		return ""
+	}
+
+	// none, stub-noop, unsupported, and partial are missing-behavior.
+	switch row.Behavior {
+	case BehaviorNone, BehaviorStubNoOp, BehaviorUnsupported, BehaviorPartial:
+		return GapMissingBehavior
+	}
+
+	// supported behavior requires executable correctness evidence.
+	if row.Behavior == BehaviorSupported {
+		switch row.Evidence {
+		case EvidenceFixture, EvidenceOracle, EvidenceFixtureAndOracle:
+			return "" // closed
+		case EvidenceNone, EvidenceDocs, EvidenceCorpus:
+			return GapMissingEvidence
+		}
+	}
+
+	// Default: missing behavior.
+	return GapMissingBehavior
 }
 
 // descendantMatch returns true when child starts with parent + ".",
