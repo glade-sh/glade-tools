@@ -19,7 +19,7 @@ func TestCB27ConnectAPIMockOverloadsAreSignatureKnownSupportedAndEvidenced(t *te
 		"apex:ConnectApi.ManagedContent.getAllManagedContent(String,Integer,Integer,String,String,Boolean)",
 		"apex:ConnectApi.ManagedContent.getManagedContentByContentKeys(String,List<String>,Integer,Integer,String,String,Boolean)",
 		"apex:ConnectApi.UserProfiles.setPhoto(String,String,ConnectApi.BinaryInput)",
-		"apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Object)",
+		"apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Integer)",
 	}
 	fixturePath := func(name string) string {
 		return filepath.Join("..", "..", "docs", "fixtures", name)
@@ -32,6 +32,10 @@ func TestCB27ConnectAPIMockOverloadsAreSignatureKnownSupportedAndEvidenced(t *te
 	if err != nil {
 		t.Fatal(err)
 	}
+	mock, err := compat.LoadFile(mockPath)
+	if err != nil {
+		t.Fatal(err)
+	}
 	tail, err := compat.LoadFile(tailPath)
 	if err != nil {
 		t.Fatal(err)
@@ -41,12 +45,24 @@ func TestCB27ConnectAPIMockOverloadsAreSignatureKnownSupportedAndEvidenced(t *te
 	for _, evidence := range identity.Evidence {
 		identityIDs[evidence.SurfaceID] = true
 	}
-	wantObjectID := targets[len(targets)-1]
-	if !identityIDs[wantObjectID] {
-		t.Errorf("identity fixture is missing corrected UserProfiles.setPhoto Object signature %s", wantObjectID)
+	wantIntegerID := targets[len(targets)-1]
+	objectID := "apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Object)"
+	if !identityIDs[wantIntegerID] {
+		t.Errorf("identity fixture is missing UserProfiles.setPhoto Integer signature %s", wantIntegerID)
 	}
-	if identityIDs["apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Integer)"] {
-		t.Errorf("identity fixture retains wrong UserProfiles.setPhoto Integer signature")
+	if identityIDs[objectID] {
+		t.Errorf("identity fixture retains stale UserProfiles.setPhoto Object signature")
+	}
+
+	mockIDs := make(map[string]bool, len(mock.Evidence))
+	for _, evidence := range mock.Evidence {
+		mockIDs[evidence.SurfaceID] = true
+	}
+	if !mockIDs[wantIntegerID] {
+		t.Errorf("local mock fixture is missing corrected UserProfiles.setPhoto Integer signature %s", wantIntegerID)
+	}
+	if mockIDs[objectID] {
+		t.Errorf("local mock fixture retains stale UserProfiles.setPhoto Object signature")
 	}
 
 	tailIDs := make(map[string]bool, len(tail.Evidence))
