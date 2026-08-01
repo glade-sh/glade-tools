@@ -379,7 +379,162 @@ func TestCorpusUsageBlockingErrors(t *testing.T) {
 	}
 }
 
-// 10. no private project name, path, or source excerpt appears in aggregate JSON
+// 8. generated/cache directories (.sfdx, .sf, .git, node_modules) are excluded
+func TestCorpusUsageExcludesGeneratedDirs(t *testing.T) {
+	root := t.TempDir()
+	ledger := ledgerWithNamespaces("Slack")
+
+	// Write a real project that does NOT reference Slack.
+	writeApexFile(t, root, "realproj", "Real.cls", `public class Real { public void m() { System.debug('x'); } }`)
+
+	// Write a cache file inside .sfdx that DOES reference Slack.
+	// Path mimics: .sfdx/tools/262/StandardApexLibrary/Slack/Fake.cls
+	writeApexFile(t, root, filepath.Join(".sfdx", "tools", "262", "StandardApexLibrary", "Slack"), "Fake.cls", `public class Fake { public void m() { Slack.call(); } }`)
+
+	cu, err := BuildCorpusUsage(ledger, root, "", "")
+	if err != nil {
+		t.Fatalf("BuildCorpusUsage: %v", err)
+	}
+
+	// Slack must have zero refs because the only file referencing it is in .sfdx.
+	for _, e := range cu.Usage {
+		if e.Namespace == "Slack" && e.TotalRefs() > 0 {
+			t.Fatalf("Slack should have zero refs (only in .sfdx cache), got %d", e.TotalRefs())
+		}
+	}
+}
+
+// 9. .git, .sf, and node_modules Apex-looking files are excluded
+func TestCorpusUsageExcludesVCSAndModules(t *testing.T) {
+	root := t.TempDir()
+	ledger := ledgerWithNamespaces("Database")
+
+	// One legitimate project that does NOT reference Database at all.
+	writeApexFile(t, root, "realproj", "Real.cls", `public class Real { public void m() { System.debug('x'); } }`)
+
+	// Write files in excluded directories that DO reference Database.
+	writeApexFile(t, root, filepath.Join(".git", "hooks"), "Hook.cls", `public class Hook { public void m() { Database.insert(null); } }`)
+	writeApexFile(t, root, filepath.Join(".sf", "orgs"), "Org.cls", `public class Org { public void m() { Database.insert(null); } }`)
+	writeApexFile(t, root, filepath.Join("node_modules", "sf-lib"), "Lib.cls", `public class Lib { public void m() { Database.insert(null); } }`)
+
+	cu, err := BuildCorpusUsage(ledger, root, "", "")
+	if err != nil {
+		t.Fatalf("BuildCorpusUsage: %v", err)
+	}
+
+	// Database must have zero refs — all referencing files are in excluded directories.
+	for _, e := range cu.Usage {
+		if e.Namespace == "Database" && e.TotalRefs() > 0 {
+			t.Fatalf("Database should have zero refs (all in excluded dirs), got %d", e.TotalRefs())
+		}
+	}
+}
+
+// 10. excluded cache contents do not change the root digest
+func TestCorpusUsageCacheDoesNotChangeDigest(t *testing.T) {
+	root := t.TempDir()
+	ledger := ledgerWithNamespaces("System")
+
+	// One legitimate project.
+	writeApexFile(t, root, "realproj", "App.cls", `public class App { public void m() { System.debug('x'); } }`)
+
+	cu, err := BuildCorpusUsage(ledger, root, "", "")
+	if err != nil {
+		t.Fatalf("BuildCorpusUsage: %v", err)
+	}
+	firstDigest := cu.PublicRootSHA256
+
+	// Now add files in .sfdx — same real files, plus cache noise.
+	writeApexFile(t, root, filepath.Join(".sfdx", "tools", "262", "StandardApexLibrary", "System"), "System.cls", `public class System { public void m() { System.assert(true); } }`)
+
+	cu2, err := BuildCorpusUsage(ledger, root, "", "")
+	if err != nil {
+		t.Fatalf("BuildCorpusUsage second: %v", err)
+	}
+
+	if cu2.PublicRootSHA256 != firstDigest {
+		t.Fatalf("root digest changed after adding .sfdx cache: was %s, now %s", firstDigest, cu2.PublicRootSHA256)
+	}
+}
+
+// 11. two source directories under one top-level project count as one project
+func TestCorpusUsageMergesSubdirsIntoSingleProject(t *testing.T) {
+	root := t.TempDir()
+	ledger := ledgerWithNamespaces("System")
+
+	// Two subdirectories under the same top-level project.
+	writeApexFile(t, root, filepath.Join("myproj", "src", "classes"), "Foo.cls", `public class Foo { public void m() { System.debug('x'); } }`)
+	writeApexFile(t, root, filepath.Join("myproj", "src", "triggers"), "Bar.trigger", `trigger Bar on Account (before insert) { System.debug('x'); }`)
+
+	cu, err := BuildCorpusUsage(ledger, root, "", "")
+	if err != nil {
+		t.Fatalf("BuildCorpusUsage: %v", err)
+	}
+
+	for _, e := range cu.Usage {
+		if e.Namespace != "System" {
+			continue
+		}
+		if e.PubProdProjects != 1 {
+			t.Fatalf("System PubProdProjects: want 1 project (myproj), got %d", e.PubProdProjects)
+		}
+		if e.PubProdFiles != 2 {
+			t.Fatalf("System PubProdFiles: want 2 files, got %d", e.PubProdFiles)
+		}
+		return
+	}
+	t.Fatalf("System entry not found in usage")
+}
+
+// 12. case-insensitive namespace matching — system.assert and System.assert merge
+func TestCorpusUsageCaseInsensitiveNamespaceMatching(t *testing.T) {
+	root := t.TempDir()
+	ledger := ledgerWithNamespaces("System")
+
+	// Use both casing variants.
+	writeApexFile(t, root, "proj", "Case.cls", `
+public class Case {
+    public void m() {
+        system.assert(true);
+        System.assert(true);
+        system.assertEquals(1, 1);
+    }
+}
+`)
+
+	cu, err := BuildCorpusUsage(ledger, root, "", "")
+	if err != nil {
+		t.Fatalf("BuildCorpusUsage: %v", err)
+	}
+
+	// All references must be under the canonical "System" key.
+	hasSystem := false
+	for _, e := range cu.Usage {
+		if strings.HasPrefix(e.UsageKey, "System") {
+			hasSystem = true
+		}
+		// No lowercase "system" key should exist.
+		if strings.HasPrefix(e.UsageKey, "system") {
+			t.Fatalf("found lowercase usage key %q — want canonical System", e.UsageKey)
+		}
+	}
+	if !hasSystem {
+		t.Fatalf("no System entries found in usage")
+	}
+
+	// Verify specific counts: 3 System namespace-level references.
+	for _, e := range cu.Usage {
+		if e.UsageKey == "System" {
+			if e.TotalRefs() != 3 {
+				t.Fatalf("System: want 3 refs (2x assert + 1x assertEquals), got %d", e.TotalRefs())
+			}
+			return
+		}
+	}
+	t.Fatalf("System entry not found in usage")
+}
+
+// 13. no private project name, path, or source excerpt appears in aggregate JSON
 func TestCorpusUsageNoPrivateLeakage(t *testing.T) {
 	root := t.TempDir()
 	ledger := ledgerWithNamespaces("System")

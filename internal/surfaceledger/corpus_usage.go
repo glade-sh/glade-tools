@@ -51,17 +51,18 @@ const (
 )
 
 type corpusScanner struct {
-	namespaces map[string]bool // candidate namespace set from ledger
+	namespaces map[string]string // lowercase → canonical namespace from ledger
 }
 
 // BuildCorpusUsage scans Apex source under labeled roots and returns
 // aggregate usage counts for every namespace/type/member derived from the ledger.
 func BuildCorpusUsage(ledgerRows []SurfaceLedgerRow, publicRoot, publicFailRoot, privateRoot string) (CorpusUsage, error) {
 	// Derive candidate namespaces from Apex rows.
-	namespaces := make(map[string]bool)
+	// Map lowercase → canonical for case-insensitive matching.
+	namespaces := make(map[string]string)
 	for _, row := range ledgerRows {
 		if row.Product == ProductApex && row.Namespace != "" {
-			namespaces[row.Namespace] = true
+			namespaces[strings.ToLower(row.Namespace)] = row.Namespace
 		}
 	}
 	if len(namespaces) == 0 {
@@ -204,7 +205,18 @@ type apexFile struct {
 	project string
 }
 
-// scanApexFiles walks root and returns all .cls and .trigger files.
+// isExcludedDir returns true for generated, cache, and VCS directories.
+func isExcludedDir(name string) bool {
+	switch name {
+	case ".git", ".sfdx", ".sf", "node_modules":
+		return true
+	}
+	return false
+}
+
+// scanApexFiles walks root and returns all .cls and .trigger files,
+// skipping excluded directories and using the first path component
+// beneath root as the project identity.
 func scanApexFiles(root string) ([]apexFile, error) {
 	var files []apexFile
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
@@ -212,6 +224,9 @@ func scanApexFiles(root string) ([]apexFile, error) {
 			return err
 		}
 		if d.IsDir() {
+			if isExcludedDir(d.Name()) {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		name := d.Name()
@@ -223,11 +238,14 @@ func scanApexFiles(root string) ([]apexFile, error) {
 		if err != nil {
 			rel = path
 		}
+		// First path component beneath root is the project identity.
+		parts := strings.SplitN(rel, string(filepath.Separator), 2)
+		project := parts[0]
 		files = append(files, apexFile{
 			absPath: path,
 			relPath: rel,
 			name:    name,
-			project: filepath.Dir(path),
+			project: project,
 		})
 		return nil
 	})
@@ -325,6 +343,7 @@ type refKey struct {
 }
 
 // findRefs finds all namespace references in stripped code.
+// Namespace matching is case-insensitive; output uses canonical ledger spelling.
 func (s *corpusScanner) findRefs(stripped string, localTypes map[string]bool) []refKey {
 	// Split on non-identifier-non-dot characters.
 	var fragments []string
@@ -352,29 +371,30 @@ func (s *corpusScanner) findRefs(stripped string, localTypes map[string]bool) []
 		if len(parts) < 1 {
 			continue
 		}
-		first := parts[0]
-		if !s.namespaces[first] {
+		firstLower := strings.ToLower(parts[0])
+		canonical, ok := s.namespaces[firstLower]
+		if !ok {
 			continue
 		}
 		// Shadow check: if this project has a local type with the same name as
-		// the namespace, skip counting.
-		if localTypes[strings.ToLower(first)] {
+		// the namespace (case-insensitive), skip counting.
+		if localTypes[firstLower] {
 			continue
 		}
 
-		// Namespace-level ref.
-		refs = append(refs, refKey{usageKey: first, namespace: first})
+		// Namespace-level ref — use canonical spelling.
+		refs = append(refs, refKey{usageKey: canonical, namespace: canonical})
 
 		// Namespace.Type ref.
 		if len(parts) >= 2 {
-			nsTypeKey := first + "." + parts[1]
-			refs = append(refs, refKey{usageKey: nsTypeKey, namespace: first, typeName: parts[1]})
+			nsTypeKey := canonical + "." + parts[1]
+			refs = append(refs, refKey{usageKey: nsTypeKey, namespace: canonical, typeName: parts[1]})
 		}
 
 		// Namespace.Type.member ref.
 		if len(parts) >= 3 {
-			nsTypeMemKey := first + "." + parts[1] + "." + parts[2]
-			refs = append(refs, refKey{usageKey: nsTypeMemKey, namespace: first, typeName: parts[1], memberName: parts[2]})
+			nsTypeMemKey := canonical + "." + parts[1] + "." + parts[2]
+			refs = append(refs, refKey{usageKey: nsTypeMemKey, namespace: canonical, typeName: parts[1], memberName: parts[2]})
 		}
 	}
 	return refs
