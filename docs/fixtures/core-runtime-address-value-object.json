@@ -2,6 +2,11 @@
   "name": "core-runtime-address-value-object",
   "evidence": [
     {
+      "surfaceId": "apex:System.Address.getDistance()",
+      "symbol": "Address.getDistance",
+      "kind": "exec"
+    },
+    {
       "surfaceId": "apex:System.Address.getStreet()",
       "symbol": "Address.getStreet",
       "kind": "exec"

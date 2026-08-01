@@ -2,12 +2,6 @@
   "name": "core-feature-management-constructor-unsupported",
   "evidence": [
     {
-      "symbol": "FeatureManagement",
-      "surfaceId": "apex:System.FeatureManagement",
-      "kind": "exec",
-      "notes": "FeatureManagement is a static platform surface; direct construction is not a supported Apex contract."
-    },
-    {
       "symbol": "FeatureManagement constructor",
       "surfaceId": "apex:System.FeatureManagement.FeatureManagement()",
       "kind": "exec",
