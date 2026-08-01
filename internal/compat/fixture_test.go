@@ -80,6 +80,9 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("apex-language-rules") {
 		t.Fatal("Apex language rule catalog should stay out of documented fixture execution")
 	}
+	if shouldRunDocumentedFixture("apex-local-support-policy") {
+		t.Fatal("apex-local-support-policy should stay out of documented fixture execution")
+	}
 	if shouldRunDocumentedFixture("salesforce-runtime-correctness") {
 		t.Fatal("Salesforce runtime correctness catalog should stay out of documented fixture execution")
 	}
@@ -162,6 +165,7 @@ func documentedFixturePaths(t *testing.T) []string {
 func skipDocumentedFixture(name string) bool {
 	switch name {
 	case "apex-language-rules",
+		"apex-local-support-policy",
 		"async-test-harness-local-evidence",
 		"core-runtime-json-dto-lwc-evidence",
 		"data-platform-schema-lwc-record-wire-evidence",
