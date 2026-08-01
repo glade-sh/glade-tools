@@ -191,7 +191,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	// Detect stale member exceptions.
 	for _, rule := range policy.Rules {
 		for _, exc := range rule.MemberExceptions {
-			key := ruleMatchKey(rule.Namespace, rule.TypeFamily, exc.TypeName, exc.MemberName)
+			key := ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName)
 			if !exceptionMatched[key] {
 				validationErrors = append(validationErrors,
 					fmt.Sprintf("stale member exception: %s.%s (namespace=%s typeFamily=%s)",
@@ -273,7 +273,7 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 			excMemberMatch := exc.MemberName == "" || strings.EqualFold(row.MemberName, exc.MemberName)
 
 			if excTypeMatch && excMemberMatch {
-				exceptionMatched[ruleMatchKey(rule.Namespace, rule.TypeFamily, exc.TypeName, exc.MemberName)] = true
+				exceptionMatched[ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName)] = true
 				disp := exc.Disposition
 				if disp == "" {
 					disp = rule.Disposition
@@ -346,10 +346,13 @@ func ruleMatchLabel(rule SupportPolicyRule, isException bool) string {
 	return "typeFamily=" + rule.TypeFamily
 }
 
-func ruleMatchKey(namespace, typeFamily, typeName, memberName string) string {
+func ruleMatchKey(namespace, typeFamily, surfacePrefix, typeName, memberName string) string {
 	scope := namespace
 	if scope == "" {
 		scope = typeFamily
+	}
+	if scope == "" {
+		scope = surfacePrefix
 	}
 	return scope + ":" + typeName + "." + memberName
 }

@@ -734,7 +734,7 @@ func TestSupportProfileSurfacePrefixNoMatch(t *testing.T) {
 
 	profile := ComputeSupportProfile(rows, policy, nil)
 
-	// The System.String row does not start with apeax-language: — it should be unclassified.
+	// The System.String row does not start with apex-language: — it should be unclassified.
 	if len(profile.UnclassifiedRows) != 1 {
 		t.Fatalf("unclassified: want 1 got %d", len(profile.UnclassifiedRows))
 	}
@@ -781,5 +781,109 @@ func TestSupportProfileDuplicateSurfacePrefix(t *testing.T) {
 	}
 	if !foundOverlap {
 		t.Fatalf("expected overlapping surface-prefix validation error, got: %v", profile.ValidationErrors)
+	}
+}
+
+// SF-CB14 RED 1: a surfacePrefix rule with a matched member exception is not reported stale.
+func TestSupportProfileSurfacePrefixMemberExceptionNotStale(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				SurfacePrefix: "apex:Approval.process",
+				Disposition:   DispositionHostedDeferred,
+				Reason:        "approval process hosted",
+				MemberExceptions: []SupportPolicyMemberException{
+					{
+						TypeName:    "SubmitAction",
+						MemberName:  "submit",
+						Disposition: DispositionDeterministicMockRequired,
+						Reason:      "observed corpus usage",
+					},
+				},
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		apexMemberRow("apex:Approval.process.SubmitAction.submit", "Approval.process", "SubmitAction", "submit"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 1 {
+		t.Fatalf("total: want 1 got %d", profile.Total)
+	}
+	if profile.Rows[0].Disposition != DispositionDeterministicMockRequired {
+		t.Fatalf("disposition: want deterministic-mock-required got %s", profile.Rows[0].Disposition)
+	}
+	if !strings.Contains(profile.Rows[0].MatchRule, "member exception") {
+		t.Fatalf("match rule must indicate member exception, got %q", profile.Rows[0].MatchRule)
+	}
+
+	// Must NOT report stale member exception.
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "stale member exception") {
+			t.Fatalf("unexpected stale member exception: %s", err)
+		}
+	}
+}
+
+// SF-CB14 RED 2: exception keys for two distinct surface prefixes remain distinct.
+func TestSupportProfileSurfacePrefixDistinctExceptionKeys(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				SurfacePrefix: "apex:ConnectApi.",
+				Disposition:   DispositionHostedDeferred,
+				Reason:        "connect-api hosted",
+				MemberExceptions: []SupportPolicyMemberException{
+					{
+						TypeName:    "Organization",
+						MemberName:  "getSettings",
+						Disposition: DispositionDeterministicMockRequired,
+						Reason:      "org settings mock",
+					},
+				},
+			},
+			{
+				SurfacePrefix: "apex:Connect.",
+				Disposition:   DispositionHostedDeferred,
+				Reason:        "connect hosted",
+				MemberExceptions: []SupportPolicyMemberException{
+					{
+						TypeName:    "Organization",
+						MemberName:  "getSettings",
+						Disposition: DispositionDeterministicMockRequired,
+						Reason:      "connect org settings mock",
+					},
+				},
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		apexMemberRow("apex:ConnectApi.Organization.getSettings", "ConnectApi", "Organization", "getSettings"),
+		apexMemberRow("apex:Connect.Organization.getSettings", "Connect", "Organization", "getSettings"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 2 {
+		t.Fatalf("total: want 2 got %d", profile.Total)
+	}
+
+	// Both rows should be classified by their respective member exceptions.
+	for _, r := range profile.Rows {
+		if r.Disposition != DispositionDeterministicMockRequired {
+			t.Fatalf("row %s: want deterministic-mock-required got %s", r.SurfaceID, r.Disposition)
+		}
+		if !strings.Contains(r.MatchRule, "member exception") {
+			t.Fatalf("row %s: match rule must indicate member exception, got %q", r.SurfaceID, r.MatchRule)
+		}
+	}
+
+	// Must NOT report stale member exceptions — each surfacePrefix scopes its own key.
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "stale member exception") {
+			t.Fatalf("unexpected stale member exception: %s", err)
+		}
 	}
 }

@@ -41,6 +41,21 @@
       "reason": "EventBus publish and trigger surface"
     },
     {
+      "namespace": "Apex",
+      "disposition": "local-runtime-required",
+      "reason": "Apex entry-point and execution surface"
+    },
+    {
+      "namespace": "Package",
+      "disposition": "local-runtime-required",
+      "reason": "Package version and dependency surface"
+    },
+    {
+      "namespace": "QueueableDuplicateSignature",
+      "disposition": "local-runtime-required",
+      "reason": "Queueable duplicate detection surface"
+    },
+    {
       "namespace": "Messaging",
       "disposition": "deterministic-mock-required",
       "reason": "Messaging email send and render — deterministic mock"
@@ -49,6 +64,141 @@
       "namespace": "Cache",
       "disposition": "deterministic-mock-required",
       "reason": "Cache partition and session — deterministic mock"
+    },
+    {
+      "namespace": "Metadata",
+      "disposition": "deterministic-mock-required",
+      "reason": "shallow Metadata operations — deterministic mock"
+    },
+    {
+      "namespace": "Auth",
+      "disposition": "deterministic-mock-required",
+      "reason": "shallow Auth session — deterministic mock"
+    },
+    {
+      "namespace": "Flow",
+      "disposition": "deterministic-mock-required",
+      "reason": "Flow interview contracts — deterministic mock"
+    },
+    {
+      "namespace": "Datacloud",
+      "disposition": "deterministic-mock-required",
+      "reason": "Datacloud — deterministic mock"
+    },
+    {
+      "namespace": "IsvPartners",
+      "disposition": "deterministic-mock-required",
+      "reason": "ISV partners surface — deterministic mock"
+    },
+    {
+      "namespace": "Answers",
+      "disposition": "deterministic-mock-required",
+      "reason": "Answers community surface — deterministic mock"
+    },
+    {
+      "namespace": "BusinessRule",
+      "disposition": "deterministic-mock-required",
+      "reason": "BusinessRule evaluation surface — deterministic mock"
+    },
+    {
+      "namespace": "Canvas",
+      "disposition": "deterministic-mock-required",
+      "reason": "Canvas app surface — deterministic mock"
+    },
+    {
+      "namespace": "Context",
+      "disposition": "deterministic-mock-required",
+      "reason": "Context provider surface — deterministic mock"
+    },
+    {
+      "namespace": "Process",
+      "disposition": "deterministic-mock-required",
+      "reason": "Process and approval surface — deterministic mock"
+    },
+    {
+      "namespace": "Search",
+      "disposition": "deterministic-mock-required",
+      "reason": "Search surface — deterministic mock"
+    },
+    {
+      "namespace": "UserProvisioning",
+      "disposition": "deterministic-mock-required",
+      "reason": "User provisioning surface — deterministic mock"
+    },
+    {
+      "namespace": "applauncher",
+      "disposition": "deterministic-mock-required",
+      "reason": "App Launcher surface — deterministic mock"
+    },
+    {
+      "namespace": "functions",
+      "disposition": "deterministic-mock-required",
+      "reason": "Functions surface — deterministic mock"
+    },
+    {
+      "namespace": "orchestration",
+      "disposition": "deterministic-mock-required",
+      "reason": "Orchestration surface — deterministic mock"
+    },
+    {
+      "namespace": "pref",
+      "disposition": "deterministic-mock-required",
+      "reason": "Preference surface — deterministic mock"
+    },
+    {
+      "namespace": "setup",
+      "disposition": "deterministic-mock-required",
+      "reason": "Setup surface — deterministic mock"
+    },
+    {
+      "namespace": "workflow",
+      "disposition": "deterministic-mock-required",
+      "reason": "Workflow surface — deterministic mock"
+    },
+    {
+      "namespace": "Reports",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "DataSource",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "VisualEditor",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "DataWeave",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "Approval",
+      "disposition": "compile-shape-required",
+      "reason": "compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "Invocable",
+      "disposition": "compile-shape-required",
+      "reason": "Invocable.Action — compile shape unless runtime evidence elevates"
+    },
+    {
+      "namespace": "Component",
+      "disposition": "compile-shape-required",
+      "reason": "Component callback interface — compile shape"
+    },
+    {
+      "namespace": "Sfc",
+      "disposition": "compile-shape-required",
+      "reason": "SFC component surface — compile shape"
+    },
+    {
+      "namespace": "TxnSecurity",
+      "disposition": "compile-shape-required",
+      "reason": "Transaction security callback — compile shape"
     },
     {
       "namespace": "ConnectApi",
@@ -86,61 +236,6 @@
           "reason": "observed corpus usage"
         }
       ]
-    },
-    {
-      "namespace": "Metadata",
-      "disposition": "deterministic-mock-required",
-      "reason": "shallow Metadata operations — deterministic mock"
-    },
-    {
-      "namespace": "Auth",
-      "disposition": "deterministic-mock-required",
-      "reason": "shallow Auth session — deterministic mock"
-    },
-    {
-      "namespace": "Flow",
-      "disposition": "deterministic-mock-required",
-      "reason": "Flow interview contracts — deterministic mock"
-    },
-    {
-      "namespace": "Datacloud",
-      "disposition": "deterministic-mock-required",
-      "reason": "Datacloud — deterministic mock"
-    },
-    {
-      "namespace": "IsvPartners",
-      "disposition": "deterministic-mock-required",
-      "reason": "ISV partners surface — deterministic mock"
-    },
-    {
-      "namespace": "Reports",
-      "disposition": "compile-shape-required",
-      "reason": "compile shape unless runtime evidence elevates"
-    },
-    {
-      "namespace": "DataSource",
-      "disposition": "compile-shape-required",
-      "reason": "compile shape unless runtime evidence elevates"
-    },
-    {
-      "namespace": "VisualEditor",
-      "disposition": "compile-shape-required",
-      "reason": "compile shape unless runtime evidence elevates"
-    },
-    {
-      "namespace": "DataWeave",
-      "disposition": "compile-shape-required",
-      "reason": "compile shape unless runtime evidence elevates"
-    },
-    {
-      "namespace": "Approval",
-      "disposition": "compile-shape-required",
-      "reason": "compile shape unless runtime evidence elevates"
-    },
-    {
-      "namespace": "Invocable",
-      "disposition": "compile-shape-required",
-      "reason": "Invocable.Action — compile shape unless runtime evidence elevates"
     },
     {
       "namespace": "Slack",
@@ -206,6 +301,546 @@
       "typeFamily": "omni*",
       "disposition": "hosted-deferred",
       "reason": "OmniStudio hosted deferred"
+    },
+    {
+      "namespace": "RevSalesTrxn",
+      "disposition": "hosted-deferred",
+      "reason": "Revenue sales transaction — hosted deferred"
+    },
+    {
+      "namespace": "wavetemplate",
+      "disposition": "hosted-deferred",
+      "reason": "Wave template — hosted deferred"
+    },
+    {
+      "namespace": "id_verification",
+      "disposition": "hosted-deferred",
+      "reason": "ID verification — hosted deferred"
+    },
+    {
+      "namespace": "AiCopilot",
+      "disposition": "hosted-deferred",
+      "reason": "AI Copilot — hosted deferred"
+    },
+    {
+      "namespace": "wave",
+      "disposition": "hosted-deferred",
+      "reason": "Wave analytics — hosted deferred"
+    },
+    {
+      "namespace": "NLPPredictions",
+      "disposition": "hosted-deferred",
+      "reason": "NLP predictions — hosted deferred"
+    },
+    {
+      "namespace": "lxscheduler",
+      "disposition": "hosted-deferred",
+      "reason": "LX scheduler — hosted deferred"
+    },
+    {
+      "namespace": "customer_intelligence_deploy_datakit",
+      "disposition": "hosted-deferred",
+      "reason": "Customer intelligence deploy datakit — hosted deferred"
+    },
+    {
+      "namespace": "sfsqlquery",
+      "disposition": "hosted-deferred",
+      "reason": "SF SQL query — hosted deferred"
+    },
+    {
+      "namespace": "pref_center",
+      "disposition": "hosted-deferred",
+      "reason": "Preference center — hosted deferred"
+    },
+    {
+      "namespace": "placequote",
+      "disposition": "hosted-deferred",
+      "reason": "Place quote — hosted deferred"
+    },
+    {
+      "namespace": "licensing",
+      "disposition": "hosted-deferred",
+      "reason": "Licensing — hosted deferred"
+    },
+    {
+      "namespace": "inventorypricing",
+      "disposition": "hosted-deferred",
+      "reason": "Inventory pricing — hosted deferred"
+    },
+    {
+      "namespace": "SF_Archive",
+      "disposition": "hosted-deferred",
+      "reason": "SF Archive — hosted deferred"
+    },
+    {
+      "namespace": "compression",
+      "disposition": "hosted-deferred",
+      "reason": "Compression — hosted deferred"
+    },
+    {
+      "namespace": "ind_mfg_sample_mgmt_apex",
+      "disposition": "hosted-deferred",
+      "reason": "Industry manufacturing sample management — hosted deferred"
+    },
+    {
+      "namespace": "ind_mfg_ai_apex",
+      "disposition": "hosted-deferred",
+      "reason": "Industry manufacturing AI — hosted deferred"
+    },
+    {
+      "namespace": "documentreader",
+      "disposition": "hosted-deferred",
+      "reason": "Document reader — hosted deferred"
+    },
+    {
+      "namespace": "DataRetrieval",
+      "disposition": "hosted-deferred",
+      "reason": "Data retrieval — hosted deferred"
+    },
+    {
+      "namespace": "sfdc_surveys",
+      "disposition": "hosted-deferred",
+      "reason": "SFDC surveys — hosted deferred"
+    },
+    {
+      "namespace": "Support",
+      "disposition": "hosted-deferred",
+      "reason": "Support surface — hosted deferred"
+    },
+    {
+      "namespace": "RoboticProcAutom",
+      "disposition": "hosted-deferred",
+      "reason": "Robotic process automation — hosted deferred"
+    },
+    {
+      "namespace": "formulaeval",
+      "disposition": "hosted-deferred",
+      "reason": "Formula evaluation — hosted deferred"
+    },
+    {
+      "namespace": "publicsectrsltn",
+      "disposition": "hosted-deferred",
+      "reason": "Public sector solution — hosted deferred"
+    },
+    {
+      "namespace": "ExternalConnect",
+      "disposition": "hosted-deferred",
+      "reason": "External connect — hosted deferred"
+    },
+    {
+      "namespace": "Social",
+      "disposition": "hosted-deferred",
+      "reason": "Social — hosted deferred"
+    },
+    {
+      "namespace": "ime_mrm",
+      "disposition": "hosted-deferred",
+      "reason": "IME MRM — hosted deferred"
+    },
+    {
+      "namespace": "FlowTemplate",
+      "disposition": "hosted-deferred",
+      "reason": "Flow template — hosted deferred"
+    },
+    {
+      "namespace": "fscwmgen",
+      "disposition": "hosted-deferred",
+      "reason": "FSC WM gen — hosted deferred"
+    },
+    {
+      "namespace": "sfdc_enablement",
+      "disposition": "hosted-deferred",
+      "reason": "SFDC enablement — hosted deferred"
+    },
+    {
+      "namespace": "LiveAgent",
+      "disposition": "hosted-deferred",
+      "reason": "Live agent — hosted deferred"
+    },
+    {
+      "namespace": "scrt",
+      "disposition": "hosted-deferred",
+      "reason": "SCRT — hosted deferred"
+    },
+    {
+      "namespace": "sfdc",
+      "disposition": "hosted-deferred",
+      "reason": "SFDC internal — hosted deferred"
+    },
+    {
+      "namespace": "mlplatform",
+      "disposition": "hosted-deferred",
+      "reason": "ML platform — hosted deferred"
+    },
+    {
+      "namespace": "InvoiceWriteOff",
+      "disposition": "hosted-deferred",
+      "reason": "Invoice write-off — hosted deferred"
+    },
+    {
+      "namespace": "fschousehold",
+      "disposition": "hosted-deferred",
+      "reason": "FSC household — hosted deferred"
+    },
+    {
+      "namespace": "RevSignaling",
+      "disposition": "hosted-deferred",
+      "reason": "Revenue signaling — hosted deferred"
+    },
+    {
+      "namespace": "embeddedMessaging",
+      "disposition": "hosted-deferred",
+      "reason": "Embedded messaging — hosted deferred"
+    },
+    {
+      "namespace": "ApptBooking",
+      "disposition": "hosted-deferred",
+      "reason": "Appointment booking — hosted deferred"
+    },
+    {
+      "namespace": "RulesAppln",
+      "disposition": "hosted-deferred",
+      "reason": "Rules application — hosted deferred"
+    },
+    {
+      "namespace": "IssueCreditMemo",
+      "disposition": "hosted-deferred",
+      "reason": "Issue credit memo — hosted deferred"
+    },
+    {
+      "namespace": "renew_assets_summary",
+      "disposition": "hosted-deferred",
+      "reason": "Renew assets summary — hosted deferred"
+    },
+    {
+      "namespace": "industries_docgen",
+      "disposition": "hosted-deferred",
+      "reason": "Industries document generation — hosted deferred"
+    },
+    {
+      "namespace": "KbManagement",
+      "disposition": "hosted-deferred",
+      "reason": "Knowledge base management — hosted deferred"
+    },
+    {
+      "namespace": "flowuiruntime",
+      "disposition": "hosted-deferred",
+      "reason": "Flow UI runtime — hosted deferred"
+    },
+    {
+      "namespace": "embeddedService",
+      "disposition": "hosted-deferred",
+      "reason": "Embedded service — hosted deferred"
+    },
+    {
+      "namespace": "HlthcrBilling",
+      "disposition": "hosted-deferred",
+      "reason": "Healthcare billing — hosted deferred"
+    },
+    {
+      "namespace": "nlpservice",
+      "disposition": "hosted-deferred",
+      "reason": "NLP service — hosted deferred"
+    },
+    {
+      "namespace": "setup_service_itsm_teams",
+      "disposition": "hosted-deferred",
+      "reason": "Setup service ITSM teams — hosted deferred"
+    },
+    {
+      "namespace": "embeddedai",
+      "disposition": "hosted-deferred",
+      "reason": "Embedded AI — hosted deferred"
+    },
+    {
+      "namespace": "arc_swaps",
+      "disposition": "hosted-deferred",
+      "reason": "ARC swaps — hosted deferred"
+    },
+    {
+      "namespace": "fsccashflow",
+      "disposition": "hosted-deferred",
+      "reason": "FSC cash flow — hosted deferred"
+    },
+    {
+      "namespace": "ChatterAnswers",
+      "disposition": "hosted-deferred",
+      "reason": "Chatter answers — hosted deferred"
+    },
+    {
+      "namespace": "industries_record_rollup",
+      "disposition": "hosted-deferred",
+      "reason": "Industries record rollup — hosted deferred"
+    },
+    {
+      "namespace": "Readiness",
+      "disposition": "hosted-deferred",
+      "reason": "Readiness — hosted deferred"
+    },
+    {
+      "namespace": "EnhancedChannel",
+      "disposition": "hosted-deferred",
+      "reason": "Enhanced channel — hosted deferred"
+    },
+    {
+      "namespace": "ise_bots_apex",
+      "disposition": "hosted-deferred",
+      "reason": "ISE bots Apex — hosted deferred"
+    },
+    {
+      "namespace": "industries_clm",
+      "disposition": "hosted-deferred",
+      "reason": "Industries CLM — hosted deferred"
+    },
+    {
+      "namespace": "industriesNlpSvc",
+      "disposition": "hosted-deferred",
+      "reason": "Industries NLP service — hosted deferred"
+    },
+    {
+      "namespace": "InternalTestAction",
+      "disposition": "hosted-deferred",
+      "reason": "Internal test action — hosted deferred"
+    },
+    {
+      "namespace": "ise",
+      "disposition": "hosted-deferred",
+      "reason": "ISE — hosted deferred"
+    },
+    {
+      "namespace": "chatbots",
+      "disposition": "hosted-deferred",
+      "reason": "Chatbots — hosted deferred"
+    },
+    {
+      "namespace": "setup_flow_performance",
+      "disposition": "hosted-deferred",
+      "reason": "Setup flow performance — hosted deferred"
+    },
+    {
+      "namespace": "setup_service_livemessage",
+      "disposition": "hosted-deferred",
+      "reason": "Setup service live message — hosted deferred"
+    },
+    {
+      "namespace": "sales_einstein_sdr",
+      "disposition": "hosted-deferred",
+      "reason": "Sales Einstein SDR — hosted deferred"
+    },
+    {
+      "namespace": "networkspulse",
+      "disposition": "hosted-deferred",
+      "reason": "Network pulse — hosted deferred"
+    },
+    {
+      "namespace": "data_mask",
+      "disposition": "hosted-deferred",
+      "reason": "Data mask — hosted deferred"
+    },
+    {
+      "namespace": "sfdatakit",
+      "disposition": "hosted-deferred",
+      "reason": "SFDatakit namespace — hosted deferred"
+    },
+    {
+      "namespace": "ind_docgen_api",
+      "disposition": "hosted-deferred",
+      "reason": "Industry document generation API — hosted deferred"
+    },
+    {
+      "namespace": "aiaccelerator",
+      "disposition": "hosted-deferred",
+      "reason": "AI accelerator — hosted deferred"
+    },
+    {
+      "namespace": "mapslite",
+      "disposition": "hosted-deferred",
+      "reason": "Maps lite — hosted deferred"
+    },
+    {
+      "namespace": "SubMgmt",
+      "disposition": "hosted-deferred",
+      "reason": "Subscription management — hosted deferred"
+    },
+    {
+      "namespace": "regrelloapex",
+      "disposition": "hosted-deferred",
+      "reason": "Regrello Apex — hosted deferred"
+    },
+    {
+      "namespace": "ListConnectApi",
+      "disposition": "hosted-deferred",
+      "reason": "List ConnectApi — hosted deferred"
+    },
+    {
+      "namespace": "malwaredefense",
+      "disposition": "hosted-deferred",
+      "reason": "Malware defense — hosted deferred"
+    },
+    {
+      "namespace": "BusRuleDtMig",
+      "disposition": "hosted-deferred",
+      "reason": "Business rule data migration — hosted deferred"
+    },
+    {
+      "namespace": "AgentInvAction",
+      "disposition": "hosted-deferred",
+      "reason": "Agent invocable action — hosted deferred"
+    },
+    {
+      "namespace": "umaForms",
+      "disposition": "hosted-deferred",
+      "reason": "UMA forms — hosted deferred"
+    },
+    {
+      "namespace": "herokuintegration",
+      "disposition": "hosted-deferred",
+      "reason": "Heroku integration — hosted deferred"
+    },
+    {
+      "namespace": "WaveRevenueInsights",
+      "disposition": "hosted-deferred",
+      "reason": "Wave revenue insights — hosted deferred"
+    },
+    {
+      "namespace": "TerritoryMgmt",
+      "disposition": "hosted-deferred",
+      "reason": "Territory management — hosted deferred"
+    },
+    {
+      "namespace": "FslActions",
+      "disposition": "hosted-deferred",
+      "reason": "FSL actions — hosted deferred"
+    },
+    {
+      "namespace": "version55",
+      "disposition": "hosted-deferred",
+      "reason": "Version 55 internal — hosted deferred"
+    },
+    {
+      "namespace": "version54",
+      "disposition": "hosted-deferred",
+      "reason": "Version 54 internal — hosted deferred"
+    },
+    {
+      "namespace": "theusermakingthecallmusthavecreatedthedefinitionorhaveViewAllDatapermission",
+      "disposition": "hosted-deferred",
+      "reason": "Restriction rule internal — hosted deferred"
+    },
+    {
+      "namespace": "sfdc_checkout",
+      "disposition": "hosted-deferred",
+      "reason": "SFDC checkout — hosted deferred"
+    },
+    {
+      "namespace": "ordeletethedefinition",
+      "disposition": "hosted-deferred",
+      "reason": "Restriction rule internal — hosted deferred"
+    },
+    {
+      "namespace": "inversion55",
+      "disposition": "hosted-deferred",
+      "reason": "In version 55 internal — hosted deferred"
+    },
+    {
+      "namespace": "fsccashold",
+      "disposition": "hosted-deferred",
+      "reason": "FSC cash hold — hosted deferred"
+    },
+    {
+      "namespace": "DatetimeConnectApi",
+      "disposition": "hosted-deferred",
+      "reason": "Datetime ConnectApi — hosted deferred"
+    },
+    {
+      "namespace": "Connect",
+      "disposition": "hosted-deferred",
+      "reason": "Connect — hosted deferred"
+    },
+    {
+      "surfacePrefix": "apex-language:",
+      "disposition": "local-runtime-required",
+      "reason": "Apex language construct"
+    },
+    {
+      "surfacePrefix": "apex:RestResource",
+      "disposition": "local-runtime-required",
+      "reason": "RestResource annotation surface"
+    },
+    {
+      "surfacePrefix": "apex:System.BusinessHours",
+      "disposition": "local-runtime-required",
+      "reason": "System.BusinessHours local runtime"
+    },
+    {
+      "surfacePrefix": "apex:System.Exact",
+      "disposition": "local-runtime-required",
+      "reason": "System.Exact local runtime"
+    },
+    {
+      "surfacePrefix": "apex:System.PageReference",
+      "disposition": "local-runtime-required",
+      "reason": "System.PageReference local runtime"
+    },
+    {
+      "surfacePrefix": "unknown:salesforce_app_limits_platform_soslsoql",
+      "disposition": "local-runtime-required",
+      "reason": "SOQL/SOSL limit surface"
+    },
+    {
+      "surfacePrefix": "unknown:supported_soql",
+      "disposition": "local-runtime-required",
+      "reason": "Supported SOQL surface"
+    },
+    {
+      "surfacePrefix": "unknown:unsupported_soql_statements",
+      "disposition": "local-runtime-required",
+      "reason": "Unsupported SOQL statements surface"
+    },
+    {
+      "surfacePrefix": "apex:Approval.process",
+      "disposition": "hosted-deferred",
+      "reason": "hosted approval engine routing"
+    },
+    {
+      "surfacePrefix": "apex:ConnectApi.",
+      "disposition": "hosted-deferred",
+      "reason": "ConnectApi hosted surface"
+    },
+    {
+      "surfacePrefix": "apex:System.Hosted",
+      "disposition": "hosted-deferred",
+      "reason": "System hosted platform surface"
+    },
+    {
+      "surfacePrefix": "apex:System.HttpRequest client certificate",
+      "disposition": "hosted-deferred",
+      "reason": "HttpRequest client certificate transport"
+    },
+    {
+      "surfacePrefix": "apex:System.Visualforce full rendering lifecycle",
+      "disposition": "hosted-deferred",
+      "reason": "Visualforce full rendering lifecycle"
+    },
+    {
+      "surfacePrefix": "apex:System.WebServiceCallout outbound SOAP transport",
+      "disposition": "hosted-deferred",
+      "reason": "WebServiceCallout outbound SOAP transport"
+    },
+    {
+      "surfacePrefix": "unknown:MockSOQLTestsForDMOs",
+      "disposition": "hosted-deferred",
+      "reason": "Mock SOQL tests for DMOs"
+    },
+    {
+      "surfacePrefix": "unknown:apex_connector_external_objects_mock_soql_tests",
+      "disposition": "hosted-deferred",
+      "reason": "Apex connector external objects mock SOQL tests"
+    },
+    {
+      "surfacePrefix": "unknown:sforce_api_calls_",
+      "disposition": "hosted-deferred",
+      "reason": "sforce API calls"
     }
   ]
 }
