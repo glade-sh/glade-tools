@@ -68,7 +68,7 @@ func buildSeedPolicy() SupportPolicy {
 	}
 }
 
-func TestRealAuthPolicyDefersHostedAuthTokenLookups(t *testing.T) {
+func TestRealAuthPolicyClassifiesAuthTokenOperations(t *testing.T) {
 	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -88,7 +88,12 @@ func TestRealAuthPolicyDefersHostedAuthTokenLookups(t *testing.T) {
 		apexMemberRow("apex:Auth.AuthToken.getAccessTokenMap(String,String)", "Auth", "AuthToken", "getAccessTokenMap"),
 		apexMemberRow("apex:Auth.AuthToken.refreshAccessToken(String,String,String)", "Auth", "AuthToken", "refreshAccessToken"),
 		apexMemberRow("apex:Auth.AuthToken.revokeAccess(String,String,String,String)", "Auth", "AuthToken", "revokeAccess"),
+		apexRow("apex:Auth.JWT", "Auth", "JWT"),
+		apexMemberRow("apex:Auth.JWTUtil.parseJWTFromStringWithoutValidation(String)", "Auth", "JWTUtil", "parseJWTFromStringWithoutValidation"),
+		apexMemberRow("apex:Auth.CommunitiesUtil.isGuestUser()", "Auth", "CommunitiesUtil", "isGuestUser"),
+		apexMemberRow("apex:Auth.SessionManagement.getCurrentSession()", "Auth", "SessionManagement", "getCurrentSession"),
 	}
+	rows = appendPolicyExceptionRows(rows, []SupportPolicyRule{authRule})
 	profile := ComputeSupportProfile(rows, SupportPolicy{Rules: []SupportPolicyRule{authRule}}, nil)
 	if len(profile.ValidationErrors) != 0 {
 		t.Fatalf("expected no validation errors, got: %v", profile.ValidationErrors)
@@ -114,12 +119,220 @@ func TestRealAuthPolicyDefersHostedAuthTokenLookups(t *testing.T) {
 		if wantDisposition == DispositionHostedDeferred && (!strings.Contains(row.Reason, "hosted") || !strings.Contains(row.Reason, "corpus")) {
 			t.Errorf("%s reason = %q, want hosted-state/no-corpus reason", row.SurfaceID, row.Reason)
 		}
+		if wantDisposition == DispositionDeterministicMockRequired && !strings.Contains(row.Reason, "exact") {
+			t.Errorf("%s reason = %q, want exact local contract reason", row.SurfaceID, row.Reason)
+		}
 	}
 	for id := range want {
 		if _, ok := byID[id]; !ok {
 			t.Fatalf("missing AuthToken profile row %s", id)
 		}
 	}
+}
+
+func TestRealSupportPolicyHonestSystemAndAuthBoundaries(t *testing.T) {
+	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var relevantRules []SupportPolicyRule
+	for _, rule := range policy.Rules {
+		if rule.Namespace == "System" || rule.Namespace == "Auth" {
+			relevantRules = append(relevantRules, rule)
+		}
+	}
+	policy.Rules = relevantRules
+	rows := []SurfaceLedgerRow{
+		apexRow("apex:System.String", "System", "String"),
+		apexRow("apex:System.List", "System", "List"),
+		apexRow("apex:System.Set", "System", "Set"),
+		apexRow("apex:System.Map", "System", "Map"),
+		apexRow("apex:System.JSON", "System", "JSON"),
+		apexRow("apex:System.JSONGenerator", "System", "JSONGenerator"),
+		apexRow("apex:System.JSONParser", "System", "JSONParser"),
+		apexRow("apex:System.Test", "System", "Test"),
+		apexRow("apex:System.Limits", "System", "Limits"),
+		apexRow("apex:System.BusinessHours", "System", "BusinessHours"),
+		apexMemberRow("apex:System.Date.today()", "System", "Date", "today"),
+		apexMemberRow("apex:System.Datetime.now()", "System", "Datetime", "now"),
+		apexRow("apex:System.Exception", "System", "Exception"),
+		apexRow("apex:System.SerializationException", "System", "SerializationException"),
+		apexRow("apex:System.Label", "System", "Label"),
+		apexRow("apex:System.LoggingLevel", "System", "LoggingLevel"),
+		apexRow("apex:System.UserInfo", "System", "UserInfo"),
+		apexRow("apex:System.Cookie", "System", "Cookie"),
+		apexRow("apex:System.Location", "System", "Location"),
+		apexRow("apex:System.StubProvider", "System", "StubProvider"),
+		apexRow("apex:System.Callable", "System", "Callable"),
+		apexRow("apex:System.Savepoint", "System", "Savepoint"),
+		apexRow("apex:System.Address", "System", "Address"),
+		apexRow("apex:System.Quiddity", "System", "Quiddity"),
+		apexRow("apex:System.DmlException", "System", "DmlException"),
+		apexRow("apex:System.Queueable", "System", "Queueable"),
+		apexRow("apex:System.QueueableContext", "System", "QueueableContext"),
+		apexRow("apex:System.Schedulable", "System", "Schedulable"),
+		apexRow("apex:System.SchedulableContext", "System", "SchedulableContext"),
+		apexRow("apex:System.Finalizer", "System", "Finalizer"),
+		apexRow("apex:System.FinalizerContext", "System", "FinalizerContext"),
+		apexRow("apex:System.InstallHandler", "System", "InstallHandler"),
+		apexRow("apex:System.InstallContext", "System", "InstallContext"),
+		apexRow("apex:System.UninstallHandler", "System", "UninstallHandler"),
+		apexRow("apex:System.UninstallContext", "System", "UninstallContext"),
+		apexRow("apex:System.SandboxPostCopy", "System", "SandboxPostCopy"),
+		apexRow("apex:System.SandboxContext", "System", "SandboxContext"),
+		apexRow("apex:System.HttpCalloutMock", "System", "HttpCalloutMock"),
+		apexRow("apex:System.WebServiceMock", "System", "WebServiceMock"),
+		apexRow("apex:System.SoqlStubProvider", "System", "SoqlStubProvider"),
+		apexRow("apex:System.Trigger", "System", "Trigger"),
+		apexRow("apex:System.TriggerContext", "System", "TriggerContext"),
+		apexRow("apex:System.TriggerOperation", "System", "TriggerOperation"),
+		apexRow("apex:System.RestContext", "System", "RestContext"),
+		apexRow("apex:System.RestRequest", "System", "RestRequest"),
+		apexRow("apex:System.RestResponse", "System", "RestResponse"),
+		apexRow("apex:System.HttpRequest", "System", "HttpRequest"),
+		apexRow("apex:System.HttpResponse", "System", "HttpResponse"),
+		apexRow("apex:System.PageReference", "System", "PageReference"),
+		apexRow("apex:System.SelectOption", "System", "SelectOption"),
+		apexRow("apex:System.SObjectAccessDecision", "System", "SObjectAccessDecision"),
+		apexRow("apex:System.DMLOptions", "System", "DMLOptions"),
+		apexRow("apex:System.TimeZone", "System", "TimeZone"),
+		apexRow("apex:System.Security", "System", "Security"),
+		apexRow("apex:System.DMLException", "System", "DMLException"),
+		apexRow("apex:System.HostedService", "System", "HostedService"),
+		apexMemberRow("apex:System.Http.send", "System", "Http", "send"),
+		apexMemberRow("apex:System.HttpRequest.setClientCertificate", "System", "HttpRequest", "setClientCertificate"),
+		apexMemberRow("apex:System.HttpRequest.setClientCertificateName", "System", "HttpRequest", "setClientCertificateName"),
+		apexMemberRow("apex:System.PageReference.getContent", "System", "PageReference", "getContent"),
+		apexMemberRow("apex:System.PageReference.getContentAsPDF()", "System", "PageReference", "getContentAsPDF"),
+		apexMemberRow("apex:System.PageReference.getParameters()", "System", "PageReference", "getParameters"),
+		apexMemberRow("apex:Auth.AuthToken.getAccessToken(String,String)", "Auth", "AuthToken", "getAccessToken"),
+		apexMemberRow("apex:Auth.AuthToken.getAccessTokenMap(String,String)", "Auth", "AuthToken", "getAccessTokenMap"),
+		apexMemberRow("apex:Auth.AuthToken.refreshAccessToken(String,String,String)", "Auth", "AuthToken", "refreshAccessToken"),
+		apexMemberRow("apex:Auth.AuthToken.revokeAccess(String,String,String,String)", "Auth", "AuthToken", "revokeAccess"),
+		apexRow("apex:Auth.JWT", "Auth", "JWT"),
+		apexMemberRow("apex:Auth.JWTUtil.parseJWTFromStringWithoutValidation(String)", "Auth", "JWTUtil", "parseJWTFromStringWithoutValidation"),
+		apexMemberRow("apex:Auth.CommunitiesUtil.isGuestUser()", "Auth", "CommunitiesUtil", "isGuestUser"),
+		apexMemberRow("apex:Auth.SessionManagement.getCurrentSession()", "Auth", "SessionManagement", "getCurrentSession"),
+		apexMemberRow("apex:Auth.SessionManagement.finishLoginFlow()", "Auth", "SessionManagement", "finishLoginFlow"),
+		apexMemberRow("apex:Auth.AuthProviderPlugin.initiate(Map<String,String>,String)", "Auth", "AuthProviderPlugin", "initiate"),
+		apexRow("apex:Auth.JWTBearerTokenExchange", "Auth", "JWTBearerTokenExchange"),
+	}
+	rows = appendPolicyExceptionRows(rows, relevantRules)
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+	if len(profile.ValidationErrors) != 0 {
+		t.Fatalf("expected no validation errors, got: %v", profile.ValidationErrors)
+	}
+
+	want := map[string]SupportDisposition{
+		"apex:System.String":                                               DispositionLocalRuntimeRequired,
+		"apex:System.List":                                                 DispositionLocalRuntimeRequired,
+		"apex:System.Set":                                                  DispositionLocalRuntimeRequired,
+		"apex:System.Map":                                                  DispositionLocalRuntimeRequired,
+		"apex:System.JSON":                                                 DispositionLocalRuntimeRequired,
+		"apex:System.JSONGenerator":                                        DispositionLocalRuntimeRequired,
+		"apex:System.JSONParser":                                           DispositionLocalRuntimeRequired,
+		"apex:System.Test":                                                 DispositionLocalRuntimeRequired,
+		"apex:System.Limits":                                               DispositionLocalRuntimeRequired,
+		"apex:System.BusinessHours":                                        DispositionLocalRuntimeRequired,
+		"apex:System.Date.today()":                                         DispositionLocalRuntimeRequired,
+		"apex:System.Datetime.now()":                                       DispositionLocalRuntimeRequired,
+		"apex:System.Exception":                                            DispositionLocalRuntimeRequired,
+		"apex:System.SerializationException":                               DispositionLocalRuntimeRequired,
+		"apex:System.Label":                                                DispositionLocalRuntimeRequired,
+		"apex:System.LoggingLevel":                                         DispositionLocalRuntimeRequired,
+		"apex:System.UserInfo":                                             DispositionLocalRuntimeRequired,
+		"apex:System.Cookie":                                               DispositionLocalRuntimeRequired,
+		"apex:System.Location":                                             DispositionLocalRuntimeRequired,
+		"apex:System.StubProvider":                                         DispositionLocalRuntimeRequired,
+		"apex:System.Callable":                                             DispositionLocalRuntimeRequired,
+		"apex:System.Savepoint":                                            DispositionLocalRuntimeRequired,
+		"apex:System.Address":                                              DispositionLocalRuntimeRequired,
+		"apex:System.Quiddity":                                             DispositionLocalRuntimeRequired,
+		"apex:System.DmlException":                                         DispositionLocalRuntimeRequired,
+		"apex:System.Queueable":                                            DispositionLocalRuntimeRequired,
+		"apex:System.QueueableContext":                                     DispositionLocalRuntimeRequired,
+		"apex:System.Schedulable":                                          DispositionLocalRuntimeRequired,
+		"apex:System.SchedulableContext":                                   DispositionLocalRuntimeRequired,
+		"apex:System.Finalizer":                                            DispositionLocalRuntimeRequired,
+		"apex:System.FinalizerContext":                                     DispositionLocalRuntimeRequired,
+		"apex:System.InstallHandler":                                       DispositionLocalRuntimeRequired,
+		"apex:System.InstallContext":                                       DispositionLocalRuntimeRequired,
+		"apex:System.UninstallHandler":                                     DispositionLocalRuntimeRequired,
+		"apex:System.UninstallContext":                                     DispositionLocalRuntimeRequired,
+		"apex:System.SandboxPostCopy":                                      DispositionLocalRuntimeRequired,
+		"apex:System.SandboxContext":                                       DispositionLocalRuntimeRequired,
+		"apex:System.HttpCalloutMock":                                      DispositionLocalRuntimeRequired,
+		"apex:System.WebServiceMock":                                       DispositionLocalRuntimeRequired,
+		"apex:System.SoqlStubProvider":                                     DispositionLocalRuntimeRequired,
+		"apex:System.Trigger":                                              DispositionLocalRuntimeRequired,
+		"apex:System.TriggerContext":                                       DispositionLocalRuntimeRequired,
+		"apex:System.TriggerOperation":                                     DispositionLocalRuntimeRequired,
+		"apex:System.RestContext":                                          DispositionLocalRuntimeRequired,
+		"apex:System.RestRequest":                                          DispositionLocalRuntimeRequired,
+		"apex:System.RestResponse":                                         DispositionLocalRuntimeRequired,
+		"apex:System.HttpRequest":                                          DispositionLocalRuntimeRequired,
+		"apex:System.HttpResponse":                                         DispositionLocalRuntimeRequired,
+		"apex:System.PageReference":                                        DispositionLocalRuntimeRequired,
+		"apex:System.PageReference.getParameters()":                        DispositionLocalRuntimeRequired,
+		"apex:System.SelectOption":                                         DispositionLocalRuntimeRequired,
+		"apex:System.SObjectAccessDecision":                                DispositionLocalRuntimeRequired,
+		"apex:System.DMLOptions":                                           DispositionLocalRuntimeRequired,
+		"apex:System.TimeZone":                                             DispositionLocalRuntimeRequired,
+		"apex:System.Security":                                             DispositionLocalRuntimeRequired,
+		"apex:System.FeatureManagement":                                    DispositionDeterministicMockRequired,
+		"apex:System.DMLException":                                         DispositionLocalRuntimeRequired,
+		"apex:System.HostedService":                                        DispositionCompileShapeRequired,
+		"apex:System.Http.send":                                            DispositionDeterministicMockRequired,
+		"apex:System.HttpRequest.setClientCertificate":                     DispositionHostedDeferred,
+		"apex:System.PageReference.getContent":                             DispositionHostedDeferred,
+		"apex:System.PageReference.getContentAsPDF()":                      DispositionHostedDeferred,
+		"apex:Auth.JWT":                                                    DispositionDeterministicMockRequired,
+		"apex:Auth.JWTUtil.parseJWTFromStringWithoutValidation(String)":    DispositionDeterministicMockRequired,
+		"apex:Auth.CommunitiesUtil.isGuestUser()":                          DispositionDeterministicMockRequired,
+		"apex:Auth.SessionManagement.getCurrentSession()":                  DispositionDeterministicMockRequired,
+		"apex:Auth.AuthToken.revokeAccess(String,String,String,String)":    DispositionDeterministicMockRequired,
+		"apex:Auth.SessionManagement.finishLoginFlow()":                    DispositionCompileShapeRequired,
+		"apex:Auth.AuthProviderPlugin.initiate(Map<String,String>,String)": DispositionCompileShapeRequired,
+		"apex:Auth.JWTBearerTokenExchange":                                 DispositionCompileShapeRequired,
+	}
+	byID := make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	for id, wantDisposition := range want {
+		row, ok := byID[id]
+		if !ok {
+			t.Fatalf("missing policy regression row %s", id)
+		}
+		if row.Disposition != wantDisposition {
+			t.Errorf("%s disposition = %s, want %s", id, row.Disposition, wantDisposition)
+		}
+		if id == "apex:System.FeatureManagement" &&
+			(!strings.Contains(row.Reason, "permission") || !strings.Contains(row.Reason, "package feature")) {
+			t.Errorf("%s reason = %q, want local permission and package feature state rationale", id, row.Reason)
+		}
+	}
+}
+
+func appendPolicyExceptionRows(rows []SurfaceLedgerRow, rules []SupportPolicyRule) []SurfaceLedgerRow {
+	for _, rule := range rules {
+		if rule.Namespace == "" {
+			continue
+		}
+		for _, exc := range rule.MemberExceptions {
+			if exc.TypeName == "" {
+				continue
+			}
+			id := "apex:" + rule.Namespace + "." + exc.TypeName
+			if exc.MemberName == "" {
+				rows = append(rows, apexRow(id, rule.Namespace, exc.TypeName))
+				continue
+			}
+			rows = append(rows, apexMemberRow(id+"."+exc.MemberName+"()", rule.Namespace, exc.TypeName, exc.MemberName))
+		}
+	}
+	return rows
 }
 
 func apexRow(id, namespace, typeName string) SurfaceLedgerRow {
@@ -566,24 +779,24 @@ func TestSupportProfileJoinsCorpusUsage(t *testing.T) {
 	cu := CorpusUsage{
 		Usage: []CorpusUsageEntry{
 			{
-				UsageKey:  "ConnectApi.ChatterUsers.getFollowings",
-				Namespace: "ConnectApi",
-				TypeName:  "ChatterUsers",
-				MemberName: "getFollowings",
-				PubProdRefs: 5,
-				PubProdFiles: 3,
+				UsageKey:        "ConnectApi.ChatterUsers.getFollowings",
+				Namespace:       "ConnectApi",
+				TypeName:        "ChatterUsers",
+				MemberName:      "getFollowings",
+				PubProdRefs:     5,
+				PubProdFiles:    3,
 				PubProdProjects: 2,
 			},
 			{
-				UsageKey:  "ConnectApi.SomeDTO",
-				Namespace: "ConnectApi",
-				TypeName:  "SomeDTO",
+				UsageKey:    "ConnectApi.SomeDTO",
+				Namespace:   "ConnectApi",
+				TypeName:    "SomeDTO",
 				PubProdRefs: 1,
 			},
 			{
-				UsageKey:  "System.String",
-				Namespace: "System",
-				TypeName:  "String",
+				UsageKey:    "System.String",
+				Namespace:   "System",
+				TypeName:    "String",
 				PubTestRefs: 10,
 			},
 		},
@@ -1589,9 +1802,9 @@ func TestOverlapTwoOverridesFails(t *testing.T) {
 	policy := SupportPolicy{
 		Rules: []SupportPolicyRule{
 			{
-				Namespace: "System",
+				Namespace:   "System",
 				Disposition: DispositionLocalRuntimeRequired,
-				Reason: "system runtime",
+				Reason:      "system runtime",
 			},
 			{
 				SurfacePrefix: "apex:System.Hosted",

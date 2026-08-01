@@ -2,8 +2,766 @@
   "rules": [
     {
       "namespace": "System",
+      "disposition": "compile-shape-required",
+      "reason": "System fallback preserves hosted services outside the explicit local runtime allowlist",
+      "memberExceptions": [
+        {
+          "typeName": "AccessLevel",
+          "disposition": "local-runtime-required",
+          "reason": "core local runtime contract"
+        },
+        {
+          "typeName": "AccessType",
+          "disposition": "local-runtime-required",
+          "reason": "core local runtime contract"
+        },
+        {
+          "typeName": "AggregateResult",
+          "disposition": "local-runtime-required",
+          "reason": "core local query result contract"
+        },
+        {
+          "typeName": "Assert",
+          "disposition": "local-runtime-required",
+          "reason": "test assertion runtime contract"
+        },
+        {
+          "typeName": "AssertException",
+          "disposition": "local-runtime-required",
+          "reason": "test assertion runtime contract"
+        },
+        {
+          "typeName": "Blob",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Boolean",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "BusinessHours",
+          "disposition": "local-runtime-required",
+          "reason": "deterministic local business-hours calendar contract"
+        },
+        {
+          "typeName": "Comparable",
+          "disposition": "local-runtime-required",
+          "reason": "core local collection contract"
+        },
+        {
+          "typeName": "Comparator",
+          "disposition": "local-runtime-required",
+          "reason": "core local collection contract"
+        },
+        {
+          "typeName": "Crypto",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Date",
+          "disposition": "local-runtime-required",
+          "reason": "deterministic local date and clock contract"
+        },
+        {
+          "typeName": "Datetime",
+          "disposition": "local-runtime-required",
+          "reason": "deterministic local datetime and clock contract"
+        },
+        {
+          "typeName": "Decimal",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Double",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "EncodingUtil",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Enum",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Exception",
+          "disposition": "local-runtime-required",
+          "reason": "core local exception contract"
+        },
+        {
+          "typeName": "Id",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Integer",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Iterable",
+          "disposition": "local-runtime-required",
+          "reason": "core local collection contract"
+        },
+        {
+          "typeName": "Iterator",
+          "disposition": "local-runtime-required",
+          "reason": "core local collection contract"
+        },
+        {
+          "typeName": "JSON",
+          "disposition": "local-runtime-required",
+          "reason": "core local JSON serialization contract"
+        },
+        {
+          "typeName": "JSONGenerator",
+          "disposition": "local-runtime-required",
+          "reason": "core local JSON serialization contract"
+        },
+        {
+          "typeName": "JSONParser",
+          "disposition": "local-runtime-required",
+          "reason": "core local JSON serialization contract"
+        },
+        {
+          "typeName": "JSONToken",
+          "disposition": "local-runtime-required",
+          "reason": "core local JSON serialization contract"
+        },
+        {
+          "typeName": "List",
+          "disposition": "local-runtime-required",
+          "reason": "core local collection contract"
+        },
+        {
+          "typeName": "Limits",
+          "disposition": "local-runtime-required",
+          "reason": "local governor and test-runtime contract"
+        },
+        {
+          "typeName": "Long",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Map",
+          "disposition": "local-runtime-required",
+          "reason": "core local collection contract"
+        },
+        {
+          "typeName": "Math",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Matcher",
+          "disposition": "local-runtime-required",
+          "reason": "core local regex contract"
+        },
+        {
+          "typeName": "Object",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Pattern",
+          "disposition": "local-runtime-required",
+          "reason": "core local regex contract"
+        },
+        {
+          "typeName": "RoundingMode",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "SObject",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "SObjectException",
+          "disposition": "local-runtime-required",
+          "reason": "core local exception contract"
+        },
+        {
+          "typeName": "SerializationException",
+          "disposition": "local-runtime-required",
+          "reason": "core local serialization exception contract"
+        },
+        {
+          "typeName": "Set",
+          "disposition": "local-runtime-required",
+          "reason": "core local collection contract"
+        },
+        {
+          "typeName": "StatusCode",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "String",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Test",
+          "disposition": "local-runtime-required",
+          "reason": "test runtime contract"
+        },
+        {
+          "typeName": "TestAsyncHttp",
+          "disposition": "local-runtime-required",
+          "reason": "deterministic local test transport harness"
+        },
+        {
+          "typeName": "Time",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "Type",
+          "disposition": "local-runtime-required",
+          "reason": "core local reflection contract"
+        },
+        {
+          "typeName": "URL",
+          "disposition": "local-runtime-required",
+          "reason": "core local value contract"
+        },
+        {
+          "typeName": "XmlStreamReader",
+          "disposition": "local-runtime-required",
+          "reason": "core local XML serialization contract"
+        },
+        {
+          "typeName": "XmlStreamWriter",
+          "disposition": "local-runtime-required",
+          "reason": "core local XML serialization contract"
+        },
+        {
+          "typeName": "XmlTag",
+          "disposition": "local-runtime-required",
+          "reason": "core local XML serialization contract"
+        },
+        {
+          "typeName": "Address",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local value contract"
+        },
+        {
+          "typeName": "AsyncInfo",
+          "disposition": "local-runtime-required",
+          "reason": "local async runtime contract"
+        },
+        {
+          "typeName": "AsyncOptions",
+          "disposition": "local-runtime-required",
+          "reason": "local async configuration contract"
+        },
+        {
+          "typeName": "AsyncException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "BigObjectException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "CalloutException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "CanvasException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "DataWeaveScriptException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "DMLException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "DmlException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "DuplicateMessageException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "EmailException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "EmailTemplateRenderException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "EventObjectException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "ExternalObjectException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "FatalCursorException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "FinalException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "FlowException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "FormulaEvaluationException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "FormulaValidationException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "HandledException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "IllegalArgumentException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "IllegalStateException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "InvalidHeaderException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "InvalidParameterValueException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "InvalidReadOnlyUserDmlException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "JSONException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "LicenseException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "LimitException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "ListException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "MathException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "NoAccessException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "NoDataFoundException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "NoSuchElementException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "NullPointerException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "PatternSyntaxException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "PlatformCacheException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "PolyglotException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "ProcedureException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "QueryException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "RequiredFeatureMissingException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "SearchException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "SecurityException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "StringException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "TouchHandledException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "TransientCursorException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "TypeException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "UnexpectedException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "UnsupportedOperationException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "VisualforceException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "WaveTemplateException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "XmlException",
+          "disposition": "local-runtime-required",
+          "reason": "local catchable exception contract"
+        },
+        {
+          "typeName": "Callable",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local extension contract"
+        },
+        {
+          "typeName": "Cookie",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local request contract"
+        },
+        {
+          "typeName": "DMLOptions",
+          "disposition": "local-runtime-required",
+          "reason": "local DML configuration contract"
+        },
+        {
+          "typeName": "FeatureManagement",
+          "disposition": "deterministic-mock-required",
+          "reason": "local permission and in-memory package feature state"
+        },
+        {
+          "typeName": "Finalizer",
+          "disposition": "local-runtime-required",
+          "reason": "local async lifecycle contract"
+        },
+        {
+          "typeName": "FinalizerContext",
+          "disposition": "local-runtime-required",
+          "reason": "local async lifecycle contract"
+        },
+        {
+          "typeName": "HttpCalloutMock",
+          "disposition": "local-runtime-required",
+          "reason": "local HTTP mock contract"
+        },
+        {
+          "typeName": "HttpResponse",
+          "disposition": "local-runtime-required",
+          "reason": "local request value contract"
+        },
+        {
+          "typeName": "ExternalServiceTest",
+          "disposition": "local-runtime-required",
+          "reason": "local external-service mock contract"
+        },
+        {
+          "typeName": "InstallContext",
+          "disposition": "local-runtime-required",
+          "reason": "local package lifecycle contract"
+        },
+        {
+          "typeName": "InstallHandler",
+          "disposition": "local-runtime-required",
+          "reason": "local package lifecycle contract"
+        },
+        {
+          "typeName": "Label",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local value contract"
+        },
+        {
+          "typeName": "LoggingLevel",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local logging contract"
+        },
+        {
+          "typeName": "Location",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local value contract"
+        },
+        {
+          "typeName": "Queueable",
+          "disposition": "local-runtime-required",
+          "reason": "local async lifecycle contract"
+        },
+        {
+          "typeName": "QueueableContext",
+          "disposition": "local-runtime-required",
+          "reason": "local async lifecycle contract"
+        },
+        {
+          "typeName": "Quiddity",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local execution-context contract"
+        },
+        {
+          "typeName": "Request",
+          "disposition": "local-runtime-required",
+          "reason": "local request context contract"
+        },
+        {
+          "typeName": "RestContext",
+          "disposition": "local-runtime-required",
+          "reason": "local request context contract"
+        },
+        {
+          "typeName": "RestRequest",
+          "disposition": "local-runtime-required",
+          "reason": "local request value contract"
+        },
+        {
+          "typeName": "RestResponse",
+          "disposition": "local-runtime-required",
+          "reason": "local request value contract"
+        },
+        {
+          "typeName": "SandboxContext",
+          "disposition": "local-runtime-required",
+          "reason": "local post-copy lifecycle contract"
+        },
+        {
+          "typeName": "SandboxPostCopy",
+          "disposition": "local-runtime-required",
+          "reason": "local post-copy lifecycle contract"
+        },
+        {
+          "typeName": "Savepoint",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local transaction contract"
+        },
+        {
+          "typeName": "Schedulable",
+          "disposition": "local-runtime-required",
+          "reason": "local async lifecycle contract"
+        },
+        {
+          "typeName": "SchedulableContext",
+          "disposition": "local-runtime-required",
+          "reason": "local async lifecycle contract"
+        },
+        {
+          "typeName": "Security",
+          "disposition": "local-runtime-required",
+          "reason": "local security contract; stripInaccessible remains a correctness gap"
+        },
+        {
+          "typeName": "SelectOption",
+          "disposition": "local-runtime-required",
+          "reason": "local request value contract"
+        },
+        {
+          "typeName": "SObjectAccessDecision",
+          "disposition": "local-runtime-required",
+          "reason": "local security result contract"
+        },
+        {
+          "typeName": "SoqlStubProvider",
+          "disposition": "local-runtime-required",
+          "reason": "local SOQL mock contract"
+        },
+        {
+          "typeName": "StubProvider",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local mock contract"
+        },
+        {
+          "typeName": "StaticResourceCalloutMock",
+          "disposition": "local-runtime-required",
+          "reason": "local HTTP mock configuration contract"
+        },
+        {
+          "typeName": "MultiStaticResourceCalloutMock",
+          "disposition": "local-runtime-required",
+          "reason": "local HTTP mock configuration contract"
+        },
+        {
+          "typeName": "TimeZone",
+          "disposition": "local-runtime-required",
+          "reason": "local value contract"
+        },
+        {
+          "typeName": "Trigger",
+          "disposition": "local-runtime-required",
+          "reason": "local trigger context contract"
+        },
+        {
+          "typeName": "TriggerContext",
+          "disposition": "local-runtime-required",
+          "reason": "local trigger context contract"
+        },
+        {
+          "typeName": "TriggerOperation",
+          "disposition": "local-runtime-required",
+          "reason": "local trigger context contract"
+        },
+        {
+          "typeName": "UninstallContext",
+          "disposition": "local-runtime-required",
+          "reason": "local package lifecycle contract"
+        },
+        {
+          "typeName": "UninstallHandler",
+          "disposition": "local-runtime-required",
+          "reason": "local package lifecycle contract"
+        },
+        {
+          "typeName": "UserInfo",
+          "disposition": "local-runtime-required",
+          "reason": "corpus-used local user context contract"
+        },
+        {
+          "typeName": "WebServiceMock",
+          "disposition": "local-runtime-required",
+          "reason": "local web-service mock contract"
+        },
+        {
+          "typeName": "Http",
+          "memberName": "send",
+          "disposition": "deterministic-mock-required",
+          "reason": "local HttpCalloutMock dispatch; outbound transport remains hosted"
+        },
+        {
+          "typeName": "HttpRequest",
+          "memberName": "setClientCertificate",
+          "disposition": "hosted-deferred",
+          "reason": "hosted certificate transport"
+        },
+        {
+          "typeName": "HttpRequest",
+          "memberName": "setClientCertificateName",
+          "disposition": "hosted-deferred",
+          "reason": "hosted certificate transport"
+        },
+        {
+          "typeName": "PageReference",
+          "memberName": "getContent",
+          "disposition": "hosted-deferred",
+          "reason": "hosted Visualforce rendering"
+        },
+        {
+          "typeName": "PageReference",
+          "memberName": "getContentAsPDF",
+          "disposition": "hosted-deferred",
+          "reason": "hosted Visualforce rendering"
+        },
+        {
+          "typeName": "HttpRequest",
+          "disposition": "local-runtime-required",
+          "reason": "local request value contract"
+        },
+        {
+          "typeName": "PageReference",
+          "disposition": "local-runtime-required",
+          "reason": "local PageReference value contract"
+        }
+      ]
+    },
+    {
+      "surfacePrefix": "apex:System.PageReference(",
       "disposition": "local-runtime-required",
-      "reason": "language/compiler behavior; System is the Apex runtime foundation"
+      "override": true,
+      "reason": "local PageReference value constructors"
     },
     {
       "namespace": "Schema",
@@ -72,8 +830,8 @@
     },
     {
       "namespace": "Auth",
-      "disposition": "deterministic-mock-required",
-      "reason": "shallow Auth session — deterministic mock",
+      "disposition": "compile-shape-required",
+      "reason": "Auth shapes; hosted identity behavior is deferred",
       "memberExceptions": [
         {
           "typeName": "AuthToken",
@@ -92,6 +850,47 @@
           "memberName": "refreshAccessToken",
           "disposition": "hosted-deferred",
           "reason": "hosted org auth/token state; no corpus usage"
+        },
+        {
+          "typeName": "AuthToken",
+          "memberName": "revokeAccess",
+          "disposition": "deterministic-mock-required",
+          "reason": "exact Salesforce/local revoke contract"
+        },
+        {
+          "typeName": "JWT",
+          "disposition": "deterministic-mock-required",
+          "reason": "local JWT value construction and parsing"
+        },
+        {
+          "typeName": "JWTUtil",
+          "memberName": "parseJWTFromStringWithoutValidation",
+          "disposition": "deterministic-mock-required",
+          "reason": "local JWT value parsing"
+        },
+        {
+          "typeName": "CommunitiesUtil",
+          "memberName": "isGuestUser",
+          "disposition": "deterministic-mock-required",
+          "reason": "local community user-context helper"
+        },
+        {
+          "typeName": "SessionManagement",
+          "memberName": "getCurrentSession",
+          "disposition": "deterministic-mock-required",
+          "reason": "local session value helper"
+        },
+        {
+          "typeName": "AuthConfiguration",
+          "memberName": "getAuthProviderSsoUrl",
+          "disposition": "hosted-deferred",
+          "reason": "hosted SSO endpoint"
+        },
+        {
+          "typeName": "JWTUtil",
+          "memberName": "validateJWTWithKeysEndpoint",
+          "disposition": "hosted-deferred",
+          "reason": "hosted token validation endpoint"
         }
       ]
     },
@@ -817,19 +1616,13 @@
       "surfacePrefix": "apex:System.BusinessHours",
       "disposition": "local-runtime-required",
       "override": true,
-      "reason": "System.BusinessHours local runtime"
+      "reason": "deterministic local business-hours calendar contract"
     },
     {
       "surfacePrefix": "apex:System.Exact",
       "disposition": "local-runtime-required",
       "override": true,
       "reason": "System.Exact local runtime"
-    },
-    {
-      "surfacePrefix": "apex:System.PageReference",
-      "disposition": "local-runtime-required",
-      "override": true,
-      "reason": "System.PageReference local runtime"
     },
     {
       "surfacePrefix": "unknown:salesforce_app_limits_platform_soslsoql",

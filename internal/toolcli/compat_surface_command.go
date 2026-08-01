@@ -809,6 +809,7 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	ledgerPath := ""
 	policyPath := ""
 	corpusUsagePath := ""
+	snapshotDir := ""
 	output := ""
 	jsonOut := false
 	markdownOut := false
@@ -832,6 +833,13 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 			i++
 			var err error
 			corpusUsagePath, err = argValue(args, i, "--corpus-usage")
+			if err != nil {
+				return err
+			}
+		case "--snapshot-dir":
+			i++
+			var err error
+			snapshotDir, err = argValue(args, i, "--snapshot-dir")
 			if err != nil {
 				return err
 			}
@@ -886,6 +894,11 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	}
 
 	profile := surfaceledger.ComputeSupportProfile(ledger.Rows, policy, cu)
+	inputs, err := buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir)
+	if err != nil {
+		return err
+	}
+	profile.Inputs = inputs
 
 	// When --output is used, write the profile atomically even when
 	// validation errors exist. Then exit nonzero so the evidence is
@@ -923,6 +936,40 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 		return err
 	}
 	return nil
+}
+
+func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir string) (*surfaceledger.SupportProfileInputs, error) {
+	requested := []struct {
+		name string
+		path string
+	}{
+		{name: "ledger", path: ledgerPath},
+		{name: "policy", path: policyPath},
+	}
+	if corpusUsagePath != "" {
+		requested = append(requested, struct {
+			name string
+			path string
+		}{name: "corpus-usage", path: corpusUsagePath})
+	}
+	if snapshotDir != "" {
+		for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+			requested = append(requested, struct {
+				name string
+				path string
+			}{name: name, path: filepath.Join(snapshotDir, name)})
+		}
+	}
+
+	inputs := &surfaceledger.SupportProfileInputs{Files: make([]surfaceledger.SupportProfileInput, 0, len(requested))}
+	for _, input := range requested {
+		digest, err := sha256File(input.path)
+		if err != nil {
+			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
+		}
+		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, SHA256: digest})
+	}
+	return inputs, nil
 }
 
 func stringsBuilderFromErrors(errors []string) string {

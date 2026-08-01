@@ -658,6 +658,114 @@ func TestCompatSurfaceSupportProfileJSONOutput(t *testing.T) {
 	}
 }
 
+func TestCompatSurfaceSupportProfileInputDigests(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	corpusUsage := filepath.Join(root, "corpus-usage.json")
+	snapshots := filepath.Join(root, "snapshots")
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if err := os.MkdirAll(snapshots, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(snapshots, name), []byte(name+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[{"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(`{"rules":[{"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(corpusUsage, []byte(`{"usage":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	args := []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--corpus-usage", corpusUsage, "--snapshot-dir", snapshots, "--json"}
+	run := func() map[string]string {
+		var stdout, stderr bytes.Buffer
+		if code := Run(context.Background(), args, &stdout, &stderr); code != 0 {
+			t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+		}
+		var decoded struct {
+			Inputs struct {
+				Files []struct {
+					Name   string `json:"name"`
+					SHA256 string `json:"sha256"`
+				} `json:"files"`
+			} `json:"inputs"`
+		}
+		if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+			t.Fatalf("decode JSON: %v\n%s", err, stdout.String())
+		}
+		got := make(map[string]string, len(decoded.Inputs.Files))
+		for _, file := range decoded.Inputs.Files {
+			if len(file.SHA256) != 64 || strings.ToLower(file.SHA256) != file.SHA256 {
+				t.Fatalf("invalid digest for %q: %q", file.Name, file.SHA256)
+			}
+			got[file.Name] = file.SHA256
+		}
+		return got
+	}
+
+	first := run()
+	second := run()
+	if len(first) != 7 {
+		t.Fatalf("input digest count = %d, want 7: %#v", len(first), first)
+	}
+	if len(second) != len(first) {
+		t.Fatalf("repeat input digest count = %d, want %d", len(second), len(first))
+	}
+	for name, digest := range first {
+		if second[name] != digest {
+			t.Fatalf("digest for %q changed across identical runs: %q != %q", name, digest, second[name])
+		}
+	}
+	for _, name := range []string{"ledger", "policy", "corpus-usage", "DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if first[name] == "" {
+			t.Fatalf("missing input digest %q: %#v", name, first)
+		}
+	}
+	if err := os.WriteFile(policy, []byte(`{"rules":[{"namespace":"System","disposition":"compile-shape-required","reason":"changed policy"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	changed := run()
+	if changed["policy"] == first["policy"] {
+		t.Fatalf("policy digest did not change: %q", changed["policy"])
+	}
+}
+
+func TestCompatSurfaceSupportProfileMissingSnapshotFails(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	snapshots := filepath.Join(root, "snapshots")
+	if err := os.MkdirAll(snapshots, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(`{"rules":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if err := os.WriteFile(filepath.Join(snapshots, name), []byte("{}\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--snapshot-dir", snapshots, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected missing snapshot failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "DOCS_SNAPSHOT.json") {
+		t.Fatalf("missing snapshot name in error: %q", stderr.String())
+	}
+}
+
 func TestCompatSurfaceSupportProfileMarkdownOutput(t *testing.T) {
 	root := t.TempDir()
 	ledger := filepath.Join(root, "ledger.json")

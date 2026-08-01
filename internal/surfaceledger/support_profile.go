@@ -26,13 +26,13 @@ const (
 // rule is an explicit narrower override that wins over broader
 // matches during overlap resolution.
 type SupportPolicyRule struct {
-	Namespace        string                          `json:"namespace,omitempty"`
-	TypeFamily       string                          `json:"typeFamily,omitempty"`
-	SurfacePrefix    string                          `json:"surfacePrefix,omitempty"`
-	Disposition      SupportDisposition              `json:"disposition"`
-	Reason           string                          `json:"reason"`
-	Override         bool                            `json:"override,omitempty"`
-	MemberExceptions []SupportPolicyMemberException  `json:"memberExceptions,omitempty"`
+	Namespace        string                         `json:"namespace,omitempty"`
+	TypeFamily       string                         `json:"typeFamily,omitempty"`
+	SurfacePrefix    string                         `json:"surfacePrefix,omitempty"`
+	Disposition      SupportDisposition             `json:"disposition"`
+	Reason           string                         `json:"reason"`
+	Override         bool                           `json:"override,omitempty"`
+	MemberExceptions []SupportPolicyMemberException `json:"memberExceptions,omitempty"`
 }
 
 // SupportPolicyMemberException elevates (or preserves) a specific member
@@ -51,21 +51,31 @@ type SupportPolicy struct {
 
 // SupportProfileRow is one Apex surface with its assigned disposition.
 type SupportProfileRow struct {
-	SurfaceID            string             `json:"surfaceId"`
-	Namespace            string             `json:"namespace,omitempty"`
-	TypeFamily           string             `json:"typeFamily,omitempty"`
-	LedgerShape          ShapeState         `json:"ledgerShape"`
-	Behavior             BehaviorState      `json:"behavior"`
-	Evidence             EvidenceState      `json:"evidence"`
-	Disposition          SupportDisposition `json:"disposition"`
-	MatchRule            string             `json:"matchRule"`
-	Reason               string             `json:"reason"`
-	Obligation           string             `json:"obligation"`
-	GapClass             string             `json:"gapClass,omitempty"`
-	UsageKey             string             `json:"usageKey,omitempty"`
-	CorpusPassingRefs    int                `json:"corpusPassingRefs,omitempty"`
-	CorpusFailureRefs    int                `json:"corpusFailureRefs,omitempty"`
-	CorpusPassingProjects int               `json:"corpusPassingProjects,omitempty"`
+	SurfaceID             string             `json:"surfaceId"`
+	Namespace             string             `json:"namespace,omitempty"`
+	TypeFamily            string             `json:"typeFamily,omitempty"`
+	LedgerShape           ShapeState         `json:"ledgerShape"`
+	Behavior              BehaviorState      `json:"behavior"`
+	Evidence              EvidenceState      `json:"evidence"`
+	Disposition           SupportDisposition `json:"disposition"`
+	MatchRule             string             `json:"matchRule"`
+	Reason                string             `json:"reason"`
+	Obligation            string             `json:"obligation"`
+	GapClass              string             `json:"gapClass,omitempty"`
+	UsageKey              string             `json:"usageKey,omitempty"`
+	CorpusPassingRefs     int                `json:"corpusPassingRefs,omitempty"`
+	CorpusFailureRefs     int                `json:"corpusFailureRefs,omitempty"`
+	CorpusPassingProjects int                `json:"corpusPassingProjects,omitempty"`
+}
+
+// SupportProfileInputs records the exact bytes used to build a profile.
+type SupportProfileInputs struct {
+	Files []SupportProfileInput `json:"files"`
+}
+
+type SupportProfileInput struct {
+	Name   string `json:"name"`
+	SHA256 string `json:"sha256"`
 }
 
 // SupportProfile is the computed result over a Surface Ledger.
@@ -79,6 +89,7 @@ type SupportProfile struct {
 	Rows             []SupportProfileRow        `json:"rows"`
 	ValidationErrors []string                   `json:"validationErrors,omitempty"`
 	CorpusUsage      []CorpusUsageEntry         `json:"corpusUsage,omitempty"`
+	Inputs           *SupportProfileInputs      `json:"inputs,omitempty"`
 }
 
 // ComputeSupportProfile computes a SupportProfile from ledger rows, a policy,
@@ -333,29 +344,41 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 		}
 
 		// Check member exceptions first.
-		exceptionFound := false
-		for _, exc := range rule.MemberExceptions {
+		var selectedException *SupportPolicyMemberException
+		selectedSpecificity := -1
+		for j := range rule.MemberExceptions {
+			exc := &rule.MemberExceptions[j]
 			excTypeMatch := exc.TypeName == "" || strings.EqualFold(row.TypeName, exc.TypeName)
 			excMemberMatch := exc.MemberName == "" || strings.EqualFold(row.MemberName, exc.MemberName)
 
 			if excTypeMatch && excMemberMatch {
 				exceptionMatched[ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName)] = true
-				disp := exc.Disposition
-				if disp == "" {
-					disp = rule.Disposition
+				specificity := 0
+				if exc.TypeName != "" {
+					specificity++
 				}
-				reason := exc.Reason
-				if reason == "" {
-					reason = rule.Reason
+				if exc.MemberName != "" {
+					specificity++
 				}
-				matches = append(matches, matchInfo{rule: rule, ruleIndex: i, isException: true, disposition: disp, reason: reason})
-				exceptionFound = true
-				break
+				if specificity > selectedSpecificity {
+					selectedException = exc
+					selectedSpecificity = specificity
+				}
 			}
 		}
 
-		if !exceptionFound {
+		if selectedException == nil {
 			matches = append(matches, matchInfo{rule: rule, ruleIndex: i, isException: false, disposition: rule.Disposition, reason: rule.Reason})
+		} else {
+			disp := selectedException.Disposition
+			if disp == "" {
+				disp = rule.Disposition
+			}
+			reason := selectedException.Reason
+			if reason == "" {
+				reason = rule.Reason
+			}
+			matches = append(matches, matchInfo{rule: rule, ruleIndex: i, isException: true, disposition: disp, reason: reason})
 		}
 	}
 
