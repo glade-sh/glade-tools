@@ -782,3 +782,24 @@ func TestBuildEvidenceSnapshotTreatsNoParenDescribeMemberAsProperty(t *testing.T
 		t.Fatalf("property row = kind:%s namespace:%s type:%s member:%s rows:%#v", row.Kind, row.Namespace, row.TypeName, row.MemberName, rows)
 	}
 }
+
+func TestBuildEvidenceSnapshotReadsApexPagesSeverityLocalEvidence(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "apex-apexpages-severity-local-evidence.json")
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:ApexPages.Severity.ERROR",
+		"apex:ApexPages.Severity.INFO",
+		"apex:ApexPages.Severity.WARNING",
+		"apex:ApexPages.Severity.CONFIRM",
+		"apex:ApexPages.Severity.FATAL",
+	} {
+		row := byID[id]
+		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
+			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/supported", id, row.Evidence, row.GladeBehavior)
+		}
+	}
+}

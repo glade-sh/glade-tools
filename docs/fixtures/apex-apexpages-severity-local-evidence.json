@@ -1,0 +1,53 @@
+{
+  "name": "apex-apexpages-severity-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:ApexPages.Severity.ERROR",
+      "symbol": "ApexPages.Severity.ERROR",
+      "kind": "test",
+      "notes": "Local ApexPages.Severity enum constant ERROR materialized by the VM."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.INFO",
+      "symbol": "ApexPages.Severity.INFO",
+      "kind": "test",
+      "notes": "Local ApexPages.Severity enum constant INFO materialized by the VM."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.WARNING",
+      "symbol": "ApexPages.Severity.WARNING",
+      "kind": "test",
+      "notes": "Local ApexPages.Severity enum constant WARNING materialized by the VM."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.CONFIRM",
+      "symbol": "ApexPages.Severity.CONFIRM",
+      "kind": "test",
+      "notes": "Local ApexPages.Severity enum constant CONFIRM materialized by the VM."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.FATAL",
+      "symbol": "ApexPages.Severity.FATAL",
+      "kind": "test",
+      "notes": "Local ApexPages.Severity enum constant FATAL materialized by the VM."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/ApexPagesSeverityLocalEvidenceTest.cls",
+      "content": "@isTest private class ApexPagesSeverityLocalEvidenceTest {\n  @isTest static void severityEnumLocalEvidence() {\n    ApexPages.Message errMsg = new ApexPages.Message(ApexPages.Severity.ERROR, 'err');\n    System.assertEquals(ApexPages.Severity.ERROR, errMsg.getSeverity());\n    ApexPages.Message infoMsg = new ApexPages.Message(ApexPages.Severity.INFO, 'info');\n    System.assertEquals(ApexPages.Severity.INFO, infoMsg.getSeverity());\n    ApexPages.Message warnMsg = new ApexPages.Message(ApexPages.Severity.WARNING, 'warn');\n    System.assertEquals(ApexPages.Severity.WARNING, warnMsg.getSeverity());\n    ApexPages.Message confMsg = new ApexPages.Message(ApexPages.Severity.CONFIRM, 'conf');\n    System.assertEquals(ApexPages.Severity.CONFIRM, confMsg.getSeverity());\n    ApexPages.Message fatalMsg = new ApexPages.Message(ApexPages.Severity.FATAL, 'fatal');\n    System.assertEquals(ApexPages.Severity.FATAL, fatalMsg.getSeverity());\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.INFO);\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.WARNING);\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.CONFIRM);\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.FATAL);\n  }\n}"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  }
+}
