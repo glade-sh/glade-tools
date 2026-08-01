@@ -900,8 +900,8 @@ func TestSupportProfileSurfacePrefixDistinctExceptionKeys(t *testing.T) {
 
 // --- SF-CB15 obligation queue tests ---
 
-// RED 1: compile-shape row with known shape is closed; absent shape is a gap.
-func TestGapClassCompileShapeClosedWhenShapePresent(t *testing.T) {
+// RED 1: compile-shape rows require local fixture evidence when their shape is present.
+func TestGapClassCompileShapeClosedWithFixtureEvidence(t *testing.T) {
 	policy := SupportPolicy{
 		Rules: []SupportPolicyRule{
 			{Namespace: "Reports", Disposition: DispositionCompileShapeRequired, Reason: "compile shape"},
@@ -949,33 +949,81 @@ func TestGapClassCompileShapeClosedWhenShapePresent(t *testing.T) {
 	}
 }
 
-// RED 2: passive mock/runtime row with known shape is closed.
-func TestGapClassPassiveBehaviorClosedWhenShapePresent(t *testing.T) {
+func TestGapClassCompileShapeRequiresLocalFixtureEvidence(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{Namespace: "Reports", Disposition: DispositionCompileShapeRequired, Reason: "compile shape"},
+		},
+	}
+	cases := []struct {
+		name     string
+		evidence EvidenceState
+		wantGap  string
+	}{
+		{name: "fixture", evidence: EvidenceFixture, wantGap: ""},
+		{name: "fixture-and-oracle", evidence: EvidenceFixtureAndOracle, wantGap: ""},
+		{name: "oracle-only", evidence: EvidenceOracle, wantGap: GapMissingEvidence},
+		{name: "docs-only", evidence: EvidenceDocs, wantGap: GapMissingEvidence},
+		{name: "corpus-only", evidence: EvidenceCorpus, wantGap: GapMissingEvidence},
+		{name: "no-evidence", evidence: EvidenceNone, wantGap: GapMissingEvidence},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			r := apexRow("apex:Reports."+tc.name, "Reports", tc.name)
+			r.Evidence = tc.evidence
+
+			profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
+
+			if got := profile.Rows[0].GapClass; got != tc.wantGap {
+				t.Fatalf("gapClass: want %q got %q for evidence %q", tc.wantGap, got, tc.evidence)
+			}
+		})
+	}
+}
+
+// RED 2: passive rows require both local fixture and Salesforce oracle evidence.
+func TestGapClassPassiveBehaviorRequiresDualEvidence(t *testing.T) {
 	policy := SupportPolicy{
 		Rules: []SupportPolicyRule{
 			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+			{Namespace: "Cache", Disposition: DispositionDeterministicMockRequired, Reason: "mock"},
 		},
 	}
-	rows := []SurfaceLedgerRow{
-		func() SurfaceLedgerRow {
-			r := apexRow("apex:System.PassiveHelper", "System", "PassiveHelper")
+	cases := []struct {
+		name        string
+		namespace   string
+		disposition SupportDisposition
+		evidence    EvidenceState
+		wantGap     string
+	}{
+		{name: "runtime-no-evidence", namespace: "System", disposition: DispositionLocalRuntimeRequired, evidence: EvidenceNone, wantGap: GapMissingEvidence},
+		{name: "runtime-fixture-only", namespace: "System", disposition: DispositionLocalRuntimeRequired, evidence: EvidenceFixture, wantGap: GapMissingEvidence},
+		{name: "runtime-oracle-only", namespace: "System", disposition: DispositionLocalRuntimeRequired, evidence: EvidenceOracle, wantGap: GapMissingEvidence},
+		{name: "runtime-docs-only", namespace: "System", disposition: DispositionLocalRuntimeRequired, evidence: EvidenceDocs, wantGap: GapMissingEvidence},
+		{name: "runtime-corpus-only", namespace: "System", disposition: DispositionLocalRuntimeRequired, evidence: EvidenceCorpus, wantGap: GapMissingEvidence},
+		{name: "runtime-dual", namespace: "System", disposition: DispositionLocalRuntimeRequired, evidence: EvidenceFixtureAndOracle, wantGap: ""},
+		{name: "mock-no-evidence", namespace: "Cache", disposition: DispositionDeterministicMockRequired, evidence: EvidenceNone, wantGap: GapMissingEvidence},
+		{name: "mock-fixture-only", namespace: "Cache", disposition: DispositionDeterministicMockRequired, evidence: EvidenceFixture, wantGap: GapMissingEvidence},
+		{name: "mock-oracle-only", namespace: "Cache", disposition: DispositionDeterministicMockRequired, evidence: EvidenceOracle, wantGap: GapMissingEvidence},
+		{name: "mock-docs-only", namespace: "Cache", disposition: DispositionDeterministicMockRequired, evidence: EvidenceDocs, wantGap: GapMissingEvidence},
+		{name: "mock-corpus-only", namespace: "Cache", disposition: DispositionDeterministicMockRequired, evidence: EvidenceCorpus, wantGap: GapMissingEvidence},
+		{name: "mock-dual", namespace: "Cache", disposition: DispositionDeterministicMockRequired, evidence: EvidenceFixtureAndOracle, wantGap: ""},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			r := apexRow("apex:"+tc.namespace+".PassiveHelper", tc.namespace, "PassiveHelper")
 			r.GladeShape = ShapeTypeKnown
 			r.GladeBehavior = BehaviorPassive
-			r.Evidence = EvidenceNone
-			return r
-		}(),
-	}
+			r.Evidence = tc.evidence
 
-	profile := ComputeSupportProfile(rows, policy, nil)
+			profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
 
-	if profile.Total != 1 {
-		t.Fatalf("total: want 1 got %d", profile.Total)
-	}
-	if len(profile.NonDeferredGaps) != 0 {
-		t.Fatalf("passive+typeKnown should be closed, got %d gaps", len(profile.NonDeferredGaps))
-	}
-	if profile.Rows[0].GapClass != "" {
-		t.Fatalf("passive row gapClass should be empty, got %q", profile.Rows[0].GapClass)
+			if got := profile.Rows[0].GapClass; got != tc.wantGap {
+				t.Fatalf("gapClass: want %q got %q for %s/%s", tc.wantGap, got, tc.disposition, tc.evidence)
+			}
+		})
 	}
 }
 
@@ -987,56 +1035,76 @@ func TestGapClassBehaviorGaps(t *testing.T) {
 		},
 	}
 	behaviors := []BehaviorState{BehaviorNone, BehaviorStubNoOp, BehaviorUnsupported, BehaviorPartial}
+	evidences := []EvidenceState{EvidenceNone, EvidenceFixture, EvidenceOracle, EvidenceDocs, EvidenceCorpus, EvidenceFixtureAndOracle}
 	for _, bh := range behaviors {
-		t.Run(string(bh), func(t *testing.T) {
-			r := apexRow("apex:System.Test", "System", "Test")
-			r.GladeShape = ShapeTypeKnown
-			r.GladeBehavior = bh
-			r.Evidence = EvidenceNone
+		for _, ev := range evidences {
+			bh, ev := bh, ev
+			t.Run(string(bh)+"/"+string(ev), func(t *testing.T) {
+				r := apexRow("apex:System.Test", "System", "Test")
+				r.GladeShape = ShapeTypeKnown
+				r.GladeBehavior = bh
+				r.Evidence = ev
 
-			profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
+				profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
 
-			if profile.Total != 1 {
-				t.Fatalf("total: want 1 got %d", profile.Total)
-			}
-			if len(profile.NonDeferredGaps) != 1 {
-				t.Fatalf("NonDeferredGaps: want 1 got %d for behavior %q", len(profile.NonDeferredGaps), bh)
-			}
-			if profile.Rows[0].GapClass != "missing-behavior" {
-				t.Fatalf("gapClass: want missing-behavior got %q for behavior %q", profile.Rows[0].GapClass, bh)
-			}
-			if profile.ByGapClass["missing-behavior"] != 1 {
-				t.Fatalf("byGapClass[missing-behavior]: want 1 got %d", profile.ByGapClass["missing-behavior"])
-			}
-		})
+				if profile.Total != 1 {
+					t.Fatalf("total: want 1 got %d", profile.Total)
+				}
+				if len(profile.NonDeferredGaps) != 1 {
+					t.Fatalf("NonDeferredGaps: want 1 got %d for behavior/evidence %q/%q", len(profile.NonDeferredGaps), bh, ev)
+				}
+				if profile.Rows[0].GapClass != GapMissingBehavior {
+					t.Fatalf("gapClass: want %s got %q for behavior/evidence %q/%q", GapMissingBehavior, profile.Rows[0].GapClass, bh, ev)
+				}
+				if profile.ByGapClass[GapMissingBehavior] != 1 {
+					t.Fatalf("byGapClass[%s]: want 1 got %d", GapMissingBehavior, profile.ByGapClass[GapMissingBehavior])
+				}
+			})
+		}
 	}
 }
 
-// RED 4: supported behavior with fixture/oracle/fixture-and-oracle evidence closes.
-func TestGapClassSupportedWithExecutableEvidenceCloses(t *testing.T) {
+// RED 4: supported runtime/mock behavior requires both local fixture and Salesforce oracle evidence.
+func TestGapClassSupportedRequiresDualEvidence(t *testing.T) {
 	policy := SupportPolicy{
 		Rules: []SupportPolicyRule{
 			{Namespace: "System", Disposition: DispositionLocalRuntimeRequired, Reason: "runtime"},
+			{Namespace: "Cache", Disposition: DispositionDeterministicMockRequired, Reason: "mock"},
 		},
 	}
-	evidences := []EvidenceState{EvidenceFixture, EvidenceOracle, EvidenceFixtureAndOracle}
-	for _, ev := range evidences {
-		t.Run(string(ev), func(t *testing.T) {
-			r := apexRow("apex:System.Test", "System", "Test")
+	cases := []struct {
+		name      string
+		namespace string
+		evidence  EvidenceState
+		wantGap   string
+	}{
+		{name: "runtime-fixture-only", namespace: "System", evidence: EvidenceFixture, wantGap: GapMissingEvidence},
+		{name: "runtime-oracle-only", namespace: "System", evidence: EvidenceOracle, wantGap: GapMissingEvidence},
+		{name: "runtime-no-evidence", namespace: "System", evidence: EvidenceNone, wantGap: GapMissingEvidence},
+		{name: "runtime-docs-only", namespace: "System", evidence: EvidenceDocs, wantGap: GapMissingEvidence},
+		{name: "runtime-corpus-only", namespace: "System", evidence: EvidenceCorpus, wantGap: GapMissingEvidence},
+		{name: "runtime-dual", namespace: "System", evidence: EvidenceFixtureAndOracle, wantGap: ""},
+		{name: "mock-fixture-only", namespace: "Cache", evidence: EvidenceFixture, wantGap: GapMissingEvidence},
+		{name: "mock-oracle-only", namespace: "Cache", evidence: EvidenceOracle, wantGap: GapMissingEvidence},
+		{name: "mock-no-evidence", namespace: "Cache", evidence: EvidenceNone, wantGap: GapMissingEvidence},
+		{name: "mock-docs-only", namespace: "Cache", evidence: EvidenceDocs, wantGap: GapMissingEvidence},
+		{name: "mock-corpus-only", namespace: "Cache", evidence: EvidenceCorpus, wantGap: GapMissingEvidence},
+		{name: "mock-dual", namespace: "Cache", evidence: EvidenceFixtureAndOracle, wantGap: ""},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			r := apexRow("apex:"+tc.namespace+".Test", tc.namespace, "Test")
 			r.GladeShape = ShapeTypeKnown
 			r.GladeBehavior = BehaviorSupported
-			r.Evidence = ev
+			r.Evidence = tc.evidence
 
 			profile := ComputeSupportProfile([]SurfaceLedgerRow{r}, policy, nil)
 
 			if profile.Total != 1 {
 				t.Fatalf("total: want 1 got %d", profile.Total)
 			}
-			if len(profile.NonDeferredGaps) != 0 {
-				t.Fatalf("supported+%s should be closed, got %d gaps", ev, len(profile.NonDeferredGaps))
-			}
-			if profile.Rows[0].GapClass != "" {
-				t.Fatalf("gapClass should be empty for supported+%s, got %q", ev, profile.Rows[0].GapClass)
+			if got := profile.Rows[0].GapClass; got != tc.wantGap {
+				t.Fatalf("gapClass: want %q got %q for %s/%s", tc.wantGap, got, tc.namespace, tc.evidence)
 			}
 		})
 	}
@@ -1293,10 +1361,14 @@ func TestGapClassDeterministicJSONStillWorks(t *testing.T) {
 		t.Fatalf("ByGapClass must be initialized")
 	}
 
-	// All rows must have empty gapClass for these fixtures (closed with type-known+supported+fixture).
+	// Runtime closure requires dual evidence; compile-shape closure accepts local fixture evidence.
+	wantGapByID := map[string]string{
+		"apex:System.String":         GapMissingEvidence,
+		"apex:Reports.ReportManager": "",
+	}
 	for _, r := range profile.Rows {
-		if r.GapClass != "" {
-			t.Fatalf("row %s gapClass should be empty, got %q", r.SurfaceID, r.GapClass)
+		if want := wantGapByID[r.SurfaceID]; r.GapClass != want {
+			t.Fatalf("row %s gapClass: want %q got %q", r.SurfaceID, want, r.GapClass)
 		}
 	}
 

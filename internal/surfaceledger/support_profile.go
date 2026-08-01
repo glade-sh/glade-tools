@@ -440,15 +440,21 @@ func classifyGap(row SupportProfileRow) string {
 		return GapMissingShape
 	}
 
-	// compile-shape-required closes when shape is present.
+	// compile-shape-required closes with present shape and local fixture evidence.
 	if row.Disposition == DispositionCompileShapeRequired {
-		return ""
+		if row.Evidence == EvidenceFixture || row.Evidence == EvidenceFixtureAndOracle {
+			return ""
+		}
+		return GapMissingEvidence
 	}
 
 	// local-runtime-required and deterministic-mock-required:
-	// passive behavior closes when shape is present.
+	// passive behavior still requires both local fixture and Salesforce oracle evidence.
 	if row.Behavior == BehaviorPassive {
-		return ""
+		if row.Evidence == EvidenceFixtureAndOracle {
+			return ""
+		}
+		return GapMissingEvidence
 	}
 
 	// none, stub-noop, unsupported, and partial are missing-behavior.
@@ -457,14 +463,12 @@ func classifyGap(row SupportProfileRow) string {
 		return GapMissingBehavior
 	}
 
-	// supported behavior requires executable correctness evidence.
+	// supported behavior requires both local fixture and Salesforce oracle evidence.
 	if row.Behavior == BehaviorSupported {
-		switch row.Evidence {
-		case EvidenceFixture, EvidenceOracle, EvidenceFixtureAndOracle:
-			return "" // closed
-		case EvidenceNone, EvidenceDocs, EvidenceCorpus:
-			return GapMissingEvidence
+		if row.Evidence == EvidenceFixtureAndOracle {
+			return ""
 		}
+		return GapMissingEvidence
 	}
 
 	// Default: missing behavior.
