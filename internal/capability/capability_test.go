@@ -591,11 +591,11 @@ func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)": StatusSupported,
 		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                             StatusSupported,
 		"TrailblazerIdentity.splunkLog(String,String)":                                 StatusSupported,
-		"BusinessHours.add(String, Datetime, Long)":                                    StatusSupported,
-		"BusinessHours.addGmt(String, Datetime, Long)":                                 StatusSupported,
-		"BusinessHours.diff(String, Datetime, Datetime)":                               StatusSupported,
-		"BusinessHours.isWithin(String, Datetime)":                                     StatusSupported,
-		"BusinessHours.nextStartDate(String, Datetime)":                                StatusSupported,
+		"BusinessHours.add(Id, Datetime, Long)":                                        StatusSupported,
+		"BusinessHours.addGmt(Id, Datetime, Long)":                                     StatusSupported,
+		"BusinessHours.diff(Id, Datetime, Datetime)":                                   StatusSupported,
+		"BusinessHours.isWithin(Id, Datetime)":                                         StatusSupported,
+		"BusinessHours.nextStartDate(Id, Datetime)":                                    StatusSupported,
 	}
 	assertStdlibStatuses(t, watched)
 }

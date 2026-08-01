@@ -2,19 +2,19 @@
   "name": "core-runtime-businesshours-full-local-calendar",
   "evidence": [
     {
-      "surfaceId": "apex:BusinessHours.diff(String,Datetime,Datetime)",
+      "surfaceId": "apex:BusinessHours.diff(Id,Datetime,Datetime)",
       "symbol": "BusinessHours.diff",
       "kind": "exec",
       "notes": "Seeded partial-day Holiday windows subtract only the closed local minutes from BusinessHours.diff."
     },
     {
-      "surfaceId": "apex:BusinessHours.isWithin(String,Datetime)",
+      "surfaceId": "apex:BusinessHours.isWithin(Id,Datetime)",
       "symbol": "BusinessHours.isWithin",
       "kind": "exec",
       "notes": "Seeded Holiday recurrence metadata supports daily, weekly, monthly, yearly, linked, and global local closures."
     },
     {
-      "surfaceId": "apex:BusinessHours.nextStartDate(String,Datetime)",
+      "surfaceId": "apex:BusinessHours.nextStartDate(Id,Datetime)",
       "symbol": "BusinessHours.nextStartDate",
       "kind": "exec",
       "notes": "Linked holidays close only the seeded BusinessHours calendar they are associated with."
@@ -64,9 +64,9 @@
       "object": "Holiday",
       "records": [
         {
-          "Id": "0HoPartial000001AAA",
+          "Id": "0HoPartial00001AAA",
           "Name": "Partial",
-          "ActivityDate": "2026-06-15",
+          "ActivityDate": "2026-06-16",
           "IsAllDay": false,
           "StartTimeInMinutes": 720,
           "EndTimeInMinutes": 780
@@ -126,7 +126,7 @@
           "IsAllDay": true
         },
         {
-          "Id": "0HoGlobal0000001AAA",
+          "Id": "0HoGlobal000001AAA",
           "Name": "Global",
           "ActivityDate": "2026-06-24",
           "IsAllDay": true
@@ -147,13 +147,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "System.assertEquals(3600000, BusinessHours.diff('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 15, 18, 30, 0), Datetime.newInstanceGmt(2026, 6, 15, 20, 30, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 7, 15, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2027, 6, 21, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(true, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 24, 16, 0, 0)));"
+      "content": "System.assertEquals(3600000, BusinessHours.diff('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 16, 18, 30, 0), Datetime.newInstanceGmt(2026, 6, 16, 20, 30, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 7, 15, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2027, 6, 21, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(true, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 24, 16, 0, 0)));"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "System.assertEquals(3600000, BusinessHours.diff('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 15, 18, 30, 0), Datetime.newInstanceGmt(2026, 6, 15, 20, 30, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 7, 15, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2027, 6, 21, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(true, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 24, 16, 0, 0)));"
+      "System.assertEquals(3600000, BusinessHours.diff('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 16, 18, 30, 0), Datetime.newInstanceGmt(2026, 6, 16, 20, 30, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 17, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 22, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 7, 15, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2027, 6, 21, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000001AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(true, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 23, 16, 0, 0))); System.assertEquals(false, BusinessHours.isWithin('01m000000000002AAA', Datetime.newInstanceGmt(2026, 6, 24, 16, 0, 0)));"
     ]
   },
   "expected": {

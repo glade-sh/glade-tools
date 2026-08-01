@@ -261,7 +261,7 @@ func TestStdlibAPIIDParsesQualifiedSchemaMethods(t *testing.T) {
 func TestBuildGladeSnapshotPromotesBusinessHoursLocalContract(t *testing.T) {
 	rows := BuildGladeSnapshot()
 	byID := rowsByID(rows)
-	id := ApexMemberID("", "BusinessHours", "add", []string{"String", "Datetime", "Long"})
+	id := ApexMemberID("", "BusinessHours", "add", []string{"Id", "Datetime", "Long"})
 	row, ok := byID[id]
 	if !ok {
 		t.Fatalf("missing BusinessHours row %s", id)

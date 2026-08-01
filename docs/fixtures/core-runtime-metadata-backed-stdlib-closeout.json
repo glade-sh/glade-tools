@@ -21,31 +21,31 @@
     },
     {
       "symbol": "BusinessHours.add",
-      "surfaceId": "apex:BusinessHours.add(String,Datetime,Long)",
+      "surfaceId": "apex:BusinessHours.add(Id,Datetime,Long)",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records support deterministic weekday schedule addition."
     },
     {
       "symbol": "BusinessHours.addGmt",
-      "surfaceId": "apex:BusinessHours.addGmt(String,Datetime,Long)",
+      "surfaceId": "apex:BusinessHours.addGmt(Id,Datetime,Long)",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records support deterministic weekday schedule addition in GMT form."
     },
     {
       "symbol": "BusinessHours.diff",
-      "surfaceId": "apex:BusinessHours.diff(String,Datetime,Datetime)",
+      "surfaceId": "apex:BusinessHours.diff(Id,Datetime,Datetime)",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records support deterministic weekday schedule interval math."
     },
     {
       "symbol": "BusinessHours.isWithin",
-      "surfaceId": "apex:BusinessHours.isWithin(String,Datetime)",
+      "surfaceId": "apex:BusinessHours.isWithin(Id,Datetime)",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records support deterministic inside/outside checks."
     },
     {
       "symbol": "BusinessHours.nextStartDate",
-      "surfaceId": "apex:BusinessHours.nextStartDate(String,Datetime)",
+      "surfaceId": "apex:BusinessHours.nextStartDate(Id,Datetime)",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records support deterministic next weekday start lookup."
     }
