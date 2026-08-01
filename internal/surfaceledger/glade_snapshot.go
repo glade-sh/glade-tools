@@ -103,6 +103,7 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	addFixtureBackedInvocableActionDTORows(byID)
 	addApexLanguageRuleRows(byID)
 	addSurfaceClosureTailGladeRows(byID)
+	addMethodFamilyShapeReconciliation(byID)
 	rows := make([]SurfaceLedgerRow, 0, len(byID))
 	for _, row := range byID {
 		rows = append(rows, withDefaults(row))
@@ -832,6 +833,60 @@ unknown:ref_aura_attribute
 unknown:ref_aura_event
 unknown:ref_aura_interface
 `)
+
+// addMethodFamilyShapeReconciliation promotes absent, signatureless Apex
+// method-family rows to type-known when a different exact sibling overload
+// with the same namespace, type, member, and kind is already shaped by Glade.
+func addMethodFamilyShapeReconciliation(byID map[string]SurfaceLedgerRow) {
+	familyKeys := make(map[string]bool)
+	for _, row := range byID {
+		if row.Product != ProductApex {
+			continue
+		}
+		if row.GladeShape == ShapeAbsent || row.GladeShape == "" {
+			continue
+		}
+		// Shaped siblings must have an explicit parameter list in their
+		// surfaceId — detectable by '(' in the surface ID.
+		if !strings.Contains(row.SurfaceID, "(") {
+			continue
+		}
+		if row.MemberName == "" {
+			continue
+		}
+		key := methodFamilyReconciliationKey(row.Namespace, row.TypeName, row.MemberName, row.Kind)
+		familyKeys[key] = true
+	}
+	for key, row := range byID {
+		if row.Product != ProductApex {
+			continue
+		}
+		if row.GladeShape != ShapeAbsent {
+			continue
+		}
+		// Only promote signatureless rows — surfaceId contains no '('.
+		if strings.Contains(row.SurfaceID, "(") {
+			continue
+		}
+		if row.MemberName == "" {
+			continue
+		}
+		familyKey := methodFamilyReconciliationKey(row.Namespace, row.TypeName, row.MemberName, row.Kind)
+		if !familyKeys[familyKey] {
+			continue
+		}
+		row.GladeShape = ShapeTypeKnown
+		row.Sources = mergeStrings(row.Sources, []string{"standard-symbol-family"})
+		byID[key] = row
+	}
+}
+
+// methodFamilyReconciliationKey builds an exact-match key from namespace, type,
+// member, and kind. The key is used to link signatureless family rows to their
+// shaped sibling overloads.
+func methodFamilyReconciliationKey(namespace, typeName, memberName, kind string) string {
+	return namespace + "\x00" + typeName + "\x00" + memberName + "\x00" + kind
+}
 
 func splitTypeName(namespace, name string) (string, string) {
 	if namespace != "" {

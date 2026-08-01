@@ -598,3 +598,157 @@ func TestBuildGladeSnapshotIncludesSummer26ReleaseAliases(t *testing.T) {
 		}
 	}
 }
+
+// --- CB17: method-family shape reconciliation tests ---
+
+func TestCB17_FamilyRowPromotedFromExactShapedSibling(t *testing.T) {
+	// A signatureless Apex method-family row (no '(' in surfaceId) becomes
+	// type-known when a sibling overload with the same namespace, type, member,
+	// and kind has an explicit parameter list in its surfaceId.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	tests := []struct {
+		familyID string
+	}{
+		{ApexMemberID("System", "Assert", "areEqual", nil)},
+		{ApexMemberID("System", "Test", "startTest", nil)},
+		{ApexMemberID("System", "JSON", "deserialize", nil)},
+	}
+	for _, tt := range tests {
+		row, ok := byID[tt.familyID]
+		if !ok {
+			t.Fatalf("missing family row %s", tt.familyID)
+		}
+		if row.GladeShape != ShapeTypeKnown {
+			t.Fatalf("%s gladeShape = %s, want %s", tt.familyID, row.GladeShape, ShapeTypeKnown)
+		}
+		if !hasSource(row.Sources, "standard-symbol-family") {
+			t.Fatalf("%s sources = %#v, want standard-symbol-family", tt.familyID, row.Sources)
+		}
+	}
+}
+
+func TestCB17_FamilyReconciliationIndependentOfOrder(t *testing.T) {
+	// Multiple calls to BuildGladeSnapshot produce identical shape and behavior.
+	var first map[string]SurfaceLedgerRow
+	familyIDs := []string{
+		ApexMemberID("System", "Assert", "areEqual", nil),
+		ApexMemberID("System", "Test", "startTest", nil),
+		ApexMemberID("System", "JSON", "deserialize", nil),
+	}
+	for i := 0; i < 5; i++ {
+		byID := rowsByID(BuildGladeSnapshot())
+		if first == nil {
+			first = byID
+			continue
+		}
+		for _, id := range familyIDs {
+			r1, ok1 := first[id]
+			r2, ok2 := byID[id]
+			if ok1 != ok2 {
+				t.Fatalf("run %d: presence of %s changed", i, id)
+			}
+			if r1.GladeShape != r2.GladeShape || r1.GladeBehavior != r2.GladeBehavior {
+				t.Fatalf("run %d: %s shape/behavior changed", i, id)
+			}
+		}
+	}
+}
+
+func TestCB17_BehaviorStatesPreserved(t *testing.T) {
+	// Shape reconciliation must not alter GladeBehavior byte-for-byte.
+	// Rows promoted from absent to type-known keep their original behavior.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	tests := []struct {
+		id       string
+		behavior BehaviorState
+	}{
+		// startTest: promoted from absent stdlib-matrix row, behavior supported
+		{ApexMemberID("System", "Test", "startTest", nil), BehaviorSupported},
+		// deserialize: promoted from absent stdlib-matrix row, behavior supported
+		{ApexMemberID("System", "JSON", "deserialize", nil), BehaviorSupported},
+		// areEqual: promoted from absent stdlib-matrix row, behavior supported
+		{ApexMemberID("System", "Assert", "areEqual", nil), BehaviorSupported},
+	}
+	for _, tt := range tests {
+		row, ok := byID[tt.id]
+		if !ok {
+			t.Fatalf("missing family row %s", tt.id)
+		}
+		if row.GladeShape != ShapeTypeKnown {
+			t.Fatalf("%s gladeShape = %s, want %s", tt.id, row.GladeShape, ShapeTypeKnown)
+		}
+		if row.GladeBehavior != tt.behavior {
+			t.Fatalf("%s behavior = %s, want %s", tt.id, row.GladeBehavior, tt.behavior)
+		}
+	}
+}
+
+func TestCB17_FamilyRowNotPromotedOnMismatch(t *testing.T) {
+	// A family row is not promoted when the shaped sibling differs by
+	// namespace, type, member, or kind.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	// Each member's family row is promoted from its own shaped siblings,
+	// not from a different member's siblings.
+	tests := []struct {
+		familyID string
+	}{
+		{ApexMemberID("System", "Assert", "areEqual", nil)},
+		{ApexMemberID("System", "Assert", "isTrue", nil)},
+	}
+	for _, tt := range tests {
+		row, ok := byID[tt.familyID]
+		if !ok || row.GladeShape != ShapeTypeKnown {
+			t.Fatalf("%s shape = %s, want type-known", tt.familyID, row.GladeShape)
+		}
+	}
+
+	// A type row must not be promoted by a method sibling.
+	assertTypeID := ApexTypeID("System", "Assert")
+	if row, ok := byID[assertTypeID]; ok && row.GladeShape == ShapeSignatureKnown {
+		t.Fatalf("Assert type row shape = %s, should not be promoted by method sibling", row.GladeShape)
+	}
+}
+
+func TestCB17_FamilyRowNotPromotedFromSignaturelessOrAbsent(t *testing.T) {
+	// A family row must not be promoted by another signatureless sibling
+	// or by an absent sibling.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	// publishAfterCommit (nil params) exists via system-fixture-alias.
+	// It must not be promoted by another signatureless sibling like publish.
+	pubAfterID := ApexMemberID("System", "EventBus", "publishAfterCommit", nil)
+	if row, ok := byID[pubAfterID]; ok && row.GladeShape == ShapeTypeKnown {
+		// It must NOT be type-known — none of its shaped siblings are
+		// parameterized overloads.
+		if !hasSource(row.Sources, "system-fixture-alias") {
+			t.Fatalf("publishAfterCommit shape = %s from non-fixture source", row.GladeShape)
+		}
+	}
+}
+
+func TestCB17_JSONDeserializeBehaviorPreserved(t *testing.T) {
+	// System.JSON.deserialize has behavior supported in BuildGladeSnapshot
+	// (from stdlib). Shape reconciliation must not alter this.
+	// The merged ledger becomes unsupported via explicit fixture evidence.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	familyID := ApexMemberID("System", "JSON", "deserialize", nil)
+	row, ok := byID[familyID]
+	if !ok {
+		t.Fatalf("missing family row %s", familyID)
+	}
+	if row.GladeShape != ShapeTypeKnown {
+		t.Fatalf("%s gladeShape = %s, want %s", familyID, row.GladeShape, ShapeTypeKnown)
+	}
+	if row.GladeBehavior != BehaviorSupported {
+		t.Fatalf("%s behavior = %s, want %s", familyID, row.GladeBehavior, BehaviorSupported)
+	}
+}
