@@ -1,0 +1,24 @@
+{
+  "name": "apex-connectapi-corpus-local-mocks",
+  "evidence": [
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ManagedContent.getAllManagedContent(String,Integer,Integer,String,String)", "symbol": "ConnectApi.ManagedContent.getAllManagedContent", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ManagedContent.getAllManagedContent(String,Integer,Integer,String,String,Boolean)", "symbol": "ConnectApi.ManagedContent.getAllManagedContent", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ManagedContent.getManagedContentByContentKeys(String,List<String>,Integer,Integer,String,String,Boolean)", "symbol": "ConnectApi.ManagedContent.getManagedContentByContentKeys", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.UserProfiles.setPhoto(String,String,ConnectApi.BinaryInput)", "symbol": "ConnectApi.UserProfiles.setPhoto", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Object)", "symbol": "ConnectApi.UserProfiles.setPhoto", "kind": "test" }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/ApexConnectApiCorpusLocalMocksTest.cls",
+      "content": "@isTest private class ApexConnectApiCorpusLocalMocksTest { @isTest(SeeAllData=true) static void rows() { ConnectApi.FollowingPage byUser = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId()); ConnectApi.FollowingPage byPage = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), 0); ConnectApi.FollowingPage byPageSize = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), 0, 10); ConnectApi.FollowingPage byFilter = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), 'People'); ConnectApi.FollowingPage byFilterPage = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), 'People', 0); ConnectApi.FollowingPage byFilterPageSize = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), 'People', 0, 10); System.assertNotEquals(null, byUser); System.assertEquals(0, byUser.total); System.assertEquals(0, byUser.following.size()); System.assertEquals('/services/data/vXX.X/connect/followings', byUser.currentPageUrl); System.assertEquals(byUser.currentPageUrl, byPage.currentPageUrl); System.assertEquals(byUser.currentPageUrl, byPageSize.currentPageUrl); System.assertEquals(byUser.currentPageUrl, byFilter.currentPageUrl); System.assertEquals(byUser.currentPageUrl, byFilterPage.currentPageUrl); System.assertEquals(byUser.currentPageUrl, byFilterPageSize.currentPageUrl); ConnectApi.ManagedContentVersionCollection allFive = ConnectApi.ManagedContent.getAllManagedContent(null, 0, 1, 'en_US', 'News'); ConnectApi.ManagedContentVersionCollection allSix = ConnectApi.ManagedContent.getAllManagedContent(null, 0, 1, 'en_US', 'News', false); List<String> keys = new List<String>{ 'home-hero' }; ConnectApi.ManagedContentVersionCollection byKeys = ConnectApi.ManagedContent.getManagedContentByContentKeys(null, keys, 0, 1, 'en_US', 'News', false); System.assertNotEquals(null, allFive); System.assertNotEquals(null, allSix); System.assertNotEquals(null, byKeys); System.assertEquals(0, allFive.items.size()); System.assertEquals(0, allSix.items.size()); System.assertEquals(0, byKeys.items.size()); Object versionNumber = null; ConnectApi.UserProfiles.setPhoto(null, UserInfo.getUserId(), new ConnectApi.BinaryInput(Blob.valueOf('bytes'), 'image/png', 'avatar.png')); ConnectApi.UserProfiles.setPhoto(null, UserInfo.getUserId(), '069000000000001', versionNumber); } }"
+    }
+  ],
+  "command": { "kind": "test" },
+  "expected": { "result": { "ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0 } }
+}

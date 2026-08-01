@@ -10,7 +10,7 @@
     { "surfaceId": "apex:ConnectApi.NamedCredentials.getExternalCredential(String)", "symbol": "NamedCredentials.getExternalCredential", "kind": "test" },
     { "surfaceId": "apex:ConnectApi.UserProfiles.getUserProfile(String,String)", "symbol": "UserProfiles.getUserProfile", "kind": "test" },
     { "surfaceId": "apex:ConnectApi.UserProfiles.getPhoto(String,String)", "symbol": "UserProfiles.getPhoto", "kind": "test" },
-    { "surfaceId": "apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Integer)", "symbol": "UserProfiles.setPhoto", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Object)", "symbol": "UserProfiles.setPhoto", "kind": "test" },
     { "surfaceId": "apex:ConnectApi.UserProfiles.deletePhoto(String,String)", "symbol": "UserProfiles.deletePhoto", "kind": "test" },
     { "surfaceId": "apex:ConnectApi.NextBestAction.executeStrategy(String,Integer,String,String)", "symbol": "NextBestAction.executeStrategy", "kind": "test" },
     { "surfaceId": "apex:ConnectApi.NextBestAction.setRecommendationReaction(ConnectApi.RecommendationReactionInput)", "symbol": "NextBestAction.setRecommendationReaction", "kind": "test" },
