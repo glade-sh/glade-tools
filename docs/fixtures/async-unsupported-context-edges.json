@@ -4,12 +4,13 @@
     {
       "surfaceId": "apex:System.AsyncInfo.getCurrentQueueableStackDepth()",
       "symbol": "AsyncInfo.getCurrentQueueableStackDepth",
-      "kind": "exec"
+      "kind": "exec",
+      "notes": "Out-of-context AsyncException is the executed Salesforce-shaped context-guard contract; Queueable or Finalizer execution supplies the supported method."
     },
     {
       "symbol": "AsyncInfo",
-      "kind": "unsupported",
-      "notes": "Local queueable stack metadata is not modeled."
+      "kind": "exec",
+      "notes": "Out-of-context AsyncException is the executed Salesforce-shaped context-guard contract; Queueable or Finalizer execution supplies the supported AsyncInfo type."
     }
   ],
   "source": [
