@@ -1,0 +1,47 @@
+{
+  "name": "integration-auth-token-local-mocks",
+  "evidence": [
+    {
+      "surfaceId": "apex:Auth.AuthToken.getAccessToken(String,String)",
+      "symbol": "Auth.AuthToken.getAccessToken(String,String)",
+      "kind": "exec",
+      "notes": "Local AuthToken mock returns the deterministic non-secret access token string."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthToken.getAccessTokenMap(String,String)",
+      "symbol": "Auth.AuthToken.getAccessTokenMap(String,String)",
+      "kind": "exec",
+      "notes": "Local AuthToken mock returns typed OAuth access_token, refresh_token, and token_type entries."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthToken.refreshAccessToken(String,String,String)",
+      "symbol": "Auth.AuthToken.refreshAccessToken(String,String,String)",
+      "kind": "exec",
+      "notes": "Local AuthToken mock returns a typed OAuthRefreshResult with deterministic tokens and null error."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthToken.revokeAccess(String,String,String,String)",
+      "symbol": "Auth.AuthToken.revokeAccess(String,String,String,String)",
+      "kind": "exec",
+      "notes": "Local AuthToken mock accepts the four-argument revokeAccess signature and returns true."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "String accessToken = Auth.AuthToken.getAccessToken('provider', 'local');\nSystem.assertEquals('local-auth-token', accessToken);\nMap<String,String> accessTokenMap = Auth.AuthToken.getAccessTokenMap('provider', 'local');\nSystem.assertEquals('local-auth-token', accessTokenMap.get('access_token'));\nSystem.assertEquals('local-refresh-token', accessTokenMap.get('refresh_token'));\nSystem.assertEquals('Bearer', accessTokenMap.get('token_type'));\nAuth.OAuthRefreshResult refresh = Auth.AuthToken.refreshAccessToken('provider', 'local', accessToken);\nSystem.assertEquals('local-auth-token', refresh.accessToken);\nSystem.assertEquals('local-refresh-token', refresh.refreshToken);\nSystem.assertEquals(null, refresh.error);\nSystem.assertEquals(true, Auth.AuthToken.revokeAccess('provider', 'local', 'user', 'remote'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "String accessToken = Auth.AuthToken.getAccessToken('provider', 'local');\nSystem.assertEquals('local-auth-token', accessToken);\nMap<String,String> accessTokenMap = Auth.AuthToken.getAccessTokenMap('provider', 'local');\nSystem.assertEquals('local-auth-token', accessTokenMap.get('access_token'));\nSystem.assertEquals('local-refresh-token', accessTokenMap.get('refresh_token'));\nSystem.assertEquals('Bearer', accessTokenMap.get('token_type'));\nAuth.OAuthRefreshResult refresh = Auth.AuthToken.refreshAccessToken('provider', 'local', accessToken);\nSystem.assertEquals('local-auth-token', refresh.accessToken);\nSystem.assertEquals('local-refresh-token', refresh.refreshToken);\nSystem.assertEquals(null, refresh.error);\nSystem.assertEquals(true, Auth.AuthToken.revokeAccess('provider', 'local', 'user', 'remote'));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
