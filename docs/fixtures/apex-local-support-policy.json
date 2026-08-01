@@ -61,6 +61,18 @@
           "reason": "core local value contract"
         },
         {
+          "typeName": "Crypto",
+          "memberName": "signXML",
+          "disposition": "hosted-deferred",
+          "reason": "hosted certificate-backed XML signing service"
+        },
+        {
+          "typeName": "Crypto",
+          "memberName": "signXml",
+          "disposition": "hosted-deferred",
+          "reason": "hosted certificate-backed XML signing service"
+        },
+        {
           "typeName": "Date",
           "disposition": "local-runtime-required",
           "reason": "deterministic local date and clock contract"
@@ -917,7 +929,27 @@
     {
       "namespace": "BusinessRule",
       "disposition": "deterministic-mock-required",
-      "reason": "BusinessRule evaluation surface — deterministic mock"
+      "reason": "BusinessRule evaluation surface — deterministic mock",
+      "memberExceptions": [
+        {
+          "typeName": "CalculationMatrixMigrationService",
+          "memberName": "migrate",
+          "disposition": "hosted-deferred",
+          "reason": "hosted BusinessRule calculation-matrix migration service"
+        },
+        {
+          "typeName": "CalculationProcedureMigrationService",
+          "memberName": "migrate",
+          "disposition": "hosted-deferred",
+          "reason": "hosted BusinessRule calculation-procedure migration service"
+        },
+        {
+          "typeName": "DecisionMatrixRowMigratorService",
+          "memberName": "migrate",
+          "disposition": "hosted-deferred",
+          "reason": "hosted BusinessRule decision-matrix migration service"
+        }
+      ]
     },
     {
       "namespace": "Canvas",
@@ -927,7 +959,27 @@
     {
       "namespace": "Context",
       "disposition": "deterministic-mock-required",
-      "reason": "Context provider surface — deterministic mock"
+      "reason": "Context provider surface — deterministic mock",
+      "memberExceptions": [
+        {
+          "typeName": "IndustriesContext",
+          "memberName": "deleteContext",
+          "disposition": "hosted-deferred",
+          "reason": "hosted Industries Context persistence service"
+        },
+        {
+          "typeName": "IndustriesContext",
+          "memberName": "deleteRecords",
+          "disposition": "hosted-deferred",
+          "reason": "hosted Industries Context persistence service"
+        },
+        {
+          "typeName": "IndustriesContext",
+          "memberName": "evictContextDefinition",
+          "disposition": "hosted-deferred",
+          "reason": "hosted Industries Context persistence service"
+        }
+      ]
     },
     {
       "namespace": "Process",
@@ -942,12 +994,51 @@
     {
       "namespace": "UserProvisioning",
       "disposition": "deterministic-mock-required",
-      "reason": "User provisioning surface — deterministic mock"
+      "reason": "User provisioning surface — deterministic mock",
+      "memberExceptions": [
+        {
+          "typeName": "UserProvisioningPlugin",
+          "memberName": "invoke",
+          "disposition": "hosted-deferred",
+          "reason": "hosted UserProvisioning plugin invocation"
+        }
+      ]
     },
     {
       "namespace": "applauncher",
       "disposition": "deterministic-mock-required",
-      "reason": "App Launcher surface — deterministic mock"
+      "reason": "App Launcher surface — deterministic mock",
+      "memberExceptions": [
+        {"typeName": "AppLauncherSetupReordererController", "memberName": "getModel", "disposition": "hosted-deferred", "reason": "hosted AppLauncher setup controller"},
+        {"typeName": "AppLauncherSetupReordererController", "memberName": "saveOrder", "disposition": "hosted-deferred", "reason": "hosted AppLauncher setup controller"},
+        {"typeName": "ChangePasswordController", "memberName": "changePassowrd", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "ChangePasswordController", "memberName": "changePassword", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "ChangePasswordController", "memberName": "getPasswordPolicyStatement", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "ForgotPasswordController", "memberName": "forgotPassword", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "ForgotPasswordController", "memberName": "setExperienceId", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "getForgotPasswordUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "getIsSelfRegistrationEnabled", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "getIsUsernamePasswordEnabled", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "getLoginRightFrameUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "getSelfRegistrationUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "getUsernamePasswordSelfRegEnabled", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "login", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "loginGetPageRefUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "LoginFormController", "memberName": "setExperienceId", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "SelfRegisterController", "memberName": "commonSelfRegisterGetRedirectUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher registration controller"},
+        {"typeName": "SelfRegisterController", "memberName": "getExtraFields", "disposition": "hosted-deferred", "reason": "hosted AppLauncher registration controller"},
+        {"typeName": "SelfRegisterController", "memberName": "isValidPassword", "disposition": "hosted-deferred", "reason": "hosted AppLauncher registration controller"},
+        {"typeName": "SelfRegisterController", "memberName": "selfRegister", "disposition": "hosted-deferred", "reason": "hosted AppLauncher registration controller"},
+        {"typeName": "SelfRegisterController", "memberName": "selfRegisterGetRedirectUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher registration controller"},
+        {"typeName": "SelfRegisterController", "memberName": "setExperienceId", "disposition": "hosted-deferred", "reason": "hosted AppLauncher registration controller"},
+        {"typeName": "SocialLoginController", "memberName": "getAuthProviders", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "SocialLoginController", "memberName": "getCommunityDomainSsoUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "SocialLoginController", "memberName": "getSamlProviders", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "SocialLoginController", "memberName": "getSamlSsoUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "SocialLoginController", "memberName": "getSamlSsoUrlNoCache", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "SocialLoginController", "memberName": "getSsoUrl", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"},
+        {"typeName": "SocialLoginController", "memberName": "handleIdp", "disposition": "hosted-deferred", "reason": "hosted AppLauncher authentication controller"}
+      ]
     },
     {
       "namespace": "functions",
@@ -1620,24 +1711,27 @@
     },
     {
       "surfacePrefix": "apex:System.Exact",
-      "disposition": "local-runtime-required",
+      "disposition": "hosted-deferred",
       "override": true,
-      "reason": "System.Exact local runtime"
+      "reason": "synthetic exact Salesforce governor accounting is hosted"
     },
     {
       "surfacePrefix": "unknown:salesforce_app_limits_platform_soslsoql",
-      "disposition": "local-runtime-required",
-      "reason": "SOQL/SOSL limit surface"
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "synthetic remote SOQL/SOSL limit accounting surface"
     },
     {
       "surfacePrefix": "unknown:supported_soql",
-      "disposition": "local-runtime-required",
-      "reason": "Supported SOQL surface"
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "synthetic hosted PushTopic query support inventory"
     },
     {
       "surfacePrefix": "unknown:unsupported_soql_statements",
-      "disposition": "local-runtime-required",
-      "reason": "Unsupported SOQL statements surface"
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "synthetic hosted PushTopic query restriction inventory"
     },
     {
       "surfacePrefix": "apex:Approval.process",
@@ -1683,6 +1777,78 @@
       "surfacePrefix": "unknown:sforce_api_calls_",
       "disposition": "hosted-deferred",
       "reason": "sforce API calls"
+    },
+    {
+      "surfacePrefix": "apex:functions.",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted cloud Functions transport and invocation"
+    },
+    {
+      "surfacePrefix": "apex:pref.",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted Preference Center service"
+    },
+    {
+      "surfacePrefix": "apex:System.PackageBundleService",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted package bundle service"
+    },
+    {
+      "surfacePrefix": "apex:System.Messaging.renderStoredEmailTemplate hosted usage mutation",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted stored-email usage mutation"
+    },
+    {
+      "surfacePrefix": "apex:System.Messaging.sendEmail delivery transport",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted email delivery transport"
+    },
+    {
+      "surfacePrefix": "apex:System.PageReference.getContent and getContentAsPDF",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted Visualforce rendering and PDF parity"
+    },
+    {
+      "surfacePrefix": "apex:System.System.enqueueJob hosted wall-clock queue scheduling",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted wall-clock queue scheduling"
+    },
+    {
+      "surfacePrefix": "apex:System.System.runAs package install and license validation",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted package installation and license validation"
+    },
+    {
+      "surfacePrefix": "apex:System.Test.getExternalService live service execution",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted external-service execution"
+    },
+    {
+      "surfacePrefix": "apex:System.Test.loadData packaged resource and relationship external-ID expansion",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted packaged-resource and external-ID expansion"
+    },
+    {
+      "surfacePrefix": "apex:System.Test.startTest and stopTest hosted service accounting",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted service accounting"
+    },
+    {
+      "surfacePrefix": "apex:System.Type.forName hosted package namespace reflection",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted package namespace reflection"
     }
   ]
 }

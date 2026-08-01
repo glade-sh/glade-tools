@@ -228,6 +228,10 @@ func localStubBehaviorEvidenceOverride(symbol typesys.TypeSymbol, member typesys
 			if schemaDataCategoryGroupSobjectTypePairProperty(name) {
 				return StubBehaviorImplemented, "local runtime materializes DataCategoryGroupSobjectTypePair properties through Apex setters and getters", true
 			}
+		case "Messaging.SingleEmailMessage":
+			if name == "customheaders" {
+				return StubBehaviorImplemented, "local email runtime stores and captures SingleEmailMessage custom headers", true
+			}
 		case "Schema.DescribeDataCategoryGroupResult":
 			if schemaDescribeDataCategoryGroupResultProperty(name) {
 				return StubBehaviorImplemented, "local runtime materializes DescribeDataCategoryGroupResult properties from metadata-backed data category group values", true
@@ -791,6 +795,7 @@ var generatedPlatformImplementedTypes = []string{
 	"Schema.SObjectTypeFields",
 	"Schema",
 	"Schema.Schema",
+	"Auth.JWT",
 }
 
 func matchesAnyFold(value string, candidates []string) bool {
@@ -1217,6 +1222,20 @@ func corePlatformBehaviorMethod(symbol typesys.TypeSymbol, member typesys.Member
 		return name == "getrecords" || name == "getremovedfields" || name == "getmodifiedindexes"
 	case "InstallContext":
 		return name == "previousversion" || name == "ispush" || name == "installerid"
+	case "InstallHandler":
+		return name == "oninstall"
+	case "UninstallContext":
+		return name == "organizationid"
+	case "UninstallHandler":
+		return name == "onuninstall"
+	case "Auth.JWT":
+		switch name {
+		case "getadditionalclaims", "getaud", "getiss", "getnbfclockskew", "getsub", "getvaliditylength",
+			"setadditionalclaims", "setaud", "setiss", "setnbfclockskew", "setsub", "setvaliditylength", "tojsonstring":
+			return true
+		}
+	case "Auth.JWTUtil":
+		return name == "parsejwtfromstringwithoutvalidation"
 	case "SandboxContext":
 		return name == "organizationid" || name == "sandboxid" || name == "sandboxname"
 	case "RequestImpl":
@@ -1627,7 +1646,7 @@ func apexPagesBehaviorMethod(typeName, methodName string) bool {
 	case "ApexPages.Message":
 		return strings.HasPrefix(methodName, "get")
 	case "ApexPages.Action":
-		return methodName == "getexpression"
+		return methodName == "getexpression" || methodName == "invoke"
 	case "ApexPages.Component", "ApexPages.ComponentIteration":
 		return methodName == "getcomponentbyid"
 	case "ApexPages.StandardController":

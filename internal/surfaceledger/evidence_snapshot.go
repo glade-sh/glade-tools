@@ -29,7 +29,7 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 			if id == "" {
 				continue
 			}
-			if _, nonCanonical := nonCanonicalGeneratedSurfaceIDs[id]; nonCanonical {
+			if isNonCanonicalGeneratedSurfaceID(id) {
 				continue
 			}
 			product := productFromID(id)

@@ -9,6 +9,9 @@ func Merge(docs, org, glade, evidence []SurfaceLedgerRow) SurfaceLedger {
 	byID := map[string]SurfaceLedgerRow{}
 	for _, group := range [][]SurfaceLedgerRow{docs, org, glade, evidence} {
 		for _, row := range group {
+			if isNonCanonicalGeneratedSurfaceID(row.SurfaceID) {
+				continue
+			}
 			row = withDefaults(row)
 			if row.SurfaceID == "" {
 				continue

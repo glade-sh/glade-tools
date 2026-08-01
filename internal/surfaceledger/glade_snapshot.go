@@ -776,9 +776,6 @@ type surfaceClosureTailRow struct {
 var surfaceClosureTailRows = []surfaceClosureTailRow{
 	{ID: ApexMemberID("ConnectApi", "CommerceSearchConnectFamily", "searchProducts", []string{"String", "String", "List<String>", "String", "String", "String", "List<String>", "String", "Integer", "Integer", "String", "List<String>", "Boolean", "Boolean"}), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "ConnectApi commerce search executes hosted Commerce search services outside the local runtime."},
 	{ID: ApexMemberID("ConnectApi", "OptimizationFiles", "FetchOptimizationFiles", []string{"ConnectApi.fetchFilesInput"}), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "ConnectApi optimization files fetches hosted optimization resources outside the local runtime."},
-	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withActionIdentifier", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
-	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withTargetId", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
-	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withTargetPageRef", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
 	{ID: ApexMemberID("Schema", "DescribeSObjectResult", "getAssociateEntityType", nil), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Schema associate entity type is represented as a passive describe shape in local metadata."},
 	{ID: ApexMemberID("System", "List", "List", []string{"Set<T>"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic List Set-copy constructor is a passive collection shape."},
 	{ID: ApexMemberID("System", "Set", "Set", []string{"Object"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic Set Object constructor is a passive collection shape."},
@@ -1003,33 +1000,71 @@ func isSyntheticStdlibAPI(api string) bool {
 }
 
 var nonCanonicalGeneratedSurfaceIDs = map[string]struct{}{
-	"apex:Schema.ChildRelationship.ChildRelationship()":                                               {},
-	"apex:Schema.DescribeColorResult.DescribeColorResult()":                                           {},
-	"apex:Schema.DescribeDataCategoryGroupResult.DescribeDataCategoryGroupResult()":                   {},
-	"apex:Schema.DescribeDataCategoryGroupStructureResult.DescribeDataCategoryGroupStructureResult()": {},
-	"apex:Schema.DescribeFieldResult.DescribeFieldResult()":                                           {},
-	"apex:Schema.DescribeIconResult.DescribeIconResult()":                                             {},
-	"apex:Schema.DescribeSObjectResult.DescribeSObjectResult()":                                       {},
-	"apex:Schema.DescribeTabResult.DescribeTabResult()":                                               {},
-	"apex:Schema.DescribeTabSetResult.DescribeTabSetResult()":                                         {},
-	"apex:Schema.FieldSet.FieldSet()":                                                                 {},
-	"apex:Schema.FieldSetMember.FieldSetMember()":                                                     {},
-	"apex:Schema.FilteredLookupInfo.FilteredLookupInfo()":                                             {},
-	"apex:Schema.PicklistEntry.PicklistEntry()":                                                       {},
-	"apex:Schema.RecordTypeInfo.RecordTypeInfo()":                                                     {},
-	"apex:Schema.SObjectField.SObjectField()":                                                         {},
-	"apex:Schema.SObjectType.SObjectType()":                                                           {},
-	"apex:System.EmailException.getDmlFieldNames(Integer)":                                            {},
-	"apex:System.EmailException.getDmlFields(Integer)":                                                {},
-	"apex:System.EmailException.getDmlId(Integer)":                                                    {},
-	"apex:System.EmailException.getDmlIndex(Integer)":                                                 {},
-	"apex:System.EmailException.getDmlMessage(Integer)":                                               {},
-	"apex:System.EmailException.getDmlStatusCode(Integer)":                                            {},
-	"apex:System.EmailException.getDmlType(Integer)":                                                  {},
-	"apex:System.EmailException.getNumDml()":                                                          {},
-	"apex:System.FeatureManagement.FeatureManagement()":                                               {},
-	"apex:System.JSONException.getInaccessibleFields()":                                               {},
-	"apex:System.JSONException.initCause(Exception)":                                                  {},
+	"apex:Schema.ChildRelationship.ChildRelationship()":                                                      {},
+	"apex:Schema.DescribeColorResult.DescribeColorResult()":                                                  {},
+	"apex:Schema.DescribeDataCategoryGroupResult.DescribeDataCategoryGroupResult()":                          {},
+	"apex:Schema.DescribeDataCategoryGroupStructureResult.DescribeDataCategoryGroupStructureResult()":        {},
+	"apex:Schema.DescribeFieldResult.DescribeFieldResult()":                                                  {},
+	"apex:Schema.DescribeIconResult.DescribeIconResult()":                                                    {},
+	"apex:Schema.DescribeSObjectResult.DescribeSObjectResult()":                                              {},
+	"apex:Schema.DescribeTabResult.DescribeTabResult()":                                                      {},
+	"apex:Schema.DescribeTabSetResult.DescribeTabSetResult()":                                                {},
+	"apex:Schema.FieldSet.FieldSet()":                                                                        {},
+	"apex:Schema.FieldSetMember.FieldSetMember()":                                                            {},
+	"apex:Schema.FilteredLookupInfo.FilteredLookupInfo()":                                                    {},
+	"apex:Schema.PicklistEntry.PicklistEntry()":                                                              {},
+	"apex:Schema.RecordTypeInfo.RecordTypeInfo()":                                                            {},
+	"apex:Schema.SObjectField.SObjectField()":                                                                {},
+	"apex:Schema.SObjectType.SObjectType()":                                                                  {},
+	"apex:System.EmailException.getDmlFieldNames(Integer)":                                                   {},
+	"apex:System.EmailException.getDmlFields(Integer)":                                                       {},
+	"apex:System.EmailException.getDmlId(Integer)":                                                           {},
+	"apex:System.EmailException.getDmlIndex(Integer)":                                                        {},
+	"apex:System.EmailException.getDmlMessage(Integer)":                                                      {},
+	"apex:System.EmailException.getDmlStatusCode(Integer)":                                                   {},
+	"apex:System.EmailException.getDmlType(Integer)":                                                         {},
+	"apex:System.EmailException.getNumDml()":                                                                 {},
+	"apex:System.FeatureManagement.FeatureManagement()":                                                      {},
+	"apex:System.JSONException.getInaccessibleFields()":                                                      {},
+	"apex:System.JSONException.initCause(Exception)":                                                         {},
+	"apex:System.Assert.areEqual(Object,Object,Object)":                                                      {},
+	"apex:System.Assert.areNotEqual(Object,Object,Object)":                                                   {},
+	"apex:System.Assert.isTrue(Boolean,Object)":                                                              {},
+	"apex:System.Assert.isFalse(Boolean,Object)":                                                             {},
+	"apex:System.Assert.isNull(Object,Object)":                                                               {},
+	"apex:System.Assert.isNotNull(Object,Object)":                                                            {},
+	"apex:System.Assert.fail(Object)":                                                                        {},
+	"apex:System.Http.send(Object)":                                                                          {},
+	"apex:Messaging.ActionableNotification.Builder.withActionIdentifier":                                     {},
+	"apex:Messaging.ActionableNotification.Builder.withTargetId":                                             {},
+	"apex:Messaging.ActionableNotification.Builder.withTargetPageRef":                                        {},
+	"apex:Messaging.CustomNotification.CustomNotification(String,String,String,String,String,String,String)": {},
+	"apex:Messaging.CustomNotification.setActionGroup(String)":                                               {},
+	"apex:System.IntegrationTest.clone()":                                                                    {},
+	"apex:Approval.*":                                                                                        {},
+	"apex:Search.SuggestionOption.setFilter(Search.KnowledegeSuggestionFilter)":                              {},
+	"apex:System.BusinessHours malformed local holiday metadata":                                             {},
+	"apex:System.InvalidParameterValueException constructors":                                                {},
+	"apex:System.Limits.get*":                                                                                {},
+	"apex:System.NoAccessException constructors":                                                             {},
+	"apex:System.NoDataFoundException constructors":                                                          {},
+	"apex:System.NullPointerException constructors":                                                          {},
+	"apex:System.PageReference(partialURL)":                                                                  {},
+	"apex:System.Search.query / SOSL FIND":                                                                   {},
+	"apex:System.unimplemented platform/stdlib calls":                                                        {},
+}
+
+func isNonCanonicalGeneratedSurfaceID(id string) bool {
+	if _, ok := nonCanonicalGeneratedSurfaceIDs[id]; ok {
+		return true
+	}
+	key := surfaceIDKey(id)
+	for candidate := range nonCanonicalGeneratedSurfaceIDs {
+		if surfaceIDKey(candidate) == key {
+			return true
+		}
+	}
+	return false
 }
 
 func removeNonCanonicalGeneratedRows(byID map[string]SurfaceLedgerRow) {
