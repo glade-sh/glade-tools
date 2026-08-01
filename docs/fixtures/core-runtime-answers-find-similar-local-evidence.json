@@ -12,6 +12,12 @@
       "symbol": "Answers.findSimilar",
       "kind": "shape",
       "notes": "Answers.findSimilar method-family shape is known from the exact overload local evidence."
+    },
+    {
+      "surfaceId": "apex:Answers.findSimilar",
+      "symbol": "Answers.findSimilar",
+      "kind": "test",
+      "notes": "The exact overload test supplies family behavior evidence."
     }
   ],
   "source": [

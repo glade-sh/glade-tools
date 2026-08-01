@@ -817,8 +817,48 @@ func TestBuildEvidenceSnapshotReadsAnswersFindSimilarLocalEvidence(t *testing.T)
 		t.Fatalf("exact Answers.findSimilar(Object) evidence/behavior = %s/%s, want fixture/supported", exactRow.Evidence, exactRow.GladeBehavior)
 	}
 
-	familyRow := byID["apex:Answers.findSimilar"]
-	if familyRow.Evidence != EvidenceFixture || familyRow.GladeShape == ShapeAbsent || familyRow.GladeBehavior != BehaviorNone {
-		t.Fatalf("family Answers.findSimilar evidence/shape/behavior = %s/%s/%s, want fixture/non-absent/none", familyRow.Evidence, familyRow.GladeShape, familyRow.GladeBehavior)
+	// Raw evidence has two family rows: one shape-only, one behavior-supported.
+	familyID := "apex:Answers.findSimilar"
+	var familyShapeRow, familyTestRow *SurfaceLedgerRow
+	for i := range rows {
+		if rows[i].SurfaceID == familyID {
+			if rows[i].GladeBehavior == BehaviorNone {
+				familyShapeRow = &rows[i]
+			} else if rows[i].GladeBehavior == BehaviorSupported {
+				familyTestRow = &rows[i]
+			}
+		}
+	}
+	if familyShapeRow == nil {
+		t.Fatalf("missing shape-only family row for %s", familyID)
+	}
+	if familyShapeRow.GladeShape == ShapeAbsent || familyShapeRow.GladeBehavior != BehaviorNone || familyShapeRow.Evidence != EvidenceFixture {
+		t.Fatalf("shape-only family row shape/behavior/evidence = %s/%s/%s, want non-absent/none/fixture", familyShapeRow.GladeShape, familyShapeRow.GladeBehavior, familyShapeRow.Evidence)
+	}
+	if familyTestRow == nil {
+		t.Fatalf("missing behavior-supported family row for %s", familyID)
+	}
+	if familyTestRow.GladeBehavior != BehaviorSupported || familyTestRow.Evidence != EvidenceFixture {
+		t.Fatalf("behavior family row behavior/evidence = %s/%s, want supported/fixture", familyTestRow.GladeBehavior, familyTestRow.Evidence)
+	}
+
+	// After merge, the single family row closes the gap.
+	ledger := Merge(nil, nil, nil, rows)
+	mergedByID := rowsByID(ledger.Rows)
+	familyMerged := mergedByID[familyID]
+	if familyMerged.GladeShape == ShapeAbsent {
+		t.Fatalf("merged family row shape is absent, want non-absent")
+	}
+	if familyMerged.GladeBehavior != BehaviorSupported {
+		t.Fatalf("merged family row behavior = %s, want %s", familyMerged.GladeBehavior, BehaviorSupported)
+	}
+	if familyMerged.Evidence != EvidenceFixture {
+		t.Fatalf("merged family row evidence = %s, want %s", familyMerged.Evidence, EvidenceFixture)
+	}
+	if familyMerged.Bucket != BucketImplemented {
+		t.Fatalf("merged family row bucket = %s, want %s", familyMerged.Bucket, BucketImplemented)
+	}
+	if familyMerged.GapClass != "" {
+		t.Fatalf("merged family row gap = %s, want empty", familyMerged.GapClass)
 	}
 }
