@@ -284,6 +284,9 @@ func concreteComparableTypeForRow(row SurfaceLedgerRow, value string) string {
 	if comparableMessagingGenericBuilderBuildRow(row) && (value == "messaging.actionresult" || value == "messaging.actionablenotification") {
 		return "messaging.builder.result"
 	}
+	if comparableSystemListGetRow(row) {
+		return "list-element"
+	}
 	if value == "object" {
 		return ""
 	}
@@ -339,6 +342,16 @@ func genericCollectionComparableRow(row SurfaceLedgerRow) bool {
 	return row.Product == ProductApex &&
 		strings.EqualFold(row.Namespace, "System") &&
 		(strings.EqualFold(row.TypeName, "List") || strings.EqualFold(row.TypeName, "Set") || strings.EqualFold(row.TypeName, "Map"))
+}
+
+func comparableSystemListGetRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		row.Kind == KindMethod &&
+		strings.EqualFold(row.Namespace, "System") &&
+		strings.EqualFold(row.TypeName, "List") &&
+		strings.EqualFold(row.MemberName, "get") &&
+		len(row.Parameters) == 1 &&
+		strings.EqualFold(canonicalComparableType(row.Parameters[0]), "Integer")
 }
 
 func comparableSystemVersionRow(row SurfaceLedgerRow) bool {

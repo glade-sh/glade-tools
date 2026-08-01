@@ -119,6 +119,61 @@ func TestMergeTreatsSystemCollectionGenericInstantiationsAsComparable(t *testing
 	}
 }
 
+func TestMergeTreatsSystemListGetGenericReturnSpecializationsAsComparable(t *testing.T) {
+	id := ApexMemberID("System", "List", "get", []string{"Integer"})
+	ledger := Merge(
+		[]SurfaceLedgerRow{RowFromDocs(SurfaceLedgerRow{
+			SurfaceID:  id,
+			Product:    ProductApex,
+			Area:       AreaRuntime,
+			Namespace:  "System",
+			TypeName:   "List",
+			MemberName: "get",
+			Kind:       KindMethod,
+			ReturnType: "Object",
+			Parameters: []string{"Integer"},
+		})},
+		[]SurfaceLedgerRow{RowFromOrg(SurfaceLedgerRow{
+			SurfaceID:  id,
+			Product:    ProductApex,
+			Area:       AreaRuntime,
+			Namespace:  "System",
+			TypeName:   "List",
+			MemberName: "get",
+			Kind:       KindMethod,
+			ReturnType: "String",
+			Parameters: []string{"Integer"},
+		})},
+		[]SurfaceLedgerRow{RowFromGladeShape(SurfaceLedgerRow{
+			SurfaceID:     id,
+			Product:       ProductApex,
+			Area:          AreaRuntime,
+			Namespace:     "System",
+			TypeName:      "List",
+			MemberName:    "get",
+			Kind:          KindMethod,
+			ReturnType:    "Id",
+			Parameters:    []string{"Integer"},
+			GladeBehavior: BehaviorSupported,
+		})},
+		[]SurfaceLedgerRow{RowFromEvidence(SurfaceLedgerRow{
+			SurfaceID:  id,
+			Product:    ProductApex,
+			Area:       AreaRuntime,
+			Namespace:  "System",
+			TypeName:   "List",
+			MemberName: "get",
+			Kind:       KindMethod,
+			Evidence:   EvidenceFixture,
+		})},
+	)
+
+	row := ledger.Rows[0]
+	if row.Bucket != BucketImplemented || row.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented/no gap: %#v", row.Bucket, row.GapClass, row)
+	}
+}
+
 func TestMergeTreatsIdAndStringAsComparableApexIdentityTypes(t *testing.T) {
 	id := ApexMemberID("ApexPages", "StandardController", "getId", []string{})
 	ledger := Merge(
