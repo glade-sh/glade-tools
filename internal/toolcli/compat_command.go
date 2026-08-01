@@ -188,7 +188,7 @@ func compatUsage() string {
 		"server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json]",
 		"dashboard|gaps|stdlib [--output <path>|--check <path>]",
 		"stdlib --json",
-		"oracle-stdlib --target-org <alias> [--output <path>]",
+		"oracle-stdlib --target-org <alias> [--cases <json>] [--work-dir <dir>] [--output <path>]",
 		"docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>]",
 		"catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>]",
 		"reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>]",
@@ -1907,19 +1907,34 @@ func runCompatStdlib(args []string, w io.Writer) error {
 
 func runCompatOracleStdlib(ctx context.Context, args []string, w io.Writer) error {
 	targetOrg := ""
+	casesPath := ""
+	workDir := ""
 	outputPath := ""
+	usage := "usage: glade-tools oracle-stdlib --target-org <alias> [--cases <json>] [--work-dir <dir>] [--output <path>]"
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--target-org":
 			i++
 			if i >= len(args) {
-				return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+				return errors.New(usage)
 			}
 			targetOrg = args[i]
+		case "--cases":
+			i++
+			if i >= len(args) {
+				return errors.New(usage)
+			}
+			casesPath = args[i]
+		case "--work-dir":
+			i++
+			if i >= len(args) {
+				return errors.New(usage)
+			}
+			workDir = args[i]
 		case "--output":
 			i++
 			if i >= len(args) {
-				return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+				return errors.New(usage)
 			}
 			outputPath = args[i]
 		default:
@@ -1927,9 +1942,17 @@ func runCompatOracleStdlib(ctx context.Context, args []string, w io.Writer) erro
 		}
 	}
 	if targetOrg == "" {
-		return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+		return errors.New(usage)
 	}
-	report, err := oracleprobe.RunAnonymous(ctx, oracleprobe.StdlibCases(), oracleprobe.Options{TargetOrg: targetOrg})
+	cases := oracleprobe.StdlibCases()
+	if casesPath != "" {
+		var err error
+		cases, err = oracleprobe.LoadCases(casesPath)
+		if err != nil {
+			return err
+		}
+	}
+	report, err := oracleprobe.RunAnonymous(ctx, cases, oracleprobe.Options{TargetOrg: targetOrg, WorkDir: workDir})
 	if err != nil {
 		return err
 	}
