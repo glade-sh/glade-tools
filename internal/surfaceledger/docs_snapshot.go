@@ -594,6 +594,7 @@ func inferApexIdentityFromSource(sourcePath, name string) (string, string, strin
 	}{
 		{key: "apex_system_", namespace: "System"},
 		{key: "apex_messaging_", namespace: "Messaging"},
+		{key: "apex_connectapi_", namespace: "ConnectApi"},
 		{key: "apex_industriesnlpsvc_", namespace: "industriesNlpSvc"},
 		{key: "apex_commercepayments_", namespace: "commercepayments"},
 		{key: "apex_canvas_", namespace: "Canvas"},

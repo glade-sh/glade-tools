@@ -1670,26 +1670,6 @@
       "reason": "WebServiceCallout outbound SOAP transport"
     },
     {
-      "surfacePrefix": "apex:ConnectApi.getTextClassificationsBulkResults(ids)",
-      "disposition": "hosted-deferred",
-      "reason": "ConnectApi namespace-less hosted row"
-    },
-    {
-      "surfacePrefix": "apex:ConnectApi.productsExpand(scope,",
-      "disposition": "hosted-deferred",
-      "reason": "ConnectApi namespace-less hosted row"
-    },
-    {
-      "surfacePrefix": "apex:ConnectApi.productsReturnRate(pageParam,",
-      "disposition": "hosted-deferred",
-      "reason": "ConnectApi namespace-less hosted row"
-    },
-    {
-      "surfacePrefix": "apex:ConnectApi.submitTextClassificationsRequest(textClassificationsRequestInput,",
-      "disposition": "hosted-deferred",
-      "reason": "ConnectApi namespace-less hosted row"
-    },
-    {
       "surfacePrefix": "unknown:MockSOQLTestsForDMOs",
       "disposition": "hosted-deferred",
       "reason": "Mock SOQL tests for DMOs"

@@ -284,6 +284,24 @@ func TestBuildDocsSnapshotUsesApexSignatureParameterTypes(t *testing.T) {
 	}
 }
 
+func TestBuildDocsSnapshotInfersConnectApiStandaloneMethodIdentity(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "apex/apex_ConnectAPI_OMSAnalytics_productExpand.md", "# productsExpand(scope, products, expand)\n\n## Signature\n\n`public static ConnectApi.ProductsListOutputRepresentation productsExpand(String scope, List<String> products, List<ConnectApi.ProductExpandType> expand)`\n")
+
+	rows, err := BuildDocsSnapshot(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	want := ApexMemberID("ConnectApi", "OMSAnalytics", "productsExpand", []string{"String", "List<String>", "List<ConnectApi.ProductExpandType>"})
+	if _, ok := byID[want]; !ok {
+		t.Fatalf("missing canonical ConnectApi docs row %s in %#v", want, rows)
+	}
+	if _, ok := byID["apex:ConnectApi.productsExpand(scope,"]; ok {
+		t.Fatalf("kept malformed title-as-type docs row in %#v", rows)
+	}
+}
+
 func TestDocsSourceStemStripsHiddenFormatMarks(t *testing.T) {
 	if got := sourceStem("ui-api/picklistAtrributes\u200bValueType.md"); got != "picklistAtrributesValueType" {
 		t.Fatalf("source stem = %q", got)
