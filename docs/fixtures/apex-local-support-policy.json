@@ -234,6 +234,36 @@
           "memberName": "getFollowings",
           "disposition": "deterministic-mock-required",
           "reason": "observed corpus usage"
+        },
+        {
+          "typeName": "NamedCredentials",
+          "memberName": "createExternalCredential",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed expected-success corpus usage"
+        },
+        {
+          "typeName": "NamedCredentials",
+          "memberName": "createNamedCredential",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed expected-success corpus usage"
+        },
+        {
+          "typeName": "NamedCredentials",
+          "memberName": "getExternalCredential",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed expected-success corpus usage"
+        },
+        {
+          "typeName": "ManagedContent",
+          "memberName": "getAllManagedContent",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed expected-success corpus usage"
+        },
+        {
+          "typeName": "ManagedContent",
+          "memberName": "getManagedContentByContentKeys",
+          "disposition": "deterministic-mock-required",
+          "reason": "observed expected-success corpus usage"
         }
       ]
     },
@@ -283,7 +313,7 @@
       "reason": "QuickAction hosted deferred"
     },
     {
-      "typeFamily": "sfdatakit",
+      "namespace": "sfdatakit",
       "disposition": "hosted-deferred",
       "reason": "sfdatakit hosted deferred"
     },
@@ -463,11 +493,6 @@
       "reason": "SCRT — hosted deferred"
     },
     {
-      "namespace": "sfdc",
-      "disposition": "hosted-deferred",
-      "reason": "SFDC internal — hosted deferred"
-    },
-    {
       "namespace": "mlplatform",
       "disposition": "hosted-deferred",
       "reason": "ML platform — hosted deferred"
@@ -638,9 +663,9 @@
       "reason": "Data mask — hosted deferred"
     },
     {
-      "namespace": "sfdatakit",
+      "namespace": "sfdc",
       "disposition": "hosted-deferred",
-      "reason": "SFDatakit namespace — hosted deferred"
+      "reason": "SFDC internal — hosted deferred"
     },
     {
       "namespace": "ind_docgen_api",
@@ -760,6 +785,7 @@
     {
       "surfacePrefix": "apex-language:",
       "disposition": "local-runtime-required",
+      "override": true,
       "reason": "Apex language construct"
     },
     {
@@ -770,16 +796,19 @@
     {
       "surfacePrefix": "apex:System.BusinessHours",
       "disposition": "local-runtime-required",
+      "override": true,
       "reason": "System.BusinessHours local runtime"
     },
     {
       "surfacePrefix": "apex:System.Exact",
       "disposition": "local-runtime-required",
+      "override": true,
       "reason": "System.Exact local runtime"
     },
     {
       "surfacePrefix": "apex:System.PageReference",
       "disposition": "local-runtime-required",
+      "override": true,
       "reason": "System.PageReference local runtime"
     },
     {
@@ -800,32 +829,52 @@
     {
       "surfacePrefix": "apex:Approval.process",
       "disposition": "hosted-deferred",
+      "override": true,
       "reason": "hosted approval engine routing"
-    },
-    {
-      "surfacePrefix": "apex:ConnectApi.",
-      "disposition": "hosted-deferred",
-      "reason": "ConnectApi hosted surface"
     },
     {
       "surfacePrefix": "apex:System.Hosted",
       "disposition": "hosted-deferred",
+      "override": true,
       "reason": "System hosted platform surface"
     },
     {
       "surfacePrefix": "apex:System.HttpRequest client certificate",
       "disposition": "hosted-deferred",
+      "override": true,
       "reason": "HttpRequest client certificate transport"
     },
     {
       "surfacePrefix": "apex:System.Visualforce full rendering lifecycle",
       "disposition": "hosted-deferred",
+      "override": true,
       "reason": "Visualforce full rendering lifecycle"
     },
     {
       "surfacePrefix": "apex:System.WebServiceCallout outbound SOAP transport",
       "disposition": "hosted-deferred",
+      "override": true,
       "reason": "WebServiceCallout outbound SOAP transport"
+    },
+    {
+      "surfacePrefix": "apex:ConnectApi.getTextClassificationsBulkResults(ids)",
+      "disposition": "hosted-deferred",
+      "reason": "ConnectApi namespace-less hosted row"
+    },
+    {
+      "surfacePrefix": "apex:ConnectApi.productsExpand(scope,",
+      "disposition": "hosted-deferred",
+      "reason": "ConnectApi namespace-less hosted row"
+    },
+    {
+      "surfacePrefix": "apex:ConnectApi.productsReturnRate(pageParam,",
+      "disposition": "hosted-deferred",
+      "reason": "ConnectApi namespace-less hosted row"
+    },
+    {
+      "surfacePrefix": "apex:ConnectApi.submitTextClassificationsRequest(textClassificationsRequestInput,",
+      "disposition": "hosted-deferred",
+      "reason": "ConnectApi namespace-less hosted row"
     },
     {
       "surfacePrefix": "unknown:MockSOQLTestsForDMOs",

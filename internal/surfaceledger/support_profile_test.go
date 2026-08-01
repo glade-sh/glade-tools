@@ -159,7 +159,7 @@ func TestSupportProfileUnclassifiedApexRow(t *testing.T) {
 	}
 }
 
-// 3. Test overlapping policy rules (first match wins)
+// 3. Test overlapping policy rules (cross-type, no override) produces a validation error.
 func TestSupportProfileOverlappingPolicyRules(t *testing.T) {
 	policy := SupportPolicy{
 		Rules: []SupportPolicyRule{
@@ -188,12 +188,22 @@ func TestSupportProfileOverlappingPolicyRules(t *testing.T) {
 	if len(profile.Rows) != 1 {
 		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
 	}
-	// First matching rule should win — System namespace matches first rule.
-	if profile.Rows[0].Disposition != DispositionLocalRuntimeRequired {
-		t.Fatalf("disposition: want %s got %s (first rule should win)", DispositionLocalRuntimeRequired, profile.Rows[0].Disposition)
+
+	// Cross-type overlap without override must produce a validation error.
+	foundConflict := false
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "conflicting classifications for row apex:System.String") {
+			foundConflict = true
+			break
+		}
 	}
-	if profile.Rows[0].MatchRule != "namespace=System" {
-		t.Fatalf("match rule: want namespace=System got %q", profile.Rows[0].MatchRule)
+	if !foundConflict {
+		t.Fatalf("expected conflicting classification validation error, got: %v", profile.ValidationErrors)
+	}
+
+	// Row is still classified but match rule is ambiguous.
+	if profile.Rows[0].MatchRule != "ambiguous" {
+		t.Fatalf("match rule: want ambiguous got %q", profile.Rows[0].MatchRule)
 	}
 }
 
@@ -1302,5 +1312,324 @@ func TestGapClassDeterministicJSONStillWorks(t *testing.T) {
 	}
 	if buf1.String() != buf2.String() {
 		t.Fatalf("JSON output not deterministic")
+	}
+}
+
+// --- SF-CB16 phase-0 Terra rework tests ---
+
+// RED 1: A namespace and type-family rule that both match one row without an
+// override fails validation even when their dispositions are the same.
+func TestOverlapSameDispositionNoOverrideFails(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "MyNS",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason:      "ns rule",
+			},
+			{
+				TypeFamily:  "my-family",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason:      "tf rule",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		func() SurfaceLedgerRow {
+			r := apexRow("apex:MyNS.MyType", "MyNS", "MyType")
+			r.SalesforceSurfaceFamily = "my-family"
+			return r
+		}(),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if len(profile.Rows) != 1 {
+		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
+	}
+
+	// Must report an ambiguity validation error.
+	found := false
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "ambiguous classification for row apex:MyNS.MyType") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected same-disposition ambiguity validation error, got: %v", profile.ValidationErrors)
+	}
+
+	if profile.Rows[0].MatchRule != "ambiguous" {
+		t.Fatalf("match rule: want ambiguous got %q", profile.Rows[0].MatchRule)
+	}
+}
+
+// RED 2: Conflicting matching rules without an override fail validation.
+func TestOverlapConflictingNoOverrideFails(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "MyNS",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason:      "ns rule",
+			},
+			{
+				TypeFamily:  "my-family",
+				Disposition: DispositionHostedDeferred,
+				Reason:      "tf rule",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		func() SurfaceLedgerRow {
+			r := apexRow("apex:MyNS.MyType", "MyNS", "MyType")
+			r.SalesforceSurfaceFamily = "my-family"
+			return r
+		}(),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if len(profile.Rows) != 1 {
+		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
+	}
+
+	found := false
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "conflicting classifications for row apex:MyNS.MyType") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected conflicting classification validation error, got: %v", profile.ValidationErrors)
+	}
+
+	if profile.Rows[0].MatchRule != "ambiguous" {
+		t.Fatalf("match rule: want ambiguous got %q", profile.Rows[0].MatchRule)
+	}
+}
+
+// RED 3: Exactly one explicit narrower override selects that rule independent of
+// policy array order and produces no overlap error.
+func TestOverlapOneOverrideWins(t *testing.T) {
+	// Put the override LAST in the rules array to prove array-order independence.
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "System",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason:      "system runtime",
+			},
+			{
+				SurfacePrefix: "apex:System.Hosted",
+				Disposition:   DispositionHostedDeferred,
+				Override:      true,
+				Reason:        "hosted surface",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		func() SurfaceLedgerRow {
+			r := apexMemberRow("apex:System.Hosted.HostedClass.doIt", "System.Hosted", "HostedClass", "doIt")
+			return r
+		}(),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if len(profile.Rows) != 1 {
+		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
+	}
+
+	// Override must win: hosted-deferred.
+	if profile.Rows[0].Disposition != DispositionHostedDeferred {
+		t.Fatalf("disposition: want hosted-deferred (override) got %s", profile.Rows[0].Disposition)
+	}
+	if !strings.Contains(profile.Rows[0].MatchRule, "surfacePrefix=apex:System.Hosted") {
+		t.Fatalf("match rule: want surfacePrefix=apex:System.Hosted got %q", profile.Rows[0].MatchRule)
+	}
+
+	// No validation error.
+	if len(profile.ValidationErrors) != 0 {
+		t.Fatalf("expected zero validation errors with one override, got: %v", profile.ValidationErrors)
+	}
+}
+
+// RED 4: Two matching overrides fail validation.
+func TestOverlapTwoOverridesFails(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace: "System",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason: "system runtime",
+			},
+			{
+				SurfacePrefix: "apex:System.Hosted",
+				Disposition:   DispositionHostedDeferred,
+				Override:      true,
+				Reason:        "hosted override A",
+			},
+			{
+				SurfacePrefix: "apex:System.Hosted",
+				Disposition:   DispositionCompileShapeRequired,
+				Override:      true,
+				Reason:        "hosted override B",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		func() SurfaceLedgerRow {
+			r := apexMemberRow("apex:System.Hosted.HostedClass.doIt", "System.Hosted", "HostedClass", "doIt")
+			return r
+		}(),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if len(profile.Rows) != 1 {
+		t.Fatalf("rows: want 1 got %d", len(profile.Rows))
+	}
+
+	found := false
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "multiple overrides match row apex:System.Hosted.HostedClass.doIt") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected multiple overrides validation error, got: %v", profile.ValidationErrors)
+	}
+
+	if profile.Rows[0].MatchRule != "ambiguous" {
+		t.Fatalf("match rule: want ambiguous got %q", profile.Rows[0].MatchRule)
+	}
+}
+
+// RED 5: An unclassified future row remains rejected and does not create an
+// empty byDisposition key.
+func TestUnclassifiedRowNoEmptyDispositionKey(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "System",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason:      "system runtime",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		apexRow("apex:FutureNS.SomeType", "FutureNS", "SomeType"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if len(profile.UnclassifiedRows) != 1 {
+		t.Fatalf("unclassified rows: want 1 got %d", len(profile.UnclassifiedRows))
+	}
+	if profile.UnclassifiedRows[0].SurfaceID != "apex:FutureNS.SomeType" {
+		t.Fatalf("unclassified row: got %q", profile.UnclassifiedRows[0].SurfaceID)
+	}
+
+	// No empty disposition key.
+	if _, exists := profile.ByDisposition[""]; exists {
+		t.Fatalf("byDisposition must not contain empty key, got: %v", profile.ByDisposition)
+	}
+
+	// Validation error must still report the unclassified row.
+	found := false
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "unclassified Apex row: apex:FutureNS.SomeType") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected unclassified validation error, got: %v", profile.ValidationErrors)
+	}
+}
+
+// RED 6: All six ledger rows for the five retained ConnectApi methods classify as
+// deterministic-mock-required; the remaining ConnectApi surface stays hosted-deferred.
+func TestConnectApiSixRetainedMethodsDeterministicMock(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "ConnectApi",
+				Disposition: DispositionHostedDeferred,
+				Reason:      "connect-api deferred",
+				MemberExceptions: []SupportPolicyMemberException{
+					{TypeName: "Organization", MemberName: "getSettings", Disposition: DispositionDeterministicMockRequired, Reason: "observed corpus usage"},
+					{TypeName: "UserProfiles", MemberName: "setPhoto", Disposition: DispositionDeterministicMockRequired, Reason: "observed corpus usage"},
+					{TypeName: "UserProfiles", MemberName: "deletePhoto", Disposition: DispositionDeterministicMockRequired, Reason: "observed corpus usage"},
+					{TypeName: "Communities", MemberName: "getCommunity", Disposition: DispositionDeterministicMockRequired, Reason: "observed corpus usage"},
+					{TypeName: "ChatterUsers", MemberName: "getFollowings", Disposition: DispositionDeterministicMockRequired, Reason: "observed corpus usage"},
+					{TypeName: "NamedCredentials", MemberName: "createExternalCredential", Disposition: DispositionDeterministicMockRequired, Reason: "observed expected-success corpus usage"},
+					{TypeName: "NamedCredentials", MemberName: "createNamedCredential", Disposition: DispositionDeterministicMockRequired, Reason: "observed expected-success corpus usage"},
+					{TypeName: "NamedCredentials", MemberName: "getExternalCredential", Disposition: DispositionDeterministicMockRequired, Reason: "observed expected-success corpus usage"},
+					{TypeName: "ManagedContent", MemberName: "getAllManagedContent", Disposition: DispositionDeterministicMockRequired, Reason: "observed expected-success corpus usage"},
+					{TypeName: "ManagedContent", MemberName: "getManagedContentByContentKeys", Disposition: DispositionDeterministicMockRequired, Reason: "observed expected-success corpus usage"},
+				},
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		// Five existing retained rows (to prevent stale-exception noise).
+		apexMemberRow("apex:ConnectApi.Organization.getSettings", "ConnectApi", "Organization", "getSettings"),
+		apexMemberRow("apex:ConnectApi.UserProfiles.setPhoto", "ConnectApi", "UserProfiles", "setPhoto"),
+		apexMemberRow("apex:ConnectApi.UserProfiles.deletePhoto", "ConnectApi", "UserProfiles", "deletePhoto"),
+		apexMemberRow("apex:ConnectApi.Communities.getCommunity", "ConnectApi", "Communities", "getCommunity"),
+		apexMemberRow("apex:ConnectApi.ChatterUsers.getFollowings", "ConnectApi", "ChatterUsers", "getFollowings"),
+		// Six retained rows from the new five method families.
+		apexMemberRow("apex:ConnectApi.NamedCredentials.createExternalCredential", "ConnectApi", "NamedCredentials", "createExternalCredential"),
+		apexMemberRow("apex:ConnectApi.NamedCredentials.createNamedCredential", "ConnectApi", "NamedCredentials", "createNamedCredential"),
+		apexMemberRow("apex:ConnectApi.NamedCredentials.getExternalCredential", "ConnectApi", "NamedCredentials", "getExternalCredential"),
+		apexMemberRow("apex:ConnectApi.ManagedContent.getAllManagedContent", "ConnectApi", "ManagedContent", "getAllManagedContent"),
+		apexMemberRow("apex:ConnectApi.ManagedContent.getManagedContentByContentKeys", "ConnectApi", "ManagedContent", "getManagedContentByContentKeys"),
+		// Second overload row (one of the five names has an overload variant).
+		apexMemberRow("apex:ConnectApi.ManagedContent.getManagedContentByContentKeys(List)", "ConnectApi", "ManagedContent", "getManagedContentByContentKeys"),
+		// Remaining ConnectApi surface.
+		apexRow("apex:ConnectApi.SomeDTO", "ConnectApi", "SomeDTO"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 12 {
+		t.Fatalf("total: want 12 got %d", profile.Total)
+	}
+
+	// Eleven rows must be deterministic-mock-required (5 existing + 6 new).
+	dmCount := 0
+	for _, r := range profile.Rows {
+		if r.Disposition == DispositionDeterministicMockRequired {
+			dmCount++
+		}
+	}
+	if dmCount != 11 {
+		t.Fatalf("deterministic-mock-required rows: want 11 got %d", dmCount)
+	}
+
+	// The remaining ConnectApi row must be hosted-deferred.
+	for _, r := range profile.Rows {
+		if r.SurfaceID == "apex:ConnectApi.SomeDTO" {
+			if r.Disposition != DispositionHostedDeferred {
+				t.Fatalf("ConnectApi.SomeDTO: want hosted-deferred got %s", r.Disposition)
+			}
+		}
+	}
+
+	// No validation errors.
+	if len(profile.ValidationErrors) != 0 {
+		t.Fatalf("expected zero validation errors, got: %v", profile.ValidationErrors)
+	}
+
+	// No stale member exceptions.
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "stale member exception") {
+			t.Fatalf("unexpected stale member exception: %s", err)
+		}
 	}
 }
