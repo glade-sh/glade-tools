@@ -686,6 +686,9 @@ func genericStubBehaviorMemberStatus(symbol typesys.TypeSymbol, member typesys.M
 	if packagedControllerUnsupportedBehaviorMethod(symbol, member) {
 		return StubBehaviorUnsupported, "packaged mutation, external service, authentication, geocoding, archive, quote, or transaction execution surface remains explicitly unsupported", true
 	}
+	if strings.EqualFold(stubBehaviorTypeName(symbol), "Auth.AuthToken") && strings.EqualFold(member.Name, "revokeAccess") {
+		return StubBehaviorImplemented, "local runtime deterministically handles AuthToken.revokeAccess without hosted token state", true
+	}
 	if explicitlyUnsupportedCoreBehaviorMethod(symbol, member) {
 		return StubBehaviorUnsupported, "local runtime returns an explicit unsupported-feature error for this platform surface", true
 	}
@@ -1807,7 +1810,7 @@ func explicitlyUnsupportedCoreBehaviorMethod(symbol typesys.TypeSymbol, member t
 	case "Approval":
 		return name != "lock" && name != "unlock" && name != "islocked"
 	case "Auth.AuthToken":
-		return true
+		return name != "revokeaccess"
 	case "Auth.CommunitiesUtil":
 		return name != "isguestuser"
 	case "Auth.SessionManagement":

@@ -11,7 +11,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
-func TestAuthTokenLocalMockEvidenceClosesExactlyFourSupportedSignatures(t *testing.T) {
+func TestAuthTokenLocalMockEvidenceClosesOnlyRevokeAccess(t *testing.T) {
 	fixturesDir := filepath.Join("..", "..", "docs", "fixtures")
 	oldPath := filepath.Join(fixturesDir, "integration-auth-token-unsupported.json")
 	path := filepath.Join(fixturesDir, "integration-auth-token-local-mocks.json")
@@ -24,26 +24,15 @@ func TestAuthTokenLocalMockEvidenceClosesExactlyFourSupportedSignatures(t *testi
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantIDs := []string{
-		"apex:Auth.AuthToken.getAccessToken(String,String)",
-		"apex:Auth.AuthToken.getAccessTokenMap(String,String)",
-		"apex:Auth.AuthToken.refreshAccessToken(String,String,String)",
-		"apex:Auth.AuthToken.revokeAccess(String,String,String,String)",
-	}
+	wantID := "apex:Auth.AuthToken.revokeAccess(String,String,String,String)"
 	if fixture.Name != "integration-auth-token-local-mocks" {
 		t.Fatalf("fixture name = %q", fixture.Name)
 	}
-	if len(fixture.Evidence) != len(wantIDs) {
-		t.Fatalf("evidence rows = %d, want exactly %d: %#v", len(fixture.Evidence), len(wantIDs), fixture.Evidence)
+	if len(fixture.Evidence) != 1 {
+		t.Fatalf("evidence rows = %d, want exactly one: %#v", len(fixture.Evidence), fixture.Evidence)
 	}
-	wantEvidence := make(map[string]bool, len(wantIDs))
-	for _, id := range wantIDs {
-		wantEvidence[id] = true
-	}
-	for _, evidence := range fixture.Evidence {
-		if !wantEvidence[evidence.SurfaceID] || evidence.Kind != "exec" {
-			t.Errorf("unexpected AuthToken evidence row = %#v", evidence)
-		}
+	if fixture.Evidence[0].SurfaceID != wantID || fixture.Evidence[0].Kind != "exec" {
+		t.Fatalf("unexpected AuthToken evidence row = %#v", fixture.Evidence[0])
 	}
 
 	if fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 || fixture.Expected.Error != nil {
@@ -63,20 +52,17 @@ func TestAuthTokenLocalMockEvidenceClosesExactlyFourSupportedSignatures(t *testi
 		t.Fatalf("fixture source/command mismatch: source=%#v command=%#v", fixture.Source, fixture.Command)
 	}
 	for _, marker := range []string{
-		"String accessToken = Auth.AuthToken.getAccessToken('provider', 'local');",
-		"Map<String,String> accessTokenMap = Auth.AuthToken.getAccessTokenMap('provider', 'local');",
-		"Auth.OAuthRefreshResult refresh = Auth.AuthToken.refreshAccessToken('provider', 'local', accessToken);",
-		"System.assertEquals(true, Auth.AuthToken.revokeAccess('provider', 'local', 'user', 'remote'));",
-		"System.assertEquals('local-auth-token', accessToken);",
-		"System.assertEquals('local-auth-token', accessTokenMap.get('access_token'));",
-		"System.assertEquals('local-refresh-token', accessTokenMap.get('refresh_token'));",
-		"System.assertEquals('Bearer', accessTokenMap.get('token_type'));",
-		"System.assertEquals('local-auth-token', refresh.accessToken);",
-		"System.assertEquals('local-refresh-token', refresh.refreshToken);",
-		"System.assertEquals(null, refresh.error);",
+		"System.assertEquals(true, Auth.AuthToken.revokeAccess('005000000000001', 'provider', null, 'remote'));",
+		"local-auth-token",
+		"local-refresh-token",
+		"OAuthRefreshResult",
 	} {
-		if !strings.Contains(fixture.Source[0].Content, marker) {
-			t.Errorf("fixture source is missing %q", marker)
+		if marker == "System.assertEquals(true, Auth.AuthToken.revokeAccess('005000000000001', 'provider', null, 'remote'));" {
+			if !strings.Contains(fixture.Source[0].Content, marker) {
+				t.Errorf("fixture source is missing %q", marker)
+			}
+		} else if strings.Contains(fixture.Source[0].Content, marker) {
+			t.Errorf("fixture source contains fake AuthToken marker %q", marker)
 		}
 	}
 
@@ -120,13 +106,25 @@ func TestAuthTokenLocalMockEvidenceClosesExactlyFourSupportedSignatures(t *testi
 	}
 	ledger := Merge(nil, nil, BuildGladeSnapshot(), evidence)
 	byID := rowsByID(ledger.Rows)
-	for _, id := range wantIDs {
+	wantBehavior := map[string]BehaviorState{
+		"apex:Auth.AuthToken.getAccessToken(String,String)":            BehaviorUnsupported,
+		"apex:Auth.AuthToken.getAccessTokenMap(String,String)":         BehaviorUnsupported,
+		"apex:Auth.AuthToken.refreshAccessToken(String,String,String)": BehaviorUnsupported,
+		wantID: BehaviorSupported,
+	}
+	for id, behavior := range wantBehavior {
 		row, ok := byID[id]
 		if !ok {
 			t.Fatalf("missing AuthToken target row %s", id)
 		}
-		if row.GladeShape != ShapeSignatureKnown || row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture || row.GapClass != "" {
+		if row.GladeShape != ShapeSignatureKnown || row.GladeBehavior != behavior {
+			t.Errorf("%s merged shape/behavior = %s/%s, want signature-known/%s", id, row.GladeShape, row.GladeBehavior, behavior)
+		}
+		if id == wantID && (row.Evidence != EvidenceFixture || row.GapClass != "") {
 			t.Errorf("%s merged state = shape:%s behavior:%s evidence:%s gap:%s", id, row.GladeShape, row.GladeBehavior, row.Evidence, row.GapClass)
+		}
+		if id != wantID && row.Evidence == EvidenceFixture {
+			t.Errorf("%s received local evidence credit", id)
 		}
 	}
 }

@@ -2,6 +2,7 @@ package oracleprobe
 
 func StdlibCases() []Case {
 	return []Case{
+		{ID: "auth-token-revoke-access", Area: "Auth", API: "Auth.AuthToken.revokeAccess", Mode: ModeAnonymous, SurfaceIDs: []string{"apex:Auth.AuthToken.revokeAccess(String,String,String,String)"}, Expression: "Auth.AuthToken.revokeAccess('005000000000001', 'provider', null, 'remote')", ValueType: "Boolean"},
 		{ID: "decimal-round-default-positive-tie", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, SurfaceIDs: []string{"apex:System.Decimal.valueOf(String)", "apex:System.Decimal.round()"}, Expression: "Decimal.valueOf('2.5').round()", ValueType: "Integer"},
 		{ID: "decimal-round-default-negative-tie", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, SurfaceIDs: []string{"apex:System.Decimal.valueOf(String)", "apex:System.Decimal.round()"}, Expression: "Decimal.valueOf('-2.5').round()", ValueType: "Integer"},
 		{ID: "decimal-round-half-up-positive", Area: "Decimal", API: "Decimal.round", Mode: ModeAnonymous, SurfaceIDs: []string{"apex:System.Decimal.valueOf(String)", "apex:System.RoundingMode.HALF_UP", "apex:System.Decimal.round(RoundingMode)"}, Expression: "Decimal.valueOf('2.5').round(RoundingMode.HALF_UP)", ValueType: "Integer"},

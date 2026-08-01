@@ -1071,6 +1071,18 @@ func TestStubBehaviorSeparatesServiceMethodsFromPassiveDTOs(t *testing.T) {
 	assertStubBehaviorPrefix(t, entries, "EmailException.getNumDml()", StubBehaviorUnsupported)
 }
 
+func TestAuthTokenBehaviorKeepsHostedLookupsUnsupportedAndRevokeImplemented(t *testing.T) {
+	entries := map[string]StubBehaviorEntry{}
+	for _, entry := range BuildStubBehaviorReport().Entries {
+		entries[entry.ID] = entry
+	}
+
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.getAccessToken(", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.getAccessTokenMap(", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.refreshAccessToken(", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.revokeAccess(", StubBehaviorImplemented)
+}
+
 func assertStubBehaviorExact(t *testing.T, entries map[string]StubBehaviorEntry, id string, want StubBehaviorStatus) {
 	t.Helper()
 	entry, ok := entries[id]

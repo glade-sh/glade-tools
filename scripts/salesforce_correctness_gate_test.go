@@ -69,12 +69,12 @@ func writeVerifierJSON(t *testing.T, dir, status, gladeCommit, toolsCommit, shaB
 		shaAfter = shaBefore
 	}
 	cp, cf := 422, 0
-	sp, sf := 486, 0
+	sp, sf := 487, 0
 	cs := "pass"
 	if status != "pass" {
 		cp, cf, sp, sf, cs = 0, 422, 64, 422, "fail"
 	}
-	j := fmt.Sprintf(`{"schemaVersion":1,"release":"Summer '26","apiVersion":"66.0","status":"%s","glade":{"commit":"%s","dirty":false},"gladeTools":{"commit":"%s","dirty":false},"candidate":{"path":"glade","sha256Before":"%s","sha256After":"%s"},"inputs":[],"compiler":{"status":"%s","summary":{"pass":%d,"fail":%d,"inconclusive":0}},"runtime":{"status":"pass","summary":{"pass":52,"fail":0,"inconclusive":0}},"lifecycle":{"status":"pass","summary":{"pass":12,"fail":0,"inconclusive":0}},"summary":{"pass":%d,"fail":%d,"inconclusive":0}}`,
+	j := fmt.Sprintf(`{"schemaVersion":1,"release":"Summer '26","apiVersion":"66.0","status":"%s","glade":{"commit":"%s","dirty":false},"gladeTools":{"commit":"%s","dirty":false},"candidate":{"path":"glade","sha256Before":"%s","sha256After":"%s"},"inputs":[],"compiler":{"status":"%s","summary":{"pass":%d,"fail":%d,"inconclusive":0}},"runtime":{"status":"pass","summary":{"pass":53,"fail":0,"inconclusive":0}},"lifecycle":{"status":"pass","summary":{"pass":12,"fail":0,"inconclusive":0}},"summary":{"pass":%d,"fail":%d,"inconclusive":0}}`,
 		status, gladeCommit, toolsCommit, shaBefore, shaAfter, cs, cp, cf, sp, sf)
 	p := filepath.Join(dir, "verifier.json")
 	os.WriteFile(p, []byte(j), 0644)

@@ -2,13 +2,13 @@
   "name": "core-runtime-businesshours-full-local-calendar",
   "evidence": [
     {
-      "surfaceId": "apex:BusinessHours.diff(Id,Datetime,Datetime)",
+      "surfaceId": "apex:BusinessHours.diff(String,Datetime,Datetime)",
       "symbol": "BusinessHours.diff",
       "kind": "exec",
       "notes": "Seeded partial-day Holiday windows subtract only the closed local minutes from BusinessHours.diff."
     },
     {
-      "surfaceId": "apex:BusinessHours.isWithin(Id,Datetime)",
+      "surfaceId": "apex:BusinessHours.isWithin(String,Datetime)",
       "symbol": "BusinessHours.isWithin",
       "kind": "exec",
       "notes": "Seeded Holiday recurrence metadata supports daily, weekly, monthly, yearly, linked, and global local closures."

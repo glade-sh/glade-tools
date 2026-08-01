@@ -73,7 +73,27 @@
     {
       "namespace": "Auth",
       "disposition": "deterministic-mock-required",
-      "reason": "shallow Auth session — deterministic mock"
+      "reason": "shallow Auth session — deterministic mock",
+      "memberExceptions": [
+        {
+          "typeName": "AuthToken",
+          "memberName": "getAccessToken",
+          "disposition": "hosted-deferred",
+          "reason": "hosted org auth/token state; no corpus usage"
+        },
+        {
+          "typeName": "AuthToken",
+          "memberName": "getAccessTokenMap",
+          "disposition": "hosted-deferred",
+          "reason": "hosted org auth/token state; no corpus usage"
+        },
+        {
+          "typeName": "AuthToken",
+          "memberName": "refreshAccessToken",
+          "disposition": "hosted-deferred",
+          "reason": "hosted org auth/token state; no corpus usage"
+        }
+      ]
     },
     {
       "namespace": "Flow",

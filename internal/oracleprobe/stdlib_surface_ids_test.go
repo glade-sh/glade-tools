@@ -9,6 +9,7 @@ import (
 
 func TestStdlibCasesLinkExactKnownSurfaces(t *testing.T) {
 	want := map[string][]string{
+		"auth-token-revoke-access":              {"apex:Auth.AuthToken.revokeAccess(String,String,String,String)"},
 		"decimal-round-default-positive-tie":    {"apex:System.Decimal.valueOf(String)", "apex:System.Decimal.round()"},
 		"decimal-round-default-negative-tie":    {"apex:System.Decimal.valueOf(String)", "apex:System.Decimal.round()"},
 		"decimal-round-half-up-positive":        {"apex:System.Decimal.valueOf(String)", "apex:System.RoundingMode.HALF_UP", "apex:System.Decimal.round(RoundingMode)"},

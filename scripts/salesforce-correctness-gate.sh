@@ -84,11 +84,11 @@ jq -e \
    and .gladeTools.dirty == false
    and .candidate.sha256Before == .candidate.sha256After
    and (.candidate.sha256Before | length) > 0
-   and .summary.pass == 486
+   and .summary.pass == 487
    and .summary.fail == 0
    and .summary.inconclusive == 0
    and .compiler.summary.pass == 422
-   and .runtime.summary.pass == 52
+   and .runtime.summary.pass == 53
    and .lifecycle.summary.pass == 12' \
   "${VERIFIER_OUT}" >/dev/null || { echo "verifier artifact validation failed" >&2; exit 1; }
 

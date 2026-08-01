@@ -5,20 +5,20 @@ import (
 	"testing"
 )
 
-func TestBusinessHoursIdSignaturesHaveGapFreeEvidence(t *testing.T) {
+func TestBusinessHoursAPI67SignaturesHaveGapFreeEvidence(t *testing.T) {
 	tests := []struct {
 		name   string
 		params []string
 	}{
 		{name: "add", params: []string{"Id", "Datetime", "Long"}},
 		{name: "addGmt", params: []string{"Id", "Datetime", "Long"}},
-		{name: "diff", params: []string{"Id", "Datetime", "Datetime"}},
-		{name: "isWithin", params: []string{"Id", "Datetime"}},
+		{name: "diff", params: []string{"String", "Datetime", "Datetime"}},
+		{name: "isWithin", params: []string{"String", "Datetime"}},
 		{name: "nextStartDate", params: []string{"Id", "Datetime"}},
 	}
 
 	gladeRows := BuildGladeSnapshot()
-	assertNoBusinessHoursStringRows(t, gladeRows, tests, "Glade snapshot")
+	assertNoBusinessHoursOppositeFirstParameterRows(t, gladeRows, tests, "Glade snapshot")
 	gladeByID := rowsByID(gladeRows)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -46,7 +46,7 @@ func TestBusinessHoursIdSignaturesHaveGapFreeEvidence(t *testing.T) {
 		t.Fatal(err)
 	}
 	ledger := Merge(nil, nil, gladeRows, evidence)
-	assertNoBusinessHoursStringRows(t, ledger.Rows, tests, "merged fixture ledger")
+	assertNoBusinessHoursOppositeFirstParameterRows(t, ledger.Rows, tests, "merged fixture ledger")
 	mergedByID := rowsByID(ledger.Rows)
 	for _, tt := range tests {
 		id := ApexMemberID("", "BusinessHours", tt.name, tt.params)
@@ -60,18 +60,22 @@ func TestBusinessHoursIdSignaturesHaveGapFreeEvidence(t *testing.T) {
 	}
 }
 
-func assertNoBusinessHoursStringRows(t *testing.T, rows []SurfaceLedgerRow, tests []struct {
+func assertNoBusinessHoursOppositeFirstParameterRows(t *testing.T, rows []SurfaceLedgerRow, tests []struct {
 	name   string
 	params []string
 }, source string) {
 	t.Helper()
 	staleIDs := make(map[string]struct{}, len(tests))
 	for _, tt := range tests {
-		staleIDs[ApexMemberID("", "BusinessHours", tt.name, append([]string{"String"}, tt.params[1:]...))] = struct{}{}
+		wrongFirstParameter := "Id"
+		if tt.params[0] == "Id" {
+			wrongFirstParameter = "String"
+		}
+		staleIDs[ApexMemberID("", "BusinessHours", tt.name, append([]string{wrongFirstParameter}, tt.params[1:]...))] = struct{}{}
 	}
 	for _, row := range rows {
 		if _, ok := staleIDs[row.SurfaceID]; ok {
-			t.Fatalf("stale String BusinessHours row %s is present in %s", row.SurfaceID, source)
+			t.Fatalf("opposite first-parameter BusinessHours row %s is present in %s", row.SurfaceID, source)
 		}
 	}
 }

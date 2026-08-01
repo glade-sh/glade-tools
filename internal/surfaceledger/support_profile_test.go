@@ -3,6 +3,7 @@ package surfaceledger
 import (
 	"bytes"
 	"encoding/json"
+	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
@@ -64,6 +65,60 @@ func buildSeedPolicy() SupportPolicy {
 				Reason:      "commerce hosted deferred",
 			},
 		},
+	}
+}
+
+func TestRealAuthPolicyDefersHostedAuthTokenLookups(t *testing.T) {
+	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var authRule SupportPolicyRule
+	for _, rule := range policy.Rules {
+		if rule.Namespace == "Auth" {
+			authRule = rule
+			break
+		}
+	}
+	if authRule.Namespace == "" {
+		t.Fatal("missing Auth rule in real support policy")
+	}
+	rows := []SurfaceLedgerRow{
+		apexMemberRow("apex:Auth.AuthToken.getAccessToken(String,String)", "Auth", "AuthToken", "getAccessToken"),
+		apexMemberRow("apex:Auth.AuthToken.getAccessTokenMap(String,String)", "Auth", "AuthToken", "getAccessTokenMap"),
+		apexMemberRow("apex:Auth.AuthToken.refreshAccessToken(String,String,String)", "Auth", "AuthToken", "refreshAccessToken"),
+		apexMemberRow("apex:Auth.AuthToken.revokeAccess(String,String,String,String)", "Auth", "AuthToken", "revokeAccess"),
+	}
+	profile := ComputeSupportProfile(rows, SupportPolicy{Rules: []SupportPolicyRule{authRule}}, nil)
+	if len(profile.ValidationErrors) != 0 {
+		t.Fatalf("expected no validation errors, got: %v", profile.ValidationErrors)
+	}
+	want := map[string]SupportDisposition{
+		"apex:Auth.AuthToken.getAccessToken(String,String)":             DispositionHostedDeferred,
+		"apex:Auth.AuthToken.getAccessTokenMap(String,String)":          DispositionHostedDeferred,
+		"apex:Auth.AuthToken.refreshAccessToken(String,String,String)":  DispositionHostedDeferred,
+		"apex:Auth.AuthToken.revokeAccess(String,String,String,String)": DispositionDeterministicMockRequired,
+	}
+	byID := make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	for _, row := range profile.Rows {
+		if _, ok := want[row.SurfaceID]; !ok {
+			continue
+		}
+		wantDisposition := want[row.SurfaceID]
+		if row.Disposition != wantDisposition {
+			t.Errorf("%s disposition = %s, want %s", row.SurfaceID, row.Disposition, wantDisposition)
+		}
+		if wantDisposition == DispositionHostedDeferred && (!strings.Contains(row.Reason, "hosted") || !strings.Contains(row.Reason, "corpus")) {
+			t.Errorf("%s reason = %q, want hosted-state/no-corpus reason", row.SurfaceID, row.Reason)
+		}
+	}
+	for id := range want {
+		if _, ok := byID[id]; !ok {
+			t.Fatalf("missing AuthToken profile row %s", id)
+		}
 	}
 }
 
