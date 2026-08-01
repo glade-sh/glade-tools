@@ -246,13 +246,13 @@ func TestBuildGladeSnapshotUsesSchemaDescribePropertyIDs(t *testing.T) {
 
 func TestStdlibAPIIDParsesQualifiedSchemaMethods(t *testing.T) {
 	got := idFromStdlibAPI("Schema.describeDataCategoryGroups(List<String>)")
-	want := ApexMemberID("Schema", "Schema", "describeDataCategoryGroups", []string{"List<String>"})
+	want := ApexMemberID("System", "Schema", "describeDataCategoryGroups", []string{"List<String>"})
 	if got != want {
 		t.Fatalf("id = %q, want %q", got, want)
 	}
 
 	got = idFromStdlibAPI("Schema.describeDataCategoryGroupStructures(List<Schema.DataCategoryGroupSobjectTypePair>,Boolean)")
-	want = ApexMemberID("Schema", "Schema", "describeDataCategoryGroupStructures", []string{"List<Schema.DataCategoryGroupSobjectTypePair>", "Boolean"})
+	want = ApexMemberID("System", "Schema", "describeDataCategoryGroupStructures", []string{"List<Schema.DataCategoryGroupSobjectTypePair>", "Boolean"})
 	if got != want {
 		t.Fatalf("id = %q, want %q", got, want)
 	}
@@ -271,12 +271,8 @@ func TestBuildGladeSnapshotPromotesBusinessHoursLocalContract(t *testing.T) {
 	}
 
 	id = ApexTypeID("System", "BusinessHours malformed local holiday metadata")
-	row, ok = byID[id]
-	if !ok {
-		t.Fatalf("missing BusinessHours boundary row %s", id)
-	}
-	if row.GladeBehavior != BehaviorUnsupported {
-		t.Fatalf("BusinessHours boundary behavior = %s, want %s", row.GladeBehavior, BehaviorUnsupported)
+	if _, ok = byID[id]; ok {
+		t.Fatalf("synthetic BusinessHours boundary row remains: %s", id)
 	}
 }
 

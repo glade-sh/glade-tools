@@ -59,11 +59,21 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	}
 	for _, entry := range capability.StdlibMatrix() {
 		id := idFromStdlibAPI(entry.API)
+		if id == "" {
+			continue
+		}
+		kind := KindMethod
+		if stdlibTypeAPI(entry.API) {
+			kind = KindType
+		}
 		key := surfaceIDKey(id)
 		row := byID[key]
 		if row.SurfaceID == "" {
-			row = SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Sources: []string{"stdlib-matrix"}}
+			row = SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: kind, Sources: []string{"stdlib-matrix"}}
 			fillFromApexID(&row)
+			if kind == KindType {
+				row = RowFromGladeShape(row)
+			}
 		}
 		row.GladeBehavior = behaviorFromCapabilityStatus(entry.Status)
 		row.Notes = entry.Notes
@@ -104,6 +114,7 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	addApexLanguageRuleRows(byID)
 	addSurfaceClosureTailGladeRows(byID)
 	addMethodFamilyShapeReconciliation(byID)
+	removeNonCanonicalGeneratedRows(byID)
 	rows := make([]SurfaceLedgerRow, 0, len(byID))
 	for _, row := range byID {
 		rows = append(rows, withDefaults(row))
@@ -950,9 +961,17 @@ func gladeMemberKind(kind string) string {
 
 func idFromStdlibAPI(api string) string {
 	api = strings.TrimSpace(api)
+	if isSyntheticStdlibAPI(api) {
+		return ""
+	}
 	parts := strings.SplitN(api, ".", 2)
 	if len(parts) != 2 {
-		return ApexTypeID("System", api)
+		namespace, typeName := splitTypeName("", api)
+		return ApexTypeID(namespace, typeName)
+	}
+	if stdlibTypeAPI(api) {
+		namespace, typeName := splitTypeName("", api)
+		return ApexTypeID(namespace, typeName)
 	}
 	params := []string(nil)
 	member := parts[1]
@@ -963,7 +982,60 @@ func idFromStdlibAPI(api string) string {
 	} else if member == "contains" {
 		params = []string{"String"}
 	}
-	return ApexMemberID("System", parts[0], member, params)
+	namespace, typeName := splitTypeName("", parts[0])
+	return ApexMemberID(namespace, typeName, member, params)
+}
+
+func stdlibTypeAPI(api string) bool {
+	switch api {
+	case "ApexPages.Message", "Database.UnitOfWork", "Messaging.SendEmailOptions", "Messaging.SingleEmailMessage":
+		return true
+	default:
+		return false
+	}
+}
+
+func isSyntheticStdlibAPI(api string) bool {
+	if api == "PageReference(partialURL)" || api == "Search.query / SOSL FIND" || api == "unimplemented platform/stdlib calls" {
+		return true
+	}
+	return strings.Contains(api, "*") || strings.Contains(api, " constructors") || strings.Contains(api, " malformed ")
+}
+
+var nonCanonicalGeneratedSurfaceIDs = map[string]struct{}{
+	"apex:Schema.ChildRelationship.ChildRelationship()":                                               {},
+	"apex:Schema.DescribeColorResult.DescribeColorResult()":                                           {},
+	"apex:Schema.DescribeDataCategoryGroupResult.DescribeDataCategoryGroupResult()":                   {},
+	"apex:Schema.DescribeDataCategoryGroupStructureResult.DescribeDataCategoryGroupStructureResult()": {},
+	"apex:Schema.DescribeFieldResult.DescribeFieldResult()":                                           {},
+	"apex:Schema.DescribeIconResult.DescribeIconResult()":                                             {},
+	"apex:Schema.DescribeSObjectResult.DescribeSObjectResult()":                                       {},
+	"apex:Schema.DescribeTabResult.DescribeTabResult()":                                               {},
+	"apex:Schema.DescribeTabSetResult.DescribeTabSetResult()":                                         {},
+	"apex:Schema.FieldSet.FieldSet()":                                                                 {},
+	"apex:Schema.FieldSetMember.FieldSetMember()":                                                     {},
+	"apex:Schema.FilteredLookupInfo.FilteredLookupInfo()":                                             {},
+	"apex:Schema.PicklistEntry.PicklistEntry()":                                                       {},
+	"apex:Schema.RecordTypeInfo.RecordTypeInfo()":                                                     {},
+	"apex:Schema.SObjectField.SObjectField()":                                                         {},
+	"apex:Schema.SObjectType.SObjectType()":                                                           {},
+	"apex:System.EmailException.getDmlFieldNames(Integer)":                                            {},
+	"apex:System.EmailException.getDmlFields(Integer)":                                                {},
+	"apex:System.EmailException.getDmlId(Integer)":                                                    {},
+	"apex:System.EmailException.getDmlIndex(Integer)":                                                 {},
+	"apex:System.EmailException.getDmlMessage(Integer)":                                               {},
+	"apex:System.EmailException.getDmlStatusCode(Integer)":                                            {},
+	"apex:System.EmailException.getDmlType(Integer)":                                                  {},
+	"apex:System.EmailException.getNumDml()":                                                          {},
+	"apex:System.FeatureManagement.FeatureManagement()":                                               {},
+	"apex:System.JSONException.getInaccessibleFields()":                                               {},
+	"apex:System.JSONException.initCause(Exception)":                                                  {},
+}
+
+func removeNonCanonicalGeneratedRows(byID map[string]SurfaceLedgerRow) {
+	for id := range nonCanonicalGeneratedSurfaceIDs {
+		delete(byID, surfaceIDKey(id))
+	}
 }
 
 func splitSurfaceParameterList(raw string) []string {

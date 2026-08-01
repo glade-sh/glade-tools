@@ -29,6 +29,9 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 			if id == "" {
 				continue
 			}
+			if _, nonCanonical := nonCanonicalGeneratedSurfaceIDs[id]; nonCanonical {
+				continue
+			}
 			product := productFromID(id)
 			kind := evidenceKindFromSurfaceID(id)
 			area := evidenceAreaForProduct(product)

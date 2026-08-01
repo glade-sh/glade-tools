@@ -8,12 +8,6 @@
       "notes": "Database.UnitOfWork queues local DML, supports discardWork, and applies queued records on commitWork."
     },
     {
-      "surfaceId": "apex:System.Database.UnitOfWork",
-      "symbol": "Database.UnitOfWork",
-      "kind": "test",
-      "notes": "Alias evidence kept for the docs-side System.Database identity row."
-    },
-    {
       "surfaceId": "apex:Database.UnitOfWork.UnitOfWork()",
       "symbol": "Database.UnitOfWork.UnitOfWork",
       "kind": "test"

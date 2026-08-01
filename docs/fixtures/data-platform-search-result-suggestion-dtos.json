@@ -108,12 +108,6 @@
       "kind": "test"
     },
     {
-      "surfaceId": "apex:Search.SuggestionOption.setFilter(Search.KnowledegeSuggestionFilter)",
-      "symbol": "Search.SuggestionOption.setFilter",
-      "kind": "unsupported",
-      "notes": "Public docs spell this parameter as KnowledegeSuggestionFilter; the local Apex surface supports the real KnowledgeSuggestionFilter/Object shape and does not add a misspelled type alias."
-    },
-    {
       "surfaceId": "apex:Search.SuggestionOption.setLimit(Integer)",
       "symbol": "Search.SuggestionOption.setLimit",
       "kind": "test"

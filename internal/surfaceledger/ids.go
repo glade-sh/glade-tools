@@ -152,6 +152,14 @@ func canonicalApexQualifiedParts(namespace, typeName string) (string, string) {
 
 func canonicalApexMemberParameters(namespace, typeName, memberName string, parameters []string) []string {
 	out := cleanList(parameters)
+	if namespace == "" && typeName == "BusinessHours" {
+		switch memberName {
+		case "add", "addGmt", "nextStartDate":
+			if len(out) > 0 && out[0] == "String" {
+				out[0] = "Id"
+			}
+		}
+	}
 	if namespace == "" && (typeName == "Answers" || typeName == "Ideas") && memberName == "findSimilar" {
 		if len(out) > 0 && (out[0] == "Question" || out[0] == "Idea") {
 			out[0] = "Object"

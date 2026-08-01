@@ -2,6 +2,7 @@ package surfaceledger
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -71,7 +72,10 @@ func assertNoBusinessHoursOppositeFirstParameterRows(t *testing.T, rows []Surfac
 		if tt.params[0] == "Id" {
 			wrongFirstParameter = "String"
 		}
-		staleIDs[ApexMemberID("", "BusinessHours", tt.name, append([]string{wrongFirstParameter}, tt.params[1:]...))] = struct{}{}
+		wrongParams := append([]string{wrongFirstParameter}, tt.params[1:]...)
+		// Build the deliberately noncanonical identity directly. ApexMemberID
+		// canonicalizes the stale docs String overloads to the API 67 Id shape.
+		staleIDs["apex:BusinessHours."+tt.name+"("+strings.Join(wrongParams, ",")+")"] = struct{}{}
 	}
 	for _, row := range rows {
 		if _, ok := staleIDs[row.SurfaceID]; ok {

@@ -2,7 +2,7 @@
   "name": "ui-lwc-vf-local-bridge-evidence",
   "evidence": [
     {
-      "surfaceId": "apex:System.ApexPages.Message",
+      "surfaceId": "apex:ApexPages.Message",
       "symbol": "ApexPages.Message",
       "kind": "test",
       "notes": "Local page messages are collected during Visualforce actions and reset between action lifecycles."
