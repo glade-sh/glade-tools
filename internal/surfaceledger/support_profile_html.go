@@ -17,6 +17,7 @@ type SupportProfileHTMLPage struct {
 	Total            int                        `json:"total"`
 	ByDisposition    map[SupportDisposition]int `json:"byDisposition"`
 	ByGapClass       map[string]int             `json:"byGapClass"`
+	ByDeliveryState  map[string]int             `json:"byDeliveryState"`
 	Inputs           *SupportProfileInputs      `json:"inputs,omitempty"`
 	ValidationErrors []string                   `json:"validationErrors,omitempty"`
 	Rows             []SupportProfileHTMLRow    `json:"rows"`
@@ -136,6 +137,19 @@ func WriteSupportProfileHTML(w io.Writer, profile SupportProfile, ledger Surface
     <div class="metric"><span>Compile-shape obligation</span><strong>%d</strong></div>
     <div class="metric"><span>Hosted deferred</span><strong>%d</strong></div>
   </section>
+  <section class="panel" aria-labelledby="delivery-heading">
+    <div class="section-heading"><h2 id="delivery-heading">Delivery totals</h2><span class="muted">Derived from every row; states may overlap</span></div>
+    <div class="summary delivery-summary">
+      <div class="metric"><span>Covered</span><strong>%d</strong></div>
+      <div class="metric"><span>Unimplemented / open</span><strong>%d</strong></div>
+      <div class="metric"><span>Local runtime present</span><strong>%d</strong></div>
+      <div class="metric"><span>Mock implemented</span><strong>%d</strong></div>
+      <div class="metric"><span>Compile shape present</span><strong>%d</strong></div>
+      <div class="metric"><span>Explicitly unsupported</span><strong>%d</strong></div>
+      <div class="metric"><span>Not locally implemented</span><strong>%d</strong></div>
+      <div class="metric"><span>Hosted deferred</span><strong>%d</strong></div>
+    </div>
+  </section>
   <section class="panel" aria-labelledby="gaps-heading">
     <div class="section-heading"><h2 id="gaps-heading">Gap totals</h2><span class="muted">Profile-owned counts</span></div>
     <div id="gap-summary" class="gap-summary">%s</div>
@@ -175,6 +189,14 @@ func WriteSupportProfileHTML(w io.Writer, profile SupportProfile, ledger Surface
 		payload.ByDisposition[DispositionDeterministicMockRequired],
 		payload.ByDisposition[DispositionCompileShapeRequired],
 		payload.ByDisposition[DispositionHostedDeferred],
+		payload.ByDeliveryState[htmlDeliveryCovered],
+		payload.ByDeliveryState[htmlDeliveryOpen],
+		payload.ByDeliveryState[htmlDeliveryLocalRuntime],
+		payload.ByDeliveryState[htmlDeliveryDeterministicMock],
+		payload.ByDeliveryState[htmlDeliveryCompileShape],
+		payload.ByDeliveryState[htmlDeliveryExplicitUnsupported],
+		payload.ByDeliveryState[htmlDeliveryNotLocallyImplemented],
+		payload.ByDeliveryState[htmlDeliveryHostedDeferred],
 		renderSupportProfileHTMLGapSummary(profile.ByGapClass), payload.Total)
 	escaped.WriteTo(&b)
 	fmt.Fprint(&b, `</script>
@@ -373,6 +395,7 @@ func buildSupportProfileHTMLPage(profile SupportProfile, ledger SurfaceLedger) (
 		Total:            profile.Total,
 		ByDisposition:    make(map[SupportDisposition]int, 4),
 		ByGapClass:       make(map[string]int, len(profile.ByGapClass)),
+		ByDeliveryState:  make(map[string]int, 8),
 		Inputs:           profile.Inputs,
 		ValidationErrors: append([]string(nil), profile.ValidationErrors...),
 		Rows:             make([]SupportProfileHTMLRow, 0, len(profile.Rows)),
@@ -455,6 +478,9 @@ func buildSupportProfileHTMLPage(profile SupportProfile, ledger SurfaceLedger) (
 				entryCopy := entry
 				row.Corpus = &entryCopy
 			}
+		}
+		for _, state := range row.DeliveryStates {
+			page.ByDeliveryState[state]++
 		}
 		page.Rows = append(page.Rows, row)
 	}
@@ -541,6 +567,7 @@ h2 { margin-bottom: 0; font-size: 18px; }
 h3 { margin-bottom: 12px; color: var(--blue); font-size: 14px; }
 .lede { max-width: 760px; margin-bottom: 0; color: var(--muted); font-size: 16px; }
 .summary { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.delivery-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0; }
 .metric, .panel { border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
 .metric { min-height: 90px; padding: 15px; }
 .metric span, .muted { color: var(--muted); }
@@ -578,7 +605,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 dt { color: var(--muted); font-size: 11px; }
 dd { margin: 2px 0 0; overflow-wrap: anywhere; }
 .pagination { justify-content: center; }
-@media (max-width: 1050px) { .summary { grid-template-columns: repeat(3, 1fr); } .filters { grid-template-columns: 1fr 1fr; } .legend { grid-template-columns: 1fr 1fr; } .detail-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1050px) { .summary, .delivery-summary { grid-template-columns: repeat(3, 1fr); } .filters { grid-template-columns: 1fr 1fr; } .legend { grid-template-columns: 1fr 1fr; } .detail-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { main { width: min(100% - 20px, 1500px); padding-top: 22px; } .summary, .filters, .legend, .detail-grid { grid-template-columns: 1fr; } .surface-row summary { display: block; } .state-line { display: block; margin: 8px 0 0 19px; text-align: left; } .detail-body { padding-left: 28px; } }
 </style>
 </head>

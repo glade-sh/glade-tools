@@ -1,0 +1,12 @@
+{
+  "name": "core-runtime-cb62-apexpages-evidence",
+  "evidence": [
+    {"surfaceId": "apex:ApexPages.Action", "symbol": "ApexPages.Action", "kind": "test", "notes": "CB57 passing local value case for the ApexPages.Action type."},
+    {"surfaceId": "apex:ApexPages.Severity", "symbol": "ApexPages.Severity", "kind": "test", "notes": "CB57 passing local value case for the ApexPages.Severity enum type."}
+  ],
+  "source": [
+    {"path": "force-app/main/classes/CoreRuntimeCB62ApexPagesEvidenceTest.cls", "content": "@isTest private class CoreRuntimeCB62ApexPagesEvidenceTest { @isTest static void rows() { ApexPages.Action action = new ApexPages.Action('list'); System.assertEquals('list', action.getExpression()); ApexPages.Message msg = new ApexPages.Message(ApexPages.Severity.FATAL, 'fatal'); System.assertEquals(ApexPages.Severity.FATAL, msg.getSeverity()); } }"}
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}}
+}

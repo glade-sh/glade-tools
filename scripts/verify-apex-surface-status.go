@@ -8,22 +8,24 @@ import (
 	"strings"
 )
 
+type surfaceStatusRow struct {
+	SurfaceID      string   `json:"surfaceId"`
+	DeliveryStates []string `json:"deliveryStates,omitempty"`
+}
+
 type supportProfileArtifact struct {
-	Total         int            `json:"total"`
-	ByDisposition map[string]int `json:"byDisposition"`
-	ByGapClass    map[string]int `json:"byGapClass"`
-	Rows          []struct {
-		SurfaceID string `json:"surfaceId"`
-	} `json:"rows"`
+	Total         int                `json:"total"`
+	ByDisposition map[string]int     `json:"byDisposition"`
+	ByGapClass    map[string]int     `json:"byGapClass"`
+	Rows          []surfaceStatusRow `json:"rows"`
 }
 
 type surfaceStatusArtifact struct {
-	Total         int            `json:"total"`
-	ByDisposition map[string]int `json:"byDisposition"`
-	ByGapClass    map[string]int `json:"byGapClass"`
-	Rows          []struct {
-		SurfaceID string `json:"surfaceId"`
-	} `json:"rows"`
+	Total           int                `json:"total"`
+	ByDisposition   map[string]int     `json:"byDisposition"`
+	ByGapClass      map[string]int     `json:"byGapClass"`
+	ByDeliveryState map[string]int     `json:"byDeliveryState"`
+	Rows            []surfaceStatusRow `json:"rows"`
 }
 
 func main() {
@@ -103,6 +105,20 @@ func reconcile(profile supportProfileArtifact, page surfaceStatusArtifact) error
 			return fmt.Errorf("gap mismatch for %q: profile=%d page=%d", gap, want, page.ByGapClass[gap])
 		}
 	}
+	deliveryCounts := make(map[string]int)
+	for _, row := range page.Rows {
+		for _, state := range row.DeliveryStates {
+			deliveryCounts[state]++
+		}
+	}
+	if len(page.ByDeliveryState) != len(deliveryCounts) {
+		return fmt.Errorf("delivery-state key count mismatch: page=%d rows=%d", len(page.ByDeliveryState), len(deliveryCounts))
+	}
+	for state, want := range deliveryCounts {
+		if page.ByDeliveryState[state] != want {
+			return fmt.Errorf("delivery-state mismatch for %q: page=%d rows=%d", state, page.ByDeliveryState[state], want)
+		}
+	}
 	profileIDs, err := uniqueSortedIDs(profile.Rows)
 	if err != nil {
 		return fmt.Errorf("profile rows: %w", err)
@@ -122,9 +138,7 @@ func reconcile(profile supportProfileArtifact, page surfaceStatusArtifact) error
 	return nil
 }
 
-func uniqueSortedIDs(rows []struct {
-	SurfaceID string `json:"surfaceId"`
-}) ([]string, error) {
+func uniqueSortedIDs(rows []surfaceStatusRow) ([]string, error) {
 	ids := make([]string, 0, len(rows))
 	seen := make(map[string]bool, len(rows))
 	for _, row := range rows {

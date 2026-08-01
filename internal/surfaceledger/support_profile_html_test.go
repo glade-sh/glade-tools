@@ -86,6 +86,15 @@ func TestWriteSupportProfileHTMLReconcilesCountsAndJoinsEvidence(t *testing.T) {
 	if !reflect.DeepEqual(payload.ByGapClass, profile.ByGapClass) {
 		t.Fatalf("embedded gaps = %#v, want %#v", payload.ByGapClass, profile.ByGapClass)
 	}
+	wantDeliveryStates := map[string]int{}
+	for _, row := range payload.Rows {
+		for _, state := range row.DeliveryStates {
+			wantDeliveryStates[state]++
+		}
+	}
+	if !reflect.DeepEqual(payload.ByDeliveryState, wantDeliveryStates) {
+		t.Fatalf("embedded delivery states = %#v, want %#v", payload.ByDeliveryState, wantDeliveryStates)
+	}
 	if !reflect.DeepEqual(payload.Inputs, profile.Inputs) {
 		t.Fatalf("embedded inputs = %#v, want %#v", payload.Inputs, profile.Inputs)
 	}
@@ -175,6 +184,10 @@ func TestWriteSupportProfileHTMLContainsRequiredFiltersLegendAndActions(t *testi
 		"monitor release/corpus and retain the stated reason",
 		"no current-base action",
 		"shown-count",
+		"delivery totals",
+		"derived from every row; states may overlap",
+		"mock implemented",
+		"explicitly unsupported",
 		"page-size",
 		"profile validation errors",
 		"evidence/source ids",
