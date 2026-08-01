@@ -19,12 +19,14 @@ const (
 	DispositionHostedDeferred            SupportDisposition = "hosted-deferred"
 )
 
-// SupportPolicyRule encodes one classification rule: a namespace or
-// type-family pattern, a disposition, a reason, and optional member
-// exceptions that elevate specific members to a different disposition.
+// SupportPolicyRule encodes one classification rule: a namespace,
+// type-family pattern, or surface-prefix selector; a disposition;
+// a reason; and optional member exceptions that elevate specific
+// members to a different disposition.
 type SupportPolicyRule struct {
 	Namespace        string                          `json:"namespace,omitempty"`
 	TypeFamily       string                          `json:"typeFamily,omitempty"`
+	SurfacePrefix    string                          `json:"surfacePrefix,omitempty"`
 	Disposition      SupportDisposition              `json:"disposition"`
 	Reason           string                          `json:"reason"`
 	MemberExceptions []SupportPolicyMemberException  `json:"memberExceptions,omitempty"`
@@ -81,6 +83,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	// Validate policy for overlaps.
 	seenNS := map[string]int{}
 	seenTF := map[string]int{}
+	seenSP := map[string]int{}
 	for i, rule := range policy.Rules {
 		if rule.Namespace != "" {
 			if prev, ok := seenNS[rule.Namespace]; ok {
@@ -96,18 +99,28 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 			}
 			seenTF[rule.TypeFamily] = i
 		}
+		if rule.SurfacePrefix != "" {
+			if prev, ok := seenSP[rule.SurfacePrefix]; ok {
+				_ = prev
+			}
+			seenSP[rule.SurfacePrefix] = i
+		}
 	}
 
 	// Detect overlapping rules (same namespace or type-family in multiple rules).
 	overlapDetected := map[string]bool{}
 	nsCount := map[string]int{}
 	tfCount := map[string]int{}
+	spCount := map[string]int{}
 	for _, rule := range policy.Rules {
 		if rule.Namespace != "" {
 			nsCount[rule.Namespace]++
 		}
 		if rule.TypeFamily != "" {
 			tfCount[rule.TypeFamily]++
+		}
+		if rule.SurfacePrefix != "" {
+			spCount[rule.SurfacePrefix]++
 		}
 	}
 
@@ -122,6 +135,12 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 		if count > 1 {
 			validationErrors = append(validationErrors, fmt.Sprintf("overlapping type-family rule: %s", tf))
 			overlapDetected[tf] = true
+		}
+	}
+	for sp, count := range spCount {
+		if count > 1 {
+			validationErrors = append(validationErrors, fmt.Sprintf("overlapping surface-prefix rule: %s", sp))
+			overlapDetected[sp] = true
 		}
 	}
 
@@ -225,8 +244,12 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 	for _, rule := range policy.Rules {
 		matched := false
 
-		if rule.Namespace != "" && strings.EqualFold(row.Namespace, rule.Namespace) {
-			matched = true
+		if rule.Namespace != "" {
+			if strings.EqualFold(row.Namespace, rule.Namespace) {
+				matched = true
+			} else if descendantMatch(rule.Namespace, row.Namespace) {
+				matched = true
+			}
 		}
 		if !matched && rule.TypeFamily != "" {
 			if matchTypeFamily(rule.TypeFamily, row.SalesforceSurfaceFamily) {
@@ -235,6 +258,9 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 			if !matched && matchTypeFamily(rule.TypeFamily, row.Namespace) {
 				matched = true
 			}
+		}
+		if !matched && rule.SurfacePrefix != "" && strings.HasPrefix(row.SurfaceID, rule.SurfacePrefix) {
+			matched = true
 		}
 
 		if !matched {
@@ -278,6 +304,18 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 	return pr
 }
 
+// descendantMatch returns true when child starts with parent + ".",
+// case-insensitively. "Database" matches "Database.Cursor" but not "DatabaseX".
+func descendantMatch(parent, child string) bool {
+	if len(child) <= len(parent)+1 {
+		return false
+	}
+	if child[len(parent)] != '.' {
+		return false
+	}
+	return strings.EqualFold(child[:len(parent)], parent)
+}
+
 func matchTypeFamily(pattern, value string) bool {
 	if pattern == "" || value == "" {
 		return false
@@ -294,10 +332,16 @@ func ruleMatchLabel(rule SupportPolicyRule, isException bool) string {
 		if rule.Namespace != "" {
 			return "namespace=" + rule.Namespace + " (member exception)"
 		}
+		if rule.SurfacePrefix != "" {
+			return "surfacePrefix=" + rule.SurfacePrefix + " (member exception)"
+		}
 		return "typeFamily=" + rule.TypeFamily + " (member exception)"
 	}
 	if rule.Namespace != "" {
 		return "namespace=" + rule.Namespace
+	}
+	if rule.SurfacePrefix != "" {
+		return "surfacePrefix=" + rule.SurfacePrefix
 	}
 	return "typeFamily=" + rule.TypeFamily
 }

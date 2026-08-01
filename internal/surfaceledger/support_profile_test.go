@@ -575,3 +575,211 @@ func TestSupportProfileJoinsCorpusUsage(t *testing.T) {
 		t.Fatalf("corpusUsage should be empty without corpus input")
 	}
 }
+
+// RED 1: namespace=Database classifies a Database.Cursor row (descendant namespace match).
+func TestSupportProfileDescendantNamespaceMatch(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "Database",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason:      "DML runtime",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		apexRow("apex:Database.Cursor", "Database.Cursor", "Cursor"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 1 {
+		t.Fatalf("total: want 1 got %d", profile.Total)
+	}
+	if profile.Rows[0].Disposition != DispositionLocalRuntimeRequired {
+		t.Fatalf("disposition: want local-runtime-required got %s", profile.Rows[0].Disposition)
+	}
+	if profile.Rows[0].MatchRule != "namespace=Database" {
+		t.Fatalf("match rule: want namespace=Database got %q", profile.Rows[0].MatchRule)
+	}
+	if len(profile.UnclassifiedRows) != 0 {
+		t.Fatalf("unclassified: want 0 got %d", len(profile.UnclassifiedRows))
+	}
+}
+
+// RED 2: namespace=Database does NOT classify DatabaseX (no dot separator).
+func TestSupportProfileDescendantNamespaceBoundary(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "Database",
+				Disposition: DispositionLocalRuntimeRequired,
+				Reason:      "DML runtime",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		apexRow("apex:DatabaseX.Foo", "DatabaseX", "Foo"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if len(profile.UnclassifiedRows) != 1 {
+		t.Fatalf("unclassified: want 1 got %d (DatabaseX must not match Database)", len(profile.UnclassifiedRows))
+	}
+	if profile.UnclassifiedRows[0].SurfaceID != "apex:DatabaseX.Foo" {
+		t.Fatalf("unclassified row: got %q", profile.UnclassifiedRows[0].SurfaceID)
+	}
+}
+
+// RED 3: a member exception works on a descendant namespace row.
+func TestSupportProfileMemberExceptionOnDescendantNamespace(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				Namespace:   "ConnectApi",
+				Disposition: DispositionHostedDeferred,
+				Reason:      "connect-api deferred",
+				MemberExceptions: []SupportPolicyMemberException{
+					{
+						TypeName:    "Organization",
+						MemberName:  "getSettings",
+						Disposition: DispositionDeterministicMockRequired,
+						Reason:      "observed corpus usage",
+					},
+				},
+			},
+		},
+	}
+	// Descendant namespace: ConnectApi.Internal
+	rows := []SurfaceLedgerRow{
+		apexMemberRow("apex:ConnectApi.Internal.Organization.getSettings", "ConnectApi.Internal", "Organization", "getSettings"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 1 {
+		t.Fatalf("total: want 1 got %d", profile.Total)
+	}
+	if profile.Rows[0].Disposition != DispositionDeterministicMockRequired {
+		t.Fatalf("disposition: want deterministic-mock-required got %s", profile.Rows[0].Disposition)
+	}
+	if !strings.Contains(profile.Rows[0].MatchRule, "member exception") {
+		t.Fatalf("match rule must indicate member exception, got %q", profile.Rows[0].MatchRule)
+	}
+}
+
+// RED 4: surfacePrefix=apex-language: classifies a namespace-less language row.
+func TestSupportProfileSurfacePrefixMatch(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				SurfacePrefix: "apex-language:",
+				Disposition:   DispositionLocalRuntimeRequired,
+				Reason:        "language constructs",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		{
+			SurfaceID:     "apex-language:for:loop",
+			Product:       ProductApex,
+			Area:          AreaRuntime,
+			Kind:          KindType,
+			Namespace:     "",
+			TypeName:      "for:loop",
+			GladeShape:    ShapeTypeKnown,
+			GladeBehavior: BehaviorSupported,
+			Evidence:      EvidenceFixture,
+		},
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	if profile.Total != 1 {
+		t.Fatalf("total: want 1 got %d", profile.Total)
+	}
+	if profile.Rows[0].Disposition != DispositionLocalRuntimeRequired {
+		t.Fatalf("disposition: want local-runtime-required got %s", profile.Rows[0].Disposition)
+	}
+	if profile.Rows[0].MatchRule != "surfacePrefix=apex-language:" {
+		t.Fatalf("match rule: want surfacePrefix=apex-language: got %q", profile.Rows[0].MatchRule)
+	}
+}
+
+// RED 5: nonmatching surface prefix leaves row unclassified.
+func TestSupportProfileSurfacePrefixNoMatch(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				SurfacePrefix: "apex-language:",
+				Disposition:   DispositionLocalRuntimeRequired,
+				Reason:        "language constructs",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		{
+			SurfaceID:     "apex:System.String",
+			Product:       ProductApex,
+			Area:          AreaRuntime,
+			Kind:          KindType,
+			Namespace:     "System",
+			TypeName:      "String",
+			GladeShape:    ShapeTypeKnown,
+			GladeBehavior: BehaviorSupported,
+			Evidence:      EvidenceFixture,
+		},
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	// The System.String row does not start with apeax-language: — it should be unclassified.
+	if len(profile.UnclassifiedRows) != 1 {
+		t.Fatalf("unclassified: want 1 got %d", len(profile.UnclassifiedRows))
+	}
+}
+
+// RED 6: duplicate surface-prefix rules produce a deterministic validation error.
+func TestSupportProfileDuplicateSurfacePrefix(t *testing.T) {
+	policy := SupportPolicy{
+		Rules: []SupportPolicyRule{
+			{
+				SurfacePrefix: "apex-language:",
+				Disposition:   DispositionLocalRuntimeRequired,
+				Reason:        "language constructs",
+			},
+			{
+				SurfacePrefix: "apex-language:",
+				Disposition:   DispositionCompileShapeRequired,
+				Reason:        "duplicate",
+			},
+		},
+	}
+	rows := []SurfaceLedgerRow{
+		{
+			SurfaceID:     "apex-language:for:loop",
+			Product:       ProductApex,
+			Area:          AreaRuntime,
+			Kind:          KindType,
+			Namespace:     "",
+			TypeName:      "for:loop",
+			GladeShape:    ShapeTypeKnown,
+			GladeBehavior: BehaviorSupported,
+			Evidence:      EvidenceFixture,
+		},
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	foundOverlap := false
+	for _, err := range profile.ValidationErrors {
+		if strings.Contains(err, "overlapping surface-prefix rule: apex-language:") {
+			foundOverlap = true
+			break
+		}
+	}
+	if !foundOverlap {
+		t.Fatalf("expected overlapping surface-prefix validation error, got: %v", profile.ValidationErrors)
+	}
+}
