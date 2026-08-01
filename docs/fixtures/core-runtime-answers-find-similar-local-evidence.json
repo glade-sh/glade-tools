@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-answers-find-similar-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:Answers.findSimilar(Object)",
+      "symbol": "Answers.findSimilar(Object)",
+      "kind": "test",
+      "notes": "Local execution returns a deterministic empty List<Id> without performing hosted similarity search."
+    },
+    {
+      "surfaceId": "apex:Answers.findSimilar",
+      "symbol": "Answers.findSimilar",
+      "kind": "shape",
+      "notes": "Answers.findSimilar method-family shape is known from the exact overload local evidence."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/AnswersFindSimilarLocalTest.cls",
+      "content": "@isTest private class AnswersFindSimilarLocalTest { @isTest static void findSimilarReturnsEmptyList() { List<Id> ids = Answers.findSimilar(new Question(Title = 'Acme')); System.assertEquals(0, ids.size()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  }
+}

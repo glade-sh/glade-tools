@@ -57,7 +57,7 @@ func WriteStdlibMarkdown(w io.Writer) error {
 
 var stdlibEntries = []StdlibEntry{
 	{Area: "AccessLevel", API: "AccessLevel.withPermissionSetId(String)", Status: StatusSupported, Notes: "Creates a local permission-set-scoped user-mode token used by supported SOQL and DML permission checks."},
-	{Area: "Answers", API: "Answers.findSimilar(Question)", Status: StatusUnsupported, Notes: "Zone similar-question search requires Answers service data and returns a stable UnsupportedFeature diagnostic locally."},
+	{Area: "Answers", API: "Answers.findSimilar(Question)", Status: StatusSupported, Notes: "Local execution returns a deterministic empty List<Id> without performing hosted similarity search."},
 	{Area: "ApexPages", API: "ApexPages.addMessage", Status: StatusSupported, Notes: "Stores page messages on the VM instance."},
 	{Area: "ApexPages", API: "ApexPages.addMessage(ApexPages.Message)", Status: StatusSupported, Notes: "Stores page messages on the VM instance."},
 	{Area: "ApexPages", API: "ApexPages.addMessages(Exception)", Status: StatusSupported, Notes: "Converts supported exception values into VM-local page messages."},

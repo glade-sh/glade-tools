@@ -803,3 +803,22 @@ func TestBuildEvidenceSnapshotReadsApexPagesSeverityLocalEvidence(t *testing.T) 
 		}
 	}
 }
+
+func TestBuildEvidenceSnapshotReadsAnswersFindSimilarLocalEvidence(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-answers-find-similar-local-evidence.json")
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+
+	exactRow := byID["apex:Answers.findSimilar(Object)"]
+	if exactRow.Evidence != EvidenceFixture || exactRow.GladeBehavior != BehaviorSupported {
+		t.Fatalf("exact Answers.findSimilar(Object) evidence/behavior = %s/%s, want fixture/supported", exactRow.Evidence, exactRow.GladeBehavior)
+	}
+
+	familyRow := byID["apex:Answers.findSimilar"]
+	if familyRow.Evidence != EvidenceFixture || familyRow.GladeShape == ShapeAbsent || familyRow.GladeBehavior != BehaviorNone {
+		t.Fatalf("family Answers.findSimilar evidence/shape/behavior = %s/%s/%s, want fixture/non-absent/none", familyRow.Evidence, familyRow.GladeShape, familyRow.GladeBehavior)
+	}
+}

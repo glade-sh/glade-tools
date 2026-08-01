@@ -752,3 +752,19 @@ func TestCB17_JSONDeserializeBehaviorPreserved(t *testing.T) {
 		t.Fatalf("%s behavior = %s, want %s", familyID, row.GladeBehavior, BehaviorSupported)
 	}
 }
+
+func TestBuildGladeSnapshotReportsAnswersFindSimilarSupported(t *testing.T) {
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+	id := "apex:Answers.findSimilar(Object)"
+	row, ok := byID[id]
+	if !ok {
+		t.Fatalf("missing Answers.findSimilar(Object) in Glade snapshot")
+	}
+	if row.GladeBehavior != BehaviorSupported {
+		t.Fatalf("Answers.findSimilar(Object) behavior = %s, want %s", row.GladeBehavior, BehaviorSupported)
+	}
+	if row.GladeShape == ShapeAbsent {
+		t.Fatalf("Answers.findSimilar(Object) shape is absent, want non-absent")
+	}
+}

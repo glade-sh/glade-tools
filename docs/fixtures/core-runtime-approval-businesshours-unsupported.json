@@ -24,11 +24,6 @@
       "symbol": "BusinessHours.nextStartDate",
       "kind": "exec",
       "notes": "Business-hours reopening calculation requires BusinessHours and holiday metadata; the local runtime returns a stable UnsupportedFeature diagnostic."
-    },
-    {
-      "symbol": "Answers.findSimilar",
-      "kind": "exec",
-      "notes": "Answers similar-question search is a zone search service and returns a stable UnsupportedFeature diagnostic locally."
     }
   ],
   "source": [
