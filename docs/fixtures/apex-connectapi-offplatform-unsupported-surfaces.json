@@ -1098,36 +1098,6 @@
       "symbol": "TopicEndorsementCollection",
       "kind": "unsupported",
       "notes": "Chatter, community, content, and recommendation ConnectApi behavior depends on Salesforce-hosted collaboration services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.getError()",
-      "symbol": "getError",
-      "kind": "unsupported",
-      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.getErrorMessage()",
-      "symbol": "getErrorMessage",
-      "kind": "unsupported",
-      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.getErrorTypeName()",
-      "symbol": "getErrorTypeName",
-      "kind": "unsupported",
-      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.getResult()",
-      "symbol": "getResult",
-      "kind": "unsupported",
-      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.isSuccess()",
-      "symbol": "isSuccess",
-      "kind": "unsupported",
-      "notes": "ConnectApi service behavior depends on Salesforce-hosted services and completion-only shapes outside local Apex execution."
     }
   ],
   "source": [
