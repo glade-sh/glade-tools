@@ -1,0 +1,39 @@
+{
+  "name": "current-base-system-assert-positive-api67",
+  "evidence": [
+    {"surfaceId": "apex:System.Assert.areEqual(Object,Object)", "symbol": "System.Assert.areEqual", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.areEqual(Object,Object,String)", "symbol": "System.Assert.areEqual", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.areNotEqual(Object,Object)", "symbol": "System.Assert.areNotEqual", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.areNotEqual(Object,Object,String)", "symbol": "System.Assert.areNotEqual", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isFalse(Boolean)", "symbol": "System.Assert.isFalse", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isFalse(Boolean,String)", "symbol": "System.Assert.isFalse", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isTrue(Boolean)", "symbol": "System.Assert.isTrue", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isTrue(Boolean,String)", "symbol": "System.Assert.isTrue", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNotNull(Object)", "symbol": "System.Assert.isNotNull", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNotNull(Object,String)", "symbol": "System.Assert.isNotNull", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNull(Object)", "symbol": "System.Assert.isNull", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNull(Object,String)", "symbol": "System.Assert.isNull", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isInstanceOfType(Object,Type)", "symbol": "System.Assert.isInstanceOfType", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isInstanceOfType(Object,Type,String)", "symbol": "System.Assert.isInstanceOfType", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNotInstanceOfType(Object,Type)", "symbol": "System.Assert.isNotInstanceOfType", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNotInstanceOfType(Object,Type,String)", "symbol": "System.Assert.isNotInstanceOfType", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.Assert.areEqual('a', 'a');\nSystem.Assert.areEqual(true, true, 'same');\nSystem.Assert.areNotEqual('a', 'b');\nSystem.Assert.areNotEqual(true, false, 'different');\nSystem.Assert.isFalse(false);\nSystem.Assert.isFalse(false, 'false');\nSystem.Assert.isTrue(true);\nSystem.Assert.isTrue(true, 'true');\nSystem.Assert.isNotNull('value');\nSystem.Assert.isNotNull('value', 'not null');\nSystem.Assert.isNull(null);\nSystem.Assert.isNull(null, 'null');\nSystem.Assert.isInstanceOfType('value', String.class);\nSystem.Assert.isInstanceOfType('value', String.class, 'type');\nSystem.Assert.isNotInstanceOfType('value', Account.class);\nSystem.Assert.isNotInstanceOfType('value', Account.class, 'type');\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.Assert.areEqual('a', 'a');\nSystem.Assert.areEqual(true, true, 'same');\nSystem.Assert.areNotEqual('a', 'b');\nSystem.Assert.areNotEqual(true, false, 'different');\nSystem.Assert.isFalse(false);\nSystem.Assert.isFalse(false, 'false');\nSystem.Assert.isTrue(true);\nSystem.Assert.isTrue(true, 'true');\nSystem.Assert.isNotNull('value');\nSystem.Assert.isNotNull('value', 'not null');\nSystem.Assert.isNull(null);\nSystem.Assert.isNull(null, 'null');\nSystem.Assert.isInstanceOfType('value', String.class);\nSystem.Assert.isInstanceOfType('value', String.class, 'type');\nSystem.Assert.isNotInstanceOfType('value', Account.class);\nSystem.Assert.isNotInstanceOfType('value', Account.class, 'type');\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
