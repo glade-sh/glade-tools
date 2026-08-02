@@ -5544,7 +5544,9 @@
       "source": "public class Probe { public Integer Value { get { Value = 1; return Value; } } }",
       "oracle": "reject",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-GETTER-EXTERNAL-ASSIGNMENT",
@@ -5556,7 +5558,9 @@
       "source": "public class Probe { public Integer Value { get { return 1; } } public static void run() { new Probe().Value = 2; } }",
       "oracle": "reject",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-RECEIVER-QUALIFIED-OVERLOAD",
@@ -5646,7 +5650,9 @@
       "source": "public class Probe {\n    @InvocableVariable(\n        Required=false\n        Label='Email From Org-Wide Id'\n        Description='The Salesforce Id of the Organization-Wide email address to use as the \"From\" in emails. If this isn\\'t set, the email address of the user sending the email is used instead.'\n    )\n    public String emailFromOrgWideId;\n}",
       "oracle": "accept",
       "owner": "parser",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-NESTED-WEBSERVICE-PROPERTY",
@@ -5697,7 +5703,9 @@
       "source": "public class Probe { public static void run(Map<Id, Integer> firstById, Map<Id, Integer> secondById) { for (Integer index = 0; index < firstById.size(); index++) { Integer ignored = index; } for (Id cartId : firstById.keySet()) { Integer firstValue = firstById.get(cartId); if (firstValue != null) { System.debug(firstValue); } } Integer dmlOperations = Limits.getQueries(); for (Id cartId : secondById.keySet()) { Integer secondValue = secondById.get(cartId); if (secondValue != null) { System.debug(secondValue); } } System.debug(dmlOperations); } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-STATIC-METHOD-HIDING",
@@ -5715,7 +5723,9 @@
       ],
       "oracle": "accept",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-STATIC-GETTER-SELF-ASSIGNMENT",
@@ -5727,7 +5737,9 @@
       "source": "public class Probe { public static Probe Instance { get { if (Instance == null) { Instance = new Probe(); } return Instance; } } }",
       "oracle": "reject",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-NESTED-INTERFACE-INSTANCEOF",
@@ -5745,7 +5757,9 @@
       ],
       "oracle": "accept",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-STANDARD-RELATIONSHIP-TRAVERSAL",
@@ -5757,7 +5771,9 @@
       "source": "public class Probe { public static void run() { List<Contact> rows = [SELECT Account.Name FROM Contact]; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-STATIC-INHERITED-INSTANCE-NAME",
@@ -5775,7 +5791,9 @@
       ],
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-INTERFACE-INSTANCEOF-IMPLEMENTATION",
@@ -5787,7 +5805,9 @@
       "source": "public class Probe { public interface Contract { } public class Implementation implements Contract { } public static Boolean run(Contract value) { return value instanceof Implementation; } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-MERGE-ACCOUNT-ID-COLLECTION",
@@ -5799,7 +5819,9 @@
       "source": "public class Probe { public static void run(Id masterId, List<Id> duplicateIds) { merge new Account(Id = masterId) new List<Id>(duplicateIds); } }",
       "oracle": "accept",
       "owner": "sema",
-      "status": "confirmed-gap"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions",
+      "productTestAliasOf": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY"
     },
     {
       "id": "APEX-RELEASE-FINALLY-RETURN-REACHABILITY",
@@ -5811,7 +5833,8 @@
       "source": "public class Probe { public static String run() { try { return 'try'; } catch (Exception ex) { return 'catch'; } finally { System.debug('flush'); } return 'fallback'; } }",
       "oracle": "reject",
       "owner": "sema",
-      "status": "oracle-pending"
+      "status": "supported",
+      "productTest": "internal/sema/scratch_rule_regressions_test.go:TestAPI67ReleaseLanguageRuleRegressions"
     },
     {
       "id": "APEX-RELEASE-UNREACHABLE-AFTER-RETURN",
