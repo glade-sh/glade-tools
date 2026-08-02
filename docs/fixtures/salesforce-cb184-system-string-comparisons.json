@@ -1,0 +1,33 @@
+{
+  "comparisons": [
+    {
+      "caseId": "cb184-system-string-exact-value-contract",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:System.String.contains(String)",
+        "apex:System.String.endsWith(String)",
+        "apex:System.String.equalsIgnoreCase(String)",
+        "apex:System.String.indexOf(String)",
+        "apex:System.String.indexOf(String,Integer)",
+        "apex:System.String.indexOfChar(Integer)",
+        "apex:System.String.indexOfChar(Integer,Integer)",
+        "apex:System.String.indexOfIgnoreCase(String)",
+        "apex:System.String.indexOfIgnoreCase(String,Integer)",
+        "apex:System.String.isBlank(String)",
+        "apex:System.String.isEmpty(String)",
+        "apex:System.String.isNotBlank(String)",
+        "apex:System.String.isNotEmpty(String)",
+        "apex:System.String.join(Object,String)",
+        "apex:System.String.format(String,List<Object>)",
+        "apex:System.String.getCommonPrefix(List<String>)",
+        "apex:System.String.getLevenshteinDistance(String)",
+        "apex:System.String.getLevenshteinDistance(String,Integer)",
+        "apex:System.String.fromCharArray(List<Integer>)",
+        "apex:System.String.escapeSingleQuotes(String)"
+      ],
+      "expectedObservation": "Boolean true for context-free deterministic String value checks",
+      "sfObservation": "Boolean true on API 67.0 anonymous Apex",
+      "gladeObservation": "Boolean true from exact candidate a0dc2fb662b5a785f66eae7d9024875b0468827c1a6ed8469308c34cdd4123ac"
+    }
+  ]
+}
