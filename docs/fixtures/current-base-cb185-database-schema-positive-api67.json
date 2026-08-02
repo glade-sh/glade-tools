@@ -1,0 +1,25 @@
+{
+  "name": "current-base-cb185-database-schema-positive-api67",
+  "evidence": [
+    {"surfaceId": "apex:System.Database.insert(Object)", "symbol": "Database.insert", "kind": "exec"},
+    {"surfaceId": "apex:System.Database.update(Object)", "symbol": "Database.update", "kind": "exec"},
+    {"surfaceId": "apex:System.Database.delete(Object)", "symbol": "Database.delete", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.getLabelPlural()", "symbol": "Schema.DescribeSObjectResult.getLabelPlural", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.isAccessible()", "symbol": "Schema.DescribeSObjectResult.isAccessible", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.isCreateable()", "symbol": "Schema.DescribeSObjectResult.isCreateable", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.isDeletable()", "symbol": "Schema.DescribeSObjectResult.isDeletable", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.isQueryable()", "symbol": "Schema.DescribeSObjectResult.isQueryable", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.isSearchable()", "symbol": "Schema.DescribeSObjectResult.isSearchable", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.isUndeletable()", "symbol": "Schema.DescribeSObjectResult.isUndeletable", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.isUpdateable()", "symbol": "Schema.DescribeSObjectResult.isUpdateable", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult.getLength()", "symbol": "Schema.DescribeFieldResult.getLength", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult.getType()", "symbol": "Schema.DescribeFieldResult.getType", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult.isAccessible()", "symbol": "Schema.DescribeFieldResult.isAccessible", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult.isCreateable()", "symbol": "Schema.DescribeFieldResult.isCreateable", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult.isNameField()", "symbol": "Schema.DescribeFieldResult.isNameField", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult.isUpdateable()", "symbol": "Schema.DescribeFieldResult.isUpdateable", "kind": "exec"}
+  ],
+  "source": [{"path": "anonymous.apex", "content": "Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe();\nSchema.DescribeFieldResult nameDescribe = Account.Name.getDescribe();\nBoolean describeOk = accountDescribe.getLabelPlural() == 'Accounts' && accountDescribe.isAccessible() && accountDescribe.isCreateable() && accountDescribe.isDeletable() && accountDescribe.isQueryable() && accountDescribe.isSearchable() && accountDescribe.isUndeletable() && accountDescribe.isUpdateable() && nameDescribe.getLength() == 255 && nameDescribe.getType() == Schema.DisplayType.STRING && nameDescribe.isAccessible() && nameDescribe.isCreateable() && nameDescribe.isNameField() && nameDescribe.isUpdateable();\nAccount record = new Account(Name = 'CB185 before update');\nDatabase.insert(record);\nrecord.Name = 'CB185 after update';\nDatabase.update(record);\nAccount queried = [SELECT Name FROM Account WHERE Id = :record.Id];\nBoolean dmlOk = record.Id != null && queried.Name == 'CB185 after update';\nDatabase.delete(record);\nSystem.debug(describeOk && dmlOk);\n"}],
+  "command": {"kind": "exec", "args": ["Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe();\nSchema.DescribeFieldResult nameDescribe = Account.Name.getDescribe();\nBoolean describeOk = accountDescribe.getLabelPlural() == 'Accounts' && accountDescribe.isAccessible() && accountDescribe.isCreateable() && accountDescribe.isDeletable() && accountDescribe.isQueryable() && accountDescribe.isSearchable() && accountDescribe.isUndeletable() && accountDescribe.isUpdateable() && nameDescribe.getLength() == 255 && nameDescribe.getType() == Schema.DisplayType.STRING && nameDescribe.isAccessible() && nameDescribe.isCreateable() && nameDescribe.isNameField() && nameDescribe.isUpdateable();\nAccount record = new Account(Name = 'CB185 before update');\nDatabase.insert(record);\nrecord.Name = 'CB185 after update';\nDatabase.update(record);\nAccount queried = [SELECT Name FROM Account WHERE Id = :record.Id];\nBoolean dmlOk = record.Id != null && queried.Name == 'CB185 after update';\nDatabase.delete(record);\nSystem.debug(describeOk && dmlOk);\n"]},
+  "expected": {"result": {"debug": ["true"], "ok": true}}
+}
