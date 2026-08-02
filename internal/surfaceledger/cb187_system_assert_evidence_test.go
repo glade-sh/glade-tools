@@ -24,6 +24,7 @@ var cb187SystemAssertSurfaceIDs = []string{
 	"apex:System.AssertException.AssertException(String)",
 	"apex:System.AssertException.AssertException(String,Exception)",
 	"apex:System.AssertException.getCause()",
+	"apex:System.AssertException.getInaccessibleFields()",
 	"apex:System.AssertException.getMessage()",
 	"apex:System.AssertException.getTypeName()",
 	"apex:System.AssertException.initCause(Exception)",

@@ -74,11 +74,11 @@
     },
     {
       "caseId": "cb187-system-assertexception-get-inaccessible-fields",
-      "status": "fail",
+      "status": "pass",
       "surfaceIds": ["apex:System.AssertException.getInaccessibleFields()"],
-      "expectedObservation": "value true Boolean",
+      "expectedObservation": "throws System.TypeException: Procedure is only valid for System.QueryException",
       "sfObservation": "throws System.TypeException: Procedure is only valid for System.QueryException",
-      "gladeObservation": "value true Boolean"
+      "gladeObservation": "throws System.TypeException: Procedure is only valid for System.QueryException"
     },
     {
       "caseId": "cb187-system-assertexception-get-line-number",
