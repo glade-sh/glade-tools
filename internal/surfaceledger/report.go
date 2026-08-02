@@ -55,14 +55,26 @@ func ReadLedgerJSON(path string) (SurfaceLedger, error) {
 	if err := json.Unmarshal(data, &ledger); err != nil {
 		return SurfaceLedger{}, err
 	}
+	pinnedFailures := ledger.Summary.Failures
 	for i := range ledger.Rows {
 		Classify(&ledger.Rows[i])
 	}
 	ledger.Summary = Summarize(ledger.Rows)
+	if pinnedFailures != nil {
+		ledger.Summary.Failures = cloneFailureCounts(pinnedFailures)
+	}
 	if ledger.SchemaVersion == 0 {
 		ledger.SchemaVersion = SchemaVersion
 	}
 	return ledger, nil
+}
+
+func cloneFailureCounts(counts map[string]int) map[string]int {
+	clone := make(map[string]int, len(counts))
+	for key, count := range counts {
+		clone[key] = count
+	}
+	return clone
 }
 
 func marshalPretty(v any) ([]byte, error) {

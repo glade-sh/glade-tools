@@ -5,8 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -59,7 +61,11 @@ func TestCompatSurfaceSupportProfileWritesJSONAndHTMLTogether(t *testing.T) {
 		Total         int
 		ByDisposition map[string]int
 		ByGapClass    map[string]int
-		Rows          []struct {
+		Gate          struct {
+			Status string
+			Passed bool
+		}
+		Rows []struct {
 			SurfaceID string
 		}
 	}
@@ -81,6 +87,9 @@ func TestCompatSurfaceSupportProfileWritesJSONAndHTMLTogether(t *testing.T) {
 	}
 	if !reflect.DeepEqual(page.ByGapClass, profile.ByGapClass) {
 		t.Fatalf("HTML gaps = %#v, JSON gaps = %#v", page.ByGapClass, profile.ByGapClass)
+	}
+	if page.Gate.Status != "PASS" || !page.Gate.Passed {
+		t.Fatalf("HTML gate = %#v, want PASS", page.Gate)
 	}
 	if len(profile.Inputs.Files) != 2 || profile.Inputs.Files[0].Path == "" || len(profile.Inputs.Files[0].SHA256) != 64 ||
 		profile.Inputs.Files[1].Path == "" || len(profile.Inputs.Files[1].SHA256) != 64 {
@@ -176,7 +185,11 @@ func TestCompatSurfaceSupportProfileWritesHTMLBeforeValidationErrorExit(t *testi
 	}
 	var page struct {
 		Total int
-		Rows  []struct {
+		Gate  struct {
+			Status string
+			Passed bool
+		}
+		Rows []struct {
 			SurfaceID string
 			Open      bool
 		}
@@ -192,6 +205,102 @@ func TestCompatSurfaceSupportProfileWritesHTMLBeforeValidationErrorExit(t *testi
 	}
 	if page.Total != 2 || len(page.Rows) != 2 || !openFound {
 		t.Fatalf("invalid HTML page = %#v", page)
+	}
+	if page.Gate.Status != "BLOCKED" || page.Gate.Passed {
+		t.Fatalf("invalid HTML gate = %#v, want BLOCKED", page.Gate)
+	}
+}
+
+func TestCompatSurfaceSupportProfileSummaryInventoryFailureBlocksGate(t *testing.T) {
+	root := t.TempDir()
+	ledger, policy := writeSupportProfileCLIParserFailureInputs(t, root)
+	profilePath := filepath.Join(root, "profile.json")
+	htmlPath := filepath.Join(root, "status.html")
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{
+		"surface", "support-profile",
+		"--ledger", ledger,
+		"--policy", policy,
+		"--output", profilePath,
+		"--html-output", htmlPath,
+	}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("support-profile exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	var page struct {
+		InventoryFailureCount int `json:"inventoryFailureCount"`
+		Gate                  struct {
+			Status                string `json:"status"`
+			Passed                bool   `json:"passed"`
+			InventoryFailureCount int    `json:"inventoryFailureCount"`
+		} `json:"gate"`
+	}
+	if err := json.Unmarshal([]byte(extractPageDataForCLI(t, readFile(t, htmlPath))), &page); err != nil {
+		t.Fatalf("decode parser-failure HTML: %v", err)
+	}
+	if page.InventoryFailureCount != 1 || page.Gate.Status != "BLOCKED" || page.Gate.Passed || page.Gate.InventoryFailureCount != 1 {
+		t.Fatalf("parser-only inventory failure page = %#v, want BLOCKED with count 1", page)
+	}
+}
+
+func TestCompatSurfaceSupportProfileVerifierRejectsInventoryDrift(t *testing.T) {
+	cases := []struct {
+		name   string
+		mutate func(map[string]any)
+	}{
+		{
+			name: "incorrect pass",
+			mutate: func(page map[string]any) {
+				gate := page["gate"].(map[string]any)
+				gate["status"] = "PASS"
+				gate["passed"] = true
+				gate["blockingRowCount"] = 0
+				gate["inventoryFailureCount"] = 0
+				delete(gate, "blockingReasons")
+				page["inventoryFailureCount"] = 0
+				page["inventoryFailureCounts"] = map[string]any{}
+			},
+		},
+		{
+			name: "incorrect embedded bucket",
+			mutate: func(page map[string]any) {
+				page["rows"].([]any)[0].(map[string]any)["bucket"] = surfaceledger.BucketImplemented
+			},
+		},
+		{
+			name: "incorrect embedded ledger gap",
+			mutate: func(page map[string]any) {
+				page["rows"].([]any)[0].(map[string]any)["ledgerGapClass"] = ""
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			ledger, policy := writeSupportProfileCLIInventoryFailureInputs(t, root)
+			profilePath := filepath.Join(root, "profile.json")
+			htmlPath := filepath.Join(root, "status.html")
+			var stdout, stderr bytes.Buffer
+			code := Run(context.Background(), []string{
+				"surface", "support-profile",
+				"--ledger", ledger,
+				"--policy", policy,
+				"--output", profilePath,
+				"--html-output", htmlPath,
+			}, &stdout, &stderr)
+			if code != 0 {
+				t.Fatalf("support-profile exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+			}
+			mutateSupportProfileHTMLPage(t, htmlPath, tc.mutate)
+
+			cmd := exec.Command("go", "run", "./scripts/verify-apex-surface-status.go", profilePath, htmlPath)
+			cmd.Dir = toolRepoRoot(t)
+			output, err := cmd.CombinedOutput()
+			if err == nil {
+				t.Fatalf("verifier accepted %s: %s", tc.name, output)
+			}
+		})
 	}
 }
 
@@ -246,6 +355,107 @@ func writeSupportProfileCLIInputs(t *testing.T, root string, invalid bool) (stri
 		t.Fatal(err)
 	}
 	return ledgerPath, policyPath
+}
+
+func writeSupportProfileCLIInventoryFailureInputs(t *testing.T, root string) (string, string) {
+	t.Helper()
+	ledger := surfaceledger.SurfaceLedger{
+		SchemaVersion: surfaceledger.SchemaVersion,
+		Rows: []surfaceledger.SurfaceLedgerRow{{
+			SurfaceID:       "apex:ConnectApi.Remote",
+			Product:         surfaceledger.ProductApex,
+			Area:            surfaceledger.AreaRuntime,
+			Namespace:       "ConnectApi",
+			TypeName:        "Remote",
+			Kind:            surfaceledger.KindType,
+			ReturnType:      "String",
+			OrgReturnType:   "String",
+			GladeReturnType: "Integer",
+			Docs:            surfaceledger.SourcePresent,
+			Org:             surfaceledger.SourcePresent,
+			GladeShape:      surfaceledger.ShapeTypeKnown,
+			GladeBehavior:   surfaceledger.BehaviorSupported,
+			Evidence:        surfaceledger.EvidenceFixtureAndOracle,
+			Sources:         []string{"fixture:connect-api"},
+		}},
+	}
+	policy := surfaceledger.SupportPolicy{Rules: []surfaceledger.SupportPolicyRule{{
+		Namespace:   "ConnectApi",
+		Disposition: surfaceledger.DispositionHostedDeferred,
+		Reason:      "hosted Connect API",
+	}}}
+	ledgerData, err := json.Marshal(ledger)
+	if err != nil {
+		t.Fatal(err)
+	}
+	policyData, err := json.Marshal(policy)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ledgerPath := filepath.Join(root, "ledger.json")
+	policyPath := filepath.Join(root, "policy.json")
+	if err := os.WriteFile(ledgerPath, ledgerData, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policyPath, policyData, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return ledgerPath, policyPath
+}
+
+func writeSupportProfileCLIParserFailureInputs(t *testing.T, root string) (string, string) {
+	t.Helper()
+	ledgerPath, policyPath := writeSupportProfileCLIInputs(t, root, false)
+	var ledger surfaceledger.SurfaceLedger
+	if err := json.Unmarshal(readFile(t, ledgerPath), &ledger); err != nil {
+		t.Fatalf("decode parser-failure ledger: %v", err)
+	}
+	ledger.Summary.Failures = map[string]int{"parser": 1}
+	data, err := json.Marshal(ledger)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(ledgerPath, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return ledgerPath, policyPath
+}
+
+func mutateSupportProfileHTMLPage(t *testing.T, path string, mutate func(map[string]any)) {
+	t.Helper()
+	const open = "<script id=\"page-data\" type=\"application/json\">"
+	data := string(readFile(t, path))
+	start := strings.Index(data, open)
+	if start < 0 {
+		t.Fatal("missing page-data script")
+	}
+	start += len(open)
+	end := strings.Index(data[start:], "</script>")
+	if end < 0 {
+		t.Fatal("missing page-data closing tag")
+	}
+	var page map[string]any
+	if err := json.Unmarshal([]byte(data[start:start+end]), &page); err != nil {
+		t.Fatalf("decode page data: %v", err)
+	}
+	mutate(page)
+	encoded, err := json.Marshal(page)
+	if err != nil {
+		t.Fatalf("encode page data: %v", err)
+	}
+	updated := data[:start] + string(encoded) + data[start+end:]
+	if err := os.WriteFile(path, []byte(updated), 0o644); err != nil {
+		t.Fatalf("write mutated page: %v", err)
+	}
+}
+
+func toolRepoRoot(t *testing.T) string {
+	t.Helper()
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("runtime.Caller failed")
+	}
+	return filepath.Clean(filepath.Join(filepath.Dir(file), "..", ".."))
 }
 
 func readFile(t *testing.T, path string) []byte {
