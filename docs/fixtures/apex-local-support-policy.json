@@ -969,12 +969,6 @@
         },
         {
           "typeName": "IndustriesContext",
-          "memberName": "deleteRecords",
-          "disposition": "hosted-deferred",
-          "reason": "hosted Industries Context persistence service"
-        },
-        {
-          "typeName": "IndustriesContext",
           "memberName": "evictContextDefinition",
           "disposition": "hosted-deferred",
           "reason": "hosted Industries Context persistence service"

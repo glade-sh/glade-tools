@@ -127,7 +127,6 @@ func TestCB56HostedPolicyCoversOnlyDeclaredServiceEffects(t *testing.T) {
 		"apex:BusinessRule.CalculationProcedureMigrationService.migrate(String,String)",
 		"apex:BusinessRule.DecisionMatrixRowMigratorService.migrate(String)",
 		"apex:Context.IndustriesContext.deleteContext(Map<String,Object>)",
-		"apex:Context.IndustriesContext.deleteRecords(Map<String,Object>)",
 		"apex:Context.IndustriesContext.evictContextDefinition(Map<String,Object>)",
 		"apex:System.Crypto.signXML(String,Dom.XmlNode,String,String)",
 		"apex:System.Crypto.signXml(String,dom.XmlNode,String,String,dom.XmlNode)",
