@@ -512,29 +512,28 @@ func TestCB65FreshLedgerKeepsOnlyDeclaredBehaviorGaps(t *testing.T) {
 	paths := []string{
 		filepath.Join(fixtureRoot, "core-blob-crypto-partial-encrypt-unsupported-decrypt-sign-verify.json"),
 		filepath.Join(fixtureRoot, "apex-process-support-tail-unsupported-surfaces.json"),
-		filepath.Join(fixtureRoot, "data-runtime-security-strip-inaccessible-permission-set-unsupported.json"),
+		filepath.Join(fixtureRoot, "core-runtime-cb72-frozen-behavior-local-evidence.json"),
 	}
 	evidence, err := BuildEvidenceSnapshot(paths)
 	if err != nil {
 		t.Fatal(err)
 	}
-	ledger := Merge(nil, nil, BuildGladeSnapshot(), evidence)
+	oracle, err := BuildOracleEvidenceSnapshot([]string{
+		filepath.Join(fixtureRoot, "salesforce-cb72-frozen-behavior-comparisons.json"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ledger := Merge(nil, nil, BuildGladeSnapshot(), append(evidence, oracle...))
 	policy, err := LoadSupportPolicy(filepath.Join(fixtureRoot, "apex-local-support-policy.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	profile := ComputeSupportProfile(ledger.Rows, policy, nil)
-	want := map[string]bool{
-		"apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean,Id)": true,
-	}
-	profileByID := map[string]SupportProfileRow{}
+	const target = "apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean,Id)"
 	for _, row := range profile.NonDeferredGaps {
-		profileByID[row.SurfaceID] = row
-	}
-	for id := range want {
-		row, ok := profileByID[id]
-		if !ok || row.GapClass != GapMissingBehavior {
-			t.Errorf("declared behavior gap is missing or reclassified: %s", id)
+		if row.SurfaceID == target {
+			t.Fatalf("stale residual behavior gap remains: %#v", row)
 		}
 	}
 }
