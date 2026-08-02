@@ -71,11 +71,10 @@ function diagnosticText(row) {
   ].join(" ");
 }
 
-function diagnosticOwner(row, member) {
-  if (!member) return ownerType(row);
-  const match = diagnosticText(row).match(new RegExp(`\\b([A-Za-z_][A-Za-z0-9_.]*)\\.${escapeRegExp(member)}\\b`));
-  return match?.[1] || ownerType(row);
-}
+function canonicalOwner(value) { const owner = String(value || "").replace(/\s+/g, "").toLowerCase(); return owner.includes(".") ? owner : `system.${owner}`; }
+function diagnosticDeclarationOwner(row, member) { if (!member) return ""; const match = diagnosticText(row).match(new RegExp(`\\b([A-Za-z_][A-Za-z0-9_.]*)\\.${escapeRegExp(member)}\\b`)); return match?.[1] || ""; }
+function diagnosticOwner(row, member) { return diagnosticDeclarationOwner(row, member) || ownerType(row); }
+function staticOwnerMismatch(row, member) { const requested = ownerType(row); const declared = diagnosticDeclarationOwner(row, member); return requested && declared && canonicalOwner(requested) !== canonicalOwner(declared); }
 
 function applyStaticOwnerAdapter(row, lines) {
   const member = memberName(row);
@@ -140,6 +139,9 @@ function applyVoidAdapter(lines) {
   return { lines: next, changed };
 }
 
+function genericShapes(value) { return [...String(value || "").matchAll(/\b([A-Za-z_][A-Za-z0-9_.]*)\s*<([^<>]+)>/g)].map((match) => ({ name: match[1].toLowerCase(), full: `${match[1]}<${match[2]}>` })); }
+function genericSignatureChanged(row, lines) { const target = genericShapes(row.surfaceId), adapted = genericShapes(lines.join("\n")); return target.some((expected) => adapted.some((actual) => actual.name === expected.name && canonicalOwner(actual.full) !== canonicalOwner(expected.full))); }
+
 function genericContextRequired(row) {
   const owner = String(row.source?.owner || "").split(".").at(-1);
   return row.mapping?.status !== "mapped" || /^T\d*$/.test(owner);
@@ -169,6 +171,7 @@ function applyProbeAdapter(inputCase) {
       } else {
         lines = adapted;
         reason = "corrected static versus instance owner from the Salesforce compiler diagnostic";
+        if (staticOwnerMismatch(inputCase, memberName(inputCase))) evidenceKind = "context", reason = "diagnostic declaration owner differs from the requested owner; compiled probe is context-only";
       }
       break;
     }
@@ -187,11 +190,12 @@ function applyProbeAdapter(inputCase) {
       }
       const adapted = applyGenericAdapter(lines);
       lines = adapted.lines.length > 0 ? adapted.lines : buildContextProbeLines(inputCase);
+      reason = "supplied canonical Apex generic arguments without changing the target member";
+      if (genericSignatureChanged(inputCase, lines)) evidenceKind = "context", reason = "adapted generic argument changes the ledger method parameter type; no product acceptance is claimed";
       if (!adapted.changed && lines === beforeLines) {
         lines = buildContextProbeLines(inputCase);
         evidenceKind = "context";
       }
-      reason = "supplied canonical Apex generic arguments without changing the target member";
       break;
     }
     case "sobject-field-add-error":

@@ -47,13 +47,12 @@ test("CB105 static-owner family corrects both static and instance context direct
     ...probeCase("wrong-static-instance-owner", ["Object sink = ((cache.OrgPartition)null).validateKey(false, 'cb70');"], { owner: "cache.OrgPartition", member: "validateKey" }),
     diagnostic: { problems: ["Static method cannot be referenced from a non static context: void cache.Partition.validateKey(Boolean, String)"] },
   });
-  assert.match(staticResult.mapping.lines[0], /cache\.Partition\.validateKey/);
-  assert.doesNotMatch(staticResult.mapping.lines[0], /\(\(cache\.OrgPartition\)null\)/);
+  assert.match(staticResult.mapping.lines[0], /cache\.Partition\.validateKey/); assert.doesNotMatch(staticResult.mapping.lines[0], /\(\(cache\.OrgPartition\)null\)/); assert.equal(staticResult.adapterEvidenceKind, "context");
   const instanceResult = applyProbeAdapter({
-    ...probeCase("wrong-static-instance-owner", ["Object sink = Auth.AuthConfiguration.getAuthConfig();"], { owner: "Auth.AuthConfiguration", member: "getAuthConfig" }),
+    ...probeCase("wrong-static-instance-owner", ["Object sink = auth.AuthConfiguration.getAuthConfig();"], { owner: "auth.AuthConfiguration", member: "getAuthConfig" }),
     diagnostic: { problems: ["Non static method cannot be referenced from a static context: AuthConfig Auth.AuthConfiguration.getAuthConfig()"] },
   });
-  assert.match(instanceResult.mapping.lines[0], /\(\(Auth\.AuthConfiguration\)null\)\.getAuthConfig/);
+  assert.match(instanceResult.mapping.lines[0], /\(\(auth\.AuthConfiguration\)null\)\.getAuthConfig/); assert.equal(instanceResult.adapterEvidenceKind, "accepted");
 });
 
 test("CB105 generic and addError families preserve the target family while fixing probe shape", () => {
@@ -61,7 +60,9 @@ test("CB105 generic and addError families preserve the target family while fixin
   assert.match(generic.mapping.lines[0], /\(\(List<Object>\)null\)\.deepClone/);
   assert.equal(generic.adapterEvidenceKind, "accepted");
   const batchable = applyProbeAdapter(probeCase("bare-generic", ["Database.Batchable value = (Database.Batchable)null;"], { owner: "Database.Batchable", member: "" }));
-  assert.match(batchable.mapping.lines[0], /Database\.Batchable<SObject>/);
+  assert.match(batchable.mapping.lines[0], /Database\.Batchable<SObject>/); assert.equal(batchable.adapterEvidenceKind, "accepted");
+  const execute = applyProbeAdapter({ ...probeCase("bare-generic", ["((Database.Batchable)null).execute((Database.BatchableContext)null, new List<sObject>());"], { owner: "Database.Batchable", member: "execute" }), surfaceId: "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)" });
+  assert.equal(execute.adapterEvidenceKind, "context");
   const map = applyProbeAdapter(probeCase("bare-generic", ["Object sink = ((Map)null).getSObjectType();"], { owner: "Map", member: "getSObjectType" }));
   assert.equal(map.adapterEvidenceKind, "context");
   assert.match(map.mapping.lines[0], /Object cb105Context/);
