@@ -817,8 +817,8 @@
     },
     {
       "namespace": "Package",
-      "disposition": "local-runtime-required",
-      "reason": "Package version and dependency surface"
+      "disposition": "compile-shape-required",
+      "reason": "Package.Version is a compile-only package context surface; package installation and subscriber state remain hosted."
     },
     {
       "namespace": "QueueableDuplicateSignature",

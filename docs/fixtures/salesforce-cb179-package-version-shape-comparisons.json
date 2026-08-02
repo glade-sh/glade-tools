@@ -1,0 +1,20 @@
+{
+  "comparisons": [
+    {
+      "caseId": "cb179-package-version-members-compile-shape",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Package.Version.equals(Object)",
+        "apex:Package.Version.hashCode()",
+        "apex:Package.Version.isGreaterThan(Package.Version)",
+        "apex:Package.Version.isGreaterThanOrEqual(Package.Version)",
+        "apex:Package.Version.isLessThan(Package.Version)",
+        "apex:Package.Version.isLessThanOrEqual(Package.Version)",
+        "apex:Package.Version.toString()"
+      ],
+      "expectedObservation": "compiles without executing the null receiver branch",
+      "sfObservation": "compiled true; executed successfully with the branch skipped",
+      "gladeObservation": "check completed with zero diagnostics"
+    }
+  ]
+}
