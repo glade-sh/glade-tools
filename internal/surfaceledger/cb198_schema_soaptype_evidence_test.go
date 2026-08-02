@@ -203,7 +203,9 @@ func TestCB198SchemaSoapTypeRowsHaveExactDualEvidence(t *testing.T) {
 		t.Fatalf("Salesforce evidence = %#v", comparison.Salesforce)
 	}
 
-	evidenceRoot := filepath.Join(root, "..", "..", "..")
+	// root is integration/glade-tools. The retained evidence is owned by the
+	// sibling evidence directory under the run root, two levels above it.
+	evidenceRoot := filepath.Join(root, "..", "..")
 	rowMapPath := filepath.Join(evidenceRoot, cb198RowMapPath)
 	var rowMap cb198RowMap
 	cb198ReadJSON(t, rowMapPath, &rowMap)
