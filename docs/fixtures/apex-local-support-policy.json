@@ -655,7 +655,7 @@
         {
           "typeName": "Security",
           "disposition": "local-runtime-required",
-          "reason": "local security contract; stripInaccessible remains a correctness gap"
+          "reason": "deterministic local security contract; local permission state only, with no hosted org permission state claimed"
         },
         {
           "typeName": "SelectOption",

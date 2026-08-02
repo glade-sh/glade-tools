@@ -1071,6 +1071,8 @@ var nonCanonicalGeneratedSurfaceIDs = map[string]struct{}{
 	"apex:System.NullPointerException constructors":                                                          {},
 	"apex:System.PageReference(partialURL)":                                                                  {},
 	"apex:System.Search.query / SOSL FIND":                                                                   {},
+	"apex:System.TimeZone.getDisplayName":                                                                    {},
+	"apex:System.TimeZone.getTimeZone":                                                                       {},
 	"apex:System.unimplemented platform/stdlib calls":                                                        {},
 }
 

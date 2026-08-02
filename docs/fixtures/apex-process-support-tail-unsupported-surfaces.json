@@ -2,24 +2,6 @@
   "name": "apex-process-support-tail-unsupported-surfaces",
   "evidence": [
     {
-      "surfaceId": "apex:Process.SparkPlugApi.describePlugin(String)",
-      "symbol": "Process.SparkPlugApi.describePlugin",
-      "kind": "unsupported",
-      "notes": "SparkPlug plugin description depends on a hosted plugin registry; the local default result is only a no-op placeholder."
-    },
-    {
-      "surfaceId": "apex:Process.SparkPlugApi.describePlugins()",
-      "symbol": "Process.SparkPlugApi.describePlugins",
-      "kind": "unsupported",
-      "notes": "SparkPlug plugin discovery depends on a hosted plugin registry; the local empty list is only a no-op placeholder."
-    },
-    {
-      "surfaceId": "apex:Process.SparkPlugApi.invokePluginWithJson(String,String)",
-      "symbol": "Process.SparkPlugApi.invokePluginWithJson",
-      "kind": "unsupported",
-      "notes": "SparkPlug JSON plugin invocation depends on hosted plugin execution; the local JSON object result is only a no-op placeholder."
-    },
-    {
       "surfaceId": "apex:Support.EinsteinBots.sendMessageToBot(String,String,String)",
       "symbol": "Support.EinsteinBots.sendMessageToBot",
       "kind": "unsupported",

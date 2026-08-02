@@ -525,11 +525,6 @@ func TestCB65FreshLedgerKeepsOnlyDeclaredBehaviorGaps(t *testing.T) {
 	}
 	profile := ComputeSupportProfile(ledger.Rows, policy, nil)
 	want := map[string]bool{
-		"apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob,Blob)":             true,
-		"apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob,Blob)":             true,
-		"apex:Process.SparkPlugApi.describePlugin(String)":                           true,
-		"apex:Process.SparkPlugApi.describePlugins()":                                true,
-		"apex:Process.SparkPlugApi.invokePluginWithJson(String,String)":              true,
 		"apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean,Id)": true,
 	}
 	profileByID := map[string]SupportProfileRow{}

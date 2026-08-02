@@ -1,0 +1,68 @@
+{
+  "comparisons": [
+    {
+      "caseId": "cb72-sparkplug-describe-missing",
+      "status": "pass",
+      "surfaceIds": ["apex:Process.SparkPlugApi.describePlugin(String)"],
+      "expectedObservation": "throws",
+      "sfObservation": "throws System.NoDataFoundException",
+      "gladeObservation": "throws System.NoDataFoundException"
+    },
+    {
+      "caseId": "cb72-sparkplug-describe-all",
+      "status": "pass",
+      "surfaceIds": ["apex:Process.SparkPlugApi.describePlugins()"],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb72-sparkplug-invoke-missing",
+      "status": "pass",
+      "surfaceIds": ["apex:Process.SparkPlugApi.invokePluginWithJson(String,String)"],
+      "expectedObservation": "throws",
+      "sfObservation": "throws System.NoDataFoundException",
+      "gladeObservation": "throws System.NoDataFoundException"
+    },
+    {
+      "caseId": "cb72-crypto-encrypt-managed-iv-aad",
+      "status": "pass",
+      "surfaceIds": ["apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob,Blob)"],
+      "expectedObservation": "value Blob",
+      "sfObservation": "value <UNSTABLE> Blob",
+      "gladeObservation": "value <UNSTABLE> Blob"
+    },
+    {
+      "caseId": "cb72-crypto-decrypt-managed-iv-aad",
+      "status": "pass",
+      "surfaceIds": ["apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob,Blob)"],
+      "expectedObservation": "value String",
+      "sfObservation": "value hello String",
+      "gladeObservation": "value hello String"
+    },
+    {
+      "caseId": "cb72-security-strip-inaccessible-id",
+      "status": "pass",
+      "surfaceIds": ["apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean,Id)"],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb72-timezone-display-name",
+      "status": "pass",
+      "surfaceIds": ["apex:System.TimeZone.getDisplayName()"],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb72-timezone-get-timezone",
+      "status": "pass",
+      "surfaceIds": ["apex:System.TimeZone.getTimeZone(String)"],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    }
+  ]
+}
