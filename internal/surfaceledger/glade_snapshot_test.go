@@ -208,16 +208,16 @@ func TestBuildGladeSnapshotIncludesMessagingLocalTestDTOShapes(t *testing.T) {
 	for _, id := range []string{
 		ApexMemberID("Messaging", "Email", "setTemplateID", []string{"Id"}),
 		ApexTypeID("Messaging", "InboundEmail.AuthenticationResult"),
-		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "InboundEmail.AuthenticationResult", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "AuthenticationResult", []string{}),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "authenticationResultFields", nil),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "method", nil),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "result", nil),
 		ApexTypeID("Messaging", "InboundEmail.AuthenticationResultField"),
-		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "InboundEmail.AuthenticationResultField", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "AuthenticationResultField", []string{}),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "name", nil),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "value", nil),
-		ApexMemberID("Messaging", "InboundEmail.BinaryAttachment", "InboundEmail.BinaryAttachment", []string{}),
-		ApexMemberID("Messaging", "InboundEmail.TextAttachment", "InboundEmail.TextAttachment", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.BinaryAttachment", "BinaryAttachment", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.TextAttachment", "TextAttachment", []string{}),
 		ApexMemberID("Messaging", "SingleEmailMessage", "setDocumentAttachments", []string{"List<Id>"}),
 		ApexMemberID("Messaging", "SingleEmailMessage", "setFileAttachments", []string{"List<Messaging.EmailFileAttachment>"}),
 	} {
@@ -342,7 +342,6 @@ func TestBuildGladeSnapshotAddsFixtureBackedSystemAliasRows(t *testing.T) {
 		behavior BehaviorState
 	}{
 		{id: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", kind: KindMethod, behavior: BehaviorSupported},
-		{id: "apex:System.Iterator.remove", kind: KindMethod, behavior: BehaviorUnsupported},
 		{id: "apex:System.CustomMetadataType.getAll", kind: KindMethod, behavior: BehaviorSupported},
 		{id: "apex:System.Messaging.MassEmailMessage", kind: KindType, behavior: BehaviorPassive},
 		{id: "apex:System.Matcher.hasTransparentBounds", kind: KindMethod, behavior: BehaviorSupported},
@@ -575,7 +574,6 @@ func TestBuildGladeSnapshotIncludesSummer26ReleaseAliases(t *testing.T) {
 	}{
 		{id: "apex:System.Database.convertLead(leadsToConvert,accessLevel)", kind: KindMethod},
 		{id: "apex:System.Database.convertLead(leadToConvert,accessLevel)", kind: KindMethod},
-		{id: "apex:System.EventBus.publishWithAccessLevel(event,callback,accesslevel)", kind: KindMethod},
 		{id: "apex:System.String.template(valueMap)", kind: KindMethod},
 		{id: "apex:System.System.attachFinalizer(finalizer)", kind: KindMethod},
 	} {

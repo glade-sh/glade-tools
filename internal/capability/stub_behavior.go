@@ -1363,7 +1363,7 @@ func corePlatformBehaviorMethod(symbol typesys.TypeSymbol, member typesys.Member
 			return true
 		}
 	case "EventBus":
-		return name == "publish"
+		return name == "publish" || name == "publishwithaccesslevel"
 	case "Cache.Org", "Cache.Session", "Cache.Partition", "Cache.OrgPartition", "Cache.SessionPartition",
 		"Cache.SecondaryKeyApi",
 		"cache.Org", "cache.Session", "cache.Partition", "cache.OrgPartition", "cache.SessionPartition",

@@ -2,12 +2,6 @@
   "name": "core-pattern-dialect-flags-stdlib",
   "evidence": [
     {
-      "surfaceId": "apex:System.Pattern.compile(String,Integer)",
-      "symbol": "Pattern.compile",
-      "kind": "exec",
-      "notes": "Covers the local supported flag subset: CASE_INSENSITIVE, MULTILINE, DOTALL, UNICODE_CASE as a no-op companion, LITERAL, UNICODE_CHARACTER_CLASS, and supported inline i/m/s flags."
-    },
-    {
       "surfaceId": "apex:System.Pattern.pattern()",
       "symbol": "Pattern.pattern",
       "kind": "exec",

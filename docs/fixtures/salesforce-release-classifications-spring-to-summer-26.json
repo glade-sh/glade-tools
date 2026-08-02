@@ -934,13 +934,13 @@
       "caseId": "SF67-DATABASE-CONVERT-LEAD-ACCESS"
     },
     {
-      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(event,callback,accesslevel)",
+      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(SObject,Object,AccessLevel)",
       "scope": "t0",
       "disposition": "new-case",
       "caseId": "SF67-EVENTBUS-PUBLISH-ACCESS"
     },
     {
-      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<Object>,Object,AccessLevel)",
+      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<SObject>,Object,AccessLevel)",
       "scope": "t0",
       "disposition": "new-case",
       "caseId": "SF67-EVENTBUS-PUBLISH-ACCESS"

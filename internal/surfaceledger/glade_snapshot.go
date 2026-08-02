@@ -31,6 +31,9 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 			if memberName == "" {
 				memberName = typeName
 			}
+			if namespace == "System" && typeName == "EventBus" && memberName == "publishWithAccessLevel" {
+				params = eventBusAccessLevelParameters(member.Type, params)
+			}
 			kind := gladeMemberKind(string(member.Kind))
 			if string(member.Kind) == "constructor" {
 				memberName = gladeConstructorMemberName(namespace, typeName, memberName)
@@ -121,6 +124,20 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	}
 	sortRows(rows)
 	return rows
+}
+
+func eventBusAccessLevelParameters(returnType string, params []string) []string {
+	first := "SObject"
+	if strings.HasPrefix(returnType, "List<") {
+		first = "List<SObject>"
+	}
+	if len(params) == 2 {
+		return []string{first, "AccessLevel"}
+	}
+	if len(params) == 3 {
+		return []string{first, "Object", "AccessLevel"}
+	}
+	return params
 }
 
 type apexLanguageRuleRow struct {
@@ -322,7 +339,6 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.IllegalStateException", Kind: KindType, Behavior: BehaviorPassive, Notes: "fixture-backed System-qualified alias for the local built-in IllegalStateException type"},
 	{SurfaceID: "apex:System.Integer.MAX_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Integer.MAX_VALUE"},
 	{SurfaceID: "apex:System.Integer.MIN_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Integer.MIN_VALUE"},
-	{SurfaceID: "apex:System.Iterator.remove", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for mutating collection iterators"},
 	{SurfaceID: "apex:System.JSONGenerator.writeRaw(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for JSONGenerator.writeRaw"},
 	{SurfaceID: "apex:System.JSONGenerator.writeRawField(String,String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for JSONGenerator.writeRawField"},
 	{SurfaceID: "apex:System.JSONGenerator.writeRawValue(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for JSONGenerator.writeRawValue"},
@@ -335,8 +351,6 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.Limits.getScheduledJobs", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Limits.getScheduledJobs"},
 	{SurfaceID: "apex:System.Long.MAX_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Long.MAX_VALUE"},
 	{SurfaceID: "apex:System.Long.MIN_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Long.MIN_VALUE"},
-	{SurfaceID: "apex:System.Matcher.appendReplacement", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for Java StringBuffer append replacement semantics"},
-	{SurfaceID: "apex:System.Matcher.appendTail", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for Java StringBuffer append tail semantics"},
 	{SurfaceID: "apex:System.Matcher.groupCount", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Matcher.groupCount"},
 	{SurfaceID: "apex:System.Matcher.hasAnchoringBounds", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for Matcher.hasAnchoringBounds()"},
 	{SurfaceID: "apex:System.Matcher.hasTransparentBounds", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for Matcher.hasTransparentBounds()"},
@@ -359,8 +373,8 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.QuickAction.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local quick action UI surfaces"},
 	{SurfaceID: "apex:System.RestRequest.getHeader(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for RestRequest.getHeader(String)"},
 	{SurfaceID: "apex:System.RestRequest.getParameter(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for RestRequest.getParameter(String)"},
-	{SurfaceID: "apex:System.Schema.describeSObjects(List<String>)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Schema.describeSObjects(List<String>)"},
-	{SurfaceID: "apex:System.Schema.getGlobalDescribe()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Schema.getGlobalDescribe()"},
+	{SurfaceID: "apex:Schema.Schema.describeSObjects(List<String>)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed qualified alias for Schema.describeSObjects(List<String>)"},
+	{SurfaceID: "apex:Schema.Schema.getGlobalDescribe()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed qualified alias for Schema.getGlobalDescribe()"},
 	{SurfaceID: "apex:System.Search.find", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed stdlib shorthand for deterministic local Search.find(String) behavior"},
 	{SurfaceID: "apex:System.Search.find(String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.find AccessLevel handling"},
 	{SurfaceID: "apex:System.Search.query(String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.query AccessLevel handling"},
@@ -405,7 +419,6 @@ var fixtureBackedApexAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:Database.DmlOptions.EmailHeader.triggerAutoResponseEmail", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed exact docs property id for Database.DmlOptions.EmailHeader.triggerAutoResponseEmail local storage"},
 	{SurfaceID: "apex:Database.DmlOptions.EmailHeader.triggerOtherEmail", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed exact docs property id for Database.DmlOptions.EmailHeader.triggerOtherEmail local storage"},
 	{SurfaceID: "apex:Database.DmlOptions.EmailHeader.triggerUserEmail", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed exact docs property id for Database.DmlOptions.EmailHeader.triggerUserEmail local storage"},
-	{SurfaceID: "apex:System.EventBus.publishWithAccessLevel(event,callback,accesslevel)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed Summer '26 docs shorthand for the local EventBus.publishWithAccessLevel(Object,Object,AccessLevel) overload"},
 	{SurfaceID: "apex:Messaging.SingleEmailMessage.setFileAttachments(List<EmailFileAttachment>)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for SingleEmailMessage.setFileAttachments(List<Messaging.EmailFileAttachment>)"},
 	{SurfaceID: "apex:Support.EmailTemplateSelector.getDefaultTemplateId(Id)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed selector alias returning the nullable local default email template Id result"},
 	{SurfaceID: "apex:TxnSecurity.Event.Event()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed exact TxnSecurity docs constructor for the local passive transaction-security event record"},
@@ -911,7 +924,7 @@ func gladeConstructorMemberName(namespace, typeName, memberName string) string {
 		return memberName
 	}
 	if strings.EqualFold(namespace, "Messaging.InboundEmail") {
-		return "InboundEmail." + typeName
+		return typeName
 	}
 	return typeName
 }
@@ -985,7 +998,7 @@ func idFromStdlibAPI(api string) string {
 
 func stdlibTypeAPI(api string) bool {
 	switch api {
-	case "ApexPages.Message", "Database.UnitOfWork", "Messaging.SendEmailOptions", "Messaging.SingleEmailMessage":
+	case "ApexPages.Message", "Database.UnitOfWork", "Messaging.SingleEmailMessage":
 		return true
 	default:
 		return false
@@ -1160,7 +1173,12 @@ func fillFromApexID(row *SurfaceLedgerRow) {
 		if hasParameters || row.Kind == KindMethod || row.Kind == KindProperty || row.Kind == KindField {
 			row.MemberName = member
 			if hasParameters {
-				row.Parameters = cleanList(splitSurfaceParameterList(parameters))
+				parsedParameters := splitSurfaceParameterList(parameters)
+				if strings.EqualFold(identity, "System.EventBus.publishWithAccessLevel") {
+					row.Parameters = canonicalEventBusAccessLevelParameters(parsedParameters)
+				} else {
+					row.Parameters = cleanList(parsedParameters)
+				}
 			}
 			fillApexTypeParts(row, prefix)
 			return

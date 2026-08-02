@@ -600,10 +600,33 @@ func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 	assertStdlibStatuses(t, watched)
 }
 
+func TestEventBusPublishWithAccessLevelStubBehaviorIsImplemented(t *testing.T) {
+	want := map[string]bool{
+		"EventBus.publishWithAccessLevel(SObject,AccessLevel)":              false,
+		"EventBus.publishWithAccessLevel(SObject,Object,AccessLevel)":       false,
+		"EventBus.publishWithAccessLevel(List<SObject>,AccessLevel)":        false,
+		"EventBus.publishWithAccessLevel(List<SObject>,Object,AccessLevel)": false,
+	}
+	report := BuildStubBehaviorReport()
+	for _, entry := range report.Entries {
+		if _, ok := want[entry.ID]; !ok {
+			continue
+		}
+		if entry.Status != StubBehaviorImplemented {
+			t.Errorf("%s status = %s, want %s", entry.ID, entry.Status, StubBehaviorImplemented)
+		}
+		want[entry.ID] = true
+	}
+	for id, found := range want {
+		if !found {
+			t.Errorf("missing EventBus publishWithAccessLevel stub-behavior entry: %s", id)
+		}
+	}
+}
+
 func TestLWCStdlibIntegrationRowsArePromotedOrBounded(t *testing.T) {
 	watched := map[string]Status{
 		"AccessLevel.withPermissionSetId(String)":               StatusSupported,
-		"Type.newInstance":                                      StatusSupported,
 		"PageReference(record)":                                 StatusSupported,
 		"JSON.deserialize":                                      StatusSupported,
 		"JSON.deserializeStrict":                                StatusSupported,

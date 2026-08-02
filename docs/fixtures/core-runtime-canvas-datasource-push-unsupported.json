@@ -2,11 +2,6 @@
   "name": "core-runtime-canvas-datasource-push-unsupported",
   "evidence": [
     {
-      "symbol": "Canvas.EnvironmentContext.getParametersAsJSON",
-      "kind": "exec",
-      "notes": "Canvas app context APIs require a rendered canvas app request and return UnsupportedFeature diagnostics locally."
-    },
-    {
       "symbol": "DataSource",
       "kind": "shape",
       "notes": "The Apex reference defines DataSource as its own namespace for Salesforce Connect custom adapters, not as System.DataSource."

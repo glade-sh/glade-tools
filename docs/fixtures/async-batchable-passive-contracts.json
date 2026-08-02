@@ -20,12 +20,6 @@
       "notes": "BatchableContext constructs as a passive local context value for tests."
     },
     {
-      "symbol": "Database.BatchableContext constructor",
-      "surfaceId": "apex:Database.BatchableContext.BatchableContext()",
-      "kind": "test",
-      "notes": "The no-arg context constructor returns an empty passive context."
-    },
-    {
       "symbol": "Database.BatchableContextImpl",
       "surfaceId": "apex:Database.BatchableContextImpl",
       "kind": "test",

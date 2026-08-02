@@ -9,10 +9,11 @@ func Merge(docs, org, glade, evidence []SurfaceLedgerRow) SurfaceLedger {
 	byID := map[string]SurfaceLedgerRow{}
 	for _, group := range [][]SurfaceLedgerRow{docs, org, glade, evidence} {
 		for _, row := range group {
+			row = withDefaults(row)
+			row = normalizeEventBusSurfaceRow(row)
 			if isNonCanonicalGeneratedSurfaceID(row.SurfaceID) {
 				continue
 			}
-			row = withDefaults(row)
 			if row.SurfaceID == "" {
 				continue
 			}
@@ -74,6 +75,30 @@ func mergeRow(base, next SurfaceLedgerRow) SurfaceLedgerRow {
 	}
 	base.Sources = mergeStrings(base.Sources, next.Sources)
 	return withDefaults(base)
+}
+
+func normalizeEventBusSurfaceRow(row SurfaceLedgerRow) SurfaceLedgerRow {
+	if row.Product != ProductApex {
+		return row
+	}
+	if row.Parameters == nil || row.Namespace == "" || row.TypeName == "" || row.MemberName == "" {
+		fillFromApexID(&row)
+	}
+	if row.Namespace != "System" || row.TypeName != "EventBus" || canonicalApexMemberName(row.MemberName) != "publishWithAccessLevel" {
+		return row
+	}
+	row.Parameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.Parameters)
+	if row.DocsParameters != nil {
+		row.DocsParameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.DocsParameters)
+	}
+	if row.OrgParameters != nil {
+		row.OrgParameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.OrgParameters)
+	}
+	if row.GladeParameters != nil {
+		row.GladeParameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.GladeParameters)
+	}
+	row.SurfaceID = ApexMemberID(row.Namespace, row.TypeName, row.MemberName, row.Parameters)
+	return row
 }
 
 func fillIdentity(base, next SurfaceLedgerRow) SurfaceLedgerRow {

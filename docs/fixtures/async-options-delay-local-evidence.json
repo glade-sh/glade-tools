@@ -8,12 +8,6 @@
       "notes": "Local queueable jobs accept AsyncOptions minimum delay metadata and expose it during queueable execution."
     },
     {
-      "surfaceId": "apex:System.AsyncOptions.getMinimumQueueableDelayInMinutes()",
-      "symbol": "AsyncOptions.getMinimumQueueableDelayInMinutes",
-      "kind": "test",
-      "notes": "Local AsyncOptions stores the minimum queueable delay value."
-    },
-    {
       "surfaceId": "apex:System.AsyncOptions.setMinimumQueueableDelayInMinutes(Integer)",
       "symbol": "AsyncOptions.setMinimumQueueableDelayInMinutes",
       "kind": "test",

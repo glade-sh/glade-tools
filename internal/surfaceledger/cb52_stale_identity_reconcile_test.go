@@ -13,6 +13,7 @@ func TestCB52GladeSnapshotUsesCanonicalIdentities(t *testing.T) {
 	for _, id := range []string{
 		"apex:System.ApexPages.Message",
 		"apex:System.Database.UnitOfWork",
+		"apex:Messaging.SendEmailOptions",
 		"apex:System.Messaging.SendEmailOptions",
 		"apex:System.Messaging.SingleEmailMessage",
 		"apex:System.Search.query / SOSL FIND",
@@ -30,7 +31,6 @@ func TestCB52GladeSnapshotUsesCanonicalIdentities(t *testing.T) {
 	for _, id := range []string{
 		ApexTypeID("ApexPages", "Message"),
 		ApexTypeID("Database", "UnitOfWork"),
-		ApexTypeID("Messaging", "SendEmailOptions"),
 		ApexTypeID("Messaging", "SingleEmailMessage"),
 		ApexMemberID("System", "Schema", "describeDataCategoryGroups", []string{"List<String>"}),
 		ApexMemberID("System", "Schema", "describeDataCategoryGroupStructures", []string{"List<Schema.DataCategoryGroupSobjectTypePair>", "Boolean"}),

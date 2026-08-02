@@ -32,18 +32,6 @@
       "notes": "Database.emptyRecycleBin method family purges soft-deleted local records."
     },
     {
-      "surfaceId": "apex:System.Database.lock",
-      "symbol": "Database.lock",
-      "kind": "test",
-      "notes": "Database.lock method family returns local LockResult shape."
-    },
-    {
-      "surfaceId": "apex:System.Database.unlock",
-      "symbol": "Database.unlock",
-      "kind": "test",
-      "notes": "Database.unlock method family returns local UnlockResult shape."
-    },
-    {
       "surfaceId": "apex:System.Database.upsert",
       "symbol": "Database.upsert",
       "kind": "test",
