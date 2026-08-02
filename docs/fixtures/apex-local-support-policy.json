@@ -963,15 +963,8 @@
       "memberExceptions": [
         {
           "typeName": "IndustriesContext",
-          "memberName": "deleteContext",
           "disposition": "hosted-deferred",
-          "reason": "hosted Industries Context persistence service"
-        },
-        {
-          "typeName": "IndustriesContext",
-          "memberName": "evictContextDefinition",
-          "disposition": "hosted-deferred",
-          "reason": "hosted Industries Context persistence service"
+          "reason": "feature-gated Industries Context service has no generic-org compiler oracle"
         }
       ]
     },

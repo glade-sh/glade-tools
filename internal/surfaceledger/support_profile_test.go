@@ -130,6 +130,36 @@ func TestRealAuthPolicyClassifiesAuthTokenOperations(t *testing.T) {
 	}
 }
 
+func TestRealSupportPolicyDefersFeatureGatedIndustriesContext(t *testing.T) {
+	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var contextRules []SupportPolicyRule
+	for _, rule := range policy.Rules {
+		if rule.Namespace == "Context" {
+			contextRules = append(contextRules, rule)
+		}
+	}
+	rows := []SurfaceLedgerRow{
+		apexRow("apex:Context.IndustriesContext", "Context", "IndustriesContext"),
+		apexMemberRow("apex:Context.IndustriesContext.buildContext(Map<String,Object>)", "Context", "IndustriesContext", "buildContext"),
+		apexMemberRow("apex:Context.IndustriesContext.deleteRecords(Map<String,Object>)", "Context", "IndustriesContext", "deleteRecords"),
+	}
+	profile := ComputeSupportProfile(rows, SupportPolicy{Rules: contextRules}, nil)
+	if len(profile.ValidationErrors) != 0 {
+		t.Fatalf("expected no validation errors, got: %v", profile.ValidationErrors)
+	}
+	if len(profile.NonDeferredGaps) != 0 {
+		t.Fatalf("feature-gated IndustriesContext retained non-deferred gaps: %#v", profile.NonDeferredGaps)
+	}
+	for _, row := range profile.Rows {
+		if row.Disposition != DispositionHostedDeferred {
+			t.Errorf("%s disposition = %s, want %s", row.SurfaceID, row.Disposition, DispositionHostedDeferred)
+		}
+	}
+}
+
 func TestRealSupportPolicyHonestSystemAndAuthBoundaries(t *testing.T) {
 	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
 	if err != nil {
