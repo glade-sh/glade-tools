@@ -215,6 +215,67 @@ func TestWriteSupportProfileHTMLContainsRequiredFiltersLegendAndActions(t *testi
 	}
 }
 
+func TestWriteSupportProfileHTMLUsesQualifiedApexFamiliesForFacetFiltering(t *testing.T) {
+	rows := []SurfaceLedgerRow{
+		{
+			SurfaceID: ApexTypeID("Schema", "SoapType"), Product: ProductApex, Area: AreaRuntime,
+			Namespace: "Schema", TypeName: "SoapType", Kind: KindType, SalesforceSurfaceFamily: "apex",
+			GladeShape: ShapeTypeKnown, GladeBehavior: BehaviorPassive, Evidence: EvidenceDocs,
+		},
+		{
+			SurfaceID: ApexTypeID("Messaging", "SingleEmailMessage"), Product: ProductApex, Area: AreaRuntime,
+			Namespace: "Messaging", TypeName: "SingleEmailMessage", Kind: KindType, SalesforceSurfaceFamily: "apex",
+			GladeShape: ShapeTypeKnown, GladeBehavior: BehaviorPassive, Evidence: EvidenceDocs,
+		},
+		{
+			SurfaceID: ApexTypeID("System", "String"), Product: ProductApex, Area: AreaRuntime,
+			Namespace: "System", TypeName: "String", Kind: KindType,
+			GladeShape: ShapeTypeKnown, GladeBehavior: BehaviorPassive, Evidence: EvidenceDocs,
+		},
+		{
+			SurfaceID: ApexTypeID("System", "Preserved"), Product: ProductApex, Area: AreaRuntime,
+			Namespace: "System", TypeName: "Preserved", Kind: KindType, SalesforceSurfaceFamily: "apex-runtime",
+			GladeShape: ShapeTypeKnown, GladeBehavior: BehaviorPassive, Evidence: EvidenceDocs,
+		},
+	}
+	policy := SupportPolicy{Rules: []SupportPolicyRule{
+		{Namespace: "Schema", Disposition: DispositionCompileShapeRequired, Reason: "schema shape"},
+		{Namespace: "Messaging", Disposition: DispositionCompileShapeRequired, Reason: "messaging shape"},
+		{Namespace: "System", Disposition: DispositionCompileShapeRequired, Reason: "system shape"},
+	}}
+	ledger := SurfaceLedger{SchemaVersion: SchemaVersion, Rows: rows, Summary: LedgerSummary{Total: len(rows)}}
+	profile := ComputeSupportProfile(rows, policy, nil)
+
+	var out bytes.Buffer
+	if err := WriteSupportProfileHTML(&out, profile, ledger); err != nil {
+		t.Fatalf("WriteSupportProfileHTML: %v", err)
+	}
+	var page SupportProfileHTMLPage
+	if err := json.Unmarshal([]byte(extractSupportProfileHTMLData(t, out.String())), &page); err != nil {
+		t.Fatalf("decode page: %v", err)
+	}
+
+	wantFamilies := map[string]int{
+		"Schema.SoapType":              1,
+		"Messaging.SingleEmailMessage": 1,
+		"System.String":                1,
+		"apex-runtime":                 1,
+	}
+	if !reflect.DeepEqual(page.ByFamily, wantFamilies) {
+		t.Fatalf("family facet totals = %#v, want %#v", page.ByFamily, wantFamilies)
+	}
+	for _, row := range page.Rows {
+		if row.Family == "apex" {
+			t.Fatalf("row %s retained generic Apex family", row.SurfaceID)
+		}
+	}
+	for _, family := range []string{"Schema.SoapType", "Messaging.SingleEmailMessage", "System.String", "apex-runtime"} {
+		if !strings.Contains(string(extractSupportProfileHTMLData(t, out.String())), `"family":"`+family+`"`) {
+			t.Fatalf("embedded page missing family %q", family)
+		}
+	}
+}
+
 func TestWriteSupportProfileHTMLDerivesExhaustiveFacetTotalsAndBlockingGate(t *testing.T) {
 	ledger, policy, corpus := supportProfileHTMLFixture()
 	profile := ComputeSupportProfile(ledger.Rows, policy, &corpus)

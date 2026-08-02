@@ -560,10 +560,7 @@ func buildSupportProfileHTMLPage(profile SupportProfile, ledger SurfaceLedger) (
 			return SupportProfileHTMLPage{}, fmt.Errorf("profile surface ID %q is missing from ledger", profileRow.SurfaceID)
 		}
 
-		family := ledgerRow.SalesforceSurfaceFamily
-		if family == "" {
-			family = profileRow.TypeFamily
-		}
+		family := supportProfileHTMLFamily(ledgerRow, profileRow)
 		actionKey, nextAction := supportProfileHTMLNextAction(profileRow, ledgerRow)
 		blocking := supportProfileHTMLRowBlocking(profileRow, ledgerRow)
 		row := SupportProfileHTMLRow{
@@ -658,6 +655,17 @@ func cloneSupportProfileHTMLCounts(counts map[string]int) map[string]int {
 		clone[key] = count
 	}
 	return clone
+}
+
+func supportProfileHTMLFamily(ledgerRow SurfaceLedgerRow, profileRow SupportProfileRow) string {
+	family := ledgerRow.SalesforceSurfaceFamily
+	if family == "" || family == surfaceFamilyForProduct(ProductApex) {
+		family = profileRow.TypeFamily
+	}
+	if family == "" || family == surfaceFamilyForProduct(ProductApex) {
+		family = qualifiedName(ledgerRow.Namespace, ledgerRow.TypeName)
+	}
+	return family
 }
 
 func supportProfileHTMLFailureCount(counts map[string]int) int {
