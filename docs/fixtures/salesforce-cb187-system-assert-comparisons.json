@@ -1,0 +1,100 @@
+{
+  "comparisons": [
+    {
+      "caseId": "cb187-system-assert-success",
+      "status": "pass",
+      "surfaceIds": ["apex:System.Assert", "apex:System.Assert.areEqual", "apex:System.Assert.areNotEqual", "apex:System.Assert.isFalse", "apex:System.Assert.isNotNull", "apex:System.Assert.isNull", "apex:System.Assert.isTrue"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value true Boolean on API 67.0 anonymous Apex",
+      "gladeObservation": "value true Boolean from the exact candidate"
+    },
+    {
+      "caseId": "cb187-system-assert-fail-no-message",
+      "status": "pass",
+      "surfaceIds": ["apex:System.Assert.fail", "apex:System.Assert.fail()"],
+      "expectedObservation": "throws System.AssertException",
+      "sfObservation": "throws System.AssertException",
+      "gladeObservation": "throws System.AssertException"
+    },
+    {
+      "caseId": "cb187-system-assert-fail-string",
+      "status": "pass",
+      "surfaceIds": ["apex:System.Assert.fail(String)"],
+      "expectedObservation": "throws System.AssertException",
+      "sfObservation": "throws System.AssertException",
+      "gladeObservation": "throws System.AssertException"
+    },
+    {
+      "caseId": "cb187-system-assertexception-type-and-constructors",
+      "status": "pass",
+      "surfaceIds": ["apex:System.AssertException", "apex:System.AssertException.AssertException()", "apex:System.AssertException.AssertException(Exception)", "apex:System.AssertException.AssertException(String)", "apex:System.AssertException.AssertException(String,Exception)"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value true Boolean on API 67.0 anonymous Apex",
+      "gladeObservation": "value true Boolean from the exact candidate"
+    },
+    {
+      "caseId": "cb187-system-assertexception-get-message",
+      "status": "pass",
+      "surfaceIds": ["apex:System.AssertException.getMessage()"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value true Boolean on API 67.0 anonymous Apex",
+      "gladeObservation": "value true Boolean from the exact candidate"
+    },
+    {
+      "caseId": "cb187-system-assertexception-get-type-name",
+      "status": "pass",
+      "surfaceIds": ["apex:System.AssertException.getTypeName()"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value true Boolean on API 67.0 anonymous Apex",
+      "gladeObservation": "value true Boolean from the exact candidate"
+    },
+    {
+      "caseId": "cb187-system-assertexception-set-message",
+      "status": "pass",
+      "surfaceIds": ["apex:System.AssertException.setMessage(String)"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value true Boolean on API 67.0 anonymous Apex",
+      "gladeObservation": "value true Boolean from the exact candidate"
+    },
+    {
+      "caseId": "cb187-system-assertexception-get-cause",
+      "status": "pass",
+      "surfaceIds": ["apex:System.AssertException.getCause()"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value true Boolean on API 67.0 anonymous Apex",
+      "gladeObservation": "value true Boolean from the exact candidate"
+    },
+    {
+      "caseId": "cb187-system-assertexception-init-cause",
+      "status": "pass",
+      "surfaceIds": ["apex:System.AssertException.initCause(Exception)"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value true Boolean on API 67.0 anonymous Apex",
+      "gladeObservation": "value true Boolean from the exact candidate"
+    },
+    {
+      "caseId": "cb187-system-assertexception-get-inaccessible-fields",
+      "status": "fail",
+      "surfaceIds": ["apex:System.AssertException.getInaccessibleFields()"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "throws System.TypeException: Procedure is only valid for System.QueryException",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb187-system-assertexception-get-line-number",
+      "status": "fail",
+      "surfaceIds": ["apex:System.AssertException.getLineNumber()"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb187-system-assertexception-get-stack-trace",
+      "status": "fail",
+      "surfaceIds": ["apex:System.AssertException.getStackTraceString()"],
+      "expectedObservation": "value true Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value true Boolean"
+    }
+  ]
+}

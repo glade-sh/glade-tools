@@ -1,0 +1,125 @@
+{
+  "name": "current-base-cb187-system-assert-positive-api67",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Assert",
+      "symbol": "System.Assert",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.areEqual",
+      "symbol": "System.Assert.areEqual",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.areNotEqual",
+      "symbol": "System.Assert.areNotEqual",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.fail",
+      "symbol": "System.Assert.fail",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.fail()",
+      "symbol": "System.Assert.fail",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.fail(String)",
+      "symbol": "System.Assert.fail",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.isFalse",
+      "symbol": "System.Assert.isFalse",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.isNotNull",
+      "symbol": "System.Assert.isNotNull",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.isNull",
+      "symbol": "System.Assert.isNull",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Assert.isTrue",
+      "symbol": "System.Assert.isTrue",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException",
+      "symbol": "System.AssertException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.AssertException()",
+      "symbol": "System.AssertException.AssertException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.AssertException(Exception)",
+      "symbol": "System.AssertException.AssertException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.AssertException(String)",
+      "symbol": "System.AssertException.AssertException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.AssertException(String,Exception)",
+      "symbol": "System.AssertException.AssertException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.getCause()",
+      "symbol": "System.AssertException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.getMessage()",
+      "symbol": "System.AssertException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.getTypeName()",
+      "symbol": "System.AssertException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.initCause(Exception)",
+      "symbol": "System.AssertException.initCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.setMessage(String)",
+      "symbol": "System.AssertException.setMessage",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "probe.apex",
+      "content": "List<Object> rows = new List<Object>();\n\ntry {\n  System.Assert.areEqual('same', 'same');\n  System.Assert.areNotEqual('left', 'right');\n  System.Assert.isFalse(false);\n  System.Assert.isNotNull('value');\n  System.Assert.isNull(null);\n  System.Assert.isTrue(true);\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assert-success','area'=>'System.Assert','api'=>'System.Assert success and family aliases','mode'=>'anonymous','value'=>'true','valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assert-success','area'=>'System.Assert','api'=>'System.Assert success and family aliases','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception emptyException = new AssertException();\n  Exception exceptionOnly = new AssertException(new DmlException('cause only'));\n  Exception stringOnly = new AssertException('message only');\n  Exception stringAndCause = new AssertException('message and cause', new DmlException('cause'));\n  Boolean constructorsMatch = emptyException.getTypeName() == 'System.AssertException' && exceptionOnly.getTypeName() == 'System.AssertException' && stringOnly.getMessage() == 'message only' && stringAndCause.getMessage() == 'message and cause';\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-type-and-constructors','area'=>'System.Assert','api'=>'System.AssertException constructors','mode'=>'anonymous','value'=>String.valueOf(constructorsMatch),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-type-and-constructors','area'=>'System.Assert','api'=>'System.AssertException constructors','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  Map<String, Set<String>> inaccessibleFields = assertException.getInaccessibleFields();\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-inaccessible-fields','area'=>'System.Assert','api'=>'System.AssertException.getInaccessibleFields()','mode'=>'anonymous','value'=>String.valueOf(inaccessibleFields.size() == 0),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-inaccessible-fields','area'=>'System.Assert','api'=>'System.AssertException.getInaccessibleFields()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-line-number','area'=>'System.Assert','api'=>'System.AssertException.getLineNumber()','mode'=>'anonymous','value'=>String.valueOf(assertException.getLineNumber() == 0),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-line-number','area'=>'System.Assert','api'=>'System.AssertException.getLineNumber()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  assertException.setMessage('changed assert');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-message','area'=>'System.Assert','api'=>'System.AssertException.getMessage()','mode'=>'anonymous','value'=>String.valueOf(assertException.getMessage() == 'changed assert'),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-message','area'=>'System.Assert','api'=>'System.AssertException.getMessage()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-stack-trace','area'=>'System.Assert','api'=>'System.AssertException.getStackTraceString()','mode'=>'anonymous','value'=>String.valueOf(assertException.getStackTraceString() == ''),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-stack-trace','area'=>'System.Assert','api'=>'System.AssertException.getStackTraceString()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-type-name','area'=>'System.Assert','api'=>'System.AssertException.getTypeName()','mode'=>'anonymous','value'=>String.valueOf(assertException.getTypeName() == 'System.AssertException'),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-type-name','area'=>'System.Assert','api'=>'System.AssertException.getTypeName()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  assertException.setMessage('changed assert');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-set-message','area'=>'System.Assert','api'=>'System.AssertException.setMessage(String)','mode'=>'anonymous','value'=>String.valueOf(assertException.getMessage() == 'changed assert'),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-set-message','area'=>'System.Assert','api'=>'System.AssertException.setMessage(String)','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  Object cause = assertException.getCause();\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-cause','area'=>'System.Assert','api'=>'System.AssertException.getCause()','mode'=>'anonymous','value'=>String.valueOf(cause == null),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-cause','area'=>'System.Assert','api'=>'System.AssertException.getCause()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  assertException.initCause(new DmlException('assert cause'));\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-init-cause','area'=>'System.Assert','api'=>'System.AssertException.initCause(Exception)','mode'=>'anonymous','value'=>'true','valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-init-cause','area'=>'System.Assert','api'=>'System.AssertException.initCause(Exception)','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\nSystem.debug('GLADE_STDLIB_ORACLE:' + JSON.serialize(rows));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Object> rows = new List<Object>();\n\ntry {\n  System.Assert.areEqual('same', 'same');\n  System.Assert.areNotEqual('left', 'right');\n  System.Assert.isFalse(false);\n  System.Assert.isNotNull('value');\n  System.Assert.isNull(null);\n  System.Assert.isTrue(true);\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assert-success','area'=>'System.Assert','api'=>'System.Assert success and family aliases','mode'=>'anonymous','value'=>'true','valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assert-success','area'=>'System.Assert','api'=>'System.Assert success and family aliases','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception emptyException = new AssertException();\n  Exception exceptionOnly = new AssertException(new DmlException('cause only'));\n  Exception stringOnly = new AssertException('message only');\n  Exception stringAndCause = new AssertException('message and cause', new DmlException('cause'));\n  Boolean constructorsMatch = emptyException.getTypeName() == 'System.AssertException' && exceptionOnly.getTypeName() == 'System.AssertException' && stringOnly.getMessage() == 'message only' && stringAndCause.getMessage() == 'message and cause';\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-type-and-constructors','area'=>'System.Assert','api'=>'System.AssertException constructors','mode'=>'anonymous','value'=>String.valueOf(constructorsMatch),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-type-and-constructors','area'=>'System.Assert','api'=>'System.AssertException constructors','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  Map<String, Set<String>> inaccessibleFields = assertException.getInaccessibleFields();\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-inaccessible-fields','area'=>'System.Assert','api'=>'System.AssertException.getInaccessibleFields()','mode'=>'anonymous','value'=>String.valueOf(inaccessibleFields.size() == 0),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-inaccessible-fields','area'=>'System.Assert','api'=>'System.AssertException.getInaccessibleFields()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-line-number','area'=>'System.Assert','api'=>'System.AssertException.getLineNumber()','mode'=>'anonymous','value'=>String.valueOf(assertException.getLineNumber() == 0),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-line-number','area'=>'System.Assert','api'=>'System.AssertException.getLineNumber()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  assertException.setMessage('changed assert');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-message','area'=>'System.Assert','api'=>'System.AssertException.getMessage()','mode'=>'anonymous','value'=>String.valueOf(assertException.getMessage() == 'changed assert'),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-message','area'=>'System.Assert','api'=>'System.AssertException.getMessage()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-stack-trace','area'=>'System.Assert','api'=>'System.AssertException.getStackTraceString()','mode'=>'anonymous','value'=>String.valueOf(assertException.getStackTraceString() == ''),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-stack-trace','area'=>'System.Assert','api'=>'System.AssertException.getStackTraceString()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-type-name','area'=>'System.Assert','api'=>'System.AssertException.getTypeName()','mode'=>'anonymous','value'=>String.valueOf(assertException.getTypeName() == 'System.AssertException'),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-type-name','area'=>'System.Assert','api'=>'System.AssertException.getTypeName()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  assertException.setMessage('changed assert');\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-set-message','area'=>'System.Assert','api'=>'System.AssertException.setMessage(String)','mode'=>'anonymous','value'=>String.valueOf(assertException.getMessage() == 'changed assert'),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-set-message','area'=>'System.Assert','api'=>'System.AssertException.setMessage(String)','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  Object cause = assertException.getCause();\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-cause','area'=>'System.Assert','api'=>'System.AssertException.getCause()','mode'=>'anonymous','value'=>String.valueOf(cause == null),'valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-get-cause','area'=>'System.Assert','api'=>'System.AssertException.getCause()','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\ntry {\n  Exception assertException = new AssertException('assert message');\n  assertException.initCause(new DmlException('assert cause'));\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-init-cause','area'=>'System.Assert','api'=>'System.AssertException.initCause(Exception)','mode'=>'anonymous','value'=>'true','valueType'=>'Boolean'});\n} catch (Exception e) {\n  rows.add(new Map<String,Object>{'id'=>'cb187-system-assertexception-init-cause','area'=>'System.Assert','api'=>'System.AssertException.initCause(Exception)','mode'=>'anonymous','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()});\n}\n\nSystem.debug('GLADE_STDLIB_ORACLE:' + JSON.serialize(rows));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": [
+        "GLADE_STDLIB_ORACLE:[{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.Assert success and family aliases\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assert-success\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException constructors\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-type-and-constructors\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.getInaccessibleFields()\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-get-inaccessible-fields\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.getLineNumber()\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-get-line-number\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.getMessage()\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-get-message\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.getStackTraceString()\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-get-stack-trace\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.getTypeName()\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-get-type-name\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.setMessage(String)\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-set-message\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.getCause()\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-get-cause\"},{\"valueType\":\"Boolean\",\"value\":\"true\",\"mode\":\"anonymous\",\"api\":\"System.AssertException.initCause(Exception)\",\"area\":\"System.Assert\",\"id\":\"cb187-system-assertexception-init-cause\"}]"
+      ],
+      "ok": true
+    }
+  }
+}
