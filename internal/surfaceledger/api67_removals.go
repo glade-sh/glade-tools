@@ -6,9 +6,15 @@ import "strings"
 // but are rejected by the current Salesforce API. They are negative compiler
 // contracts, not positive current-base surface rows.
 var api67RemovedSurfaceKeys = map[string]struct{}{
-	"apex:system.site.getcurrentsiteurl":    {},
-	"apex:system.site.getcustomwebaddress":  {},
-	"apex:system.site.getprefix":            {},
+	"apex:system.site.getcurrentsiteurl":                                                {},
+	"apex:system.site.getcustomwebaddress":                                              {},
+	"apex:system.site.getprefix":                                                        {},
+	"apex:system.database.insertasync(object,database.allowcallouts,accesslevel)":       {},
+	"apex:system.database.insertasync(list<object>,database.allowcallouts,accesslevel)": {},
+	"apex:system.database.updateasync(object,database.allowcallouts,accesslevel)":       {},
+	"apex:system.database.updateasync(list<object>,database.allowcallouts,accesslevel)": {},
+	"apex:system.database.deleteasync(object,database.allowcallouts,accesslevel)":       {},
+	"apex:system.database.deleteasync(list<object>,database.allowcallouts,accesslevel)": {},
 }
 
 func isAPI67RemovedSurfaceID(id string) bool {
