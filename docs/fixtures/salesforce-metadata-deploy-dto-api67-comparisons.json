@@ -7,7 +7,7 @@
     "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
   },
   "profile": {
-    "path": "evidence/current-base/canonical-bundle-metadata-deploy-dto-pending/apex-support-profile.json",
+    "path": "evidence/current-base/canonical-bundle-bulk-visible-dto-20260803/apex-support-profile.json",
     "selection": "Metadata Deploy DTO deterministic-mock missing-evidence",
     "selectedRowCount": 34,
     "predecessorNonDeferredGaps": 4683,
