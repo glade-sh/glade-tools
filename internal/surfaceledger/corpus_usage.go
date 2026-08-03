@@ -495,6 +495,7 @@ func rootDigest(root string) string {
 }
 
 // UsageKeyForRow returns the stable usage key for a profile row.
-func UsageKeyForRow(row SurfaceLedgerRow) string {
-	return usageKeyForSurface(supportPolicyNamespace(row), row.TypeName, row.MemberName)
+func UsageKeyForRow(row SurfaceLedgerRow, policies ...SupportPolicy) string {
+	namespace := supportPolicyNamespace(row, policies...)
+	return usageKeyForSurface(namespace, supportPolicyTypeName(row, namespace), row.MemberName)
 }

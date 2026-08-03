@@ -39,6 +39,13 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if args[0] == "salesforce" {
 		return runSalesforceVerify(ctx, args[1:], stdout, stderr)
 	}
+	if args[0] == "accepted-evidence" {
+		if err := runAcceptedEvidence(ctx, args[1:], stdout, stderr); err != nil {
+			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+			return 1
+		}
+		return 0
+	}
 	if err := runCompat(ctx, args, stdout); err != nil {
 		fmt.Fprintf(stderr, "glade-tools: %v\n", err)
 		return 1

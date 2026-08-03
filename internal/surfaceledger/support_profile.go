@@ -186,7 +186,9 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	if corpusUsage != nil {
 		surfaceKey = make(map[string]string, len(apexRows))
 		for _, ar := range apexRows {
-			surfaceKey[ar.SurfaceID] = usageKeyForSurface(supportPolicyNamespace(ar), ar.TypeName, ar.MemberName)
+			namespace := supportPolicyNamespace(ar, policy)
+			typeName := supportPolicyTypeName(ar, namespace)
+			surfaceKey[ar.SurfaceID] = usageKeyForSurface(namespace, typeName, ar.MemberName)
 		}
 		usageIdx = make(map[string]*CorpusUsageEntry, len(corpusUsage.Usage))
 		for i := range corpusUsage.Usage {
@@ -302,8 +304,8 @@ type matchInfo struct {
 }
 
 // ruleMatchesRow returns true when the rule's selectors match the given ledger row.
-func ruleMatchesRow(rule SupportPolicyRule, row SurfaceLedgerRow) bool {
-	namespace := supportPolicyNamespace(row)
+func ruleMatchesRow(rule SupportPolicyRule, row SurfaceLedgerRow, policy SupportPolicy) bool {
+	namespace := supportPolicyNamespace(row, policy)
 	if rule.Namespace != "" {
 		if strings.EqualFold(namespace, rule.Namespace) {
 			return true
@@ -329,7 +331,7 @@ func ruleMatchesRow(rule SupportPolicyRule, row SurfaceLedgerRow) bool {
 func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched map[string]bool) (SupportProfileRow, []string) {
 	pr := SupportProfileRow{
 		SurfaceID:   row.SurfaceID,
-		Namespace:   supportPolicyNamespace(row),
+		Namespace:   supportPolicyNamespace(row, policy),
 		LedgerShape: row.GladeShape,
 		Behavior:    row.GladeBehavior,
 		Evidence:    row.Evidence,
@@ -342,7 +344,7 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 	// Collect every rule that matches this row.
 	var matches []matchInfo
 	for i, rule := range policy.Rules {
-		if !ruleMatchesRow(rule, row) {
+		if !ruleMatchesRow(rule, row, policy) {
 			continue
 		}
 
@@ -676,17 +678,48 @@ func WriteSupportProfileMarkdown(w io.Writer, profile SupportProfile) error {
 // the source namespace even when canonicalApexQualifiedParts places a
 // Database or Schema result type in its public namespace. Keep ordinary
 // System types (for example Answers) unchanged.
-func supportPolicyNamespace(row SurfaceLedgerRow) string {
-	if !strings.EqualFold(row.Namespace, "System") {
-		return row.Namespace
+func supportPolicyNamespace(row SurfaceLedgerRow, policies ...SupportPolicy) string {
+	namespace := row.Namespace
+	if !strings.EqualFold(namespace, "System") && !strings.HasPrefix(strings.ToLower(namespace), "system.") {
+		return namespace
 	}
-	canonicalNamespace, _ := canonicalApexQualifiedParts(row.Namespace, row.TypeName)
-	switch canonicalNamespace {
-	case "Database", "Schema":
+
+	// Snapshot aliases may encode a public Apex family under System or
+	// System.<family>. Resolve the family only when the policy explicitly owns
+	// it; ordinary System types remain System.
+	if dot := strings.IndexByte(namespace, '.'); dot >= 0 {
+		family := namespace[dot+1:]
+		if family != "" && policyOwnsNamespace(family, policies...) {
+			return family
+		}
+	}
+	if row.TypeName != "" && policyOwnsNamespace(row.TypeName, policies...) {
+		return row.TypeName
+	}
+	canonicalNamespace, _ := canonicalApexQualifiedParts("System", row.TypeName)
+	if canonicalNamespace == "Database" || canonicalNamespace == "Schema" {
 		return canonicalNamespace
-	default:
-		return row.Namespace
 	}
+	return "System"
+}
+
+func policyOwnsNamespace(namespace string, policies ...SupportPolicy) bool {
+	if namespace == "" || len(policies) == 0 {
+		return false
+	}
+	for _, rule := range policies[0].Rules {
+		if strings.EqualFold(rule.Namespace, namespace) {
+			return true
+		}
+	}
+	return false
+}
+
+func supportPolicyTypeName(row SurfaceLedgerRow, namespace string) string {
+	if strings.EqualFold(row.TypeName, namespace) || (namespace == "System" && strings.EqualFold(row.TypeName, "System")) {
+		return ""
+	}
+	return row.TypeName
 }
 
 // usageKeyForSurface returns a stable join key for a namespace/type/member.
@@ -695,6 +728,9 @@ func usageKeyForSurface(namespace, typeName, memberName string) string {
 		return ""
 	}
 	if typeName == "" {
+		if memberName != "" {
+			return namespace + "." + memberName
+		}
 		return namespace
 	}
 	if memberName == "" {

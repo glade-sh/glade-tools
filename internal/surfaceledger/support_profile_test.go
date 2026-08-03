@@ -1265,6 +1265,70 @@ func TestSupportProfileDuplicateSurfacePrefix(t *testing.T) {
 	}
 }
 
+func TestSupportProfileNormalizesSystemFamilyAliases(t *testing.T) {
+	policy := SupportPolicy{Rules: []SupportPolicyRule{
+		{Namespace: "System", Disposition: DispositionCompileShapeRequired, Reason: "fallback"},
+		{Namespace: "Database", Disposition: DispositionLocalRuntimeRequired, Reason: "database"},
+		{Namespace: "Messaging", Disposition: DispositionDeterministicMockRequired, Reason: "messaging"},
+		{Namespace: "ApexPages", Disposition: DispositionLocalRuntimeRequired, Reason: "pages"},
+		{Namespace: "QuickAction", Disposition: DispositionHostedDeferred, Reason: "hosted"},
+	}}
+	rows := []SurfaceLedgerRow{
+		{SurfaceID: "apex:System.Database.getQueryLocator", Product: ProductApex, Namespace: "System", TypeName: "Database", MemberName: "getQueryLocator", GladeShape: ShapeSignatureKnown},
+		{SurfaceID: "apex:System.Database.DeletedRecord.getId", Product: ProductApex, Namespace: "System.Database", TypeName: "DeletedRecord", MemberName: "getId", GladeShape: ShapeSignatureKnown},
+		{SurfaceID: "apex:System.Messaging.sendEmail", Product: ProductApex, Namespace: "System", TypeName: "Messaging", MemberName: "sendEmail", GladeShape: ShapeSignatureKnown},
+		{SurfaceID: "apex:System.ApexPages.currentPage", Product: ProductApex, Namespace: "System", TypeName: "ApexPages", MemberName: "currentPage", GladeShape: ShapeSignatureKnown},
+		{SurfaceID: "apex:System.QuickAction.execute", Product: ProductApex, Namespace: "System", TypeName: "QuickAction", MemberName: "execute", GladeShape: ShapeSignatureKnown},
+		{SurfaceID: "apex:System.System.assertEquals", Product: ProductApex, Namespace: "System", TypeName: "System", MemberName: "assertEquals", GladeShape: ShapeSignatureKnown},
+		{SurfaceID: "apex:System.Answers.findSimilar", Product: ProductApex, Namespace: "System", TypeName: "Answers", MemberName: "findSimilar", GladeShape: ShapeSignatureKnown},
+	}
+	profile := ComputeSupportProfile(rows, policy, &CorpusUsage{})
+	byID := make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	for _, tc := range []struct {
+		id, namespace, disposition, usageKey string
+	}{
+		{"apex:System.Database.getQueryLocator", "Database", string(DispositionLocalRuntimeRequired), "Database.getQueryLocator"},
+		{"apex:System.Database.DeletedRecord.getId", "Database", string(DispositionLocalRuntimeRequired), "Database.DeletedRecord.getId"},
+		{"apex:System.Messaging.sendEmail", "Messaging", string(DispositionDeterministicMockRequired), "Messaging.sendEmail"},
+		{"apex:System.ApexPages.currentPage", "ApexPages", string(DispositionLocalRuntimeRequired), "ApexPages.currentPage"},
+		{"apex:System.QuickAction.execute", "QuickAction", string(DispositionHostedDeferred), "QuickAction.execute"},
+		{"apex:System.System.assertEquals", "System", string(DispositionCompileShapeRequired), "System.assertEquals"},
+		{"apex:System.Answers.findSimilar", "System", string(DispositionCompileShapeRequired), "System.Answers.findSimilar"},
+	} {
+		row, ok := byID[tc.id]
+		if !ok {
+			t.Fatalf("missing row %s", tc.id)
+		}
+		if row.Namespace != tc.namespace || string(row.Disposition) != tc.disposition || row.UsageKey != tc.usageKey {
+			t.Errorf("%s = namespace=%q disposition=%q usage=%q, want namespace=%q disposition=%q usage=%q", tc.id, row.Namespace, row.Disposition, row.UsageKey, tc.namespace, tc.disposition, tc.usageKey)
+		}
+	}
+}
+
+func TestSupportProfileSystemFamilyAliasJoinsCorpusUsage(t *testing.T) {
+	policy := SupportPolicy{Rules: []SupportPolicyRule{
+		{Namespace: "System", Disposition: DispositionCompileShapeRequired, Reason: "fallback"},
+		{Namespace: "Database", Disposition: DispositionLocalRuntimeRequired, Reason: "database"},
+	}}
+	rows := []SurfaceLedgerRow{{
+		SurfaceID: "apex:System.Database.getQueryLocator", Product: ProductApex,
+		Namespace: "System", TypeName: "Database", MemberName: "getQueryLocator",
+		GladeShape: ShapeSignatureKnown,
+	}}
+	usage := &CorpusUsage{Usage: []CorpusUsageEntry{{UsageKey: "Database.getQueryLocator", PubProdRefs: 34, PrivProdRefs: 91}}}
+	profile := ComputeSupportProfile(rows, policy, usage)
+	if len(profile.Rows) != 1 {
+		t.Fatalf("rows = %d, want 1", len(profile.Rows))
+	}
+	row := profile.Rows[0]
+	if row.UsageKey != "Database.getQueryLocator" || row.CorpusPassingRefs != 125 {
+		t.Fatalf("corpus join = key=%q refs=%d, want key=Database.getQueryLocator refs=125", row.UsageKey, row.CorpusPassingRefs)
+	}
+}
+
 // SF-CB14 RED 1: a surfacePrefix rule with a matched member exception is not reported stale.
 func TestSupportProfileSurfacePrefixMemberExceptionNotStale(t *testing.T) {
 	policy := SupportPolicy{
