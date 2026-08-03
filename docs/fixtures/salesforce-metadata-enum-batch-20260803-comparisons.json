@@ -7,9 +7,11 @@
     "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
   },
   "profile": {
-    "path": "evidence/current-base/canonical-bundle-metadata-dto-42a1509/apex-support-profile.json",
+    "path": "evidence/current-base/canonical-bundle-metadata-enum-8e151ad/apex-support-profile.json",
     "selection": "Metadata deterministic-mock missing-evidence",
-    "selectedRowCount": 101
+    "selectedRowCount": 101,
+    "predecessorNonDeferredGaps": 5408,
+    "expectedSuccessorNonDeferredGaps": 5307
   },
   "local": {
     "candidatePath": "evidence/glade-candidate-metadata-fix",

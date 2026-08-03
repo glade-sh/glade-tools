@@ -13,8 +13,10 @@ type metadataEnumBatchEnvelope struct {
 		SHA256 string `json:"sha256"`
 	} `json:"candidate"`
 	Profile struct {
-		Path             string `json:"path"`
-		SelectedRowCount int    `json:"selectedRowCount"`
+		Path                             string `json:"path"`
+		SelectedRowCount                 int    `json:"selectedRowCount"`
+		PredecessorNonDeferredGaps       int    `json:"predecessorNonDeferredGaps"`
+		ExpectedSuccessorNonDeferredGaps int    `json:"expectedSuccessorNonDeferredGaps"`
 	} `json:"profile"`
 	Local struct {
 		CandidatePath string `json:"candidatePath"`
@@ -54,7 +56,7 @@ func TestMetadataEnumBatchRowsHaveExactFixtureAndOracleEvidence(t *testing.T) {
 	comparisonPath := filepath.Join(toolsRoot, metadataEnumBatchComparisonPath)
 	var comparison metadataEnumBatchEnvelope
 	readJSON(t, comparisonPath, &comparison)
-	if comparison.Candidate.Commit != "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA || comparison.Profile.SelectedRowCount != 101 || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
+	if comparison.Candidate.Commit != "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA || comparison.Profile.SelectedRowCount != 101 || comparison.Profile.PredecessorNonDeferredGaps != 5408 || comparison.Profile.ExpectedSuccessorNonDeferredGaps != 5307 || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
 		t.Fatalf("batch provenance = %#v", comparison)
 	}
 	if comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.OrgID == "" || comparison.Salesforce.APIVersion != "67.0" {
@@ -90,6 +92,16 @@ func TestMetadataEnumBatchRowsHaveExactFixtureAndOracleEvidence(t *testing.T) {
 	assertMetadataDTOBatchSHA256(t, filepath.Join(evidenceRoot, comparison.Local.CandidatePath), comparison.Local.CandidateSHA)
 	assertMetadataDTOBatchSHA256(t, filepath.Join(evidenceRoot, comparison.Local.SourcePath), comparison.Local.SourceSHA)
 	assertMetadataDTOBatchSHA256(t, filepath.Join(evidenceRoot, comparison.Local.ReportPath), comparison.Local.ReportSHA)
+	profilePath := filepath.Join(evidenceRoot, comparison.Profile.Path)
+	var profile struct {
+		NonDeferredGaps []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"nonDeferredGaps"`
+	}
+	readJSON(t, profilePath, &profile)
+	if len(profile.NonDeferredGaps) != comparison.Profile.ExpectedSuccessorNonDeferredGaps {
+		t.Fatalf("successor profile non-deferred gaps = %d, want %d", len(profile.NonDeferredGaps), comparison.Profile.ExpectedSuccessorNonDeferredGaps)
+	}
 	metadataEnumBatchAssertLocal(t, filepath.Join(evidenceRoot, comparison.Local.ReportPath))
 	metadataEnumBatchAssertSalesforce(t, evidenceRoot, comparison)
 
@@ -123,6 +135,10 @@ func metadataEnumBatchAssertLocal(t *testing.T, path string) {
 
 func metadataEnumBatchAssertSalesforce(t *testing.T, root string, comparison metadataEnumBatchEnvelope) {
 	t.Helper()
+	assertMetadataDTOBatchSHA256(t, filepath.Join(root, comparison.Salesforce.DeployPath), comparison.Salesforce.DeploySHA)
+	assertMetadataDTOBatchSHA256(t, filepath.Join(root, comparison.Salesforce.TestPath), comparison.Salesforce.TestSHA)
+	assertMetadataDTOBatchSHA256(t, filepath.Join(root, comparison.Salesforce.DeletePath), comparison.Salesforce.DeleteSHA)
+	assertMetadataDTOBatchSHA256(t, filepath.Join(root, comparison.Salesforce.PostDeletePath), comparison.Salesforce.PostDeleteSHA)
 	var deploy struct {
 		Status int `json:"status"`
 		Result struct {
