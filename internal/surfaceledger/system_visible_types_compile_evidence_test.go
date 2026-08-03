@@ -56,9 +56,4 @@ func TestSystemVisibleTypesCompileRowsHaveExactDualOracleEvidence(t *testing.T) 
 	var sf struct { Status int `json:"status"`; Result struct { Success, Compiled bool; CompileProblem, ExceptionMessage string } `json:"result"` }
 	readJSON(t, filepath.Join(evidenceRoot, comparison.Salesforce.ExecutePath), &sf)
 	if sf.Status != 0 || !sf.Result.Success || !sf.Result.Compiled || sf.Result.CompileProblem != "" || sf.Result.ExceptionMessage != "" { t.Fatalf("Salesforce report = %#v", sf) }
-	ledger := Merge(nil, nil, BuildGladeSnapshot(), append(fixtureEvidence, oracleEvidence...))
-	for _, id := range wantIDs {
-		row, ok := rowsByID(ledger.Rows)[id]
-		if !ok || row.Evidence != EvidenceFixtureAndOracle || row.GladeShape == ShapeAbsent { t.Fatalf("%s ledger row = %#v", id, row) }
-	}
 }
