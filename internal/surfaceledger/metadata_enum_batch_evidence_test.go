@@ -14,6 +14,7 @@ type metadataEnumBatchEnvelope struct {
 	} `json:"candidate"`
 	Profile struct {
 		Path                             string `json:"path"`
+		PredecessorPath                  string `json:"predecessorPath"`
 		SelectedRowCount                 int    `json:"selectedRowCount"`
 		PredecessorNonDeferredGaps       int    `json:"predecessorNonDeferredGaps"`
 		ExpectedSuccessorNonDeferredGaps int    `json:"expectedSuccessorNonDeferredGaps"`
@@ -101,6 +102,41 @@ func TestMetadataEnumBatchRowsHaveExactFixtureAndOracleEvidence(t *testing.T) {
 	readJSON(t, profilePath, &profile)
 	if len(profile.NonDeferredGaps) != comparison.Profile.ExpectedSuccessorNonDeferredGaps {
 		t.Fatalf("successor profile non-deferred gaps = %d, want %d", len(profile.NonDeferredGaps), comparison.Profile.ExpectedSuccessorNonDeferredGaps)
+	}
+	if comparison.Profile.PredecessorPath == "" {
+		t.Fatal("comparison missing predecessor profile path")
+	}
+	var predecessor struct {
+		NonDeferredGaps []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"nonDeferredGaps"`
+	}
+	readJSON(t, filepath.Join(evidenceRoot, comparison.Profile.PredecessorPath), &predecessor)
+	if len(predecessor.NonDeferredGaps) != comparison.Profile.PredecessorNonDeferredGaps {
+		t.Fatalf("predecessor profile non-deferred gaps = %d, want %d", len(predecessor.NonDeferredGaps), comparison.Profile.PredecessorNonDeferredGaps)
+	}
+	oldIDs := make(map[string]bool, len(predecessor.NonDeferredGaps))
+	for _, row := range predecessor.NonDeferredGaps {
+		oldIDs[row.SurfaceID] = true
+	}
+	newIDs := make(map[string]bool, len(profile.NonDeferredGaps))
+	for _, row := range profile.NonDeferredGaps {
+		newIDs[row.SurfaceID] = true
+	}
+	var removed, added []string
+	for id := range oldIDs {
+		if !newIDs[id] {
+			removed = append(removed, id)
+		}
+	}
+	for id := range newIDs {
+		if !oldIDs[id] {
+			added = append(added, id)
+		}
+	}
+	assertExactIDs(t, removed, wantIDs)
+	if len(added) != 0 {
+		t.Fatalf("successor profile unexpectedly added IDs: %v", added)
 	}
 	metadataEnumBatchAssertLocal(t, filepath.Join(evidenceRoot, comparison.Local.ReportPath))
 	metadataEnumBatchAssertSalesforce(t, evidenceRoot, comparison)

@@ -11,7 +11,8 @@
     "selection": "Metadata deterministic-mock missing-evidence",
     "selectedRowCount": 101,
     "predecessorNonDeferredGaps": 5408,
-    "expectedSuccessorNonDeferredGaps": 5307
+    "expectedSuccessorNonDeferredGaps": 5307,
+    "predecessorPath": "evidence/current-base/canonical-bundle-metadata-dto-42a1509/apex-support-profile.json"
   },
   "local": {
     "candidatePath": "evidence/glade-candidate-metadata-fix",
