@@ -1,0 +1,85 @@
+{
+  "name": "salesforce-metadata-deploy-dto-api67-comparisons",
+  "apiVersion": "67.0",
+  "mode": "anonymous",
+  "candidate": {
+    "commit": "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d",
+    "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
+  },
+  "profile": {
+    "path": "evidence/current-base/canonical-bundle-metadata-deploy-dto-pending/apex-support-profile.json",
+    "selection": "Metadata Deploy DTO deterministic-mock missing-evidence",
+    "selectedRowCount": 34,
+    "predecessorNonDeferredGaps": 4683,
+    "expectedSuccessorNonDeferredGaps": 4649,
+    "predecessorPath": "evidence/current-base/canonical-bundle-status-code-e5e3abf/apex-support-profile.json"
+  },
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "targetOrgId": "00DO400000bt08ZMAQ",
+    "apiVersion": "67.0",
+    "executePath": "evidence/current-base/metadata-mock-batch-20260803/salesforce-deploy-dto.json",
+    "executeSha256": "51ab2d15f2706699e4e22ed5c017397f1c97b590f1944ecf22a8c179e049176e"
+  },
+  "local": {
+    "candidatePath": "evidence/glade-candidate-metadata-fix",
+    "candidateCommit": "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d",
+    "candidateSha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb",
+    "projectPath": "evidence/current-base/metadata-enum-batch-20260803/project",
+    "sourcePath": "evidence/current-base/metadata-mock-batch-20260803/deploy-dto-family.apex",
+    "sourceSha256": "a8881224c1f7caa371e815aa29f9642fe0797ec07600b07cb7ea6a46e8347cd4",
+    "reportPath": "evidence/current-base/metadata-mock-batch-20260803/glade-deploy-dto.json",
+    "reportSha256": "b70fbd03a4a63530c7ccf9c5bed9e5077e37b8354154de7cffaca88351bef66f"
+  },
+  "localFixtures": [
+    {
+      "path": "docs/fixtures/core-runtime-metadata-deploy-dto-api67.json",
+      "sha256": "2fe6545347dc29888b2185370c4c5577b952becea9b9f2905b68d490dd47eaa9"
+    }
+  ],
+  "comparisons": [
+    {
+      "caseId": "metadata-deploy-dto-api67",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 anonymous Apex compiled and executed DeployMessage, DeployDetails, and DeployResult constructors, assignments, and assertions successfully.",
+      "gladeObservation": "Glade candidate anonymous Apex compiled and executed the same Deploy DTO source and assertions successfully.",
+      "surfaceIds": [
+        "apex:Metadata.DeployDetails",
+        "apex:Metadata.DeployDetails.DeployDetails()",
+        "apex:Metadata.DeployDetails.componentFailures",
+        "apex:Metadata.DeployDetails.componentSuccesses",
+        "apex:Metadata.DeployMessage",
+        "apex:Metadata.DeployMessage.DeployMessage()",
+        "apex:Metadata.DeployMessage.changed",
+        "apex:Metadata.DeployMessage.columnNumber",
+        "apex:Metadata.DeployMessage.componentType",
+        "apex:Metadata.DeployMessage.created",
+        "apex:Metadata.DeployMessage.createdDate",
+        "apex:Metadata.DeployMessage.deleted",
+        "apex:Metadata.DeployMessage.fileName",
+        "apex:Metadata.DeployMessage.fullName",
+        "apex:Metadata.DeployMessage.lineNumber",
+        "apex:Metadata.DeployMessage.problem",
+        "apex:Metadata.DeployMessage.success",
+        "apex:Metadata.DeployResult.DeployResult()",
+        "apex:Metadata.DeployResult.canceledBy",
+        "apex:Metadata.DeployResult.canceledByName",
+        "apex:Metadata.DeployResult.checkOnly",
+        "apex:Metadata.DeployResult.createdBy",
+        "apex:Metadata.DeployResult.createdByName",
+        "apex:Metadata.DeployResult.details",
+        "apex:Metadata.DeployResult.done",
+        "apex:Metadata.DeployResult.errorMessage",
+        "apex:Metadata.DeployResult.ignoreWarnings",
+        "apex:Metadata.DeployResult.numberComponentErrors",
+        "apex:Metadata.DeployResult.numberComponentsDeployed",
+        "apex:Metadata.DeployResult.numberComponentsTotal",
+        "apex:Metadata.DeployResult.rollbackOnError",
+        "apex:Metadata.DeployResult.stateDetail",
+        "apex:Metadata.DeployResult.status",
+        "apex:Metadata.DeployResult.success"
+      ]
+    }
+  ],
+  "notes": "The selected 34 rows are the exact dual-valid subset. Salesforce-removed or local-invalid properties are intentionally excluded and remain unproven."
+}
