@@ -4,7 +4,7 @@
   "mode": "anonymous",
   "candidate": {
     "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
-    "sha256": "ce522fbd7a7588777dc2756b42799ecf123bb8632c3b933c8da8bc7a8d3e4100"
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
   },
   "profile": {
     "path": "evidence/current-base/canonical-bundle-bulk-visible-dto-20260803/apex-support-profile.json",
@@ -22,14 +22,14 @@
     "executeSha256": "51ab2d15f2706699e4e22ed5c017397f1c97b590f1944ecf22a8c179e049176e"
   },
   "local": {
-    "candidatePath": "evidence/glade-candidate-current-base-0a0f624",
+    "candidatePath": "evidence/glade-candidate-current-base-0a0f624-cgo",
     "candidateCommit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
-    "candidateSha256": "ce522fbd7a7588777dc2756b42799ecf123bb8632c3b933c8da8bc7a8d3e4100",
+    "candidateSha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4",
     "projectPath": "evidence/current-base/metadata-enum-batch-20260803/project",
     "sourcePath": "evidence/current-base/metadata-mock-batch-20260803/deploy-dto-family.apex",
     "sourceSha256": "a8881224c1f7caa371e815aa29f9642fe0797ec07600b07cb7ea6a46e8347cd4",
     "reportPath": "evidence/current-base/metadata-mock-batch-20260803/glade-deploy-dto.json",
-    "reportSha256": "670d97021215ce1e8e54388257de82dbf4feb0341de3da83cc75cc51cb40d5d3"
+    "reportSha256": "88088e7069cbcb634e0ad767d6abe0e81a1f0a000f2c1198315ca2ea7bd0cd74"
   },
   "localFixtures": [
     {
