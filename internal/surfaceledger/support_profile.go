@@ -40,6 +40,7 @@ type SupportPolicyRule struct {
 type SupportPolicyMemberException struct {
 	TypeName    string             `json:"typeName"`
 	MemberName  string             `json:"memberName,omitempty"`
+	Kind        string             `json:"kind,omitempty"`
 	Disposition SupportDisposition `json:"disposition,omitempty"`
 	Reason      string             `json:"reason,omitempty"`
 }
@@ -239,7 +240,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	// Detect stale member exceptions.
 	for _, rule := range policy.Rules {
 		for _, exc := range rule.MemberExceptions {
-			key := ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName)
+			key := ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName, exc.Kind)
 			if !exceptionMatched[key] {
 				validationErrors = append(validationErrors,
 					fmt.Sprintf("stale member exception: %s.%s (namespace=%s typeFamily=%s)",
@@ -351,14 +352,18 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 			exc := &rule.MemberExceptions[j]
 			excTypeMatch := exc.TypeName == "" || strings.EqualFold(row.TypeName, exc.TypeName)
 			excMemberMatch := exc.MemberName == "" || strings.EqualFold(row.MemberName, exc.MemberName)
+			excKindMatch := exc.Kind == "" || strings.EqualFold(row.Kind, exc.Kind)
 
-			if excTypeMatch && excMemberMatch {
-				exceptionMatched[ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName)] = true
+			if excTypeMatch && excMemberMatch && excKindMatch {
+				exceptionMatched[ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName, exc.Kind)] = true
 				specificity := 0
 				if exc.TypeName != "" {
 					specificity++
 				}
 				if exc.MemberName != "" {
+					specificity++
+				}
+				if exc.Kind != "" {
 					specificity++
 				}
 				if specificity > selectedSpecificity {
@@ -541,7 +546,7 @@ func ruleMatchLabel(rule SupportPolicyRule, isException bool) string {
 	return "typeFamily=" + rule.TypeFamily
 }
 
-func ruleMatchKey(namespace, typeFamily, surfacePrefix, typeName, memberName string) string {
+func ruleMatchKey(namespace, typeFamily, surfacePrefix, typeName, memberName, kind string) string {
 	scope := namespace
 	if scope == "" {
 		scope = typeFamily
@@ -549,7 +554,7 @@ func ruleMatchKey(namespace, typeFamily, surfacePrefix, typeName, memberName str
 	if scope == "" {
 		scope = surfacePrefix
 	}
-	return scope + ":" + typeName + "." + memberName
+	return scope + ":" + typeName + "." + memberName + ":" + kind
 }
 
 // LoadSupportPolicy reads a SupportPolicy from a JSON file.

@@ -130,6 +130,141 @@ func TestRealAuthPolicyClassifiesAuthTokenOperations(t *testing.T) {
 	}
 }
 
+func TestRealSupportPolicyClassifiesReviewedConnectApiShapes(t *testing.T) {
+	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var relevantRules []SupportPolicyRule
+	for _, rule := range policy.Rules {
+		if rule.Namespace == "ConnectApi" {
+			relevantRules = append(relevantRules, rule)
+			continue
+		}
+		if rule.Namespace == "Auth" {
+			for _, exception := range rule.MemberExceptions {
+				if exception.TypeName == "AuthConfiguration" && exception.MemberName == "getAuthProviderSsoUrl" {
+					rule.MemberExceptions = []SupportPolicyMemberException{exception}
+					relevantRules = append(relevantRules, rule)
+					break
+				}
+			}
+		}
+	}
+
+	type reviewedSurface struct {
+		id       string
+		typeName string
+		member   string
+	}
+	reviewed := []reviewedSurface{
+		{"apex:ConnectApi.ChatterUsers", "ChatterUsers", ""},
+		{"apex:ConnectApi.Communities", "Communities", ""},
+		{"apex:ConnectApi.ConnectApiException", "ConnectApiException", ""},
+		{"apex:ConnectApi.CredentialAuthenticationProtocol", "CredentialAuthenticationProtocol", ""},
+		{"apex:ConnectApi.CredentialAuthenticationProtocol.Custom", "CredentialAuthenticationProtocol", "Custom"},
+		{"apex:ConnectApi.CredentialPrincipalType", "CredentialPrincipalType", ""},
+		{"apex:ConnectApi.CredentialPrincipalType.NamedPrincipal", "CredentialPrincipalType", "NamedPrincipal"},
+		{"apex:ConnectApi.ExternalCredential", "ExternalCredential", ""},
+		{"apex:ConnectApi.ExternalCredentialInput", "ExternalCredentialInput", ""},
+		{"apex:ConnectApi.ExternalCredentialPrincipal", "ExternalCredentialPrincipal", ""},
+		{"apex:ConnectApi.ExternalCredentialPrincipalInput", "ExternalCredentialPrincipalInput", ""},
+		{"apex:ConnectApi.ManagedContent", "ManagedContent", ""},
+		{"apex:ConnectApi.ManagedContentNodeValue", "ManagedContentNodeValue", ""},
+		{"apex:ConnectApi.ManagedContentVersion", "ManagedContentVersion", ""},
+		{"apex:ConnectApi.ManagedContentVersionCollection", "ManagedContentVersionCollection", ""},
+		{"apex:ConnectApi.NamedCredential", "NamedCredential", ""},
+		{"apex:ConnectApi.NamedCredentialCalloutOptions", "NamedCredentialCalloutOptions", ""},
+		{"apex:ConnectApi.NamedCredentialCalloutOptionsInput", "NamedCredentialCalloutOptionsInput", ""},
+		{"apex:ConnectApi.NamedCredentialInput", "NamedCredentialInput", ""},
+		{"apex:ConnectApi.NamedCredentialType", "NamedCredentialType", ""},
+		{"apex:ConnectApi.NamedCredentialType.SecuredEndpoint", "NamedCredentialType", "SecuredEndpoint"},
+		{"apex:ConnectApi.NamedCredentials", "NamedCredentials", ""},
+		{"apex:ConnectApi.Organization", "Organization", ""},
+		{"apex:ConnectApi.OrganizationSettings", "OrganizationSettings", ""},
+		{"apex:ConnectApi.TimeZone", "TimeZone", ""},
+		{"apex:ConnectApi.UserProfiles", "UserProfiles", ""},
+		{"apex:ConnectApi.UserSettings", "UserSettings", ""},
+	}
+	rows := make([]SurfaceLedgerRow, 0, len(reviewed)+10)
+	for _, surface := range reviewed {
+		if surface.member == "" {
+			rows = append(rows, apexRow(surface.id, "ConnectApi", surface.typeName))
+		} else {
+			rows = append(rows, apexPropertyRow(surface.id, "ConnectApi", surface.typeName, surface.member))
+		}
+	}
+	for _, service := range []struct{ typeName, member string }{
+		{"Organization", "getSettings"},
+		{"UserProfiles", "setPhoto"},
+		{"UserProfiles", "deletePhoto"},
+		{"Communities", "getCommunity"},
+		{"ChatterUsers", "getFollowings"},
+		{"NamedCredentials", "createExternalCredential"},
+		{"NamedCredentials", "createNamedCredential"},
+		{"NamedCredentials", "getExternalCredential"},
+		{"ManagedContent", "getAllManagedContent"},
+		{"ManagedContent", "getManagedContentByContentKeys"},
+	} {
+		rows = append(rows, apexMemberRow("apex:ConnectApi."+service.typeName+"."+service.member, "ConnectApi", service.typeName, service.member))
+	}
+	rows = append(rows, apexMemberRow("apex:Auth.AuthConfiguration.getAuthProviderSsoUrl(String,String,String)", "Auth", "AuthConfiguration", "getAuthProviderSsoUrl"))
+
+	profile := ComputeSupportProfile(rows, SupportPolicy{Rules: relevantRules}, nil)
+	if len(profile.ValidationErrors) != 0 {
+		t.Fatalf("expected no validation errors, got: %v", profile.ValidationErrors)
+	}
+	byID := make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	if len(reviewed) != 27 {
+		t.Fatalf("test fixture must cover 27 reviewed surfaces, got %d", len(reviewed))
+	}
+	for _, surface := range reviewed {
+		row, ok := byID[surface.id]
+		if !ok {
+			t.Fatalf("missing reviewed ConnectApi row %s", surface.id)
+		}
+		if row.Disposition != DispositionCompileShapeRequired {
+			t.Errorf("%s disposition = %s, want %s", surface.id, row.Disposition, DispositionCompileShapeRequired)
+		}
+	}
+	if profile.ByDisposition[DispositionCompileShapeRequired] != len(reviewed) {
+		t.Errorf("compile-shape-required count = %d, want %d", profile.ByDisposition[DispositionCompileShapeRequired], len(reviewed))
+	}
+	for _, service := range []string{
+		"apex:ConnectApi.Organization.getSettings",
+		"apex:ConnectApi.UserProfiles.setPhoto",
+		"apex:ConnectApi.UserProfiles.deletePhoto",
+		"apex:ConnectApi.Communities.getCommunity",
+		"apex:ConnectApi.ChatterUsers.getFollowings",
+		"apex:ConnectApi.NamedCredentials.createExternalCredential",
+		"apex:ConnectApi.NamedCredentials.createNamedCredential",
+		"apex:ConnectApi.NamedCredentials.getExternalCredential",
+		"apex:ConnectApi.ManagedContent.getAllManagedContent",
+		"apex:ConnectApi.ManagedContent.getManagedContentByContentKeys",
+	} {
+		if row := byID[service]; row.Disposition != DispositionDeterministicMockRequired {
+			t.Errorf("%s disposition = %s, want %s", service, row.Disposition, DispositionDeterministicMockRequired)
+		}
+	}
+	unreviewed := "apex:ConnectApi.ChatterUsers.getReputation"
+	rows = append(rows, apexMemberRow(unreviewed, "ConnectApi", "ChatterUsers", "getReputation"))
+	profile = ComputeSupportProfile(rows, SupportPolicy{Rules: relevantRules}, nil)
+	byID = make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	if row := byID[unreviewed]; row.Disposition != DispositionHostedDeferred {
+		t.Errorf("%s disposition = %s, want %s", unreviewed, row.Disposition, DispositionHostedDeferred)
+	}
+	sso := byID["apex:Auth.AuthConfiguration.getAuthProviderSsoUrl(String,String,String)"]
+	if sso.Disposition != DispositionHostedDeferred {
+		t.Errorf("Auth SSO disposition = %s, want %s", sso.Disposition, DispositionHostedDeferred)
+	}
+}
+
 func TestRealSupportPolicyDefersFeatureGatedIndustriesContext(t *testing.T) {
 	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
 	if err != nil {
@@ -359,7 +494,11 @@ func appendPolicyExceptionRows(rows []SurfaceLedgerRow, rules []SupportPolicyRul
 				rows = append(rows, apexRow(id, rule.Namespace, exc.TypeName))
 				continue
 			}
-			rows = append(rows, apexMemberRow(id+"."+exc.MemberName+"()", rule.Namespace, exc.TypeName, exc.MemberName))
+			if exc.Kind == KindProperty {
+				rows = append(rows, apexPropertyRow(id+"."+exc.MemberName, rule.Namespace, exc.TypeName, exc.MemberName))
+			} else {
+				rows = append(rows, apexMemberRow(id+"."+exc.MemberName+"()", rule.Namespace, exc.TypeName, exc.MemberName))
+			}
 		}
 	}
 	return rows
@@ -392,6 +531,12 @@ func apexMemberRow(id, namespace, typeName, memberName string) SurfaceLedgerRow 
 		GladeBehavior: BehaviorSupported,
 		Evidence:      EvidenceFixture,
 	}
+}
+
+func apexPropertyRow(id, namespace, typeName, memberName string) SurfaceLedgerRow {
+	row := apexMemberRow(id, namespace, typeName, memberName)
+	row.Kind = KindProperty
+	return row
 }
 
 // 1. Test all four dispositions

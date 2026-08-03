@@ -1103,6 +1103,171 @@
       "reason": "ConnectApi DTOs — mostly passive, hosted-deferred",
       "memberExceptions": [
         {
+          "typeName": "ChatterUsers",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "Communities",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ConnectApiException",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "CredentialAuthenticationProtocol",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "CredentialAuthenticationProtocol",
+          "memberName": "Custom",
+          "kind": "property",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "CredentialPrincipalType",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "CredentialPrincipalType",
+          "memberName": "NamedPrincipal",
+          "kind": "property",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ExternalCredential",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ExternalCredentialInput",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ExternalCredentialPrincipal",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ExternalCredentialPrincipalInput",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ManagedContent",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ManagedContentNodeValue",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ManagedContentVersion",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "ManagedContentVersionCollection",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "NamedCredential",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "NamedCredentialCalloutOptions",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "NamedCredentialCalloutOptionsInput",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "NamedCredentialInput",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "NamedCredentialType",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "NamedCredentialType",
+          "memberName": "SecuredEndpoint",
+          "kind": "property",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "NamedCredentials",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "Organization",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "OrganizationSettings",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "TimeZone",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "UserProfiles",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
+          "typeName": "UserSettings",
+          "kind": "type",
+          "disposition": "compile-shape-required",
+          "reason": "reviewed corpus compile-shape exception"
+        },
+        {
           "typeName": "Organization",
           "memberName": "getSettings",
           "disposition": "deterministic-mock-required",
