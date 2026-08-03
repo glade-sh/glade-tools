@@ -52,13 +52,15 @@ func runCompatSurface(args []string, w io.Writer) error {
 		return runCompatSurfaceSupportProfile(args[1:], w)
 	case "corpus-usage":
 		return runCompatSurfaceCorpusUsage(args[1:], w)
+	case "delta-preflight":
+		return runCompatSurfaceDeltaPreflight(args[1:], w)
 	default:
 		return errors.New(surfaceUsage())
 	}
 }
 
 func surfaceUsage() string {
-	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage [flags]"
+	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight [flags]"
 }
 
 func runCompatSurfaceSources(args []string, w io.Writer) error {
@@ -699,6 +701,182 @@ func runCompatSurfaceStrictCurrentBase(args []string, w io.Writer) error {
 		return nil
 	}
 	return surfaceledger.WriteStrictCurrentBaseJSON(w, base)
+}
+
+// runCompatSurfaceDeltaPreflight applies a bounded set of additions and
+// removals to a previously materialized ledger. It deliberately emits only a
+// compact reconciliation report; a full support profile remains an explicit
+// follow-up command at the end of a family wave.
+func runCompatSurfaceDeltaPreflight(args []string, w io.Writer) error {
+	basePath := ""
+	policyPath := ""
+	output := ""
+	jsonOut := false
+	var additionsPaths, removalsPaths, tombstonePaths []string
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--base-ledger":
+			i++
+			value, err := argValue(args, i, "--base-ledger")
+			if err != nil {
+				return err
+			}
+			basePath = value
+		case "--add", "--addition", "--additions":
+			i++
+			value, err := argValue(args, i, args[i-1])
+			if err != nil {
+				return err
+			}
+			additionsPaths = append(additionsPaths, value)
+		case "--remove", "--removal", "--removals":
+			i++
+			value, err := argValue(args, i, args[i-1])
+			if err != nil {
+				return err
+			}
+			removalsPaths = append(removalsPaths, value)
+		case "--tombstone", "--tombstones":
+			i++
+			value, err := argValue(args, i, args[i-1])
+			if err != nil {
+				return err
+			}
+			tombstonePaths = append(tombstonePaths, value)
+		case "--policy":
+			i++
+			value, err := argValue(args, i, "--policy")
+			if err != nil {
+				return err
+			}
+			policyPath = value
+		case "--output":
+			i++
+			value, err := argValue(args, i, "--output")
+			if err != nil {
+				return err
+			}
+			output = value
+		case "--json":
+			jsonOut = true
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	if basePath == "" {
+		return errors.New("--base-ledger is required")
+	}
+	if output != "" && jsonOut {
+		return errors.New("use only one of --output or --json")
+	}
+	base, err := surfaceledger.ReadLedgerJSON(basePath)
+	if err != nil {
+		// Evidence bundles often retain a raw BASE_LEDGER_ROWS.json alongside
+		// the wrapped SURFACE_LEDGER.json. Accept both forms for preflight so
+		// callers do not need a no-op conversion step.
+		rows, rowsErr := surfaceledger.ReadRowsJSON(basePath)
+		if rowsErr != nil {
+			return fmt.Errorf("read base ledger: %w", err)
+		}
+		base = surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: rows}
+	}
+	var additions []surfaceledger.SurfaceLedgerRow
+	for _, path := range additionsPaths {
+		rows, err := surfaceledger.ReadRowsJSON(path)
+		if err != nil {
+			return fmt.Errorf("read additions %s: %w", path, err)
+		}
+		additions = append(additions, rows...)
+	}
+	removals, err := readSurfaceDeltaIDs(removalsPaths, "removal")
+	if err != nil {
+		return err
+	}
+	tombstones, err := readSurfaceDeltaIDs(tombstonePaths, "tombstone")
+	if err != nil {
+		return err
+	}
+	var policy *surfaceledger.SupportPolicy
+	if policyPath != "" {
+		loaded, err := surfaceledger.LoadSupportPolicy(policyPath)
+		if err != nil {
+			return fmt.Errorf("read policy: %w", err)
+		}
+		policy = &loaded
+	}
+	_, result, err := surfaceledger.ComputeDeltaPreflight(base.Rows, additions, removals, tombstones, policy)
+	if err != nil {
+		return err
+	}
+	if output != "" {
+		var buf stringsBuilder
+		if err := surfaceledger.WriteDeltaPreflightJSON(&buf, result); err != nil {
+			return err
+		}
+		if err := atomicWriteFile(output, buf.data); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, "surface delta-preflight: %s\n", output)
+		return nil
+	}
+	return surfaceledger.WriteDeltaPreflightJSON(w, result)
+}
+
+// readSurfaceDeltaIDs accepts the compact []string form and the removal
+// fixture form used by API-version tombstones ({"removals":[{"surfaceId":
+// "..."}]}). Accepting both keeps the preflight command useful with existing
+// evidence artifacts without introducing a conversion step.
+func readSurfaceDeltaIDs(paths []string, label string) ([]string, error) {
+	var ids []string
+	for _, path := range paths {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil, fmt.Errorf("read %s IDs %s: %w", label, path, err)
+		}
+		var stringsValue []string
+		if err := json.Unmarshal(data, &stringsValue); err == nil {
+			ids = append(ids, stringsValue...)
+			continue
+		}
+		var rows []surfaceledger.SurfaceLedgerRow
+		if err := json.Unmarshal(data, &rows); err == nil {
+			for _, row := range rows {
+				ids = append(ids, row.SurfaceID)
+			}
+			continue
+		}
+		var envelope struct {
+			IDs        []string `json:"ids"`
+			SurfaceIDs []string `json:"surfaceIds"`
+			Removals   []struct {
+				SurfaceID string `json:"surfaceId"`
+			} `json:"removals"`
+			Tombstones []struct {
+				SurfaceID string `json:"surfaceId"`
+			} `json:"tombstones"`
+			SetChecks struct {
+				API67NegativeTombstones struct {
+					IDs []string `json:"ids"`
+				} `json:"api67NegativeTombstones"`
+			} `json:"setChecks"`
+		}
+		if err := json.Unmarshal(data, &envelope); err != nil {
+			return nil, fmt.Errorf("parse %s IDs %s: %w", label, path, err)
+		}
+		ids = append(ids, envelope.IDs...)
+		ids = append(ids, envelope.SurfaceIDs...)
+		for _, row := range envelope.Removals {
+			ids = append(ids, row.SurfaceID)
+		}
+		for _, row := range envelope.Tombstones {
+			ids = append(ids, row.SurfaceID)
+		}
+		ids = append(ids, envelope.SetChecks.API67NegativeTombstones.IDs...)
+		if len(envelope.IDs) == 0 && len(envelope.SurfaceIDs) == 0 && len(envelope.Removals) == 0 && len(envelope.Tombstones) == 0 && len(envelope.SetChecks.API67NegativeTombstones.IDs) == 0 {
+			return nil, fmt.Errorf("parse %s IDs %s: expected an ID array or removal/tombstone envelope", label, path)
+		}
+	}
+	return ids, nil
 }
 
 // atomicWriteFile writes data to outPath via a temp file in the same

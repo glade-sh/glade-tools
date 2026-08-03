@@ -169,7 +169,7 @@ func compatUsage() string {
 		"matrix|mvp [--json] [--require-ready]",
 		"local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>]",
 		"local-tests compare --base-bin <path> --candidate-bin <path> --project <root> --out <new-dir> --workers <n> --runs 5 --manifest <path> [--json]",
-		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags]",
+		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight> [flags]",
 		"corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]",
 		"visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]",
 		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
