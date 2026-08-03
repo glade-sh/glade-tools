@@ -28,7 +28,7 @@ func TestSystemVisibleTypesCompileRowsHaveExactDualOracleEvidence(t *testing.T) 
 		Comparisons []struct { CaseID, Status string; SurfaceIDs []string } `json:"comparisons"`
 	}
 	readJSON(t, comparisonPath, &comparison)
-	if comparison.Candidate.Commit != "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d" || comparison.Candidate.SHA256 != "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb" || comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.APIVersion != "67.0" || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 || comparison.Comparisons[0].Status != "pass" {
+	if comparison.Candidate.Commit != "0a0f624e9c6fc82f8efc824852aef2808cd823fa" || comparison.Candidate.SHA256 != "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4" || comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.APIVersion != "67.0" || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 || comparison.Comparisons[0].Status != "pass" {
 		t.Fatalf("comparison metadata = %#v", comparison)
 	}
 	if comparison.LocalFixtures[0].SHA256 != "d8929f137a98ab31be289d90241542a4be027870e7e39d7609825c6793c6f427" {

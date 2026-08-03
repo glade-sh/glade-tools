@@ -3,9 +3,9 @@
   "name": "salesforce-current-base-schema-g02-cb146-api67-20260803",
   "packetId": "SF-Schema-G02-CB146-20260803",
   "candidate": {
-    "path": "evidence/glade-candidate-metadata-fix",
-    "commit": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb",
-    "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
+    "path": "evidence/glade-candidate-current-base-0a0f624-cgo",
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
@@ -144,14 +144,14 @@
     "salesforceReport": "evidence/current-base/schema-runtime-batch-20260803/salesforce-g02-current.raw.json"
   },
   "local": {
-    "candidatePath": "evidence/glade-candidate-metadata-fix",
-    "candidateSha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb",
+    "candidatePath": "evidence/glade-candidate-current-base-0a0f624-cgo",
+    "candidateSha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4",
     "sourcePath": "evidence/current-base/cb146-schema-database-broad-evidence/scenarios/G02-schema-describe.apex",
     "sourceSha256": "ebe6af472381a0259dacfde78f401034cda494562849bd9ac3176cedc3e63f8d",
-    "reportPath": "evidence/current-base/schema-runtime-batch-20260803/glade-g02-current.json",
-    "reportSha256": "7007e95efd2ffacb5817babeec2ca235d7d43e557311f633a0753b5f88ebe680",
-    "reportPathSecond": "evidence/current-base/schema-runtime-batch-20260803/glade-g02-current-2.json",
-    "reportSha256Second": "277297bd6a9e1ea609c9f1ec75a07c932c913e593fb6117de5c4bfd685725b66"
+    "reportPath": "evidence/current-base/rebind-0a0f624-cgo/glade-g02-current.json",
+    "reportSha256": "dd8cac768554820dd50d9f3aaaa77ca5c0af33e846f02d9f87e6ba7f054796e1",
+    "reportPathSecond": "evidence/current-base/rebind-0a0f624-cgo/glade-g02-current-2.json",
+    "reportSha256Second": "dd8cac768554820dd50d9f3aaaa77ca5c0af33e846f02d9f87e6ba7f054796e1"
   },
   "fixturePath": "docs/fixtures/current-base-schema-g02-cb146-api67-20260803.json",
   "fixtureSha256": "c4857003e5f8061a4f6f20a14be2966cdb8cc333cd08ae9563cd509bfa7ed253"

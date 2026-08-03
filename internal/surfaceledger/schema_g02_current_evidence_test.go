@@ -50,7 +50,7 @@ func TestSchemaG02CurrentRowsHaveExactFixtureAndOracleEvidence(t *testing.T) {
 	comparisonPath := filepath.Join(toolsRoot, schemaG02CurrentComparisonPath)
 	var comparison schemaG02CurrentEnvelope
 	readJSON(t, comparisonPath, &comparison)
-	if comparison.Candidate.Commit != "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA || comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.OrgID == "" || comparison.Salesforce.APIVersion != "67.0" {
+	if comparison.Candidate.Commit != "0a0f624e9c6fc82f8efc824852aef2808cd823fa" || comparison.Candidate.SHA256 != "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA || comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.OrgID == "" || comparison.Salesforce.APIVersion != "67.0" {
 		t.Fatalf("Schema G02 provenance = %#v", comparison)
 	}
 	if len(comparison.Comparisons) != 1 || comparison.Comparisons[0].CaseID != "schema-g02-cb146-api67-exact" || comparison.Comparisons[0].Status != "pass" || len(comparison.Comparisons[0].SurfaceIDs) != 54 || len(comparison.Excluded) != 4 {

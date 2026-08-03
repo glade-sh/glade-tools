@@ -3,8 +3,8 @@
   "apiVersion": "67.0",
   "mode": "compile-shape",
   "candidate": {
-    "commit": "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d",
-    "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
   },
   "profile": {
     "selection": "compile-shape-required",
@@ -12,11 +12,11 @@
     "selectedRowCount": 170
   },
   "local": {
-    "candidatePath": "evidence/glade-candidate-metadata-fix",
-    "candidateSha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb",
+    "candidatePath": "evidence/glade-candidate-current-base-0a0f624-cgo",
+    "candidateSha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4",
     "sourcePath": "evidence/current-base/system-compile-batch-20260803/anonymous-members.apex",
     "sourceSha256": "bf4b96c8a0f56dcb3d3144bfdf8b6a3f2b54098e255473040a821dc588ff839e",
-    "reportPath": "evidence/current-base/system-compile-batch-20260803/glade-members-exec.json",
+    "reportPath": "evidence/current-base/rebind-0a0f624-cgo/glade-members-exec.json",
     "reportSha256": "99db300b628158a8383cf90081992c99fc45a794ccf4a3215eb590f0c8f5c16d"
   },
   "salesforce": {

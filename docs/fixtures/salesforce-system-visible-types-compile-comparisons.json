@@ -2,9 +2,9 @@
   "name": "salesforce-system-visible-types-compile-comparisons",
   "apiVersion": "67.0",
   "mode": "compile-shape",
-  "candidate": {"commit":"6419bf1e8ede470d9fd5c6c789aede9ef5d2713d","sha256":"35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"},
+  "candidate": {"commit":"0a0f624e9c6fc82f8efc824852aef2808cd823fa","sha256":"773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"},
   "profile": {"selection":"compile-shape-required","area":"System","selectedRowCount":36},
-  "local": {"candidatePath":"evidence/glade-candidate-metadata-fix","candidateSha256":"35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb","sourcePath":"evidence/current-base/system-compile-batch-20260803/anonymous-types.apex","sourceSha256":"35bb677f3bc577c9473a7be8243ff5325cfa3816218af4465b3bda31877c56ad","reportPath":"evidence/current-base/system-compile-batch-20260803/glade-types-exec.json","reportSha256":"5601a4a73a6f180c8d261a6e46faed431beb8802225d8094b41832810e4944d0"},
+  "local": {"candidatePath":"evidence/glade-candidate-current-base-0a0f624-cgo","candidateSha256":"773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4","sourcePath":"evidence/current-base/system-compile-batch-20260803/anonymous-types.apex","sourceSha256":"35bb677f3bc577c9473a7be8243ff5325cfa3816218af4465b3bda31877c56ad","reportPath":"evidence/current-base/rebind-0a0f624-cgo/glade-types-exec.json","reportSha256":"5601a4a73a6f180c8d261a6e46faed431beb8802225d8094b41832810e4944d0"},
   "salesforce": {"targetOrgAlias":"glade-sf-correctness","targetOrgId":"00DO400000bt08ZMAQ","apiVersion":"67.0","executePath":"evidence/current-base/system-compile-batch-20260803/salesforce-types-exec.json","executeSha256":"cdfa18863a9eb7c8ed2a2f1c249c0e4cef1131e2b78ef4c88a4c356ee998f13e"},
   "localFixtures": [{"path":"docs/fixtures/current-base-system-visible-types-compile-api67.json","sha256":"d8929f137a98ab31be289d90241542a4be027870e7e39d7609825c6793c6f427"}],
   "comparisons": [{

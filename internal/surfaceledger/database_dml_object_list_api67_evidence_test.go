@@ -43,7 +43,7 @@ func TestDatabaseDMLObjectListAPI67RowsHaveExactFixtureAndOracleEvidence(t *test
 	comparisonPath := filepath.Join(toolsRoot, databaseDMLObjectListAPI67ComparisonPath)
 	var comparison databaseDMLObjectListAPI67Envelope
 	readJSON(t, comparisonPath, &comparison)
-	if comparison.Candidate.Commit != "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d" || comparison.Candidate.SHA256 == "" || comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.OrgID == "" || comparison.Salesforce.APIVersion != "67.0" || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
+	if comparison.Candidate.Commit != "0a0f624e9c6fc82f8efc824852aef2808cd823fa" || comparison.Candidate.SHA256 != "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4" || comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.OrgID == "" || comparison.Salesforce.APIVersion != "67.0" || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
 		t.Fatalf("database DML provenance = %#v", comparison)
 	}
 	fixturePath := filepath.Join(toolsRoot, comparison.LocalFixtures[0].Path)
