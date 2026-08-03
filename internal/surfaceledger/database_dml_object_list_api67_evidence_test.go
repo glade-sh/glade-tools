@@ -1,6 +1,8 @@
 package surfaceledger
 
 import (
+	"bytes"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -75,6 +77,15 @@ func TestDatabaseDMLObjectListAPI67RowsHaveExactFixtureAndOracleEvidence(t *test
 		t.Fatal(err)
 	}
 	assertMetadataDTOBatchSHA256(t, filepath.Join(evidenceRoot, caseRow.SourcePath), caseRow.SourceSHA256)
+	source, err := os.ReadFile(filepath.Join(evidenceRoot, caseRow.SourcePath))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, token := range [][]byte{[]byte("Database.insert("), []byte("Database.update("), []byte("Database.delete("), []byte("Database.undelete(")} {
+		if !bytes.Contains(source, token) {
+			t.Fatalf("source %s does not reach %q", caseRow.CaseID, token)
+		}
+	}
 	assertMetadataDTOBatchSHA256(t, filepath.Join(evidenceRoot, caseRow.GladeReportPath), caseRow.GladeReportSHA256)
 	assertMetadataDTOBatchSHA256(t, filepath.Join(evidenceRoot, caseRow.SalesforceReportPath), caseRow.SalesforceReportSHA256)
 	var local struct {
