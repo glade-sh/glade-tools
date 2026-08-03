@@ -19,21 +19,21 @@
     "candidateSha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb",
     "projectPath": "evidence/current-base/metadata-enum-batch-20260803/project",
     "sourcePath": "evidence/current-base/system-exception-batch-20260803/anonymous-api67-safe4.apex",
-    "sourceSha256": "c17427ba164aa9c3b405b24e28046fbc3e7e96a77d15dd795efb8c8b611a0ff7",
+    "sourceSha256": "3d99266b93d055b693500d5cc78fd5147538d07bd8d76e7de7afb80ff41afae4",
     "reportPath": "evidence/current-base/system-exception-batch-20260803/glade-exec-safe4.json",
-    "reportSha256": "a5dff328b4fb47557979214673ec5a00a6436ca3a5df4113b32db6037cbb42af"
+    "reportSha256": "baf812ea2b4f50536e6107f4ca142e8dc88321d22ec30de3aeffc3c01b3fcf59"
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
     "targetOrgId": "00DO400000bt08ZMAQ",
     "apiVersion": "67.0",
     "executePath": "evidence/current-base/system-exception-batch-20260803/salesforce-exec-safe4.json",
-    "executeSha256": "ca910687b81d3006a4ca87db27f429300d05f025194edace040202ef0e0e9e6b"
+    "executeSha256": "98b5cad7df82c7d5980fb8192f2a4328a9962ada08a9aff2d130f5716f7b6f07"
   },
   "localFixtures": [
     {
       "path": "docs/fixtures/core-runtime-exception-api67-safe-family-accessors.json",
-      "sha256": "17c846b4e296ba60f55d836a6a9bf386aeca304750d29d9cb108cb65661c29d7"
+      "sha256": "7248f351f0a6568fc94f1c8987a6e0b8c512dad9215ef952254c6f595e2fa60e"
     }
   ],
   "comparisons": [
