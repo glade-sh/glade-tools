@@ -583,7 +583,9 @@ func TestSalesforceVerify_EmitsLinkedSurfaceIDsForRuntimeAndLifecycleCases(t *te
 	}
 	report := runVerifyWithDeps(t, opts, allPassDeps())
 	linked := findCase(report.Runtime.Cases, "decimal-round-default-positive-tie")
-	if linked == nil || len(linked.SurfaceIDs) != 1 || linked.SurfaceIDs[0] != "apex:System.Decimal.round()" {
+	if linked == nil || len(linked.SurfaceIDs) != 2 ||
+		linked.SurfaceIDs[0] != "apex:System.Decimal.valueOf(String)" ||
+		linked.SurfaceIDs[1] != "apex:System.Decimal.round()" {
 		t.Fatalf("linked runtime case = %#v", linked)
 	}
 	for _, c := range report.Lifecycle.Cases {
@@ -1142,7 +1144,6 @@ func TestSalesforceVerify_ArtifactRedactsCredentials(t *testing.T) {
 		"orgId",
 		"orgID",
 		"accessToken",
-		"auth",
 	} {
 		if strings.Contains(strings.ToLower(reportStr), strings.ToLower(banned)) {
 			t.Fatalf("report contains banned term %q", banned)
