@@ -237,7 +237,7 @@ func TestBuildEvidenceSnapshotMarksApexShapeEvidenceAsShapeOnly(t *testing.T) {
 	}
 }
 
-func TestBuildEvidenceSnapshotUsesCanonicalSiteZeroArgumentIDs(t *testing.T) {
+func TestBuildEvidenceSnapshotExcludesAPI67RemovedSiteHelpers(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-site-local-contracts.json")
 	rows, err := BuildEvidenceSnapshot([]string{path})
 	if err != nil {
@@ -249,16 +249,11 @@ func TestBuildEvidenceSnapshotUsesCanonicalSiteZeroArgumentIDs(t *testing.T) {
 		"apex:System.Site.getCustomWebAddress",
 		"apex:System.Site.getPrefix",
 	} {
-		row, ok := byID[id]
-		if !ok {
-			t.Errorf("missing canonical Site evidence row %s", id)
-			continue
+		if _, present := byID[id]; present {
+			t.Errorf("removed Site helper entered positive evidence snapshot: %s", id)
 		}
-		if row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
-			t.Errorf("%s behavior/evidence = %s/%s, want supported/fixture", id, row.GladeBehavior, row.Evidence)
-		}
-		if _, duplicate := byID[id+"()"]; duplicate {
-			t.Errorf("retained noncanonical duplicate %s()", id)
+		if _, present := byID[id+"()"]; present {
+			t.Errorf("removed Site helper entered positive evidence snapshot: %s()", id)
 		}
 	}
 }
