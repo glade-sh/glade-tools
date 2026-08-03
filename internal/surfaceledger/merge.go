@@ -11,6 +11,9 @@ func Merge(docs, org, glade, evidence []SurfaceLedgerRow) SurfaceLedger {
 		for _, row := range group {
 			row = withDefaults(row)
 			row = normalizeEventBusSurfaceRow(row)
+			if isAPI67RemovedSurfaceID(row.SurfaceID) {
+				continue
+			}
 			if isNonCanonicalGeneratedSurfaceID(row.SurfaceID) {
 				continue
 			}
