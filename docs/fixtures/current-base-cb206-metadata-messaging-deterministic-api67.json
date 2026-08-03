@@ -9,7 +9,7 @@
   "profile": {
     "path": "evidence/current-base/canonical-bundle-current-base-0a0f624-cgo-20260803/apex-support-profile.json",
     "selection": "Metadata/Messaging deterministic-mock missing-evidence",
-    "selectedRowCount": 6
+    "selectedRowCount": 4
   },
   "evidence": [
     {"surfaceId": "apex:Metadata.DeployCallbackContext", "symbol": "Metadata.DeployCallbackContext", "kind": "exec"},
