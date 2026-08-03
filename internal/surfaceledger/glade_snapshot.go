@@ -792,9 +792,6 @@ var surfaceClosureTailRows = []surfaceClosureTailRow{
 	{ID: ApexMemberID("Schema", "DescribeSObjectResult", "getAssociateEntityType", nil), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Schema associate entity type is represented as a passive describe shape in local metadata."},
 	{ID: ApexMemberID("System", "List", "List", []string{"Set<T>"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic List Set-copy constructor is a passive collection shape."},
 	{ID: ApexMemberID("System", "Set", "Set", []string{"Object"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic Set Object constructor is a passive collection shape."},
-	{ID: ApexMemberID("System", "Site", "getCurrentSiteUrl", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Removed by Salesforce after API version 29.0; retain as a negative compiler contract."},
-	{ID: ApexMemberID("System", "Site", "getCustomWebAddress", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Removed by Salesforce after API version 29.0; retain as a negative compiler contract."},
-	{ID: ApexMemberID("System", "Site", "getPrefix", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Removed by Salesforce after API version 29.0; retain as a negative compiler contract."},
 }
 
 func addSurfaceClosureTailGladeRows(byID map[string]SurfaceLedgerRow) {
