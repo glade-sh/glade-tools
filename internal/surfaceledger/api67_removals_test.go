@@ -38,6 +38,17 @@ func TestMergeExcludesAPI67InvalidDatabaseAllowCalloutsRows(t *testing.T) {
 	}
 }
 
+func TestMergeExcludesAPI67InvalidSystemDebugObjectObjectRow(t *testing.T) {
+	rows := []SurfaceLedgerRow{{
+		SurfaceID: "apex:System.System.debug(Object,Object)",
+		Product:   ProductApex,
+	}}
+	merged := Merge(rows, rows, rows, rows)
+	if len(merged.Rows) != 0 {
+		t.Fatalf("invalid API67 System.debug(Object,Object) row entered current-base ledger: %#v", merged.Rows)
+	}
+}
+
 func TestBuildEvidenceSnapshotExcludesAPI67InvalidDatabaseAllowCalloutsRows(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "fixtures", "async-database-allowcallouts-unsupported.json")
 	rows, err := BuildEvidenceSnapshot([]string{path})

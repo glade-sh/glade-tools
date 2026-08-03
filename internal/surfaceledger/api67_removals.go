@@ -6,6 +6,7 @@ import "strings"
 // but are rejected by the current Salesforce API. They are negative compiler
 // contracts, not positive current-base surface rows.
 var api67RemovedSurfaceKeys = map[string]struct{}{
+	"apex:system.system.debug(object,object)":                                           {},
 	"apex:system.site.getcurrentsiteurl":                                                {},
 	"apex:system.site.getcustomwebaddress":                                              {},
 	"apex:system.site.getprefix":                                                        {},
