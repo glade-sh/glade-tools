@@ -1,0 +1,21 @@
+{
+  "name": "salesforce-system-visible-types-compile-comparisons",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "candidate": {"commit":"6419bf1e8ede470d9fd5c6c789aede9ef5d2713d","sha256":"35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"},
+  "profile": {"selection":"compile-shape-required","area":"System","selectedRowCount":36},
+  "local": {"candidatePath":"evidence/glade-candidate-metadata-fix","candidateSha256":"35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb","sourcePath":"evidence/current-base/system-compile-batch-20260803/anonymous-types.apex","sourceSha256":"35bb677f3bc577c9473a7be8243ff5325cfa3816218af4465b3bda31877c56ad","reportPath":"evidence/current-base/system-compile-batch-20260803/glade-types-exec.json","reportSha256":"5601a4a73a6f180c8d261a6e46faed431beb8802225d8094b41832810e4944d0"},
+  "salesforce": {"targetOrgAlias":"glade-sf-correctness","targetOrgId":"00Dxx0000000001EAA","apiVersion":"67.0","executePath":"evidence/current-base/system-compile-batch-20260803/salesforce-types-exec.json","executeSha256":"cdfa18863a9eb7c8ed2a2f1c249c0e4cef1131e2b78ef4c88a4c356ee998f13e"},
+  "localFixtures": [{"path":"docs/fixtures/current-base-system-visible-types-compile-api67.json","sha256":"d8929f137a98ab31be289d90241542a4be027870e7e39d7609825c6793c6f427"}],
+  "comparisons": [{
+    "caseId":"system-visible-types-api67",
+    "status":"pass",
+    "sfObservation":"Salesforce anonymous Apex API 67 compiled a single source declaring every selected org-visible System type.",
+    "gladeObservation":"Glade anonymous Apex compiled and executed the same source with no diagnostics.",
+    "surfaceIds":[
+      "apex:System.AppExchangeTrialTemplate","apex:System.Aura","apex:System.CallbackStatus","apex:System.Cases","apex:System.Collator","apex:System.Continuation","apex:System.Domain","apex:System.DomainCreator","apex:System.DomainParser","apex:System.DomainType","apex:System.EmailMessages","apex:System.FinalizerContextImpl","apex:System.FlexQueue","apex:System.Formula","apex:System.FormulaRecalcFieldError","apex:System.FormulaRecalcResult","apex:System.Http","apex:System.Network","apex:System.OrgLimit","apex:System.OrgLimits","apex:System.Packaging","apex:System.ParentJobResult","apex:System.QueueableContextImpl","apex:System.RemoteObjectController","apex:System.ResetPasswordResult","apex:System.SchedulableContextImpl","apex:System.SetupScope","apex:System.SupportPredictiveService","apex:System.System","apex:System.UIRequest","apex:System.UUID","apex:System.UserManagement","apex:System.Version","apex:System.WebServiceCallout","apex:System.WebServiceCalloutFuture","apex:System.WebStoreContext"
+    ]
+  }],
+  "excluded": [{"reason":"Salesforce reports 19 org-present System type rows as Type is not visible or Invalid type; those are retained as explicit oracle blockers.","count":19}],
+  "notes":"This bounded batch covers declarations only. Member compile-shape rows remain open until their signatures can be validated without hosted/runtime side effects."
+}
