@@ -7,6 +7,25 @@
     "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
   },
   "salesforceExecution": "fresh-api67",
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "apiVersion": "67.0",
+    "reportPath": "evidence/current-base/metadata-batch-oracle-20260803/salesforce-report.json",
+    "reportSha256": "6fb29d1df295f8f08a76b2da85be0f8789da4c51e3fe4e5df9f72a5478fb2d0c"
+  },
+  "local": {
+    "candidatePath": "evidence/glade-candidate-metadata-fix",
+    "candidateCommit": "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d",
+    "candidateSha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb",
+    "command": "evidence/glade-candidate-metadata-fix exec --json <metadata-dto-values-probe.apex>",
+    "reportPath": "evidence/current-base/metadata-batch-oracle-20260803/glade-report.json",
+    "reportSha256": "7f10a1a8e15e4e14a199f198733dc3d314505ef7cf27fe4511d8ddb9d3a6eae9"
+  },
+  "predecessor": {
+    "bundle": "evidence/current-base/canonical-bundle-metadata-batch-9520d38",
+    "profileNonDeferredGaps": 5417,
+    "netNewRows": 9
+  },
   "salesforceReport": {
     "path": "evidence/current-base/metadata-batch-oracle-20260803/salesforce-report.json",
     "sha256": "6fb29d1df295f8f08a76b2da85be0f8789da4c51e3fe4e5df9f72a5478fb2d0c"
