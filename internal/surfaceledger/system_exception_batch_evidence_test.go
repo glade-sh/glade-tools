@@ -56,6 +56,9 @@ func TestSystemExceptionBatchRowsHaveExactFixtureAndOracleEvidence(t *testing.T)
 	if comparison.Candidate.Commit != "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA || comparison.Profile.SelectedRowCount != 111 || comparison.Profile.PredecessorNonDeferredGaps != 5307 || comparison.Profile.ExpectedSuccessorGaps != 5196 || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
 		t.Fatalf("exception batch provenance = %#v", comparison)
 	}
+	if comparison.Profile.Path != "evidence/current-base/canonical-bundle-system-exceptions-9b9b95b/apex-support-profile.json" || comparison.Profile.PredecessorPath != "evidence/current-base/canonical-bundle-metadata-enum-8e151ad/apex-support-profile.json" {
+		t.Fatalf("exception batch profile paths = %#v", comparison.Profile)
+	}
 	if comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.TargetOrgID == "" || comparison.Salesforce.APIVersion != "67.0" {
 		t.Fatalf("Salesforce provenance = %#v", comparison.Salesforce)
 	}
