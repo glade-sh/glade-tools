@@ -1,0 +1,82 @@
+{
+  "name": "salesforce-current-base-system-compile-shape-next-api67-comparisons",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "candidate": {
+    "commit": "9c3edbe43fabeb3b9069c2d47911e8362be688fe",
+    "sha256": "e3788be1542125cf9947dd482c7d5694562ac7627faad8d0ac12f64c33a4e24a"
+  },
+  "profile": {
+    "selection": "System compile-shape fallback",
+    "area": "System",
+    "packetId": "SF-CB-SYSTEM-NEXT",
+    "totalRows": 229,
+    "compiledRows": 33,
+    "openRows": 196,
+    "predecessorNonDeferredGaps": 4309,
+    "expectedSuccessorNonDeferredGaps": 4276
+  },
+  "local": {
+    "candidatePath": "evidence/glade-tools-b5d00cf",
+    "candidateSha256": "67de4230351766fd4e5c75678cf5c52123c604a1182e654a29d2bf7f191d8441",
+    "sourcePath": "evidence/current-base/system-compile-shape-next-9c3edbe4-20260803/positive.apex",
+    "sourceSha256": "215e8f0414e77d0a54c9fc16e854792d4ef27ff502f9a600401783ac37455533",
+    "reportPath": "evidence/current-base/system-compile-shape-next-9c3edbe4-20260803/glade-positive.json",
+    "reportSha256": "99db300b628158a8383cf90081992c99fc45a794ccf4a3215eb590f0c8f5c16d"
+  },
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "apiVersion": "67.0",
+    "executePath": "evidence/current-base/system-compile-shape-next-9c3edbe4-20260803/salesforce-positive-deploy.json",
+    "executeSha256": "a317d130c5271ab65f5a39217437af91f5ca9cf3e901014c87ae359f29527f70"
+  },
+  "localFixtures": [
+    {
+      "path": "docs/fixtures/current-base-system-compile-shape-next-api67.json",
+      "sha256": "db01eaeb314e8a8f86048e6297cb3c10d4a49134be5ce6f18d0c7d89ed5e4736"
+    }
+  ],
+  "comparisons": [
+    {
+      "caseId": "system-compile-shape-next-api67",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 compiled 33 of 114 positive System compile-shape rows individually via deploy check-only; 83 rejected for invisible or invalid types.",
+      "gladeObservation": "Glade candidate compiled and executed all 114 positive rows locally; 33 rows also confirmed compiled on Salesforce form the closure-eligible subset.",
+      "surfaceIds": [
+        "apex:Ideas",
+        "apex:Ideas.Ideas()",
+        "apex:Ideas.clone()",
+        "apex:Ideas.markRead(String)",
+        "apex:System.CallbackStatus.CANCELLED",
+        "apex:System.CallbackStatus.COMPLETED",
+        "apex:System.CallbackStatus.PENDING",
+        "apex:System.CallbackStatus.TIMED_OUT",
+        "apex:System.Continuation.continuationMethod",
+        "apex:System.Continuation.timeout",
+        "apex:System.DomainType.CMS_DOMAIN",
+        "apex:System.DomainType.CONTENT_DOMAIN",
+        "apex:System.DomainType.CUSTOMER_360_ADMIN_DOMAIN",
+        "apex:System.DomainType.CUSTOMER_360_DOMAIN",
+        "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_BUILDER_DOMAIN",
+        "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_DOMAIN",
+        "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_LIVE_PREVIEW_DOMAIN",
+        "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_PREVIEW_DOMAIN",
+        "apex:System.DomainType.LIGHTNING_CONTAINER_COMPONENT_DOMAIN",
+        "apex:System.DomainType.LIGHTNING_DOMAIN",
+        "apex:System.DomainType.ORG_MY_DOMAIN",
+        "apex:System.DomainType.SALESFORCE_SITES_DOMAIN",
+        "apex:System.DomainType.SETUP_DOMAIN",
+        "apex:System.DomainType.VISUALFORCE_DOMAIN",
+        "apex:System.ResetPasswordResult.password",
+        "apex:System.SetupScope.ORGANIZATION",
+        "apex:System.SetupScope.PROFILE",
+        "apex:System.SetupScope.USER",
+        "apex:System.SupportPredictiveService.findSimilarCases(String)",
+        "apex:System.WebServiceCallout.beginInvoke(Object,Object,Object,Object,List)",
+        "apex:System.WebServiceCallout.endInvoke(Object)",
+        "apex:System.ApplicationReadWriteMode",
+        "apex:System.TracerSpan"
+      ]
+    }
+  ]
+}
