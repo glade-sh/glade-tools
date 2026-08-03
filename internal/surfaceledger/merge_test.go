@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 )
@@ -479,6 +480,50 @@ func TestMergeClassifiesGeneratedDataReferenceShapeWithDocsRow(t *testing.T) {
 	}
 	if !hasSource(row.Sources, SourceStandardSObjectGeneratedShape) {
 		t.Fatalf("sources = %#v, want generated shape source", row.Sources)
+	}
+}
+
+func TestMergePreservesNamespaceForRoundTrippedApexRowWithEmptyParameters(t *testing.T) {
+	// JSON snapshots omit empty parameter slices. A row such as System.Answers.Answers()
+	// must retain its namespace identity rather than being re-parsed from the surface ID,
+	// which drops the System namespace for unqualified types.
+	id := ApexMemberID("System", "Answers", "Answers", []string{})
+	row := SurfaceLedgerRow{
+		SurfaceID:     id,
+		Product:       ProductApex,
+		Area:          AreaRuntime,
+		Namespace:     "System",
+		TypeName:      "Answers",
+		MemberName:    "Answers",
+		Kind:          KindMethod,
+		Parameters:    []string{},
+		Docs:          SourcePresent,
+		Org:           SourceAbsent,
+		GladeShape:    ShapeSignatureKnown,
+		GladeBehavior: BehaviorSupported,
+		Evidence:      EvidenceFixture,
+	}
+
+	// Round-trip through JSON so the empty parameter slice becomes nil, as in a snapshot.
+	b, err := json.Marshal(row)
+	if err != nil {
+		t.Fatalf("marshal row: %v", err)
+	}
+	var decoded SurfaceLedgerRow
+	if err := json.Unmarshal(b, &decoded); err != nil {
+		t.Fatalf("unmarshal row: %v", err)
+	}
+
+	ledger := Merge(nil, nil, []SurfaceLedgerRow{decoded}, nil)
+	if len(ledger.Rows) != 1 {
+		t.Fatalf("rows = %d, want 1", len(ledger.Rows))
+	}
+	got := ledger.Rows[0]
+	if got.Namespace != "System" {
+		t.Fatalf("namespace = %q, want %q", got.Namespace, "System")
+	}
+	if got.Bucket != BucketImplemented || got.GapClass != "" {
+		t.Fatalf("bucket/gap = %q/%q, want implemented: %#v", got.Bucket, got.GapClass, got)
 	}
 }
 

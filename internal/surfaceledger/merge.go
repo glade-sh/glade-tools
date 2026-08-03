@@ -81,7 +81,7 @@ func normalizeEventBusSurfaceRow(row SurfaceLedgerRow) SurfaceLedgerRow {
 	if row.Product != ProductApex {
 		return row
 	}
-	if row.Parameters == nil || row.Namespace == "" || row.TypeName == "" || row.MemberName == "" {
+	if row.Namespace == "" || row.TypeName == "" || row.MemberName == "" {
 		fillFromApexID(&row)
 	}
 	if row.Namespace != "System" || row.TypeName != "EventBus" || canonicalApexMemberName(row.MemberName) != "publishWithAccessLevel" {
