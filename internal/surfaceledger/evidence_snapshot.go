@@ -32,6 +32,9 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 			if isNonCanonicalGeneratedSurfaceID(id) {
 				continue
 			}
+			if isAPI67RemovedSurfaceID(id) {
+				continue
+			}
 			product := productFromID(id)
 			kind := evidenceKindFromSurfaceID(id)
 			area := evidenceAreaForProduct(product)
