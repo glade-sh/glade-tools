@@ -567,7 +567,7 @@ func buildSupportProfileHTMLPage(profile SupportProfile, ledger SurfaceLedger) (
 			SurfaceID:              profileRow.SurfaceID,
 			Product:                ledgerRow.Product,
 			Area:                   ledgerRow.Area,
-			Namespace:              ledgerRow.Namespace,
+			Namespace:              profileRow.Namespace,
 			Family:                 family,
 			TypeName:               ledgerRow.TypeName,
 			MemberName:             ledgerRow.MemberName,
