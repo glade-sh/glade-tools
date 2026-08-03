@@ -81,6 +81,12 @@ func evidenceAreaForProduct(product string) string {
 	return areaForProduct(product)
 }
 
+// SortEvidenceRows sorts rows in the deterministic order used by evidence
+// snapshots and ledger outputs.
+func SortEvidenceRows(rows []SurfaceLedgerRow) {
+	sortRows(rows)
+}
+
 func fixtureEvidenceExpectsUnsupportedFeature(fixture compat.Fixture, evidence compat.FixtureEvidence, id string) bool {
 	if strings.HasPrefix(id, "unknown:") {
 		return false

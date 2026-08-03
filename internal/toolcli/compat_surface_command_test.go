@@ -1223,6 +1223,117 @@ func TestCompatSurfaceSupportProfileWithCorpusUsage(t *testing.T) {
 	}
 }
 
+func TestCompatSurfaceEvidenceWithoutOracleEvidenceHasNoOracleRows(t *testing.T) {
+	root := t.TempDir()
+	fixture := filepath.Join(root, "fixture.json")
+	if err := os.WriteFile(fixture, []byte(`{
+  "name": "fixture-only",
+  "evidence": [{"symbol": "System.Label", "surfaceId": "apex:System.Label", "kind": "test"}],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", fixture}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	var rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &rows); err != nil {
+		t.Fatalf("decode: %v\n%s", err, stdout.String())
+	}
+	for _, row := range rows {
+		if row.Evidence == "oracle" {
+			t.Fatalf("unexpected oracle row without --oracle-evidence: %#v", row)
+		}
+	}
+}
+
+func TestCompatSurfaceEvidenceWithOracleEvidenceProducesOracleRows(t *testing.T) {
+	root := t.TempDir()
+	fixture := filepath.Join(root, "fixture.json")
+	if err := os.WriteFile(fixture, []byte(`{
+  "name": "fixture-only",
+  "evidence": [{"symbol": "System.Label", "surfaceId": "apex:System.Label", "kind": "test"}],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	oracle := filepath.Join(root, "oracle.json")
+	if err := os.WriteFile(oracle, []byte(`[{"caseId":"cb-test","status":"pass","sfObservation":"sf","gladeObservation":"gl","surfaceIds":["apex:System.OracleTest.probe()"]}]`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", "--oracle-evidence", oracle, fixture}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	var rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &rows); err != nil {
+		t.Fatalf("decode: %v\n%s", err, stdout.String())
+	}
+	found := false
+	for _, row := range rows {
+		if row.SurfaceID == "apex:System.OracleTest.probe()" && row.Evidence == "oracle" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("missing oracle row in output: %#v", rows)
+	}
+}
+
+func TestCompatSurfaceEvidenceRepeatedOracleEvidenceDoesNotDuplicate(t *testing.T) {
+	root := t.TempDir()
+	oracle := filepath.Join(root, "oracle.json")
+	if err := os.WriteFile(oracle, []byte(`[{"caseId":"cb-test","status":"pass","sfObservation":"sf","gladeObservation":"gl","surfaceIds":["apex:System.DedupTest.probe()"]}]`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", "--oracle-evidence", oracle, "--oracle-evidence", oracle}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	var rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &rows); err != nil {
+		t.Fatalf("decode: %v\n%s", err, stdout.String())
+	}
+	count := 0
+	for _, row := range rows {
+		if row.SurfaceID == "apex:System.DedupTest.probe()" && row.Evidence == "oracle" {
+			count++
+		}
+	}
+	if count != 1 {
+		t.Fatalf("oracle row count = %d, want 1 (no duplicates): %#v", count, rows)
+	}
+}
+
+func TestCompatSurfaceEvidenceRejectsMissingOracleEvidencePath(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", "--oracle-evidence", "/no/such/file.json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "oracle-evidence") {
+		t.Fatalf("missing oracle-evidence error: %q", stderr.String())
+	}
+}
+
 //  9. an invalid support profile is written atomically by --output but the CLI
 //     still exits nonzero.
 func TestCompatSurfaceSupportProfileAtomicWriteOnInvalid(t *testing.T) {

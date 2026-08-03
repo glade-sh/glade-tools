@@ -90,6 +90,12 @@ func defaultEvidenceFixtures(patterns []string) []string {
 		matches, _ := filepath.Glob(filepath.Join("docs", "fixtures", "*.json"))
 		return matches
 	}
+	return ExpandEvidencePaths(patterns)
+}
+
+// ExpandEvidencePaths expands glob patterns to concrete file paths, keeping
+// non-matching paths as-is so that downstream readers can report the error.
+func ExpandEvidencePaths(patterns []string) []string {
 	var out []string
 	for _, pattern := range patterns {
 		matches, err := filepath.Glob(pattern)

@@ -322,6 +322,7 @@ func runCompatSurfaceEvidence(args []string, w io.Writer) error {
 	output := ""
 	jsonOut := false
 	var fixtures []string
+	var oracleEvidence []string
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--output":
@@ -330,6 +331,12 @@ func runCompatSurfaceEvidence(args []string, w io.Writer) error {
 				return errors.New("--output requires a value")
 			}
 			output = args[i]
+		case "--oracle-evidence":
+			i++
+			if i >= len(args) {
+				return errors.New("--oracle-evidence requires a value")
+			}
+			oracleEvidence = append(oracleEvidence, args[i])
 		case "--json":
 			jsonOut = true
 		default:
@@ -339,6 +346,15 @@ func runCompatSurfaceEvidence(args []string, w io.Writer) error {
 	rows, err := surfaceledger.BuildEvidenceSnapshot(fixtures)
 	if err != nil {
 		return err
+	}
+	if len(oracleEvidence) > 0 {
+		expanded := dedupStrings(surfaceledger.ExpandEvidencePaths(oracleEvidence))
+		oracleRows, err := surfaceledger.BuildOracleEvidenceSnapshot(expanded)
+		if err != nil {
+			return fmt.Errorf("oracle-evidence: %w", err)
+		}
+		rows = append(rows, oracleRows...)
+		surfaceledger.SortEvidenceRows(rows)
 	}
 	return writeRows(rows, output, jsonOut, w)
 }
@@ -1260,6 +1276,19 @@ func argValue(args []string, i int, flag string) (string, error) {
 		return "", fmt.Errorf("%s requires a value", flag)
 	}
 	return args[i], nil
+}
+
+func dedupStrings(values []string) []string {
+	seen := make(map[string]struct{}, len(values))
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		if _, ok := seen[value]; ok {
+			continue
+		}
+		seen[value] = struct{}{}
+		out = append(out, value)
+	}
+	return out
 }
 
 func parseIntArg(args []string, i int, flag string) (int, error) {
