@@ -53,7 +53,7 @@ func TestMetadataDeployDTOBatchRowsHaveExactFixtureAndOracleEvidence(t *testing.
 	comparisonPath := filepath.Join(toolsRoot, metadataDeployDTOBatchComparisonPath)
 	var comparison metadataDeployDTOBatchEnvelope
 	readJSON(t, comparisonPath, &comparison)
-	if comparison.Candidate.Commit != "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA || comparison.Profile.SelectedRowCount != 34 || comparison.Profile.PredecessorNonDeferredGaps != 4683 || comparison.Profile.ExpectedSuccessorGaps != 4649 || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
+	if comparison.Candidate.Commit != "0a0f624e9c6fc82f8efc824852aef2808cd823fa" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA || comparison.Profile.SelectedRowCount != 34 || comparison.Profile.PredecessorNonDeferredGaps != 4683 || comparison.Profile.ExpectedSuccessorGaps != 4649 || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
 		t.Fatalf("metadata deploy DTO provenance = %#v", comparison)
 	}
 	if comparison.Salesforce.TargetOrgAlias != "glade-sf-correctness" || comparison.Salesforce.TargetOrgID == "" || comparison.Salesforce.APIVersion != "67.0" {

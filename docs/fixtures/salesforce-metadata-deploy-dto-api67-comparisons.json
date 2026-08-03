@@ -3,8 +3,8 @@
   "apiVersion": "67.0",
   "mode": "anonymous",
   "candidate": {
-    "commit": "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d",
-    "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "sha256": "ce522fbd7a7588777dc2756b42799ecf123bb8632c3b933c8da8bc7a8d3e4100"
   },
   "profile": {
     "path": "evidence/current-base/canonical-bundle-bulk-visible-dto-20260803/apex-support-profile.json",
@@ -22,14 +22,14 @@
     "executeSha256": "51ab2d15f2706699e4e22ed5c017397f1c97b590f1944ecf22a8c179e049176e"
   },
   "local": {
-    "candidatePath": "evidence/glade-candidate-metadata-fix",
-    "candidateCommit": "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d",
-    "candidateSha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb",
+    "candidatePath": "evidence/glade-candidate-current-base-0a0f624",
+    "candidateCommit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "candidateSha256": "ce522fbd7a7588777dc2756b42799ecf123bb8632c3b933c8da8bc7a8d3e4100",
     "projectPath": "evidence/current-base/metadata-enum-batch-20260803/project",
     "sourcePath": "evidence/current-base/metadata-mock-batch-20260803/deploy-dto-family.apex",
     "sourceSha256": "a8881224c1f7caa371e815aa29f9642fe0797ec07600b07cb7ea6a46e8347cd4",
     "reportPath": "evidence/current-base/metadata-mock-batch-20260803/glade-deploy-dto.json",
-    "reportSha256": "b70fbd03a4a63530c7ccf9c5bed9e5077e37b8354154de7cffaca88351bef66f"
+    "reportSha256": "670d97021215ce1e8e54388257de82dbf4feb0341de3da83cc75cc51cb40d5d3"
   },
   "localFixtures": [
     {
