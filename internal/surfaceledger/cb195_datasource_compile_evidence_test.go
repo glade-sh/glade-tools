@@ -232,10 +232,7 @@ type cb195Delete struct {
 
 func TestCB195DataSourceCompileRowsHaveExactDualEvidence(t *testing.T) {
 	root := filepath.Join("..", "..")
-	evidenceRoot, err := filepath.Abs(filepath.Join(root, "..", "..", ".."))
-	if err != nil {
-		t.Fatal(err)
-	}
+	evidenceRoot := cb195EvidenceRoot(t, root)
 	fixturePath := filepath.Join(root, "docs", "fixtures", "current-base-cb195-datasource-compile-positive-api67.json")
 	comparisonPath := filepath.Join(root, "docs", "fixtures", "salesforce-cb195-datasource-compile-comparisons.json")
 
@@ -399,6 +396,22 @@ func TestCB195DataSourceCompileRowsHaveExactDualEvidence(t *testing.T) {
 			t.Fatalf("%s ledger evidence/behavior = %#v", id, row)
 		}
 	}
+}
+
+func cb195EvidenceRoot(t *testing.T, toolsRoot string) string {
+	t.Helper()
+	root, err := filepath.Abs(toolsRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for range 4 {
+		if _, err := os.Stat(filepath.Join(root, cb195RowMapPath)); err == nil {
+			return root
+		}
+		root = filepath.Dir(root)
+	}
+	t.Fatalf("find CB195 evidence root from %q", toolsRoot)
+	return ""
 }
 
 func assertCB195Candidate(t *testing.T, candidate cb195Candidate) {
