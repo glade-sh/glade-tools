@@ -533,11 +533,6 @@
           "reason": "corpus-used local request contract"
         },
         {
-          "typeName": "DMLOptions",
-          "disposition": "local-runtime-required",
-          "reason": "local DML configuration contract"
-        },
-        {
           "typeName": "FeatureManagement",
           "disposition": "deterministic-mock-required",
           "reason": "local permission and in-memory package feature state"
