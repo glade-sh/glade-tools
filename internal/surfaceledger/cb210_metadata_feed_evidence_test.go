@@ -44,7 +44,7 @@ func TestCB210MetadataFeedRowsHaveExactFixtureAndOracleEvidence(t *testing.T) {
 	comparisonPath := filepath.Join(toolsRoot, "docs", "fixtures", "salesforce-current-base-cb210-metadata-feed-deterministic-api67-comparisons.json")
 	var comparison cb210MetadataFeedComparison
 	readJSON(t, comparisonPath, &comparison)
-	if comparison.Candidate.Commit != "6d3aa2da1838f54832577aa7ca1fdb86d0b7fc22" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA256 || comparison.Profile.SelectedRowCount != 40 || comparison.Profile.PredecessorNonDeferredGaps != 4406 || comparison.Profile.ExpectedSuccessorGaps != 4366 || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
+	if comparison.Candidate.Commit != "9c3edbe43fabeb3b9069c2d47911e8362be688fe" || comparison.Candidate.SHA256 != comparison.Local.CandidateSHA256 || comparison.Profile.SelectedRowCount != 40 || comparison.Profile.PredecessorNonDeferredGaps != 4309 || comparison.Profile.ExpectedSuccessorGaps != 4269 || len(comparison.LocalFixtures) != 1 || len(comparison.Comparisons) != 1 {
 		t.Fatalf("CB210 provenance = %#v", comparison)
 	}
 	fixturePath := filepath.Join(toolsRoot, comparison.LocalFixtures[0].Path)
