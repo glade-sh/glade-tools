@@ -74,9 +74,9 @@
   },
   "cleanup": {
     "proofPath": "evidence/current-base/database-next-batch-20260803/cleanup-proof.json",
-    "proofSha256": "44b5a03418b3454433ab8e3eb24579a329c7f574a069b53f846aacd5a6063a7c",
+    "proofSha256": "5c5a32c231084920e7d3fcaea3761af86e4dc0207cc78581d10c55b958acb006",
     "timelinePath": "evidence/current-base/database-next-batch-20260803/cleanup-timeline.json",
-    "timelineSha256": "ed8b8a2f0de809d0f1a7a1cdb185aa166a9a4352c580920a94ee47153b898737",
+    "timelineSha256": "de5f155065885908a56f4683a080d97900d93260eed6f10c492a242550029812",
     "artifactHashesPath": "evidence/current-base/database-next-batch-20260803/cleanup-artifact-sha256.txt",
     "postCleanup": {
       "probeClasses": 0,
