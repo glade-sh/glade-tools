@@ -186,7 +186,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	if corpusUsage != nil {
 		surfaceKey = make(map[string]string, len(apexRows))
 		for _, ar := range apexRows {
-			surfaceKey[ar.SurfaceID] = usageKeyForSurface(ar.Namespace, ar.TypeName, ar.MemberName)
+			surfaceKey[ar.SurfaceID] = usageKeyForSurface(supportPolicyNamespace(ar), ar.TypeName, ar.MemberName)
 		}
 		usageIdx = make(map[string]*CorpusUsageEntry, len(corpusUsage.Usage))
 		for i := range corpusUsage.Usage {
@@ -303,11 +303,12 @@ type matchInfo struct {
 
 // ruleMatchesRow returns true when the rule's selectors match the given ledger row.
 func ruleMatchesRow(rule SupportPolicyRule, row SurfaceLedgerRow) bool {
+	namespace := supportPolicyNamespace(row)
 	if rule.Namespace != "" {
-		if strings.EqualFold(row.Namespace, rule.Namespace) {
+		if strings.EqualFold(namespace, rule.Namespace) {
 			return true
 		}
-		if descendantMatch(rule.Namespace, row.Namespace) {
+		if descendantMatch(rule.Namespace, namespace) {
 			return true
 		}
 	}
@@ -315,7 +316,7 @@ func ruleMatchesRow(rule SupportPolicyRule, row SurfaceLedgerRow) bool {
 		if matchTypeFamily(rule.TypeFamily, row.SalesforceSurfaceFamily) {
 			return true
 		}
-		if matchTypeFamily(rule.TypeFamily, row.Namespace) {
+		if matchTypeFamily(rule.TypeFamily, namespace) {
 			return true
 		}
 	}
@@ -328,7 +329,7 @@ func ruleMatchesRow(rule SupportPolicyRule, row SurfaceLedgerRow) bool {
 func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched map[string]bool) (SupportProfileRow, []string) {
 	pr := SupportProfileRow{
 		SurfaceID:   row.SurfaceID,
-		Namespace:   row.Namespace,
+		Namespace:   supportPolicyNamespace(row),
 		LedgerShape: row.GladeShape,
 		Behavior:    row.GladeBehavior,
 		Evidence:    row.Evidence,
@@ -668,6 +669,24 @@ func WriteSupportProfileMarkdown(w io.Writer, profile SupportProfile) error {
 
 	_, err := fmt.Fprint(w, b.String())
 	return err
+}
+
+// supportPolicyNamespace returns the namespace represented by the canonical
+// Apex identity for policy matching. Offline snapshots may retain System as
+// the source namespace even when canonicalApexQualifiedParts places a
+// Database or Schema result type in its public namespace. Keep ordinary
+// System types (for example Answers) unchanged.
+func supportPolicyNamespace(row SurfaceLedgerRow) string {
+	if !strings.EqualFold(row.Namespace, "System") {
+		return row.Namespace
+	}
+	canonicalNamespace, _ := canonicalApexQualifiedParts(row.Namespace, row.TypeName)
+	switch canonicalNamespace {
+	case "Database", "Schema":
+		return canonicalNamespace
+	default:
+		return row.Namespace
+	}
 }
 
 // usageKeyForSurface returns a stable join key for a namespace/type/member.

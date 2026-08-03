@@ -1085,6 +1085,34 @@ func TestSupportProfileDescendantNamespaceBoundary(t *testing.T) {
 	}
 }
 
+func TestSupportProfileUsesCanonicalDatabaseAndSchemaNamespace(t *testing.T) {
+	policy := SupportPolicy{Rules: []SupportPolicyRule{
+		{Namespace: "System", Disposition: DispositionCompileShapeRequired, Reason: "system fallback"},
+		{Namespace: "Schema", Disposition: DispositionLocalRuntimeRequired, Reason: "schema runtime"},
+		{Namespace: "Database", Disposition: DispositionLocalRuntimeRequired, Reason: "database runtime"},
+	}}
+	rows := []SurfaceLedgerRow{
+		apexMemberRow("apex:Schema.DescribeFieldResult.getLabel()", "System", "DescribeFieldResult", "getLabel"),
+		apexMemberRow("apex:Database.QueryLocator.iterator()", "System", "QueryLocator", "iterator"),
+		apexMemberRow("apex:Answers.Answers()", "System", "Answers", "Answers"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+	byID := make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	for _, id := range []string{"apex:Schema.DescribeFieldResult.getLabel()", "apex:Database.QueryLocator.iterator()"} {
+		row := byID[id]
+		if row.Namespace == "System" || row.Disposition != DispositionLocalRuntimeRequired {
+			t.Errorf("%s classified as namespace=%q disposition=%q; want canonical local runtime", id, row.Namespace, row.Disposition)
+		}
+	}
+	if row := byID["apex:Answers.Answers()"]; row.Namespace != "System" || row.Disposition != DispositionCompileShapeRequired {
+		t.Errorf("System.Answers identity changed: namespace=%q disposition=%q", row.Namespace, row.Disposition)
+	}
+}
+
 // RED 3: a member exception works on a descendant namespace row.
 func TestSupportProfileMemberExceptionOnDescendantNamespace(t *testing.T) {
 	policy := SupportPolicy{

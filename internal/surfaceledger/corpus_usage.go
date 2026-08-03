@@ -408,9 +408,9 @@ func ensureEntry(acc map[string]*CorpusUsageEntry, ref refKey) *CorpusUsageEntry
 	e, ok := acc[ref.usageKey]
 	if !ok {
 		e = &CorpusUsageEntry{
-			UsageKey:  ref.usageKey,
-			Namespace: ref.namespace,
-			TypeName:  ref.typeName,
+			UsageKey:   ref.usageKey,
+			Namespace:  ref.namespace,
+			TypeName:   ref.typeName,
 			MemberName: ref.memberName,
 		}
 		acc[ref.usageKey] = e
@@ -496,5 +496,5 @@ func rootDigest(root string) string {
 
 // UsageKeyForRow returns the stable usage key for a profile row.
 func UsageKeyForRow(row SurfaceLedgerRow) string {
-	return usageKeyForSurface(row.Namespace, row.TypeName, row.MemberName)
+	return usageKeyForSurface(supportPolicyNamespace(row), row.TypeName, row.MemberName)
 }
