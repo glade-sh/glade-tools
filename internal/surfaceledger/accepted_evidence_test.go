@@ -48,12 +48,12 @@ func TestAcceptedEvidence_Integration(t *testing.T) {
 		t.Errorf("SupportTotal = %d, want 94352", manifest.SupportTotal)
 	}
 
-	wantAccepted := 1 + 2 + 11 + 12 + 0
+	wantAccepted := 4
 	if manifest.Accepted != wantAccepted {
-		t.Errorf("Accepted = %d, want %d (1 cb109 + 2 cb110 + 11 cb112 + 12 cb114 + 0 cb115)",
+		t.Errorf("Accepted = %d, want %d (only rows with complete provenance)",
 			manifest.Accepted, wantAccepted)
 	}
-	wantRejected := 3 + 2 + 0 + 2 + 4
+	wantRejected := 33
 	if manifest.Rejected != wantRejected {
 		t.Errorf("Rejected = %d, want %d", manifest.Rejected, wantRejected)
 	}
@@ -75,8 +75,8 @@ func TestAcceptedEvidence_Integration(t *testing.T) {
 	if !acceptedIDs["apex:Messaging.ActionError"] {
 		t.Error("expected accepted: apex:Messaging.ActionError")
 	}
-	if !acceptedIDs["apex:Auth.JWT"] {
-		t.Error("expected accepted: apex:Auth.JWT")
+	if !acceptedIDs["apex:Messaging.ActionError.ACCESS_DENIED"] {
+		t.Error("expected accepted: apex:Messaging.ActionError.ACCESS_DENIED")
 	}
 	if acceptedIDs["apex-language:SystemNamespaceDefaultImport"] {
 		t.Error("unexpected accepted: cb109 uncovered language row")

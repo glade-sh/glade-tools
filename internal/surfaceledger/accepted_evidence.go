@@ -11,15 +11,15 @@ import (
 )
 
 type AcceptedEvidenceManifest struct {
-	SchemaVersion int                      `json:"schemaVersion"`
-	ManifestSHA   string                   `json:"manifestSHA256"`
-	SourceFiles   []AcceptedSourceInput    `json:"sourceFiles"`
-	TotalInput    int                      `json:"totalInput"`
-	Accepted      int                      `json:"accepted"`
-	Rejected      int                      `json:"rejected"`
-	AcceptedRows  []AcceptedEvidenceRow    `json:"acceptedRows"`
-	RejectedRows  []AcceptedRejectedRow    `json:"rejectedRows"`
-	SupportTotal  int                      `json:"supportProfileTotal"`
+	SchemaVersion int                   `json:"schemaVersion"`
+	ManifestSHA   string                `json:"manifestSHA256"`
+	SourceFiles   []AcceptedSourceInput `json:"sourceFiles"`
+	TotalInput    int                   `json:"totalInput"`
+	Accepted      int                   `json:"accepted"`
+	Rejected      int                   `json:"rejected"`
+	AcceptedRows  []AcceptedEvidenceRow `json:"acceptedRows"`
+	RejectedRows  []AcceptedRejectedRow `json:"rejectedRows"`
+	SupportTotal  int                   `json:"supportProfileTotal"`
 }
 
 type AcceptedSourceInput struct {
@@ -28,20 +28,20 @@ type AcceptedSourceInput struct {
 }
 
 type AcceptedEvidenceRow struct {
-	SurfaceID      string                   `json:"surfaceId"`
-	CoverageKind   string                   `json:"coverageKind"`
-	PacketID       string                   `json:"packetId,omitempty"`
-	CandidatePath  string                   `json:"candidatePath,omitempty"`
-	CandidateSHA   string                   `json:"candidateSha256,omitempty"`
-	APIVersion     string                   `json:"apiVersion,omitempty"`
-	OrgAlias       string                   `json:"orgAlias,omitempty"`
-	OrgID          string                   `json:"orgId,omitempty"`
-	SourceBatch    string                   `json:"sourceBatch,omitempty"`
-	ScenarioIDs    []string                 `json:"scenarioIds,omitempty"`
-	EvidencePaths  []string                 `json:"evidencePaths,omitempty"`
-	SourceHashes   []string                 `json:"sourceHashes,omitempty"`
-	WitnessSides   []string                 `json:"witnessSides,omitempty"`
-	EvidenceReason string                   `json:"evidenceReason,omitempty"`
+	SurfaceID      string   `json:"surfaceId"`
+	CoverageKind   string   `json:"coverageKind"`
+	PacketID       string   `json:"packetId,omitempty"`
+	CandidatePath  string   `json:"candidatePath,omitempty"`
+	CandidateSHA   string   `json:"candidateSha256,omitempty"`
+	APIVersion     string   `json:"apiVersion,omitempty"`
+	OrgAlias       string   `json:"orgAlias,omitempty"`
+	OrgID          string   `json:"orgId,omitempty"`
+	SourceBatch    string   `json:"sourceBatch,omitempty"`
+	ScenarioIDs    []string `json:"scenarioIds,omitempty"`
+	EvidencePaths  []string `json:"evidencePaths,omitempty"`
+	SourceHashes   []string `json:"sourceHashes,omitempty"`
+	WitnessSides   []string `json:"witnessSides,omitempty"`
+	EvidenceReason string   `json:"evidenceReason,omitempty"`
 }
 
 type AcceptedRejectedRow struct {
@@ -50,22 +50,22 @@ type AcceptedRejectedRow struct {
 }
 
 type rawMap109 struct {
-	PacketID    string `json:"packetId"`
-	ClosureID   string `json:"closureId"`
-	Candidate   struct {
+	PacketID  string `json:"packetId"`
+	ClosureID string `json:"closureId"`
+	Candidate struct {
 		Path   string `json:"path"`
 		SHA256 string `json:"sha256"`
 	} `json:"candidate"`
 	APIVersion  string `json:"apiVersion"`
 	SourceBatch string `json:"sourceBatch"`
 	Rows        []struct {
-		SurfaceID          string `json:"surfaceId"`
-		CoverageKind       string `json:"coverageKind"`
-		ScenarioIDs        []string `json:"scenarioIds"`
-		EvidencePaths      []string `json:"evidencePaths"`
+		SurfaceID            string   `json:"surfaceId"`
+		CoverageKind         string   `json:"coverageKind"`
+		ScenarioIDs          []string `json:"scenarioIds"`
+		EvidencePaths        []string `json:"evidencePaths"`
 		AttemptedScenarioIDs []string `json:"attemptedScenarioIds"`
-		Reason             string `json:"reason"`
-		SourceWitnesses    []struct {
+		Reason               string   `json:"reason"`
+		SourceWitnesses      []struct {
 			Side         string `json:"side"`
 			Kind         string `json:"kind"`
 			SourcePath   string `json:"sourcePath"`
@@ -88,13 +88,13 @@ type rawMap110 struct {
 	OrgAlias     string `json:"orgAlias"`
 	APIVersion   string `json:"apiVersion"`
 	Rows         []struct {
-		SurfaceID     string `json:"surfaceId"`
-		CoverageKind  string `json:"coverageKind"`
-		ScenarioIDs    []string `json:"scenarioIds"`
-		EvidencePaths []string `json:"evidencePaths"`
+		SurfaceID            string   `json:"surfaceId"`
+		CoverageKind         string   `json:"coverageKind"`
+		ScenarioIDs          []string `json:"scenarioIds"`
+		EvidencePaths        []string `json:"evidencePaths"`
 		AttemptedScenarioIDs []string `json:"attemptedScenarioIds"`
-		Reason        string `json:"reason"`
-		SourceWitnesses []struct {
+		Reason               string   `json:"reason"`
+		SourceWitnesses      []struct {
 			Side         string `json:"side"`
 			Kind         string `json:"kind"`
 			SourcePath   string `json:"sourcePath"`
@@ -124,43 +124,43 @@ type rawMap112 struct {
 		APIVersion string `json:"apiVersion"`
 	} `json:"selectedOrg"`
 	Rows []struct {
-		SurfaceID          string `json:"surfaceId"`
-		CoverageKind       string `json:"coverageKind"`
-		ComparisonStatus   string `json:"comparisonStatus"`
-		LocalObserved      bool   `json:"localObserved"`
-		SalesforceObserved bool   `json:"salesforceObserved"`
-		ScenarioIDs         []string `json:"scenarioIds"`
+		SurfaceID          string   `json:"surfaceId"`
+		CoverageKind       string   `json:"coverageKind"`
+		ComparisonStatus   string   `json:"comparisonStatus"`
+		LocalObserved      bool     `json:"localObserved"`
+		SalesforceObserved bool     `json:"salesforceObserved"`
+		ScenarioIDs        []string `json:"scenarioIds"`
 		EvidencePaths      []string `json:"evidencePaths"`
-		Reason             string `json:"reason"`
+		Reason             string   `json:"reason"`
 		SourceEvidence     []struct {
 			SourceSHA256 string `json:"sourceSha256"`
 		} `json:"sourceEvidence"`
-		LocalEvidencePaths    []string `json:"localEvidencePaths"`
+		LocalEvidencePaths      []string `json:"localEvidencePaths"`
 		SalesforceEvidencePaths []string `json:"salesforceEvidencePaths"`
 	} `json:"rows"`
 }
 
 type rawMap114 struct {
 	Rows []struct {
-		RowID           string `json:"rowId"`
-		SourceBatch     string `json:"sourceBatch"`
-		CoverageKind    string `json:"coverageKind"`
-		Passed          bool   `json:"passed"`
-		EvidenceReason  string `json:"evidenceReason"`
-		ScenarioIDs      []string `json:"scenarioIds"`
+		RowID          string   `json:"rowId"`
+		SourceBatch    string   `json:"sourceBatch"`
+		CoverageKind   string   `json:"coverageKind"`
+		Passed         bool     `json:"passed"`
+		EvidenceReason string   `json:"evidenceReason"`
+		ScenarioIDs    []string `json:"scenarioIds"`
 	} `json:"rows"`
 }
 
 type rawMap115 struct {
 	Packet string `json:"packet"`
 	Rows   []struct {
-		SurfaceID    string `json:"surfaceId"`
-		SourceBatch  string `json:"sourceBatch"`
-		CoverageKind string `json:"coverageKind"`
+		SurfaceID     string   `json:"surfaceId"`
+		SourceBatch   string   `json:"sourceBatch"`
+		CoverageKind  string   `json:"coverageKind"`
 		ScenarioIDs   []string `json:"scenarioIds"`
 		EvidencePaths []string `json:"evidencePaths"`
-		Reason       string `json:"reason"`
-		Comparison   []struct {
+		Reason        string   `json:"reason"`
+		Comparison    []struct {
 			ScenarioID       string `json:"scenarioId"`
 			Status           string `json:"status"`
 			LocalPassed      bool   `json:"localPassed"`
@@ -173,7 +173,7 @@ type rawMap115 struct {
 }
 
 type rawSupportProfile struct {
-	Total  int `json:"total"`
+	Total         int            `json:"total"`
 	ByDisposition map[string]int `json:"byDisposition"`
 }
 
@@ -263,23 +263,19 @@ func ingestMap109(data []byte) (*ingestResult, error) {
 	result := &ingestResult{InputCount: len(m.Rows)}
 	for _, r := range m.Rows {
 		row, accept, reason := evaluate109Row(r, m.PacketID, m.Candidate.Path, m.Candidate.SHA256, m.APIVersion, m.SourceBatch)
-		if accept {
-			result.Accepted = append(result.Accepted, row)
-		} else {
-			result.Rejected = append(result.Rejected, AcceptedRejectedRow{SurfaceID: row.SurfaceID, Reason: reason})
-		}
+		appendAcceptedEvidence(result, row, accept, reason)
 	}
 	return result, nil
 }
 
 func evaluate109Row(r struct {
-	SurfaceID          string `json:"surfaceId"`
-	CoverageKind       string `json:"coverageKind"`
-	ScenarioIDs        []string `json:"scenarioIds"`
-	EvidencePaths      []string `json:"evidencePaths"`
+	SurfaceID            string   `json:"surfaceId"`
+	CoverageKind         string   `json:"coverageKind"`
+	ScenarioIDs          []string `json:"scenarioIds"`
+	EvidencePaths        []string `json:"evidencePaths"`
 	AttemptedScenarioIDs []string `json:"attemptedScenarioIds"`
-	Reason             string `json:"reason"`
-	SourceWitnesses    []struct {
+	Reason               string   `json:"reason"`
+	SourceWitnesses      []struct {
 		Side         string `json:"side"`
 		Kind         string `json:"kind"`
 		SourcePath   string `json:"sourcePath"`
@@ -300,7 +296,7 @@ func evaluate109Row(r struct {
 		CandidateSHA:  candSHA,
 		APIVersion:    apiVer,
 		SourceBatch:   sourceBatch,
-		ScenarioIDs:    copyStrs(r.ScenarioIDs),
+		ScenarioIDs:   copyStrs(r.ScenarioIDs),
 		EvidencePaths: copyStrs(r.EvidencePaths),
 	}
 
@@ -338,23 +334,19 @@ func ingestMap110(data []byte) (*ingestResult, error) {
 	result := &ingestResult{InputCount: len(m.Rows)}
 	for _, r := range m.Rows {
 		row, accept, reason := evaluate110Row(r, m.PacketID, "", m.CandidateSHA, m.APIVersion, m.SourceBatch, m.OrgAlias)
-		if accept {
-			result.Accepted = append(result.Accepted, row)
-		} else {
-			result.Rejected = append(result.Rejected, AcceptedRejectedRow{SurfaceID: row.SurfaceID, Reason: reason})
-		}
+		appendAcceptedEvidence(result, row, accept, reason)
 	}
 	return result, nil
 }
 
 func evaluate110Row(r struct {
-	SurfaceID     string `json:"surfaceId"`
-	CoverageKind  string `json:"coverageKind"`
-	ScenarioIDs    []string `json:"scenarioIds"`
-	EvidencePaths []string `json:"evidencePaths"`
+	SurfaceID            string   `json:"surfaceId"`
+	CoverageKind         string   `json:"coverageKind"`
+	ScenarioIDs          []string `json:"scenarioIds"`
+	EvidencePaths        []string `json:"evidencePaths"`
 	AttemptedScenarioIDs []string `json:"attemptedScenarioIds"`
-	Reason        string `json:"reason"`
-	SourceWitnesses []struct {
+	Reason               string   `json:"reason"`
+	SourceWitnesses      []struct {
 		Side         string `json:"side"`
 		Kind         string `json:"kind"`
 		SourcePath   string `json:"sourcePath"`
@@ -378,7 +370,7 @@ func evaluate110Row(r struct {
 		APIVersion:    apiVer,
 		SourceBatch:   sourceBatch,
 		OrgAlias:      orgAlias,
-		ScenarioIDs:    copyStrs(r.ScenarioIDs),
+		ScenarioIDs:   copyStrs(r.ScenarioIDs),
 		EvidencePaths: copyStrs(r.EvidencePaths),
 	}
 
@@ -433,28 +425,24 @@ func ingestMap112(data []byte) (*ingestResult, error) {
 	result := &ingestResult{InputCount: len(m.Rows)}
 	for _, r := range m.Rows {
 		row, accept, reason := evaluate112Row(r, m.PacketID, m.Candidate.Path, m.Candidate.SHA256, m.SelectedOrg.APIVersion, m.SourceBatch, m.SelectedOrg.Alias, m.SelectedOrg.OrgID)
-		if accept {
-			result.Accepted = append(result.Accepted, row)
-		} else {
-			result.Rejected = append(result.Rejected, AcceptedRejectedRow{SurfaceID: row.SurfaceID, Reason: reason})
-		}
+		appendAcceptedEvidence(result, row, accept, reason)
 	}
 	return result, nil
 }
 
 func evaluate112Row(r struct {
-	SurfaceID          string `json:"surfaceId"`
-	CoverageKind       string `json:"coverageKind"`
-	ComparisonStatus   string `json:"comparisonStatus"`
-	LocalObserved      bool   `json:"localObserved"`
-	SalesforceObserved bool   `json:"salesforceObserved"`
-	ScenarioIDs         []string `json:"scenarioIds"`
+	SurfaceID          string   `json:"surfaceId"`
+	CoverageKind       string   `json:"coverageKind"`
+	ComparisonStatus   string   `json:"comparisonStatus"`
+	LocalObserved      bool     `json:"localObserved"`
+	SalesforceObserved bool     `json:"salesforceObserved"`
+	ScenarioIDs        []string `json:"scenarioIds"`
 	EvidencePaths      []string `json:"evidencePaths"`
-	Reason             string `json:"reason"`
+	Reason             string   `json:"reason"`
 	SourceEvidence     []struct {
 		SourceSHA256 string `json:"sourceSha256"`
 	} `json:"sourceEvidence"`
-	LocalEvidencePaths    []string `json:"localEvidencePaths"`
+	LocalEvidencePaths      []string `json:"localEvidencePaths"`
 	SalesforceEvidencePaths []string `json:"salesforceEvidencePaths"`
 }, packetID, candPath, candSHA, apiVer, sourceBatch, orgAlias, orgID string) (AcceptedEvidenceRow, bool, string) {
 
@@ -468,7 +456,7 @@ func evaluate112Row(r struct {
 		SourceBatch:   sourceBatch,
 		OrgAlias:      orgAlias,
 		OrgID:         orgID,
-		ScenarioIDs:    copyStrs(r.ScenarioIDs),
+		ScenarioIDs:   copyStrs(r.ScenarioIDs),
 		EvidencePaths: copyStrs(r.EvidencePaths),
 	}
 
@@ -498,29 +486,25 @@ func ingestMap114(data []byte) (*ingestResult, error) {
 	result := &ingestResult{InputCount: len(m.Rows)}
 	for _, r := range m.Rows {
 		row, accept, reason := evaluate114Row(r)
-		if accept {
-			result.Accepted = append(result.Accepted, row)
-		} else {
-			result.Rejected = append(result.Rejected, AcceptedRejectedRow{SurfaceID: row.SurfaceID, Reason: reason})
-		}
+		appendAcceptedEvidence(result, row, accept, reason)
 	}
 	return result, nil
 }
 
 func evaluate114Row(r struct {
-	RowID           string `json:"rowId"`
-	SourceBatch     string `json:"sourceBatch"`
-	CoverageKind    string `json:"coverageKind"`
-	Passed          bool   `json:"passed"`
-	EvidenceReason  string `json:"evidenceReason"`
-	ScenarioIDs      []string `json:"scenarioIds"`
+	RowID          string   `json:"rowId"`
+	SourceBatch    string   `json:"sourceBatch"`
+	CoverageKind   string   `json:"coverageKind"`
+	Passed         bool     `json:"passed"`
+	EvidenceReason string   `json:"evidenceReason"`
+	ScenarioIDs    []string `json:"scenarioIds"`
 }) (AcceptedEvidenceRow, bool, string) {
 
 	row := AcceptedEvidenceRow{
 		SurfaceID:      r.RowID,
 		CoverageKind:   r.CoverageKind,
 		SourceBatch:    r.SourceBatch,
-		ScenarioIDs:     copyStrs(r.ScenarioIDs),
+		ScenarioIDs:    copyStrs(r.ScenarioIDs),
 		EvidenceReason: r.EvidenceReason,
 	}
 
@@ -541,23 +525,51 @@ func ingestMap115(data []byte) (*ingestResult, error) {
 	result := &ingestResult{InputCount: len(m.Rows)}
 	for _, r := range m.Rows {
 		row, accept, reason := evaluate115Row(r, m.Packet)
-		if accept {
-			result.Accepted = append(result.Accepted, row)
-		} else {
-			result.Rejected = append(result.Rejected, AcceptedRejectedRow{SurfaceID: row.SurfaceID, Reason: reason})
-		}
+		appendAcceptedEvidence(result, row, accept, reason)
 	}
 	return result, nil
 }
 
+func appendAcceptedEvidence(result *ingestResult, row AcceptedEvidenceRow, accept bool, reason string) {
+	if accept {
+		if reason = acceptedEvidenceProvenanceReason(row); reason != "" {
+			accept = false
+		}
+	}
+	if accept {
+		result.Accepted = append(result.Accepted, row)
+		return
+	}
+	if reason == "" {
+		reason = "insufficient-provenance"
+	}
+	result.Rejected = append(result.Rejected, AcceptedRejectedRow{SurfaceID: row.SurfaceID, Reason: reason})
+}
+
+func acceptedEvidenceProvenanceReason(row AcceptedEvidenceRow) string {
+	if row.SurfaceID == "" || row.PacketID == "" || row.APIVersion == "" {
+		return "insufficient-provenance: missing surface, packet, or API identity"
+	}
+	if row.CandidateSHA == "" && row.CandidatePath == "" {
+		return "insufficient-provenance: missing candidate identity"
+	}
+	if len(row.EvidencePaths) == 0 {
+		return "insufficient-provenance: missing evidence paths"
+	}
+	if len(row.SourceHashes) == 0 || len(row.WitnessSides) == 0 {
+		return "insufficient-provenance: missing source hashes or witness sides"
+	}
+	return ""
+}
+
 func evaluate115Row(r struct {
-	SurfaceID    string `json:"surfaceId"`
-	SourceBatch  string `json:"sourceBatch"`
-	CoverageKind string `json:"coverageKind"`
+	SurfaceID     string   `json:"surfaceId"`
+	SourceBatch   string   `json:"sourceBatch"`
+	CoverageKind  string   `json:"coverageKind"`
 	ScenarioIDs   []string `json:"scenarioIds"`
 	EvidencePaths []string `json:"evidencePaths"`
-	Reason       string `json:"reason"`
-	Comparison   []struct {
+	Reason        string   `json:"reason"`
+	Comparison    []struct {
 		ScenarioID       string `json:"scenarioId"`
 		Status           string `json:"status"`
 		LocalPassed      bool   `json:"localPassed"`
@@ -573,7 +585,7 @@ func evaluate115Row(r struct {
 		CoverageKind:  r.CoverageKind,
 		PacketID:      packetID,
 		SourceBatch:   r.SourceBatch,
-		ScenarioIDs:    copyStrs(r.ScenarioIDs),
+		ScenarioIDs:   copyStrs(r.ScenarioIDs),
 		EvidencePaths: copyStrs(r.EvidencePaths),
 	}
 

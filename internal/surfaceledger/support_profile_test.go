@@ -302,7 +302,7 @@ func TestRealSupportPolicyHonestSystemAndAuthBoundaries(t *testing.T) {
 	}
 	var relevantRules []SupportPolicyRule
 	for _, rule := range policy.Rules {
-		if rule.Namespace == "System" || rule.Namespace == "Auth" {
+		if rule.Namespace == "System" || rule.Namespace == "Auth" || rule.Namespace == "Database" {
 			relevantRules = append(relevantRules, rule)
 		}
 	}
@@ -1305,6 +1305,14 @@ func TestSupportProfileNormalizesSystemFamilyAliases(t *testing.T) {
 		if row.Namespace != tc.namespace || string(row.Disposition) != tc.disposition || row.UsageKey != tc.usageKey {
 			t.Errorf("%s = namespace=%q disposition=%q usage=%q, want namespace=%q disposition=%q usage=%q", tc.id, row.Namespace, row.Disposition, row.UsageKey, tc.namespace, tc.disposition, tc.usageKey)
 		}
+	}
+}
+
+func TestSupportPolicyNamespaceCanonicalizesSystemDMLOptions(t *testing.T) {
+	policy := SupportPolicy{Rules: []SupportPolicyRule{{Namespace: "System"}, {Namespace: "Database"}}}
+	row := SurfaceLedgerRow{Namespace: "System", TypeName: "DMLOptions"}
+	if got := supportPolicyNamespace(row, policy); got != "Database" {
+		t.Fatalf("namespace = %q, want Database", got)
 	}
 }
 
