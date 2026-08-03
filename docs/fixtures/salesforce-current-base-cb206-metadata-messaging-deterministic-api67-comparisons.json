@@ -1,0 +1,54 @@
+{
+  "name": "salesforce-current-base-cb206-metadata-messaging-deterministic-api67-comparisons",
+  "apiVersion": "67.0",
+  "mode": "anonymous",
+  "candidate": {
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
+  },
+  "profile": {
+    "path": "evidence/current-base/canonical-bundle-current-base-0a0f624-cgo-20260803/apex-support-profile.json",
+    "selection": "Metadata/Messaging deterministic-mock missing-evidence",
+    "selectedRowCount": 4,
+    "predecessorNonDeferredGaps": 4465,
+    "expectedSuccessorNonDeferredGaps": 4461,
+    "predecessorPath": "evidence/current-base/canonical-bundle-current-base-0a0f624-cgo-20260803/apex-support-profile.json"
+  },
+  "local": {
+    "candidatePath": "evidence/glade-candidate-current-base-0a0f624-cgo",
+    "candidateCommit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "candidateSha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4",
+    "projectPath": "evidence/current-base/metadata-auth-messaging-batch-20260803/project-fresh",
+    "sourcePath": "evidence/current-base/metadata-mock-batch-20260803/metadata-auth-messaging-batch.apex",
+    "sourceSha256": "97696426b2f965119c5cb7023ceff82fb4550db9b833a7ff9ce0f44714843153",
+    "reportPath": "evidence/current-base/metadata-auth-messaging-batch-20260803/glade-metadata-auth-messaging.json",
+    "reportSha256": "51e301205d6ea0254b5c6724e8cc95b2bff2073465282a20e78a4cb4fe9c826a"
+  },
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "targetOrgId": "00DO400000bt08ZMAQ",
+    "apiVersion": "67.0",
+    "executePath": "evidence/current-base/metadata-mock-batch-20260803/salesforce-metadata-auth-messaging.json",
+    "executeSha256": "a08f1fc354b33821a5f26501a6d1af43167bb9cd64b0b15058ea7ce511fe1760"
+  },
+  "localFixtures": [
+    {
+      "path": "docs/fixtures/current-base-cb206-metadata-messaging-deterministic-api67.json",
+      "sha256": "0bfdd09385690f44799cabf788660fb53d3b0fa3dea14185d32a1de68f4f9862"
+    }
+  ],
+  "comparisons": [
+    {
+      "caseId": "metadata-messaging-deterministic-api67",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 constructed Metadata.DeployCallbackContext, Messaging.InboundEmail, and Messaging.EmailFileAttachment successfully.",
+      "gladeObservation": "The canonical CGO=1 candidate constructed the same three DTOs successfully in a fresh API 67 project.",
+      "surfaceIds": [
+        "apex:Metadata.DeployCallbackContext",
+        "apex:Metadata.DeployCallbackContext.DeployCallbackContext()",
+        "apex:Messaging.InboundEmail",
+        "apex:Messaging.EmailFileAttachment"
+      ]
+    }
+  ]
+}
