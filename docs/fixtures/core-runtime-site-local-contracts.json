@@ -116,13 +116,13 @@
       "kind": "exec"
     },
     {
-      "surfaceId": "apex:System.Site.getCurrentSiteUrl()",
+      "surfaceId": "apex:System.Site.getCurrentSiteUrl",
       "symbol": "Site.getCurrentSiteUrl",
       "kind": "exec",
       "notes": "Local Site maps the deprecated current URL getter to the local base URL."
     },
     {
-      "surfaceId": "apex:System.Site.getCustomWebAddress()",
+      "surfaceId": "apex:System.Site.getCustomWebAddress",
       "symbol": "Site.getCustomWebAddress",
       "kind": "exec",
       "notes": "Local Site has no custom web address unless request metadata supplies one."
@@ -176,7 +176,7 @@
       "kind": "exec"
     },
     {
-      "surfaceId": "apex:System.Site.getPrefix()",
+      "surfaceId": "apex:System.Site.getPrefix",
       "symbol": "Site.getPrefix",
       "kind": "exec",
       "notes": "Deprecated Site.getPrefix follows the local path-prefix getter."

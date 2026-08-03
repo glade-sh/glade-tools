@@ -792,9 +792,9 @@ var surfaceClosureTailRows = []surfaceClosureTailRow{
 	{ID: ApexMemberID("Schema", "DescribeSObjectResult", "getAssociateEntityType", nil), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Schema associate entity type is represented as a passive describe shape in local metadata."},
 	{ID: ApexMemberID("System", "List", "List", []string{"Set<T>"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic List Set-copy constructor is a passive collection shape."},
 	{ID: ApexMemberID("System", "Set", "Set", []string{"Object"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic Set Object constructor is a passive collection shape."},
-	{ID: ApexMemberID("System", "Site", "getCurrentSiteUrl", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
-	{ID: ApexMemberID("System", "Site", "getCustomWebAddress", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
-	{ID: ApexMemberID("System", "Site", "getPrefix", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
+	{ID: ApexMemberID("System", "Site", "getCurrentSiteUrl", nil), Kind: KindMethod, Behavior: BehaviorSupported, Notes: "Local Site maps the deprecated current URL getter to the local base URL."},
+	{ID: ApexMemberID("System", "Site", "getCustomWebAddress", nil), Kind: KindMethod, Behavior: BehaviorSupported, Notes: "Local Site has no custom web address unless request metadata supplies one."},
+	{ID: ApexMemberID("System", "Site", "getPrefix", nil), Kind: KindMethod, Behavior: BehaviorSupported, Notes: "Deprecated Site.getPrefix follows the local path-prefix getter."},
 }
 
 func addSurfaceClosureTailGladeRows(byID map[string]SurfaceLedgerRow) {

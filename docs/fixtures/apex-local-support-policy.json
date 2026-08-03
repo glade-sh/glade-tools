@@ -840,7 +840,27 @@
     {
       "namespace": "EventBus",
       "disposition": "local-runtime-required",
-      "reason": "EventBus publish and trigger surface"
+      "reason": "EventBus publish and trigger surface",
+      "memberExceptions": [
+        {
+          "typeName": "EventBus",
+          "memberName": "*",
+          "disposition": "hosted-deferred",
+          "reason": "unbounded EventBus platform delivery surface is hosted"
+        },
+        {
+          "typeName": "EventBus",
+          "memberName": "getOperationId",
+          "disposition": "hosted-deferred",
+          "reason": "Salesforce platform event operation IDs are hosted"
+        },
+        {
+          "typeName": "EventBus",
+          "memberName": "publishAfterCommit",
+          "disposition": "hosted-deferred",
+          "reason": "after-commit platform event delivery is hosted"
+        }
+      ]
     },
     {
       "namespace": "Apex",
@@ -860,7 +880,15 @@
     {
       "namespace": "Messaging",
       "disposition": "deterministic-mock-required",
-      "reason": "Messaging email send and render — deterministic mock"
+      "reason": "Messaging email send and render — deterministic mock",
+      "memberExceptions": [
+        {
+          "typeName": "Messaging",
+          "memberName": "sendPushNotification",
+          "disposition": "hosted-deferred",
+          "reason": "push notification delivery transport is hosted"
+        }
+      ]
     },
     {
       "namespace": "Cache",
@@ -986,7 +1014,15 @@
     {
       "namespace": "Canvas",
       "disposition": "deterministic-mock-required",
-      "reason": "Canvas app surface — deterministic mock"
+      "reason": "Canvas app surface — deterministic mock",
+      "memberExceptions": [
+        {
+          "typeName": "Canvas",
+          "memberName": "*",
+          "disposition": "hosted-deferred",
+          "reason": "unbounded Canvas application integration surface is hosted"
+        }
+      ]
     },
     {
       "namespace": "Context",
@@ -1991,6 +2027,42 @@
       "disposition": "hosted-deferred",
       "override": true,
       "reason": "hosted email delivery transport"
+    },
+    {
+      "surfacePrefix": "apex:System.Database.insertAsync(Object,Database.AllowCallouts,AccessLevel)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "AllowCallouts async DML requires hosted async callout execution"
+    },
+    {
+      "surfacePrefix": "apex:System.Database.insertAsync(List<Object>,Database.AllowCallouts,AccessLevel)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "AllowCallouts async DML requires hosted async callout execution"
+    },
+    {
+      "surfacePrefix": "apex:System.Database.updateAsync(Object,Database.AllowCallouts,AccessLevel)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "AllowCallouts async DML requires hosted async callout execution"
+    },
+    {
+      "surfacePrefix": "apex:System.Database.updateAsync(List<Object>,Database.AllowCallouts,AccessLevel)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "AllowCallouts async DML requires hosted async callout execution"
+    },
+    {
+      "surfacePrefix": "apex:System.Database.deleteAsync(Object,Database.AllowCallouts,AccessLevel)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "AllowCallouts async DML requires hosted async callout execution"
+    },
+    {
+      "surfacePrefix": "apex:System.Database.deleteAsync(List<Object>,Database.AllowCallouts,AccessLevel)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "AllowCallouts async DML requires hosted async callout execution"
     },
     {
       "surfacePrefix": "apex:System.PageReference.getContent and getContentAsPDF",

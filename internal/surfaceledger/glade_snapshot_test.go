@@ -47,7 +47,9 @@ func TestBuildGladeSnapshotIncludesSurfaceClosureTailShapes(t *testing.T) {
 		id       string
 		behavior BehaviorState
 	}{
-		{ApexMemberID("System", "Site", "getPrefix", nil), BehaviorUnsupported},
+		{ApexMemberID("System", "Site", "getCurrentSiteUrl", nil), BehaviorSupported},
+		{ApexMemberID("System", "Site", "getCustomWebAddress", nil), BehaviorSupported},
+		{ApexMemberID("System", "Site", "getPrefix", nil), BehaviorSupported},
 		{ApexMemberID("System", "List", "List", []string{"Set<T>"}), BehaviorPassive},
 	}
 	for _, tt := range tests {

@@ -1380,6 +1380,32 @@ func TestSupportProfileSurfacePrefixMemberExceptionNotStale(t *testing.T) {
 	}
 }
 
+func TestCurrentPolicyDefersIntentionalHostedBoundaryRows(t *testing.T) {
+	policy, err := LoadSupportPolicy(filepath.Join("..", "..", "docs", "fixtures", "apex-local-support-policy.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := []SurfaceLedgerRow{
+		{SurfaceID: "apex:System.Canvas.*", Product: ProductApex, Namespace: "System", TypeName: "Canvas", MemberName: "*", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.Database.deleteAsync(List<Object>,Database.AllowCallouts,AccessLevel)", Product: ProductApex, Namespace: "System", TypeName: "Database", MemberName: "deleteAsync", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.Database.deleteAsync(Object,Database.AllowCallouts,AccessLevel)", Product: ProductApex, Namespace: "System", TypeName: "Database", MemberName: "deleteAsync", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.Database.insertAsync(List<Object>,Database.AllowCallouts,AccessLevel)", Product: ProductApex, Namespace: "System", TypeName: "Database", MemberName: "insertAsync", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.Database.insertAsync(Object,Database.AllowCallouts,AccessLevel)", Product: ProductApex, Namespace: "System", TypeName: "Database", MemberName: "insertAsync", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.Database.updateAsync(List<Object>,Database.AllowCallouts,AccessLevel)", Product: ProductApex, Namespace: "System", TypeName: "Database", MemberName: "updateAsync", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.Database.updateAsync(Object,Database.AllowCallouts,AccessLevel)", Product: ProductApex, Namespace: "System", TypeName: "Database", MemberName: "updateAsync", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.EventBus.*", Product: ProductApex, Namespace: "System", TypeName: "EventBus", MemberName: "*", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.EventBus.getOperationId(Object)", Product: ProductApex, Namespace: "System", TypeName: "EventBus", MemberName: "getOperationId", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.EventBus.publishAfterCommit", Product: ProductApex, Namespace: "System", TypeName: "EventBus", MemberName: "publishAfterCommit", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.Messaging.sendPushNotification", Product: ProductApex, Namespace: "System", TypeName: "Messaging", MemberName: "sendPushNotification", Kind: KindMethod, GladeShape: ShapeSignatureKnown, GladeBehavior: BehaviorUnsupported, Evidence: EvidenceFixture},
+	}
+	profile := ComputeSupportProfile(rows, policy, nil)
+	for _, row := range profile.Rows {
+		if row.Disposition != DispositionHostedDeferred || row.GapClass != "" {
+			t.Errorf("%s disposition/gap = %s/%s, want hosted-deferred/none", row.SurfaceID, row.Disposition, row.GapClass)
+		}
+	}
+}
+
 // SF-CB14 RED 2: exception keys for two distinct surface prefixes remain distinct.
 func TestSupportProfileSurfacePrefixDistinctExceptionKeys(t *testing.T) {
 	policy := SupportPolicy{

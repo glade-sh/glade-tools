@@ -237,6 +237,32 @@ func TestBuildEvidenceSnapshotMarksApexShapeEvidenceAsShapeOnly(t *testing.T) {
 	}
 }
 
+func TestBuildEvidenceSnapshotUsesCanonicalSiteZeroArgumentIDs(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-site-local-contracts.json")
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:System.Site.getCurrentSiteUrl",
+		"apex:System.Site.getCustomWebAddress",
+		"apex:System.Site.getPrefix",
+	} {
+		row, ok := byID[id]
+		if !ok {
+			t.Errorf("missing canonical Site evidence row %s", id)
+			continue
+		}
+		if row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture {
+			t.Errorf("%s behavior/evidence = %s/%s, want supported/fixture", id, row.GladeBehavior, row.Evidence)
+		}
+		if _, duplicate := byID[id+"()"]; duplicate {
+			t.Errorf("retained noncanonical duplicate %s()", id)
+		}
+	}
+}
+
 func TestBuildEvidenceSnapshotReadsTrailblazerIdentityFixture(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-trailblazer-identity-local-evidence.json")
 	rows, err := BuildEvidenceSnapshot([]string{path})
