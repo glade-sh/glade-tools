@@ -1,0 +1,68 @@
+{
+  "name": "salesforce-metadata-dto-batch-20260803-comparisons",
+  "apiVersion": "67.0",
+  "mode": "anonymous",
+  "candidate": {
+    "commit": "6419bf1e8ede470d9fd5c6c789aede9ef5d2713d",
+    "sha256": "35c3cd0c023384574381d390ab899d363e6bef1b0d3b88cd9e9653c8fb2887bb"
+  },
+  "salesforceExecution": "fresh-api67",
+  "salesforceReport": {
+    "path": "evidence/current-base/metadata-batch-oracle-20260803/salesforce-report.json",
+    "sha256": "6fb29d1df295f8f08a76b2da85be0f8789da4c51e3fe4e5df9f72a5478fb2d0c"
+  },
+  "gladeReport": {
+    "path": "evidence/current-base/metadata-batch-oracle-20260803/glade-report.json",
+    "sha256": "7f10a1a8e15e4e14a199f198733dc3d314505ef7cf27fe4511d8ddb9d3a6eae9"
+  },
+  "localFixtures": [
+    {
+      "path": "docs/fixtures/core-runtime-cb62-metadata-evidence.json",
+      "sha256": "514752b058e47e855c00b796d0fc2b461203d937fb2a7da468d8a3b171a04822"
+    },
+    {
+      "path": "docs/fixtures/core-runtime-metadata-dto-service-contracts.json",
+      "sha256": "ffc211ebca12ace78b84b1c6a50cd051fa9109a61c351e2394c63cd749bb592d"
+    }
+  ],
+  "comparisons": [
+    {
+      "caseId": "metadata-dto-values-and-status",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Metadata.CustomMetadata",
+        "apex:Metadata.CustomMetadataValue",
+        "apex:Metadata.Metadata",
+        "apex:Metadata.DeployContainer",
+        "apex:Metadata.DeployResult",
+        "apex:Metadata.DeployStatus",
+        "apex:Metadata.DeployStatus.Succeeded"
+      ],
+      "expectedObservation": "DTO values, inherited Metadata assignment, and Succeeded status",
+      "sfObservation": "[\"Feature.Default\",\"Feature.Default\",\"Enabled__c\",true,\"Succeeded\",true]",
+      "gladeObservation": "[\"Feature.Default\",\"Feature.Default\",\"Enabled__c\",true,\"Succeeded\",true]"
+    },
+    {
+      "caseId": "metadata-deploystatus-queued-values",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Metadata.DeployStatus.Failed",
+        "apex:Metadata.DeployStatus.InProgress"
+      ],
+      "expectedObservation": "queued DeployStatus enum values",
+      "sfObservation": "[\"Failed\",\"InProgress\"]",
+      "gladeObservation": "[\"Failed\",\"InProgress\"]"
+    },
+    {
+      "caseId": "metadata-metadatatype-custommetadata",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Metadata.MetadataType",
+        "apex:Metadata.MetadataType.CustomMetadata"
+      ],
+      "expectedObservation": "MetadataType CustomMetadata enum value",
+      "sfObservation": "CustomMetadata",
+      "gladeObservation": "CustomMetadata"
+    }
+  ]
+}
