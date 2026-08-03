@@ -1,7 +1,10 @@
 package surfaceledger
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -65,6 +68,22 @@ func TestSystemExceptionBatchRowsHaveExactFixtureAndOracleEvidence(t *testing.T)
 
 	fixturePath := filepath.Join(toolsRoot, comparison.LocalFixtures[0].Path)
 	assertMetadataDTOBatchSHA256(t, fixturePath, comparison.LocalFixtures[0].SHA256)
+	fixtureData, err := os.ReadFile(fixturePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var fixtureSource struct {
+		Command struct {
+			Args []string `json:"args"`
+		} `json:"command"`
+	}
+	if err := json.Unmarshal(fixtureData, &fixtureSource); err != nil {
+		t.Fatal(err)
+	}
+	source := strings.Join(fixtureSource.Command.Args, "\n")
+	if strings.Count(source, ".getCause(") != 19 {
+		t.Fatalf("fixture source getCause coverage = %d, want 19", strings.Count(source, ".getCause("))
+	}
 	fixtureEvidence, err := BuildEvidenceSnapshot([]string{fixturePath})
 	if err != nil {
 		t.Fatal(err)
