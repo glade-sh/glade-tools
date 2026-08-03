@@ -207,10 +207,20 @@ func metadataDTOBatchAssertReports(t *testing.T, evidenceRoot string, comparison
 	if err := json.Unmarshal([]byte(strings.TrimPrefix(message, prefix)), &localResults); err != nil {
 		t.Fatal(err)
 	}
+	localValues := make(map[string]string, len(localResults))
 	for _, result := range localResults {
+		if _, exists := localValues[result.ID]; exists {
+			t.Fatalf("duplicate local result ID %s", result.ID)
+		}
+		localValues[result.ID] = result.ValueType + ":" + result.Value
 		if sfValues[result.ID] != result.ValueType+":"+result.Value {
 			t.Fatalf("local/Salesforce result mismatch for %s", result.ID)
 		}
+	}
+	localIDs := mapsKeys(localValues)
+	sort.Strings(localIDs)
+	if !slices.Equal(localIDs, sfIDs) {
+		t.Fatalf("local result IDs = %v, want %v", localIDs, sfIDs)
 	}
 }
 
