@@ -1,0 +1,3552 @@
+{
+  "name": "current-base-reports-compile-positive-api67",
+  "packetId": "SF-CB205",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "candidate": {
+    "commit": "98ef0103",
+    "sha256": "ab3b86d0fb96c92068de7ba82d56378e6ebac468ebe5129813c600a7e832607a"
+  },
+  "profile": {
+    "path": "evidence/current-base/profile-sitefix-final/apex-support-profile.json",
+    "sha256": "137beb73af4db348ed2f60c2f4e464306922a77beddd5c737da5949fe8c19c55",
+    "selection": "compile-shape-required",
+    "namespace": "reports",
+    "selectedRowCount": 584
+  },
+  "replay": {
+    "root": "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T",
+    "rowMapPath": "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/row-map.json",
+    "candidateCheckPath": "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/raw/candidate/check.json",
+    "salesforceDeployPath": "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/raw/salesforce/deploy-rerun.json",
+    "salesforceDeletePath": "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/raw/salesforce/delete.json",
+    "sourcePaths": [
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard01.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard02.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard03.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard04.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard05.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard06.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard07.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard08.cls",
+      "evidence/current-base/cb199-reports-compile-shape-api67/sitefix-replay-20260803T/project/force-app/main/default/classes/CB205ReportsShard09.cls"
+    ],
+    "sourceSHA256": [
+      "781d30f7236fd31de6868f867d36f048059a041208fae7e7d6e1de83312e3ce2",
+      "89f75e4c38a08fa351399fec59af70cfa193eb9498ee0b107a520b2d740146c4",
+      "2a15da7ba7626af23c6de320c6a71d668053b135dea9739bbcf3b2f02a75b2aa",
+      "cbb71f78c239371b894af82ccba6f88e950963e2fe468b49be3140c03bbaa349",
+      "705545bd387965da8bdb1a1ec05bfd26fb45d91a4355519b4a4bc6c078a38471",
+      "05363b43aa1178730d2be209620123fb831b7cd2a9f54b069d8997a5c43abf07",
+      "3ed20c4ebfaf4349aa0a6eefb5a70f144d35dbf4ec427f9be4009b5851f2478f",
+      "8536352833b221cd11e3cd26c4f0236499e0c58124127b690e8e88c9e52be65b",
+      "fcb1eeee0be02c9d54b38d7a784ac4c9ef90352346d294d149dbe55318456f20"
+    ]
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:reports.AggregateColumn",
+      "symbol": "reports.AggregateColumn",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.AggregateColumn.clone()",
+      "symbol": "reports.AggregateColumn.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.AggregateColumn.getAcrossGroupingContext()",
+      "symbol": "reports.AggregateColumn.getAcrossGroupingContext()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.AggregateColumn.getDataType()",
+      "symbol": "reports.AggregateColumn.getDataType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.AggregateColumn.getDownGroupingContext()",
+      "symbol": "reports.AggregateColumn.getDownGroupingContext()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.AggregateColumn.getLabel()",
+      "symbol": "reports.AggregateColumn.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.AggregateColumn.getName()",
+      "symbol": "reports.AggregateColumn.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.AggregateColumn.toString()",
+      "symbol": "reports.AggregateColumn.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField",
+      "symbol": "reports.BucketField",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.BucketField()",
+      "symbol": "reports.BucketField.BucketField()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.BucketField(reports.BucketType,String,String,Boolean,String,String,List<reports.BucketFieldValue>)",
+      "symbol": "reports.BucketField.BucketField(reports.BucketType,String,String,Boolean,String,String,List<reports.BucketFieldValue>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.clone()",
+      "symbol": "reports.BucketField.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.getBucketType()",
+      "symbol": "reports.BucketField.getBucketType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.getDevloperName()",
+      "symbol": "reports.BucketField.getDevloperName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.getLabel()",
+      "symbol": "reports.BucketField.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.getNullTreatedAsZero()",
+      "symbol": "reports.BucketField.getNullTreatedAsZero()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.getOtherBucketLabel()",
+      "symbol": "reports.BucketField.getOtherBucketLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.getSourceColumnName()",
+      "symbol": "reports.BucketField.getSourceColumnName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.getValues()",
+      "symbol": "reports.BucketField.getValues()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setBucketType(String)",
+      "symbol": "reports.BucketField.setBucketType(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setBucketType(reports.BucketType)",
+      "symbol": "reports.BucketField.setBucketType(reports.BucketType)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setDevloperName(String)",
+      "symbol": "reports.BucketField.setDevloperName(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setLabel(String)",
+      "symbol": "reports.BucketField.setLabel(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setNullTreatedAsZero(Boolean)",
+      "symbol": "reports.BucketField.setNullTreatedAsZero(Boolean)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setOtherBucketLabel(String)",
+      "symbol": "reports.BucketField.setOtherBucketLabel(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setSourceColumnName(String)",
+      "symbol": "reports.BucketField.setSourceColumnName(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.setValues(List<Reports.BucketFieldValue>)",
+      "symbol": "reports.BucketField.setValues(List<Reports.BucketFieldValue>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketField.toString()",
+      "symbol": "reports.BucketField.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue",
+      "symbol": "reports.BucketFieldValue",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.BucketFieldValue()",
+      "symbol": "reports.BucketFieldValue.BucketFieldValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.BucketFieldValue(String,List<String>,Double)",
+      "symbol": "reports.BucketFieldValue.BucketFieldValue(String,List<String>,Double)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.clone()",
+      "symbol": "reports.BucketFieldValue.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.getLabel()",
+      "symbol": "reports.BucketFieldValue.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.getRangeUpperBound()",
+      "symbol": "reports.BucketFieldValue.getRangeUpperBound()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.getSourceDimensionValues()",
+      "symbol": "reports.BucketFieldValue.getSourceDimensionValues()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.setLabel(String)",
+      "symbol": "reports.BucketFieldValue.setLabel(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.setRangeUpperBound(Double)",
+      "symbol": "reports.BucketFieldValue.setRangeUpperBound(Double)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.setSourceDimensionValues(List<String>)",
+      "symbol": "reports.BucketFieldValue.setSourceDimensionValues(List<String>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketFieldValue.toString()",
+      "symbol": "reports.BucketFieldValue.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType",
+      "symbol": "reports.BucketType",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.NUMBER",
+      "symbol": "reports.BucketType.NUMBER",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.PICKLIST",
+      "symbol": "reports.BucketType.PICKLIST",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.TEXT",
+      "symbol": "reports.BucketType.TEXT",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.equals(Object)",
+      "symbol": "reports.BucketType.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.hashCode()",
+      "symbol": "reports.BucketType.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.ordinal()",
+      "symbol": "reports.BucketType.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.valueOf(String)",
+      "symbol": "reports.BucketType.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.BucketType.values()",
+      "symbol": "reports.BucketType.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType",
+      "symbol": "reports.ColumnDataType",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.BOOLEAN_DATA",
+      "symbol": "reports.ColumnDataType.BOOLEAN_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.COMBOBOX_DATA",
+      "symbol": "reports.ColumnDataType.COMBOBOX_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.CURRENCY_DATA",
+      "symbol": "reports.ColumnDataType.CURRENCY_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.DATETIME_DATA",
+      "symbol": "reports.ColumnDataType.DATETIME_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.DATE_DATA",
+      "symbol": "reports.ColumnDataType.DATE_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.DOUBLE_DATA",
+      "symbol": "reports.ColumnDataType.DOUBLE_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.EMAIL_DATA",
+      "symbol": "reports.ColumnDataType.EMAIL_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.HTML_DATA",
+      "symbol": "reports.ColumnDataType.HTML_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.ID_DATA",
+      "symbol": "reports.ColumnDataType.ID_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.INT_DATA",
+      "symbol": "reports.ColumnDataType.INT_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.MULTIPICKLIST_DATA",
+      "symbol": "reports.ColumnDataType.MULTIPICKLIST_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.PERCENT_DATA",
+      "symbol": "reports.ColumnDataType.PERCENT_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.PHONE_DATA",
+      "symbol": "reports.ColumnDataType.PHONE_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.PICKLIST_DATA",
+      "symbol": "reports.ColumnDataType.PICKLIST_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.REFERENCE_DATA",
+      "symbol": "reports.ColumnDataType.REFERENCE_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.STRING_DATA",
+      "symbol": "reports.ColumnDataType.STRING_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.TEXTAREA_DATA",
+      "symbol": "reports.ColumnDataType.TEXTAREA_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.TIME_DATA",
+      "symbol": "reports.ColumnDataType.TIME_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.URL_DATA",
+      "symbol": "reports.ColumnDataType.URL_DATA",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.equals(Object)",
+      "symbol": "reports.ColumnDataType.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.hashCode()",
+      "symbol": "reports.ColumnDataType.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.ordinal()",
+      "symbol": "reports.ColumnDataType.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.valueOf(String)",
+      "symbol": "reports.ColumnDataType.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnDataType.values()",
+      "symbol": "reports.ColumnDataType.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder",
+      "symbol": "reports.ColumnSortOrder",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder.ASCENDING",
+      "symbol": "reports.ColumnSortOrder.ASCENDING",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder.DESCENDING",
+      "symbol": "reports.ColumnSortOrder.DESCENDING",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder.equals(Object)",
+      "symbol": "reports.ColumnSortOrder.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder.hashCode()",
+      "symbol": "reports.ColumnSortOrder.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder.ordinal()",
+      "symbol": "reports.ColumnSortOrder.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder.valueOf(String)",
+      "symbol": "reports.ColumnSortOrder.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ColumnSortOrder.values()",
+      "symbol": "reports.ColumnSortOrder.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter",
+      "symbol": "reports.CrossFilter",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.CrossFilter()",
+      "symbol": "reports.CrossFilter.CrossFilter()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.CrossFilter(List<Reports.ReportFilter>,Boolean,String,String,String)",
+      "symbol": "reports.CrossFilter.CrossFilter(List<Reports.ReportFilter>,Boolean,String,String,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.clone()",
+      "symbol": "reports.CrossFilter.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.getCriteria()",
+      "symbol": "reports.CrossFilter.getCriteria()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.getIncludesObject()",
+      "symbol": "reports.CrossFilter.getIncludesObject()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.getPrimaryEntityField()",
+      "symbol": "reports.CrossFilter.getPrimaryEntityField()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.getRelatedEntity()",
+      "symbol": "reports.CrossFilter.getRelatedEntity()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.getRelatedEntityJoinField()",
+      "symbol": "reports.CrossFilter.getRelatedEntityJoinField()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.setCriteria(List<Reports.ReportFilter>)",
+      "symbol": "reports.CrossFilter.setCriteria(List<Reports.ReportFilter>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.setIncludesObject(Boolean)",
+      "symbol": "reports.CrossFilter.setIncludesObject(Boolean)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.setPrimaryEntityField(String)",
+      "symbol": "reports.CrossFilter.setPrimaryEntityField(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.setRelatedEntity(String)",
+      "symbol": "reports.CrossFilter.setRelatedEntity(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.setRelatedEntityJoinField(String)",
+      "symbol": "reports.CrossFilter.setRelatedEntityJoinField(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CrossFilter.toString()",
+      "symbol": "reports.CrossFilter.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType",
+      "symbol": "reports.CsfGroupType",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.ALL",
+      "symbol": "reports.CsfGroupType.ALL",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.CUSTOM",
+      "symbol": "reports.CsfGroupType.CUSTOM",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.GRAND_TOTAL",
+      "symbol": "reports.CsfGroupType.GRAND_TOTAL",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.equals(Object)",
+      "symbol": "reports.CsfGroupType.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.hashCode()",
+      "symbol": "reports.CsfGroupType.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.ordinal()",
+      "symbol": "reports.CsfGroupType.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.valueOf(String)",
+      "symbol": "reports.CsfGroupType.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.CsfGroupType.values()",
+      "symbol": "reports.CsfGroupType.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity",
+      "symbol": "reports.DateGranularity",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.DAY",
+      "symbol": "reports.DateGranularity.DAY",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.DAY_IN_MONTH",
+      "symbol": "reports.DateGranularity.DAY_IN_MONTH",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.FISCAL_PERIOD",
+      "symbol": "reports.DateGranularity.FISCAL_PERIOD",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.FISCAL_QUARTER",
+      "symbol": "reports.DateGranularity.FISCAL_QUARTER",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.FISCAL_WEEK",
+      "symbol": "reports.DateGranularity.FISCAL_WEEK",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.FISCAL_YEAR",
+      "symbol": "reports.DateGranularity.FISCAL_YEAR",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.MONTH",
+      "symbol": "reports.DateGranularity.MONTH",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.MONTH_IN_YEAR",
+      "symbol": "reports.DateGranularity.MONTH_IN_YEAR",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.NONE",
+      "symbol": "reports.DateGranularity.NONE",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.QUARTER",
+      "symbol": "reports.DateGranularity.QUARTER",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.WEEK",
+      "symbol": "reports.DateGranularity.WEEK",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.YEAR",
+      "symbol": "reports.DateGranularity.YEAR",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.equals(Object)",
+      "symbol": "reports.DateGranularity.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.hashCode()",
+      "symbol": "reports.DateGranularity.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.ordinal()",
+      "symbol": "reports.DateGranularity.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.valueOf(String)",
+      "symbol": "reports.DateGranularity.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DateGranularity.values()",
+      "symbol": "reports.DateGranularity.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DetailColumn",
+      "symbol": "reports.DetailColumn",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DetailColumn.clone()",
+      "symbol": "reports.DetailColumn.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DetailColumn.getDataType()",
+      "symbol": "reports.DetailColumn.getDataType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DetailColumn.getLabel()",
+      "symbol": "reports.DetailColumn.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DetailColumn.getName()",
+      "symbol": "reports.DetailColumn.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.DetailColumn.toString()",
+      "symbol": "reports.DetailColumn.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.Dimension",
+      "symbol": "reports.Dimension",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.Dimension.clone()",
+      "symbol": "reports.Dimension.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.Dimension.getGroupings()",
+      "symbol": "reports.Dimension.getGroupings()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.Dimension.toString()",
+      "symbol": "reports.Dimension.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition",
+      "symbol": "reports.EvaluatedCondition",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.EvaluatedCondition(String,String,Double,Double,String,String,Reports.EvaluatedConditionOperator)",
+      "symbol": "reports.EvaluatedCondition.EvaluatedCondition(String,String,Double,Double,String,String,Reports.EvaluatedConditionOperator)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.clone()",
+      "symbol": "reports.EvaluatedCondition.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.getAggregateLabel()",
+      "symbol": "reports.EvaluatedCondition.getAggregateLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.getAggregateName()",
+      "symbol": "reports.EvaluatedCondition.getAggregateName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.getCompareTo()",
+      "symbol": "reports.EvaluatedCondition.getCompareTo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.getDisplayCompareTo()",
+      "symbol": "reports.EvaluatedCondition.getDisplayCompareTo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.getDisplayValue()",
+      "symbol": "reports.EvaluatedCondition.getDisplayValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.getOperator()",
+      "symbol": "reports.EvaluatedCondition.getOperator()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedCondition.getValue()",
+      "symbol": "reports.EvaluatedCondition.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator",
+      "symbol": "reports.EvaluatedConditionOperator",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.EQUAL",
+      "symbol": "reports.EvaluatedConditionOperator.EQUAL",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.GREATER_THAN",
+      "symbol": "reports.EvaluatedConditionOperator.GREATER_THAN",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.GREATER_THAN_EQUAL",
+      "symbol": "reports.EvaluatedConditionOperator.GREATER_THAN_EQUAL",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.LESS_THAN",
+      "symbol": "reports.EvaluatedConditionOperator.LESS_THAN",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.LESS_THAN_EQUAL",
+      "symbol": "reports.EvaluatedConditionOperator.LESS_THAN_EQUAL",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.NOT_EQUAL",
+      "symbol": "reports.EvaluatedConditionOperator.NOT_EQUAL",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.equals(Object)",
+      "symbol": "reports.EvaluatedConditionOperator.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.hashCode()",
+      "symbol": "reports.EvaluatedConditionOperator.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.ordinal()",
+      "symbol": "reports.EvaluatedConditionOperator.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.valueOf(String)",
+      "symbol": "reports.EvaluatedConditionOperator.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.EvaluatedConditionOperator.values()",
+      "symbol": "reports.EvaluatedConditionOperator.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FeatureNotSupportedException",
+      "symbol": "reports.FeatureNotSupportedException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FeatureNotSupportedException.FeatureNotSupportedException()",
+      "symbol": "reports.FeatureNotSupportedException.FeatureNotSupportedException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FeatureNotSupportedException.FeatureNotSupportedException(Exception)",
+      "symbol": "reports.FeatureNotSupportedException.FeatureNotSupportedException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FeatureNotSupportedException.FeatureNotSupportedException(String,Exception)",
+      "symbol": "reports.FeatureNotSupportedException.FeatureNotSupportedException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FeatureNotSupportedException.clone()",
+      "symbol": "reports.FeatureNotSupportedException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterOperator",
+      "symbol": "reports.FilterOperator",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterOperator.clone()",
+      "symbol": "reports.FilterOperator.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterOperator.getLabel()",
+      "symbol": "reports.FilterOperator.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterOperator.getName()",
+      "symbol": "reports.FilterOperator.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterOperator.toString()",
+      "symbol": "reports.FilterOperator.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterValue",
+      "symbol": "reports.FilterValue",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterValue.clone()",
+      "symbol": "reports.FilterValue.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterValue.getLabel()",
+      "symbol": "reports.FilterValue.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterValue.getName()",
+      "symbol": "reports.FilterValue.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FilterValue.toString()",
+      "symbol": "reports.FilterValue.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType",
+      "symbol": "reports.FormulaType",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.CHECKBOX",
+      "symbol": "reports.FormulaType.CHECKBOX",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.CURRENCY",
+      "symbol": "reports.FormulaType.CURRENCY",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.DATE",
+      "symbol": "reports.FormulaType.DATE",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.DATE_TIME",
+      "symbol": "reports.FormulaType.DATE_TIME",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.NUMBER",
+      "symbol": "reports.FormulaType.NUMBER",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.PERCENT",
+      "symbol": "reports.FormulaType.PERCENT",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.TEXT",
+      "symbol": "reports.FormulaType.TEXT",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.TIME",
+      "symbol": "reports.FormulaType.TIME",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.equals(Object)",
+      "symbol": "reports.FormulaType.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.hashCode()",
+      "symbol": "reports.FormulaType.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.ordinal()",
+      "symbol": "reports.FormulaType.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.valueOf(String)",
+      "symbol": "reports.FormulaType.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.FormulaType.values()",
+      "symbol": "reports.FormulaType.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingColumn",
+      "symbol": "reports.GroupingColumn",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingColumn.clone()",
+      "symbol": "reports.GroupingColumn.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingColumn.getDataType()",
+      "symbol": "reports.GroupingColumn.getDataType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingColumn.getGroupingLevel()",
+      "symbol": "reports.GroupingColumn.getGroupingLevel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingColumn.getLabel()",
+      "symbol": "reports.GroupingColumn.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingColumn.getName()",
+      "symbol": "reports.GroupingColumn.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingColumn.toString()",
+      "symbol": "reports.GroupingColumn.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo",
+      "symbol": "reports.GroupingInfo",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.GroupingInfo()",
+      "symbol": "reports.GroupingInfo.GroupingInfo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.GroupingInfo(String,reports.ColumnSortOrder,reports.DateGranularity,String)",
+      "symbol": "reports.GroupingInfo.GroupingInfo(String,reports.ColumnSortOrder,reports.DateGranularity,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.clone()",
+      "symbol": "reports.GroupingInfo.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.getDateGranularity()",
+      "symbol": "reports.GroupingInfo.getDateGranularity()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.getName()",
+      "symbol": "reports.GroupingInfo.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.getSortAggregate()",
+      "symbol": "reports.GroupingInfo.getSortAggregate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.getSortOrder()",
+      "symbol": "reports.GroupingInfo.getSortOrder()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.setDateGranularity(String)",
+      "symbol": "reports.GroupingInfo.setDateGranularity(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.setDateGranularity(reports.DateGranularity)",
+      "symbol": "reports.GroupingInfo.setDateGranularity(reports.DateGranularity)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.setName(String)",
+      "symbol": "reports.GroupingInfo.setName(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.setSortAggregate(String)",
+      "symbol": "reports.GroupingInfo.setSortAggregate(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.setSortOrder(String)",
+      "symbol": "reports.GroupingInfo.setSortOrder(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.setSortOrder(reports.ColumnSortOrder)",
+      "symbol": "reports.GroupingInfo.setSortOrder(reports.ColumnSortOrder)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingInfo.toString()",
+      "symbol": "reports.GroupingInfo.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingValue",
+      "symbol": "reports.GroupingValue",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingValue.clone()",
+      "symbol": "reports.GroupingValue.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingValue.getGroupings()",
+      "symbol": "reports.GroupingValue.getGroupings()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingValue.getKey()",
+      "symbol": "reports.GroupingValue.getKey()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingValue.getLabel()",
+      "symbol": "reports.GroupingValue.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingValue.getValue()",
+      "symbol": "reports.GroupingValue.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.GroupingValue.toString()",
+      "symbol": "reports.GroupingValue.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InstanceAccessException",
+      "symbol": "reports.InstanceAccessException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InstanceAccessException.InstanceAccessException()",
+      "symbol": "reports.InstanceAccessException.InstanceAccessException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InstanceAccessException.InstanceAccessException(Exception)",
+      "symbol": "reports.InstanceAccessException.InstanceAccessException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InstanceAccessException.InstanceAccessException(String,Exception)",
+      "symbol": "reports.InstanceAccessException.InstanceAccessException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InstanceAccessException.clone()",
+      "symbol": "reports.InstanceAccessException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException",
+      "symbol": "reports.InvalidFilterException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException.InvalidFilterException()",
+      "symbol": "reports.InvalidFilterException.InvalidFilterException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException.InvalidFilterException(Exception)",
+      "symbol": "reports.InvalidFilterException.InvalidFilterException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException.InvalidFilterException(String)",
+      "symbol": "reports.InvalidFilterException.InvalidFilterException(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException.InvalidFilterException(String,Exception)",
+      "symbol": "reports.InvalidFilterException.InvalidFilterException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException.clone()",
+      "symbol": "reports.InvalidFilterException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidFilterException.getFilterErrors()",
+      "symbol": "reports.InvalidFilterException.getFilterErrors()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException",
+      "symbol": "reports.InvalidReportMetadataException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException.InvalidReportMetadataException()",
+      "symbol": "reports.InvalidReportMetadataException.InvalidReportMetadataException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException.InvalidReportMetadataException(Exception)",
+      "symbol": "reports.InvalidReportMetadataException.InvalidReportMetadataException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException.InvalidReportMetadataException(String)",
+      "symbol": "reports.InvalidReportMetadataException.InvalidReportMetadataException(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException.InvalidReportMetadataException(String,Exception)",
+      "symbol": "reports.InvalidReportMetadataException.InvalidReportMetadataException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException.clone()",
+      "symbol": "reports.InvalidReportMetadataException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidReportMetadataException.getReportMetadataErrors()",
+      "symbol": "reports.InvalidReportMetadataException.getReportMetadataErrors()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException",
+      "symbol": "reports.InvalidSnapshotDateException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException.InvalidSnapshotDateException()",
+      "symbol": "reports.InvalidSnapshotDateException.InvalidSnapshotDateException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException.InvalidSnapshotDateException(Exception)",
+      "symbol": "reports.InvalidSnapshotDateException.InvalidSnapshotDateException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException.InvalidSnapshotDateException(String)",
+      "symbol": "reports.InvalidSnapshotDateException.InvalidSnapshotDateException(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException.InvalidSnapshotDateException(String,Exception)",
+      "symbol": "reports.InvalidSnapshotDateException.InvalidSnapshotDateException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException.clone()",
+      "symbol": "reports.InvalidSnapshotDateException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.InvalidSnapshotDateException.getSnapshotDateErrors()",
+      "symbol": "reports.InvalidSnapshotDateException.getSnapshotDateErrors()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.MetadataException",
+      "symbol": "reports.MetadataException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.MetadataException.MetadataException()",
+      "symbol": "reports.MetadataException.MetadataException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.MetadataException.MetadataException(Exception)",
+      "symbol": "reports.MetadataException.MetadataException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.MetadataException.MetadataException(String,Exception)",
+      "symbol": "reports.MetadataException.MetadataException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.MetadataException.clone()",
+      "symbol": "reports.MetadataException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationAction",
+      "symbol": "reports.NotificationAction",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationAction.NotificationAction()",
+      "symbol": "reports.NotificationAction.NotificationAction()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationAction.execute(Reports.NotificationActionContext)",
+      "symbol": "reports.NotificationAction.execute(Reports.NotificationActionContext)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationActionContext",
+      "symbol": "reports.NotificationActionContext",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationActionContext.NotificationActionContext(Reports.ReportInstance,Reports.ThresholdInformation)",
+      "symbol": "reports.NotificationActionContext.NotificationActionContext(Reports.ReportInstance,Reports.ThresholdInformation)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationActionContext.clone()",
+      "symbol": "reports.NotificationActionContext.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationActionContext.getReportInstance()",
+      "symbol": "reports.NotificationActionContext.getReportInstance()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.NotificationActionContext.getThresholdInformation()",
+      "symbol": "reports.NotificationActionContext.getThresholdInformation()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf",
+      "symbol": "reports.ReportCsf",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.ReportCsf()",
+      "symbol": "reports.ReportCsf.ReportCsf()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.ReportCsf(String,String,Reports.FormulaType,Integer,String,Reports.CsfGroupType,String,Reports.CsfGroupType,String)",
+      "symbol": "reports.ReportCsf.ReportCsf(String,String,Reports.FormulaType,Integer,String,Reports.CsfGroupType,String,Reports.CsfGroupType,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.clone()",
+      "symbol": "reports.ReportCsf.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getAcrossGroup()",
+      "symbol": "reports.ReportCsf.getAcrossGroup()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getAcrossGroupType()",
+      "symbol": "reports.ReportCsf.getAcrossGroupType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getDecimalPlaces()",
+      "symbol": "reports.ReportCsf.getDecimalPlaces()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getDescription()",
+      "symbol": "reports.ReportCsf.getDescription()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getDownGroup()",
+      "symbol": "reports.ReportCsf.getDownGroup()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getDownGroupType()",
+      "symbol": "reports.ReportCsf.getDownGroupType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getFormula()",
+      "symbol": "reports.ReportCsf.getFormula()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getFormulaType()",
+      "symbol": "reports.ReportCsf.getFormulaType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.getLabel()",
+      "symbol": "reports.ReportCsf.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setAcrossGroup(String)",
+      "symbol": "reports.ReportCsf.setAcrossGroup(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setAcrossGroupType(String)",
+      "symbol": "reports.ReportCsf.setAcrossGroupType(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setAcrossGroupType(reports.CsfGroupType)",
+      "symbol": "reports.ReportCsf.setAcrossGroupType(reports.CsfGroupType)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setDecimalPlaces(Integer)",
+      "symbol": "reports.ReportCsf.setDecimalPlaces(Integer)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setDescription(String)",
+      "symbol": "reports.ReportCsf.setDescription(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setDownGroup(String)",
+      "symbol": "reports.ReportCsf.setDownGroup(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setDownGroupType(String)",
+      "symbol": "reports.ReportCsf.setDownGroupType(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setDownGroupType(reports.CsfGroupType)",
+      "symbol": "reports.ReportCsf.setDownGroupType(reports.CsfGroupType)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setFormula(String)",
+      "symbol": "reports.ReportCsf.setFormula(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setFormulaType(String)",
+      "symbol": "reports.ReportCsf.setFormulaType(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setFormulaType(reports.FormulaType)",
+      "symbol": "reports.ReportCsf.setFormulaType(reports.FormulaType)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.setLabel(String)",
+      "symbol": "reports.ReportCsf.setLabel(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCsf.toString()",
+      "symbol": "reports.ReportCsf.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCurrency",
+      "symbol": "reports.ReportCurrency",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCurrency.clone()",
+      "symbol": "reports.ReportCurrency.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCurrency.getAmount()",
+      "symbol": "reports.ReportCurrency.getAmount()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCurrency.getCurrencyCode()",
+      "symbol": "reports.ReportCurrency.getCurrencyCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportCurrency.toString()",
+      "symbol": "reports.ReportCurrency.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDataCell",
+      "symbol": "reports.ReportDataCell",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDataCell.clone()",
+      "symbol": "reports.ReportDataCell.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDataCell.getLabel()",
+      "symbol": "reports.ReportDataCell.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDataCell.getValue()",
+      "symbol": "reports.ReportDataCell.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDataCell.toString()",
+      "symbol": "reports.ReportDataCell.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDescribeResult",
+      "symbol": "reports.ReportDescribeResult",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDescribeResult.clone()",
+      "symbol": "reports.ReportDescribeResult.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDescribeResult.getReportExtendedMetadata()",
+      "symbol": "reports.ReportDescribeResult.getReportExtendedMetadata()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDescribeResult.getReportMetadata()",
+      "symbol": "reports.ReportDescribeResult.getReportMetadata()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDescribeResult.getReportTypeMetadata()",
+      "symbol": "reports.ReportDescribeResult.getReportTypeMetadata()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDescribeResult.toString()",
+      "symbol": "reports.ReportDescribeResult.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDetailRow",
+      "symbol": "reports.ReportDetailRow",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDetailRow.clone()",
+      "symbol": "reports.ReportDetailRow.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDetailRow.getDataCells()",
+      "symbol": "reports.ReportDetailRow.getDataCells()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDetailRow.toString()",
+      "symbol": "reports.ReportDetailRow.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDivisionInfo",
+      "symbol": "reports.ReportDivisionInfo",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDivisionInfo.clone()",
+      "symbol": "reports.ReportDivisionInfo.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDivisionInfo.getDefaultValue()",
+      "symbol": "reports.ReportDivisionInfo.getDefaultValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDivisionInfo.getValues()",
+      "symbol": "reports.ReportDivisionInfo.getValues()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportDivisionInfo.toString()",
+      "symbol": "reports.ReportDivisionInfo.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportExtendedMetadata",
+      "symbol": "reports.ReportExtendedMetadata",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportExtendedMetadata.clone()",
+      "symbol": "reports.ReportExtendedMetadata.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportExtendedMetadata.getAggregateColumnInfo()",
+      "symbol": "reports.ReportExtendedMetadata.getAggregateColumnInfo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportExtendedMetadata.getDetailColumnInfo()",
+      "symbol": "reports.ReportExtendedMetadata.getDetailColumnInfo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportExtendedMetadata.getGroupingColumnInfo()",
+      "symbol": "reports.ReportExtendedMetadata.getGroupingColumnInfo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportExtendedMetadata.toString()",
+      "symbol": "reports.ReportExtendedMetadata.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFact",
+      "symbol": "reports.ReportFact",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFact.clone()",
+      "symbol": "reports.ReportFact.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFact.getAggregates()",
+      "symbol": "reports.ReportFact.getAggregates()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFact.getKey()",
+      "symbol": "reports.ReportFact.getKey()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFact.toString()",
+      "symbol": "reports.ReportFact.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithDetails",
+      "symbol": "reports.ReportFactWithDetails",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithDetails.clone()",
+      "symbol": "reports.ReportFactWithDetails.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithDetails.getAggregates()",
+      "symbol": "reports.ReportFactWithDetails.getAggregates()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithDetails.getKey()",
+      "symbol": "reports.ReportFactWithDetails.getKey()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithDetails.getRows()",
+      "symbol": "reports.ReportFactWithDetails.getRows()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithDetails.toString()",
+      "symbol": "reports.ReportFactWithDetails.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithSummaries",
+      "symbol": "reports.ReportFactWithSummaries",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithSummaries.clone()",
+      "symbol": "reports.ReportFactWithSummaries.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithSummaries.getAggregates()",
+      "symbol": "reports.ReportFactWithSummaries.getAggregates()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithSummaries.getKey()",
+      "symbol": "reports.ReportFactWithSummaries.getKey()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFactWithSummaries.toString()",
+      "symbol": "reports.ReportFactWithSummaries.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter",
+      "symbol": "reports.ReportFilter",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.ReportFilter()",
+      "symbol": "reports.ReportFilter.ReportFilter()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.ReportFilter(String,String,String)",
+      "symbol": "reports.ReportFilter.ReportFilter(String,String,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.ReportFilter(String,String,String,reports.ReportFilterType)",
+      "symbol": "reports.ReportFilter.ReportFilter(String,String,String,reports.ReportFilterType)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.ReportFilter(String,String,String,reports.ReportFilterType,String)",
+      "symbol": "reports.ReportFilter.ReportFilter(String,String,String,reports.ReportFilterType,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.clone()",
+      "symbol": "reports.ReportFilter.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.getColumn()",
+      "symbol": "reports.ReportFilter.getColumn()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.getEntityName()",
+      "symbol": "reports.ReportFilter.getEntityName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.getFilterType()",
+      "symbol": "reports.ReportFilter.getFilterType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.getOperator()",
+      "symbol": "reports.ReportFilter.getOperator()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.getValue()",
+      "symbol": "reports.ReportFilter.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.setColumn(String)",
+      "symbol": "reports.ReportFilter.setColumn(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.setEntityName(String)",
+      "symbol": "reports.ReportFilter.setEntityName(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.setFilterType(String)",
+      "symbol": "reports.ReportFilter.setFilterType(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.setFilterType(reports.ReportFilterType)",
+      "symbol": "reports.ReportFilter.setFilterType(reports.ReportFilterType)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.setOperator(String)",
+      "symbol": "reports.ReportFilter.setOperator(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.setValue(String)",
+      "symbol": "reports.ReportFilter.setValue(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilter.toString()",
+      "symbol": "reports.ReportFilter.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType",
+      "symbol": "reports.ReportFilterType",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType.equals(Object)",
+      "symbol": "reports.ReportFilterType.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType.hashCode()",
+      "symbol": "reports.ReportFilterType.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType.ordinal()",
+      "symbol": "reports.ReportFilterType.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType.valueOf(String)",
+      "symbol": "reports.ReportFilterType.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFilterType.values()",
+      "symbol": "reports.ReportFilterType.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat",
+      "symbol": "reports.ReportFormat",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.MATRIX",
+      "symbol": "reports.ReportFormat.MATRIX",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.MULTI_BLOCK",
+      "symbol": "reports.ReportFormat.MULTI_BLOCK",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.SUMMARY",
+      "symbol": "reports.ReportFormat.SUMMARY",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.TABULAR",
+      "symbol": "reports.ReportFormat.TABULAR",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.equals(Object)",
+      "symbol": "reports.ReportFormat.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.hashCode()",
+      "symbol": "reports.ReportFormat.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.ordinal()",
+      "symbol": "reports.ReportFormat.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.valueOf(String)",
+      "symbol": "reports.ReportFormat.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportFormat.values()",
+      "symbol": "reports.ReportFormat.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance",
+      "symbol": "reports.ReportInstance",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.clone()",
+      "symbol": "reports.ReportInstance.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.getCompletionDate()",
+      "symbol": "reports.ReportInstance.getCompletionDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.getId()",
+      "symbol": "reports.ReportInstance.getId()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.getOwnerId()",
+      "symbol": "reports.ReportInstance.getOwnerId()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.getReportId()",
+      "symbol": "reports.ReportInstance.getReportId()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.getReportResults()",
+      "symbol": "reports.ReportInstance.getReportResults()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.getRequestDate()",
+      "symbol": "reports.ReportInstance.getRequestDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.getStatus()",
+      "symbol": "reports.ReportInstance.getStatus()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstance.toString()",
+      "symbol": "reports.ReportInstance.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes",
+      "symbol": "reports.ReportInstanceAttributes",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes.clone()",
+      "symbol": "reports.ReportInstanceAttributes.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes.getCompletionDate()",
+      "symbol": "reports.ReportInstanceAttributes.getCompletionDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes.getId()",
+      "symbol": "reports.ReportInstanceAttributes.getId()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes.getOwnerId()",
+      "symbol": "reports.ReportInstanceAttributes.getOwnerId()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes.getRequestDate()",
+      "symbol": "reports.ReportInstanceAttributes.getRequestDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes.getStatus()",
+      "symbol": "reports.ReportInstanceAttributes.getStatus()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportInstanceAttributes.toString()",
+      "symbol": "reports.ReportInstanceAttributes.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager",
+      "symbol": "reports.ReportManager",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.ReportManager()",
+      "symbol": "reports.ReportManager.ReportManager()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportManager.clone()",
+      "symbol": "reports.ReportManager.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata",
+      "symbol": "reports.ReportMetadata",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.ReportMetadata()",
+      "symbol": "reports.ReportMetadata.ReportMetadata()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.ReportMetadata(String,String,Id,List<reports.GroupingInfo>,List<reports.GroupingInfo>,List<String>,List<reports.BucketField>,List<String>,String,List<reports.ReportFilter>,List<String>,reports.ReportFormat,reports.ReportType,String,String,String,List<reports.SortColumn>,reports.StandardDateFilter,Boolean,Boolean,List<reports.StandardFilter>,String,Boolean,Boolean,reports.TopRows,Map<String,reports.ReportCsf>,List<reports.CrossFilter>)",
+      "symbol": "reports.ReportMetadata.ReportMetadata(String,String,Id,List<reports.GroupingInfo>,List<reports.GroupingInfo>,List<String>,List<reports.BucketField>,List<String>,String,List<reports.ReportFilter>,List<String>,reports.ReportFormat,reports.ReportType,String,String,String,List<reports.SortColumn>,reports.StandardDateFilter,Boolean,Boolean,List<reports.StandardFilter>,String,Boolean,Boolean,reports.TopRows,Map<String,reports.ReportCsf>,List<reports.CrossFilter>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.clone()",
+      "symbol": "reports.ReportMetadata.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getAggregates()",
+      "symbol": "reports.ReportMetadata.getAggregates()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getBuckets()",
+      "symbol": "reports.ReportMetadata.getBuckets()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getCrossFilters()",
+      "symbol": "reports.ReportMetadata.getCrossFilters()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getCurrencyCode()",
+      "symbol": "reports.ReportMetadata.getCurrencyCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getCustomSummaryFormula()",
+      "symbol": "reports.ReportMetadata.getCustomSummaryFormula()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getDescription()",
+      "symbol": "reports.ReportMetadata.getDescription()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getDetailColumns()",
+      "symbol": "reports.ReportMetadata.getDetailColumns()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getDeveloperName()",
+      "symbol": "reports.ReportMetadata.getDeveloperName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getDivision()",
+      "symbol": "reports.ReportMetadata.getDivision()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getGroupingsAcross()",
+      "symbol": "reports.ReportMetadata.getGroupingsAcross()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getGroupingsDown()",
+      "symbol": "reports.ReportMetadata.getGroupingsDown()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getHasDetailRows()",
+      "symbol": "reports.ReportMetadata.getHasDetailRows()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getHasRecordCount()",
+      "symbol": "reports.ReportMetadata.getHasRecordCount()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getHistoricalSnapshotDates()",
+      "symbol": "reports.ReportMetadata.getHistoricalSnapshotDates()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getId()",
+      "symbol": "reports.ReportMetadata.getId()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getName()",
+      "symbol": "reports.ReportMetadata.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getReportBooleanFilter()",
+      "symbol": "reports.ReportMetadata.getReportBooleanFilter()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getReportFilters()",
+      "symbol": "reports.ReportMetadata.getReportFilters()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getReportFormat()",
+      "symbol": "reports.ReportMetadata.getReportFormat()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getReportType()",
+      "symbol": "reports.ReportMetadata.getReportType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getScope()",
+      "symbol": "reports.ReportMetadata.getScope()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getShowGrandTotal()",
+      "symbol": "reports.ReportMetadata.getShowGrandTotal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getShowSubtotals()",
+      "symbol": "reports.ReportMetadata.getShowSubtotals()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getSortBy()",
+      "symbol": "reports.ReportMetadata.getSortBy()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getStandardDateFilter()",
+      "symbol": "reports.ReportMetadata.getStandardDateFilter()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getStandardFilters()",
+      "symbol": "reports.ReportMetadata.getStandardFilters()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.getTopRows()",
+      "symbol": "reports.ReportMetadata.getTopRows()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setAggregates(List<String>)",
+      "symbol": "reports.ReportMetadata.setAggregates(List<String>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setBuckets(List<Reports.BucketField>)",
+      "symbol": "reports.ReportMetadata.setBuckets(List<Reports.BucketField>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setCrossFilters(List<Reports.CrossFilter>)",
+      "symbol": "reports.ReportMetadata.setCrossFilters(List<Reports.CrossFilter>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setCurrencyCode(String)",
+      "symbol": "reports.ReportMetadata.setCurrencyCode(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setCustomSummaryFormula(MAP<String,Reports.ReportCsf>)",
+      "symbol": "reports.ReportMetadata.setCustomSummaryFormula(MAP<String,Reports.ReportCsf>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setDescription(String)",
+      "symbol": "reports.ReportMetadata.setDescription(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setDetailColumns(List<String>)",
+      "symbol": "reports.ReportMetadata.setDetailColumns(List<String>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setDeveloperName(String)",
+      "symbol": "reports.ReportMetadata.setDeveloperName(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setDivision(String)",
+      "symbol": "reports.ReportMetadata.setDivision(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setGroupingsAcross(List<Reports.GroupingInfo>)",
+      "symbol": "reports.ReportMetadata.setGroupingsAcross(List<Reports.GroupingInfo>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setGroupingsDown(List<Reports.GroupingInfo>)",
+      "symbol": "reports.ReportMetadata.setGroupingsDown(List<Reports.GroupingInfo>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setHasDetailRows(Boolean)",
+      "symbol": "reports.ReportMetadata.setHasDetailRows(Boolean)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setHasRecordCount(Boolean)",
+      "symbol": "reports.ReportMetadata.setHasRecordCount(Boolean)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setHistoricalSnapshotDates(List<String>)",
+      "symbol": "reports.ReportMetadata.setHistoricalSnapshotDates(List<String>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setId(Id)",
+      "symbol": "reports.ReportMetadata.setId(Id)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setName(String)",
+      "symbol": "reports.ReportMetadata.setName(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setReportBooleanFilter(String)",
+      "symbol": "reports.ReportMetadata.setReportBooleanFilter(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setReportFilters(List<reports.ReportFilter>)",
+      "symbol": "reports.ReportMetadata.setReportFilters(List<reports.ReportFilter>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setReportFormat(Reports.ReportFormat)",
+      "symbol": "reports.ReportMetadata.setReportFormat(Reports.ReportFormat)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setReportFormat(String)",
+      "symbol": "reports.ReportMetadata.setReportFormat(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setReportType(Reports.ReportType)",
+      "symbol": "reports.ReportMetadata.setReportType(Reports.ReportType)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setScope(String)",
+      "symbol": "reports.ReportMetadata.setScope(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setShowGrandTotal(Boolean)",
+      "symbol": "reports.ReportMetadata.setShowGrandTotal(Boolean)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setShowSubtotals(Boolean)",
+      "symbol": "reports.ReportMetadata.setShowSubtotals(Boolean)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setSortBy(List<Reports.SortColumn>)",
+      "symbol": "reports.ReportMetadata.setSortBy(List<Reports.SortColumn>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setStandardDateFilter(Reports.StandardDateFilter)",
+      "symbol": "reports.ReportMetadata.setStandardDateFilter(Reports.StandardDateFilter)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setStandardFilters(List<Reports.StandardFilter>)",
+      "symbol": "reports.ReportMetadata.setStandardFilters(List<Reports.StandardFilter>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.setTopRows(Reports.TopRows)",
+      "symbol": "reports.ReportMetadata.setTopRows(Reports.TopRows)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportMetadata.toString()",
+      "symbol": "reports.ReportMetadata.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults",
+      "symbol": "reports.ReportResults",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.clone()",
+      "symbol": "reports.ReportResults.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.getAllData()",
+      "symbol": "reports.ReportResults.getAllData()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.getFactMap()",
+      "symbol": "reports.ReportResults.getFactMap()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.getGroupingsAcross()",
+      "symbol": "reports.ReportResults.getGroupingsAcross()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.getGroupingsDown()",
+      "symbol": "reports.ReportResults.getGroupingsDown()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.getHasDetailRows()",
+      "symbol": "reports.ReportResults.getHasDetailRows()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.getReportExtendedMetadata()",
+      "symbol": "reports.ReportResults.getReportExtendedMetadata()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.getReportMetadata()",
+      "symbol": "reports.ReportResults.getReportMetadata()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportResults.toString()",
+      "symbol": "reports.ReportResults.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportRunException",
+      "symbol": "reports.ReportRunException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportRunException.ReportRunException()",
+      "symbol": "reports.ReportRunException.ReportRunException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportRunException.ReportRunException(Exception)",
+      "symbol": "reports.ReportRunException.ReportRunException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportRunException.ReportRunException(String,Exception)",
+      "symbol": "reports.ReportRunException.ReportRunException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportRunException.clone()",
+      "symbol": "reports.ReportRunException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeInfo",
+      "symbol": "reports.ReportScopeInfo",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeInfo.clone()",
+      "symbol": "reports.ReportScopeInfo.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeInfo.getDefaultValue()",
+      "symbol": "reports.ReportScopeInfo.getDefaultValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeInfo.getValues()",
+      "symbol": "reports.ReportScopeInfo.getValues()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeInfo.toString()",
+      "symbol": "reports.ReportScopeInfo.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeValue",
+      "symbol": "reports.ReportScopeValue",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeValue.clone()",
+      "symbol": "reports.ReportScopeValue.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeValue.getAllowsDivision()",
+      "symbol": "reports.ReportScopeValue.getAllowsDivision()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeValue.getLabel()",
+      "symbol": "reports.ReportScopeValue.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeValue.getValue()",
+      "symbol": "reports.ReportScopeValue.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportScopeValue.toString()",
+      "symbol": "reports.ReportScopeValue.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType",
+      "symbol": "reports.ReportType",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.ReportType()",
+      "symbol": "reports.ReportType.ReportType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.ReportType(String,String)",
+      "symbol": "reports.ReportType.ReportType(String,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.clone()",
+      "symbol": "reports.ReportType.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.getLabel()",
+      "symbol": "reports.ReportType.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.getType()",
+      "symbol": "reports.ReportType.getType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.setLabel(String)",
+      "symbol": "reports.ReportType.setLabel(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.setType(String)",
+      "symbol": "reports.ReportType.setType(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportType.toString()",
+      "symbol": "reports.ReportType.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn",
+      "symbol": "reports.ReportTypeColumn",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn.clone()",
+      "symbol": "reports.ReportTypeColumn.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn.getDataType()",
+      "symbol": "reports.ReportTypeColumn.getDataType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn.getFilterValues()",
+      "symbol": "reports.ReportTypeColumn.getFilterValues()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn.getFilterable()",
+      "symbol": "reports.ReportTypeColumn.getFilterable()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn.getLabel()",
+      "symbol": "reports.ReportTypeColumn.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn.getName()",
+      "symbol": "reports.ReportTypeColumn.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumn.toString()",
+      "symbol": "reports.ReportTypeColumn.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumnCategory",
+      "symbol": "reports.ReportTypeColumnCategory",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumnCategory.clone()",
+      "symbol": "reports.ReportTypeColumnCategory.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumnCategory.getColumns()",
+      "symbol": "reports.ReportTypeColumnCategory.getColumns()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumnCategory.getLabel()",
+      "symbol": "reports.ReportTypeColumnCategory.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeColumnCategory.toString()",
+      "symbol": "reports.ReportTypeColumnCategory.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata",
+      "symbol": "reports.ReportTypeMetadata",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata.clone()",
+      "symbol": "reports.ReportTypeMetadata.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata.getCategories()",
+      "symbol": "reports.ReportTypeMetadata.getCategories()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata.getDivisionInfo()",
+      "symbol": "reports.ReportTypeMetadata.getDivisionInfo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata.getScopeInfo()",
+      "symbol": "reports.ReportTypeMetadata.getScopeInfo()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata.getStandardDateFilterDurationGroups()",
+      "symbol": "reports.ReportTypeMetadata.getStandardDateFilterDurationGroups()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata.getStandardFilterInfos()",
+      "symbol": "reports.ReportTypeMetadata.getStandardFilterInfos()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ReportTypeMetadata.toString()",
+      "symbol": "reports.ReportTypeMetadata.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn",
+      "symbol": "reports.SortColumn",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.SortColumn()",
+      "symbol": "reports.SortColumn.SortColumn()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.SortColumn(String,reports.ColumnSortOrder)",
+      "symbol": "reports.SortColumn.SortColumn(String,reports.ColumnSortOrder)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.clone()",
+      "symbol": "reports.SortColumn.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.getSortColumn()",
+      "symbol": "reports.SortColumn.getSortColumn()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.getSortOrder()",
+      "symbol": "reports.SortColumn.getSortOrder()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.setSortColumn(String)",
+      "symbol": "reports.SortColumn.setSortColumn(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.setSortOrder(Reports.ColumnSortOrder)",
+      "symbol": "reports.SortColumn.setSortOrder(Reports.ColumnSortOrder)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.setSortOrder(String)",
+      "symbol": "reports.SortColumn.setSortOrder(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SortColumn.toString()",
+      "symbol": "reports.SortColumn.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter",
+      "symbol": "reports.StandardDateFilter",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.StandardDateFilter()",
+      "symbol": "reports.StandardDateFilter.StandardDateFilter()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.StandardDateFilter(String,String,String,String)",
+      "symbol": "reports.StandardDateFilter.StandardDateFilter(String,String,String,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.clone()",
+      "symbol": "reports.StandardDateFilter.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.getColumn()",
+      "symbol": "reports.StandardDateFilter.getColumn()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.getDurationValue()",
+      "symbol": "reports.StandardDateFilter.getDurationValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.getEndDate()",
+      "symbol": "reports.StandardDateFilter.getEndDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.getStartDate()",
+      "symbol": "reports.StandardDateFilter.getStartDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.setColumn(String)",
+      "symbol": "reports.StandardDateFilter.setColumn(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.setDurationValue(String)",
+      "symbol": "reports.StandardDateFilter.setDurationValue(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.setEndDate(String)",
+      "symbol": "reports.StandardDateFilter.setEndDate(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.setStartDate(String)",
+      "symbol": "reports.StandardDateFilter.setStartDate(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilter.toString()",
+      "symbol": "reports.StandardDateFilter.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDuration",
+      "symbol": "reports.StandardDateFilterDuration",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDuration.clone()",
+      "symbol": "reports.StandardDateFilterDuration.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDuration.getEndDate()",
+      "symbol": "reports.StandardDateFilterDuration.getEndDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDuration.getLabel()",
+      "symbol": "reports.StandardDateFilterDuration.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDuration.getStartDate()",
+      "symbol": "reports.StandardDateFilterDuration.getStartDate()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDuration.getValue()",
+      "symbol": "reports.StandardDateFilterDuration.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDuration.toString()",
+      "symbol": "reports.StandardDateFilterDuration.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDurationGroup",
+      "symbol": "reports.StandardDateFilterDurationGroup",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDurationGroup.clone()",
+      "symbol": "reports.StandardDateFilterDurationGroup.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDurationGroup.getLabel()",
+      "symbol": "reports.StandardDateFilterDurationGroup.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDurationGroup.getStandardDateFilterDurations()",
+      "symbol": "reports.StandardDateFilterDurationGroup.getStandardDateFilterDurations()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardDateFilterDurationGroup.toString()",
+      "symbol": "reports.StandardDateFilterDurationGroup.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter",
+      "symbol": "reports.StandardFilter",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.StandardFilter()",
+      "symbol": "reports.StandardFilter.StandardFilter()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.StandardFilter(String,String)",
+      "symbol": "reports.StandardFilter.StandardFilter(String,String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.clone()",
+      "symbol": "reports.StandardFilter.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.getName()",
+      "symbol": "reports.StandardFilter.getName()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.getValue()",
+      "symbol": "reports.StandardFilter.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.setName(String)",
+      "symbol": "reports.StandardFilter.setName(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.setValue(String)",
+      "symbol": "reports.StandardFilter.setValue(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilter.toString()",
+      "symbol": "reports.StandardFilter.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfo",
+      "symbol": "reports.StandardFilterInfo",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfo.clone()",
+      "symbol": "reports.StandardFilterInfo.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfo.getLabel()",
+      "symbol": "reports.StandardFilterInfo.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfo.getType()",
+      "symbol": "reports.StandardFilterInfo.getType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfo.toString()",
+      "symbol": "reports.StandardFilterInfo.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfoPicklist",
+      "symbol": "reports.StandardFilterInfoPicklist",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfoPicklist.clone()",
+      "symbol": "reports.StandardFilterInfoPicklist.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfoPicklist.getDefaultValue()",
+      "symbol": "reports.StandardFilterInfoPicklist.getDefaultValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfoPicklist.getFilterValues()",
+      "symbol": "reports.StandardFilterInfoPicklist.getFilterValues()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfoPicklist.getLabel()",
+      "symbol": "reports.StandardFilterInfoPicklist.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfoPicklist.getType()",
+      "symbol": "reports.StandardFilterInfoPicklist.getType()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterInfoPicklist.toString()",
+      "symbol": "reports.StandardFilterInfoPicklist.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType",
+      "symbol": "reports.StandardFilterType",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType.PICKLIST",
+      "symbol": "reports.StandardFilterType.PICKLIST",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType.STRING",
+      "symbol": "reports.StandardFilterType.STRING",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType.equals(Object)",
+      "symbol": "reports.StandardFilterType.equals(Object)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType.hashCode()",
+      "symbol": "reports.StandardFilterType.hashCode()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType.ordinal()",
+      "symbol": "reports.StandardFilterType.ordinal()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType.valueOf(String)",
+      "symbol": "reports.StandardFilterType.valueOf(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.StandardFilterType.values()",
+      "symbol": "reports.StandardFilterType.values()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SummaryValue",
+      "symbol": "reports.SummaryValue",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SummaryValue.clone()",
+      "symbol": "reports.SummaryValue.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SummaryValue.getLabel()",
+      "symbol": "reports.SummaryValue.getLabel()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SummaryValue.getValue()",
+      "symbol": "reports.SummaryValue.getValue()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.SummaryValue.toString()",
+      "symbol": "reports.SummaryValue.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ThresholdInformation",
+      "symbol": "reports.ThresholdInformation",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ThresholdInformation.ThresholdInformation(List<Reports.EvaluatedCondition>)",
+      "symbol": "reports.ThresholdInformation.ThresholdInformation(List<Reports.EvaluatedCondition>)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ThresholdInformation.clone()",
+      "symbol": "reports.ThresholdInformation.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.ThresholdInformation.getEvaluatedConditions()",
+      "symbol": "reports.ThresholdInformation.getEvaluatedConditions()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows",
+      "symbol": "reports.TopRows",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.TopRows()",
+      "symbol": "reports.TopRows.TopRows()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.TopRows(Integer,Reports.ColumnSortOrder)",
+      "symbol": "reports.TopRows.TopRows(Integer,Reports.ColumnSortOrder)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.clone()",
+      "symbol": "reports.TopRows.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.getDirection()",
+      "symbol": "reports.TopRows.getDirection()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.getRowLimit()",
+      "symbol": "reports.TopRows.getRowLimit()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.setDirection(String)",
+      "symbol": "reports.TopRows.setDirection(String)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.setDirection(reports.ColumnSortOrder)",
+      "symbol": "reports.TopRows.setDirection(reports.ColumnSortOrder)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.setRowLimit(Integer)",
+      "symbol": "reports.TopRows.setRowLimit(Integer)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.TopRows.toString()",
+      "symbol": "reports.TopRows.toString()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.UnsupportedOperationException",
+      "symbol": "reports.UnsupportedOperationException",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.UnsupportedOperationException.UnsupportedOperationException()",
+      "symbol": "reports.UnsupportedOperationException.UnsupportedOperationException()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.UnsupportedOperationException.UnsupportedOperationException(Exception)",
+      "symbol": "reports.UnsupportedOperationException.UnsupportedOperationException(Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.UnsupportedOperationException.UnsupportedOperationException(String,Exception)",
+      "symbol": "reports.UnsupportedOperationException.UnsupportedOperationException(String,Exception)",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    },
+    {
+      "surfaceId": "apex:reports.UnsupportedOperationException.clone()",
+      "symbol": "reports.UnsupportedOperationException.clone()",
+      "kind": "shape",
+      "notes": "API 67 compile-shape replay passed locally and in Salesforce."
+    }
+  ]
+}
