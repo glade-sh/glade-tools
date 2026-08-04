@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -13,6 +14,9 @@ import (
 var apiVersionPattern = regexp.MustCompile(`(?i)Available in API version\s+([0-9]+(?:\.[0-9]+)?)`)
 
 func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
+	if err := validateDocsSource(source); err != nil {
+		return nil, err
+	}
 	inv, err := apexdocs.BuildInventory(source)
 	if err != nil {
 		return nil, err
@@ -27,6 +31,37 @@ func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
 		rows[i].APIVersion = readAPIVersion(filepath.Join(source, filepath.FromSlash(rows[i].DocsSource)))
 	}
 	return rows, nil
+}
+
+// validateDocsSource prevents an empty or missing docs cache from being
+// treated as a valid zero-row Salesforce inventory. A zero-row docs snapshot
+// changes the denominator and can make a refresh look complete while omitting
+// the public Apex surface entirely.
+func validateDocsSource(source string) error {
+	info, err := os.Stat(source)
+	if err != nil {
+		return fmt.Errorf("docs source: %w", err)
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("docs source is not a directory: %s", source)
+	}
+	files := 0
+	err = filepath.WalkDir(source, func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if path != source && entry.Type().IsRegular() {
+			files++
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("scan docs source: %w", err)
+	}
+	if files == 0 {
+		return fmt.Errorf("docs source is empty: %s", source)
+	}
+	return nil
 }
 
 func applyApexDeclarationSignatures(rows []SurfaceLedgerRow, source string) {

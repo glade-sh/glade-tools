@@ -31,6 +31,12 @@ func TestBuildDocsSnapshotKeepsProductPathInIdentity(t *testing.T) {
 	}
 }
 
+func TestBuildDocsSnapshotRejectsEmptySource(t *testing.T) {
+	if _, err := BuildDocsSnapshot(t.TempDir()); err == nil {
+		t.Fatal("BuildDocsSnapshot accepted an empty docs source")
+	}
+}
+
 func TestBuildDocsSnapshotExtractsAPIVersionText(t *testing.T) {
 	root := t.TempDir()
 	writeDoc(t, root, "apex/apex_methods_system_label.md", "# Label Class\n\nAvailable in API version 60.0 and later.\n")
