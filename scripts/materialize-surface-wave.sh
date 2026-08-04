@@ -9,7 +9,7 @@ usage() {
   cat >&2 <<'EOF'
 usage: materialize-surface-wave.sh --tools-bin PATH --base-ledger PATH --evidence PATH
   --policy PATH --corpus-usage PATH --snapshot-dir PATH --out-dir PATH
-  [--add PATH]... [--remove PATH]... [--tombstone PATH]...
+  [--add PATH]... [--remove PATH]... [--tombstone PATH]... [--no-html]
 EOF
 }
 
@@ -23,6 +23,7 @@ out_dir=""
 additions=()
 removals=()
 tombstones=()
+render_html=true
 
 while (($# > 0)); do
   case "$1" in
@@ -44,6 +45,7 @@ while (($# > 0)); do
     --add) shift; (($# > 0)) || { echo "--add requires a value" >&2; exit 2; }; additions+=("$1"); shift ;;
     --remove) shift; (($# > 0)) || { echo "--remove requires a value" >&2; exit 2; }; removals+=("$1"); shift ;;
     --tombstone) shift; (($# > 0)) || { echo "--tombstone requires a value" >&2; exit 2; }; tombstones+=("$1"); shift ;;
+    --no-html) render_html=false; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "unknown argument: $1" >&2; usage; exit 2 ;;
   esac
@@ -81,10 +83,13 @@ fi
   --docs "$base_ledger" --org "$out_dir/EMPTY_ROWS.json" --glade "$out_dir/EMPTY_ROWS.json" \
   --evidence "$evidence" --output "$out_dir/SURFACE_LEDGER.json" >/dev/null
 
-"$tools_bin" compat surface support-profile \
-  --ledger "$out_dir/SURFACE_LEDGER.json" --policy "$policy" --corpus-usage "$corpus_usage" \
-  --snapshot-dir "$snapshot_dir" --output "$out_dir/apex-support-profile.json" \
-  --html-output "$out_dir/apex-support-profile.html" >/dev/null
+profile_args=(compat surface support-profile
+  --ledger "$out_dir/SURFACE_LEDGER.json" --policy "$policy" --corpus-usage "$corpus_usage"
+  --snapshot-dir "$snapshot_dir" --output "$out_dir/apex-support-profile.json")
+if [[ "$render_html" == true ]]; then
+  profile_args+=(--html-output "$out_dir/apex-support-profile.html")
+fi
+"$tools_bin" "${profile_args[@]}" >/dev/null
 
 "$tools_bin" compat surface strict-current-base \
   --ledger "$out_dir/SURFACE_LEDGER.json" --output "$out_dir/strict-current-base.json" >/dev/null
