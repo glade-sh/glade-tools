@@ -37,6 +37,14 @@ func TestBuildDocsSnapshotRejectsEmptySource(t *testing.T) {
 	}
 }
 
+func TestBuildDocsSnapshotRejectsNonApexSource(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "lightning-aura/guide.md", "# Guide\n\nNarrative only.\n")
+	if _, err := BuildDocsSnapshot(root); err == nil {
+		t.Fatal("BuildDocsSnapshot accepted a source without Apex rows")
+	}
+}
+
 func TestBuildDocsSnapshotExtractsAPIVersionText(t *testing.T) {
 	root := t.TempDir()
 	writeDoc(t, root, "apex/apex_methods_system_label.md", "# Label Class\n\nAvailable in API version 60.0 and later.\n")

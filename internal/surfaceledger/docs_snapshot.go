@@ -24,6 +24,18 @@ func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
 	rows := RowsFromDocsInventory(inv)
 	applyApexDeclarationSignatures(rows, source)
 	rows = filterUnresolvedApexHeadingRows(rows)
+	if len(rows) == 0 {
+		return nil, fmt.Errorf("docs source produced zero inventory rows: %s", source)
+	}
+	apexRows := 0
+	for _, row := range rows {
+		if row.Product == ProductApex {
+			apexRows++
+		}
+	}
+	if apexRows == 0 {
+		return nil, fmt.Errorf("docs source produced no Apex inventory rows: %s", source)
+	}
 	for i := range rows {
 		if rows[i].DocsSource == "" {
 			continue
