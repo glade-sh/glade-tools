@@ -3,9 +3,9 @@
   "name": "salesforce-current-base-dom-only-api67-20260805",
   "packetId": "SF-DOM-ONLY-20260805",
   "candidate": {
-    "path": "evidence/current-base/candidates/glade-07b4adba",
-    "commit": "07b4adba",
-    "sha256": "ca19381e8b82688a68268c9b3f156a93f6f2aa6fafb2c94eeedd037a28196f81"
+    "path": "evidence/current-base/candidates/glade-ea0ece72",
+    "commit": "ea0ece72",
+    "sha256": "2ed53c8e9b5230d35fa12d9f62dda4cf7d1d1d1977318c95c34c2ad2180d02c9"
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
@@ -54,11 +54,11 @@
         "apex:dom.XmlNode.removeChild(Object)"
       ],
       "sfObservation": "Dom-only Apex fixture passed on Salesforce API 67.",
-      "gladeObservation": "Dom-only Apex fixture passed on the exact fixed candidate."
+      "gladeObservation": "Dom-only Apex fixture passed on the exact fixed candidate ea0ece72."
     }
   ],
   "local": {
-    "candidatePath": "evidence/current-base/candidates/glade-07b4adba",
+    "candidatePath": "evidence/current-base/candidates/glade-ea0ece72",
     "reportPath": "evidence/current-base/current-28219829/replay-cb316-fixtures-20260805/dom-only.local.json"
   }
 }
