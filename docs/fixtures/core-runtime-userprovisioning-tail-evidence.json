@@ -34,20 +34,20 @@
     {
       "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.buildDescribeCall()",
       "symbol": "UserProvisioning.UserProvisioningPlugin.buildDescribeCall",
-      "kind": "exec",
-      "notes": "Local runtime returns a deterministic Process.PluginDescribeResult default for the describe-call hook."
+      "kind": "shape",
+      "notes": "UserProvisioningPlugin is abstract on Salesforce; this fixture records the declared method shape only. Runtime behavior requires a concrete plugin subclass."
     },
     {
       "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.describe()",
       "symbol": "UserProvisioning.UserProvisioningPlugin.describe",
-      "kind": "exec",
-      "notes": "Local runtime returns a deterministic Process.PluginDescribeResult default for the plugin describe hook."
+      "kind": "shape",
+      "notes": "UserProvisioningPlugin is abstract on Salesforce; this fixture records the declared method shape only. Runtime behavior requires a concrete plugin subclass."
     },
     {
       "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.getPluginClassName()",
       "symbol": "UserProvisioning.UserProvisioningPlugin.getPluginClassName",
-      "kind": "exec",
-      "notes": "Local runtime returns the built-in UserProvisioning.UserProvisioningPlugin class name."
+      "kind": "shape",
+      "notes": "UserProvisioningPlugin is abstract on Salesforce; this fixture records the declared method shape only. Runtime behavior requires a concrete plugin subclass."
     },
     {
       "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.invoke(Process.PluginRequest)",
@@ -83,13 +83,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "UserProvisioning.FlowProvisionBase flowBase = new UserProvisioning.FlowProvisionBase();\nSystem.assertEquals('', flowBase.getFlowName());\nSystem.assertEquals('', flowBase.getFlowNamespace());\nSystem.assertEquals(false, flowBase.hasFlow());\nSystem.assertEquals(false, flowBase.hasFlowOrApex());\nUserProvisioning.UserProvisioningPlugin plugin = new UserProvisioning.UserProvisioningPlugin();\nSystem.assert(plugin.buildDescribeCall() != null);\nSystem.assert(plugin.describe() != null);\nSystem.assertEquals('UserProvisioning.UserProvisioningPlugin', plugin.getPluginClassName());\nUserProvisioning.ProvisioningProcessHandlerInput input = new UserProvisioning.ProvisioningProcessHandlerInput('upr', '005000000000001', 'named', 'filter', 'offset');\nSystem.assert(new UserProvisioning.UserProvisioningProcessHandler().invoke(input) != null);\nSystem.assert(new UserProvisioning.DummyConnectorApexHandler().invoke(input) != null);\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail', 'field', 'value');"
+      "content": "UserProvisioning.FlowProvisionBase flowBase = new UserProvisioning.FlowProvisionBase();\nSystem.assertEquals('', flowBase.getFlowName());\nSystem.assertEquals('', flowBase.getFlowNamespace());\nSystem.assertEquals(false, flowBase.hasFlow());\nSystem.assertEquals(false, flowBase.hasFlowOrApex());\nUserProvisioning.ProvisioningProcessHandlerInput input = new UserProvisioning.ProvisioningProcessHandlerInput('upr', '005000000000001', 'named', 'filter', 'offset');\nSystem.assert(new UserProvisioning.UserProvisioningProcessHandler().invoke(input) != null);\nSystem.assert(new UserProvisioning.DummyConnectorApexHandler().invoke(input) != null);\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail', 'field', 'value');"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "UserProvisioning.FlowProvisionBase flowBase = new UserProvisioning.FlowProvisionBase();\nSystem.assertEquals('', flowBase.getFlowName());\nSystem.assertEquals('', flowBase.getFlowNamespace());\nSystem.assertEquals(false, flowBase.hasFlow());\nSystem.assertEquals(false, flowBase.hasFlowOrApex());\nUserProvisioning.UserProvisioningPlugin plugin = new UserProvisioning.UserProvisioningPlugin();\nSystem.assert(plugin.buildDescribeCall() != null);\nSystem.assert(plugin.describe() != null);\nSystem.assertEquals('UserProvisioning.UserProvisioningPlugin', plugin.getPluginClassName());\nUserProvisioning.ProvisioningProcessHandlerInput input = new UserProvisioning.ProvisioningProcessHandlerInput('upr', '005000000000001', 'named', 'filter', 'offset');\nSystem.assert(new UserProvisioning.UserProvisioningProcessHandler().invoke(input) != null);\nSystem.assert(new UserProvisioning.DummyConnectorApexHandler().invoke(input) != null);\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail', 'field', 'value');"
+      "UserProvisioning.FlowProvisionBase flowBase = new UserProvisioning.FlowProvisionBase();\nSystem.assertEquals('', flowBase.getFlowName());\nSystem.assertEquals('', flowBase.getFlowNamespace());\nSystem.assertEquals(false, flowBase.hasFlow());\nSystem.assertEquals(false, flowBase.hasFlowOrApex());\nUserProvisioning.ProvisioningProcessHandlerInput input = new UserProvisioning.ProvisioningProcessHandlerInput('upr', '005000000000001', 'named', 'filter', 'offset');\nSystem.assert(new UserProvisioning.UserProvisioningProcessHandler().invoke(input) != null);\nSystem.assert(new UserProvisioning.DummyConnectorApexHandler().invoke(input) != null);\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail');\nuserprovisioning.UserProvisioningLog.log('0PR-local', 'Created', 'detail', 'field', 'value');"
     ]
   },
   "expected": {
