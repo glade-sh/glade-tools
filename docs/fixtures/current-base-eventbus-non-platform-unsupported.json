@@ -3,5 +3,5 @@
   "command": {"kind": "exec", "args": ["EventBus.publish(new Account(Name = 'not an event'));"]},
   "source": [{"path": "anonymous.apex", "content": "EventBus.publish(new Account(Name = 'not an event'));"}],
   "expected": {"error": {"type": "Error", "message": "The specified sObject or list of sObjects contains objects that aren’t platform events. You can publish only platform event objects using EventBus.publish. Ensure the type of the specified sObject is a platform event."}},
-  "evidence": [{"surfaceId": "apex:System.EventBus.publish(SObject)", "symbol": "EventBus.publish", "kind": "exec", "notes": "Salesforce rejects non-platform-event sObjects."}]
+  "evidence": [{"surfaceId": "apex:System.EventBus.publish(Object)", "symbol": "EventBus.publish", "kind": "exec", "notes": "Salesforce rejects non-platform-event sObjects."}]
 }
