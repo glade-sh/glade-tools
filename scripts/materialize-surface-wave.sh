@@ -90,8 +90,29 @@ if ((${#additions[@]} + ${#removals[@]} + ${#tombstones[@]} > 0)); then
   "$tools_bin" "${delta_args[@]}" >/dev/null
 fi
 
+# Apply the validated delta to the predecessor rows before rebuilding the
+# ledger.  Delta-preflight alone is only a report; feeding the untouched base
+# rows to `surface ledger` silently discarded tombstones and changed rows.
+addition_rows="$out_dir/ADDITION_ROWS.json"
+if ((${#additions[@]} > 0)); then
+  jq -s 'map(if type == "object" and has("rows") then .rows else . end) | add' \
+    "${additions[@]}" > "$addition_rows"
+else
+  printf '[]\n' > "$addition_rows"
+fi
+ledger_input="$out_dir/LEDGER_INPUT_ROWS.json"
+if [[ -f "$out_dir/DELTA_PREFLIGHT.json" ]]; then
+  jq --slurpfile delta "$out_dir/DELTA_PREFLIGHT.json" \
+    --slurpfile additions "$addition_rows" \
+    '((($delta[0].removedIds // []) + ($delta[0].tombstoneIds // []) + ($delta[0].changedIds // [])) | unique) as $removed
+     | ([.[] as $row | select(($removed | index($row.surfaceId)) == null) | $row] + ($additions[0] // []))' \
+    "$base_rows" > "$ledger_input"
+else
+  jq -s '.[0] + .[1]' "$base_rows" "$addition_rows" > "$ledger_input"
+fi
+
 "$tools_bin" compat surface ledger \
-  --docs "$base_rows" --org "$out_dir/EMPTY_ROWS.json" --glade "$out_dir/EMPTY_ROWS.json" \
+  --docs "$ledger_input" --org "$out_dir/EMPTY_ROWS.json" --glade "$out_dir/EMPTY_ROWS.json" \
   --evidence "$evidence" --output "$out_dir/SURFACE_LEDGER.json" >/dev/null
 
 profile_args=(compat surface support-profile
