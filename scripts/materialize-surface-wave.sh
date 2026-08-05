@@ -74,8 +74,13 @@ mkdir -p "$out_dir"
 cp "$dual_rail_manifest" "$out_dir/DUAL_RAIL_MANIFEST.json"
 
 # The ledger command accepts raw rows for docs and needs empty org/glade inputs
-# when a wave is applied to an already merged predecessor ledger.
+# when a wave is applied to an already merged predecessor ledger. A predecessor
+# artifact is normally a full ledger object, so extract its rows before passing
+# it to the merge command; passing the object directly makes the CLI reject the
+# input before any evidence can be applied.
 printf '[]\n' > "$out_dir/EMPTY_ROWS.json"
+base_rows="$out_dir/BASE_ROWS.json"
+jq 'if type == "object" and has("rows") then .rows else . end' "$base_ledger" > "$base_rows"
 
 if ((${#additions[@]} + ${#removals[@]} + ${#tombstones[@]} > 0)); then
   delta_args=(compat surface delta-preflight --base-ledger "$base_ledger" --policy "$policy" --output "$out_dir/DELTA_PREFLIGHT.json")
@@ -86,7 +91,7 @@ if ((${#additions[@]} + ${#removals[@]} + ${#tombstones[@]} > 0)); then
 fi
 
 "$tools_bin" compat surface ledger \
-  --docs "$base_ledger" --org "$out_dir/EMPTY_ROWS.json" --glade "$out_dir/EMPTY_ROWS.json" \
+  --docs "$base_rows" --org "$out_dir/EMPTY_ROWS.json" --glade "$out_dir/EMPTY_ROWS.json" \
   --evidence "$evidence" --output "$out_dir/SURFACE_LEDGER.json" >/dev/null
 
 profile_args=(compat surface support-profile
