@@ -9,6 +9,7 @@ usage() {
   cat >&2 <<'EOF'
 usage: materialize-surface-wave.sh --tools-bin PATH --base-ledger PATH --evidence PATH
   --policy PATH --corpus-usage PATH --snapshot-dir PATH --out-dir PATH
+  --dual-rail-manifest PATH
   [--add PATH]... [--remove PATH]... [--tombstone PATH]... [--no-html]
 EOF
 }
@@ -20,6 +21,7 @@ policy=""
 corpus_usage=""
 snapshot_dir=""
 out_dir=""
+dual_rail_manifest=""
 additions=()
 removals=()
 tombstones=()
@@ -27,7 +29,7 @@ render_html=true
 
 while (($# > 0)); do
   case "$1" in
-    --tools-bin|--base-ledger|--evidence|--policy|--corpus-usage|--snapshot-dir|--out-dir)
+    --tools-bin|--base-ledger|--evidence|--policy|--corpus-usage|--snapshot-dir|--out-dir|--dual-rail-manifest)
       flag="$1"
       shift
       (($# > 0)) || { echo "$flag requires a value" >&2; exit 2; }
@@ -39,6 +41,7 @@ while (($# > 0)); do
         --corpus-usage) corpus_usage="$1" ;;
         --snapshot-dir) snapshot_dir="$1" ;;
         --out-dir) out_dir="$1" ;;
+        --dual-rail-manifest) dual_rail_manifest="$1" ;;
       esac
       shift
       ;;
@@ -51,7 +54,7 @@ while (($# > 0)); do
   esac
 done
 
-for required in tools_bin base_ledger evidence policy corpus_usage snapshot_dir out_dir; do
+for required in tools_bin base_ledger evidence policy corpus_usage snapshot_dir out_dir dual_rail_manifest; do
   if [[ -z "${!required}" ]]; then
     echo "missing required option: --${required//_/-}" >&2
     usage
@@ -64,8 +67,11 @@ for input in "$base_ledger" "$evidence" "$policy" "$corpus_usage"; do
   [[ -f "$input" ]] || { echo "input file not found: $input" >&2; exit 1; }
 done
 [[ -d "$snapshot_dir" ]] || { echo "snapshot directory not found: $snapshot_dir" >&2; exit 1; }
+[[ -f "$dual_rail_manifest" ]] || { echo "dual-rail manifest not found: $dual_rail_manifest" >&2; exit 1; }
+python3 "$(dirname "$0")/validate-dual-rail-manifest.py" "$dual_rail_manifest" >/dev/null
 [[ ! -e "$out_dir" ]] || { echo "refusing to overwrite existing output directory: $out_dir" >&2; exit 1; }
 mkdir -p "$out_dir"
+cp "$dual_rail_manifest" "$out_dir/DUAL_RAIL_MANIFEST.json"
 
 # The ledger command accepts raw rows for docs and needs empty org/glade inputs
 # when a wave is applied to an already merged predecessor ledger.
