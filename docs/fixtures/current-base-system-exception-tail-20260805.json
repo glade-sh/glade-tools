@@ -1,0 +1,355 @@
+{
+  "name": "current-base-system-exception-tail-20260805",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "system-exception-tail-20260805 local bulk probe",
+      "candidate=f90bbcea273c281902ee4f79366079b225b17a01"
+    ]
+  },
+  "expected": {},
+  "evidence": [
+    {
+      "surfaceId": "apex:System.NoAccessException.NoAccessException()",
+      "symbol": "apex:System.NoAccessException.NoAccessException()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.equals(Object)",
+      "symbol": "apex:System.NoAccessException.equals(Object)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.getCause()",
+      "symbol": "apex:System.NoAccessException.getCause()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.getInaccessibleFields()",
+      "symbol": "apex:System.NoAccessException.getInaccessibleFields()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.getLineNumber()",
+      "symbol": "apex:System.NoAccessException.getLineNumber()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.getMessage()",
+      "symbol": "apex:System.NoAccessException.getMessage()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.getStackTraceString()",
+      "symbol": "apex:System.NoAccessException.getStackTraceString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.getTypeName()",
+      "symbol": "apex:System.NoAccessException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.hashCode()",
+      "symbol": "apex:System.NoAccessException.hashCode()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.initCause(Exception)",
+      "symbol": "apex:System.NoAccessException.initCause(Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.setMessage(String)",
+      "symbol": "apex:System.NoAccessException.setMessage(String)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoAccessException.toString()",
+      "symbol": "apex:System.NoAccessException.toString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.NoDataFoundException()",
+      "symbol": "apex:System.NoDataFoundException.NoDataFoundException()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.equals(Object)",
+      "symbol": "apex:System.NoDataFoundException.equals(Object)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.getCause()",
+      "symbol": "apex:System.NoDataFoundException.getCause()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.getInaccessibleFields()",
+      "symbol": "apex:System.NoDataFoundException.getInaccessibleFields()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.getLineNumber()",
+      "symbol": "apex:System.NoDataFoundException.getLineNumber()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.getMessage()",
+      "symbol": "apex:System.NoDataFoundException.getMessage()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.getStackTraceString()",
+      "symbol": "apex:System.NoDataFoundException.getStackTraceString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.getTypeName()",
+      "symbol": "apex:System.NoDataFoundException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.hashCode()",
+      "symbol": "apex:System.NoDataFoundException.hashCode()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.initCause(Exception)",
+      "symbol": "apex:System.NoDataFoundException.initCause(Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.setMessage(String)",
+      "symbol": "apex:System.NoDataFoundException.setMessage(String)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.NoDataFoundException.toString()",
+      "symbol": "apex:System.NoDataFoundException.toString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException",
+      "symbol": "apex:System.TouchHandledException",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.TouchHandledException(String)",
+      "symbol": "apex:System.TouchHandledException.TouchHandledException(String)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.equals(Object)",
+      "symbol": "apex:System.TouchHandledException.equals(Object)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.getCause()",
+      "symbol": "apex:System.TouchHandledException.getCause()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.getInaccessibleFields()",
+      "symbol": "apex:System.TouchHandledException.getInaccessibleFields()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.getLineNumber()",
+      "symbol": "apex:System.TouchHandledException.getLineNumber()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.getMessage()",
+      "symbol": "apex:System.TouchHandledException.getMessage()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.getStackTraceString()",
+      "symbol": "apex:System.TouchHandledException.getStackTraceString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.getTypeName()",
+      "symbol": "apex:System.TouchHandledException.getTypeName()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.hashCode()",
+      "symbol": "apex:System.TouchHandledException.hashCode()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.initCause(Exception)",
+      "symbol": "apex:System.TouchHandledException.initCause(Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.setMessage(String)",
+      "symbol": "apex:System.TouchHandledException.setMessage(String)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.toString()",
+      "symbol": "apex:System.TouchHandledException.toString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException",
+      "symbol": "apex:System.VisualforceException",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.VisualforceException()",
+      "symbol": "apex:System.VisualforceException.VisualforceException()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.VisualforceException(Exception)",
+      "symbol": "apex:System.VisualforceException.VisualforceException(Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.VisualforceException(String)",
+      "symbol": "apex:System.VisualforceException.VisualforceException(String)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.VisualforceException(String,Exception)",
+      "symbol": "apex:System.VisualforceException.VisualforceException(String,Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.equals(Object)",
+      "symbol": "apex:System.VisualforceException.equals(Object)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.getInaccessibleFields()",
+      "symbol": "apex:System.VisualforceException.getInaccessibleFields()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.hashCode()",
+      "symbol": "apex:System.VisualforceException.hashCode()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.initCause(Exception)",
+      "symbol": "apex:System.VisualforceException.initCause(Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.toString()",
+      "symbol": "apex:System.VisualforceException.toString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException",
+      "symbol": "apex:System.WaveTemplateException",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.WaveTemplateException()",
+      "symbol": "apex:System.WaveTemplateException.WaveTemplateException()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.WaveTemplateException(Exception)",
+      "symbol": "apex:System.WaveTemplateException.WaveTemplateException(Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.WaveTemplateException(String)",
+      "symbol": "apex:System.WaveTemplateException.WaveTemplateException(String)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.WaveTemplateException(String,Exception)",
+      "symbol": "apex:System.WaveTemplateException.WaveTemplateException(String,Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.equals(Object)",
+      "symbol": "apex:System.WaveTemplateException.equals(Object)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.getInaccessibleFields()",
+      "symbol": "apex:System.WaveTemplateException.getInaccessibleFields()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.hashCode()",
+      "symbol": "apex:System.WaveTemplateException.hashCode()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.initCause(Exception)",
+      "symbol": "apex:System.WaveTemplateException.initCause(Exception)",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.toString()",
+      "symbol": "apex:System.WaveTemplateException.toString()",
+      "kind": "exec",
+      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
+    }
+  ]
+}

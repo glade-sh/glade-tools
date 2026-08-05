@@ -2105,6 +2105,18 @@
       "disposition": "hosted-deferred",
       "override": true,
       "reason": "hosted package namespace reflection"
+    },
+    {
+      "surfacePrefix": "apex:System.TouchHandledException.TouchHandledException()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this constructor shape; local compiler must reject it"
+    },
+    {
+      "surfacePrefix": "apex:System.TouchHandledException.TouchHandledException(String,Exception)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this constructor shape; local compiler must reject it"
     }
   ]
 }
