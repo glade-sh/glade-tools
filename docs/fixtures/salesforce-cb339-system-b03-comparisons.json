@@ -5,7 +5,7 @@
   "candidate": {
     "commit": "7b9c1019ab13874f373a765006957f2d560d3c21",
     "sha256": "360a1928b5b1941e659328cc5c41d68d99f039255db7b1571304f77536db0221",
-    "toolsCommit": "48d40659173614f6600317a2ee3fc0cb269d4e0d"
+    "toolsCommit": "066f87ee6bd9c9769552244c2d7da128549c855a"
   },
   "salesforceExecution": "fresh-execute-anonymous-api67",
   "comparisons": [
