@@ -2117,6 +2117,36 @@
       "disposition": "compile-shape-required",
       "override": true,
       "reason": "Salesforce API 67 rejects this constructor shape; local compiler must reject it"
+    },
+    {
+      "surfacePrefix": "apex:System.AsyncOptions.getMaximumQueueableStackDepth()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this absent method; local runtime preserves the explicit rejection contract"
+    },
+    {
+      "surfacePrefix": "apex:System.JSONGenerator.writeRawValue(String)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this absent method; local runtime preserves the explicit rejection contract"
+    },
+    {
+      "surfacePrefix": "apex:System.Limits.getChildRelationshipsDescribes()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce removed this method; local runtime preserves the explicit rejection contract"
+    },
+    {
+      "surfacePrefix": "apex:System.EventBus.publish(Object)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce rejects non-platform-event objects; local runtime preserves the explicit rejection contract"
+    },
+    {
+      "surfacePrefix": "apex:System.List.deepClone()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce restricts deepClone to SObject list types; local runtime preserves the explicit rejection contract"
     }
   ]
 }
