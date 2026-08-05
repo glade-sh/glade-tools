@@ -10,7 +10,7 @@
       "symbol": "Schema.DescribeSObjectResult.fieldSets",
       "surfaceId": "apex:Schema.DescribeSObjectResult.fieldSets",
       "kind": "test",
-      "notes": "Direct Apex property access returns the same FieldSetMap as getFieldSets()."
+      "notes": "Direct Apex property access returns the same hidden FieldSet collection as getFieldSets(). API 67 permits member access and getMap(), but rejects explicit Schema.SObjectTypeFieldSets and Schema.FieldSetMap declarations."
     },
     {
       "symbol": "Schema.FieldSetMap.get",
