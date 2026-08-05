@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "packetId": "CB338",
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "08684af56dc10d65e9185286428f157cfbf41f1f",
+    "sha256": "79f8f4adc44c195d93c247ea2fa070b89260e17e772fbe0dda6391a7824275ca",
+    "toolsCommit": "1eb172d54eafaabe10b58846024d0e7aeae99b65"
+  },
+  "salesforceExecution": "fresh-execute-anonymous-api67",
+  "comparisons": [
+    {
+      "caseId": "exception-family-cb338",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:System.AssertException.equals(Object)",
+        "apex:System.AssertException.hashCode()",
+        "apex:System.AssertException.toString()",
+        "apex:System.AsyncException.AsyncException()",
+        "apex:System.AsyncException.AsyncException(Exception)",
+        "apex:System.AsyncException.AsyncException(String,Exception)",
+        "apex:System.AsyncException.equals(Object)",
+        "apex:System.AsyncException.hashCode()",
+        "apex:System.BigObjectException",
+        "apex:System.BigObjectException.BigObjectException()",
+        "apex:System.BigObjectException.BigObjectException(Exception)",
+        "apex:System.BigObjectException.BigObjectException(String)",
+        "apex:System.BigObjectException.BigObjectException(String,Exception)",
+        "apex:System.BigObjectException.equals(Object)",
+        "apex:System.BigObjectException.hashCode()",
+        "apex:System.BigObjectException.toString()",
+        "apex:System.CalloutException",
+        "apex:System.CalloutException.CalloutException()",
+        "apex:System.CalloutException.CalloutException(Exception)",
+        "apex:System.CalloutException.CalloutException(String)",
+        "apex:System.CalloutException.CalloutException(String,Exception)",
+        "apex:System.CalloutException.equals(Object)",
+        "apex:System.CalloutException.hashCode()",
+        "apex:System.CalloutException.toString()",
+        "apex:System.CanvasException",
+        "apex:System.CanvasException.CanvasException()",
+        "apex:System.CanvasException.CanvasException(Exception)",
+        "apex:System.CanvasException.CanvasException(String)",
+        "apex:System.CanvasException.CanvasException(String,Exception)",
+        "apex:System.CanvasException.equals(Object)",
+        "apex:System.CanvasException.hashCode()",
+        "apex:System.CanvasException.toString()",
+        "apex:System.DataWeaveScriptException",
+        "apex:System.DataWeaveScriptException.DataWeaveScriptException()",
+        "apex:System.DataWeaveScriptException.DataWeaveScriptException(Exception)",
+        "apex:System.DataWeaveScriptException.DataWeaveScriptException(String)",
+        "apex:System.DataWeaveScriptException.DataWeaveScriptException(String,Exception)",
+        "apex:System.DataWeaveScriptException.equals(Object)",
+        "apex:System.DataWeaveScriptException.hashCode()",
+        "apex:System.DataWeaveScriptException.toString()"
+      ],
+      "sfObservation": [
+        "CB338|AssertException|0|System.AssertException|Script-thrown exception|System.AssertException: Script-thrown exception|true|true||AssertException|S|System.AssertException|CB338 AssertException|System.AssertException: CB338 AssertException|true|true||AssertException|E|System.AssertException|Script-thrown exception|System.AssertException: Script-thrown exception|true|true||AssertException|SE|System.AssertException|CB338 AssertException cause|System.AssertException: CB338 AssertException cause|true|true||AsyncException|0|System.AsyncException|Script-thrown exception|System.AsyncException: Script-thrown exception|true|true||AsyncException|S|System.AsyncException|CB338 AsyncException|System.AsyncException: CB338 AsyncException|true|true||AsyncException|E|System.AsyncException|Script-thrown exception|System.AsyncException: Script-thrown exception|true|true||AsyncException|SE|System.AsyncException|CB338 AsyncException cause|System.AsyncException: CB338 AsyncException cause|true|true||BigObjectException|0|System.BigObjectException|Script-thrown exception|System.BigObjectException: Script-thrown exception|true|true||BigObjectException|S|System.BigObjectException|CB338 BigObjectException|System.BigObjectException: CB338 BigObjectException|true|true||BigObjectException|E|System.BigObjectException|Script-thrown exception|System.BigObjectException: Script-thrown exception|true|true||BigObjectException|SE|System.BigObjectException|CB338 BigObjectException cause|System.BigObjectException: CB338 BigObjectException cause|true|true||CalloutException|0|System.CalloutException|Script-thrown exception|System.CalloutException: Script-thrown exception|true|true||CalloutException|S|System.CalloutException|CB338 CalloutException|System.CalloutException: CB338 CalloutException|true|true||CalloutException|E|System.CalloutException|Script-thrown exception|System.CalloutException: Script-thrown exception|true|true||CalloutException|SE|System.CalloutException|CB338 CalloutException cause|System.CalloutException: CB338 CalloutException cause|true|true||CanvasException|0|System.CanvasException|Script-thrown exception|System.CanvasException: Script-thrown exception|true|true||CanvasException|S|System.CanvasException|CB338 CanvasException|System.CanvasException: CB338 CanvasException|true|true||CanvasException|E|System.CanvasException|Script-thrown exception|System.CanvasException: Script-thrown exception|true|true||CanvasException|SE|System.CanvasException|CB338 CanvasException cause|System.CanvasException: CB338 CanvasException cause|true|true||DataWeaveScriptException|0|System.DataWeaveScriptException|Script-thrown exception|System.DataWeaveScriptException: Script-thrown exception|true|true||DataWeaveScriptException|S|System.DataWeaveScriptException|CB338 DataWeaveScriptException|System.DataWeaveScriptException: CB338 DataWeaveScriptException|true|true"
+      ],
+      "gladeObservation": [
+        "CB338|AssertException|0|System.AssertException|Script-thrown exception|System.AssertException: Script-thrown exception|true|true||AssertException|S|System.AssertException|CB338 AssertException|System.AssertException: CB338 AssertException|true|true||AssertException|E|System.AssertException|Script-thrown exception|System.AssertException: Script-thrown exception|true|true||AssertException|SE|System.AssertException|CB338 AssertException cause|System.AssertException: CB338 AssertException cause|true|true||AsyncException|0|System.AsyncException|Script-thrown exception|System.AsyncException: Script-thrown exception|true|true||AsyncException|S|System.AsyncException|CB338 AsyncException|System.AsyncException: CB338 AsyncException|true|true||AsyncException|E|System.AsyncException|Script-thrown exception|System.AsyncException: Script-thrown exception|true|true||AsyncException|SE|System.AsyncException|CB338 AsyncException cause|System.AsyncException: CB338 AsyncException cause|true|true||BigObjectException|0|System.BigObjectException|Script-thrown exception|System.BigObjectException: Script-thrown exception|true|true||BigObjectException|S|System.BigObjectException|CB338 BigObjectException|System.BigObjectException: CB338 BigObjectException|true|true||BigObjectException|E|System.BigObjectException|Script-thrown exception|System.BigObjectException: Script-thrown exception|true|true||BigObjectException|SE|System.BigObjectException|CB338 BigObjectException cause|System.BigObjectException: CB338 BigObjectException cause|true|true||CalloutException|0|System.CalloutException|Script-thrown exception|System.CalloutException: Script-thrown exception|true|true||CalloutException|S|System.CalloutException|CB338 CalloutException|System.CalloutException: CB338 CalloutException|true|true||CalloutException|E|System.CalloutException|Script-thrown exception|System.CalloutException: Script-thrown exception|true|true||CalloutException|SE|System.CalloutException|CB338 CalloutException cause|System.CalloutException: CB338 CalloutException cause|true|true||CanvasException|0|System.CanvasException|Script-thrown exception|System.CanvasException: Script-thrown exception|true|true||CanvasException|S|System.CanvasException|CB338 CanvasException|System.CanvasException: CB338 CanvasException|true|true||CanvasException|E|System.CanvasException|Script-thrown exception|System.CanvasException: Script-thrown exception|true|true||CanvasException|SE|System.CanvasException|CB338 CanvasException cause|System.CanvasException: CB338 CanvasException cause|true|true||DataWeaveScriptException|0|System.DataWeaveScriptException|Script-thrown exception|System.DataWeaveScriptException: Script-thrown exception|true|true||DataWeaveScriptException|S|System.DataWeaveScriptException|CB338 DataWeaveScriptException|System.DataWeaveScriptException: CB338 DataWeaveScriptException|true|true"
+      ]
+    },
+    {
+      "caseId": "exception-default-tail-cb338",
+      "status": "pass",
+      "surfaceIds": [],
+      "sfObservation": [
+        "CB338T|DmlException|Script-thrown exception|System.DmlException: Script-thrown exception||JSONException|Script-thrown exception|System.JSONException: Script-thrown exception||ListException|Script-thrown exception|System.ListException: Script-thrown exception||QueryException|Script-thrown exception|System.QueryException: Script-thrown exception"
+      ],
+      "gladeObservation": [
+        "CB338T|DmlException|Script-thrown exception|System.DmlException: Script-thrown exception||JSONException|Script-thrown exception|System.JSONException: Script-thrown exception||ListException|Script-thrown exception|System.ListException: Script-thrown exception||QueryException|Script-thrown exception|System.QueryException: Script-thrown exception"
+      ]
+    }
+  ],
+  "creditedSurfaceIds": [
+    "apex:System.AssertException.equals(Object)",
+    "apex:System.AssertException.hashCode()",
+    "apex:System.AssertException.toString()",
+    "apex:System.AsyncException.AsyncException()",
+    "apex:System.AsyncException.AsyncException(Exception)",
+    "apex:System.AsyncException.AsyncException(String,Exception)",
+    "apex:System.AsyncException.equals(Object)",
+    "apex:System.AsyncException.hashCode()",
+    "apex:System.BigObjectException",
+    "apex:System.BigObjectException.BigObjectException()",
+    "apex:System.BigObjectException.BigObjectException(Exception)",
+    "apex:System.BigObjectException.BigObjectException(String)",
+    "apex:System.BigObjectException.BigObjectException(String,Exception)",
+    "apex:System.BigObjectException.equals(Object)",
+    "apex:System.BigObjectException.hashCode()",
+    "apex:System.BigObjectException.toString()",
+    "apex:System.CalloutException",
+    "apex:System.CalloutException.CalloutException()",
+    "apex:System.CalloutException.CalloutException(Exception)",
+    "apex:System.CalloutException.CalloutException(String)",
+    "apex:System.CalloutException.CalloutException(String,Exception)",
+    "apex:System.CalloutException.equals(Object)",
+    "apex:System.CalloutException.hashCode()",
+    "apex:System.CalloutException.toString()",
+    "apex:System.CanvasException",
+    "apex:System.CanvasException.CanvasException()",
+    "apex:System.CanvasException.CanvasException(Exception)",
+    "apex:System.CanvasException.CanvasException(String)",
+    "apex:System.CanvasException.CanvasException(String,Exception)",
+    "apex:System.CanvasException.equals(Object)",
+    "apex:System.CanvasException.hashCode()",
+    "apex:System.CanvasException.toString()",
+    "apex:System.DataWeaveScriptException",
+    "apex:System.DataWeaveScriptException.DataWeaveScriptException()",
+    "apex:System.DataWeaveScriptException.DataWeaveScriptException(Exception)",
+    "apex:System.DataWeaveScriptException.DataWeaveScriptException(String)",
+    "apex:System.DataWeaveScriptException.DataWeaveScriptException(String,Exception)",
+    "apex:System.DataWeaveScriptException.equals(Object)",
+    "apex:System.DataWeaveScriptException.hashCode()",
+    "apex:System.DataWeaveScriptException.toString()"
+  ],
+  "creditCount": 40,
+  "excluded": [],
+  "match": true,
+  "notes": "Grouped constructor, default-message, toString, equals-self, and hash-stability observations. Hash values are not compared across runtimes; only self-stability is asserted."
+}
+
