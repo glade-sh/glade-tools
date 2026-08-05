@@ -1,0 +1,674 @@
+{
+  "name": "current-base-compile-shape-members-e50",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "if (false) {\nnew Invocable.Action();\nnew Invocable.Error();\n((Invocable.Error)null).clone();\nObject shape3 = ((Invocable.Error)null).code;\n((Invocable.Error)null).getCode();\n((Invocable.Error)null).getMessage();\nObject shape6 = ((Invocable.Error)null).message;\nnew Invocable.Result();\n((Invocable.Result)null).clone();\nObject shape9 = ((Invocable.Result)null).errors;\n((Invocable.Result)null).getAction();\n((Invocable.Result)null).getErrors();\n((Invocable.Result)null).getInvocationParameters();\n((Invocable.Result)null).getOutputParameters();\nObject shape14 = ((Invocable.Result)null).isSuccess;\nInvocable.Result.isSuccess();\nObject shape16 = ((Invocable.Result)null).outputParameters;\nnew System.AppExchangeTrialTemplate();\nnew System.AppExchangeUserPerms();\n((System.AppExchangeUserPerms)null).clone();\n((System.AppExchangeUserPerms)null).getCanEditBilling();\n((System.AppExchangeUserPerms)null).getCanInstall();\nnew System.Aura();\nnew System.BcpProvisionService();\n((System.BcpProvisionService)null).clone();\nnew System.Builder();\n((System.Builder)null).clone();\nnew System.CURRENCY();\n((System.CURRENCY)null).equals((Object)null);\n((System.CURRENCY)null).hashCode();\n((System.CURRENCY)null).toString();\nnew System.Collator();\nnew System.Communities();\n((System.Communities)null).clone();\nObject shape34 = ((System.Continuation)null).state;\nSystem.Custom.getAll();\nSystem.Custom.getInstance();\nSystem.Custom.getInstance((Id)null);\nSystem.Custom.getOrgDefaults();\nSystem.Custom.getValues((Id)null);\nSystem.Custom.getValues((String)null);\n((System.CustomizationType)null).equals((Object)null);\n((System.CustomizationType)null).hashCode();\n((System.CustomizationType)null).ordinal();\nSystem.CustomizationType.valueOf((String)null);\nnew System.DataWeaveScriptResource();\nnew System.DistributedLedgerService();\n((System.DistributedLedgerService)null).clone();\nnew System.Domain();\nnew System.FinalizerContextImpl();\nnew System.FlexQueue();\nnew System.FormulaRecalcFieldError();\nnew System.FormulaRecalcResult();\nnew System.OrgInstrumentationContext((OrgMetricPublishTypeEnum)null);\n((System.OrgInstrumentationContext)null).clone();\nnew System.OrgInstrumentationOperation();\n((System.OrgInstrumentationOperation)null).clone();\nnew System.OrgInstrumentationService((OrgMetricServiceEnum)null, (String)null, (String)null, (String)null);\n((System.OrgInstrumentationService)null).clone();\nnew System.OrgLimit();\nObject shape60 = System.OrgMetricPublishTypeEnum.DURATION;\nObject shape61 = System.OrgMetricPublishTypeEnum.NONE;\nObject shape62 = System.OrgMetricPublishTypeEnum.REQUEST_COUNT;\nObject shape63 = System.OrgMetricPublishTypeEnum.REQUEST_COUNT_AND_DURATION;\n((System.OrgMetricPublishTypeEnum)null).equals((Object)null);\n((System.OrgMetricPublishTypeEnum)null).hashCode();\n((System.OrgMetricPublishTypeEnum)null).ordinal();\nSystem.OrgMetricPublishTypeEnum.valueOf((String)null);\n((System.OrgMetricServiceEnum)null).equals((Object)null);\n((System.OrgMetricServiceEnum)null).hashCode();\n((System.OrgMetricServiceEnum)null).ordinal();\nSystem.OrgMetricServiceEnum.valueOf((String)null);\nObject shape72 = System.OrgMetricTypeEnum.DURATION;\nObject shape73 = System.OrgMetricTypeEnum.REQUEST_COUNT;\nObject shape74 = System.OrgMetricTypeEnum.SATURATION;\n((System.OrgMetricTypeEnum)null).equals((Object)null);\n((System.OrgMetricTypeEnum)null).hashCode();\n((System.OrgMetricTypeEnum)null).ordinal();\nSystem.OrgMetricTypeEnum.valueOf((String)null);\nnew System.OrgMonitorFramework();\n((System.OrgMonitorFramework)null).clone();\nSystem.OrgMonitorFramework.executeBlackTabRequest((String)null, (String)null, (String)null, (Set<String>)null, (Set<String>)null);\nnew System.PackageOMCopyForRzoneEnvironment();\n((System.PackageOMCopyForRzoneEnvironment)null).clone();\nObject shape84 = ((System.Question)null).CommunityId;\nnew System.Question();\nObject shape86 = ((System.Question)null).Title;\nnew System.QueueableContextImpl();\nSystem.RemoteObjectController.update((String)null, (List<String>)null, (Map<String,Object>)null);\nnew System.RequestImpl();\n((System.RequestImpl)null).clone();\nnew System.ResetPasswordResult();\nObject shape92 = System.SObjectDescribeOptions.DEFAULT;\nObject shape93 = System.SObjectDescribeOptions.DEFERRED;\nObject shape94 = System.SObjectDescribeOptions.FULL;\nnew System.SchedulableContextImpl();\nnew System.System();\nnew System.TrailblazerIdentity();\n((System.TrailblazerIdentity)null).clone();\nnew System.UIRequest();\nnew System.UUID();\nnew System.WebServiceCallout();\nnew System.WebServiceCalloutFuture();\nnew System.YubiAuthForAloha();\n((System.YubiAuthForAloha)null).clone();\nSystem.YubiAuthForAloha.validateYubiKeyLogin((String)null, (String)null);\nnew TxnSecurity.EventCondition();\nnew TxnSecurity.PolicyCondition();\nnew VisualEditor.DynamicPickList();\n}\n"
+    ]
+  },
+  "expected": {},
+  "evidence": [
+    {
+      "surfaceId": "apex:Invocable.Action.Action()",
+      "symbol": "Invocable.Action.Action()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Error.Error()",
+      "symbol": "Invocable.Error.Error()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Error.clone()",
+      "symbol": "Invocable.Error.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Error.code",
+      "symbol": "Invocable.Error.code",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Error.getCode()",
+      "symbol": "Invocable.Error.getCode()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Error.getMessage()",
+      "symbol": "Invocable.Error.getMessage()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Error.message",
+      "symbol": "Invocable.Error.message",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.Result()",
+      "symbol": "Invocable.Result.Result()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.clone()",
+      "symbol": "Invocable.Result.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.errors",
+      "symbol": "Invocable.Result.errors",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.getAction()",
+      "symbol": "Invocable.Result.getAction()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.getErrors()",
+      "symbol": "Invocable.Result.getErrors()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.getInvocationParameters()",
+      "symbol": "Invocable.Result.getInvocationParameters()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.getOutputParameters()",
+      "symbol": "Invocable.Result.getOutputParameters()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.isSuccess",
+      "symbol": "Invocable.Result.isSuccess",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.isSuccess()",
+      "symbol": "Invocable.Result.isSuccess()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result.outputParameters",
+      "symbol": "Invocable.Result.outputParameters",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate.AppExchangeTrialTemplate()",
+      "symbol": "System.AppExchangeTrialTemplate.AppExchangeTrialTemplate()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeUserPerms.AppExchangeUserPerms()",
+      "symbol": "System.AppExchangeUserPerms.AppExchangeUserPerms()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeUserPerms.clone()",
+      "symbol": "System.AppExchangeUserPerms.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeUserPerms.getCanEditBilling()",
+      "symbol": "System.AppExchangeUserPerms.getCanEditBilling()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeUserPerms.getCanInstall()",
+      "symbol": "System.AppExchangeUserPerms.getCanInstall()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Aura.Aura()",
+      "symbol": "System.Aura.Aura()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.BcpProvisionService.BcpProvisionService()",
+      "symbol": "System.BcpProvisionService.BcpProvisionService()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.BcpProvisionService.clone()",
+      "symbol": "System.BcpProvisionService.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Builder.Builder()",
+      "symbol": "System.Builder.Builder()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Builder.clone()",
+      "symbol": "System.Builder.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CURRENCY.CURRENCY()",
+      "symbol": "System.CURRENCY.CURRENCY()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CURRENCY.equals(Object)",
+      "symbol": "System.CURRENCY.equals(Object)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CURRENCY.hashCode()",
+      "symbol": "System.CURRENCY.hashCode()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CURRENCY.toString()",
+      "symbol": "System.CURRENCY.toString()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Collator.Collator()",
+      "symbol": "System.Collator.Collator()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Communities.Communities()",
+      "symbol": "System.Communities.Communities()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Communities.clone()",
+      "symbol": "System.Communities.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Continuation.state",
+      "symbol": "System.Continuation.state",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Custom.getAll()",
+      "symbol": "System.Custom.getAll()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Custom.getInstance()",
+      "symbol": "System.Custom.getInstance()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Custom.getInstance(Id)",
+      "symbol": "System.Custom.getInstance(Id)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Custom.getOrgDefaults()",
+      "symbol": "System.Custom.getOrgDefaults()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Custom.getValues(Id)",
+      "symbol": "System.Custom.getValues(Id)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Custom.getValues(String)",
+      "symbol": "System.Custom.getValues(String)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CustomizationType.equals(Object)",
+      "symbol": "System.CustomizationType.equals(Object)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CustomizationType.hashCode()",
+      "symbol": "System.CustomizationType.hashCode()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CustomizationType.ordinal()",
+      "symbol": "System.CustomizationType.ordinal()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CustomizationType.valueOf(String)",
+      "symbol": "System.CustomizationType.valueOf(String)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptResource.DataWeaveScriptResource()",
+      "symbol": "System.DataWeaveScriptResource.DataWeaveScriptResource()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DistributedLedgerService.DistributedLedgerService()",
+      "symbol": "System.DistributedLedgerService.DistributedLedgerService()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DistributedLedgerService.clone()",
+      "symbol": "System.DistributedLedgerService.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Domain.Domain()",
+      "symbol": "System.Domain.Domain()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContextImpl.FinalizerContextImpl()",
+      "symbol": "System.FinalizerContextImpl.FinalizerContextImpl()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FlexQueue.FlexQueue()",
+      "symbol": "System.FlexQueue.FlexQueue()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcFieldError.FormulaRecalcFieldError()",
+      "symbol": "System.FormulaRecalcFieldError.FormulaRecalcFieldError()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcResult.FormulaRecalcResult()",
+      "symbol": "System.FormulaRecalcResult.FormulaRecalcResult()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationContext.OrgInstrumentationContext(OrgMetricPublishTypeEnum)",
+      "symbol": "System.OrgInstrumentationContext.OrgInstrumentationContext(OrgMetricPublishTypeEnum)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationContext.clone()",
+      "symbol": "System.OrgInstrumentationContext.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationOperation.OrgInstrumentationOperation()",
+      "symbol": "System.OrgInstrumentationOperation.OrgInstrumentationOperation()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationOperation.clone()",
+      "symbol": "System.OrgInstrumentationOperation.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationService.OrgInstrumentationService(OrgMetricServiceEnum,String,String,String)",
+      "symbol": "System.OrgInstrumentationService.OrgInstrumentationService(OrgMetricServiceEnum,String,String,String)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationService.clone()",
+      "symbol": "System.OrgInstrumentationService.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgLimit.OrgLimit()",
+      "symbol": "System.OrgLimit.OrgLimit()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.DURATION",
+      "symbol": "System.OrgMetricPublishTypeEnum.DURATION",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.NONE",
+      "symbol": "System.OrgMetricPublishTypeEnum.NONE",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.REQUEST_COUNT",
+      "symbol": "System.OrgMetricPublishTypeEnum.REQUEST_COUNT",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.REQUEST_COUNT_AND_DURATION",
+      "symbol": "System.OrgMetricPublishTypeEnum.REQUEST_COUNT_AND_DURATION",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.equals(Object)",
+      "symbol": "System.OrgMetricPublishTypeEnum.equals(Object)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.hashCode()",
+      "symbol": "System.OrgMetricPublishTypeEnum.hashCode()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.ordinal()",
+      "symbol": "System.OrgMetricPublishTypeEnum.ordinal()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.valueOf(String)",
+      "symbol": "System.OrgMetricPublishTypeEnum.valueOf(String)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricServiceEnum.equals(Object)",
+      "symbol": "System.OrgMetricServiceEnum.equals(Object)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricServiceEnum.hashCode()",
+      "symbol": "System.OrgMetricServiceEnum.hashCode()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricServiceEnum.ordinal()",
+      "symbol": "System.OrgMetricServiceEnum.ordinal()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricServiceEnum.valueOf(String)",
+      "symbol": "System.OrgMetricServiceEnum.valueOf(String)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum.DURATION",
+      "symbol": "System.OrgMetricTypeEnum.DURATION",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum.REQUEST_COUNT",
+      "symbol": "System.OrgMetricTypeEnum.REQUEST_COUNT",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum.SATURATION",
+      "symbol": "System.OrgMetricTypeEnum.SATURATION",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum.equals(Object)",
+      "symbol": "System.OrgMetricTypeEnum.equals(Object)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum.hashCode()",
+      "symbol": "System.OrgMetricTypeEnum.hashCode()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum.ordinal()",
+      "symbol": "System.OrgMetricTypeEnum.ordinal()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum.valueOf(String)",
+      "symbol": "System.OrgMetricTypeEnum.valueOf(String)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMonitorFramework.OrgMonitorFramework()",
+      "symbol": "System.OrgMonitorFramework.OrgMonitorFramework()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMonitorFramework.clone()",
+      "symbol": "System.OrgMonitorFramework.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMonitorFramework.executeBlackTabRequest(String,String,String,Set<String>,Set<String>)",
+      "symbol": "System.OrgMonitorFramework.executeBlackTabRequest(String,String,String,Set<String>,Set<String>)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.PackageOMCopyForRzoneEnvironment.PackageOMCopyForRzoneEnvironment()",
+      "symbol": "System.PackageOMCopyForRzoneEnvironment.PackageOMCopyForRzoneEnvironment()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.PackageOMCopyForRzoneEnvironment.clone()",
+      "symbol": "System.PackageOMCopyForRzoneEnvironment.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Question.CommunityId",
+      "symbol": "System.Question.CommunityId",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Question.Question()",
+      "symbol": "System.Question.Question()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Question.Title",
+      "symbol": "System.Question.Title",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.QueueableContextImpl.QueueableContextImpl()",
+      "symbol": "System.QueueableContextImpl.QueueableContextImpl()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.update(String,List<String>,Map<String,Object>)",
+      "symbol": "System.RemoteObjectController.update(String,List<String>,Map<String,Object>)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.RequestImpl.RequestImpl()",
+      "symbol": "System.RequestImpl.RequestImpl()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.RequestImpl.clone()",
+      "symbol": "System.RequestImpl.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.ResetPasswordResult.ResetPasswordResult()",
+      "symbol": "System.ResetPasswordResult.ResetPasswordResult()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SObjectDescribeOptions.DEFAULT",
+      "symbol": "System.SObjectDescribeOptions.DEFAULT",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SObjectDescribeOptions.DEFERRED",
+      "symbol": "System.SObjectDescribeOptions.DEFERRED",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SObjectDescribeOptions.FULL",
+      "symbol": "System.SObjectDescribeOptions.FULL",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SchedulableContextImpl.SchedulableContextImpl()",
+      "symbol": "System.SchedulableContextImpl.SchedulableContextImpl()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.System.System()",
+      "symbol": "System.System.System()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.TrailblazerIdentity.TrailblazerIdentity()",
+      "symbol": "System.TrailblazerIdentity.TrailblazerIdentity()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.TrailblazerIdentity.clone()",
+      "symbol": "System.TrailblazerIdentity.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.UIRequest.UIRequest()",
+      "symbol": "System.UIRequest.UIRequest()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.UUID.UUID()",
+      "symbol": "System.UUID.UUID()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCallout.WebServiceCallout()",
+      "symbol": "System.WebServiceCallout.WebServiceCallout()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCalloutFuture.WebServiceCalloutFuture()",
+      "symbol": "System.WebServiceCalloutFuture.WebServiceCalloutFuture()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.YubiAuthForAloha.YubiAuthForAloha()",
+      "symbol": "System.YubiAuthForAloha.YubiAuthForAloha()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.YubiAuthForAloha.clone()",
+      "symbol": "System.YubiAuthForAloha.clone()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.YubiAuthForAloha.validateYubiKeyLogin(String,String)",
+      "symbol": "System.YubiAuthForAloha.validateYubiKeyLogin(String,String)",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:TxnSecurity.EventCondition.EventCondition()",
+      "symbol": "TxnSecurity.EventCondition.EventCondition()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:TxnSecurity.PolicyCondition.PolicyCondition()",
+      "symbol": "TxnSecurity.PolicyCondition.PolicyCondition()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:VisualEditor.DynamicPickList.DynamicPickList()",
+      "symbol": "VisualEditor.DynamicPickList.DynamicPickList()",
+      "kind": "shape",
+      "notes": "Compile-shape access generated from the current-base gap row."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "if (false) {\nnew Invocable.Action();\nnew Invocable.Error();\n((Invocable.Error)null).clone();\nObject shape3 = ((Invocable.Error)null).code;\n((Invocable.Error)null).getCode();\n((Invocable.Error)null).getMessage();\nObject shape6 = ((Invocable.Error)null).message;\nnew Invocable.Result();\n((Invocable.Result)null).clone();\nObject shape9 = ((Invocable.Result)null).errors;\n((Invocable.Result)null).getAction();\n((Invocable.Result)null).getErrors();\n((Invocable.Result)null).getInvocationParameters();\n((Invocable.Result)null).getOutputParameters();\nObject shape14 = ((Invocable.Result)null).isSuccess;\nInvocable.Result.isSuccess();\nObject shape16 = ((Invocable.Result)null).outputParameters;\nnew System.AppExchangeTrialTemplate();\nnew System.AppExchangeUserPerms();\n((System.AppExchangeUserPerms)null).clone();\n((System.AppExchangeUserPerms)null).getCanEditBilling();\n((System.AppExchangeUserPerms)null).getCanInstall();\nnew System.Aura();\nnew System.BcpProvisionService();\n((System.BcpProvisionService)null).clone();\nnew System.Builder();\n((System.Builder)null).clone();\nnew System.CURRENCY();\n((System.CURRENCY)null).equals((Object)null);\n((System.CURRENCY)null).hashCode();\n((System.CURRENCY)null).toString();\nnew System.Collator();\nnew System.Communities();\n((System.Communities)null).clone();\nObject shape34 = ((System.Continuation)null).state;\nSystem.Custom.getAll();\nSystem.Custom.getInstance();\nSystem.Custom.getInstance((Id)null);\nSystem.Custom.getOrgDefaults();\nSystem.Custom.getValues((Id)null);\nSystem.Custom.getValues((String)null);\n((System.CustomizationType)null).equals((Object)null);\n((System.CustomizationType)null).hashCode();\n((System.CustomizationType)null).ordinal();\nSystem.CustomizationType.valueOf((String)null);\nnew System.DataWeaveScriptResource();\nnew System.DistributedLedgerService();\n((System.DistributedLedgerService)null).clone();\nnew System.Domain();\nnew System.FinalizerContextImpl();\nnew System.FlexQueue();\nnew System.FormulaRecalcFieldError();\nnew System.FormulaRecalcResult();\nnew System.OrgInstrumentationContext((OrgMetricPublishTypeEnum)null);\n((System.OrgInstrumentationContext)null).clone();\nnew System.OrgInstrumentationOperation();\n((System.OrgInstrumentationOperation)null).clone();\nnew System.OrgInstrumentationService((OrgMetricServiceEnum)null, (String)null, (String)null, (String)null);\n((System.OrgInstrumentationService)null).clone();\nnew System.OrgLimit();\nObject shape60 = System.OrgMetricPublishTypeEnum.DURATION;\nObject shape61 = System.OrgMetricPublishTypeEnum.NONE;\nObject shape62 = System.OrgMetricPublishTypeEnum.REQUEST_COUNT;\nObject shape63 = System.OrgMetricPublishTypeEnum.REQUEST_COUNT_AND_DURATION;\n((System.OrgMetricPublishTypeEnum)null).equals((Object)null);\n((System.OrgMetricPublishTypeEnum)null).hashCode();\n((System.OrgMetricPublishTypeEnum)null).ordinal();\nSystem.OrgMetricPublishTypeEnum.valueOf((String)null);\n((System.OrgMetricServiceEnum)null).equals((Object)null);\n((System.OrgMetricServiceEnum)null).hashCode();\n((System.OrgMetricServiceEnum)null).ordinal();\nSystem.OrgMetricServiceEnum.valueOf((String)null);\nObject shape72 = System.OrgMetricTypeEnum.DURATION;\nObject shape73 = System.OrgMetricTypeEnum.REQUEST_COUNT;\nObject shape74 = System.OrgMetricTypeEnum.SATURATION;\n((System.OrgMetricTypeEnum)null).equals((Object)null);\n((System.OrgMetricTypeEnum)null).hashCode();\n((System.OrgMetricTypeEnum)null).ordinal();\nSystem.OrgMetricTypeEnum.valueOf((String)null);\nnew System.OrgMonitorFramework();\n((System.OrgMonitorFramework)null).clone();\nSystem.OrgMonitorFramework.executeBlackTabRequest((String)null, (String)null, (String)null, (Set<String>)null, (Set<String>)null);\nnew System.PackageOMCopyForRzoneEnvironment();\n((System.PackageOMCopyForRzoneEnvironment)null).clone();\nObject shape84 = ((System.Question)null).CommunityId;\nnew System.Question();\nObject shape86 = ((System.Question)null).Title;\nnew System.QueueableContextImpl();\nSystem.RemoteObjectController.update((String)null, (List<String>)null, (Map<String,Object>)null);\nnew System.RequestImpl();\n((System.RequestImpl)null).clone();\nnew System.ResetPasswordResult();\nObject shape92 = System.SObjectDescribeOptions.DEFAULT;\nObject shape93 = System.SObjectDescribeOptions.DEFERRED;\nObject shape94 = System.SObjectDescribeOptions.FULL;\nnew System.SchedulableContextImpl();\nnew System.System();\nnew System.TrailblazerIdentity();\n((System.TrailblazerIdentity)null).clone();\nnew System.UIRequest();\nnew System.UUID();\nnew System.WebServiceCallout();\nnew System.WebServiceCalloutFuture();\nnew System.YubiAuthForAloha();\n((System.YubiAuthForAloha)null).clone();\nSystem.YubiAuthForAloha.validateYubiKeyLogin((String)null, (String)null);\nnew TxnSecurity.EventCondition();\nnew TxnSecurity.PolicyCondition();\nnew VisualEditor.DynamicPickList();\n}\n"
+    }
+  ]
+}
