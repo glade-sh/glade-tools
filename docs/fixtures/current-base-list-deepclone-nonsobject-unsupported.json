@@ -1,0 +1,7 @@
+{
+  "name": "current-base-list-deepclone-nonsobject-unsupported",
+  "command": {"kind": "exec", "args": ["List<Integer> values = new List<Integer>{1}; values.deepClone();"]},
+  "source": [{"path": "anonymous.apex", "content": "List<Integer> values = new List<Integer>{1}; values.deepClone();"}],
+  "expected": {"error": {"type": "Error", "message": "Operation only applies to SObject list types: List<Integer>"}},
+  "evidence": [{"surfaceId": "apex:System.List.deepClone()", "symbol": "List.deepClone", "kind": "exec", "notes": "Salesforce restricts deepClone to SObject list types."}]
+}
