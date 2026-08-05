@@ -4,7 +4,7 @@
   "apiVersion": "67.0",
   "mode": "exec",
   "candidate": {
-    "commit": "4ecb67f372ec141fbeb706f667b3fd962fbc0c54",
+    "commit": "7b9c1019ab13874f373a765006957f2d560d3c21",
     "sha256": "360a1928b5b1941e659328cc5c41d68d99f039255db7b1571304f77536db0221",
     "toolsCommit": "48d40659173614f6600317a2ee3fc0cb269d4e0d"
   },
@@ -192,12 +192,6 @@
     {
       "surfaceId": "apex:System.EmailTemplateRenderException.toString()",
       "symbol": "EmailTemplateRenderException.toString()",
-      "kind": "exec",
-      "notes": "CB339 focused local Apex executable coverage with Salesforce Execute Anonymous comparison."
-    },
-    {
-      "surfaceId": "apex:System.Enum",
-      "symbol": "Enum",
       "kind": "exec",
       "notes": "CB339 focused local Apex executable coverage with Salesforce Execute Anonymous comparison."
     },
