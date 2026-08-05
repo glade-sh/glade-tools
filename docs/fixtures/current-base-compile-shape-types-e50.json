@@ -1,0 +1,524 @@
+{
+  "name": "current-base-compile-shape-types-e50",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "if (false) {\nInvocable.Error compileShape0;\nInvocable.Result compileShape1;\nSystem.ActivationPlatformCreationTypeEnum compileShape2;\nSystem.ActivationPlatformPrivacyTypeEnum compileShape3;\nSystem.ActivationPlatformTypeEnum compileShape4;\nSystem.ActivationTargetStatusEnum compileShape5;\nSystem.AppExchangeUserPerms compileShape6;\nSystem.AudienceDMODeltaTypeEnum compileShape7;\nSystem.BcpProvisionService compileShape8;\nSystem.BranchUnitRelatedRecord compileShape9;\nSystem.Builder compileShape10;\nSystem.CURRENCY compileShape11;\nSystem.CdpMlModelPredictionTypeEnum compileShape12;\nSystem.CdpMlPredictAggregateFunctionStatusEnum compileShape13;\nSystem.CdpMlPredictAggregateFunctionTypeEnum compileShape14;\nSystem.CdpMlPredictStatusEnum compileShape15;\nSystem.CustomSetting__c compileShape16;\nSystem.DaoObjectFieldTypeQueryEnum compileShape17;\nSystem.DataConnectorTypeEnum compileShape18;\nSystem.DataExportAttributeSourceEnum compileShape19;\nSystem.DataExportAttributeTypeEnum compileShape20;\nSystem.DataGraphObjectTypeEnum compileShape21;\nSystem.DataGraphStatusEnum compileShape22;\nSystem.DataSpaceStatusEnum compileShape23;\nSystem.DataWeaveScriptResource compileShape24;\nSystem.DisplayType compileShape25;\nSystem.DistributedLedgerService compileShape26;\nSystem.EgressFileNameTypeEnum compileShape27;\nSystem.EntityDefinition compileShape28;\nSystem.EntityParticle compileShape29;\nSystem.FieldDefinition compileShape30;\nSystem.FileDelimiterEnum compileShape31;\nSystem.FilterConjunctionEnum compileShape32;\nSystem.FilterOperatorDataTypeEnum compileShape33;\nSystem.FilterSortOrderEnum compileShape34;\nSystem.Folder compileShape35;\nSystem.Idea compileShape36;\nSystem.IdeaComment compileShape37;\nSystem.IntegrationTest compileShape38;\nSystem.Key compileShape39;\nSystem.ListIterator compileShape40;\nSystem.LongClass compileShape41;\nSystem.Note compileShape42;\nSystem.Order compileShape43;\nSystem.OrderAdjustmentGroup compileShape44;\nSystem.OrderDeliveryGroup compileShape45;\nSystem.OrderDeliveryMethod compileShape46;\nSystem.OrderItem compileShape47;\nSystem.OrderItemAdjustmentLineItem compileShape48;\nSystem.OrderItemTaxLineItem compileShape49;\nSystem.OrderSummaryAdditionalInfo compileShape50;\nSystem.OrgInstrumentationContext compileShape51;\nSystem.OrgInstrumentationOperation compileShape52;\nSystem.OrgInstrumentationService compileShape53;\nSystem.OrgMetricPublishTypeEnum compileShape54;\nSystem.OrgMetricServiceEnum compileShape55;\nSystem.OrgMetricTypeEnum compileShape56;\nSystem.OrgMonitorFramework compileShape57;\nSystem.PackageOMCopyForRzoneEnvironment compileShape58;\nSystem.PartyAppointmentRequest compileShape59;\nSystem.PreDeterminedFileNameEnum compileShape60;\nSystem.PurchaseQuantityRule compileShape61;\nSystem.QuerySqlStatusEnum compileShape62;\nSystem.Question compileShape63;\nSystem.RecentlyViewed compileShape64;\nSystem.RelationshipCardinality compileShape65;\nSystem.RequestImpl compileShape66;\nSystem.SObjectDescribeOptions compileShape67;\nSystem.SamlSsoConfig compileShape68;\nSystem.SoapType compileShape69;\nSystem.SocialPersona compileShape70;\nSystem.SocialPost compileShape71;\nSystem.T compileShape72;\nSystem.T1 compileShape73;\nSystem.T2 compileShape74;\nSystem.TrailblazerIdentity compileShape75;\nSystem.TypeEnum compileShape76;\nSystem.User compileShape77;\nSystem.UserEntityAccess compileShape78;\nSystem.UserFieldAccess compileShape79;\nSystem.UserProvisioningRequest compileShape80;\nSystem.YubiAuthForAloha compileShape81;\nSystem.modify compileShape82;\nSystem.onlycallsmadefromtheApexnamespacethatcreatedtheactionlinkdefinitioncanread compileShape83;\n}"
+    ]
+  },
+  "expected": {},
+  "evidence": [
+    {
+      "surfaceId": "apex:Invocable.Error",
+      "symbol": "Invocable.Error",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:Invocable.Result",
+      "symbol": "Invocable.Result",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.ActivationPlatformCreationTypeEnum",
+      "symbol": "System.ActivationPlatformCreationTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.ActivationPlatformPrivacyTypeEnum",
+      "symbol": "System.ActivationPlatformPrivacyTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.ActivationPlatformTypeEnum",
+      "symbol": "System.ActivationPlatformTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.ActivationTargetStatusEnum",
+      "symbol": "System.ActivationTargetStatusEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeUserPerms",
+      "symbol": "System.AppExchangeUserPerms",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.AudienceDMODeltaTypeEnum",
+      "symbol": "System.AudienceDMODeltaTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.BcpProvisionService",
+      "symbol": "System.BcpProvisionService",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.BranchUnitRelatedRecord",
+      "symbol": "System.BranchUnitRelatedRecord",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Builder",
+      "symbol": "System.Builder",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CURRENCY",
+      "symbol": "System.CURRENCY",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CdpMlModelPredictionTypeEnum",
+      "symbol": "System.CdpMlModelPredictionTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CdpMlPredictAggregateFunctionStatusEnum",
+      "symbol": "System.CdpMlPredictAggregateFunctionStatusEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CdpMlPredictAggregateFunctionTypeEnum",
+      "symbol": "System.CdpMlPredictAggregateFunctionTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CdpMlPredictStatusEnum",
+      "symbol": "System.CdpMlPredictStatusEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.CustomSetting__c",
+      "symbol": "System.CustomSetting__c",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DaoObjectFieldTypeQueryEnum",
+      "symbol": "System.DaoObjectFieldTypeQueryEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataConnectorTypeEnum",
+      "symbol": "System.DataConnectorTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataExportAttributeSourceEnum",
+      "symbol": "System.DataExportAttributeSourceEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataExportAttributeTypeEnum",
+      "symbol": "System.DataExportAttributeTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataGraphObjectTypeEnum",
+      "symbol": "System.DataGraphObjectTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataGraphStatusEnum",
+      "symbol": "System.DataGraphStatusEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataSpaceStatusEnum",
+      "symbol": "System.DataSpaceStatusEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptResource",
+      "symbol": "System.DataWeaveScriptResource",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DisplayType",
+      "symbol": "System.DisplayType",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.DistributedLedgerService",
+      "symbol": "System.DistributedLedgerService",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.EgressFileNameTypeEnum",
+      "symbol": "System.EgressFileNameTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.EntityDefinition",
+      "symbol": "System.EntityDefinition",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.EntityParticle",
+      "symbol": "System.EntityParticle",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FieldDefinition",
+      "symbol": "System.FieldDefinition",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FileDelimiterEnum",
+      "symbol": "System.FileDelimiterEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FilterConjunctionEnum",
+      "symbol": "System.FilterConjunctionEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FilterOperatorDataTypeEnum",
+      "symbol": "System.FilterOperatorDataTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.FilterSortOrderEnum",
+      "symbol": "System.FilterSortOrderEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Folder",
+      "symbol": "System.Folder",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Idea",
+      "symbol": "System.Idea",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.IdeaComment",
+      "symbol": "System.IdeaComment",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.IntegrationTest",
+      "symbol": "System.IntegrationTest",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Key",
+      "symbol": "System.Key",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.ListIterator",
+      "symbol": "System.ListIterator",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.LongClass",
+      "symbol": "System.LongClass",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Note",
+      "symbol": "System.Note",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Order",
+      "symbol": "System.Order",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrderAdjustmentGroup",
+      "symbol": "System.OrderAdjustmentGroup",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrderDeliveryGroup",
+      "symbol": "System.OrderDeliveryGroup",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrderDeliveryMethod",
+      "symbol": "System.OrderDeliveryMethod",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrderItem",
+      "symbol": "System.OrderItem",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrderItemAdjustmentLineItem",
+      "symbol": "System.OrderItemAdjustmentLineItem",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrderItemTaxLineItem",
+      "symbol": "System.OrderItemTaxLineItem",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrderSummaryAdditionalInfo",
+      "symbol": "System.OrderSummaryAdditionalInfo",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationContext",
+      "symbol": "System.OrgInstrumentationContext",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationOperation",
+      "symbol": "System.OrgInstrumentationOperation",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgInstrumentationService",
+      "symbol": "System.OrgInstrumentationService",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum",
+      "symbol": "System.OrgMetricPublishTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricServiceEnum",
+      "symbol": "System.OrgMetricServiceEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMetricTypeEnum",
+      "symbol": "System.OrgMetricTypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.OrgMonitorFramework",
+      "symbol": "System.OrgMonitorFramework",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.PackageOMCopyForRzoneEnvironment",
+      "symbol": "System.PackageOMCopyForRzoneEnvironment",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.PartyAppointmentRequest",
+      "symbol": "System.PartyAppointmentRequest",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.PreDeterminedFileNameEnum",
+      "symbol": "System.PreDeterminedFileNameEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.PurchaseQuantityRule",
+      "symbol": "System.PurchaseQuantityRule",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.QuerySqlStatusEnum",
+      "symbol": "System.QuerySqlStatusEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.Question",
+      "symbol": "System.Question",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.RecentlyViewed",
+      "symbol": "System.RecentlyViewed",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.RelationshipCardinality",
+      "symbol": "System.RelationshipCardinality",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.RequestImpl",
+      "symbol": "System.RequestImpl",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SObjectDescribeOptions",
+      "symbol": "System.SObjectDescribeOptions",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SamlSsoConfig",
+      "symbol": "System.SamlSsoConfig",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SoapType",
+      "symbol": "System.SoapType",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SocialPersona",
+      "symbol": "System.SocialPersona",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.SocialPost",
+      "symbol": "System.SocialPost",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.T",
+      "symbol": "System.T",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.T1",
+      "symbol": "System.T1",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.T2",
+      "symbol": "System.T2",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.TrailblazerIdentity",
+      "symbol": "System.TrailblazerIdentity",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.TypeEnum",
+      "symbol": "System.TypeEnum",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.User",
+      "symbol": "System.User",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.UserEntityAccess",
+      "symbol": "System.UserEntityAccess",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.UserFieldAccess",
+      "symbol": "System.UserFieldAccess",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.UserProvisioningRequest",
+      "symbol": "System.UserProvisioningRequest",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.YubiAuthForAloha",
+      "symbol": "System.YubiAuthForAloha",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.modify",
+      "symbol": "System.modify",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    },
+    {
+      "surfaceId": "apex:System.onlycallsmadefromtheApexnamespacethatcreatedtheactionlinkdefinitioncanread",
+      "symbol": "System.onlycallsmadefromtheApexnamespacethatcreatedtheactionlinkdefinitioncanread",
+      "kind": "shape",
+      "notes": "Compile-shape declaration generated from the current-base gap row."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "if (false) {\nInvocable.Error compileShape0;\nInvocable.Result compileShape1;\nSystem.ActivationPlatformCreationTypeEnum compileShape2;\nSystem.ActivationPlatformPrivacyTypeEnum compileShape3;\nSystem.ActivationPlatformTypeEnum compileShape4;\nSystem.ActivationTargetStatusEnum compileShape5;\nSystem.AppExchangeUserPerms compileShape6;\nSystem.AudienceDMODeltaTypeEnum compileShape7;\nSystem.BcpProvisionService compileShape8;\nSystem.BranchUnitRelatedRecord compileShape9;\nSystem.Builder compileShape10;\nSystem.CURRENCY compileShape11;\nSystem.CdpMlModelPredictionTypeEnum compileShape12;\nSystem.CdpMlPredictAggregateFunctionStatusEnum compileShape13;\nSystem.CdpMlPredictAggregateFunctionTypeEnum compileShape14;\nSystem.CdpMlPredictStatusEnum compileShape15;\nSystem.CustomSetting__c compileShape16;\nSystem.DaoObjectFieldTypeQueryEnum compileShape17;\nSystem.DataConnectorTypeEnum compileShape18;\nSystem.DataExportAttributeSourceEnum compileShape19;\nSystem.DataExportAttributeTypeEnum compileShape20;\nSystem.DataGraphObjectTypeEnum compileShape21;\nSystem.DataGraphStatusEnum compileShape22;\nSystem.DataSpaceStatusEnum compileShape23;\nSystem.DataWeaveScriptResource compileShape24;\nSystem.DisplayType compileShape25;\nSystem.DistributedLedgerService compileShape26;\nSystem.EgressFileNameTypeEnum compileShape27;\nSystem.EntityDefinition compileShape28;\nSystem.EntityParticle compileShape29;\nSystem.FieldDefinition compileShape30;\nSystem.FileDelimiterEnum compileShape31;\nSystem.FilterConjunctionEnum compileShape32;\nSystem.FilterOperatorDataTypeEnum compileShape33;\nSystem.FilterSortOrderEnum compileShape34;\nSystem.Folder compileShape35;\nSystem.Idea compileShape36;\nSystem.IdeaComment compileShape37;\nSystem.IntegrationTest compileShape38;\nSystem.Key compileShape39;\nSystem.ListIterator compileShape40;\nSystem.LongClass compileShape41;\nSystem.Note compileShape42;\nSystem.Order compileShape43;\nSystem.OrderAdjustmentGroup compileShape44;\nSystem.OrderDeliveryGroup compileShape45;\nSystem.OrderDeliveryMethod compileShape46;\nSystem.OrderItem compileShape47;\nSystem.OrderItemAdjustmentLineItem compileShape48;\nSystem.OrderItemTaxLineItem compileShape49;\nSystem.OrderSummaryAdditionalInfo compileShape50;\nSystem.OrgInstrumentationContext compileShape51;\nSystem.OrgInstrumentationOperation compileShape52;\nSystem.OrgInstrumentationService compileShape53;\nSystem.OrgMetricPublishTypeEnum compileShape54;\nSystem.OrgMetricServiceEnum compileShape55;\nSystem.OrgMetricTypeEnum compileShape56;\nSystem.OrgMonitorFramework compileShape57;\nSystem.PackageOMCopyForRzoneEnvironment compileShape58;\nSystem.PartyAppointmentRequest compileShape59;\nSystem.PreDeterminedFileNameEnum compileShape60;\nSystem.PurchaseQuantityRule compileShape61;\nSystem.QuerySqlStatusEnum compileShape62;\nSystem.Question compileShape63;\nSystem.RecentlyViewed compileShape64;\nSystem.RelationshipCardinality compileShape65;\nSystem.RequestImpl compileShape66;\nSystem.SObjectDescribeOptions compileShape67;\nSystem.SamlSsoConfig compileShape68;\nSystem.SoapType compileShape69;\nSystem.SocialPersona compileShape70;\nSystem.SocialPost compileShape71;\nSystem.T compileShape72;\nSystem.T1 compileShape73;\nSystem.T2 compileShape74;\nSystem.TrailblazerIdentity compileShape75;\nSystem.TypeEnum compileShape76;\nSystem.User compileShape77;\nSystem.UserEntityAccess compileShape78;\nSystem.UserFieldAccess compileShape79;\nSystem.UserProvisioningRequest compileShape80;\nSystem.YubiAuthForAloha compileShape81;\nSystem.modify compileShape82;\nSystem.onlycallsmadefromtheApexnamespacethatcreatedtheactionlinkdefinitioncanread compileShape83;\n}"
+    }
+  ]
+}
