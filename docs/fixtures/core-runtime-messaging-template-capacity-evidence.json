@@ -44,7 +44,7 @@
       "notes": "Docs and tooling expose this local test-visible reservation contract; the runtime records the call without sending email."
     },
     {
-      "surfaceId": "apex:System.Messaging.sendEmailMessage(List<Id>,Boolean)",
+      "surfaceId": "apex:System.Messaging.sendEmailMessage(List<ID>,Boolean)",
       "symbol": "Messaging.sendEmailMessage(List<Id>,Boolean)",
       "kind": "test",
       "notes": "Docs and tooling expose the EmailMessage Id overload; the local runtime returns ordered SendEmailResult values."
