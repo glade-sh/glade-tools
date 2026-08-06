@@ -19,6 +19,31 @@ func TestMergeExcludesAPI67RemovedSiteHelpers(t *testing.T) {
 	}
 }
 
+func TestMergeExcludesAPI67LegacyDeleteFilterAndStatusAlias(t *testing.T) {
+	ids := []string{
+		"apex:Database.DeleteFilter",
+		"apex:Database.DeleteFilter.DELETED_ROWS_ONLY",
+		"apex:Database.DeleteFilter.NO_DELETED_ROWS",
+		"apex:Database.DeleteFilter.NO_DELETED_SHARING_ROWS",
+		"apex:Database.DeleteFilter.NO_FILTER",
+		"apex:Database.DeleteFilter.equals(Object)",
+		"apex:Database.DeleteFilter.hashCode()",
+		"apex:Database.DeleteFilter.ordinal()",
+		"apex:Database.DeleteFilter.valueOf(String)",
+		"apex:Database.DeleteFilter.values()",
+		"apex:Metadata.DeployStatus.IN_PROGRESS",
+	}
+	rows := make([]SurfaceLedgerRow, 0, len(ids))
+	for _, id := range ids {
+		rows = append(rows, SurfaceLedgerRow{SurfaceID: id, Product: ProductApex})
+	}
+	for _, row := range Merge(rows, nil, nil, nil).Rows {
+		if isAPI67RemovedSurfaceID(row.SurfaceID) {
+			t.Fatalf("API-67 removed surface entered current-base ledger: %s", row.SurfaceID)
+		}
+	}
+}
+
 func TestMergeExcludesAPI67InvalidDatabaseAllowCalloutsRows(t *testing.T) {
 	ids := []string{
 		"apex:System.Database.insertAsync(Object,Database.AllowCallouts,AccessLevel)",
