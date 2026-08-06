@@ -299,7 +299,7 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.Auth.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local Auth token, JWT, OAuth, and cloud surfaces"},
 	{SurfaceID: "apex:System.Canvas.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local Canvas app integration surfaces"},
 	{SurfaceID: "apex:System.Continuation.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local Continuation callback and callout surfaces"},
-	{SurfaceID: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Crypto constant-time Blob comparison"},
+	{SurfaceID: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "API-67 Salesforce rejects this signature; local runtime preserves the explicit unsupported diagnostic"},
 	{SurfaceID: "apex:System.CustomMetadataType.getAll", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local custom metadata static getAll access"},
 	{SurfaceID: "apex:System.CustomSetting.getInstance", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local custom setting static getInstance access"},
 	{SurfaceID: "apex:System.Database.DeletedRecord.getDeletedDate()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Database.DeletedRecord.getDeletedDate local sync DTO accessor"},
