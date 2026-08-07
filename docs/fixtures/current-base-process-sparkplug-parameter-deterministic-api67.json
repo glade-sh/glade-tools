@@ -1,0 +1,58 @@
+{
+  "name": "current-base-process-sparkplug-parameter-deterministic-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Process mock shape only and makes no Salesforce parity claim.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-Process-002: six Process.SparkPlugParameter rows have deterministic local evidence for construction, public fields, and clone. No hosted approval or process execution is exercised.",
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CurrentBaseProcessSparkPlugParameterDeterministicTest.cls",
+      "content": "@isTest private class CurrentBaseProcessSparkPlugParameterDeterministicTest { @isTest static void fieldsAndCloneWitness() { Process.SparkPlugParameter parameter = new Process.SparkPlugParameter(); parameter.name = 'threshold'; parameter.parameterType = 'String'; parameter.required = true; Process.SparkPlugParameter clone = (Process.SparkPlugParameter) parameter.clone(); System.assertEquals('threshold', clone.name); System.assertEquals('String', clone.parameterType); System.assertEquals(true, clone.required); } }"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:Process.SparkPlugParameter",
+      "symbol": "Process.SparkPlugParameter",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugParameter.SparkPlugParameter()",
+      "symbol": "Process.SparkPlugParameter.SparkPlugParameter()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugParameter.clone()",
+      "symbol": "Process.SparkPlugParameter.clone()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugParameter.name",
+      "symbol": "Process.SparkPlugParameter.name",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugParameter.parameterType",
+      "symbol": "Process.SparkPlugParameter.parameterType",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugParameter.required",
+      "symbol": "Process.SparkPlugParameter.required",
+      "kind": "test"
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

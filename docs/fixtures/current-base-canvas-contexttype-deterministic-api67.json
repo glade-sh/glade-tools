@@ -1,0 +1,33 @@
+{
+  "name": "current-base-canvas-contexttype-deterministic-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Canvas mock shape only and makes no Salesforce parity claim.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-canvas-001: Canvas.ContextTypeEnum has local deterministic type evidence through the ORGANIZATION value. No hosted Canvas application context is exercised.",
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CurrentBaseCanvasContextTypeDeterministicTest.cls",
+      "content": "@isTest private class CurrentBaseCanvasContextTypeDeterministicTest { @isTest static void enumTypeWitness() { Canvas.ContextTypeEnum type = Canvas.ContextTypeEnum.ORGANIZATION; System.assertNotEquals(null, type); } }"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:canvas.ContextTypeEnum",
+      "symbol": "Canvas.ContextTypeEnum",
+      "kind": "test"
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "current-base-cache-sessionpartition-deterministic-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Cache mock boundary only and makes no Salesforce parity claim.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-cache-002: local Cache construction and Cache.UnsupportedOperationException.clone() are deterministic. Cache.SessionPartition.clone() has a stable local failure boundary. No hosted platform-cache behavior is claimed.",
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CurrentBaseCacheSessionPartitionDeterministicTest.cls",
+      "content": "@isTest private class CurrentBaseCacheSessionPartitionDeterministicTest { @isTest static void constructionWitness() { Cache.SessionPartition partition = new Cache.SessionPartition('local'); System.assertNotEquals(null, partition); Cache.UnsupportedOperationException issue = new Cache.UnsupportedOperationException('local'); System.assertNotEquals(null, issue); } @isTest static void sessionPartitionCloneBoundary() { Cache.SessionPartition partition = new Cache.SessionPartition('local'); partition.clone(); } @isTest static void exceptionCloneBoundary() { Cache.UnsupportedOperationException issue = new Cache.UnsupportedOperationException('local'); issue.clone(); } }"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:Cache.SessionPartition.SessionPartition(String)",
+      "symbol": "Cache.SessionPartition.SessionPartition(String)",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Cache.SessionPartition.clone()",
+      "symbol": "Cache.SessionPartition.clone()",
+      "kind": "test",
+      "notes": "The local deterministic boundary is an expected failed test for SessionPartition.clone()."
+    },
+    {
+      "surfaceId": "apex:Cache.UnsupportedOperationException.UnsupportedOperationException(String)",
+      "symbol": "Cache.UnsupportedOperationException.UnsupportedOperationException(String)",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Cache.UnsupportedOperationException.clone()",
+      "symbol": "Cache.UnsupportedOperationException.clone()",
+      "kind": "test",
+      "notes": "The local deterministic mock returns a cloned Cache.UnsupportedOperationException."
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": false,
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "errors": 0
+    }
+  }
+}
