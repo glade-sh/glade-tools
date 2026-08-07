@@ -8,7 +8,7 @@
   },
   "source": [
     {
-      "path": "classes/FeatureManagementCloneCompileShapeFixture.cls",
+      "path": "force-app/main/default/classes/FeatureManagementCloneCompileShapeFixture.cls",
       "content": "public class FeatureManagementCloneCompileShapeFixture {\n    public static Object probe() {\n        if (false) {\n            return ((System.FeatureManagement)null).clone();\n        }\n        return null;\n    }\n}"
     }
   ],
