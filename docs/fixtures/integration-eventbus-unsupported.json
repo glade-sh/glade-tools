@@ -22,15 +22,18 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Database.SaveResult result = EventBus.publish(new Account(Name = 'Acme')); System.assert(result.isSuccess()); List<Database.SaveResult> many = EventBus.publish(new List<Account>{new Account(Name = 'One'), new Account(Name = 'Two')}); System.assertEquals(2, many.size()); System.assert(many[0].isSuccess()); System.assert(many[1].isSuccess());"
+      "content": "Database.SaveResult result = EventBus.publish(new Event_Recipes_Demo__e()); System.assert(result.isSuccess()); List<Database.SaveResult> many = EventBus.publish(new List<SObject>{new Event_Recipes_Demo__e(), new Event_Recipes_Demo__e()}); System.assertEquals(2, many.size()); System.assert(many[0].isSuccess()); System.assert(many[1].isSuccess());"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Database.SaveResult result = EventBus.publish(new Account(Name = 'Acme')); System.assert(result.isSuccess()); List<Database.SaveResult> many = EventBus.publish(new List<Account>{new Account(Name = 'One'), new Account(Name = 'Two')}); System.assertEquals(2, many.size()); System.assert(many[0].isSuccess()); System.assert(many[1].isSuccess());"
+      "Database.SaveResult result = EventBus.publish(new Event_Recipes_Demo__e()); System.assert(result.isSuccess()); List<Database.SaveResult> many = EventBus.publish(new List<SObject>{new Event_Recipes_Demo__e(), new Event_Recipes_Demo__e()}); System.assertEquals(2, many.size()); System.assert(many[0].isSuccess()); System.assert(many[1].isSuccess());"
     ]
   },
+  "schema": [
+    {"path": "force-app/main/default/objects/Event_Recipes_Demo__e/Event_Recipes_Demo__e.object-meta.xml", "content": "<CustomObject><label>Event Recipes Demo</label><pluralLabel>Event Recipes Demos</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>"}
+  ],
   "expected": {
     "result": {
       "ok": true,

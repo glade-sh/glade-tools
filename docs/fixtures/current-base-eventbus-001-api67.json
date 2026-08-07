@@ -4,7 +4,7 @@
   "mode": "local-runtime",
   "candidate": {"commit": "1933ae6ea107e255f476a863c480c5d574e03254"},
   "salesforceEligible": false,
-  "salesforceExclusionReason": "The fixture uses a non-platform Account deliberately to exercise Glade's deterministic local rejection path; it makes no hosted Salesforce runtime claim.",
+  "salesforceExclusionReason": "The fixture proves the deterministic local EventBus type, constructor, and platform-event publish contract; hosted delivery is not claimed.",
   "notes": "Covers the three missing rows from current-base-local-runtime-required-EventBus-001: the System.EventBus type, its local constructor shape, and the canonical publish entry point.",
   "profile": {
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
@@ -12,12 +12,13 @@
     "laneId": "current-base-local-runtime-required-EventBus-001",
     "selectedRowCount": 3
   },
-  "command": {"kind": "exec", "args": ["System.EventBus bus = new System.EventBus(); System.assertNotEquals(null, bus); EventBus.publish(new Account(Name = 'not an event'));"]},
-  "source": [{"path": "anonymous.apex", "content": "System.EventBus bus = new System.EventBus(); System.assertNotEquals(null, bus); try { EventBus.publish(new Account(Name = 'not an event')); System.assert(false); } catch (Exception e) { System.assertEquals('The specified sObject or list of sObjects contains objects that aren’t platform events. You can publish only platform event objects using EventBus.publish. Ensure the type of the specified sObject is a platform event.'); }"}],
+  "command": {"kind": "exec", "args": ["System.EventBus bus = new System.EventBus(); System.assertNotEquals(null, bus); Database.SaveResult result = EventBus.publish(new Event_Recipes_Demo__e()); System.assert(result.isSuccess());"]},
+  "source": [{"path": "anonymous.apex", "content": "System.EventBus bus = new System.EventBus(); System.assertNotEquals(null, bus); Database.SaveResult result = EventBus.publish(new Event_Recipes_Demo__e()); System.assert(result.isSuccess());"}],
   "evidence": [
     {"surfaceId": "apex:System.EventBus", "symbol": "System.EventBus", "kind": "exec"},
     {"surfaceId": "apex:System.EventBus.EventBus()", "symbol": "System.EventBus.EventBus", "kind": "exec"},
     {"surfaceId": "apex:System.EventBus.publish", "symbol": "System.EventBus.publish", "kind": "exec"}
   ],
-  "expected": {"error": {"type": "Error", "message": "The specified sObject or list of sObjects contains objects that aren’t platform events. You can publish only platform event objects using EventBus.publish. Ensure the type of the specified sObject is a platform event."}}
+  "schema": [{"path": "force-app/main/default/objects/Event_Recipes_Demo__e/Event_Recipes_Demo__e.object-meta.xml", "content": "<CustomObject><label>Event Recipes Demo</label><pluralLabel>Event Recipes Demos</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>"}],
+  "expected": {"result": {"ok": true, "debug": null}}
 }
