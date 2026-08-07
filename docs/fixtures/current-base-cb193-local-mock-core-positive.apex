@@ -18,7 +18,7 @@ Cache.Org.put('cb193-org-basic-put', 'basic-put');
 System.assertEquals('basic-put', (String) Cache.Org.get('cb193-org-basic-put'));
 Cache.Org.put('cb193-org-visible-put', 'visible-put', Cache.Visibility.ALL);
 System.assertEquals('visible-put', (String) Cache.Org.get('cb193-org-visible-put'));
-Cache.Org.put('cb193-org-ttl-put', 'ttl-put', 60);
+Cache.Org.put('cb193-org-ttl-put', 'ttl-put', 300);
 System.assertEquals('ttl-put', (String) Cache.Org.get('cb193-org-ttl-put'));
 Cache.Org.put('cb193-org-full-put', 'full-put', 60, Cache.Visibility.ALL, false);
 System.assertEquals('full-put', (String) Cache.Org.get('cb193-org-full-put'));
@@ -46,7 +46,7 @@ Cache.Session.put('cb193-session-basic-put', 'basic-put');
 System.assertEquals('basic-put', (String) Cache.Session.get('cb193-session-basic-put'));
 Cache.Session.put('cb193-session-visible-put', 'visible-put', Cache.Visibility.ALL);
 System.assertEquals('visible-put', (String) Cache.Session.get('cb193-session-visible-put'));
-Cache.Session.put('cb193-session-ttl-put', 'ttl-put', 60);
+Cache.Session.put('cb193-session-ttl-put', 'ttl-put', 300);
 System.assertEquals('ttl-put', (String) Cache.Session.get('cb193-session-ttl-put'));
 Cache.Session.put('cb193-session-full-put', 'full-put', 60, Cache.Visibility.ALL, false);
 System.assertEquals('full-put', (String) Cache.Session.get('cb193-session-full-put'));
@@ -125,4 +125,3 @@ System.assert(new UserProvisioning.DummyConnectorApexHandler().invoke(input) != 
 userprovisioning.UserProvisioningLog.log('0PR-cb193', 'Created');
 userprovisioning.UserProvisioningLog.log('0PR-cb193', 'Created', 'detail');
 userprovisioning.UserProvisioningLog.log('0PR-cb193', 'Created', 'detail', 'field', 'value');
-
