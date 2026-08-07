@@ -52,8 +52,6 @@
     {"surfaceId": "apex:Messaging.Email.setSubject(String)", "symbol": "Messaging.Email.setSubject", "kind": "exec"},
     {"surfaceId": "apex:Messaging.Email.setUseSignature(Boolean)", "symbol": "Messaging.Email.setUseSignature", "kind": "exec"},
     {"surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)", "symbol": "UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)", "kind": "exec"},
-    {"surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.buildDescribeCall()", "symbol": "UserProvisioning.UserProvisioningPlugin.buildDescribeCall", "kind": "exec"},
-    {"surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.describe()", "symbol": "UserProvisioning.UserProvisioningPlugin.describe", "kind": "exec"},
     {"surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)", "symbol": "UserProvisioning.UserProvisioningProcessHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)", "kind": "exec"},
     {"surfaceId": "apex:UserProvisioning.UserProvisioningLog.log(String,String)", "symbol": "userprovisioning.UserProvisioningLog.log(String,String)", "kind": "exec"},
     {"surfaceId": "apex:UserProvisioning.UserProvisioningLog.log(String,String,String)", "symbol": "userprovisioning.UserProvisioningLog.log(String,String,String)", "kind": "exec"},
