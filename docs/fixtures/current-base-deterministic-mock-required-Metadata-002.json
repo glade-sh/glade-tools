@@ -1,0 +1,85 @@
+{
+  "name": "current-base-deterministic-mock-required-Metadata-002",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "sha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "The current Salesforce compile oracle does not accept the Metadata DTO surface in this lane; this fixture records local deterministic-mock construction and member behavior only and makes no Salesforce compile claim.",
+  "notes": "Current-base Metadata-002 covers only the 47 queue rows not already present in existing fixture evidence. The source exercises local result fields, feed/layout DTO construction, enum behavior, and metadata base/value shapes.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "laneId": "current-base-deterministic-mock-required-Metadata-002",
+    "selectedRowCount": 47
+  },
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/classes/CurrentBaseDeterministicMockRequiredMetadata002Test.cls",
+      "content": "@isTest private class CurrentBaseDeterministicMockRequiredMetadata002Test { @isTest static void metadata002Witness() { Metadata.DeployProblemType problemType = Metadata.DeployProblemType.Info; System.assertEquals(true, problemType.equals(Metadata.DeployProblemType.Info)); System.assertNotEquals(null, problemType.hashCode()); System.assert(problemType.ordinal() >= 0); System.assertEquals(true, Metadata.DeployProblemType.valueOf('Info').equals(problemType)); System.assert(Metadata.DeployProblemType.values().size() > 0); Metadata.DeployResult result = new Metadata.DeployResult(); System.assertEquals(null, result.completedDate); System.assertEquals(null, result.createdDate); System.assertEquals(null, result.errorStatusCode); System.assertEquals(null, result.id); System.assertEquals(null, result.lastModifiedDate); System.assertNotEquals(null, result.messages); System.assertEquals(null, result.startDate); Metadata.FeedItemTypeEnum feedItem = Metadata.FeedItemTypeEnum.TextPost; System.assertEquals(true, feedItem.equals(Metadata.FeedItemTypeEnum.TextPost)); Metadata.FeedLayout feedLayout = new Metadata.FeedLayout(); Metadata.FeedLayoutComponent component = new Metadata.FeedLayoutComponent(); Metadata.FeedLayoutFilter filter = new Metadata.FeedLayoutFilter(); System.assertNotEquals(null, feedLayout); System.assertNotEquals(null, component); System.assertNotEquals(null, filter); Metadata.Layout layout = new Metadata.Layout(); Metadata.LayoutColumn column = new Metadata.LayoutColumn(); column.layoutItems = new List<Metadata.LayoutItem>{new Metadata.LayoutItem()}; column.reserved = 'left'; System.assertEquals(1, column.layoutItems.size()); System.assertEquals('left', column.reserved); Metadata.LayoutHeader header = Metadata.LayoutHeader.PersonalTagging; System.assertEquals(true, header.equals(Metadata.LayoutHeader.valueOf('PersonalTagging'))); System.assertNotEquals(null, header.hashCode()); System.assert(header.ordinal() >= 0); System.assert(Metadata.LayoutHeader.values().size() > 0); System.assertNotEquals(null, layout); Metadata.LayoutSection section = new Metadata.LayoutSection(); System.assertNotEquals(null, section); Metadata.LayoutSectionStyle sectionStyle = Metadata.LayoutSectionStyle.OneColumn; System.assertEquals(true, sectionStyle.equals(Metadata.LayoutSectionStyle.valueOf('OneColumn'))); System.assertNotEquals(null, sectionStyle.hashCode()); System.assert(sectionStyle.ordinal() >= 0); System.assert(Metadata.LayoutSectionStyle.values().size() > 0); Metadata.Metadata baseMetadata = new Metadata.Metadata(); baseMetadata.fullName = 'Fixture.Base'; System.assertEquals('Fixture.Base', baseMetadata.fullName); Metadata.MetadataType metadataType = Metadata.MetadataType.Layout; System.assertEquals(true, metadataType.equals(Metadata.MetadataType.valueOf('Layout'))); System.assertNotEquals(null, metadataType.hashCode()); System.assertNotEquals(null, metadataType.ordinal()); System.assert(Metadata.MetadataType.values().size() > 0); Metadata.MetadataValue metadataValue = new Metadata.MetadataValue(); System.assertNotEquals(null, metadataValue.clone()); Metadata.MiniLayout miniLayout = new Metadata.MiniLayout(); miniLayout.fields = new List<String>{'Name'}; miniLayout.relatedLists = new List<Metadata.RelatedListItem>{new Metadata.RelatedListItem()}; System.assertEquals('Name', miniLayout.fields[0]); System.assertEquals(1, miniLayout.relatedLists.size()); Metadata.OmniInteractionAccessConfig config = new Metadata.OmniInteractionAccessConfig(); System.assertNotEquals(null, config); } }"
+    }
+  ],
+  "evidence": [
+    {"surfaceId": "apex:Metadata.DeployProblemType", "symbol": "Metadata.DeployProblemType", "kind": "test"},
+    {"surfaceId": "apex:Metadata.DeployResult.completedDate", "symbol": "Metadata.DeployResult.completedDate", "kind": "test"},
+    {"surfaceId": "apex:Metadata.DeployResult.createdDate", "symbol": "Metadata.DeployResult.createdDate", "kind": "test"},
+    {"surfaceId": "apex:Metadata.DeployResult.errorStatusCode", "symbol": "Metadata.DeployResult.errorStatusCode", "kind": "test"},
+    {"surfaceId": "apex:Metadata.DeployResult.id", "symbol": "Metadata.DeployResult.id", "kind": "test"},
+    {"surfaceId": "apex:Metadata.DeployResult.lastModifiedDate", "symbol": "Metadata.DeployResult.lastModifiedDate", "kind": "test"},
+    {"surfaceId": "apex:Metadata.DeployResult.messages", "symbol": "Metadata.DeployResult.messages", "kind": "test"},
+    {"surfaceId": "apex:Metadata.DeployResult.startDate", "symbol": "Metadata.DeployResult.startDate", "kind": "test"},
+    {"surfaceId": "apex:Metadata.FeedItemTypeEnum", "symbol": "Metadata.FeedItemTypeEnum", "kind": "test"},
+    {"surfaceId": "apex:Metadata.FeedLayout.FeedLayout()", "symbol": "Metadata.FeedLayout.FeedLayout()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.FeedLayoutComponent.FeedLayoutComponent()", "symbol": "Metadata.FeedLayoutComponent.FeedLayoutComponent()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.FeedLayoutFilter.FeedLayoutFilter()", "symbol": "Metadata.FeedLayoutFilter.FeedLayoutFilter()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.Layout.Layout()", "symbol": "Metadata.Layout.Layout()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutColumn", "symbol": "Metadata.LayoutColumn", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutColumn.LayoutColumn()", "symbol": "Metadata.LayoutColumn.LayoutColumn()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutColumn.layoutItems", "symbol": "Metadata.LayoutColumn.layoutItems", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutColumn.reserved", "symbol": "Metadata.LayoutColumn.reserved", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutHeader", "symbol": "Metadata.LayoutHeader", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutHeader.equals(Object)", "symbol": "Metadata.LayoutHeader.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutHeader.hashCode()", "symbol": "Metadata.LayoutHeader.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutHeader.ordinal()", "symbol": "Metadata.LayoutHeader.ordinal()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutHeader.valueOf(String)", "symbol": "Metadata.LayoutHeader.valueOf(String)", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutHeader.values()", "symbol": "Metadata.LayoutHeader.values()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutItem.LayoutItem()", "symbol": "Metadata.LayoutItem.LayoutItem()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutSection.LayoutSection()", "symbol": "Metadata.LayoutSection.LayoutSection()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutSectionStyle", "symbol": "Metadata.LayoutSectionStyle", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutSectionStyle.equals(Object)", "symbol": "Metadata.LayoutSectionStyle.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutSectionStyle.hashCode()", "symbol": "Metadata.LayoutSectionStyle.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutSectionStyle.ordinal()", "symbol": "Metadata.LayoutSectionStyle.ordinal()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutSectionStyle.valueOf(String)", "symbol": "Metadata.LayoutSectionStyle.valueOf(String)", "kind": "test"},
+    {"surfaceId": "apex:Metadata.LayoutSectionStyle.values()", "symbol": "Metadata.LayoutSectionStyle.values()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.Metadata.Metadata()", "symbol": "Metadata.Metadata.Metadata()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.Metadata.fullName", "symbol": "Metadata.Metadata.fullName", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataType.equals(Object)", "symbol": "Metadata.MetadataType.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataType.hashCode()", "symbol": "Metadata.MetadataType.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataType.ordinal()", "symbol": "Metadata.MetadataType.ordinal()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataType.valueOf(String)", "symbol": "Metadata.MetadataType.valueOf(String)", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataType.values()", "symbol": "Metadata.MetadataType.values()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataValue", "symbol": "Metadata.MetadataValue", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataValue.MetadataValue()", "symbol": "Metadata.MetadataValue.MetadataValue()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MetadataValue.clone()", "symbol": "Metadata.MetadataValue.clone()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MiniLayout", "symbol": "Metadata.MiniLayout", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MiniLayout.MiniLayout()", "symbol": "Metadata.MiniLayout.MiniLayout()", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MiniLayout.fields", "symbol": "Metadata.MiniLayout.fields", "kind": "test"},
+    {"surfaceId": "apex:Metadata.MiniLayout.relatedLists", "symbol": "Metadata.MiniLayout.relatedLists", "kind": "test"},
+    {"surfaceId": "apex:Metadata.OmniInteractionAccessConfig", "symbol": "Metadata.OmniInteractionAccessConfig", "kind": "test"},
+    {"surfaceId": "apex:Metadata.OmniInteractionAccessConfig.OmniInteractionAccessConfig()", "symbol": "Metadata.OmniInteractionAccessConfig.OmniInteractionAccessConfig()", "kind": "test"}
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}
