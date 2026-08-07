@@ -60,7 +60,7 @@
     {"surfaceId": "apex:UserProvisioning.UserProvisioningLog.log(String,String,String,String,String)", "symbol": "userprovisioning.UserProvisioningLog.log(String,String,String,String,String)", "kind": "exec"}
   ],
   "source": [
-    {"path": "evidence/current-base/cb193-local-mock-core-contracts/fixture.apex"}
+    {"path": "current-base-cb193-local-mock-core-positive.apex"}
   ],
   "command": {
     "kind": "exec",
