@@ -1,0 +1,37 @@
+{
+  "name": "current-base-dom-local-runtime-001-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": true,
+  "notes": "Current-base lane current-base-local-runtime-required-dom-001: 14 uncovered lowercase dom rows. The fixture uses the public DOM runtime and asserts inherited object helpers plus XmlNodeType enum behavior locally.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-local-runtime-required-dom-001",
+    "selectedRowCount": 14
+  },
+  "command": {"kind": "test"},
+  "source": [{
+    "path": "force-app/main/default/classes/CurrentBaseDomLocalRuntime001Test.cls",
+    "content": "@isTest private class CurrentBaseDomLocalRuntime001Test { @isTest static void domLocalRuntime001Witness() { dom.Document documentValue = new dom.Document(); System.assertEquals(documentValue, documentValue); System.assertNotEquals(null, documentValue.hashCode()); System.assertNotEquals(null, documentValue.toString()); dom.XmlNode nodeValue = new dom.XmlNode(); System.assertEquals(nodeValue, nodeValue); System.assertNotEquals(null, nodeValue.hashCode()); System.assertNotEquals(null, nodeValue.toString()); dom.XmlNodeType commentValue = dom.XmlNodeType.COMMENT; dom.XmlNodeType textValue = dom.XmlNodeType.TEXT; System.assertEquals(commentValue, commentValue); System.assertNotEquals(null, commentValue.hashCode()); System.assertEquals(0, commentValue.ordinal()); System.assertEquals(commentValue, dom.XmlNodeType.valueOf('COMMENT')); System.assertEquals(true, dom.XmlNodeType.values().size() > 0); System.assertNotEquals(null, textValue); } }"
+  }],
+  "evidence": [
+    {"surfaceId": "apex:dom.Document.equals(Object)", "symbol": "dom.Document.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:dom.Document.hashCode()", "symbol": "dom.Document.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:dom.Document.toString()", "symbol": "dom.Document.toString()", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNode.XmlNode()", "symbol": "dom.XmlNode.XmlNode()", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNode.equals(Object)", "symbol": "dom.XmlNode.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNode.hashCode()", "symbol": "dom.XmlNode.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNode.toString()", "symbol": "dom.XmlNode.toString()", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNodeType.COMMENT", "symbol": "dom.XmlNodeType.COMMENT", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNodeType.TEXT", "symbol": "dom.XmlNodeType.TEXT", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNodeType.equals(Object)", "symbol": "dom.XmlNodeType.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNodeType.hashCode()", "symbol": "dom.XmlNodeType.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNodeType.ordinal()", "symbol": "dom.XmlNodeType.ordinal()", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNodeType.valueOf(String)", "symbol": "dom.XmlNodeType.valueOf(String)", "kind": "test"},
+    {"surfaceId": "apex:dom.XmlNodeType.values()", "symbol": "dom.XmlNodeType.values()", "kind": "test"}
+  ],
+  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+}

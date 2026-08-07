@@ -1,0 +1,27 @@
+{
+  "name": "current-base-answers-deterministic-mock-001-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Answers is retained as a local deterministic-mock community surface; this fixture does not claim Salesforce availability or hosted best-reply behavior.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-Answers-001: 3 uncovered rows. Existing fixture evidence covers findSimilar and its Object overload.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Answers-001",
+    "selectedRowCount": 3
+  },
+  "command": {"kind": "test"},
+  "source": [{
+    "path": "force-app/main/default/classes/CurrentBaseAnswersDeterministic001Test.cls",
+    "content": "@isTest private class CurrentBaseAnswersDeterministic001Test { @isTest static void answersDeterministic001Witness() { Answers value = new Answers(); System.assertNotEquals(null, value); System.assertNotEquals(null, value.clone()); Answers.setBestReply('question', 'reply'); } }"
+  }],
+  "evidence": [
+    {"surfaceId": "apex:Answers.Answers()", "symbol": "Answers.Answers()", "kind": "test"},
+    {"surfaceId": "apex:Answers.clone()", "symbol": "Answers.clone()", "kind": "test"},
+    {"surfaceId": "apex:Answers.setBestReply(String,String)", "symbol": "Answers.setBestReply(String,String)", "kind": "test"}
+  ],
+  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+}
