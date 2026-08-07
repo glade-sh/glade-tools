@@ -28,20 +28,20 @@
     {
       "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object)",
       "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
+      "kind": "unsupported",
+      "notes": "IsvPartners.AppAnalytics is a Salesforce-hosted analytics service; this fixture preserves the service-only classification instead of claiming deterministic local behavior."
     },
     {
       "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)",
       "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
+      "kind": "unsupported",
+      "notes": "IsvPartners.AppAnalytics is a Salesforce-hosted analytics service; this fixture preserves the service-only classification instead of claiming deterministic local behavior."
     },
     {
       "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)",
       "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
+      "kind": "unsupported",
+      "notes": "IsvPartners.AppAnalytics is a Salesforce-hosted analytics service; this fixture preserves the service-only classification instead of claiming deterministic local behavior."
     },
     {
       "surfaceId": "apex:RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch",

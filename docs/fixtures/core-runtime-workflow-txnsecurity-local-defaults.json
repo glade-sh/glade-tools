@@ -4,62 +4,47 @@
     {
       "surfaceId": "apex:workflow.Action.invoke(workflow.Context)",
       "symbol": "workflow.Action.invoke",
-      "kind": "exec",
-      "notes": "Local workflow action callback returns an empty DML action list without executing workflow automation."
+      "kind": "unsupported",
+      "notes": "Salesforce reports the workflow.ActionDml return type as not visible from Apex; preserve this hosted workflow surface as non-executable local evidence."
     },
     {
       "surfaceId": "apex:workflow.ActionDml.invoke()",
       "symbol": "workflow.ActionDml.invoke",
-      "kind": "exec",
-      "notes": "Local workflow DML action callback accepts invocation without cloud automation side effects."
+      "kind": "unsupported",
+      "notes": "Salesforce reports the workflow.ActionDml return type as not visible from Apex; preserve this hosted workflow surface as non-executable local evidence."
     },
     {
       "surfaceId": "apex:System.TxnSecurity.EventCondition.evaluate(SObject)",
       "symbol": "TxnSecurity.EventCondition.evaluate",
-      "kind": "exec",
-      "notes": "Local transaction security event condition evaluates to false by default without enforcing org policies."
+      "kind": "unsupported",
+      "notes": "TxnSecurity event-condition evaluation depends on hosted transaction-policy context and is not a local runtime contract; preserve the non-executable classification."
     },
     {
       "surfaceId": "apex:TxnSecurity.EventCondition.evaluate(Object)",
       "symbol": "TxnSecurity.EventCondition.evaluate",
-      "kind": "exec",
-      "notes": "Exact docs-side method identity for the same local default event-condition evaluation."
+      "kind": "unsupported",
+      "notes": "TxnSecurity event-condition evaluation depends on hosted transaction-policy context and is not a local runtime contract; preserve the non-executable classification."
     },
     {
       "surfaceId": "apex:TxnSecurity.Event.Event()",
       "symbol": "TxnSecurity.Event.Event",
-      "kind": "exec",
-      "notes": "TxnSecurity.Event constructs a local passive event record for transaction-security policy tests."
+      "kind": "unsupported",
+      "notes": "TxnSecurity.Event is a hosted transaction-security policy value and is not validated as a local passive record; preserve the non-executable classification."
     },
     {
       "surfaceId": "apex:System.TxnSecurity.PolicyCondition.evaluate(TxnSecurity.Event)",
       "symbol": "TxnSecurity.PolicyCondition.evaluate",
-      "kind": "exec",
-      "notes": "Local transaction security policy condition evaluates to false by default without enforcing org policies."
+      "kind": "unsupported",
+      "notes": "TxnSecurity policy-condition evaluation depends on hosted transaction-policy context and is not a local runtime contract; preserve the non-executable classification."
     },
     {
       "surfaceId": "apex:TxnSecurity.PolicyCondition.evaluate(TxnSecurity.Event)",
       "symbol": "TxnSecurity.PolicyCondition.evaluate",
-      "kind": "exec",
-      "notes": "Exact docs-side method identity for the same local default policy-condition evaluation."
-    }
-  ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "List<workflow.ActionDml> actions = new workflow.Action().invoke(new workflow.Context());\nSystem.assertEquals(0, actions.size());\nnew workflow.ActionDml().invoke();\nSystem.assertEquals(false, new TxnSecurity.EventCondition().evaluate(new Account(Name = 'Local')));\nTxnSecurity.Event event = new TxnSecurity.Event('00D000000000001', UserInfo.getUserId(), 'Account', 'Read', 'Record', '001000000000001', System.now(), new Map<String,String>{'source' => 'local'});\nSystem.assertEquals(false, new TxnSecurity.PolicyCondition().evaluate(event));"
+      "kind": "unsupported",
+      "notes": "TxnSecurity policy-condition evaluation depends on hosted transaction-policy context and is not a local runtime contract; preserve the non-executable classification."
     }
   ],
   "command": {
-    "kind": "exec",
-    "args": [
-      "List<workflow.ActionDml> actions = new workflow.Action().invoke(new workflow.Context());\nSystem.assertEquals(0, actions.size());\nnew workflow.ActionDml().invoke();\nSystem.assertEquals(false, new TxnSecurity.EventCondition().evaluate(new Account(Name = 'Local')));\nTxnSecurity.Event event = new TxnSecurity.Event('00D000000000001', UserInfo.getUserId(), 'Account', 'Read', 'Record', '001000000000001', System.now(), new Map<String,String>{'source' => 'local'});\nSystem.assertEquals(false, new TxnSecurity.PolicyCondition().evaluate(event));"
-    ]
-  },
-  "expected": {
-    "result": {
-      "debug": null,
-      "ok": true
-    }
+    "kind": "policy-evidence"
   }
 }

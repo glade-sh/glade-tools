@@ -4,8 +4,8 @@
     {
       "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
       "symbol": "UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
-      "kind": "exec",
-      "notes": "Local connector test utility returns a ConnectedApplication DTO with deterministic Id and caller-supplied Name."
+      "kind": "unsupported",
+      "notes": "ConnectorTestUtil.createConnectedApp is a Salesforce test-only utility and rejects anonymous execution with System.TypeException; preserve the rejection rather than adding local behavior."
     }
   ],
   "source": [
@@ -21,9 +21,9 @@
     ]
   },
   "expected": {
-    "result": {
-      "debug": null,
-      "ok": true
+    "error": {
+      "type": "System.TypeException",
+      "message": "Cannot call test methods in non-test context"
     }
   }
 }
