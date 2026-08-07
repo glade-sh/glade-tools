@@ -64,7 +64,7 @@
   ],
   "command": {
     "kind": "exec",
-    "args": ["fixture.apex"],
+    "args": ["current-base-cb193-local-mock-core-positive.apex"],
     "limitMode": "permissive"
   },
   "expected": {
