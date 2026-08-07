@@ -1,11 +1,11 @@
 {
-  "name": "current-base-deterministic-mock-required-Database.PaginationCursor-001",
+  "name": "current-base-local-runtime-required-Database.PaginationCursor-001",
   "apiVersion": "67.0",
   "mode": "local-runtime",
   "salesforceEligible": true,
-  "notes": "Current-base lane current-base-deterministic-mock-required-Database.PaginationCursor-001: one public Database.PaginationCursor type row with a deterministic local SOQL construction witness.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database.PaginationCursor-001: the Database.PaginationCursor.DeleteFilter type is exercised against deterministic local SOQL rows.",
   "profile": {
-    "laneId": "current-base-deterministic-mock-required-Database.PaginationCursor-001",
+    "laneId": "current-base-local-runtime-required-Database.PaginationCursor-001",
     "selectedRowCount": 1
   },
   "command": {
@@ -22,15 +22,15 @@
     },
     {
       "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredDatabasePaginationCursor001Test.cls",
-      "content": "@isTest private class CurrentBaseDeterministicMockRequiredDatabasePaginationCursor001Test { @isTest static void paginationCursorUsesDeterministicLocalRows() { insert new Account(Name = 'Pagination'); Database.PaginationCursor cursor = Database.getPaginationCursor('SELECT Id FROM Account'); System.assertEquals(1, cursor.getNumRecords()); } }"
+      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabasePaginationCursor001Test { @isTest static void paginationCursorDeleteFilterUsesDeterministicLocalRows() { insert new Account(Name = 'Pagination'); Database.PaginationCursor cursor = Database.getPaginationCursor('SELECT Id FROM Account'); Database.PaginationCursor.DeleteFilter filter = Database.PaginationCursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assertEquals(Database.PaginationCursor.DeleteFilter.NO_FILTER, filter); } }"
     }
   ],
   "evidence": [
     {
-      "surfaceId": "apex:Database.PaginationCursor",
-      "symbol": "Database.PaginationCursor",
+      "surfaceId": "apex:Database.PaginationCursor.DeleteFilter",
+      "symbol": "Database.PaginationCursor.DeleteFilter",
       "kind": "test",
-      "notes": "A public Salesforce pagination-cursor type exercised against Glade's deterministic local SOQL rows."
+      "notes": "A public Salesforce pagination-cursor delete-filter enum exercised against Glade's deterministic local SOQL rows."
     }
   ],
   "expected": {

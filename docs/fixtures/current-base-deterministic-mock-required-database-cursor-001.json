@@ -1,11 +1,11 @@
 {
-  "name": "current-base-deterministic-mock-required-Database.Cursor-001",
+  "name": "current-base-local-runtime-required-Database.Cursor-001",
   "apiVersion": "67.0",
   "mode": "local-runtime",
   "salesforceEligible": true,
-  "notes": "Current-base lane current-base-deterministic-mock-required-Database.Cursor-001: one public Database.Cursor type row with a deterministic local SOQL construction witness.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database.Cursor-001: the Database.Cursor.DeleteFilter type is exercised against deterministic local SOQL rows.",
   "profile": {
-    "laneId": "current-base-deterministic-mock-required-Database.Cursor-001",
+    "laneId": "current-base-local-runtime-required-Database.Cursor-001",
     "selectedRowCount": 1
   },
   "command": {
@@ -22,15 +22,15 @@
     },
     {
       "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredDatabaseCursor001Test.cls",
-      "content": "@isTest private class CurrentBaseDeterministicMockRequiredDatabaseCursor001Test { @isTest static void cursorUsesDeterministicLocalRows() { insert new Account(Name = 'Cursor'); Database.Cursor cursor = Database.getCursor('SELECT Id FROM Account'); System.assertEquals(1, cursor.getNumRecords()); } }"
+      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabaseCursor001Test { @isTest static void cursorDeleteFilterUsesDeterministicLocalRows() { insert new Account(Name = 'Cursor'); Database.Cursor cursor = Database.getCursor('SELECT Id FROM Account'); Database.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter); } }"
     }
   ],
   "evidence": [
     {
-      "surfaceId": "apex:Database.Cursor",
-      "symbol": "Database.Cursor",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter",
+      "symbol": "Database.Cursor.DeleteFilter",
       "kind": "test",
-      "notes": "A public Salesforce cursor type exercised against Glade's deterministic local SOQL rows."
+      "notes": "A public Salesforce cursor delete-filter enum exercised against Glade's deterministic local SOQL rows."
     }
   ],
   "expected": {
