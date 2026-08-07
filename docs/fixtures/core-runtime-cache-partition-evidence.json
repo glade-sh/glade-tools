@@ -1,5 +1,7 @@
 {
   "name": "core-runtime-cache-partition-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce API 67 rejects or removes several Cache partition members in this fixture, including isAvailable, getAvgValueSize, getMaxValueSize, and instance calls to static validators; this fixture preserves Glade's local cache boundary and makes no hosted Platform Cache parity claim.",
   "evidence": [
     {
       "surfaceId": "apex:Cache.Org.contains(String)",

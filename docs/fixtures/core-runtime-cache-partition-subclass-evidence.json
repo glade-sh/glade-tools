@@ -1,5 +1,7 @@
 {
   "name": "core-runtime-cache-partition-subclass-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce API 67 reports removed Cache metrics, removed validateKeys overloads, static-vs-instance misuse, and incompatible result casts in this subclass fixture; it preserves Glade's local cache subclass boundary without claiming hosted Platform Cache parity.",
   "evidence": [
     {
       "surfaceId": "apex:Cache.OrgPartition.contains(Set<String>)",

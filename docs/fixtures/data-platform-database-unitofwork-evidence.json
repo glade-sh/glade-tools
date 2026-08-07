@@ -1,5 +1,7 @@
 {
   "name": "data-platform-database-unitofwork-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce API 67 reports Database.UnitOfWork as not visible from Apex; this fixture preserves Glade's local unit-of-work contract and makes no Salesforce parity claim.",
   "evidence": [
     {
       "surfaceId": "apex:Database.UnitOfWork",

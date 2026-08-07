@@ -1,5 +1,7 @@
 {
   "name": "core-runtime-local-function-http-test-harness",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce API 67 reports System.TestAsyncHttp and functions.FunctionInvocation as not visible in this Apex harness; this fixture preserves local function/HTTP test doubles and makes no hosted invocation parity claim.",
   "evidence": [
     {
       "surfaceId": "apex:System.ExternalServiceTest.sendCallback(HttpRequest)",

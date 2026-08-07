@@ -1,5 +1,7 @@
 {
   "name": "data-platform-database-treesave",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce API 67 rejects Database.NestedSaveResult and Database.RelationshipSaveResult as invalid types; this fixture preserves Glade's local treeSave result and relationship shapes and makes no Salesforce parity claim.",
   "evidence": [
     {
       "symbol": "Database.treeSave",
