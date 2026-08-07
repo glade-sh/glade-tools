@@ -1,0 +1,169 @@
+{
+  "name": "current-base-system-exception-constructor-family-api67",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "notes": "Wave26 current-base System lane: 24 uncovered queue rows for six System exception constructor families. Each type already has local accessor evidence in core-runtime-exception-more-family-accessors.json; this fixture proves the four public constructors ((),(Exception),(String),(String,Exception)) resolve through sema in the pinned candidate. Compile-shape only: no runtime construction claim is made.",
+  "command": {
+    "kind": "check"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/SystemExceptionConstructorFamilyFixture.cls",
+      "content": "public class SystemExceptionConstructorFamilyFixture {\n    public static Object probe() {\n        if (false) {\n            new FatalCursorException();\n            new FatalCursorException(new DmlException('cause'));\n            new FatalCursorException('message');\n            new FatalCursorException('message', new DmlException('cause'));\n            new FinalException();\n            new FinalException(new DmlException('cause'));\n            new FinalException('message');\n            new FinalException('message', new DmlException('cause'));\n            new FlowException();\n            new FlowException(new DmlException('cause'));\n            new FlowException('message');\n            new FlowException('message', new DmlException('cause'));\n            new FormulaEvaluationException();\n            new FormulaEvaluationException(new DmlException('cause'));\n            new FormulaEvaluationException('message');\n            new FormulaEvaluationException('message', new DmlException('cause'));\n            new FormulaValidationException();\n            new FormulaValidationException(new DmlException('cause'));\n            new FormulaValidationException('message');\n            new FormulaValidationException('message', new DmlException('cause'));\n            new HandledException();\n            new HandledException(new DmlException('cause'));\n            new HandledException('message');\n            new HandledException('message', new DmlException('cause'));\n        }\n        return null;\n    }\n}"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:System.FatalCursorException.FatalCursorException()",
+      "symbol": "System.FatalCursorException.FatalCursorException()",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FatalCursorException.FatalCursorException() constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FatalCursorException.FatalCursorException(Exception)",
+      "symbol": "System.FatalCursorException.FatalCursorException(Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FatalCursorException.FatalCursorException(Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FatalCursorException.FatalCursorException(String)",
+      "symbol": "System.FatalCursorException.FatalCursorException(String)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FatalCursorException.FatalCursorException(String) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FatalCursorException.FatalCursorException(String,Exception)",
+      "symbol": "System.FatalCursorException.FatalCursorException(String,Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FatalCursorException.FatalCursorException(String,Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FinalException.FinalException()",
+      "symbol": "System.FinalException.FinalException()",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FinalException.FinalException() constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FinalException.FinalException(Exception)",
+      "symbol": "System.FinalException.FinalException(Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FinalException.FinalException(Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FinalException.FinalException(String)",
+      "symbol": "System.FinalException.FinalException(String)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FinalException.FinalException(String) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FinalException.FinalException(String,Exception)",
+      "symbol": "System.FinalException.FinalException(String,Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FinalException.FinalException(String,Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FlowException.FlowException()",
+      "symbol": "System.FlowException.FlowException()",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FlowException.FlowException() constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FlowException.FlowException(Exception)",
+      "symbol": "System.FlowException.FlowException(Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FlowException.FlowException(Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FlowException.FlowException(String)",
+      "symbol": "System.FlowException.FlowException(String)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FlowException.FlowException(String) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FlowException.FlowException(String,Exception)",
+      "symbol": "System.FlowException.FlowException(String,Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FlowException.FlowException(String,Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaEvaluationException.FormulaEvaluationException()",
+      "symbol": "System.FormulaEvaluationException.FormulaEvaluationException()",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaEvaluationException.FormulaEvaluationException() constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaEvaluationException.FormulaEvaluationException(Exception)",
+      "symbol": "System.FormulaEvaluationException.FormulaEvaluationException(Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaEvaluationException.FormulaEvaluationException(Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaEvaluationException.FormulaEvaluationException(String)",
+      "symbol": "System.FormulaEvaluationException.FormulaEvaluationException(String)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaEvaluationException.FormulaEvaluationException(String) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaEvaluationException.FormulaEvaluationException(String,Exception)",
+      "symbol": "System.FormulaEvaluationException.FormulaEvaluationException(String,Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaEvaluationException.FormulaEvaluationException(String,Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaValidationException.FormulaValidationException()",
+      "symbol": "System.FormulaValidationException.FormulaValidationException()",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaValidationException.FormulaValidationException() constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaValidationException.FormulaValidationException(Exception)",
+      "symbol": "System.FormulaValidationException.FormulaValidationException(Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaValidationException.FormulaValidationException(Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaValidationException.FormulaValidationException(String)",
+      "symbol": "System.FormulaValidationException.FormulaValidationException(String)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaValidationException.FormulaValidationException(String) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.FormulaValidationException.FormulaValidationException(String,Exception)",
+      "symbol": "System.FormulaValidationException.FormulaValidationException(String,Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.FormulaValidationException.FormulaValidationException(String,Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.HandledException.HandledException()",
+      "symbol": "System.HandledException.HandledException()",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.HandledException.HandledException() constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.HandledException.HandledException(Exception)",
+      "symbol": "System.HandledException.HandledException(Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.HandledException.HandledException(Exception) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.HandledException.HandledException(String)",
+      "symbol": "System.HandledException.HandledException(String)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.HandledException.HandledException(String) constructor through sema without runtime construction."
+    },
+    {
+      "surfaceId": "apex:System.HandledException.HandledException(String,Exception)",
+      "symbol": "System.HandledException.HandledException(String,Exception)",
+      "kind": "shape",
+      "notes": "Compile-shape probe resolves the System.HandledException.HandledException(String,Exception) constructor through sema without runtime construction."
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 1,
+      "types": 1,
+      "diagnostics": 0
+    }
+  }
+}
