@@ -1,0 +1,16 @@
+{
+  "name": "current-base-flow-deterministic-mock-001-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "This fixture proves Glade's local Flow.Interview mock shape only; it does not claim hosted Flow metadata execution.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-Flow-001: two uncovered constructor and clone rows.",
+  "profile": {"path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json", "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81", "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254", "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5", "laneId": "current-base-deterministic-mock-required-Flow-001", "selectedRowCount": 2},
+  "command": {"kind": "test"},
+  "source": [{"path": "force-app/main/default/classes/CurrentBaseFlowDeterministic001Test.cls", "content": "@isTest private class CurrentBaseFlowDeterministic001Test { @isTest static void flowDeterministic001Witness() { Flow.Interview interview = Flow.Interview.createInterview('LocalFlow', new Map<String,Object>{'answer' => 42}); System.assertNotEquals(null, interview); System.assertNotEquals(null, interview.clone()); } }"}],
+  "evidence": [
+    {"surfaceId": "apex:Flow.Interview.Interview()", "symbol": "Flow.Interview.Interview()", "kind": "test"},
+    {"surfaceId": "apex:Flow.Interview.clone()", "symbol": "Flow.Interview.clone()", "kind": "test"}
+  ],
+  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+}

@@ -1,0 +1,24 @@
+{
+  "name": "current-base-apexpages-local-runtime-002-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "This fixture proves local Visualforce controller value helpers only; it does not claim hosted Visualforce execution.",
+  "notes": "Current-base lane current-base-local-runtime-required-ApexPages-002: ten uncovered rows.",
+  "profile": {"path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json", "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81", "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254", "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5", "laneId": "current-base-local-runtime-required-ApexPages-002", "selectedRowCount": 10},
+  "command": {"kind": "test"},
+  "source": [{"path": "force-app/main/default/classes/CurrentBaseApexPagesLocalRuntime002Test.cls", "content": "@isTest private class CurrentBaseApexPagesLocalRuntime002Test { @isTest static void apexPagesLocalRuntime002Witness() { ApexPages.IdeaStandardSetController setController = new ApexPages.IdeaStandardSetController(); System.assertNotEquals(0, setController.hashCode()); System.assert(setController.toString().length() > 0); Knowledge__kav article = new Knowledge__kav(Title = 'Fixture Article'); ApexPages.KnowledgeArticleVersionStandardController knowledge = new ApexPages.KnowledgeArticleVersionStandardController(article); System.assertEquals(true, knowledge.equals(knowledge)); System.assertNotEquals(0, knowledge.hashCode()); System.assert(knowledge.toString().length() > 0); ApexPages.StandardSetController standard = new ApexPages.StandardSetController(new List<Account>()); System.assertEquals(true, standard.equals(standard)); System.assertNotEquals(0, standard.hashCode()); System.assert(standard.toString().length() > 0); System.ApexPages apexPages = new System.ApexPages(); System.assertNotEquals(null, apexPages); } }"}],
+  "evidence": [
+    {"surfaceId": "apex:ApexPages.IdeaStandardSetController.hashCode()", "symbol": "ApexPages.IdeaStandardSetController.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.IdeaStandardSetController.toString()", "symbol": "ApexPages.IdeaStandardSetController.toString()", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController", "symbol": "ApexPages.KnowledgeArticleVersionStandardController", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.equals(Object)", "symbol": "ApexPages.KnowledgeArticleVersionStandardController.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.hashCode()", "symbol": "ApexPages.KnowledgeArticleVersionStandardController.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.toString()", "symbol": "ApexPages.KnowledgeArticleVersionStandardController.toString()", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.StandardSetController.equals(Object)", "symbol": "ApexPages.StandardSetController.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.StandardSetController.hashCode()", "symbol": "ApexPages.StandardSetController.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.StandardSetController.toString()", "symbol": "ApexPages.StandardSetController.toString()", "kind": "test"},
+    {"surfaceId": "apex:System.ApexPages.ApexPages()", "symbol": "System.ApexPages.ApexPages()", "kind": "test"}
+  ],
+  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+}
