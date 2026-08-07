@@ -17,13 +17,13 @@
       "surfaceId": "apex:Database.MergeResult.getErrors()",
       "symbol": "Database.MergeResult.getErrors",
       "kind": "test",
-      "notes": "MergeResult exposes the local Database result error list."
+      "notes": "MergeResult exposes the Salesforce-shaped nullable Database result errors value."
     },
     {
       "surfaceId": "apex:Database.DuplicateError.getDuplicateResult()",
       "symbol": "Database.DuplicateError.getDuplicateResult",
       "kind": "test",
-      "notes": "DuplicateError exposes DTO accessors without adding duplicate-rule execution."
+      "notes": "DuplicateError exposes DTO accessors without adding duplicate-rule execution; an empty DTO returns null for its duplicate result."
     },
     {
       "surfaceId": "apex:Database.DuplicateError.getFields()",
@@ -52,7 +52,7 @@
     },
     {
       "path": "force-app/main/classes/DatabaseSmallResultDtosTest.cls",
-      "content": "@isTest private class DatabaseSmallResultDtosTest { @isTest static void smallResultDtoAccessorsStayExplicit() { Database.LeadConvertResult lead = new Database.LeadConvertResult(); System.assertEquals(0, lead.getErrors().size()); System.assertEquals(null, lead.getRelatedPersonAccountId()); Account master = new Account(Name = 'Master'); insert master; Account duplicate = new Account(Name = 'Duplicate'); insert duplicate; Database.MergeResult merged = Database.merge(master, duplicate, false); System.assert(merged.isSuccess()); System.assertEquals(0, merged.getErrors().size()); Database.DuplicateError duplicateError = new Database.DuplicateError(); System.assertNotEquals(null, duplicateError.getDuplicateResult()); System.assertEquals(0, duplicateError.getFields().size()); System.assertEquals(null, duplicateError.getMessage()); System.assertEquals(null, duplicateError.getStatusCode()); } }"
+      "content": "@isTest private class DatabaseSmallResultDtosTest { @isTest static void smallResultDtoAccessorsStayExplicit() { Database.LeadConvertResult lead = new Database.LeadConvertResult(); System.assertEquals(0, lead.getErrors().size()); System.assertEquals(null, lead.getRelatedPersonAccountId()); Account master = new Account(Name = 'Master'); insert master; Account duplicate = new Account(Name = 'Duplicate'); insert duplicate; Database.MergeResult merged = Database.merge(master, duplicate, false); System.assert(merged.isSuccess()); System.assertEquals(null, merged.getErrors()); Database.DuplicateError duplicateError = new Database.DuplicateError(); System.assertEquals(null, duplicateError.getDuplicateResult()); System.assertEquals(0, duplicateError.getFields().size()); System.assertEquals(null, duplicateError.getMessage()); System.assertEquals(null, duplicateError.getStatusCode()); } }"
     }
   ],
   "command": {
