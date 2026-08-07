@@ -1,0 +1,286 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.QuickActionList.QuickActionList()",
+      "symbol": "Metadata.QuickActionList.QuickActionList()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.QuickActionList.quickActionListItems",
+      "symbol": "Metadata.QuickActionList.quickActionListItems"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.QuickActionListItem",
+      "symbol": "Metadata.QuickActionListItem"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.QuickActionListItem.QuickActionListItem()",
+      "symbol": "Metadata.QuickActionListItem.QuickActionListItem()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.QuickActionListItem.quickActionName",
+      "symbol": "Metadata.QuickActionListItem.quickActionName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedContent",
+      "symbol": "Metadata.RelatedContent"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedContent.RelatedContent()",
+      "symbol": "Metadata.RelatedContent.RelatedContent()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedContent.relatedContentItems",
+      "symbol": "Metadata.RelatedContent.relatedContentItems"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedContentItem",
+      "symbol": "Metadata.RelatedContentItem"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedContentItem.RelatedContentItem()",
+      "symbol": "Metadata.RelatedContentItem.RelatedContentItem()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedContentItem.layoutItem",
+      "symbol": "Metadata.RelatedContentItem.layoutItem"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedList",
+      "symbol": "Metadata.RelatedList"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedList.RelatedList()",
+      "symbol": "Metadata.RelatedList.RelatedList()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedList.hideOnDetail",
+      "symbol": "Metadata.RelatedList.hideOnDetail"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedList.name",
+      "symbol": "Metadata.RelatedList.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem",
+      "symbol": "Metadata.RelatedListItem"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.RelatedListItem()",
+      "symbol": "Metadata.RelatedListItem.RelatedListItem()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.customButtons",
+      "symbol": "Metadata.RelatedListItem.customButtons"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.excludeButtons",
+      "symbol": "Metadata.RelatedListItem.excludeButtons"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.fields",
+      "symbol": "Metadata.RelatedListItem.fields"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.quickActions",
+      "symbol": "Metadata.RelatedListItem.quickActions"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.relatedList",
+      "symbol": "Metadata.RelatedListItem.relatedList"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.sortField",
+      "symbol": "Metadata.RelatedListItem.sortField"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.RelatedListItem.sortOrder",
+      "symbol": "Metadata.RelatedListItem.sortOrder"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem",
+      "symbol": "Metadata.ReportChartComponentLayoutItem"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.ReportChartComponentLayoutItem()",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.ReportChartComponentLayoutItem()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.cacheData",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.cacheData"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.contextFilterableField",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.contextFilterableField"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.error",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.error"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.hideOnError",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.hideOnError"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.includeContext",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.includeContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.reportName",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.reportName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.showTitle",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.showTitle"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentLayoutItem.size",
+      "symbol": "Metadata.ReportChartComponentLayoutItem.size"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize",
+      "symbol": "Metadata.ReportChartComponentSize"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.LARGE",
+      "symbol": "Metadata.ReportChartComponentSize.LARGE"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.MEDIUM",
+      "symbol": "Metadata.ReportChartComponentSize.MEDIUM"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.SMALL",
+      "symbol": "Metadata.ReportChartComponentSize.SMALL"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.equals(Object)",
+      "symbol": "Metadata.ReportChartComponentSize.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.hashCode()",
+      "symbol": "Metadata.ReportChartComponentSize.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.ordinal()",
+      "symbol": "Metadata.ReportChartComponentSize.ordinal()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.valueOf(String)",
+      "symbol": "Metadata.ReportChartComponentSize.valueOf(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.ReportChartComponentSize.values()",
+      "symbol": "Metadata.ReportChartComponentSize.values()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent",
+      "symbol": "Metadata.SidebarComponent"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.SidebarComponent()",
+      "symbol": "Metadata.SidebarComponent.SidebarComponent()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.componentType",
+      "symbol": "Metadata.SidebarComponent.componentType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.createAction",
+      "symbol": "Metadata.SidebarComponent.createAction"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.enableLinking",
+      "symbol": "Metadata.SidebarComponent.enableLinking"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.height",
+      "symbol": "Metadata.SidebarComponent.height"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.knowledgeOneEnable",
+      "symbol": "Metadata.SidebarComponent.knowledgeOneEnable"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-metadata-dto-deterministic-004-api67",
+  "notes": "Wave26 current-base lane current-base-deterministic-mock-required-Metadata-004: 50 uncovered apex:Metadata rows covered with local deterministic-mock DTO evidence (construction, public fields, clone). No hosted Metadata API deployment or retrieve is exercised.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Metadata-004",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "selectedRowCount": 50,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce compile oracle rejects Metadata DTO types in Apex (observed: Invalid type: Metadata.AsyncResult, Metadata.ConsoleComponent, Metadata.CustomField; System.Metadata also invalid); this fixture preserves local deterministic-mock evidence without claiming Salesforce availability.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseMetadataDtoDeterministic004Test {\n    @isTest static void metadataDtoDeterministic004Witness() {\n        Metadata.QuickActionList quickActionList = new Metadata.QuickActionList();\n        System.assertNotEquals(null, quickActionList);\n        quickActionList.quickActionListItems = new List<Metadata.QuickActionListItem>{new Metadata.QuickActionListItem()};\n        System.assertEquals(1, quickActionList.quickActionListItems.size());\n\n        Metadata.QuickActionListItem quickActionListItem = new Metadata.QuickActionListItem();\n        System.assertNotEquals(null, quickActionListItem);\n        quickActionListItem.quickActionName = 'Account.NewQuickAction';\n        System.assertEquals('Account.NewQuickAction', quickActionListItem.quickActionName);\n\n        Metadata.RelatedContent relatedContent = new Metadata.RelatedContent();\n        System.assertNotEquals(null, relatedContent);\n        relatedContent.relatedContentItems = new List<Metadata.RelatedContentItem>{new Metadata.RelatedContentItem()};\n        System.assertEquals(1, relatedContent.relatedContentItems.size());\n\n        Metadata.RelatedContentItem relatedContentItem = new Metadata.RelatedContentItem();\n        System.assertNotEquals(null, relatedContentItem);\n        relatedContentItem.layoutItem = new Metadata.LayoutItem();\n        System.assertNotEquals(null, relatedContentItem.layoutItem);\n\n        Metadata.RelatedList relatedList = new Metadata.RelatedList();\n        System.assertNotEquals(null, relatedList);\n        relatedList.hideOnDetail = true;\n        relatedList.name = 'Contacts';\n        System.assertEquals(true, relatedList.hideOnDetail);\n        System.assertEquals('Contacts', relatedList.name);\n\n        Metadata.RelatedListItem relatedListItem = new Metadata.RelatedListItem();\n        System.assertNotEquals(null, relatedListItem);\n        relatedListItem.customButtons = new List<String>{'New'};\n        relatedListItem.excludeButtons = new List<String>{'Delete'};\n        relatedListItem.fields = new List<String>{'Name'};\n        relatedListItem.quickActions = new List<String>{'Account.NewQuickAction'};\n        relatedListItem.relatedList = 'Contacts';\n        relatedListItem.sortField = 'Name';\n        relatedListItem.sortOrder = Metadata.SortOrder.Asc_x;\n        System.assertEquals('New', relatedListItem.customButtons[0]);\n        System.assertEquals('Delete', relatedListItem.excludeButtons[0]);\n        System.assertEquals('Name', relatedListItem.fields[0]);\n        System.assertEquals('Account.NewQuickAction', relatedListItem.quickActions[0]);\n        System.assertEquals('Contacts', relatedListItem.relatedList);\n        System.assertEquals('Name', relatedListItem.sortField);\n        System.assertEquals(true, Metadata.SortOrder.Asc_x.equals(relatedListItem.sortOrder));\n\n        Metadata.ReportChartComponentLayoutItem chart = new Metadata.ReportChartComponentLayoutItem();\n        System.assertNotEquals(null, chart);\n        chart.cacheData = true;\n        chart.contextFilterableField = 'Account.Name';\n        chart.error = 'error';\n        chart.hideOnError = true;\n        chart.includeContext = true;\n        chart.reportName = 'MyReport';\n        chart.showTitle = true;\n        chart.size = Metadata.ReportChartComponentSize.LARGE;\n        System.assertEquals(true, chart.cacheData);\n        System.assertEquals('Account.Name', chart.contextFilterableField);\n        System.assertEquals('error', chart.error);\n        System.assertEquals(true, chart.hideOnError);\n        System.assertEquals(true, chart.includeContext);\n        System.assertEquals('MyReport', chart.reportName);\n        System.assertEquals(true, chart.showTitle);\n        System.assertEquals(true, Metadata.ReportChartComponentSize.LARGE.equals(chart.size));\n\n        Metadata.ReportChartComponentSize large = Metadata.ReportChartComponentSize.LARGE;\n        Metadata.ReportChartComponentSize medium = Metadata.ReportChartComponentSize.MEDIUM;\n        Metadata.ReportChartComponentSize small = Metadata.ReportChartComponentSize.SMALL;\n        System.assertEquals(true, large.equals(large));\n        System.assertNotEquals(null, large.hashCode());\n        System.assertEquals(0, large.ordinal());\n        System.assertEquals(true, Metadata.ReportChartComponentSize.valueOf('LARGE').equals(large));\n        System.assertEquals(3, Metadata.ReportChartComponentSize.values().size());\n        System.assertEquals('LARGE', String.valueOf(large));\n        System.assertEquals('MEDIUM', String.valueOf(medium));\n        System.assertEquals('SMALL', String.valueOf(small));\n\n        Metadata.SidebarComponent sidebar = new Metadata.SidebarComponent();\n        System.assertNotEquals(null, sidebar);\n        sidebar.componentType = 'Custom';\n        sidebar.createAction = 'New';\n        sidebar.enableLinking = true;\n        sidebar.height = 100;\n        sidebar.knowledgeOneEnable = false;\n        System.assertEquals('Custom', sidebar.componentType);\n        System.assertEquals('New', sidebar.createAction);\n        System.assertEquals(true, sidebar.enableLinking);\n        System.assertEquals(100, sidebar.height);\n        System.assertEquals(false, sidebar.knowledgeOneEnable);\n\n        System.assertNotEquals(null, quickActionList.clone());\n        System.assertNotEquals(null, quickActionListItem.clone());\n        System.assertNotEquals(null, relatedContent.clone());\n        System.assertNotEquals(null, relatedContentItem.clone());\n        System.assertNotEquals(null, relatedList.clone());\n        System.assertNotEquals(null, relatedListItem.clone());\n        System.assertNotEquals(null, chart.clone());\n        System.assertNotEquals(null, sidebar.clone());\n    }\n}",
+      "path": "force-app/main/default/classes/CurrentBaseMetadataDtoDeterministic004Test.cls"
+    }
+  ]
+}
