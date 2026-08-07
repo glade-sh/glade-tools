@@ -1,0 +1,36 @@
+{
+  "name": "current-base-deterministic-mock-required-messaging-constructor-negative-api67",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "These documented Messaging names are callback/DTO surfaces whose direct constructors are rejected by Salesforce API 67; the fixture preserves the negative compile contract.",
+  "notes": "The positive local DTO fixture uses supported builders and concrete callback implementations. This shape probe proves the platform-rejected direct-constructor boundary instead of faking constructibility.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Messaging-001",
+    "selectedRowCount": 3
+  },
+  "command": {
+    "kind": "check"
+  },
+  "source": [
+    {"path": "force-app/main/default/classes/CurrentBaseMessagingActionResultConstructorNegativeApi67.cls", "content": "public class CurrentBaseMessagingActionResultConstructorNegativeApi67 { public void probe() { if (false) { new Messaging.ActionResult(); } } }"},
+    {"path": "force-app/main/default/classes/CurrentBaseMessagingActionableNotificationConstructorNegativeApi67.cls", "content": "public class CurrentBaseMessagingActionableNotificationConstructorNegativeApi67 { public void probe() { if (false) { new Messaging.ActionableNotification(); } } }"},
+    {"path": "force-app/main/default/classes/CurrentBaseMessagingNotificationHandlerConstructorNegativeApi67.cls", "content": "public class CurrentBaseMessagingNotificationHandlerConstructorNegativeApi67 { public void probe() { if (false) { new Messaging.NotificationActionHandler(); } } }"}
+  ],
+  "expected": {
+    "result": {
+      "ok": false,
+      "files": 3,
+      "types": 3,
+      "diagnostics": 2
+    }
+  },
+  "evidence": [
+    {"surfaceId": "apex:Messaging.ActionResult.ActionResult()", "symbol": "Messaging.ActionResult.ActionResult()", "kind": "shape", "notes": "Salesforce API 67 rejects direct construction; local positive tests use the documented builder."},
+    {"surfaceId": "apex:Messaging.ActionableNotification.ActionableNotification()", "symbol": "Messaging.ActionableNotification.ActionableNotification()", "kind": "shape", "notes": "Salesforce API 67 rejects direct construction; local positive tests use the documented builder."}
+  ]
+}

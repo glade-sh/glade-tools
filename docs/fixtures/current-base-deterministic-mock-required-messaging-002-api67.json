@@ -1,0 +1,57 @@
+{
+  "name": "current-base-deterministic-mock-required-messaging-002-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Messaging DTO and email-result shapes are covered as deterministic local mocks; this fixture does not claim hosted email delivery or Salesforce compile parity.",
+  "notes": "Current-base Messaging-002 lane: result object identity methods, email header/property boundaries, text attachments, and System.Messaging aliases are exercised locally without live delivery claims.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Messaging-002",
+    "selectedRowCount": 21
+  },
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CurrentBaseMessagingDeterministic002Test.cls",
+      "content": "@isTest private class CurrentBaseMessagingDeterministic002Test { @isTest static void resultAndAttachmentShapes() { Messaging.SingleEmailMessage invalid = new Messaging.SingleEmailMessage(); invalid.setToAddresses(new List<String>{'missing-body@example.test'}); List<Messaging.SendEmailResult> results = Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{invalid}, false); Messaging.SendEmailResult result = results[0]; System.assertEquals(false, result.isSuccess()); System.assertEquals(true, result.equals(result)); System.assertNotEquals(null, result.hashCode()); System.assertNotEquals(null, result.toString()); Messaging.SendEmailError error = result.getErrors()[0]; System.assertEquals(true, error.equals(error)); System.assertNotEquals(null, error.hashCode()); System.assertNotEquals(null, error.toString()); Messaging.SingleEmailMessage single = new Messaging.SingleEmailMessage(); single.setCustomHeaders(new Map<String,String>{'X-Trace' => 'local'}); System.assertEquals('local', single.getCustomHeaders().get('X-Trace')); System.assertEquals(null, single.templatename); System.assertEquals(false, single.usermail); Messaging.TextAttachment text = new Messaging.TextAttachment(); text.body = 'text body'; text.bodyIsTruncated = false; text.charset = 'UTF-8'; text.fileName = 'note.txt'; text.headers = new List<Messaging.Header>(); text.mimeTypeSubType = 'text/plain'; System.assertNotEquals(null, text.clone()); System.assertEquals('text body', text.body); System.assertEquals(false, text.bodyIsTruncated); System.assertEquals('UTF-8', text.charset); System.assertEquals('note.txt', text.fileName); System.assertEquals('text/plain', text.mimeTypeSubType); Messaging.MassEmailMessage mass = new Messaging.MassEmailMessage(); System.assertNotEquals(null, mass); } }"
+    }
+  ],
+  "evidence": [
+    {"surfaceId": "apex:Messaging.SendEmailError.equals(Object)", "symbol": "Messaging.SendEmailError.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SendEmailError.hashCode()", "symbol": "Messaging.SendEmailError.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SendEmailError.toString()", "symbol": "Messaging.SendEmailError.toString()", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SendEmailResult.equals(Object)", "symbol": "Messaging.SendEmailResult.equals(Object)", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SendEmailResult.hashCode()", "symbol": "Messaging.SendEmailResult.hashCode()", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SendEmailResult.toString()", "symbol": "Messaging.SendEmailResult.toString()", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.setCustomHeaders(Map<String,String>)", "symbol": "Messaging.SingleEmailMessage.setCustomHeaders(Map<String,String>)", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.templatename", "symbol": "Messaging.SingleEmailMessage.templatename", "kind": "test"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.usermail", "symbol": "Messaging.SingleEmailMessage.usermail", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment", "symbol": "Messaging.TextAttachment", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.TextAttachment()", "symbol": "Messaging.TextAttachment.TextAttachment()", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.body", "symbol": "Messaging.TextAttachment.body", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.bodyIsTruncated", "symbol": "Messaging.TextAttachment.bodyIsTruncated", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.charset", "symbol": "Messaging.TextAttachment.charset", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.clone()", "symbol": "Messaging.TextAttachment.clone()", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.fileName", "symbol": "Messaging.TextAttachment.fileName", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.headers", "symbol": "Messaging.TextAttachment.headers", "kind": "test"},
+    {"surfaceId": "apex:Messaging.TextAttachment.mimeTypeSubType", "symbol": "Messaging.TextAttachment.mimeTypeSubType", "kind": "test"},
+    {"surfaceId": "apex:System.Messaging.MassEmailMessage", "symbol": "System.Messaging.MassEmailMessage", "kind": "test"},
+    {"surfaceId": "apex:System.Messaging.Messaging()", "symbol": "System.Messaging.Messaging()", "kind": "test"},
+    {"surfaceId": "apex:System.Messaging.SendEmailResult", "symbol": "System.Messaging.SendEmailResult", "kind": "test"}
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}
