@@ -4,7 +4,7 @@
   "mode": "deterministic-mock",
   "salesforceEligible": false,
   "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Cache mock boundary only and makes no Salesforce parity claim.",
-  "notes": "Current-base lane current-base-deterministic-mock-required-cache-002: local Cache construction and Cache.UnsupportedOperationException.clone() are deterministic. Cache.SessionPartition.clone() has a stable local failure boundary. No hosted platform-cache behavior is claimed.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-cache-002: local Cache construction and clone behavior are deterministic. No hosted platform-cache behavior is claimed.",
   "command": {
     "kind": "test"
   },
@@ -24,7 +24,7 @@
       "surfaceId": "apex:Cache.SessionPartition.clone()",
       "symbol": "Cache.SessionPartition.clone()",
       "kind": "test",
-      "notes": "The local deterministic boundary is an expected failed test for SessionPartition.clone()."
+      "notes": "The local deterministic mock returns a cloned Cache.SessionPartition."
     },
     {
       "surfaceId": "apex:Cache.UnsupportedOperationException.UnsupportedOperationException(String)",
@@ -40,10 +40,10 @@
   ],
   "expected": {
     "result": {
-      "ok": false,
+      "ok": true,
       "total": 3,
-      "passed": 2,
-      "failed": 1,
+      "passed": 3,
+      "failed": 0,
       "errors": 0
     }
   }
