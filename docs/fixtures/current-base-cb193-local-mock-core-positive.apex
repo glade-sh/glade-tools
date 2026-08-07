@@ -64,11 +64,11 @@ item.fullName = 'Feature.CB193';
 item.label = 'CB193';
 Metadata.CustomMetadataValue value = new Metadata.CustomMetadataValue();
 value.field = 'Enabled__c';
-value.value = true;
+value.value = 'true';
 item.values.add(value);
 System.assertEquals('Feature.CB193', item.fullName);
 System.assertEquals('Enabled__c', item.values[0].field);
-System.assertEquals(true, item.values[0].value);
+System.assertEquals('true', item.values[0].value);
 Metadata.DeployContainer container = new Metadata.DeployContainer();
 container.addMetadata(item);
 System.assertEquals(1, container.getMetadata().size());
@@ -93,7 +93,7 @@ System.assertEquals(1, rows.size());
 System.assertEquals(1, rowsWithProtected.size());
 System.assertEquals('Feature.CB193', rows[0].fullName);
 System.assertEquals('Enabled__c', rows[0].values[0].field);
-System.assertEquals(true, rows[0].values[0].value);
+System.assertEquals('true', rows[0].values[0].value);
 System.assertEquals('Feature.CB193', rowsWithProtected[0].fullName);
 
 // Messaging.Email constructor plus seven direct getter/setter pairs.
