@@ -1,0 +1,45 @@
+{
+  "name": "current-base-deterministic-mock-required-Database.Cursor-001",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": true,
+  "notes": "Current-base lane current-base-deterministic-mock-required-Database.Cursor-001: one public Database.Cursor type row with a deterministic local SOQL construction witness.",
+  "profile": {
+    "laneId": "current-base-deterministic-mock-required-Database.Cursor-001",
+    "selectedRowCount": 1
+  },
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredDatabaseCursor001Test.cls",
+      "content": "@isTest private class CurrentBaseDeterministicMockRequiredDatabaseCursor001Test { @isTest static void cursorUsesDeterministicLocalRows() { insert new Account(Name = 'Cursor'); Database.Cursor cursor = Database.getCursor('SELECT Id FROM Account'); System.assertEquals(1, cursor.getNumRecords()); } }"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.Cursor",
+      "symbol": "Database.Cursor",
+      "kind": "test",
+      "notes": "A public Salesforce cursor type exercised against Glade's deterministic local SOQL rows."
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}
