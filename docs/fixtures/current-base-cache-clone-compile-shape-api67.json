@@ -1,0 +1,28 @@
+{
+  "name": "current-base-cache-clone-compile-shape-api67",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "These Cache clone members are local Platform Cache DTO/namespace shape contracts and are not hosted Platform Cache oracles.",
+  "notes": "Compile-shape-only coverage preserves the API-67 member contracts where the local runtime intentionally does not instantiate or clone the static cache namespace objects.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "laneId": "current-base-deterministic-mock-required-cache-001",
+    "selectedRowCount": 6
+  },
+  "command": {"kind": "check"},
+  "source": [
+    {"path":"force-app/main/default/classes/CurrentBaseCacheCloneCompileShapeApi67.cls","content":"public class CurrentBaseCacheCloneCompileShapeApi67 { public static Object probe() { if (false) { new Cache.Session(); } if (false) { return ((Cache.Session)null).clone(); } if (false) { return ((Cache.OrgPartition)null).clone(); } if (false) { return ((Cache.Partition)null).clone(); } if (false) { return ((Cache.ScanResult)null).clone(); } if (false) { return ((Cache.SecondaryKeyApi)null).clone(); } return null; } }"}
+  ],
+  "expected": {"result": {"ok": true, "files": 1, "types": 1, "diagnostics": 0}},
+  "evidence": [
+    {"surfaceId":"apex:Cache.OrgPartition.clone()","symbol":"Cache.OrgPartition.clone()","kind":"shape"},
+    {"surfaceId":"apex:Cache.Partition.clone()","symbol":"Cache.Partition.clone()","kind":"shape"},
+    {"surfaceId":"apex:Cache.ScanResult.clone()","symbol":"Cache.ScanResult.clone()","kind":"shape"},
+    {"surfaceId":"apex:Cache.SecondaryKeyApi.clone()","symbol":"Cache.SecondaryKeyApi.clone()","kind":"shape"},
+    {"surfaceId":"apex:Cache.Session.Session()","symbol":"Cache.Session.Session()","kind":"shape"},
+    {"surfaceId":"apex:Cache.Session.clone()","symbol":"Cache.Session.clone()","kind":"shape"}
+  ]
+}

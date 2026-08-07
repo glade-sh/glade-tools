@@ -1,0 +1,24 @@
+{
+  "name": "current-base-canvas-test-compile-shape-api67",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Canvas.Test is a local test-harness shape and is not a hosted Canvas application oracle.",
+  "notes": "The generated API-67 shape accepts the Canvas.Test constructor and clone member for compile-shape accounting; runtime construction is intentionally not claimed because Glade treats Canvas.Test as a static local harness boundary.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "laneId": "current-base-deterministic-mock-required-Canvas-001",
+    "selectedRowCount": 2
+  },
+  "command": {"kind": "check"},
+  "source": [
+    {"path":"force-app/main/default/classes/CurrentBaseCanvasTestCompileShapeApi67.cls","content":"public class CurrentBaseCanvasTestCompileShapeApi67 { public static Object probe() { if (false) { Canvas.Test harness = new Canvas.Test(); return ((Canvas.Test)null).clone(); } return null; } }"}
+  ],
+  "expected": {"result": {"ok": true, "files": 1, "types": 1, "diagnostics": 0}},
+  "evidence": [
+    {"surfaceId":"apex:Canvas.Test.Test()","symbol":"Canvas.Test.Test()","kind":"shape"},
+    {"surfaceId":"apex:Canvas.Test.clone()","symbol":"Canvas.Test.clone()","kind":"shape"}
+  ]
+}
