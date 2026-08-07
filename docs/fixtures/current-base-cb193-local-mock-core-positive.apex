@@ -20,7 +20,7 @@ Cache.Org.put('cb193-org-visible-put', 'visible-put', Cache.Visibility.ALL);
 System.assertEquals('visible-put', (String) Cache.Org.get('cb193-org-visible-put'));
 Cache.Org.put('cb193-org-ttl-put', 'ttl-put', 300);
 System.assertEquals('ttl-put', (String) Cache.Org.get('cb193-org-ttl-put'));
-Cache.Org.put('cb193-org-full-put', 'full-put', 60, Cache.Visibility.ALL, false);
+Cache.Org.put('cb193-org-full-put', 'full-put', 300, Cache.Visibility.ALL, false);
 System.assertEquals('full-put', (String) Cache.Org.get('cb193-org-full-put'));
 
 // Cache.Org: remove(List<String>), remove(String).
@@ -48,7 +48,7 @@ Cache.Session.put('cb193-session-visible-put', 'visible-put', Cache.Visibility.A
 System.assertEquals('visible-put', (String) Cache.Session.get('cb193-session-visible-put'));
 Cache.Session.put('cb193-session-ttl-put', 'ttl-put', 300);
 System.assertEquals('ttl-put', (String) Cache.Session.get('cb193-session-ttl-put'));
-Cache.Session.put('cb193-session-full-put', 'full-put', 60, Cache.Visibility.ALL, false);
+Cache.Session.put('cb193-session-full-put', 'full-put', 300, Cache.Visibility.ALL, false);
 System.assertEquals('full-put', (String) Cache.Session.get('cb193-session-full-put'));
 
 // Cache.Session: remove(String).
