@@ -1,0 +1,53 @@
+{
+  "name": "data-platform-database-small-result-dto-shape",
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.LeadConvertResult.getErrors()",
+      "symbol": "Database.LeadConvertResult.getErrors",
+      "kind": "shape",
+      "notes": "Salesforce exposes the accessor on a non-constructible result DTO; this fixture proves compile shape only."
+    },
+    {
+      "surfaceId": "apex:Database.LeadConvertResult.getRelatedPersonAccountId()",
+      "symbol": "Database.LeadConvertResult.getRelatedPersonAccountId",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:Database.DuplicateError.getDuplicateResult()",
+      "symbol": "Database.DuplicateError.getDuplicateResult",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:Database.DuplicateError.getFields()",
+      "symbol": "Database.DuplicateError.getFields",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:Database.DuplicateError.getMessage()",
+      "symbol": "Database.DuplicateError.getMessage",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:Database.DuplicateError.getStatusCode()",
+      "symbol": "Database.DuplicateError.getStatusCode",
+      "kind": "shape"
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/DatabaseSmallResultDtoShape.cls",
+      "content": "public class DatabaseSmallResultDtoShape { public static void referencesOnly() { Database.LeadConvertResult lead = (Database.LeadConvertResult)null; Database.DuplicateError duplicateError = (Database.DuplicateError)null; if (false) { Object errors = lead.getErrors(); Object relatedPersonAccountId = lead.getRelatedPersonAccountId(); Object duplicateResult = duplicateError.getDuplicateResult(); Object fields = duplicateError.getFields(); Object message = duplicateError.getMessage(); Object statusCode = duplicateError.getStatusCode(); } } }"
+    }
+  ],
+  "command": {
+    "kind": "check"
+  },
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  }
+}
