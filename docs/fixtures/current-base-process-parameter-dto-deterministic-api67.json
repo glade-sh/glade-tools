@@ -2,6 +2,8 @@
   "name": "current-base-process-parameter-dto-deterministic-api67",
   "apiVersion": "67.0",
   "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce compile oracle rejects Process.InputParameter and Process.OutputParameter; this fixture preserves local deterministic-mock evidence without claiming a Salesforce namespace contract.",
   "notes": "Current-base Process lane: locally constructible InputParameter and OutputParameter DTOs round-trip their documented constructors, clone methods, and public fields. This is deterministic local evidence only; it makes no Salesforce runtime claim.",
   "command": {
     "kind": "test"
