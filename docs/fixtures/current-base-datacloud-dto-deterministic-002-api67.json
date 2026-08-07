@@ -1,0 +1,196 @@
+{
+  "name": "current-base-datacloud-dto-deterministic-002-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionReason": "Salesforce Summer '26 Apex reference documents the Datacloud DTO classes but does not document Datacloud.FieldDifferenceType or the System.Datacloud alias; this fixture preserves local deterministic-mock evidence without claiming Salesforce availability for every row in the lane.",
+  "notes": "Wave26 current-base lane current-base-deterministic-mock-required-Datacloud-002: 32 uncovered apex:Datacloud rows covered with local deterministic-mock DTO evidence (construction, public fields, getters, equals/hashCode/toString). No hosted duplicate matching or Data.com service call is exercised.",
+  "profile": {
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Datacloud-002",
+    "selectedRowCount": 32
+  },
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CurrentBaseDatacloudDtoDeterministic002Test.cls",
+      "content": "@isTest private class CurrentBaseDatacloudDtoDeterministic002Test {\n    @isTest static void datacloudDtoDeterministic002Witness() {\n        Datacloud.AdditionalInformationMap aim = new Datacloud.AdditionalInformationMap();\n        aim.name = 'Country';\n        aim.value = 'US';\n        Datacloud.FieldDiff fd = new Datacloud.FieldDiff();\n        fd.name = 'Name';\n        fd.difference = 'Changed';\n        Account rec = new Account(Name = 'Acme');\n\n        Datacloud.MatchRecord mr = new Datacloud.MatchRecord();\n        System.assertNotEquals(null, mr);\n        mr.additionalinformation = new List<Datacloud.AdditionalInformationMap>{aim};\n        mr.fielddiffs = new List<Datacloud.FieldDiff>{fd};\n        mr.matchconfidence = 0.75;\n        mr.record = rec;\n        System.assertEquals(1, mr.additionalinformation.size());\n        System.assertEquals(1, mr.fielddiffs.size());\n        System.assertEquals(0.75, mr.matchconfidence);\n        System.assertEquals(rec, mr.record);\n        System.assertEquals(1, mr.getAdditionalInformation().size());\n        System.assertEquals(1, mr.getFieldDiffs().size());\n        System.assertEquals(0.75, mr.getMatchConfidence());\n        System.assertEquals(rec, mr.getRecord());\n        System.assertEquals(true, mr.equals(mr));\n        System.assertNotEquals(null, mr.hashCode());\n        System.assertNotEquals(null, mr.toString());\n\n        Datacloud.MatchResult match = new Datacloud.MatchResult();\n        System.assertNotEquals(null, match);\n        match.entitytype = 'Account';\n        match.errors = new List<Database.Error>();\n        match.matchengine = 'standard';\n        match.matchrecords = new List<Datacloud.MatchRecord>{mr};\n        match.rule = 'Rule1';\n        match.size = 1;\n        match.success = true;\n        System.assertEquals('Account', match.entitytype);\n        System.assertEquals(0, match.errors.size());\n        System.assertEquals('standard', match.matchengine);\n        System.assertEquals(1, match.matchrecords.size());\n        System.assertEquals('Rule1', match.rule);\n        System.assertEquals(1, match.size);\n        System.assertEquals(true, match.success);\n        System.assertEquals('Account', match.getEntityType());\n        System.assertEquals(0, match.getErrors().size());\n        System.assertEquals('standard', match.getMatchEngine());\n        System.assertEquals(1, match.getMatchRecords().size());\n        System.assertEquals('Rule1', match.getRule());\n        System.assertEquals(1, match.getSize());\n        System.assertEquals(true, match.isSuccess());\n        System.assertEquals(true, match.equals(match));\n        System.assertNotEquals(null, match.hashCode());\n        System.assertNotEquals(null, match.toString());\n\n        System.Datacloud.AdditionalInformationMap aliasAim = new System.Datacloud.AdditionalInformationMap();\n        System.Datacloud.MatchResult aliasMatch = new System.Datacloud.MatchResult();\n        System.assertNotEquals(null, aliasAim);\n        System.assertNotEquals(null, aliasMatch);\n    }\n}\n"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.MatchRecord()",
+      "symbol": "Datacloud.MatchRecord.MatchRecord()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.additionalinformation",
+      "symbol": "Datacloud.MatchRecord.additionalinformation",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.equals(Object)",
+      "symbol": "Datacloud.MatchRecord.equals(Object)",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.fielddiffs",
+      "symbol": "Datacloud.MatchRecord.fielddiffs",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.getAdditionalInformation()",
+      "symbol": "Datacloud.MatchRecord.getAdditionalInformation()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.getFieldDiffs()",
+      "symbol": "Datacloud.MatchRecord.getFieldDiffs()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.getMatchConfidence()",
+      "symbol": "Datacloud.MatchRecord.getMatchConfidence()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.getRecord()",
+      "symbol": "Datacloud.MatchRecord.getRecord()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.hashCode()",
+      "symbol": "Datacloud.MatchRecord.hashCode()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.matchconfidence",
+      "symbol": "Datacloud.MatchRecord.matchconfidence",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.record",
+      "symbol": "Datacloud.MatchRecord.record",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchRecord.toString()",
+      "symbol": "Datacloud.MatchRecord.toString()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult",
+      "symbol": "Datacloud.MatchResult",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.MatchResult()",
+      "symbol": "Datacloud.MatchResult.MatchResult()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.entitytype",
+      "symbol": "Datacloud.MatchResult.entitytype",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.equals(Object)",
+      "symbol": "Datacloud.MatchResult.equals(Object)",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.errors",
+      "symbol": "Datacloud.MatchResult.errors",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.getEntityType()",
+      "symbol": "Datacloud.MatchResult.getEntityType()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.getErrors()",
+      "symbol": "Datacloud.MatchResult.getErrors()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.getMatchEngine()",
+      "symbol": "Datacloud.MatchResult.getMatchEngine()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.getMatchRecords()",
+      "symbol": "Datacloud.MatchResult.getMatchRecords()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.getRule()",
+      "symbol": "Datacloud.MatchResult.getRule()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.getSize()",
+      "symbol": "Datacloud.MatchResult.getSize()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.hashCode()",
+      "symbol": "Datacloud.MatchResult.hashCode()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.isSuccess()",
+      "symbol": "Datacloud.MatchResult.isSuccess()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.matchengine",
+      "symbol": "Datacloud.MatchResult.matchengine",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.matchrecords",
+      "symbol": "Datacloud.MatchResult.matchrecords",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.rule",
+      "symbol": "Datacloud.MatchResult.rule",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.size",
+      "symbol": "Datacloud.MatchResult.size",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.success",
+      "symbol": "Datacloud.MatchResult.success",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:Datacloud.MatchResult.toString()",
+      "symbol": "Datacloud.MatchResult.toString()",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Datacloud",
+      "symbol": "System.Datacloud",
+      "kind": "test"
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}
