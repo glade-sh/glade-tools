@@ -21,6 +21,6 @@ test("CI checks product evidence against the catalog-pinned Glade commit", () =>
   assert.doesNotMatch(workflow, /if:.*refs\/tags/);
 });
 
-test("CI fails fast instead of consuming the default runner timeout", () => {
-  assert.match(workflow, /runs-on: ubuntu-latest\n\s+timeout-minutes: 5/);
+test("CI uses a bounded timeout long enough for the release proof", () => {
+  assert.match(workflow, /runs-on: ubuntu-latest\n\s+timeout-minutes: 15/);
 });
