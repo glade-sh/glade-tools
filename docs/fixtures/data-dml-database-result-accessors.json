@@ -161,9 +161,7 @@
     }
   },
   "name": "data-dml-database-result-accessors",
-  "salesforceEligible": false,
-  "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "Salesforce API 67 rejects the Database DML overloads used by this deterministic accessor fixture (Database.insert/update/upsert/merge/undelete/delete(..., Boolean) and emptyRecycleBin); retain the local deterministic result-accessor proof and exclude hosted execution.",
+  "salesforceEligible": true,
   "source": [
     {
       "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
