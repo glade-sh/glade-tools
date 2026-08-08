@@ -98,6 +98,9 @@
     }
   },
   "name": "data-platform-database-request-field-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The LeadConvert field half passes in Salesforce, but the MergeRequest field half returns an Internal Salesforce Error in the API 67 scratch org. Keep the complete local DTO-field proof and exclude this mixed hosted fixture until Salesforce provides a stable runtime path.",
   "source": [
     {
       "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",

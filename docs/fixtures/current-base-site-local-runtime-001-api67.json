@@ -1,17 +1,50 @@
 {
-  "name": "current-base-site-local-runtime-001-api67",
   "apiVersion": "67.0",
-  "mode": "local-runtime",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "The fixture records the local Site.UrlRewriter construction boundary and public exception type only; it does not claim hosted Sites execution.",
-  "notes": "Current-base lane current-base-local-runtime-required-Site-001: three uncovered Site rows. Salesforce rejects direct UrlRewriter construction; the negative runtime result is retained as the truthful contract.",
-  "profile": {"path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json", "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81", "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254", "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5", "laneId": "current-base-local-runtime-required-Site-001", "selectedRowCount": 3},
-  "command": {"kind": "exec", "args": ["Site.ExternalUserCreateException externalError; System.assertEquals(null, externalError); new Site.UrlRewriter();"]},
-  "source": [{"path": "anonymous.apex", "content": "Site.ExternalUserCreateException externalError; System.assertEquals(null, externalError); new Site.UrlRewriter();"}],
+  "command": {
+    "args": [
+      "new Site.UrlRewriter();",
+      "new Site.UrlRewriter();"
+    ],
+    "kind": "exec",
+    "perEvidence": true
+  },
   "evidence": [
-    {"surfaceId": "apex:Site.ExternalUserCreateException", "symbol": "Site.ExternalUserCreateException", "kind": "exec"},
-    {"surfaceId": "apex:Site.UrlRewriter", "symbol": "Site.UrlRewriter", "kind": "exec"},
-    {"surfaceId": "apex:Site.UrlRewriter.UrlRewriter()", "symbol": "Site.UrlRewriter.UrlRewriter()", "kind": "exec", "notes": "The local runtime preserves Salesforce's direct-construction rejection for UrlRewriter."}
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Site.UrlRewriter",
+      "symbol": "Site.UrlRewriter"
+    },
+    {
+      "kind": "exec",
+      "notes": "The local runtime preserves Salesforce's direct-construction rejection for UrlRewriter.",
+      "surfaceId": "apex:Site.UrlRewriter.UrlRewriter()",
+      "symbol": "Site.UrlRewriter.UrlRewriter()"
+    }
   ],
-  "expected": {"error": {"type": "Error", "message": "Site.UrlRewriter cannot be constructed"}}
+  "expected": {
+    "error": {
+      "message": "GLADESEMA028: method \"execute\" uses unsupported local feature \"new Site.UrlRewriter\"",
+      "type": "Error"
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-site-local-runtime-001-api67",
+  "notes": "Current-base lane current-base-local-runtime-required-Site-001: UrlRewriter construction is recorded as one exact negative observation per declared surface.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-local-runtime-required-Site-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 3,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture records the local Site.UrlRewriter construction boundary and public exception type only; it does not claim hosted Sites execution.",
+  "source": [
+    {
+      "content": "Site.ExternalUserCreateException externalError; System.assertEquals(null, externalError); new Site.UrlRewriter();",
+      "path": "anonymous.apex"
+    }
+  ]
 }

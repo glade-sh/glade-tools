@@ -1,50 +1,56 @@
 {
-  "name": "core-runtime-eventbus-accesslevel",
+  "command": {
+    "args": [
+      "Database.SaveResult one = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), AccessLevel.USER_MODE); System.assert(one.isSuccess()); Database.SaveResult two = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), null, AccessLevel.USER_MODE); System.assert(two.isSuccess()); List<Database.SaveResult> three = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, AccessLevel.SYSTEM_MODE); System.assertEquals(1, three.size()); System.assert(three[0].isSuccess()); List<Database.SaveResult> four = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, null, AccessLevel.SYSTEM_MODE); System.assertEquals(1, four.size()); System.assert(four[0].isSuccess());"
+    ],
+    "kind": "exec"
+  },
   "evidence": [
     {
+      "kind": "exec",
+      "notes": "The local runtime accepts AccessLevel and returns the same no-delivery SaveResult as EventBus.publish.",
       "surfaceId": "apex:System.EventBus.publishWithAccessLevel(SObject,AccessLevel)",
-      "symbol": "EventBus.publishWithAccessLevel",
-      "kind": "exec",
-      "notes": "The local runtime accepts AccessLevel and returns the same no-delivery SaveResult as EventBus.publish."
+      "symbol": "EventBus.publishWithAccessLevel"
     },
     {
+      "kind": "exec",
+      "notes": "The callback overload reuses local EventBus.publish callback handling and ignores AccessLevel.",
       "surfaceId": "apex:System.EventBus.publishWithAccessLevel(SObject,Object,AccessLevel)",
-      "symbol": "EventBus.publishWithAccessLevel",
-      "kind": "exec",
-      "notes": "The callback overload reuses local EventBus.publish callback handling and ignores AccessLevel."
+      "symbol": "EventBus.publishWithAccessLevel"
     },
     {
+      "kind": "exec",
+      "notes": "The list overload returns ordered local SaveResult values and ignores AccessLevel.",
       "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<SObject>,AccessLevel)",
-      "symbol": "EventBus.publishWithAccessLevel",
-      "kind": "exec",
-      "notes": "The list overload returns ordered local SaveResult values and ignores AccessLevel."
+      "symbol": "EventBus.publishWithAccessLevel"
     },
     {
-      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<SObject>,Object,AccessLevel)",
-      "symbol": "EventBus.publishWithAccessLevel",
       "kind": "exec",
-      "notes": "The list callback overload returns ordered local SaveResult values and ignores AccessLevel."
+      "notes": "The list callback overload returns ordered local SaveResult values and ignores AccessLevel.",
+      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<SObject>,Object,AccessLevel)",
+      "symbol": "EventBus.publishWithAccessLevel"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "name": "core-runtime-eventbus-accesslevel",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "API 67 clean-org cannot resolve the fixture's local custom event type; retained as local EventBus evidence and excluded from hosted parity.",
+  "schema": [
+    {
+      "content": "<CustomObject><label>Event Recipes Demo</label><pluralLabel>Event Recipes Demos</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>",
+      "path": "force-app/main/default/objects/Event_Recipes_Demo__e/Event_Recipes_Demo__e.object-meta.xml"
     }
   ],
   "source": [
     {
-      "path": "anonymous.apex",
-      "content": "Database.SaveResult one = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), AccessLevel.USER_MODE); System.assert(one.isSuccess()); Database.SaveResult two = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), null, AccessLevel.USER_MODE); System.assert(two.isSuccess()); List<Database.SaveResult> three = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, AccessLevel.SYSTEM_MODE); System.assertEquals(1, three.size()); System.assert(three[0].isSuccess()); List<Database.SaveResult> four = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, null, AccessLevel.SYSTEM_MODE); System.assertEquals(1, four.size()); System.assert(four[0].isSuccess());"
+      "content": "Database.SaveResult one = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), AccessLevel.USER_MODE); System.assert(one.isSuccess()); Database.SaveResult two = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), null, AccessLevel.USER_MODE); System.assert(two.isSuccess()); List<Database.SaveResult> three = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, AccessLevel.SYSTEM_MODE); System.assertEquals(1, three.size()); System.assert(three[0].isSuccess()); List<Database.SaveResult> four = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, null, AccessLevel.SYSTEM_MODE); System.assertEquals(1, four.size()); System.assert(four[0].isSuccess());",
+      "path": "anonymous.apex"
     }
-  ],
-  "command": {
-    "kind": "exec",
-    "args": [
-      "Database.SaveResult one = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), AccessLevel.USER_MODE); System.assert(one.isSuccess()); Database.SaveResult two = EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), null, AccessLevel.USER_MODE); System.assert(two.isSuccess()); List<Database.SaveResult> three = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, AccessLevel.SYSTEM_MODE); System.assertEquals(1, three.size()); System.assert(three[0].isSuccess()); List<Database.SaveResult> four = EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, null, AccessLevel.SYSTEM_MODE); System.assertEquals(1, four.size()); System.assert(four[0].isSuccess());"
-    ]
-  },
-  "schema": [
-    {"path": "force-app/main/default/objects/Event_Recipes_Demo__e/Event_Recipes_Demo__e.object-meta.xml", "content": "<CustomObject><label>Event Recipes Demo</label><pluralLabel>Event Recipes Demos</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>"}
-  ],
-  "expected": {
-    "result": {
-      "ok": true,
-      "debug": null
-    }
-  }
+  ]
 }

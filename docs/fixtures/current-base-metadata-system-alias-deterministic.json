@@ -1,41 +1,44 @@
 {
-  "name": "current-base-metadata-system-alias-deterministic",
-  "evidence": [
-    {
-      "surfaceId": "apex:System.Metadata.Metadata()",
-      "symbol": "System.Metadata.Metadata",
-      "kind": "test",
-      "notes": "System.Metadata is the documented namespace-qualified alias for the deterministic Metadata base DTO; the local constructor yields a Metadata object."
-    },
-    {
-      "surfaceId": "apex:System.Metadata.clone()",
-      "symbol": "System.Metadata.clone",
-      "kind": "test",
-      "notes": "clone() runs through the generic Metadata DTO clone path and preserves fullName."
-    },
-    {
-      "surfaceId": "apex:System.Metadata.fullName",
-      "symbol": "System.Metadata.fullName",
-      "kind": "test",
-      "notes": "fullName is a mutable deterministic field on the System-qualified Metadata alias."
-    }
-  ],
-  "source": [
-    {
-      "path": "force-app/main/classes/SystemMetadataAliasDeterministicTest.cls",
-      "content": "@isTest private class SystemMetadataAliasDeterministicTest { @isTest static void systemMetadataAliasCompilesAndRuns() { System.Metadata metadata = new System.Metadata(); metadata.fullName = 'Feature.Default'; System.Metadata cloned = (System.Metadata)metadata.clone(); System.assertEquals('Feature.Default', cloned.fullName); System.assertEquals('Feature.Default', metadata.fullName); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "System.Metadata is the documented namespace-qualified alias for the deterministic Metadata base DTO; the local constructor yields a Metadata object.",
+      "surfaceId": "apex:System.Metadata.Metadata()",
+      "symbol": "System.Metadata.Metadata"
+    },
+    {
+      "kind": "test",
+      "notes": "clone() runs through the generic Metadata DTO clone path and preserves fullName.",
+      "surfaceId": "apex:System.Metadata.clone()",
+      "symbol": "System.Metadata.clone"
+    },
+    {
+      "kind": "test",
+      "notes": "fullName is a mutable deterministic field on the System-qualified Metadata alias.",
+      "surfaceId": "apex:System.Metadata.fullName",
+      "symbol": "System.Metadata.fullName"
+    }
+  ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "name": "current-base-metadata-system-alias-deterministic",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects the System.Metadata alias; retained as local metadata evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "@isTest private class SystemMetadataAliasDeterministicTest { @isTest static void systemMetadataAliasCompilesAndRuns() { System.Metadata metadata = new System.Metadata(); metadata.fullName = 'Feature.Default'; System.Metadata cloned = (System.Metadata)metadata.clone(); System.assertEquals('Feature.Default', cloned.fullName); System.assertEquals('Feature.Default', metadata.fullName); } }",
+      "path": "force-app/main/classes/SystemMetadataAliasDeterministicTest.cls"
+    }
+  ]
 }

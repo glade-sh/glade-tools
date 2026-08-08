@@ -1,0 +1,63 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.addFields(List<String>)",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.addFields"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.cancel()",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.cancel"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.getId()",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.getId"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.getRecord()",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.getRecord"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory(String,String)",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.setDataCategory"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.view()",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.view"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.StandardController.quickSave()",
+      "symbol": "ApexPages.StandardController.quickSave"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-apexpages-residual-runtime-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "Knowledge and Visualforce controller actions use Glade's local Knowledge__kav and page-reference model; the scratch org has no portable Knowledge data for hosted runtime proof.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseApexPagesResidualRuntimeTest { @isTest static void residualControllerActions() { Knowledge__kav article = new Knowledge__kav(Title = 'Fixture Article'); ApexPages.KnowledgeArticleVersionStandardController knowledge = new ApexPages.KnowledgeArticleVersionStandardController(article); knowledge.addFields(new List<String>{'Title'}); knowledge.setDataCategory('Products', 'Trail'); System.assertEquals(article, knowledge.getRecord()); System.assertEquals(article.Id, knowledge.getId()); System.assertNotEquals(null, knowledge.view()); System.assertNotEquals(null, knowledge.cancel()); Account account = new Account(Name = 'Quick Save'); ApexPages.StandardController standard = new ApexPages.StandardController(account); System.assertNotEquals(null, standard.quickSave()); } }",
+      "path": "force-app/main/classes/CurrentBaseApexPagesResidualRuntimeTest.cls"
+    }
+  ]
+}

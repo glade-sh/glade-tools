@@ -1,16 +1,48 @@
 {
-  "name": "current-base-userprovisioning-pluginbatchable-compile-shape-api67",
   "apiVersion": "67.0",
-  "mode": "compile-shape",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "This fixture retains the local PluginBatchable type and constructor shape without claiming hosted provisioning execution.",
-  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: two PluginBatchable rows are compile-shape evidence because direct local execution is not a stable deterministic contract.",
-  "profile": {"path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json", "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81", "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254", "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5", "laneId": "current-base-deterministic-mock-required-UserProvisioning-001", "selectedRowCount": 2},
-  "command": {"kind": "check"},
-  "source": [{"path": "force-app/main/default/classes/CurrentBaseUserProvisioningPluginBatchableCompileShape.cls", "content": "public class CurrentBaseUserProvisioningPluginBatchableCompileShape { public static Object probe() { if (false) { UserProvisioning.PluginBatchable value = new UserProvisioning.PluginBatchable(new List<SObject>()); return value; } return null; } }"}],
+  "command": {
+    "kind": "check"
+  },
   "evidence": [
-    {"surfaceId": "apex:UserProvisioning.PluginBatchable", "symbol": "UserProvisioning.PluginBatchable", "kind": "shape"},
-    {"surfaceId": "apex:UserProvisioning.PluginBatchable.PluginBatchable(List<Object>)", "symbol": "UserProvisioning.PluginBatchable.PluginBatchable(List<Object>)", "kind": "shape"}
+    {
+      "kind": "shape",
+      "surfaceId": "apex:UserProvisioning.PluginBatchable",
+      "symbol": "UserProvisioning.PluginBatchable"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:UserProvisioning.PluginBatchable.PluginBatchable(List<Object>)",
+      "symbol": "UserProvisioning.PluginBatchable.PluginBatchable(List<Object>)"
+    }
   ],
-  "expected": {"result": {"ok": true, "files": 1, "types": 1, "diagnostics": 0}}
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  },
+  "mode": "compile-shape",
+  "name": "current-base-userprovisioning-pluginbatchable-compile-shape-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: two PluginBatchable rows are compile-shape evidence because direct local execution is not a stable deterministic contract.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-UserProvisioning-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 2,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture mode and evidence are compile-shape probes; UserProvisioning batch runtime construction is not claimed.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture retains the local PluginBatchable type and constructor shape without claiming hosted provisioning execution.",
+  "source": [
+    {
+      "content": "public class CurrentBaseUserProvisioningPluginBatchableCompileShape { public static Object probe() { if (false) { UserProvisioning.PluginBatchable value = new UserProvisioning.PluginBatchable(new List<SObject>()); return value; } return null; } }",
+      "path": "force-app/main/default/classes/CurrentBaseUserProvisioningPluginBatchableCompileShape.cls"
+    }
+  ]
 }

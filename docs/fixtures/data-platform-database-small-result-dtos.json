@@ -1,37 +1,40 @@
 {
-  "name": "data-platform-database-small-result-dtos",
-  "evidence": [
-    {
-      "surfaceId": "apex:Database.MergeResult.getErrors()",
-      "symbol": "Database.MergeResult.getErrors",
-      "kind": "test",
-      "notes": "MergeResult exposes the Salesforce-shaped nullable Database result errors value."
-    }
-  ],
-  "source": [
-    {
-      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
-      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
-    },
-    {
-      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
-      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
-    },
-    {
-      "path": "force-app/main/classes/DatabaseSmallResultDtosTest.cls",
-      "content": "@isTest private class DatabaseSmallResultDtosTest { @isTest static void smallResultDtoAccessorsStayExplicit() { Account master = new Account(Name = 'Master'); insert master; Account duplicate = new Account(Name = 'Duplicate'); insert duplicate; Database.MergeResult merged = Database.merge(master, duplicate, false); System.assert(merged.isSuccess()); System.assertEquals(null, merged.getErrors()); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "MergeResult exposes the Salesforce-shaped nullable Database result errors value.",
+      "surfaceId": "apex:Database.MergeResult.getErrors()",
+      "symbol": "Database.MergeResult.getErrors"
+    }
+  ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "name": "data-platform-database-small-result-dtos",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects the fixture's Database.merge invocation shape; retained as local data evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>",
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml"
+    },
+    {
+      "content": "@isTest private class DatabaseSmallResultDtosTest { @isTest static void smallResultDtoAccessorsStayExplicit() { Account master = new Account(Name = 'Master'); insert master; Account duplicate = new Account(Name = 'Duplicate'); insert duplicate; Database.MergeResult merged = Database.merge(master, duplicate, false); System.assert(merged.isSuccess()); System.assertEquals(null, merged.getErrors()); } }",
+      "path": "force-app/main/classes/DatabaseSmallResultDtosTest.cls"
+    }
+  ]
 }

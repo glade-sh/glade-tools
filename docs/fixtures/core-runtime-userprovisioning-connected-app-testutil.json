@@ -1,29 +1,32 @@
 {
-  "name": "core-runtime-userprovisioning-connected-app-testutil",
-  "evidence": [
-    {
-      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
-      "symbol": "UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
-      "kind": "unsupported",
-      "notes": "ConnectorTestUtil.createConnectedApp is a Salesforce test-only utility and rejects anonymous execution with System.TypeException; preserve the rejection rather than adding local behavior."
-    }
-  ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "ConnectedApplication app = UserProvisioning.ConnectorTestUtil.createConnectedApp('Local App');\nSystem.assertEquals('Local App', app.Name);\nSystem.assertEquals('0SO000000000001', app.Id);"
-    }
-  ],
   "command": {
-    "kind": "exec",
     "args": [
       "ConnectedApplication app = UserProvisioning.ConnectorTestUtil.createConnectedApp('Local App');\nSystem.assertEquals('Local App', app.Name);\nSystem.assertEquals('0SO000000000001', app.Id);"
-    ]
+    ],
+    "kind": "exec"
   },
+  "evidence": [
+    {
+      "kind": "unsupported",
+      "notes": "ConnectorTestUtil.createConnectedApp is a Salesforce test-only utility and rejects anonymous execution with System.TypeException; preserve the rejection rather than adding local behavior.",
+      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
+      "symbol": "UserProvisioning.ConnectorTestUtil.createConnectedApp(String)"
+    }
+  ],
   "expected": {
     "error": {
-      "type": "System.TypeException",
-      "message": "Cannot call test methods in non-test context"
+      "message": "Cannot call test methods in non-test context",
+      "type": "System.TypeException"
     }
-  }
+  },
+  "name": "core-runtime-userprovisioning-connected-app-testutil",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "ConnectorTestUtil is a Salesforce test-only utility and anonymous execution is rejected; retain the local negative contract.",
+  "source": [
+    {
+      "content": "ConnectedApplication app = UserProvisioning.ConnectorTestUtil.createConnectedApp('Local App');\nSystem.assertEquals('Local App', app.Name);\nSystem.assertEquals('0SO000000000001', app.Id);",
+      "path": "anonymous.apex"
+    }
+  ]
 }

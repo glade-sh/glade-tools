@@ -1,28 +1,36 @@
 {
-  "name": "core-datetime-invalid-time",
-  "evidence": [
-    {
-      "symbol": "Time.valueOf",
-      "kind": "exec",
-      "notes": "Invalid Time.valueOf text returns a stable ordinary error."
-    }
-  ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "Time.valueOf('24:00:00');"
-    }
-  ],
   "command": {
-    "kind": "exec",
     "args": [
       "Time.valueOf('24:00:00');"
-    ]
+    ],
+    "kind": "exec"
   },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Time.valueOf(String)",
+      "symbol": "Time.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Invalid Time.valueOf text returns a stable ordinary error.",
+      "symbol": "Time.valueOf"
+    }
+  ],
   "expected": {
     "error": {
-      "type": "Error",
-      "message": "unsupported Time value \"24:00:00\""
+      "message": "unsupported Time value \"24:00:00\"",
+      "type": "Error"
     }
-  }
+  },
+  "name": "core-datetime-invalid-time",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture intentionally exercises invalid Time.valueOf input; Salesforce rejects the shape and does not provide a positive hosted runtime contract.",
+  "source": [
+    {
+      "content": "Time.valueOf('24:00:00');",
+      "path": "anonymous.apex"
+    }
+  ]
 }

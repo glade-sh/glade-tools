@@ -1,0 +1,54 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "check"
+  },
+  "evidence": [
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.UninstallContext",
+      "symbol": "System.UninstallContext"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.UninstallContext.OrganizationId",
+      "symbol": "System.UninstallContext.OrganizationId"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.UninstallContext.organizationId()",
+      "symbol": "System.UninstallContext.organizationId"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.UninstallHandler",
+      "symbol": "System.UninstallHandler"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.UninstallHandler.onUninstall(UninstallContext)",
+      "symbol": "System.UninstallHandler.onUninstall"
+    }
+  ],
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  },
+  "mode": "compile-shape",
+  "name": "current-base-platform-lifecycle-shape-api67",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture mode and evidence are compile-shape probes; package lifecycle runtime execution is not claimed.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Uninstall lifecycle values are platform-managed callbacks; this fixture proves the local declaration, property, and handler shape without claiming a hosted uninstall event.",
+  "source": [
+    {
+      "content": "public class CurrentBaseUninstallLifecycleShape implements UninstallHandler { public void onUninstall(UninstallContext context) { Id propertyValue = context.OrganizationId; Id methodValue = context.organizationId(); if (false) { System.assertEquals(propertyValue, methodValue); } } }",
+      "path": "force-app/main/classes/CurrentBaseUninstallLifecycleShape.cls"
+    }
+  ]
+}

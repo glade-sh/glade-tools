@@ -1,95 +1,84 @@
 {
-  "name": "current-base-process-parameter-dto-deterministic-api67",
   "apiVersion": "67.0",
-  "mode": "deterministic-mock",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "Salesforce compile oracle rejects Process.InputParameter and Process.OutputParameter; this fixture preserves local deterministic-mock evidence without claiming a Salesforce namespace contract.",
-  "notes": "Current-base Process lane: locally constructible InputParameter and OutputParameter DTOs round-trip their documented constructors, clone methods, and public fields. This is deterministic local evidence only; it makes no Salesforce runtime claim.",
   "command": {
     "kind": "test"
   },
-  "source": [
-    {
-      "path": "force-app/main/default/classes/CurrentBaseProcessParameterDtoDeterministicTest.cls",
-      "content": "@isTest private class CurrentBaseProcessParameterDtoDeterministicTest {\n @isTest static void parameterDtoFieldsWitness() {\n  Process.PluginDescribeResult.ParameterType stringType = Process.PluginDescribeResult.ParameterType.STRING;\n  Process.InputParameter input = new Process.InputParameter('inputName', stringType, true);\n  input.description = 'input description';\n  Process.InputParameter inputWithDescription = new Process.InputParameter('inputName', 'input description', stringType, false);\n  Process.InputParameter inputClone = (Process.InputParameter)input.clone();\n  System.assertEquals('inputName', input.name);\n  System.assertEquals('input description', input.description);\n  System.assertEquals(stringType, input.parameterType);\n  System.assertEquals(true, input.required);\n  System.assertEquals('inputName', inputWithDescription.name);\n  System.assertEquals('input description', inputWithDescription.description);\n  System.assertEquals(false, inputWithDescription.required);\n  System.assertEquals('inputName', inputClone.name);\n  Process.OutputParameter output = new Process.OutputParameter('outputName', stringType);\n  output.description = 'output description';\n  Process.OutputParameter outputWithDescription = new Process.OutputParameter('outputName', 'output description', stringType);\n  Process.OutputParameter outputClone = (Process.OutputParameter)output.clone();\n  System.assertEquals('outputName', output.name);\n  System.assertEquals('output description', output.description);\n  System.assertEquals(stringType, output.parameterType);\n  System.assertEquals('outputName', outputWithDescription.name);\n  System.assertEquals('output description', outputWithDescription.description);\n  System.assertEquals('outputName', outputClone.name);\n }\n}\n"
-    }
-  ],
   "evidence": [
     {
-      "surfaceId": "apex:Process.InputParameter",
-      "symbol": "Process.InputParameter",
       "kind": "test",
-      "notes": "Locally constructs the InputParameter DTO."
+      "notes": "Locally constructs the InputParameter DTO.",
+      "surfaceId": "apex:Process.InputParameter",
+      "symbol": "Process.InputParameter"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.InputParameter.InputParameter(String,Process.PluginDescribeResult.ParameterType,Boolean)",
-      "symbol": "Process.InputParameter.InputParameter(String,Process.PluginDescribeResult.ParameterType,Boolean)",
-      "kind": "test"
+      "symbol": "Process.InputParameter.InputParameter(String,Process.PluginDescribeResult.ParameterType,Boolean)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.InputParameter.InputParameter(String,String,Process.PluginDescribeResult.ParameterType,Boolean)",
-      "symbol": "Process.InputParameter.InputParameter(String,String,Process.PluginDescribeResult.ParameterType,Boolean)",
-      "kind": "test"
+      "symbol": "Process.InputParameter.InputParameter(String,String,Process.PluginDescribeResult.ParameterType,Boolean)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.InputParameter.clone()",
-      "symbol": "Process.InputParameter.clone()",
-      "kind": "test"
+      "symbol": "Process.InputParameter.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.InputParameter.description",
-      "symbol": "Process.InputParameter.description",
-      "kind": "test"
+      "symbol": "Process.InputParameter.description"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.InputParameter.name",
-      "symbol": "Process.InputParameter.name",
-      "kind": "test"
+      "symbol": "Process.InputParameter.name"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.InputParameter.parameterType",
-      "symbol": "Process.InputParameter.parameterType",
-      "kind": "test"
+      "symbol": "Process.InputParameter.parameterType"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.InputParameter.required",
-      "symbol": "Process.InputParameter.required",
-      "kind": "test"
+      "symbol": "Process.InputParameter.required"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.OutputParameter",
-      "symbol": "Process.OutputParameter",
-      "kind": "test"
+      "symbol": "Process.OutputParameter"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.OutputParameter.OutputParameter(String,Process.PluginDescribeResult.ParameterType)",
-      "symbol": "Process.OutputParameter.OutputParameter(String,Process.PluginDescribeResult.ParameterType)",
-      "kind": "test"
+      "symbol": "Process.OutputParameter.OutputParameter(String,Process.PluginDescribeResult.ParameterType)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.OutputParameter.OutputParameter(String,String,Process.PluginDescribeResult.ParameterType)",
-      "symbol": "Process.OutputParameter.OutputParameter(String,String,Process.PluginDescribeResult.ParameterType)",
-      "kind": "test"
+      "symbol": "Process.OutputParameter.OutputParameter(String,String,Process.PluginDescribeResult.ParameterType)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.OutputParameter.clone()",
-      "symbol": "Process.OutputParameter.clone()",
-      "kind": "test"
+      "symbol": "Process.OutputParameter.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.OutputParameter.description",
-      "symbol": "Process.OutputParameter.description",
-      "kind": "test"
+      "symbol": "Process.OutputParameter.description"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.OutputParameter.name",
-      "symbol": "Process.OutputParameter.name",
-      "kind": "test"
+      "symbol": "Process.OutputParameter.name"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Process.OutputParameter.parameterType",
-      "symbol": "Process.OutputParameter.parameterType",
-      "kind": "test"
+      "symbol": "Process.OutputParameter.parameterType"
     }
   ],
   "expected": {
@@ -100,5 +89,17 @@
       "passed": 1,
       "total": 1
     }
-  }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-process-parameter-dto-deterministic-api67",
+  "notes": "Current-base Process lane: locally constructible InputParameter and OutputParameter DTOs round-trip their documented constructors, clone methods, and public fields. This is deterministic local evidence only; it makes no Salesforce runtime claim.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce compile oracle rejects Process.InputParameter and Process.OutputParameter; this fixture preserves local deterministic-mock evidence without claiming a Salesforce namespace contract.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseProcessParameterDtoDeterministicTest {\n @isTest static void parameterDtoFieldsWitness() {\n  Process.PluginDescribeResult.ParameterType stringType = Process.PluginDescribeResult.ParameterType.STRING;\n  Process.InputParameter input = new Process.InputParameter('inputName', stringType, true);\n  input.description = 'input description';\n  Process.InputParameter inputWithDescription = new Process.InputParameter('inputName', 'input description', stringType, false);\n  Process.InputParameter inputClone = (Process.InputParameter)input.clone();\n  System.assertEquals('inputName', input.name);\n  System.assertEquals('input description', input.description);\n  System.assertEquals(stringType, input.parameterType);\n  System.assertEquals(true, input.required);\n  System.assertEquals('inputName', inputWithDescription.name);\n  System.assertEquals('input description', inputWithDescription.description);\n  System.assertEquals(false, inputWithDescription.required);\n  System.assertEquals('inputName', inputClone.name);\n  Process.OutputParameter output = new Process.OutputParameter('outputName', stringType);\n  output.description = 'output description';\n  Process.OutputParameter outputWithDescription = new Process.OutputParameter('outputName', 'output description', stringType);\n  Process.OutputParameter outputClone = (Process.OutputParameter)output.clone();\n  System.assertEquals('outputName', output.name);\n  System.assertEquals('output description', output.description);\n  System.assertEquals(stringType, output.parameterType);\n  System.assertEquals('outputName', outputWithDescription.name);\n  System.assertEquals('output description', outputWithDescription.description);\n  System.assertEquals('outputName', outputClone.name);\n }\n}\n",
+      "path": "force-app/main/default/classes/CurrentBaseProcessParameterDtoDeterministicTest.cls"
+    }
+  ]
 }

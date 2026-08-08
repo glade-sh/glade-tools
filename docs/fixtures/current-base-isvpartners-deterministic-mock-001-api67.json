@@ -1,17 +1,52 @@
 {
-  "name": "current-base-isvpartners-deterministic-mock-001-api67",
   "apiVersion": "67.0",
-  "mode": "deterministic-mock",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "This fixture proves the local IsvPartners analytics mock shape only; it does not claim hosted AppAnalytics telemetry.",
-  "notes": "Current-base lane current-base-deterministic-mock-required-IsvPartners-001: three uncovered AppAnalytics rows.",
-  "profile": {"path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json", "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81", "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254", "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5", "laneId": "current-base-deterministic-mock-required-IsvPartners-001", "selectedRowCount": 3},
-  "command": {"kind": "test"},
-  "source": [{"path": "force-app/main/default/classes/CurrentBaseIsvPartnersDeterministic001Test.cls", "content": "@isTest private class CurrentBaseIsvPartnersDeterministic001Test { @isTest static void isvPartnersDeterministic001Witness() { IsvPartners.AppAnalytics analytics = new IsvPartners.AppAnalytics(); System.assertNotEquals(null, analytics); System.assertNotEquals(null, analytics.clone()); IsvPartners.AppAnalytics.logCustomInteraction('fixture'); } }"}],
+  "command": {
+    "kind": "test"
+  },
   "evidence": [
-    {"surfaceId": "apex:IsvPartners.AppAnalytics", "symbol": "IsvPartners.AppAnalytics", "kind": "test"},
-    {"surfaceId": "apex:IsvPartners.AppAnalytics.AppAnalytics()", "symbol": "IsvPartners.AppAnalytics.AppAnalytics()", "kind": "test"},
-    {"surfaceId": "apex:IsvPartners.AppAnalytics.clone()", "symbol": "IsvPartners.AppAnalytics.clone()", "kind": "test"}
+    {
+      "kind": "test",
+      "surfaceId": "apex:IsvPartners.AppAnalytics",
+      "symbol": "IsvPartners.AppAnalytics"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:IsvPartners.AppAnalytics.AppAnalytics()",
+      "symbol": "IsvPartners.AppAnalytics.AppAnalytics()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:IsvPartners.AppAnalytics.clone()",
+      "symbol": "IsvPartners.AppAnalytics.clone()"
+    }
   ],
-  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-isvpartners-deterministic-mock-001-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-IsvPartners-001: three uncovered AppAnalytics rows.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-IsvPartners-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 3,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves the local IsvPartners analytics mock shape only; it does not claim hosted AppAnalytics telemetry.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseIsvPartnersDeterministic001Test { @isTest static void isvPartnersDeterministic001Witness() { IsvPartners.AppAnalytics analytics = new IsvPartners.AppAnalytics(); System.assertNotEquals(null, analytics); System.assertNotEquals(null, analytics.clone()); IsvPartners.AppAnalytics.logCustomInteraction('fixture'); } }",
+      "path": "force-app/main/default/classes/CurrentBaseIsvPartnersDeterministic001Test.cls"
+    }
+  ]
 }

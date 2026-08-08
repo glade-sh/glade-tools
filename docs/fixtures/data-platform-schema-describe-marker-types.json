@@ -1,103 +1,88 @@
 {
-  "name": "data-platform-schema-describe-marker-types",
-  "evidence": [
-    {
-      "symbol": "Schema.DataCategory",
-      "surfaceId": "apex:Schema.DataCategory",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.DescribeDataCategoryGroupResult",
-      "surfaceId": "apex:Schema.DescribeDataCategoryGroupResult",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.DescribeDataCategoryGroupStructureResult",
-      "surfaceId": "apex:Schema.DescribeDataCategoryGroupStructureResult",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.DisplayType",
-      "surfaceId": "apex:Schema.DisplayType",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldDescribeOptions",
-      "surfaceId": "apex:Schema.FieldDescribeOptions",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMap",
-      "surfaceId": "apex:Schema.FieldSetMap",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FilteredLookupInfo",
-      "surfaceId": "apex:Schema.FilteredLookupInfo",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.SOAPType",
-      "surfaceId": "apex:Schema.SOAPType",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.SObjectDescribeOptions",
-      "surfaceId": "apex:Schema.SObjectDescribeOptions",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.SObjectField",
-      "surfaceId": "apex:Schema.SObjectField",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.SObjectType",
-      "surfaceId": "apex:Schema.SObjectType",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.SObjectTypeFieldSets",
-      "surfaceId": "apex:Schema.SObjectTypeFieldSets",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.SObjectTypeFields",
-      "surfaceId": "apex:Schema.SObjectTypeFields",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.Schema",
-      "surfaceId": "apex:Schema.Schema",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.DataCategory constructor",
-      "surfaceId": "apex:Schema.DataCategory.DataCategory()",
-      "kind": "test",
-      "notes": "Schema.DataCategory can be constructed locally as a passive describe value and exposes writable metadata fields."
-    }
-  ],
-  "source": [
-    {
-      "path": "force-app/main/default/classes/SchemaDescribeMarkerTypesFixtureTest.cls",
-      "content": "@isTest private class SchemaDescribeMarkerTypesFixtureTest { @isTest static void touchesMarkerTypes() { Schema.DisplayType displayType = Schema.DisplayType.STRING; Schema.FieldDescribeOptions fieldOption = Schema.FieldDescribeOptions.DEFAULT; Schema.SOAPType soapType = Account.Name.getDescribe().getSOAPType(); Schema.SObjectDescribeOptions describeOption = Schema.SObjectDescribeOptions.DEFAULT; Schema.SObjectField fieldToken = Account.Name; Schema.SObjectType typeToken = Account.SObjectType; Object fieldMap = Account.SObjectType.getDescribe().fields; Object fieldSetMap = Account.SObjectType.getDescribe().fieldSets; Schema.DataCategory category = new Schema.DataCategory(); category.name = 'Hardware'; category.label = 'Hardware'; System.assertEquals('Hardware', category.getName()); System.assertEquals('Hardware', category.getLabel()); System.assertEquals(0, category.getChildCategories().size()); Schema.DataCategoryGroupSobjectTypePair pair = new Schema.DataCategoryGroupSobjectTypePair(); pair.setSobject('Knowledge__kav'); pair.setDataCategoryGroupName('Products'); List<Object> groups = Schema.describeDataCategoryGroups(new List<String>{'Knowledge__kav'}); List<Object> structures = Schema.describeDataCategoryGroupStructures(new List<Schema.DataCategoryGroupSobjectTypePair>{pair}, false); System.assertEquals(Schema.DisplayType.STRING, displayType); System.assertEquals(Schema.FieldDescribeOptions.DEFAULT, fieldOption); System.assertEquals(Schema.SOAPType.STRING, soapType); System.assertEquals(Schema.SObjectDescribeOptions.DEFAULT, describeOption); System.assertEquals('Name', fieldToken.getDescribe().getName()); System.assertEquals('Account', typeToken.getDescribe().getName()); System.assert(fieldMap != null); System.assert(fieldSetMap != null); System.assert(groups != null); System.assert(structures != null); } }"
-    },
-    {
-      "path": "force-app/main/default/dataCategoryGroups/Products.dataCategoryGroup-meta.xml",
-      "content": "<DataCategoryGroup xmlns=\"http://soap.sforce.com/2006/04/metadata\"><label>Products</label><objectUsage><object>Knowledge__kav</object></objectUsage></DataCategoryGroup>"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.DisplayType",
+      "symbol": "Schema.DisplayType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldDescribeOptions",
+      "symbol": "Schema.FieldDescribeOptions"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMap",
+      "symbol": "Schema.FieldSetMap"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FilteredLookupInfo",
+      "symbol": "Schema.FilteredLookupInfo"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.SOAPType",
+      "symbol": "Schema.SOAPType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.SObjectDescribeOptions",
+      "symbol": "Schema.SObjectDescribeOptions"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.SObjectField",
+      "symbol": "Schema.SObjectField"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.SObjectType",
+      "symbol": "Schema.SObjectType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.SObjectTypeFieldSets",
+      "symbol": "Schema.SObjectTypeFieldSets"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.SObjectTypeFields",
+      "symbol": "Schema.SObjectTypeFields"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.Schema",
+      "symbol": "Schema.Schema"
+    }
+  ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "name": "data-platform-schema-describe-marker-types",
+  "salesforceEligible": true,
+  "source": [
+    {
+      "path": "force-app/main/default/objects/SchemaMarkerProbe__c/SchemaMarkerProbe__c.object-meta.xml",
+      "content": "<CustomObject><label>Schema Marker Probe</label><pluralLabel>Schema Marker Probes</pluralLabel><nameField><type>Text</type><label>Schema Marker Probe Name</label></nameField><deploymentStatus>Deployed</deploymentStatus><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/SchemaMarkerProbe__c/fields/MarkerParent__c.field-meta.xml",
+      "content": "<CustomField><fullName>MarkerParent__c</fullName><label>Marker Parent</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>SchemaMarkerParent</relationshipName><deleteConstraint>SetNull</deleteConstraint><lookupFilter><active>true</active><filterItems><field>Account.Name</field><operation>equals</operation><value>Marker</value></filterItems><isOptional>true</isOptional></lookupFilter></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/classes/SchemaDescribeMarkerTypesFixtureTest.cls",
+      "content": "@isTest private class SchemaDescribeMarkerTypesFixtureTest { @isTest static void touchesMarkerTypes() { Schema.DisplayType displayType = Schema.DisplayType.STRING; Schema.FieldDescribeOptions fieldOption = Schema.FieldDescribeOptions.DEFAULT; Schema.SOAPType soapType = Account.Name.getDescribe().getSOAPType(); Schema.SObjectDescribeOptions describeOption = Schema.SObjectDescribeOptions.DEFAULT; Schema.SObjectField fieldToken = Account.Name; Schema.SObjectType typeToken = Account.SObjectType; Object fieldMap = Account.SObjectType.getDescribe().fields; Object fieldSetMap = Account.SObjectType.getDescribe().fieldSets; Schema.FilteredLookupInfo lookupInfo = SchemaMarkerProbe__c.MarkerParent__c.getDescribe().getFilteredLookupInfo();  System.assertEquals(Schema.DisplayType.STRING, displayType); System.assertEquals(Schema.FieldDescribeOptions.DEFAULT, fieldOption); System.assertEquals(Schema.SOAPType.STRING, soapType); System.assertEquals(Schema.SObjectDescribeOptions.DEFAULT, describeOption); System.assertEquals('Name', fieldToken.getDescribe().getName()); System.assertEquals('Account', typeToken.getDescribe().getName()); System.assert(fieldMap != null); System.assert(fieldSetMap != null); System.assert(lookupInfo != null); } }"
+    }
+  ],
+  "notes": "Hosted API 67 marker-type witness using portable describe metadata; DataCategory is covered by a separate local-only fixture because the hosted compiler rejects its constructor."
 }

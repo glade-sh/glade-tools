@@ -1,35 +1,93 @@
 {
-  "name": "current-base-messaging-render-template-dto-family",
-  "mode": "deterministic-mock",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "Salesforce compile oracle rejects construction of Messaging.RenderEmailTemplateError; this fixture preserves the local DTO shape without claiming Salesforce availability.",
   "command": {
     "kind": "test"
   },
-  "source": [
-    {
-      "path": "force-app/main/default/classes/CurrentBaseMessagingRenderTemplateDtoTest.cls",
-      "content": "@isTest private class CurrentBaseMessagingRenderTemplateDtoTest {\n @isTest static void dtoFieldsAndMethodsWitness() {\n  Messaging.RenderEmailTemplateBodyResult body = new Messaging.RenderEmailTemplateBodyResult();\n  Messaging.RenderEmailTemplateError error = new Messaging.RenderEmailTemplateError();\n  System.assertEquals(0, body.errors.size());\n  System.assertEquals(null, body.mergedbody);\n  System.assertEquals(null, body.success);\n  System.assertEquals(null, error.fieldname);\n  System.assertEquals(null, error.message);\n  System.assertEquals(null, error.offset);\n  System.assertEquals(null, error.statuscode);\n  System.assertEquals(true, body.equals(body));\n  System.assertEquals(true, error.equals(error));\n  Object bodyHash = body.hashCode();\n  Object errorHash = error.hashCode();\n  Object bodyText = body.toString();\n  Object errorText = error.toString();\n  System.assertNotEquals(null, bodyHash);\n  System.assertNotEquals(null, errorHash);\n  System.assertNotEquals(null, bodyText);\n  System.assertNotEquals(null, errorText);\n }\n}\n"
-    }
-  ],
   "evidence": [
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult", "symbol": "Messaging.RenderEmailTemplateBodyResult", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.RenderEmailTemplateBodyResult()", "symbol": "Messaging.RenderEmailTemplateBodyResult.RenderEmailTemplateBodyResult()", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.equals(Object)", "symbol": "Messaging.RenderEmailTemplateBodyResult.equals(Object)", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.errors", "symbol": "Messaging.RenderEmailTemplateBodyResult.errors", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.hashCode()", "symbol": "Messaging.RenderEmailTemplateBodyResult.hashCode()", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.mergedbody", "symbol": "Messaging.RenderEmailTemplateBodyResult.mergedbody", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.success", "symbol": "Messaging.RenderEmailTemplateBodyResult.success", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.toString()", "symbol": "Messaging.RenderEmailTemplateBodyResult.toString()", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError", "symbol": "Messaging.RenderEmailTemplateError", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.RenderEmailTemplateError()", "symbol": "Messaging.RenderEmailTemplateError.RenderEmailTemplateError()", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.equals(Object)", "symbol": "Messaging.RenderEmailTemplateError.equals(Object)", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.fieldname", "symbol": "Messaging.RenderEmailTemplateError.fieldname", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.hashCode()", "symbol": "Messaging.RenderEmailTemplateError.hashCode()", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.message", "symbol": "Messaging.RenderEmailTemplateError.message", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.offset", "symbol": "Messaging.RenderEmailTemplateError.offset", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.statuscode", "symbol": "Messaging.RenderEmailTemplateError.statuscode", "kind": "test"},
-    {"surfaceId": "apex:Messaging.RenderEmailTemplateError.toString()", "symbol": "Messaging.RenderEmailTemplateError.toString()", "kind": "test"}
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.RenderEmailTemplateBodyResult()",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult.RenderEmailTemplateBodyResult()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.equals(Object)",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.errors",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult.errors"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.hashCode()",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.mergedbody",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult.mergedbody"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.success",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult.success"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateBodyResult.toString()",
+      "symbol": "Messaging.RenderEmailTemplateBodyResult.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError",
+      "symbol": "Messaging.RenderEmailTemplateError"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.RenderEmailTemplateError()",
+      "symbol": "Messaging.RenderEmailTemplateError.RenderEmailTemplateError()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.equals(Object)",
+      "symbol": "Messaging.RenderEmailTemplateError.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.fieldname",
+      "symbol": "Messaging.RenderEmailTemplateError.fieldname"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.hashCode()",
+      "symbol": "Messaging.RenderEmailTemplateError.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.message",
+      "symbol": "Messaging.RenderEmailTemplateError.message"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.offset",
+      "symbol": "Messaging.RenderEmailTemplateError.offset"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.statuscode",
+      "symbol": "Messaging.RenderEmailTemplateError.statuscode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.RenderEmailTemplateError.toString()",
+      "symbol": "Messaging.RenderEmailTemplateError.toString()"
+    }
   ],
   "expected": {
     "result": {
@@ -39,5 +97,16 @@
       "passed": 1,
       "total": 1
     }
-  }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-messaging-render-template-dto-family",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce compile oracle rejects construction of Messaging.RenderEmailTemplateError; this fixture preserves the local DTO shape without claiming Salesforce availability.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseMessagingRenderTemplateDtoTest {\n @isTest static void dtoFieldsAndMethodsWitness() {\n  Messaging.RenderEmailTemplateBodyResult body = new Messaging.RenderEmailTemplateBodyResult();\n  Messaging.RenderEmailTemplateError error = new Messaging.RenderEmailTemplateError();\n  System.assertEquals(0, body.errors.size());\n  System.assertEquals(null, body.mergedbody);\n  System.assertEquals(null, body.success);\n  System.assertEquals(null, error.fieldname);\n  System.assertEquals(null, error.message);\n  System.assertEquals(null, error.offset);\n  System.assertEquals(null, error.statuscode);\n  System.assertEquals(true, body.equals(body));\n  System.assertEquals(true, error.equals(error));\n  Object bodyHash = body.hashCode();\n  Object errorHash = error.hashCode();\n  Object bodyText = body.toString();\n  Object errorText = error.toString();\n  System.assertNotEquals(null, bodyHash);\n  System.assertNotEquals(null, errorHash);\n  System.assertNotEquals(null, bodyText);\n  System.assertNotEquals(null, errorText);\n }\n}\n",
+      "path": "force-app/main/default/classes/CurrentBaseMessagingRenderTemplateDtoTest.cls"
+    }
+  ]
 }

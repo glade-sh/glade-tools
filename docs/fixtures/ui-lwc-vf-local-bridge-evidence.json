@@ -1,5 +1,7 @@
 {
   "name": "ui-lwc-vf-local-bridge-evidence",
+  "proofObligation": "external-unit-test-required",
+  "proofObligationReason": "The fixture source is a bounded Go test selection; local Glade test output with zero cases is not credited.",
   "evidence": [
     {
       "surfaceId": "apex:ApexPages.Message",

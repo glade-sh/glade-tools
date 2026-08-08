@@ -1,0 +1,52 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "if (false) { SoqlStubProvider soql = new SoqlStubProvider(); soql.clone(); StubProvider stub = new StubProvider(); stub.clone(); UserProvisioning.UserProvisioningPlugin plugin = new UserProvisioning.UserProvisioningPlugin(); plugin.clone(); }"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.SoqlStubProvider",
+      "symbol": "System.SoqlStubProvider"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.SoqlStubProvider.SoqlStubProvider()",
+      "symbol": "System.SoqlStubProvider.SoqlStubProvider"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.SoqlStubProvider.clone()",
+      "symbol": "System.SoqlStubProvider.clone"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:System.StubProvider.StubProvider()",
+      "symbol": "System.StubProvider.StubProvider"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.UserProvisioningPlugin()",
+      "symbol": "UserProvisioning.UserProvisioningPlugin.UserProvisioningPlugin"
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  },
+  "mode": "compile-shape",
+  "name": "current-base-platform-interface-negative-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "These platform callback interfaces are abstract contracts, not directly constructible values; the local compiler negative is the faithful contract.",
+  "source": [
+    {
+      "content": "if (false) { SoqlStubProvider soql = new SoqlStubProvider(); soql.clone(); StubProvider stub = new StubProvider(); stub.clone(); UserProvisioning.UserProvisioningPlugin plugin = new UserProvisioning.UserProvisioningPlugin(); plugin.clone(); }",
+      "path": "anonymous.apex"
+    }
+  ]
+}

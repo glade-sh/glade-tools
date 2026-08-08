@@ -1,5 +1,7 @@
 {
   "name": "data-platform-database-small-result-dto-shape",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture evidence covers Database result DTO shape; live DML/runtime behavior is not claimed.",
   "evidence": [
     {
       "surfaceId": "apex:Database.LeadConvertResult.getErrors()",

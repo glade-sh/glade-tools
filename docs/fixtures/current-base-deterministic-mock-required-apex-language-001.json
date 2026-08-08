@@ -1,5 +1,7 @@
 {
   "name": "current-base-deterministic-mock-required-apex-language-001",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "The bound command is glade check and the evidence covers name/type resolution; runtime execution is not claimed.",
   "apiVersion": "67.0",
   "mode": "local-runtime",
   "salesforceEligible": true,

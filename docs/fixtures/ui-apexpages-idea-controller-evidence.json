@@ -1,5 +1,7 @@
 {
   "name": "ui-apexpages-idea-controller-evidence",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture evidence covers Visualforce controller compile shape; the platform-created controller runtime is not claimed.",
   "evidence": [
     {"surfaceId": "apex:ApexPages.IdeaStandardController.addFields(List<String>)", "symbol": "ApexPages.IdeaStandardController.addFields", "kind": "check", "notes": "Visualforce supplies IdeaStandardController to controller extensions; direct construction is not used."},
     {"surfaceId": "apex:ApexPages.IdeaStandardController.cancel()", "symbol": "ApexPages.IdeaStandardController.cancel", "kind": "check", "notes": "Visualforce extension constructor can call the inherited standard-controller action."},

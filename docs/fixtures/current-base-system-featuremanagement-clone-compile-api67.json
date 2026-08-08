@@ -1,5 +1,7 @@
 {
   "name": "current-base-system-featuremanagement-clone-compile-api67",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture mode and evidence are compile-shape probes; FeatureManagement runtime construction is not claimed.",
   "apiVersion": "67.0",
   "mode": "compile-shape",
   "notes": "Wave24 current-base System lane: apex:System.FeatureManagement.clone() is a compile-shape member contract; the generated type exposes clone() and sema accepts a qualified null-cast invocation. Runtime construction stays explicitly unsupported.",

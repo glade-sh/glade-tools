@@ -1,0 +1,38 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.DataCategory",
+      "symbol": "Schema.DataCategory"
+    },
+    {
+      "kind": "test",
+      "notes": "Schema.DataCategory is a passive local value; API 67 hosted compilation rejects its constructor.",
+      "surfaceId": "apex:Schema.DataCategory.DataCategory()",
+      "symbol": "Schema.DataCategory constructor"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "name": "data-platform-schema-data-category-local",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 rejects Schema.DataCategory construction; retain the passive value contract as local-only evidence.",
+  "source": [
+    {
+      "path": "force-app/main/default/classes/DataCategoryLocalFixtureTest.cls",
+      "content": "@isTest private class DataCategoryLocalFixtureTest { @isTest static void localDataCategoryContract() { Schema.DataCategory category = new Schema.DataCategory(); category.name = 'Hardware'; category.label = 'Hardware'; System.assertEquals('Hardware', category.getName()); System.assertEquals('Hardware', category.getLabel()); System.assertEquals(0, category.getChildCategories().size()); } }"
+    }
+  ]
+}

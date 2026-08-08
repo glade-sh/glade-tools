@@ -1,0 +1,25 @@
+{
+  "name": "current-base-system-exception-gap-family",
+  "apiVersion": "67.0",
+  "evidence": [
+    {"surfaceId": "apex:System.ProcedureException.ProcedureException(String,Exception)", "symbol": "ProcedureException.ProcedureException", "kind": "test"},
+    {"surfaceId": "apex:System.QueryException.QueryException()", "symbol": "QueryException.QueryException", "kind": "test"},
+    {"surfaceId": "apex:System.RequiredFeatureMissingException", "symbol": "RequiredFeatureMissingException", "kind": "test"},
+    {"surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException()", "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException", "kind": "test"},
+    {"surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException(Exception)", "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException", "kind": "test"},
+    {"surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException(String)", "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException", "kind": "test"},
+    {"surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException(String,Exception)", "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException", "kind": "test"},
+    {"surfaceId": "apex:System.SObjectException.SObjectException()", "symbol": "SObjectException.SObjectException", "kind": "test"},
+    {"surfaceId": "apex:System.SObjectException.SObjectException(Exception)", "symbol": "SObjectException.SObjectException", "kind": "test"},
+    {"surfaceId": "apex:System.SObjectException.SObjectException(String)", "symbol": "SObjectException.SObjectException", "kind": "test"},
+    {"surfaceId": "apex:System.SObjectException.SObjectException(String,Exception)", "symbol": "SObjectException.SObjectException", "kind": "test"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CurrentBaseSystemExceptionGapFamilyTest.cls",
+      "content": "@isTest private class CurrentBaseSystemExceptionGapFamilyTest { @isTest static void exercise() { QueryException cause = new QueryException('cause'); System.assertEquals('System.QueryException', new QueryException().getTypeName()); System.assertEquals('System.ProcedureException', new ProcedureException('procedure', cause).getTypeName()); Exception required0 = new RequiredFeatureMissingException(); Exception required1 = new RequiredFeatureMissingException('required'); Exception required2 = new RequiredFeatureMissingException(cause); Exception required3 = new RequiredFeatureMissingException('required', cause); System.assertEquals('System.RequiredFeatureMissingException', required0.getTypeName()); System.assertEquals('System.RequiredFeatureMissingException', required1.getTypeName()); System.assertEquals('System.RequiredFeatureMissingException', required2.getTypeName()); System.assertEquals('System.RequiredFeatureMissingException', required3.getTypeName()); Exception sobject0 = new SObjectException(); Exception sobject1 = new SObjectException(cause); Exception sobject2 = new SObjectException('sobject'); Exception sobject3 = new SObjectException('sobject', cause); System.assertEquals('System.SObjectException', sobject0.getTypeName()); System.assertEquals('System.SObjectException', sobject1.getTypeName()); System.assertEquals('System.SObjectException', sobject2.getTypeName()); System.assertEquals('System.SObjectException', sobject3.getTypeName()); } }"
+    }
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+}

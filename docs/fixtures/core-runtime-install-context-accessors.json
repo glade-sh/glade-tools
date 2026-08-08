@@ -1,24 +1,29 @@
 {
-  "name": "core-runtime-install-context-accessors",
-  "evidence": [
-    {"surfaceId": "apex:System.InstallContext.previousVersion()", "symbol": "InstallContext.previousVersion", "kind": "test"},
-    {"surfaceId": "apex:System.InstallContext.isPush()", "symbol": "InstallContext.isPush", "kind": "test"},
-    {"surfaceId": "apex:System.InstallContext.installerId()", "symbol": "InstallContext.installerId", "kind": "test"},
-    {"surfaceId": "apex:System.InstallContext.InstallerId", "symbol": "InstallContext.InstallerId", "kind": "test"}
-  ],
-  "source": [
-    {
-      "path": "force-app/main/classes/LocalInstallScript.cls",
-      "content": "public class LocalInstallScript implements InstallHandler { public static Boolean sawFresh = false; public static Boolean sawUpgrade = false; public void onInstall(InstallContext context) { if (context.previousVersion() == null) { sawFresh = !context.isPush() && context.installerId() == null && context.InstallerId == null; } else { sawUpgrade = context.previousVersion().compareTo(new Version(1, 47, 1)) < 0 && context.previousVersion().toString() == '1.47.0' && context.isPush() && context.installerId() == null; } } }"
-    },
-    {
-      "path": "force-app/main/classes/CoreRuntimeInstallContextAccessorsTest.cls",
-      "content": "@isTest private class CoreRuntimeInstallContextAccessorsTest { @isTest static void accessorsComeFromTestInstallContext() { Test.testInstall(new LocalInstallScript(), null); Test.testInstall(new LocalInstallScript(), new Version(1, 47, 0), true); System.assert(LocalInstallScript.sawFresh); System.assert(LocalInstallScript.sawUpgrade); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InstallContext.previousVersion()",
+      "symbol": "InstallContext.previousVersion"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InstallContext.isPush()",
+      "symbol": "InstallContext.isPush"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InstallContext.installerId()",
+      "symbol": "InstallContext.installerId"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InstallContext.InstallerId",
+      "symbol": "InstallContext.InstallerId"
+    }
+  ],
   "expected": {
     "result": {
       "errors": 0,
@@ -27,5 +32,19 @@
       "passed": 1,
       "total": 1
     }
-  }
+  },
+  "name": "core-runtime-install-context-accessors",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects the fixture's InstallContext member shape; retained as local runtime evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "public class LocalInstallScript implements InstallHandler { public static Boolean sawFresh = false; public static Boolean sawUpgrade = false; public void onInstall(InstallContext context) { if (context.previousVersion() == null) { sawFresh = !context.isPush() && context.installerId() == null && context.InstallerId == null; } else { sawUpgrade = context.previousVersion().compareTo(new Version(1, 47, 1)) < 0 && context.previousVersion().toString() == '1.47.0' && context.isPush() && context.installerId() == null; } } }",
+      "path": "force-app/main/classes/LocalInstallScript.cls"
+    },
+    {
+      "content": "@isTest private class CoreRuntimeInstallContextAccessorsTest { @isTest static void accessorsComeFromTestInstallContext() { Test.testInstall(new LocalInstallScript(), null); Test.testInstall(new LocalInstallScript(), new Version(1, 47, 0), true); System.assert(LocalInstallScript.sawFresh); System.assert(LocalInstallScript.sawUpgrade); } }",
+      "path": "force-app/main/classes/CoreRuntimeInstallContextAccessorsTest.cls"
+    }
+  ]
 }

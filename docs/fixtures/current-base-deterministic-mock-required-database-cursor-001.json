@@ -1,45 +1,45 @@
 {
-  "name": "current-base-local-runtime-required-Database.Cursor-001",
   "apiVersion": "67.0",
-  "mode": "local-runtime",
-  "salesforceEligible": true,
-  "notes": "Current-base lane current-base-local-runtime-required-Database.Cursor-001: the Database.Cursor.DeleteFilter type is exercised against deterministic local SOQL rows.",
-  "profile": {
-    "laneId": "current-base-local-runtime-required-Database.Cursor-001",
-    "selectedRowCount": 1
-  },
   "command": {
     "kind": "test"
   },
-  "source": [
-    {
-      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
-      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
-    },
-    {
-      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
-      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
-    },
-    {
-      "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredDatabaseCursor001Test.cls",
-      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabaseCursor001Test { @isTest static void cursorDeleteFilterUsesDeterministicLocalRows() { insert new Account(Name = 'Cursor'); Database.Cursor cursor = Database.getCursor('SELECT Id FROM Account'); Database.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter); } }"
-    }
-  ],
   "evidence": [
     {
-      "surfaceId": "apex:Database.Cursor.DeleteFilter",
-      "symbol": "Database.Cursor.DeleteFilter",
       "kind": "test",
-      "notes": "A public Salesforce cursor delete-filter enum exercised against Glade's deterministic local SOQL rows."
+      "notes": "A public Salesforce cursor delete-filter enum exercised against Glade's deterministic local SOQL rows.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter",
+      "symbol": "Database.Cursor.DeleteFilter"
     }
   ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-local-runtime-required-Database.Cursor-001",
+  "notes": "Hosted API 67 witness for Database.Cursor.DeleteFilter with a filename-matching test class.",
+  "profile": {
+    "laneId": "current-base-local-runtime-required-Database.Cursor-001",
+    "selectedRowCount": 1
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>",
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml"
+    },
+    {
+      "content": "@isTest private class CurrentBaseDeterministicMockRequiredDatabaseCursor001Test { @isTest static void cursorDeleteFilterUsesDeterministicLocalRows() { insert new Account(Name = 'Cursor'); Database.Cursor cursor = Database.getCursor('SELECT Id FROM Account'); Database.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter); } }",
+      "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredDatabaseCursor001Test.cls"
+    }
+  ]
 }

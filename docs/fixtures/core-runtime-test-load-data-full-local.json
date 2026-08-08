@@ -1,74 +1,77 @@
 {
-  "name": "core-runtime-test-load-data-full-local",
+  "command": {
+    "kind": "test"
+  },
   "evidence": [
     {
-      "surfaceId": "apex:System.Test.loadData(Schema.SObjectType,String)",
-      "symbol": "Test.loadData",
       "kind": "test",
-      "notes": "Packaged static resource names resolve against the local project namespace and CSV relationship columns such as Parent__r.External_Id__c expand to lookup IDs before DML."
+      "notes": "Packaged static resource names resolve against the local project namespace and CSV relationship columns such as Parent__r.External_Id__c expand to lookup IDs before DML.",
+      "surfaceId": "apex:System.Test.loadData(Schema.SObjectType,String)",
+      "symbol": "Test.loadData"
     }
   ],
-  "project": {
-    "namespace": "pkg",
-    "packageDirectories": [
-      {
-        "path": "force-app",
-        "default": true
-      }
-    ]
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
   },
   "metadata": {
     "staticResources": [
       {
-        "name": "Children",
-        "namespacePrefix": "pkg",
         "content": "Name,Parent__r.External_Id__c\nChild One,PARENT-1\n",
-        "contentType": "text/csv"
+        "contentType": "text/csv",
+        "name": "Children",
+        "namespacePrefix": "pkg"
       }
     ]
   },
-  "source": [
-    {
-      "path": "force-app/main/default/staticresources/Children.resource",
-      "content": "Name,Parent__r.External_Id__c\nChild One,PARENT-1\n"
-    },
-    {
-      "path": "force-app/main/default/staticresources/Children.resource-meta.xml",
-      "content": "<StaticResource><contentType>text/csv</contentType><cacheControl>Private</cacheControl></StaticResource>"
-    },
-    {
-      "path": "force-app/main/classes/CoreRuntimeTestLoadDataFullLocalTest.cls",
-      "content": "@isTest private class CoreRuntimeTestLoadDataFullLocalTest { @isTest static void rows() { Parent__c parent = new Parent__c(Name = 'Parent', External_Id__c = 'PARENT-1'); insert parent; List<Child__c> rows = Test.loadData(Child__c.SObjectType, 'pkg__Children'); System.assertEquals(1, rows.size()); Child__c child = [SELECT Parent__c FROM Child__c LIMIT 1]; System.assertEquals(parent.Id, child.Parent__c); try { Test.loadData(Child__c.SObjectType, 'other__Children'); System.assert(false, 'bad namespace should fail'); } catch (Exception e) { System.assert(e.getMessage().contains('namespace other does not match local package namespace pkg')); } } }"
-    }
-  ],
+  "name": "core-runtime-test-load-data-full-local",
+  "project": {
+    "namespace": "pkg",
+    "packageDirectories": [
+      {
+        "default": true,
+        "path": "force-app"
+      }
+    ]
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejected the fixture's local load-data metadata; retained as local test-harness evidence and excluded from hosted parity.",
   "schema": [
     {
-      "path": "force-app/main/default/objects/Parent__c/Parent__c.object-meta.xml",
-      "content": "<CustomObject><label>Parent</label><pluralLabel>Parents</pluralLabel><nameField><type>Text</type><label>Parent Name</label></nameField><sharingModel>ReadWrite</sharingModel></CustomObject>"
+      "content": "<CustomObject><label>Parent</label><pluralLabel>Parents</pluralLabel><nameField><type>Text</type><label>Parent Name</label></nameField><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/default/objects/Parent__c/Parent__c.object-meta.xml"
     },
     {
-      "path": "force-app/main/default/objects/Parent__c/fields/External_Id__c.field-meta.xml",
-      "content": "<CustomField><fullName>External_Id__c</fullName><label>External Id</label><type>Text</type><externalId>true</externalId><unique>true</unique></CustomField>"
+      "content": "<CustomField><fullName>External_Id__c</fullName><label>External Id</label><type>Text</type><externalId>true</externalId><unique>true</unique></CustomField>",
+      "path": "force-app/main/default/objects/Parent__c/fields/External_Id__c.field-meta.xml"
     },
     {
-      "path": "force-app/main/default/objects/Child__c/Child__c.object-meta.xml",
-      "content": "<CustomObject><label>Child</label><pluralLabel>Children</pluralLabel><nameField><type>Text</type><label>Child Name</label></nameField><sharingModel>ReadWrite</sharingModel></CustomObject>"
+      "content": "<CustomObject><label>Child</label><pluralLabel>Children</pluralLabel><nameField><type>Text</type><label>Child Name</label></nameField><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/default/objects/Child__c/Child__c.object-meta.xml"
     },
     {
-      "path": "force-app/main/default/objects/Child__c/fields/Parent__c.field-meta.xml",
-      "content": "<CustomField><fullName>Parent__c</fullName><label>Parent</label><type>Lookup</type><referenceTo>Parent__c</referenceTo><relationshipName>Parent</relationshipName></CustomField>"
+      "content": "<CustomField><fullName>Parent__c</fullName><label>Parent</label><type>Lookup</type><referenceTo>Parent__c</referenceTo><relationshipName>Parent</relationshipName></CustomField>",
+      "path": "force-app/main/default/objects/Child__c/fields/Parent__c.field-meta.xml"
     }
   ],
-  "command": {
-    "kind": "test"
-  },
-  "expected": {
-    "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
-      "failed": 0,
-      "errors": 0
+  "source": [
+    {
+      "content": "Name,Parent__r.External_Id__c\nChild One,PARENT-1\n",
+      "path": "force-app/main/default/staticresources/Children.resource"
+    },
+    {
+      "content": "<StaticResource><contentType>text/csv</contentType><cacheControl>Private</cacheControl></StaticResource>",
+      "path": "force-app/main/default/staticresources/Children.resource-meta.xml"
+    },
+    {
+      "content": "@isTest private class CoreRuntimeTestLoadDataFullLocalTest { @isTest static void rows() { Parent__c parent = new Parent__c(Name = 'Parent', External_Id__c = 'PARENT-1'); insert parent; List<Child__c> rows = Test.loadData(Child__c.SObjectType, 'pkg__Children'); System.assertEquals(1, rows.size()); Child__c child = [SELECT Parent__c FROM Child__c LIMIT 1]; System.assertEquals(parent.Id, child.Parent__c); try { Test.loadData(Child__c.SObjectType, 'other__Children'); System.assert(false, 'bad namespace should fail'); } catch (Exception e) { System.assert(e.getMessage().contains('namespace other does not match local package namespace pkg')); } } }",
+      "path": "force-app/main/classes/CoreRuntimeTestLoadDataFullLocalTest.cls"
     }
-  }
+  ]
 }

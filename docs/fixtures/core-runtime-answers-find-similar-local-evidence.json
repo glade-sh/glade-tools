@@ -1,34 +1,27 @@
 {
-  "name": "core-runtime-answers-find-similar-local-evidence",
-  "evidence": [
-    {
-      "surfaceId": "apex:Answers.findSimilar(Object)",
-      "symbol": "Answers.findSimilar(Object)",
-      "kind": "test",
-      "notes": "Local execution returns a deterministic empty List<Id> without performing hosted similarity search."
-    },
-    {
-      "surfaceId": "apex:Answers.findSimilar",
-      "symbol": "Answers.findSimilar",
-      "kind": "shape",
-      "notes": "Answers.findSimilar method-family shape is known from the exact overload local evidence."
-    },
-    {
-      "surfaceId": "apex:Answers.findSimilar",
-      "symbol": "Answers.findSimilar",
-      "kind": "test",
-      "notes": "The exact overload test supplies family behavior evidence."
-    }
-  ],
-  "source": [
-    {
-      "path": "force-app/main/classes/AnswersFindSimilarLocalTest.cls",
-      "content": "@isTest private class AnswersFindSimilarLocalTest { @isTest static void findSimilarReturnsEmptyList() { List<Id> ids = Answers.findSimilar(new Question(Title = 'Acme')); System.assertEquals(0, ids.size()); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "Local execution returns a deterministic empty List<Id> without performing hosted similarity search.",
+      "surfaceId": "apex:Answers.findSimilar(Object)",
+      "symbol": "Answers.findSimilar(Object)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Answers.findSimilar method-family shape is known from the exact overload local evidence.",
+      "surfaceId": "apex:Answers.findSimilar",
+      "symbol": "Answers.findSimilar"
+    },
+    {
+      "kind": "test",
+      "notes": "The exact overload test supplies family behavior evidence.",
+      "surfaceId": "apex:Answers.findSimilar",
+      "symbol": "Answers.findSimilar"
+    }
+  ],
   "expected": {
     "result": {
       "errors": 0,
@@ -37,5 +30,15 @@
       "passed": 1,
       "total": 1
     }
-  }
+  },
+  "name": "core-runtime-answers-find-similar-local-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org cannot resolve the local Question type; retained as local Answers evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "@isTest private class AnswersFindSimilarLocalTest { @isTest static void findSimilarReturnsEmptyList() { List<Id> ids = Answers.findSimilar(new Question(Title = 'Acme')); System.assertEquals(0, ids.size()); } }",
+      "path": "force-app/main/classes/AnswersFindSimilarLocalTest.cls"
+    }
+  ]
 }

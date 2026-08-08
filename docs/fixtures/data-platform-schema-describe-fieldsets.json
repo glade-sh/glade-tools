@@ -1,218 +1,220 @@
 {
-  "name": "data-platform-schema-describe-fieldsets",
-  "evidence": [
-    {
-      "symbol": "Schema.DescribeSObjectResult.getFieldSets",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getFieldSets()",
-      "kind": "unsupported",
-      "notes": "Salesforce API 67 rejected DescribeSObjectResult.getFieldSets() in the exact compile oracle; the fixture covers the supported fieldSets property instead."
-    },
-    {
-      "symbol": "Schema.DescribeSObjectResult.fieldSets",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.fieldSets",
-      "kind": "test",
-      "notes": "Direct Apex property access is the supported Salesforce API 67 path; the exact compile oracle rejects getFieldSets() and explicit Schema.SObjectTypeFieldSets or Schema.FieldSetMap declarations, so the source uses describe.fieldSets.getMap()."
-    },
-    {
-      "symbol": "Schema.FieldSetMap.get",
-      "surfaceId": "apex:Schema.FieldSetMap.get(String)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMap.getMap",
-      "surfaceId": "apex:Schema.FieldSetMap.getMap()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet",
-      "surfaceId": "apex:Schema.FieldSet",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.getFields",
-      "surfaceId": "apex:Schema.FieldSet.getFields()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.getLabel",
-      "surfaceId": "apex:Schema.FieldSet.getLabel()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.getDescription",
-      "surfaceId": "apex:Schema.FieldSet.getDescription()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.getName",
-      "surfaceId": "apex:Schema.FieldSet.getName()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.getNamespace",
-      "surfaceId": "apex:Schema.FieldSet.getNamespace()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.getNameSpace",
-      "surfaceId": "apex:Schema.FieldSet.getNameSpace()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.getSObjectType",
-      "surfaceId": "apex:Schema.FieldSet.getSObjectType()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember",
-      "surfaceId": "apex:Schema.FieldSetMember",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.getFieldPath",
-      "surfaceId": "apex:Schema.FieldSetMember.getFieldPath()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.getLabel",
-      "surfaceId": "apex:Schema.FieldSetMember.getLabel()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.getRequired",
-      "surfaceId": "apex:Schema.FieldSetMember.getRequired()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.getDBRequired",
-      "surfaceId": "apex:Schema.FieldSetMember.getDBRequired()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.getType",
-      "surfaceId": "apex:Schema.FieldSetMember.getType()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.getSObjectField",
-      "surfaceId": "apex:Schema.FieldSetMember.getSObjectField()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.description",
-      "surfaceId": "apex:Schema.FieldSet.description",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.fields",
-      "surfaceId": "apex:Schema.FieldSet.fields",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.label",
-      "surfaceId": "apex:Schema.FieldSet.label",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.name",
-      "surfaceId": "apex:Schema.FieldSet.name",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.namespace",
-      "surfaceId": "apex:Schema.FieldSet.namespace",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.sobjecttype",
-      "surfaceId": "apex:Schema.FieldSet.sobjecttype",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.dbrequired",
-      "surfaceId": "apex:Schema.FieldSetMember.dbrequired",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.fieldpath",
-      "surfaceId": "apex:Schema.FieldSetMember.fieldpath",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.label",
-      "surfaceId": "apex:Schema.FieldSetMember.label",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.required",
-      "surfaceId": "apex:Schema.FieldSetMember.required",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.sobjectfield",
-      "surfaceId": "apex:Schema.FieldSetMember.sobjectfield",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.type",
-      "surfaceId": "apex:Schema.FieldSetMember.type",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.equals",
-      "surfaceId": "apex:Schema.FieldSet.equals(Object)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.hashCode",
-      "surfaceId": "apex:Schema.FieldSet.hashCode()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSet.toString",
-      "surfaceId": "apex:Schema.FieldSet.toString()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.equals",
-      "surfaceId": "apex:Schema.FieldSetMember.equals(Object)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.hashCode",
-      "surfaceId": "apex:Schema.FieldSetMember.hashCode()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Schema.FieldSetMember.toString",
-      "surfaceId": "apex:Schema.FieldSetMember.toString()",
-      "kind": "test"
-    }
-  ],
-  "source": [
-    {
-      "path": "sfdx-project.json",
-      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"
-    },
-    {
-      "path": "force-app/main/default/objects/Account/fieldSets/Summary.fieldSet-meta.xml",
-      "content": "<FieldSet xmlns=\"http://soap.sforce.com/2006/04/metadata\"><fullName>Summary</fullName><label>Summary Fields</label><description>Fields shown on summary pages.</description><displayedFields><field>Name</field><isRequired>true</isRequired></displayedFields><displayedFields><field>Rating</field><isRequired>false</isRequired></displayedFields></FieldSet>"
-    },
-    {
-      "path": "force-app/main/default/classes/SchemaDescribeFieldSetsFixtureTest.cls",
-      "content": "@isTest private class SchemaDescribeFieldSetsFixtureTest { @isTest static void describesFieldSetMetadata() { Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe(); Map<String, Schema.FieldSet> mapped = describe.fieldSets.getMap(); System.assert(mapped.containsKey('Summary')); Schema.FieldSet summary = mapped.get('Summary'); System.assert(summary != null); System.assert(summary.equals(summary)); System.assert(!summary.equals(null)); System.assert(summary.hashCode() != 0); System.assert(summary.toString().contains('Summary')); System.assertEquals('Summary', summary.getName()); System.assertEquals(summary.getName(), summary.name); System.assertEquals(null, summary.getNameSpace()); System.assertEquals(null, summary.getNamespace()); System.assertEquals(summary.getNamespace(), summary.namespace); System.assertEquals('Summary Fields', summary.getLabel()); System.assertEquals(summary.getLabel(), summary.label); System.assertEquals('Fields shown on summary pages.', summary.getDescription()); System.assertEquals(summary.getDescription(), summary.description); System.assertEquals(Account.SObjectType, summary.getSObjectType()); System.assertEquals(summary.getSObjectType(), summary.sObjectType); List<Schema.FieldSetMember> members = summary.getFields(); System.assertEquals(members.size(), summary.fields.size()); System.assertEquals(2, members.size()); Schema.FieldSetMember nameMember = members.get(0); System.assert(nameMember.equals(nameMember)); System.assert(!nameMember.equals(null)); System.assert(nameMember.hashCode() != 0); System.assert(nameMember.toString().contains('Name')); System.assertEquals('Name', nameMember.getFieldPath()); System.assertEquals(nameMember.getFieldPath(), nameMember.fieldPath); System.assertEquals('Account Name', nameMember.getLabel()); System.assertEquals(nameMember.getLabel(), nameMember.label); System.assert(nameMember.getRequired()); System.assertEquals(nameMember.getRequired(), nameMember.required); System.assert(nameMember.getDBRequired()); System.assertEquals(nameMember.getDBRequired(), nameMember.dbRequired); System.assertEquals(Schema.DisplayType.STRING, nameMember.getType()); System.assertEquals(nameMember.getType(), nameMember.type); System.assertEquals(Account.Name, nameMember.getSObjectField()); System.assertEquals(nameMember.getSObjectField(), nameMember.sObjectField); Schema.FieldSetMember ratingMember = members.get(1); System.assertEquals('Rating', ratingMember.getFieldPath()); System.assertEquals(ratingMember.getFieldPath(), ratingMember.fieldPath); System.assertEquals('Rating', ratingMember.getLabel()); System.assertEquals(ratingMember.getLabel(), ratingMember.label); System.assert(!ratingMember.getRequired()); System.assertEquals(ratingMember.getRequired(), ratingMember.required); System.assert(!ratingMember.getDBRequired()); System.assertEquals(ratingMember.getDBRequired(), ratingMember.dbRequired); System.assertEquals(Schema.DisplayType.PICKLIST, ratingMember.getType()); System.assertEquals(ratingMember.getType(), ratingMember.type); System.assertEquals(Account.Rating, ratingMember.getSObjectField()); System.assertEquals(ratingMember.getSObjectField(), ratingMember.sObjectField); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "unsupported",
+      "notes": "Salesforce API 67 rejected DescribeSObjectResult.getFieldSets() in the exact compile oracle; the fixture covers the supported fieldSets property instead.",
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getFieldSets()",
+      "symbol": "Schema.DescribeSObjectResult.getFieldSets"
+    },
+    {
+      "kind": "test",
+      "notes": "Direct Apex property access is the supported Salesforce API 67 path; the exact compile oracle rejects getFieldSets() and explicit Schema.SObjectTypeFieldSets or Schema.FieldSetMap declarations, so the source uses describe.fieldSets.getMap().",
+      "surfaceId": "apex:Schema.DescribeSObjectResult.fieldSets",
+      "symbol": "Schema.DescribeSObjectResult.fieldSets"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMap.get(String)",
+      "symbol": "Schema.FieldSetMap.get"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMap.getMap()",
+      "symbol": "Schema.FieldSetMap.getMap"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet",
+      "symbol": "Schema.FieldSet"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.getFields()",
+      "symbol": "Schema.FieldSet.getFields"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.getLabel()",
+      "symbol": "Schema.FieldSet.getLabel"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.getDescription()",
+      "symbol": "Schema.FieldSet.getDescription"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.getName()",
+      "symbol": "Schema.FieldSet.getName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.getNamespace()",
+      "symbol": "Schema.FieldSet.getNamespace"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.getNameSpace()",
+      "symbol": "Schema.FieldSet.getNameSpace"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.getSObjectType()",
+      "symbol": "Schema.FieldSet.getSObjectType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember",
+      "symbol": "Schema.FieldSetMember"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.getFieldPath()",
+      "symbol": "Schema.FieldSetMember.getFieldPath"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.getLabel()",
+      "symbol": "Schema.FieldSetMember.getLabel"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.getRequired()",
+      "symbol": "Schema.FieldSetMember.getRequired"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.getDBRequired()",
+      "symbol": "Schema.FieldSetMember.getDBRequired"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.getType()",
+      "symbol": "Schema.FieldSetMember.getType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.getSObjectField()",
+      "symbol": "Schema.FieldSetMember.getSObjectField"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.description",
+      "symbol": "Schema.FieldSet.description"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.fields",
+      "symbol": "Schema.FieldSet.fields"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.label",
+      "symbol": "Schema.FieldSet.label"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.name",
+      "symbol": "Schema.FieldSet.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.namespace",
+      "symbol": "Schema.FieldSet.namespace"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.sobjecttype",
+      "symbol": "Schema.FieldSet.sobjecttype"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.dbrequired",
+      "symbol": "Schema.FieldSetMember.dbrequired"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.fieldpath",
+      "symbol": "Schema.FieldSetMember.fieldpath"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.label",
+      "symbol": "Schema.FieldSetMember.label"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.required",
+      "symbol": "Schema.FieldSetMember.required"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.sobjectfield",
+      "symbol": "Schema.FieldSetMember.sobjectfield"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.type",
+      "symbol": "Schema.FieldSetMember.type"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.equals(Object)",
+      "symbol": "Schema.FieldSet.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.hashCode()",
+      "symbol": "Schema.FieldSet.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSet.toString()",
+      "symbol": "Schema.FieldSet.toString"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.equals(Object)",
+      "symbol": "Schema.FieldSetMember.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.hashCode()",
+      "symbol": "Schema.FieldSetMember.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Schema.FieldSetMember.toString()",
+      "symbol": "Schema.FieldSetMember.toString"
+    }
+  ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "name": "data-platform-schema-describe-fieldsets",
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}",
+      "path": "sfdx-project.json"
+    },
+    {
+      "content": "<FieldSet xmlns=\"http://soap.sforce.com/2006/04/metadata\"><fullName>Summary</fullName><label>Summary Fields</label><description>Fields shown on summary pages.</description><displayedFields><field>Name</field><isRequired>true</isRequired></displayedFields><displayedFields><field>Rating</field><isRequired>false</isRequired></displayedFields></FieldSet>",
+      "path": "force-app/main/default/objects/Account/fieldSets/Summary.fieldSet-meta.xml"
+    },
+    {
+      "content": "@isTest private class SchemaDescribeFieldSetsFixtureTest { @isTest static void describesFieldSetMetadata() { Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe(); Map<String, Schema.FieldSet> mapped = describe.fieldSets.getMap(); System.assert(mapped.containsKey('Summary')); Schema.FieldSet summary = mapped.get('Summary'); System.assert(summary != null); System.assert(summary.equals(summary)); System.assert(!summary.equals(null)); System.assert(summary.hashCode() != 0); System.assert(summary.toString().contains('Summary')); System.assertEquals('Summary', summary.getName()); System.assertEquals(summary.getName(), summary.name); System.assertEquals(null, summary.getNameSpace()); System.assertEquals(null, summary.getNamespace()); System.assertEquals(summary.getNamespace(), summary.namespace); System.assertEquals('Summary Fields', summary.getLabel()); System.assertEquals(summary.getLabel(), summary.label); System.assertEquals('Fields shown on summary pages.', summary.getDescription()); System.assertEquals(summary.getDescription(), summary.description); System.assertEquals(Account.SObjectType, summary.getSObjectType()); System.assertEquals(summary.getSObjectType(), summary.sObjectType); List<Schema.FieldSetMember> members = summary.getFields(); System.assertEquals(members.size(), summary.fields.size()); System.assertEquals(2, members.size()); Schema.FieldSetMember nameMember = members.get(0); System.assert(nameMember.equals(nameMember)); System.assert(!nameMember.equals(null)); System.assert(nameMember.hashCode() != 0); System.assert(nameMember.toString().contains('Name')); System.assertEquals('Name', nameMember.getFieldPath()); System.assertEquals(nameMember.getFieldPath(), nameMember.fieldPath); System.assertEquals('Account Name', nameMember.getLabel()); System.assertEquals(nameMember.getLabel(), nameMember.label); System.assert(nameMember.getRequired()); System.assertEquals(nameMember.getRequired(), nameMember.required); System.assert(nameMember.getDBRequired()); System.assertEquals(nameMember.getDBRequired(), nameMember.dbRequired); System.assertEquals(Schema.DisplayType.STRING, nameMember.getType()); System.assertEquals(nameMember.getType(), nameMember.type); System.assertEquals('Name', nameMember.getSObjectField().getDescribe().getLocalName()); System.assertEquals(nameMember.getSObjectField(), nameMember.sObjectField); Schema.FieldSetMember ratingMember = members.get(1); System.assertEquals('Rating', ratingMember.getFieldPath()); System.assertEquals(ratingMember.getFieldPath(), ratingMember.fieldPath); System.assert(ratingMember.getLabel().endsWith('Rating')); System.assertEquals(ratingMember.getLabel(), ratingMember.label); System.assert(!ratingMember.getRequired()); System.assertEquals(ratingMember.getRequired(), ratingMember.required); System.assert(!ratingMember.getDBRequired()); System.assertEquals(ratingMember.getDBRequired(), ratingMember.dbRequired); System.assertEquals(Schema.DisplayType.PICKLIST, ratingMember.getType()); System.assertEquals(ratingMember.getType(), ratingMember.type); System.assert(ratingMember.getSObjectField().getDescribe().getLocalName().endsWith('Rating')); System.assertEquals(ratingMember.getSObjectField(), ratingMember.sObjectField); } }",
+      "path": "force-app/main/default/classes/SchemaDescribeFieldSetsFixtureTest.cls"
+    }
+  ],
+  "notes": "Hosted API 67 field-set witness using exact field paths and labels plus a stable local-name suffix across field-set projections."
 }

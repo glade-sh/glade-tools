@@ -1,55 +1,148 @@
 {
-  "name": "current-base-local-runtime-required-Database-003",
   "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.MergeResult",
+      "symbol": "Database.MergeResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.MergeResult.MergeResult()",
+      "symbol": "Database.MergeResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.MergeResult.errors",
+      "symbol": "Database.MergeResult.errors"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.NestedSaveResult",
+      "symbol": "Database.NestedSaveResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.NestedSaveResult.NestedSaveResult()",
+      "symbol": "Database.NestedSaveResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.NestedSaveResult.equals(Object)",
+      "symbol": "Database.NestedSaveResult.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.NestedSaveResult.hashCode()",
+      "symbol": "Database.NestedSaveResult.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.NestedSaveResult.relationshipsaveresults",
+      "symbol": "Database.NestedSaveResult.relationshipsaveresults"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.NestedSaveResult.toString()",
+      "symbol": "Database.NestedSaveResult.toString"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.PaginationCursor",
+      "symbol": "Database.PaginationCursor"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.PaginationCursor.PaginationCursor()",
+      "symbol": "Database.PaginationCursor"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.PaginationCursor.clone()",
+      "symbol": "Database.PaginationCursor.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.RelationshipSaveResult",
+      "symbol": "Database.RelationshipSaveResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.RelationshipSaveResult.RelationshipSaveResult()",
+      "symbol": "Database.RelationshipSaveResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.RelationshipSaveResult.equals(Object)",
+      "symbol": "Database.RelationshipSaveResult.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.RelationshipSaveResult.hashCode()",
+      "symbol": "Database.RelationshipSaveResult.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.RelationshipSaveResult.relationshipname",
+      "symbol": "Database.RelationshipSaveResult.relationshipname"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.RelationshipSaveResult.saveresults",
+      "symbol": "Database.RelationshipSaveResult.saveresults"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.RelationshipSaveResult.toString()",
+      "symbol": "Database.RelationshipSaveResult.toString"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.SaveResult.SaveResult()",
+      "symbol": "Database.SaveResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.Savepoint",
+      "symbol": "Database.Savepoint"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.UndeleteResult.UndeleteResult()",
+      "symbol": "Database.UndeleteResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.UnitOfWork.clone()",
+      "symbol": "Database.UnitOfWork.clone"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
   "mode": "local-runtime",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "The fixture exercises locally constructible result and unit-of-work objects; it is not a valid Salesforce compile/probe oracle.",
+  "name": "current-base-local-runtime-required-Database-003",
   "notes": "Current-base lane current-base-local-runtime-required-Database-003: deterministic local result DTO, cursor, savepoint shape, and unit-of-work clone contracts for the missing surface rows.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-003",
     "selectedRowCount": 23
   },
-  "command": {
-    "kind": "test"
-  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture exercises locally constructible result and unit-of-work objects; it is not a valid Salesforce compile/probe oracle.",
   "source": [
     {
-      "path": "force-app/main/classes/CurrentBaseLocalRuntimeRequiredDatabase003Test.cls",
-      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabase003Test { @isTest static void missingDatabaseThreeContracts() { Database.MergeResult mergeResult = new Database.MergeResult(); mergeResult.errors = new List<Database.Error>(); System.assertEquals(0, mergeResult.errors.size()); Database.NestedSaveResult nested = new Database.NestedSaveResult(); nested.relationshipsaveresults = new List<Database.RelationshipSaveResult>(); System.assert(nested.equals(nested)); System.assertEquals(nested.hashCode(), nested.hashCode()); System.assertNotEquals(null, nested.toString()); Database.PaginationCursor pagination = new Database.PaginationCursor(); System.assertNotEquals(null, pagination); System.assertNotEquals(null, pagination.clone()); Database.RelationshipSaveResult relationship = new Database.RelationshipSaveResult(); relationship.relationshipname = 'Contacts'; relationship.saveresults = new List<Database.NestedSaveResult>{nested}; System.assertEquals('Contacts', relationship.relationshipname); System.assertEquals(1, relationship.saveresults.size()); System.assert(relationship.equals(relationship)); System.assertEquals(relationship.hashCode(), relationship.hashCode()); System.assertNotEquals(null, relationship.toString()); Database.SaveResult saveResult = new Database.SaveResult(); System.assertNotEquals(null, saveResult); Object savepoint = (Database.Savepoint)null; System.assertEquals(null, savepoint); Database.UndeleteResult undeleteResult = new Database.UndeleteResult(); System.assertNotEquals(null, undeleteResult); Database.UnitOfWork work = new Database.UnitOfWork(); System.assertNotEquals(null, work.clone()); } }"
+      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabase003Test { @isTest static void missingDatabaseThreeContracts() { Database.MergeResult mergeResult = new Database.MergeResult(); mergeResult.errors = new List<Database.Error>(); System.assertEquals(0, mergeResult.errors.size()); Database.NestedSaveResult nested = new Database.NestedSaveResult(); nested.relationshipsaveresults = new List<Database.RelationshipSaveResult>(); System.assert(nested.equals(nested)); System.assertEquals(nested.hashCode(), nested.hashCode()); System.assertNotEquals(null, nested.toString()); Database.PaginationCursor pagination = new Database.PaginationCursor(); System.assertNotEquals(null, pagination); System.assertNotEquals(null, pagination.clone()); Database.RelationshipSaveResult relationship = new Database.RelationshipSaveResult(); relationship.relationshipname = 'Contacts'; relationship.saveresults = new List<Database.NestedSaveResult>{nested}; System.assertEquals('Contacts', relationship.relationshipname); System.assertEquals(1, relationship.saveresults.size()); System.assert(relationship.equals(relationship)); System.assertEquals(relationship.hashCode(), relationship.hashCode()); System.assertNotEquals(null, relationship.toString()); Database.SaveResult saveResult = new Database.SaveResult(); System.assertNotEquals(null, saveResult); Object savepoint = (Database.Savepoint)null; System.assertEquals(null, savepoint); Database.UndeleteResult undeleteResult = new Database.UndeleteResult(); System.assertNotEquals(null, undeleteResult); Database.UnitOfWork work = new Database.UnitOfWork(); System.assertNotEquals(null, work.clone()); } }",
+      "path": "force-app/main/classes/CurrentBaseLocalRuntimeRequiredDatabase003Test.cls"
     }
-  ],
-  "evidence": [
-    { "surfaceId": "apex:Database.MergeResult", "symbol": "Database.MergeResult", "kind": "test" },
-    { "surfaceId": "apex:Database.MergeResult.MergeResult()", "symbol": "Database.MergeResult", "kind": "test" },
-    { "surfaceId": "apex:Database.MergeResult.errors", "symbol": "Database.MergeResult.errors", "kind": "test" },
-    { "surfaceId": "apex:Database.NestedSaveResult", "symbol": "Database.NestedSaveResult", "kind": "test" },
-    { "surfaceId": "apex:Database.NestedSaveResult.NestedSaveResult()", "symbol": "Database.NestedSaveResult", "kind": "test" },
-    { "surfaceId": "apex:Database.NestedSaveResult.equals(Object)", "symbol": "Database.NestedSaveResult.equals", "kind": "test" },
-    { "surfaceId": "apex:Database.NestedSaveResult.hashCode()", "symbol": "Database.NestedSaveResult.hashCode", "kind": "test" },
-    { "surfaceId": "apex:Database.NestedSaveResult.relationshipsaveresults", "symbol": "Database.NestedSaveResult.relationshipsaveresults", "kind": "test" },
-    { "surfaceId": "apex:Database.NestedSaveResult.toString()", "symbol": "Database.NestedSaveResult.toString", "kind": "test" },
-    { "surfaceId": "apex:Database.PaginationCursor", "symbol": "Database.PaginationCursor", "kind": "test" },
-    { "surfaceId": "apex:Database.PaginationCursor.PaginationCursor()", "symbol": "Database.PaginationCursor", "kind": "test" },
-    { "surfaceId": "apex:Database.PaginationCursor.clone()", "symbol": "Database.PaginationCursor.clone", "kind": "test" },
-    { "surfaceId": "apex:Database.RelationshipSaveResult", "symbol": "Database.RelationshipSaveResult", "kind": "test" },
-    { "surfaceId": "apex:Database.RelationshipSaveResult.RelationshipSaveResult()", "symbol": "Database.RelationshipSaveResult", "kind": "test" },
-    { "surfaceId": "apex:Database.RelationshipSaveResult.equals(Object)", "symbol": "Database.RelationshipSaveResult.equals", "kind": "test" },
-    { "surfaceId": "apex:Database.RelationshipSaveResult.hashCode()", "symbol": "Database.RelationshipSaveResult.hashCode", "kind": "test" },
-    { "surfaceId": "apex:Database.RelationshipSaveResult.relationshipname", "symbol": "Database.RelationshipSaveResult.relationshipname", "kind": "test" },
-    { "surfaceId": "apex:Database.RelationshipSaveResult.saveresults", "symbol": "Database.RelationshipSaveResult.saveresults", "kind": "test" },
-    { "surfaceId": "apex:Database.RelationshipSaveResult.toString()", "symbol": "Database.RelationshipSaveResult.toString", "kind": "test" },
-    { "surfaceId": "apex:Database.SaveResult.SaveResult()", "symbol": "Database.SaveResult", "kind": "test" },
-    { "surfaceId": "apex:Database.Savepoint", "symbol": "Database.Savepoint", "kind": "test" },
-    { "surfaceId": "apex:Database.UndeleteResult.UndeleteResult()", "symbol": "Database.UndeleteResult", "kind": "test" },
-    { "surfaceId": "apex:Database.UnitOfWork.clone()", "symbol": "Database.UnitOfWork.clone", "kind": "test" }
-  ],
-  "expected": {
-    "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
-      "failed": 0,
-      "errors": 0
-    }
-  }
+  ]
 }

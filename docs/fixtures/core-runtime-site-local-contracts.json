@@ -1,251 +1,254 @@
 {
-  "name": "core-runtime-site-local-contracts",
+  "command": {
+    "args": [
+      "System.assertEquals(null, Site.getSiteId());\nSystem.assertEquals('', Site.getBaseUrl());\nSystem.assertEquals('', Site.getBaseRequestUrl());\nSystem.assertEquals('', Site.getBaseSecureUrl());\nSystem.assertEquals('', Site.getBaseCustomUrl());\nSystem.assertEquals('', Site.getBaseInsecureUrl());\nSystem.assertEquals(null, Site.getDomain());\nSystem.assertEquals(null, Site.getName());\nSystem.assertEquals('/site/SiteTemplate.apexp', Site.getTemplate().getUrl());\nSystem.assertEquals(null, Site.getSiteType());\nSystem.assertEquals(null, Site.getSiteTypeLabel());\nSystem.assertEquals('', Site.getPathPrefix());\nSystem.assertEquals(null, Site.getAdminEmail());\nSystem.assertEquals(null, Site.getAdminId());\nSystem.assertEquals(null, Site.getMasterLabel());\nSystem.assertEquals(null, Site.getAnalyticsTrackingCode());\nSystem.assertEquals('', Site.getExperienceId());\nSystem.assertEquals(null, Site.getOriginalUrl());\nSystem.assertEquals('Your password must be at least 8 characters long.\\nYour password must include letters and numbers', Site.getPasswordPolicyStatement());\nSystem.assertEquals(false, Site.isPasswordExpired());\nSystem.assertEquals(false, Site.isRegistrationEnabled());\nSystem.assertEquals(false, Site.isLoginEnabled());\nSystem.assertEquals(true, Site.isValidUsername('trail@example.test'));\nSystem.assertEquals(false, Site.isValidUsername('not-an-email'));\nSite.setExperienceId('0DB000000000001');\nSystem.assertEquals('0DB000000000001', Site.getExperienceId());\nSystem.assertEquals('', Site.getErrorMessage());\nSystem.assertEquals('', Site.getErrorDescription());\nSystem.assertEquals(false, Site.forgotPassword('trail@example.test'));\nSystem.assertEquals(false, Site.forgotPassword('trail@example.test', 'ResetTemplate'));\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret').getUrl());\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret', 'oldSecret').getUrl());\nUser externalUser = new User();\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret', 'Nick'));\nSystem.assertEquals('/next', Site.login('trail@example.test', 'secret', '/next').getUrl());\nSite.validatePassword(externalUser, 'secret', 'secret');\nSystem.assertEquals('/passwordless', Site.passwordlessLogin(UserInfo.getUserId(), new List<Auth.VerificationMethod>(), '/passwordless').getUrl());\nSite.setPortalUserAsAuthProvider(externalUser, '001000000000001');\n"
+    ],
+    "kind": "exec"
+  },
   "evidence": [
     {
+      "kind": "exec",
+      "notes": "Local Site password flow returns a deterministic PageReference for supported overloads.",
       "surfaceId": "apex:System.Site.changePassword(String,String)",
-      "symbol": "Site.changePassword",
-      "kind": "exec",
-      "notes": "Local Site password flow returns a deterministic PageReference for supported overloads."
+      "symbol": "Site.changePassword"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site password flow returns a deterministic PageReference for supported overloads.",
       "surfaceId": "apex:System.Site.changePassword(String,String,String)",
-      "symbol": "Site.changePassword",
-      "kind": "exec",
-      "notes": "Local Site password flow returns a deterministic PageReference for supported overloads."
+      "symbol": "Site.changePassword"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site user creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createExternalUser(Object,String)",
-      "symbol": "Site.createExternalUser",
-      "kind": "exec",
-      "notes": "Local Site user creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createExternalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site user creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createExternalUser(Object,String,String)",
-      "symbol": "Site.createExternalUser",
-      "kind": "exec",
-      "notes": "Local Site user creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createExternalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site user creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createExternalUser(Object,String,String,Boolean)",
-      "symbol": "Site.createExternalUser",
-      "kind": "exec",
-      "notes": "Local Site user creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createExternalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site person-account portal creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createPersonAccountPortalUser(Object,String,String)",
-      "symbol": "Site.createPersonAccountPortalUser",
-      "kind": "exec",
-      "notes": "Local Site person-account portal creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createPersonAccountPortalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site person-account portal creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createPersonAccountPortalUser(Object,String,String,String)",
-      "symbol": "Site.createPersonAccountPortalUser",
-      "kind": "exec",
-      "notes": "Local Site person-account portal creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createPersonAccountPortalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site portal creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createPortalUser(Object,String)",
-      "symbol": "Site.createPortalUser",
-      "kind": "exec",
-      "notes": "Local Site portal creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createPortalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site portal creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createPortalUser(Object,String,String)",
-      "symbol": "Site.createPortalUser",
-      "kind": "exec",
-      "notes": "Local Site portal creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createPortalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site portal creation returns a deterministic user Id outside test context.",
       "surfaceId": "apex:System.Site.createPortalUser(Object,String,String,Boolean)",
-      "symbol": "Site.createPortalUser",
-      "kind": "exec",
-      "notes": "Local Site portal creation returns a deterministic user Id outside test context."
+      "symbol": "Site.createPortalUser"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site password reset accepts supported overloads without sending email.",
       "surfaceId": "apex:System.Site.forgotPassword(String)",
-      "symbol": "Site.forgotPassword",
-      "kind": "exec",
-      "notes": "Local Site password reset accepts supported overloads without sending email."
+      "symbol": "Site.forgotPassword"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site password reset accepts supported overloads without sending email.",
       "surfaceId": "apex:System.Site.forgotPassword(String,String)",
-      "symbol": "Site.forgotPassword",
-      "kind": "exec",
-      "notes": "Local Site password reset accepts supported overloads without sending email."
+      "symbol": "Site.forgotPassword"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getAdminEmail()",
-      "symbol": "Site.getAdminEmail",
-      "kind": "exec"
+      "symbol": "Site.getAdminEmail"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getAdminId()",
-      "symbol": "Site.getAdminId",
-      "kind": "exec"
+      "symbol": "Site.getAdminId"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site request-only analytics state is empty.",
       "surfaceId": "apex:System.Site.getAnalyticsTrackingCode()",
-      "symbol": "Site.getAnalyticsTrackingCode",
-      "kind": "exec",
-      "notes": "Local Site request-only analytics state is empty."
+      "symbol": "Site.getAnalyticsTrackingCode"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getBaseCustomUrl()",
-      "symbol": "Site.getBaseCustomUrl",
-      "kind": "exec"
+      "symbol": "Site.getBaseCustomUrl"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site has no insecure request URL.",
       "surfaceId": "apex:System.Site.getBaseInsecureUrl()",
-      "symbol": "Site.getBaseInsecureUrl",
-      "kind": "exec",
-      "notes": "Local Site has no insecure request URL."
+      "symbol": "Site.getBaseInsecureUrl"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getBaseRequestUrl()",
-      "symbol": "Site.getBaseRequestUrl",
-      "kind": "exec"
+      "symbol": "Site.getBaseRequestUrl"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getBaseSecureUrl()",
-      "symbol": "Site.getBaseSecureUrl",
-      "kind": "exec"
+      "symbol": "Site.getBaseSecureUrl"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getBaseUrl()",
-      "symbol": "Site.getBaseUrl",
-      "kind": "exec"
+      "symbol": "Site.getBaseUrl"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getDomain()",
-      "symbol": "Site.getDomain",
-      "kind": "exec"
+      "symbol": "Site.getDomain"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getErrorDescription()",
-      "symbol": "Site.getErrorDescription",
-      "kind": "exec"
+      "symbol": "Site.getErrorDescription"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getErrorMessage()",
-      "symbol": "Site.getErrorMessage",
-      "kind": "exec"
+      "symbol": "Site.getErrorMessage"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site stores no dynamic login experience context.",
       "surfaceId": "apex:System.Site.getExperienceId()",
-      "symbol": "Site.getExperienceId",
-      "kind": "exec",
-      "notes": "Local Site stores no dynamic login experience context."
+      "symbol": "Site.getExperienceId"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getMasterLabel()",
-      "symbol": "Site.getMasterLabel",
-      "kind": "exec"
+      "symbol": "Site.getMasterLabel"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getName()",
-      "symbol": "Site.getName",
-      "kind": "exec"
+      "symbol": "Site.getName"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site has no current request original URL.",
       "surfaceId": "apex:System.Site.getOriginalUrl()",
-      "symbol": "Site.getOriginalUrl",
-      "kind": "exec",
-      "notes": "Local Site has no current request original URL."
+      "symbol": "Site.getOriginalUrl"
     },
     {
+      "kind": "exec",
+      "notes": "Local Site does not model org password-policy copy.",
       "surfaceId": "apex:System.Site.getPasswordPolicyStatement()",
-      "symbol": "Site.getPasswordPolicyStatement",
-      "kind": "exec",
-      "notes": "Local Site does not model org password-policy copy."
+      "symbol": "Site.getPasswordPolicyStatement"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.getPathPrefix()",
-      "symbol": "Site.getPathPrefix",
-      "kind": "exec"
+      "symbol": "Site.getPathPrefix"
     },
     {
-      "surfaceId": "apex:System.Site.getSiteId()",
-      "symbol": "Site.getSiteId",
-      "kind": "exec"
-    },
-    {
-      "surfaceId": "apex:System.Site.getSiteType()",
-      "symbol": "Site.getSiteType",
-      "kind": "exec"
-    },
-    {
-      "surfaceId": "apex:System.Site.getSiteTypeLabel()",
-      "symbol": "Site.getSiteTypeLabel",
-      "kind": "exec"
-    },
-    {
-      "surfaceId": "apex:System.Site.getTemplate()",
-      "symbol": "Site.getTemplate",
-      "kind": "exec"
-    },
-    {
-      "surfaceId": "apex:System.Site.isLoginEnabled()",
-      "symbol": "Site.isLoginEnabled",
-      "kind": "exec"
-    },
-    {
-      "surfaceId": "apex:System.Site.isPasswordExpired()",
-      "symbol": "Site.isPasswordExpired",
       "kind": "exec",
-      "notes": "Local Site has no password-expiration request context."
+      "surfaceId": "apex:System.Site.getSiteId()",
+      "symbol": "Site.getSiteId"
     },
     {
+      "kind": "exec",
+      "surfaceId": "apex:System.Site.getSiteType()",
+      "symbol": "Site.getSiteType"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Site.getSiteTypeLabel()",
+      "symbol": "Site.getSiteTypeLabel"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Site.getTemplate()",
+      "symbol": "Site.getTemplate"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Site.isLoginEnabled()",
+      "symbol": "Site.isLoginEnabled"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local Site has no password-expiration request context.",
+      "surfaceId": "apex:System.Site.isPasswordExpired()",
+      "symbol": "Site.isPasswordExpired"
+    },
+    {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.isRegistrationEnabled()",
-      "symbol": "Site.isRegistrationEnabled",
-      "kind": "exec"
+      "symbol": "Site.isRegistrationEnabled"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.isValidUsername(String)",
-      "symbol": "Site.isValidUsername",
-      "kind": "exec"
+      "symbol": "Site.isValidUsername"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.login(String,String,String)",
-      "symbol": "Site.login",
-      "kind": "exec"
+      "symbol": "Site.login"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.passwordlessLogin(Id,List<Auth.VerificationMethod>,String)",
-      "symbol": "Site.passwordlessLogin",
-      "kind": "exec"
+      "symbol": "Site.passwordlessLogin"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.setExperienceId(String)",
-      "symbol": "Site.setExperienceId",
-      "kind": "exec"
+      "symbol": "Site.setExperienceId"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.setPortalUserAsAuthProvider(Object,String)",
-      "symbol": "Site.setPortalUserAsAuthProvider",
-      "kind": "exec"
+      "symbol": "Site.setPortalUserAsAuthProvider"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.Site.validatePassword(Object,String,String)",
-      "symbol": "Site.validatePassword",
-      "kind": "exec"
+      "symbol": "Site.validatePassword"
     }
   ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "System.assertEquals('local-site', Site.getSiteId());\nSystem.assertEquals('https://local.glade.example', Site.getBaseUrl());\nSystem.assertEquals('', Site.getBaseRequestUrl());\nSystem.assertEquals('', Site.getBaseSecureUrl());\nSystem.assertEquals('', Site.getBaseCustomUrl());\nSystem.assertEquals('', Site.getBaseInsecureUrl());\nSystem.assertEquals('https://local.glade.example', Site.getCurrentSiteUrl());\nSystem.assertEquals('', Site.getCustomWebAddress());\nSystem.assertEquals(null, Site.getDomain());\nSystem.assertEquals(null, Site.getName());\nSystem.assertEquals('/site/SiteTemplate.apexp', Site.getTemplate().getUrl());\nSystem.assertEquals(null, Site.getSiteType());\nSystem.assertEquals(null, Site.getSiteTypeLabel());\nSystem.assertEquals('', Site.getPathPrefix());\nSystem.assertEquals('', Site.getPrefix());\nSystem.assertEquals('system@example.invalid', Site.getAdminEmail());\nSystem.assertEquals('005-local-user', Site.getAdminId());\nSystem.assertEquals('Local Site', Site.getMasterLabel());\nSystem.assertEquals('', Site.getAnalyticsTrackingCode());\nSystem.assertEquals('', Site.getExperienceId());\nSystem.assertEquals('', Site.getOriginalUrl());\nSystem.assertEquals('', Site.getPasswordPolicyStatement());\nSystem.assertEquals(false, Site.isPasswordExpired());\nSystem.assertEquals(true, Site.isRegistrationEnabled());\nSystem.assertEquals(true, Site.isLoginEnabled());\nSystem.assertEquals(true, Site.isValidUsername('trail@example.test'));\nSystem.assertEquals(false, Site.isValidUsername('not-an-email'));\nSite.setExperienceId('0DB000000000001');\nSystem.assertEquals('0DB000000000001', Site.getExperienceId());\nSystem.assertEquals('', Site.getErrorMessage());\nSystem.assertEquals('', Site.getErrorDescription());\nSystem.assertEquals(true, Site.forgotPassword('trail@example.test'));\nSystem.assertEquals(true, Site.forgotPassword('trail@example.test', 'ResetTemplate'));\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret').getUrl());\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret', 'oldSecret').getUrl());\nUser externalUser = new User();\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret', 'Nick'));\nSystem.assertEquals('/next', Site.login('trail@example.test', 'secret', '/next').getUrl());\nSite.validatePassword(externalUser, 'secret', 'secret');\nSystem.assertEquals('/passwordless', Site.passwordlessLogin(UserInfo.getUserId(), new List<Auth.VerificationMethod>(), '/passwordless').getUrl());\nSite.setPortalUserAsAuthProvider(externalUser, '001000000000001');\n"
-    }
-  ],
-  "command": {
-    "kind": "exec",
-    "args": [
-      "System.assertEquals('local-site', Site.getSiteId());\nSystem.assertEquals('https://local.glade.example', Site.getBaseUrl());\nSystem.assertEquals('', Site.getBaseRequestUrl());\nSystem.assertEquals('', Site.getBaseSecureUrl());\nSystem.assertEquals('', Site.getBaseCustomUrl());\nSystem.assertEquals('', Site.getBaseInsecureUrl());\nSystem.assertEquals('https://local.glade.example', Site.getCurrentSiteUrl());\nSystem.assertEquals('', Site.getCustomWebAddress());\nSystem.assertEquals(null, Site.getDomain());\nSystem.assertEquals(null, Site.getName());\nSystem.assertEquals('/site/SiteTemplate.apexp', Site.getTemplate().getUrl());\nSystem.assertEquals(null, Site.getSiteType());\nSystem.assertEquals(null, Site.getSiteTypeLabel());\nSystem.assertEquals('', Site.getPathPrefix());\nSystem.assertEquals('', Site.getPrefix());\nSystem.assertEquals('system@example.invalid', Site.getAdminEmail());\nSystem.assertEquals('005-local-user', Site.getAdminId());\nSystem.assertEquals('Local Site', Site.getMasterLabel());\nSystem.assertEquals('', Site.getAnalyticsTrackingCode());\nSystem.assertEquals('', Site.getExperienceId());\nSystem.assertEquals('', Site.getOriginalUrl());\nSystem.assertEquals('', Site.getPasswordPolicyStatement());\nSystem.assertEquals(false, Site.isPasswordExpired());\nSystem.assertEquals(true, Site.isRegistrationEnabled());\nSystem.assertEquals(true, Site.isLoginEnabled());\nSystem.assertEquals(true, Site.isValidUsername('trail@example.test'));\nSystem.assertEquals(false, Site.isValidUsername('not-an-email'));\nSite.setExperienceId('0DB000000000001');\nSystem.assertEquals('0DB000000000001', Site.getExperienceId());\nSystem.assertEquals('', Site.getErrorMessage());\nSystem.assertEquals('', Site.getErrorDescription());\nSystem.assertEquals(true, Site.forgotPassword('trail@example.test'));\nSystem.assertEquals(true, Site.forgotPassword('trail@example.test', 'ResetTemplate'));\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret').getUrl());\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret', 'oldSecret').getUrl());\nUser externalUser = new User();\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret', 'Nick'));\nSystem.assertEquals('/next', Site.login('trail@example.test', 'secret', '/next').getUrl());\nSite.validatePassword(externalUser, 'secret', 'secret');\nSystem.assertEquals('/passwordless', Site.passwordlessLogin(UserInfo.getUserId(), new List<Auth.VerificationMethod>(), '/passwordless').getUrl());\nSite.setPortalUserAsAuthProvider(externalUser, '001000000000001');\n"
-    ]
-  },
   "expected": {
     "result": {
       "debug": null,
       "ok": true
     }
-  }
+  },
+  "name": "core-runtime-site-local-contracts",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "Local Site contracts depend on Glade test-context state and have no hosted Site record in the API 67 scratch org.",
+  "source": [
+    {
+      "content": "System.assertEquals(null, Site.getSiteId());\nSystem.assertEquals('', Site.getBaseUrl());\nSystem.assertEquals('', Site.getBaseRequestUrl());\nSystem.assertEquals('', Site.getBaseSecureUrl());\nSystem.assertEquals('', Site.getBaseCustomUrl());\nSystem.assertEquals('', Site.getBaseInsecureUrl());\nSystem.assertEquals(null, Site.getDomain());\nSystem.assertEquals(null, Site.getName());\nSystem.assertEquals('/site/SiteTemplate.apexp', Site.getTemplate().getUrl());\nSystem.assertEquals(null, Site.getSiteType());\nSystem.assertEquals(null, Site.getSiteTypeLabel());\nSystem.assertEquals('', Site.getPathPrefix());\nSystem.assertEquals(null, Site.getAdminEmail());\nSystem.assertEquals(null, Site.getAdminId());\nSystem.assertEquals(null, Site.getMasterLabel());\nSystem.assertEquals(null, Site.getAnalyticsTrackingCode());\nSystem.assertEquals('', Site.getExperienceId());\nSystem.assertEquals(null, Site.getOriginalUrl());\nSystem.assertEquals('Your password must be at least 8 characters long.\\nYour password must include letters and numbers', Site.getPasswordPolicyStatement());\nSystem.assertEquals(false, Site.isPasswordExpired());\nSystem.assertEquals(false, Site.isRegistrationEnabled());\nSystem.assertEquals(false, Site.isLoginEnabled());\nSystem.assertEquals(true, Site.isValidUsername('trail@example.test'));\nSystem.assertEquals(false, Site.isValidUsername('not-an-email'));\nSite.setExperienceId('0DB000000000001');\nSystem.assertEquals('0DB000000000001', Site.getExperienceId());\nSystem.assertEquals('', Site.getErrorMessage());\nSystem.assertEquals('', Site.getErrorDescription());\nSystem.assertEquals(false, Site.forgotPassword('trail@example.test'));\nSystem.assertEquals(false, Site.forgotPassword('trail@example.test', 'ResetTemplate'));\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret').getUrl());\nSystem.assertEquals('/local', Site.changePassword('newSecret', 'newSecret', 'oldSecret').getUrl());\nUser externalUser = new User();\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createExternalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPortalUser(externalUser, '001000000000001', 'secret', false));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret'));\nSystem.assertEquals('005000000000E01', Site.createPersonAccountPortalUser(externalUser, '005000000000001', 'secret', 'Nick'));\nSystem.assertEquals('/next', Site.login('trail@example.test', 'secret', '/next').getUrl());\nSite.validatePassword(externalUser, 'secret', 'secret');\nSystem.assertEquals('/passwordless', Site.passwordlessLogin(UserInfo.getUserId(), new List<Auth.VerificationMethod>(), '/passwordless').getUrl());\nSite.setPortalUserAsAuthProvider(externalUser, '001000000000001');\n",
+      "path": "anonymous.apex"
+    }
+  ]
 }

@@ -1,0 +1,130 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "Cache.Org.getAvgValueSize();",
+      "Cache.Org.getMaxValueSize();",
+      "Cache.Org.isAvailable();",
+      "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getAvgValueSize();",
+      "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getMaxValueSize();",
+      "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.validateKeys(false, new List<String>{'a'});",
+      "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.validateKeys(false, new Set<String>{'a'});",
+      "Cache.Partition.getAvgValueSize();",
+      "Cache.Partition.getMaxValueSize();",
+      "Cache.Partition.validateKeys(false, new List<String>{'a'});",
+      "Cache.Partition.validateKeys(false, new Set<String>{'a'});",
+      "Cache.Session.getAvgValueSize();",
+      "Cache.Session.getMaxValueSize();",
+      "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getAvgValueSize();",
+      "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getMaxValueSize();",
+      "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.validateKeys(false, new List<String>{'a'});",
+      "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.validateKeys(false, new Set<String>{'a'});"
+    ],
+    "kind": "exec",
+    "perEvidence": true
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.getAvgValueSize()",
+      "symbol": "Cache.Org.getAvgValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.getMaxValueSize()",
+      "symbol": "Cache.Org.getMaxValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.isAvailable()",
+      "symbol": "Cache.Org.isAvailable"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.OrgPartition.getAvgValueSize()",
+      "symbol": "Cache.OrgPartition.getAvgValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.OrgPartition.getMaxValueSize()",
+      "symbol": "Cache.OrgPartition.getMaxValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.OrgPartition.validateKeys(Boolean,List<String>)",
+      "symbol": "Cache.OrgPartition.validateKeys"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.OrgPartition.validateKeys(Boolean,Set<String>)",
+      "symbol": "Cache.OrgPartition.validateKeys"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Partition.getAvgValueSize()",
+      "symbol": "Cache.Partition.getAvgValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Partition.getMaxValueSize()",
+      "symbol": "Cache.Partition.getMaxValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Partition.validateKeys(Boolean,List<String>)",
+      "symbol": "Cache.Partition.validateKeys"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Partition.validateKeys(Boolean,Set<String>)",
+      "symbol": "Cache.Partition.validateKeys"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.getAvgValueSize()",
+      "symbol": "Cache.Session.getAvgValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.getMaxValueSize()",
+      "symbol": "Cache.Session.getMaxValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.SessionPartition.getAvgValueSize()",
+      "symbol": "Cache.SessionPartition.getAvgValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.SessionPartition.getMaxValueSize()",
+      "symbol": "Cache.SessionPartition.getMaxValueSize"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.SessionPartition.validateKeys(Boolean,List<String>)",
+      "symbol": "Cache.SessionPartition.validateKeys"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.SessionPartition.validateKeys(Boolean,Set<String>)",
+      "symbol": "Cache.SessionPartition.validateKeys"
+    }
+  ],
+  "expected": {
+    "error": {
+      "message": "GLADESEMA028",
+      "type": "Error"
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-cache-negative-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 removed these Cache value-size, availability, and static validateKeys members; the fixture preserves the negative contract locally without claiming hosted execution.",
+  "source": [
+    {
+      "content": "Cache.Org.getAvgValueSize(); Cache.Org.getMaxValueSize(); Cache.Org.isAvailable(); Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getAvgValueSize(); orgPartition.getMaxValueSize(); orgPartition.validateKeys(false, new List<String>{'a'}); orgPartition.validateKeys(false, new Set<String>{'a'}); Cache.Partition.validateKeys(false, new List<String>{'a'}); Cache.Partition.validateKeys(false, new Set<String>{'a'}); Cache.Session.getAvgValueSize(); Cache.Session.getMaxValueSize(); Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getAvgValueSize(); sessionPartition.getMaxValueSize(); sessionPartition.validateKeys(false, new List<String>{'a'}); sessionPartition.validateKeys(false, new Set<String>{'a'});",
+      "path": "anonymous.apex"
+    }
+  ]
+}

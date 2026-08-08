@@ -1,5 +1,7 @@
 {
   "name": "current-base-system-exception-constructor-family-api67",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture notes explicitly state compile-shape only; no runtime exception construction is claimed.",
   "apiVersion": "67.0",
   "mode": "compile-shape",
   "notes": "Wave26 current-base System lane: 24 uncovered queue rows for six System exception constructor families. Each type already has local accessor evidence in core-runtime-exception-more-family-accessors.json; this fixture proves the four public constructors ((),(Exception),(String),(String,Exception)) resolve through sema in the pinned candidate. Compile-shape only: no runtime construction claim is made.",

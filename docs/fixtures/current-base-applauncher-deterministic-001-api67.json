@@ -1,271 +1,272 @@
 {
-  "name": "current-base-applauncher-deterministic-001-api67",
   "apiVersion": "67.0",
-  "mode": "deterministic-mock",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "applauncher is a Salesforce-internal Apex namespace; the Salesforce compile oracle rejects Apex references to applauncher.* types, so this fixture preserves local deterministic-mock evidence without claiming a Salesforce namespace contract.",
-  "notes": "Wave26 current-base lane current-base-deterministic-mock-required-applauncher-001: 47 uncovered apex:applauncher rows covered with local deterministic-mock evidence (construction, clone, AppMenu visibility/sort-order setters, and deterministic controller accessors). No hosted Experience Cloud authentication, registration, or commerce flow is exercised.",
-  "profile": {
-    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
-    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
-    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
-    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
-    "laneId": "current-base-deterministic-mock-required-applauncher-001",
-    "selectedRowCount": 47
-  },
   "command": {
     "kind": "test"
   },
-  "source": [
-    {
-      "path": "force-app/main/default/classes/CurrentBaseApplauncherDeterministic001Test.cls",
-      "content": "@isTest private class CurrentBaseApplauncherDeterministic001Test {\n    @isTest static void applauncherDeterministic001Witness() {\n        applauncher.AccountSettingsController accountSettings = new applauncher.AccountSettingsController();\n        System.assertNotEquals(null, accountSettings);\n        System.assertNotEquals(null, accountSettings.clone());\n\n        applauncher.AppLauncherHelper appLauncherHelper = new applauncher.AppLauncherHelper();\n        System.assertNotEquals(null, appLauncherHelper);\n        System.assertNotEquals(null, appLauncherHelper.clone());\n\n        applauncher.AppLauncherSetupReordererController reorderer = new applauncher.AppLauncherSetupReordererController();\n        System.assertNotEquals(null, reorderer);\n        System.assertNotEquals(null, reorderer.clone());\n\n        applauncher.AppMenu appMenu = new applauncher.AppMenu();\n        System.assertNotEquals(null, appMenu);\n        System.assertNotEquals(null, appMenu.clone());\n        applauncher.AppMenu.setAppVisibility('001000000000001', true);\n        applauncher.AppMenu.setOrgSortOrder(new List<Id>{'001000000000001', '001000000000002'});\n        applauncher.AppMenu.setUserSortOrder(new List<Id>{'001000000000001', '001000000000002'});\n\n        applauncher.ChangePasswordController changePassword = new applauncher.ChangePasswordController();\n        System.assertNotEquals(null, changePassword);\n        System.assertNotEquals(null, changePassword.clone());\n\n        applauncher.CommerceStoreController commerceStore = new applauncher.CommerceStoreController();\n        System.assertNotEquals(null, commerceStore);\n        System.assertNotEquals(null, commerceStore.clone());\n        Map<String,Object> commerceContext = applauncher.CommerceStoreController.getCommerceContext();\n        System.assertEquals(0, commerceContext.size());\n\n        applauncher.CommunityLogoController communityLogo = new applauncher.CommunityLogoController();\n        System.assertNotEquals(null, communityLogo);\n        System.assertNotEquals(null, communityLogo.clone());\n        System.assertEquals(null, applauncher.CommunityLogoController.getCommunityName());\n        System.assertEquals(null, applauncher.CommunityLogoController.getLogoURL());\n\n        applauncher.EmployeeLoginLinkController employeeLoginLink = new applauncher.EmployeeLoginLinkController();\n        System.assertNotEquals(null, employeeLoginLink);\n        System.assertNotEquals(null, employeeLoginLink.clone());\n        System.assertEquals(null, applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl('/home'));\n        System.assertEquals(null, applauncher.EmployeeLoginLinkController.getIsAllowInternalUserLoginEnabled());\n\n        applauncher.ForgotPasswordController forgotPassword = new applauncher.ForgotPasswordController();\n        System.assertNotEquals(null, forgotPassword);\n        System.assertNotEquals(null, forgotPassword.clone());\n\n        applauncher.IdentityHeaderController identityHeader = new applauncher.IdentityHeaderController();\n        System.assertNotEquals(null, identityHeader);\n        System.assertNotEquals(null, identityHeader.clone());\n\n        applauncher.LoginFormController loginForm = new applauncher.LoginFormController();\n        System.assertNotEquals(null, loginForm);\n        System.assertNotEquals(null, loginForm.clone());\n\n        applauncher.SelfRegisterController selfRegister = new applauncher.SelfRegisterController();\n        System.assertNotEquals(null, selfRegister);\n        System.assertNotEquals(null, selfRegister.clone());\n\n        applauncher.SocialLoginController socialLogin = new applauncher.SocialLoginController();\n        System.assertNotEquals(null, socialLogin);\n        System.assertNotEquals(null, socialLogin.clone());\n    }\n}\n"
-    }
-  ],
   "evidence": [
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AccountSettingsController",
-      "symbol": "applauncher.AccountSettingsController",
-      "kind": "test"
+      "symbol": "applauncher.AccountSettingsController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AccountSettingsController.AccountSettingsController()",
-      "symbol": "applauncher.AccountSettingsController.AccountSettingsController()",
-      "kind": "test"
+      "symbol": "applauncher.AccountSettingsController.AccountSettingsController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AccountSettingsController.clone()",
-      "symbol": "applauncher.AccountSettingsController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.AccountSettingsController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppLauncherHelper",
-      "symbol": "applauncher.AppLauncherHelper",
-      "kind": "test"
+      "symbol": "applauncher.AppLauncherHelper"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppLauncherHelper.AppLauncherHelper()",
-      "symbol": "applauncher.AppLauncherHelper.AppLauncherHelper()",
-      "kind": "test"
+      "symbol": "applauncher.AppLauncherHelper.AppLauncherHelper()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppLauncherHelper.clone()",
-      "symbol": "applauncher.AppLauncherHelper.clone()",
-      "kind": "test"
+      "symbol": "applauncher.AppLauncherHelper.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppLauncherSetupReordererController",
-      "symbol": "applauncher.AppLauncherSetupReordererController",
-      "kind": "test"
+      "symbol": "applauncher.AppLauncherSetupReordererController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppLauncherSetupReordererController.AppLauncherSetupReordererController()",
-      "symbol": "applauncher.AppLauncherSetupReordererController.AppLauncherSetupReordererController()",
-      "kind": "test"
+      "symbol": "applauncher.AppLauncherSetupReordererController.AppLauncherSetupReordererController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppLauncherSetupReordererController.clone()",
-      "symbol": "applauncher.AppLauncherSetupReordererController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.AppLauncherSetupReordererController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppMenu",
-      "symbol": "applauncher.AppMenu",
-      "kind": "test"
+      "symbol": "applauncher.AppMenu"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppMenu.AppMenu()",
-      "symbol": "applauncher.AppMenu.AppMenu()",
-      "kind": "test"
+      "symbol": "applauncher.AppMenu.AppMenu()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppMenu.clone()",
-      "symbol": "applauncher.AppMenu.clone()",
-      "kind": "test"
+      "symbol": "applauncher.AppMenu.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppMenu.setAppVisibility(Id,Boolean)",
-      "symbol": "applauncher.AppMenu.setAppVisibility(Id,Boolean)",
-      "kind": "test"
+      "symbol": "applauncher.AppMenu.setAppVisibility(Id,Boolean)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppMenu.setOrgSortOrder(List<Id>)",
-      "symbol": "applauncher.AppMenu.setOrgSortOrder(List<Id>)",
-      "kind": "test"
+      "symbol": "applauncher.AppMenu.setOrgSortOrder(List<Id>)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.AppMenu.setUserSortOrder(List<Id>)",
-      "symbol": "applauncher.AppMenu.setUserSortOrder(List<Id>)",
-      "kind": "test"
+      "symbol": "applauncher.AppMenu.setUserSortOrder(List<Id>)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.ChangePasswordController",
-      "symbol": "applauncher.ChangePasswordController",
-      "kind": "test"
+      "symbol": "applauncher.ChangePasswordController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.ChangePasswordController.ChangePasswordController()",
-      "symbol": "applauncher.ChangePasswordController.ChangePasswordController()",
-      "kind": "test"
+      "symbol": "applauncher.ChangePasswordController.ChangePasswordController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.ChangePasswordController.clone()",
-      "symbol": "applauncher.ChangePasswordController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.ChangePasswordController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommerceStoreController",
-      "symbol": "applauncher.CommerceStoreController",
-      "kind": "test"
+      "symbol": "applauncher.CommerceStoreController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommerceStoreController.CommerceStoreController()",
-      "symbol": "applauncher.CommerceStoreController.CommerceStoreController()",
-      "kind": "test"
+      "symbol": "applauncher.CommerceStoreController.CommerceStoreController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommerceStoreController.clone()",
-      "symbol": "applauncher.CommerceStoreController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.CommerceStoreController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommerceStoreController.getCommerceContext()",
-      "symbol": "applauncher.CommerceStoreController.getCommerceContext()",
-      "kind": "test"
+      "symbol": "applauncher.CommerceStoreController.getCommerceContext()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommunityLogoController",
-      "symbol": "applauncher.CommunityLogoController",
-      "kind": "test"
+      "symbol": "applauncher.CommunityLogoController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommunityLogoController.CommunityLogoController()",
-      "symbol": "applauncher.CommunityLogoController.CommunityLogoController()",
-      "kind": "test"
+      "symbol": "applauncher.CommunityLogoController.CommunityLogoController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommunityLogoController.clone()",
-      "symbol": "applauncher.CommunityLogoController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.CommunityLogoController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommunityLogoController.getCommunityName()",
-      "symbol": "applauncher.CommunityLogoController.getCommunityName()",
-      "kind": "test"
+      "symbol": "applauncher.CommunityLogoController.getCommunityName()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.CommunityLogoController.getLogoURL()",
-      "symbol": "applauncher.CommunityLogoController.getLogoURL()",
-      "kind": "test"
+      "symbol": "applauncher.CommunityLogoController.getLogoURL()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.EmployeeLoginLinkController",
-      "symbol": "applauncher.EmployeeLoginLinkController",
-      "kind": "test"
+      "symbol": "applauncher.EmployeeLoginLinkController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.EmployeeLoginLinkController.EmployeeLoginLinkController()",
-      "symbol": "applauncher.EmployeeLoginLinkController.EmployeeLoginLinkController()",
-      "kind": "test"
+      "symbol": "applauncher.EmployeeLoginLinkController.EmployeeLoginLinkController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.EmployeeLoginLinkController.clone()",
-      "symbol": "applauncher.EmployeeLoginLinkController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.EmployeeLoginLinkController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl(String)",
-      "symbol": "applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl(String)",
-      "kind": "test"
+      "symbol": "applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.EmployeeLoginLinkController.getIsAllowInternalUserLoginEnabled()",
-      "symbol": "applauncher.EmployeeLoginLinkController.getIsAllowInternalUserLoginEnabled()",
-      "kind": "test"
+      "symbol": "applauncher.EmployeeLoginLinkController.getIsAllowInternalUserLoginEnabled()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.ForgotPasswordController",
-      "symbol": "applauncher.ForgotPasswordController",
-      "kind": "test"
+      "symbol": "applauncher.ForgotPasswordController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.ForgotPasswordController.ForgotPasswordController()",
-      "symbol": "applauncher.ForgotPasswordController.ForgotPasswordController()",
-      "kind": "test"
+      "symbol": "applauncher.ForgotPasswordController.ForgotPasswordController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.ForgotPasswordController.clone()",
-      "symbol": "applauncher.ForgotPasswordController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.ForgotPasswordController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.IdentityHeaderController",
-      "symbol": "applauncher.IdentityHeaderController",
-      "kind": "test"
+      "symbol": "applauncher.IdentityHeaderController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.IdentityHeaderController.IdentityHeaderController()",
-      "symbol": "applauncher.IdentityHeaderController.IdentityHeaderController()",
-      "kind": "test"
+      "symbol": "applauncher.IdentityHeaderController.IdentityHeaderController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.IdentityHeaderController.clone()",
-      "symbol": "applauncher.IdentityHeaderController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.IdentityHeaderController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.LoginFormController",
-      "symbol": "applauncher.LoginFormController",
-      "kind": "test"
+      "symbol": "applauncher.LoginFormController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.LoginFormController.LoginFormController()",
-      "symbol": "applauncher.LoginFormController.LoginFormController()",
-      "kind": "test"
+      "symbol": "applauncher.LoginFormController.LoginFormController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.LoginFormController.clone()",
-      "symbol": "applauncher.LoginFormController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.LoginFormController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.SelfRegisterController",
-      "symbol": "applauncher.SelfRegisterController",
-      "kind": "test"
+      "symbol": "applauncher.SelfRegisterController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.SelfRegisterController.SelfRegisterController()",
-      "symbol": "applauncher.SelfRegisterController.SelfRegisterController()",
-      "kind": "test"
+      "symbol": "applauncher.SelfRegisterController.SelfRegisterController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.SelfRegisterController.clone()",
-      "symbol": "applauncher.SelfRegisterController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.SelfRegisterController.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.SocialLoginController",
-      "symbol": "applauncher.SocialLoginController",
-      "kind": "test"
+      "symbol": "applauncher.SocialLoginController"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.SocialLoginController.SocialLoginController()",
-      "symbol": "applauncher.SocialLoginController.SocialLoginController()",
-      "kind": "test"
+      "symbol": "applauncher.SocialLoginController.SocialLoginController()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:applauncher.SocialLoginController.clone()",
-      "symbol": "applauncher.SocialLoginController.clone()",
-      "kind": "test"
+      "symbol": "applauncher.SocialLoginController.clone()"
     }
   ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-applauncher-deterministic-001-api67",
+  "notes": "Wave26 current-base lane current-base-deterministic-mock-required-applauncher-001: 47 uncovered apex:applauncher rows covered with local deterministic-mock evidence (construction, clone, AppMenu visibility/sort-order setters, and deterministic controller accessors). No hosted Experience Cloud authentication, registration, or commerce flow is exercised.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-applauncher-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "selectedRowCount": 47,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "applauncher is a Salesforce-internal Apex namespace; the Salesforce compile oracle rejects Apex references to applauncher.* types, so this fixture preserves local deterministic-mock evidence without claiming a Salesforce namespace contract.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseApplauncherDeterministic001Test {\n    @isTest static void applauncherDeterministic001Witness() {\n        applauncher.AccountSettingsController accountSettings = new applauncher.AccountSettingsController();\n        System.assertNotEquals(null, accountSettings);\n        System.assertNotEquals(null, accountSettings.clone());\n\n        applauncher.AppLauncherHelper appLauncherHelper = new applauncher.AppLauncherHelper();\n        System.assertNotEquals(null, appLauncherHelper);\n        System.assertNotEquals(null, appLauncherHelper.clone());\n\n        applauncher.AppLauncherSetupReordererController reorderer = new applauncher.AppLauncherSetupReordererController();\n        System.assertNotEquals(null, reorderer);\n        System.assertNotEquals(null, reorderer.clone());\n\n        applauncher.AppMenu appMenu = new applauncher.AppMenu();\n        System.assertNotEquals(null, appMenu);\n        System.assertNotEquals(null, appMenu.clone());\n        applauncher.AppMenu.setAppVisibility('001000000000001', true);\n        applauncher.AppMenu.setOrgSortOrder(new List<Id>{'001000000000001', '001000000000002'});\n        applauncher.AppMenu.setUserSortOrder(new List<Id>{'001000000000001', '001000000000002'});\n\n        applauncher.ChangePasswordController changePassword = new applauncher.ChangePasswordController();\n        System.assertNotEquals(null, changePassword);\n        System.assertNotEquals(null, changePassword.clone());\n\n        applauncher.CommerceStoreController commerceStore = new applauncher.CommerceStoreController();\n        System.assertNotEquals(null, commerceStore);\n        System.assertNotEquals(null, commerceStore.clone());\n        Map<String,Object> commerceContext = applauncher.CommerceStoreController.getCommerceContext();\n        System.assertEquals(0, commerceContext.size());\n\n        applauncher.CommunityLogoController communityLogo = new applauncher.CommunityLogoController();\n        System.assertNotEquals(null, communityLogo);\n        System.assertNotEquals(null, communityLogo.clone());\n        System.assertEquals(null, applauncher.CommunityLogoController.getCommunityName());\n        System.assertEquals(null, applauncher.CommunityLogoController.getLogoURL());\n\n        applauncher.EmployeeLoginLinkController employeeLoginLink = new applauncher.EmployeeLoginLinkController();\n        System.assertNotEquals(null, employeeLoginLink);\n        System.assertNotEquals(null, employeeLoginLink.clone());\n        System.assertEquals(null, applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl('/home'));\n        System.assertEquals(null, applauncher.EmployeeLoginLinkController.getIsAllowInternalUserLoginEnabled());\n\n        applauncher.ForgotPasswordController forgotPassword = new applauncher.ForgotPasswordController();\n        System.assertNotEquals(null, forgotPassword);\n        System.assertNotEquals(null, forgotPassword.clone());\n\n        applauncher.IdentityHeaderController identityHeader = new applauncher.IdentityHeaderController();\n        System.assertNotEquals(null, identityHeader);\n        System.assertNotEquals(null, identityHeader.clone());\n\n        applauncher.LoginFormController loginForm = new applauncher.LoginFormController();\n        System.assertNotEquals(null, loginForm);\n        System.assertNotEquals(null, loginForm.clone());\n\n        applauncher.SelfRegisterController selfRegister = new applauncher.SelfRegisterController();\n        System.assertNotEquals(null, selfRegister);\n        System.assertNotEquals(null, selfRegister.clone());\n\n        applauncher.SocialLoginController socialLogin = new applauncher.SocialLoginController();\n        System.assertNotEquals(null, socialLogin);\n        System.assertNotEquals(null, socialLogin.clone());\n    }\n}\n",
+      "path": "force-app/main/default/classes/CurrentBaseApplauncherDeterministic001Test.cls"
+    }
+  ]
 }

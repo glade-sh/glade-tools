@@ -1,45 +1,48 @@
 {
-  "name": "async-options-delay-local-evidence",
-  "evidence": [
-    {
-      "surfaceId": "apex:System.System.enqueueJob(Object,Object)",
-      "symbol": "System.enqueueJob(Object,Object)",
-      "kind": "test",
-      "notes": "Local queueable jobs accept AsyncOptions minimum delay metadata and expose it during queueable execution."
-    },
-    {
-      "surfaceId": "apex:System.AsyncOptions.setMinimumQueueableDelayInMinutes(Integer)",
-      "symbol": "AsyncOptions.setMinimumQueueableDelayInMinutes",
-      "kind": "test",
-      "notes": "Local AsyncOptions accepts minimum queueable delay metadata for deterministic queueable execution."
-    },
-    {
-      "surfaceId": "apex:System.AsyncInfo.getMinimumQueueableDelayInMinutes()",
-      "symbol": "AsyncInfo.getMinimumQueueableDelayInMinutes",
-      "kind": "test",
-      "notes": "Local queueable execution reports the delay metadata carried by System.enqueueJob."
-    }
-  ],
-  "source": [
-    {
-      "path": "force-app/main/classes/DelayFixture.cls",
-      "content": "public class DelayFixture { public static Integer seenDelay; public class QueueWorker implements Queueable { public void execute(QueueableContext context) { seenDelay = System.AsyncInfo.getMinimumQueueableDelayInMinutes(); } } }"
-    },
-    {
-      "path": "force-app/main/classes/DelayFixtureTest.cls",
-      "content": "@isTest private class DelayFixtureTest { @isTest static void carriesDelayIntoQueueable() { AsyncOptions opts = new AsyncOptions(); opts.setMinimumQueueableDelayInMinutes(7); System.assertEquals(7, opts.getMinimumQueueableDelayInMinutes()); Test.startTest(); System.enqueueJob(new DelayFixture.QueueWorker(), opts); Test.stopTest(); System.assertEquals(7, DelayFixture.seenDelay); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "Local queueable jobs accept AsyncOptions minimum delay metadata and expose it during queueable execution.",
+      "surfaceId": "apex:System.System.enqueueJob(Object,Object)",
+      "symbol": "System.enqueueJob(Object,Object)"
+    },
+    {
+      "kind": "test",
+      "notes": "Local AsyncOptions accepts minimum queueable delay metadata for deterministic queueable execution.",
+      "surfaceId": "apex:System.AsyncOptions.setMinimumQueueableDelayInMinutes(Integer)",
+      "symbol": "AsyncOptions.setMinimumQueueableDelayInMinutes"
+    },
+    {
+      "kind": "test",
+      "notes": "Local queueable execution reports the delay metadata carried by System.enqueueJob.",
+      "surfaceId": "apex:System.AsyncInfo.getMinimumQueueableDelayInMinutes()",
+      "symbol": "AsyncInfo.getMinimumQueueableDelayInMinutes"
+    }
+  ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "name": "async-options-delay-local-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects the exercised AsyncOptions delay setter; retained as local evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "public class DelayFixture { public static Integer seenDelay; public class QueueWorker implements Queueable { public void execute(QueueableContext context) { seenDelay = System.AsyncInfo.getMinimumQueueableDelayInMinutes(); } } }",
+      "path": "force-app/main/classes/DelayFixture.cls"
+    },
+    {
+      "content": "@isTest private class DelayFixtureTest { @isTest static void carriesDelayIntoQueueable() { AsyncOptions opts = new AsyncOptions(); opts.setMinimumQueueableDelayInMinutes(7); Test.startTest(); System.enqueueJob(new DelayFixture.QueueWorker(), opts); Test.stopTest(); System.assertEquals(7, DelayFixture.seenDelay); } }",
+      "path": "force-app/main/classes/DelayFixtureTest.cls"
+    }
+  ]
 }

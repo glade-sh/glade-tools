@@ -1,106 +1,109 @@
 {
-  "name": "core-runtime-system-local-control",
+  "command": {
+    "args": [
+      "System.assertEquals(null, System.currentPageReference());\nSystem.assert(System.equals('trail', 'trail'));\nSystem.assert(!System.equals('trail', 'nook'));\nSystem.assert(System.hashCode('trail') != System.hashCode('nook'));\nSystem.assertEquals('READ_WRITE', String.valueOf(System.getApplicationReadWriteMode()));\nSystem.assertEquals('R', System.getQuiddityShortCode(Quiddity.SYNCHRONOUS));\nSystem.assertEquals(false, System.isFunctionCallback());\nSystem.assertEquals(false, System.isRunningElasticCompute());\nSystem.pauseJobById('707000000000001');\nSystem.pauseJobByName('Nightly');\nSystem.resumeJobById('707000000000001');\nSystem.resumeJobByName('Nightly');\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today()));\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today(), 25));\nSystem.assertEquals('67.0.0', System.requestVersion().toString());\nSystem.setPassword(UserInfo.getUserId(), 'secret');\n"
+    ],
+    "kind": "exec"
+  },
   "evidence": [
     {
+      "kind": "exec",
+      "notes": "Local anonymous execution starts with no current page.",
       "surfaceId": "apex:System.System.currentPageReference()",
-      "symbol": "System.currentPageReference",
-      "kind": "exec",
-      "notes": "Local anonymous execution starts with no current page."
+      "symbol": "System.currentPageReference"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.System.equals(Object,Object)",
-      "symbol": "System.equals",
-      "kind": "exec"
+      "symbol": "System.equals"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.System.getApplicationReadWriteMode()",
-      "symbol": "System.getApplicationReadWriteMode",
-      "kind": "exec"
+      "symbol": "System.getApplicationReadWriteMode"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.System.getQuiddityShortCode(Object)",
-      "symbol": "System.getQuiddityShortCode",
-      "kind": "exec"
+      "symbol": "System.getQuiddityShortCode"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.System.hashCode(Object)",
-      "symbol": "System.hashCode",
-      "kind": "exec"
+      "symbol": "System.hashCode"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.System.isFunctionCallback()",
-      "symbol": "System.isFunctionCallback",
-      "kind": "exec"
+      "symbol": "System.isFunctionCallback"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.System.isRunningElasticCompute()",
-      "symbol": "System.isRunningElasticCompute",
-      "kind": "exec"
+      "symbol": "System.isRunningElasticCompute"
     },
     {
+      "kind": "exec",
+      "notes": "Local flex queue pause/resume helpers are accepted as no-ops.",
       "surfaceId": "apex:System.System.pauseJobById(String)",
-      "symbol": "System.pauseJobById",
-      "kind": "exec",
-      "notes": "Local flex queue pause/resume helpers are accepted as no-ops."
+      "symbol": "System.pauseJobById"
     },
     {
+      "kind": "exec",
+      "notes": "Local flex queue pause/resume helpers are accepted as no-ops.",
       "surfaceId": "apex:System.System.pauseJobByName(String)",
-      "symbol": "System.pauseJobByName",
-      "kind": "exec",
-      "notes": "Local flex queue pause/resume helpers are accepted as no-ops."
+      "symbol": "System.pauseJobByName"
     },
     {
+      "kind": "exec",
+      "notes": "Local async job purging returns zero removed rows.",
       "surfaceId": "apex:System.System.purgeOldAsyncJobs(Date)",
-      "symbol": "System.purgeOldAsyncJobs",
-      "kind": "exec",
-      "notes": "Local async job purging returns zero removed rows."
+      "symbol": "System.purgeOldAsyncJobs"
     },
     {
+      "kind": "exec",
+      "notes": "Local async job purging returns zero removed rows.",
       "surfaceId": "apex:System.System.purgeOldAsyncJobs(Date,Integer)",
-      "symbol": "System.purgeOldAsyncJobs",
-      "kind": "exec",
-      "notes": "Local async job purging returns zero removed rows."
+      "symbol": "System.purgeOldAsyncJobs"
     },
     {
+      "kind": "exec",
       "surfaceId": "apex:System.System.requestVersion()",
-      "symbol": "System.requestVersion",
-      "kind": "exec"
+      "symbol": "System.requestVersion"
     },
     {
+      "kind": "exec",
+      "notes": "Local flex queue pause/resume helpers are accepted as no-ops.",
       "surfaceId": "apex:System.System.resumeJobById(String)",
-      "symbol": "System.resumeJobById",
-      "kind": "exec",
-      "notes": "Local flex queue pause/resume helpers are accepted as no-ops."
+      "symbol": "System.resumeJobById"
     },
     {
+      "kind": "exec",
+      "notes": "Local flex queue pause/resume helpers are accepted as no-ops.",
       "surfaceId": "apex:System.System.resumeJobByName(String)",
-      "symbol": "System.resumeJobByName",
-      "kind": "exec",
-      "notes": "Local flex queue pause/resume helpers are accepted as no-ops."
+      "symbol": "System.resumeJobByName"
     },
     {
-      "surfaceId": "apex:System.System.setPassword(Id,String)",
-      "symbol": "System.setPassword",
       "kind": "exec",
-      "notes": "Local password mutation records a trace-only side effect."
+      "notes": "Local password mutation records a trace-only side effect.",
+      "surfaceId": "apex:System.System.setPassword(Id,String)",
+      "symbol": "System.setPassword"
     }
   ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "System.assertEquals(null, System.currentPageReference());\nSystem.assert(System.equals('trail', 'trail'));\nSystem.assert(!System.equals('trail', 'nook'));\nSystem.assert(System.hashCode('trail') != System.hashCode('nook'));\nSystem.assertEquals('READ_WRITE', String.valueOf(System.getApplicationReadWriteMode()));\nSystem.assertEquals('R', System.getQuiddityShortCode(Quiddity.SYNCHRONOUS));\nSystem.assertEquals(false, System.isFunctionCallback());\nSystem.assertEquals(false, System.isRunningElasticCompute());\nSystem.pauseJobById('707000000000001');\nSystem.pauseJobByName('Nightly');\nSystem.resumeJobById('707000000000001');\nSystem.resumeJobByName('Nightly');\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today()));\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today(), 25));\nSystem.assertEquals('65.0.0', System.requestVersion().toString());\nSystem.setPassword(UserInfo.getUserId(), 'secret');\n"
-    }
-  ],
-  "command": {
-    "kind": "exec",
-    "args": [
-      "System.assertEquals(null, System.currentPageReference());\nSystem.assert(System.equals('trail', 'trail'));\nSystem.assert(!System.equals('trail', 'nook'));\nSystem.assert(System.hashCode('trail') != System.hashCode('nook'));\nSystem.assertEquals('READ_WRITE', String.valueOf(System.getApplicationReadWriteMode()));\nSystem.assertEquals('R', System.getQuiddityShortCode(Quiddity.SYNCHRONOUS));\nSystem.assertEquals(false, System.isFunctionCallback());\nSystem.assertEquals(false, System.isRunningElasticCompute());\nSystem.pauseJobById('707000000000001');\nSystem.pauseJobByName('Nightly');\nSystem.resumeJobById('707000000000001');\nSystem.resumeJobByName('Nightly');\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today()));\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today(), 25));\nSystem.assertEquals('65.0.0', System.requestVersion().toString());\nSystem.setPassword(UserInfo.getUserId(), 'secret');\n"
-    ]
-  },
   "expected": {
     "result": {
       "debug": null,
       "ok": true
     }
-  }
+  },
+  "name": "core-runtime-system-local-control",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org returned a different local control default than the Glade contract; retained as local evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "System.assertEquals(null, System.currentPageReference());\nSystem.assert(System.equals('trail', 'trail'));\nSystem.assert(!System.equals('trail', 'nook'));\nSystem.assert(System.hashCode('trail') != System.hashCode('nook'));\nSystem.assertEquals('READ_WRITE', String.valueOf(System.getApplicationReadWriteMode()));\nSystem.assertEquals('R', System.getQuiddityShortCode(Quiddity.SYNCHRONOUS));\nSystem.assertEquals(false, System.isFunctionCallback());\nSystem.assertEquals(false, System.isRunningElasticCompute());\nSystem.pauseJobById('707000000000001');\nSystem.pauseJobByName('Nightly');\nSystem.resumeJobById('707000000000001');\nSystem.resumeJobByName('Nightly');\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today()));\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today(), 25));\nSystem.assertEquals('67.0.0', System.requestVersion().toString());\nSystem.setPassword(UserInfo.getUserId(), 'secret');\n",
+      "path": "anonymous.apex"
+    }
+  ]
 }

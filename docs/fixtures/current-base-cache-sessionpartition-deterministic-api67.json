@@ -1,50 +1,51 @@
 {
-  "name": "current-base-cache-sessionpartition-deterministic-api67",
   "apiVersion": "67.0",
-  "mode": "deterministic-mock",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Cache mock boundary only and makes no Salesforce parity claim.",
-  "notes": "Current-base lane current-base-deterministic-mock-required-cache-002: local Cache construction and clone behavior are deterministic. No hosted platform-cache behavior is claimed.",
   "command": {
     "kind": "test"
   },
-  "source": [
-    {
-      "path": "force-app/main/default/classes/CurrentBaseCacheSessionPartitionDeterministicTest.cls",
-      "content": "@isTest private class CurrentBaseCacheSessionPartitionDeterministicTest { @isTest static void constructionWitness() { Cache.SessionPartition partition = new Cache.SessionPartition('local'); System.assertNotEquals(null, partition); Cache.UnsupportedOperationException issue = new Cache.UnsupportedOperationException('local'); System.assertNotEquals(null, issue); } @isTest static void sessionPartitionCloneBoundary() { Cache.SessionPartition partition = new Cache.SessionPartition('local'); partition.clone(); } @isTest static void exceptionCloneBoundary() { Cache.UnsupportedOperationException issue = new Cache.UnsupportedOperationException('local'); issue.clone(); } }"
-    }
-  ],
   "evidence": [
     {
+      "kind": "test",
       "surfaceId": "apex:Cache.SessionPartition.SessionPartition(String)",
-      "symbol": "Cache.SessionPartition.SessionPartition(String)",
-      "kind": "test"
+      "symbol": "Cache.SessionPartition.SessionPartition(String)"
     },
     {
+      "kind": "test",
+      "notes": "The local deterministic mock returns a cloned Cache.SessionPartition.",
       "surfaceId": "apex:Cache.SessionPartition.clone()",
-      "symbol": "Cache.SessionPartition.clone()",
-      "kind": "test",
-      "notes": "The local deterministic mock returns a cloned Cache.SessionPartition."
+      "symbol": "Cache.SessionPartition.clone()"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:Cache.UnsupportedOperationException.UnsupportedOperationException(String)",
-      "symbol": "Cache.UnsupportedOperationException.UnsupportedOperationException(String)",
-      "kind": "test"
+      "symbol": "Cache.UnsupportedOperationException.UnsupportedOperationException(String)"
     },
     {
-      "surfaceId": "apex:Cache.UnsupportedOperationException.clone()",
-      "symbol": "Cache.UnsupportedOperationException.clone()",
       "kind": "test",
-      "notes": "The local deterministic mock returns a cloned Cache.UnsupportedOperationException."
+      "notes": "The local deterministic mock returns a cloned Cache.UnsupportedOperationException.",
+      "surfaceId": "apex:Cache.UnsupportedOperationException.clone()",
+      "symbol": "Cache.UnsupportedOperationException.clone()"
     }
   ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 3,
-      "passed": 3,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 3,
+      "total": 3
     }
-  }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-cache-sessionpartition-deterministic-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-cache-002: local Cache construction and clone behavior are deterministic. No hosted platform-cache behavior is claimed.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Cache mock boundary only and makes no Salesforce parity claim.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseCacheSessionPartitionDeterministicTest { @isTest static void constructionWitness() { Cache.SessionPartition partition = new Cache.SessionPartition('local'); System.assertNotEquals(null, partition); Cache.UnsupportedOperationException issue = new Cache.UnsupportedOperationException('local'); System.assertNotEquals(null, issue); } @isTest static void sessionPartitionCloneBoundary() { Cache.SessionPartition partition = new Cache.SessionPartition('local'); partition.clone(); } @isTest static void exceptionCloneBoundary() { Cache.UnsupportedOperationException issue = new Cache.UnsupportedOperationException('local'); issue.clone(); } }",
+      "path": "force-app/main/default/classes/CurrentBaseCacheSessionPartitionDeterministicTest.cls"
+    }
+  ]
 }

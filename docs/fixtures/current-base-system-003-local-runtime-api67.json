@@ -1,47 +1,142 @@
 {
-  "name": "current-base-system-003-local-runtime-api67",
   "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "JSONGenerator rawGenerator = JSON.createGenerator(false); rawGenerator.writeRaw('{\"raw\":true}'); System.assertEquals('{\"raw\":true}', rawGenerator.getAsString()); JSONGenerator fieldGenerator = new JSONGenerator(); fieldGenerator.writeStartObject(); fieldGenerator.writeRawField('raw', '1'); fieldGenerator.writeEndObject(); System.assertEquals('{\"raw\":1}', fieldGenerator.getAsString()); JSONParser parser = JSON.createParser('{}'); System.assertNotEquals(null, parser); System.assert(Limits.getScheduledJobs() >= 0); System.assert(Limits.getLimitScheduledJobs() > 0); System.assert(Limits.getScriptStatements() >= 0); System.assert(Limits.getLimitScriptStatements() > 0); Limits limits = new Limits(); System.assertNotEquals(null, limits); List<Integer> values = new List<Integer>{3, 1, 2}; List<Integer> copy = new List<Integer>(values); System.assert(values.equals(copy)); System.assertEquals(0, values.indexOf(3)); values.sort(); System.assertEquals(1, values.get(0)); ListException list0 = new ListException(); ListException list1 = new ListException(new QueryException('cause')); ListException list2 = new ListException('list'); System.assertNotEquals(null, list0); System.assertNotEquals(null, list1); System.assertEquals('list', list2.getMessage()); LicenseException license0 = new LicenseException(); LicenseException license1 = new LicenseException(new QueryException('cause')); LicenseException license2 = new LicenseException('license'); LicenseException license3 = new LicenseException('license', new QueryException('cause')); System.assertEquals('license', license2.getMessage()); System.assertNotEquals(null, license0); System.assertNotEquals(null, license1); System.assertNotEquals(null, license3); LimitException limit0 = new LimitException(); LimitException limit1 = new LimitException(new QueryException('cause')); LimitException limit2 = new LimitException('limit'); LimitException limit3 = new LimitException('limit', new QueryException('cause')); System.assertEquals('limit', limit2.getMessage()); System.assertNotEquals(null, limit0); System.assertNotEquals(null, limit1); System.assertNotEquals(null, limit3);"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.JSONGenerator.JSONGenerator()",
+      "symbol": "System.JSONGenerator.JSONGenerator()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.JSONParser.JSONParser()",
+      "symbol": "System.JSONParser.JSONParser()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LicenseException",
+      "symbol": "System.LicenseException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LicenseException.LicenseException()",
+      "symbol": "System.LicenseException.LicenseException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LicenseException.LicenseException(Exception)",
+      "symbol": "System.LicenseException.LicenseException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LicenseException.LicenseException(String)",
+      "symbol": "System.LicenseException.LicenseException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LicenseException.LicenseException(String,Exception)",
+      "symbol": "System.LicenseException.LicenseException(String,Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LimitException",
+      "symbol": "System.LimitException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LimitException.LimitException()",
+      "symbol": "System.LimitException.LimitException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LimitException.LimitException(Exception)",
+      "symbol": "System.LimitException.LimitException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LimitException.LimitException(String)",
+      "symbol": "System.LimitException.LimitException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.LimitException.LimitException(String,Exception)",
+      "symbol": "System.LimitException.LimitException(String,Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Limits.Limits()",
+      "symbol": "System.Limits.Limits()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Limits.getLimitScheduledJobs",
+      "symbol": "System.Limits.getLimitScheduledJobs"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Limits.getScheduledJobs",
+      "symbol": "System.Limits.getScheduledJobs"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.List.equals(Object)",
+      "symbol": "System.List.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.List.indexOf",
+      "symbol": "System.List.indexOf"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.ListException.ListException()",
+      "symbol": "System.ListException.ListException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.ListException.ListException(Exception)",
+      "symbol": "System.ListException.ListException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.ListException.ListException(String)",
+      "symbol": "System.ListException.ListException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.List.sort",
+      "symbol": "System.List.sort"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
   "mode": "local-runtime",
-  "salesforceEligible": false,
-  "salesforceExclusionReason": "This fixture records Glade local-runtime behavior only and makes no hosted Salesforce execution claim.",
+  "name": "current-base-system-003-local-runtime-api67",
   "notes": "Current-base lane current-base-local-runtime-required-System-003: exactly the 21 queue rows absent from existing fixture evidence. Assertions cover JSON object construction, governor getters, list behavior, and catchable exceptions.",
   "profile": {
-    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81",
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-local-runtime-required-System-003",
-    "selectedRowCount": 21
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 21,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
-  "command": {"kind": "exec", "args": ["JSONGenerator generator = new JSONGenerator(); JSONParser parser = new JSONParser(); System.assertNotEquals(null, generator); System.assertNotEquals(null, parser); System.assert(Limits.getScheduledJobs() >= 0); System.assert(Limits.getLimitScheduledJobs() > 0); Limits limitEx = new Limits(); System.assertNotEquals(null, limitEx); List<Integer> values = new List<Integer>{3, 1, 2}; List<Integer> copy = new List<Integer>(values); System.assert(values.equals(copy)); System.assertEquals(0, values.indexOf(3)); values.sort(); System.assertEquals(1, values.get(0)); ListException list0 = new ListException(); System.assertNotEquals(null, list0); LicenseException license = new LicenseException('license'); System.assertEquals('license', license.getMessage()); LimitException limitValue = new LimitException('limit'); System.assertEquals('limit', limitValue.getMessage());"]},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 removed JSONGenerator raw-write members exercised by this local-runtime contract.",
   "source": [
     {
-      "path": "anonymous.apex",
-      "content": "JSONGenerator rawGenerator = new JSONGenerator(); rawGenerator.writeRaw('{\"raw\":true}'); System.assertEquals('{\"raw\":true}', rawGenerator.getAsString()); JSONGenerator fieldGenerator = new JSONGenerator(); fieldGenerator.writeStartObject(); fieldGenerator.writeRawField('raw', '1'); fieldGenerator.writeEndObject(); System.assertEquals('{\"raw\":1}', fieldGenerator.getAsString()); JSONParser parser = new JSONParser(); System.assertNotEquals(null, parser); System.assert(Limits.getScheduledJobs() >= 0); System.assert(Limits.getLimitScheduledJobs() > 0); System.assert(Limits.getScriptStatements() >= 0); System.assert(Limits.getLimitScriptStatements() > 0); Limits limits = new Limits(); System.assertNotEquals(null, limits); List<Integer> values = new List<Integer>{3, 1, 2}; List<Integer> copy = new List<Integer>(values); System.assert(values.equals(copy)); System.assertEquals(0, values.indexOf(3)); values.sort(); System.assertEquals(1, values.get(0)); ListException list0 = new ListException(); ListException list1 = new ListException(new QueryException('cause')); ListException list2 = new ListException('list'); System.assertNotEquals(null, list0); System.assertNotEquals(null, list1); System.assertEquals('list', list2.getMessage()); LicenseException license0 = new LicenseException(); LicenseException license1 = new LicenseException(new QueryException('cause')); LicenseException license2 = new LicenseException('license'); LicenseException license3 = new LicenseException('license', new QueryException('cause')); System.assertEquals('license', license2.getMessage()); System.assertNotEquals(null, license0); System.assertNotEquals(null, license1); System.assertNotEquals(null, license3); LimitException limit0 = new LimitException(); LimitException limit1 = new LimitException(new QueryException('cause')); LimitException limit2 = new LimitException('limit'); LimitException limit3 = new LimitException('limit', new QueryException('cause')); System.assertEquals('limit', limit2.getMessage()); System.assertNotEquals(null, limit0); System.assertNotEquals(null, limit1); System.assertNotEquals(null, limit3); }"
+      "content": "JSONGenerator rawGenerator = JSON.createGenerator(false); rawGenerator.writeRaw('{\"raw\":true}'); System.assertEquals('{\"raw\":true}', rawGenerator.getAsString()); JSONGenerator fieldGenerator = new JSONGenerator(); fieldGenerator.writeStartObject(); fieldGenerator.writeRawField('raw', '1'); fieldGenerator.writeEndObject(); System.assertEquals('{\"raw\":1}', fieldGenerator.getAsString()); JSONParser parser = JSON.createParser('{}'); System.assertNotEquals(null, parser); System.assert(Limits.getScheduledJobs() >= 0); System.assert(Limits.getLimitScheduledJobs() > 0); System.assert(Limits.getScriptStatements() >= 0); System.assert(Limits.getLimitScriptStatements() > 0); Limits limits = new Limits(); System.assertNotEquals(null, limits); List<Integer> values = new List<Integer>{3, 1, 2}; List<Integer> copy = new List<Integer>(values); System.assert(values.equals(copy)); System.assertEquals(0, values.indexOf(3)); values.sort(); System.assertEquals(1, values.get(0)); ListException list0 = new ListException(); ListException list1 = new ListException(new QueryException('cause')); ListException list2 = new ListException('list'); System.assertNotEquals(null, list0); System.assertNotEquals(null, list1); System.assertEquals('list', list2.getMessage()); LicenseException license0 = new LicenseException(); LicenseException license1 = new LicenseException(new QueryException('cause')); LicenseException license2 = new LicenseException('license'); LicenseException license3 = new LicenseException('license', new QueryException('cause')); System.assertEquals('license', license2.getMessage()); System.assertNotEquals(null, license0); System.assertNotEquals(null, license1); System.assertNotEquals(null, license3); LimitException limit0 = new LimitException(); LimitException limit1 = new LimitException(new QueryException('cause')); LimitException limit2 = new LimitException('limit'); LimitException limit3 = new LimitException('limit', new QueryException('cause')); System.assertEquals('limit', limit2.getMessage()); System.assertNotEquals(null, limit0); System.assertNotEquals(null, limit1); System.assertNotEquals(null, limit3);",
+      "path": "anonymous.apex"
     }
-  ],
-  "evidence": [
-    {"surfaceId":"apex:System.JSONGenerator.JSONGenerator()","symbol":"System.JSONGenerator.JSONGenerator()","kind":"test"},
-    {"surfaceId":"apex:System.JSONParser.JSONParser()","symbol":"System.JSONParser.JSONParser()","kind":"test"},
-    {"surfaceId":"apex:System.LicenseException","symbol":"System.LicenseException","kind":"test"},
-    {"surfaceId":"apex:System.LicenseException.LicenseException()","symbol":"System.LicenseException.LicenseException()","kind":"test"},
-    {"surfaceId":"apex:System.LicenseException.LicenseException(Exception)","symbol":"System.LicenseException.LicenseException(Exception)","kind":"test"},
-    {"surfaceId":"apex:System.LicenseException.LicenseException(String)","symbol":"System.LicenseException.LicenseException(String)","kind":"test"},
-    {"surfaceId":"apex:System.LicenseException.LicenseException(String,Exception)","symbol":"System.LicenseException.LicenseException(String,Exception)","kind":"test"},
-    {"surfaceId":"apex:System.LimitException","symbol":"System.LimitException","kind":"test"},
-    {"surfaceId":"apex:System.LimitException.LimitException()","symbol":"System.LimitException.LimitException()","kind":"test"},
-    {"surfaceId":"apex:System.LimitException.LimitException(Exception)","symbol":"System.LimitException.LimitException(Exception)","kind":"test"},
-    {"surfaceId":"apex:System.LimitException.LimitException(String)","symbol":"System.LimitException.LimitException(String)","kind":"test"},
-    {"surfaceId":"apex:System.LimitException.LimitException(String,Exception)","symbol":"System.LimitException.LimitException(String,Exception)","kind":"test"},
-    {"surfaceId":"apex:System.Limits.Limits()","symbol":"System.Limits.Limits()","kind":"test"},
-    {"surfaceId":"apex:System.Limits.getLimitScheduledJobs","symbol":"System.Limits.getLimitScheduledJobs","kind":"test"},
-    {"surfaceId":"apex:System.Limits.getScheduledJobs","symbol":"System.Limits.getScheduledJobs","kind":"test"},
-    {"surfaceId":"apex:System.List.equals(Object)","symbol":"System.List.equals(Object)","kind":"test"},
-    {"surfaceId":"apex:System.List.indexOf","symbol":"System.List.indexOf","kind":"test"},
-    {"surfaceId":"apex:System.ListException.ListException()","symbol":"System.ListException.ListException()","kind":"test"},
-    {"surfaceId":"apex:System.ListException.ListException(Exception)","symbol":"System.ListException.ListException(Exception)","kind":"test"},
-    {"surfaceId":"apex:System.ListException.ListException(String)","symbol":"System.ListException.ListException(String)","kind":"test"},
-    {"surfaceId":"apex:System.List.sort","symbol":"System.List.sort","kind":"test"}
-  ],
-  "expected": {"result": {"debug": null, "ok": true}}
+  ]
 }
