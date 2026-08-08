@@ -92,4 +92,4 @@ jobs:
         run: |
           go_bin="$(command -v go)"
           /bin/bash --version | head -n 1 | grep -Eq '^GNU bash, version 3\.2\.'
-          env PATH=/bin:/usr/bin "$go_bin" test ./scripts -run TestReleaseAssetUpload -count=1
+          env PATH=/bin:/usr/bin "$go_bin" test ./scripts/release_asset_upload_test.go -run TestReleaseAssetUpload -count=1

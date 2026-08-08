@@ -8,10 +8,10 @@ catalog for Glade. It contains 422 checked rows:
 - 68 accept controls; and
 - 354 rejection controls.
 
-The current status breakdown is 410 supported rows, 3 confirmed Glade gaps, and
-9 oracle-pending rows. A supported row must point to an exact Glade product
-regression test. The remaining release controls keep their non-supported status
-explicit instead of overstating product compatibility.
+The current status breakdown is 422 supported rows, 0 confirmed Glade gaps, and
+0 oracle-pending rows. All rows are currently marked supported in the checked
+catalog. A supported row
+must point to an exact Glade product regression test.
 
 The catalog includes `APEX-RESERVED-CURRENCY`, which proves that Salesforce and
 Glade reject `currency` as a variable name. Reserved identifier matching is
