@@ -1,0 +1,33 @@
+{
+  "name": "async-finalizer-lifecycle",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.System.attachFinalizer(finalizer)",
+      "symbol": "System.attachFinalizer",
+      "kind": "test",
+      "notes": "Queueable attachment and FinalizerContext execution are both asserted; the Salesforce API-67 probe passed the same lifecycle."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/FinalizerLifecycleFixture.cls",
+      "content": "public class FinalizerLifecycleFixture implements Queueable, Finalizer { public void execute(QueueableContext context) { System.attachFinalizer(this); insert new Account(Name = 'GLADE_FINALIZER_QUEUEABLE'); } public void execute(FinalizerContext context) { System.assertEquals(ParentJobResult.SUCCESS, context.getResult()); System.assertNotEquals('', context.getAsyncApexJobId()); System.assertEquals(null, context.getException()); insert new Account(Name = 'GLADE_FINALIZER_EXECUTED'); } }"
+    },
+    {
+      "path": "force-app/main/classes/FinalizerLifecycleFixtureTest.cls",
+      "content": "@IsTest private class FinalizerLifecycleFixtureTest { @IsTest static void finalizerRunsAfterQueueable() { Test.startTest(); System.enqueueJob(new FinalizerLifecycleFixture()); Test.stopTest(); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'GLADE_FINALIZER_QUEUEABLE']); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'GLADE_FINALIZER_EXECUTED']); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  }
+}

@@ -1,35 +1,38 @@
 {
-  "name": "core-runtime-page-reference-record-evidence",
-  "evidence": [
-    {
-      "surfaceId": "apex:System.PageReference.PageReference(Object)",
-      "symbol": "PageReference.PageReference",
-      "kind": "exec",
-      "notes": "The record constructor accepts an ApexPage sObject record and creates a Visualforce page reference for that page."
-    },
-    {
-      "surfaceId": "apex:System.PageReference(record)",
-      "symbol": "PageReference(record)",
-      "kind": "exec",
-      "notes": "Exact docs-side shorthand for the same ApexPage record constructor behavior."
-    }
-  ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "SObject pageRecord = ApexPage.SObjectType.newSObject();\npageRecord.put('Name', 'LocalPage');\nPageReference page = new PageReference(pageRecord);\nSystem.assertNotEquals(null, page);\nSystem.assertEquals('/apex/LocalPage', page.getUrl());"
-    }
-  ],
   "command": {
-    "kind": "exec",
     "args": [
       "SObject pageRecord = ApexPage.SObjectType.newSObject();\npageRecord.put('Name', 'LocalPage');\nPageReference page = new PageReference(pageRecord);\nSystem.assertNotEquals(null, page);\nSystem.assertEquals('/apex/LocalPage', page.getUrl());"
-    ]
+    ],
+    "kind": "exec"
   },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "The record constructor accepts an ApexPage sObject record and creates a Visualforce page reference for that page.",
+      "surfaceId": "apex:System.PageReference.PageReference(Object)",
+      "symbol": "PageReference.PageReference"
+    },
+    {
+      "kind": "exec",
+      "notes": "Exact docs-side shorthand for the same ApexPage record constructor behavior.",
+      "surfaceId": "apex:System.PageReference(record)",
+      "symbol": "PageReference(record)"
+    }
+  ],
   "expected": {
     "result": {
       "debug": null,
       "ok": true
     }
-  }
+  },
+  "name": "core-runtime-page-reference-record-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org could not resolve the fixture's page reference record in the clean scratch org; retained as local evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "SObject pageRecord = ApexPage.SObjectType.newSObject();\npageRecord.put('Name', 'LocalPage');\nPageReference page = new PageReference(pageRecord);\nSystem.assertNotEquals(null, page);\nSystem.assertEquals('/apex/LocalPage', page.getUrl());",
+      "path": "anonymous.apex"
+    }
+  ]
 }

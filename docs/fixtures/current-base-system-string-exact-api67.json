@@ -1,0 +1,43 @@
+{
+  "name": "current-base-system-string-exact-api67",
+  "evidence": [
+    {"surfaceId": "apex:System.String.contains(String)", "symbol": "String.contains", "kind": "exec"},
+    {"surfaceId": "apex:System.String.endsWith(String)", "symbol": "String.endsWith", "kind": "exec"},
+    {"surfaceId": "apex:System.String.equalsIgnoreCase(String)", "symbol": "String.equalsIgnoreCase", "kind": "exec"},
+    {"surfaceId": "apex:System.String.indexOf(String)", "symbol": "String.indexOf", "kind": "exec"},
+    {"surfaceId": "apex:System.String.indexOf(String,Integer)", "symbol": "String.indexOf", "kind": "exec"},
+    {"surfaceId": "apex:System.String.indexOfChar(Integer)", "symbol": "String.indexOfChar", "kind": "exec"},
+    {"surfaceId": "apex:System.String.indexOfChar(Integer,Integer)", "symbol": "String.indexOfChar", "kind": "exec"},
+    {"surfaceId": "apex:System.String.indexOfIgnoreCase(String)", "symbol": "String.indexOfIgnoreCase", "kind": "exec"},
+    {"surfaceId": "apex:System.String.indexOfIgnoreCase(String,Integer)", "symbol": "String.indexOfIgnoreCase", "kind": "exec"},
+    {"surfaceId": "apex:System.String.isBlank(String)", "symbol": "String.isBlank", "kind": "exec"},
+    {"surfaceId": "apex:System.String.isEmpty(String)", "symbol": "String.isEmpty", "kind": "exec"},
+    {"surfaceId": "apex:System.String.isNotBlank(String)", "symbol": "String.isNotBlank", "kind": "exec"},
+    {"surfaceId": "apex:System.String.isNotEmpty(String)", "symbol": "String.isNotEmpty", "kind": "exec"},
+    {"surfaceId": "apex:System.String.join(Object,String)", "symbol": "String.join", "kind": "exec"},
+    {"surfaceId": "apex:System.String.format(String,List<Object>)", "symbol": "String.format", "kind": "exec"},
+    {"surfaceId": "apex:System.String.getCommonPrefix(List<String>)", "symbol": "String.getCommonPrefix", "kind": "exec"},
+    {"surfaceId": "apex:System.String.getLevenshteinDistance(String)", "symbol": "String.getLevenshteinDistance", "kind": "exec"},
+    {"surfaceId": "apex:System.String.getLevenshteinDistance(String,Integer)", "symbol": "String.getLevenshteinDistance", "kind": "exec"},
+    {"surfaceId": "apex:System.String.fromCharArray(List<Integer>)", "symbol": "String.fromCharArray", "kind": "exec"},
+    {"surfaceId": "apex:System.String.escapeSingleQuotes(String)", "symbol": "String.escapeSingleQuotes", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "String base = 'Trail cabin trail';\nBoolean gladeValue = base.contains('cabin') && base.endsWith('trail') && 'Cabin'.equalsIgnoreCase('cabin') && base.indexOf('cabin') == 6 && base.indexOf('trail', 7) == 12 && 'abc'.indexOfChar(98) == 1 && 'abca'.indexOfChar(97, 1) == 3 && base.indexOfIgnoreCase('CABIN') == 6 && base.indexOfIgnoreCase('TRAIL', 7) == 12 && String.isBlank('   ') && String.isEmpty('') && !String.isNotBlank('   ') && String.isNotEmpty('x') && String.join(new List<String>{'one', 'two', 'three'}, '/') == 'one/two/three' && String.format('{0} {1}', new List<Object>{'one', 'two'}) == 'one two' && String.getCommonPrefix(new List<String>{'spruce', 'spring', 'sprout'}) == 'spr' && 'gumbo'.getLevenshteinDistance('gambol') == 2 && 'gumbo'.getLevenshteinDistance('gambol', 1) == -1 && String.fromCharArray(new List<Integer>{65, 66, 67}) == 'ABC' && String.escapeSingleQuotes('don\\'t') == 'don\\\\\\'t';\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "String base = 'Trail cabin trail';\nBoolean gladeValue = base.contains('cabin') && base.endsWith('trail') && 'Cabin'.equalsIgnoreCase('cabin') && base.indexOf('cabin') == 6 && base.indexOf('trail', 7) == 12 && 'abc'.indexOfChar(98) == 1 && 'abca'.indexOfChar(97, 1) == 3 && base.indexOfIgnoreCase('CABIN') == 6 && base.indexOfIgnoreCase('TRAIL', 7) == 12 && String.isBlank('   ') && String.isEmpty('') && !String.isNotBlank('   ') && String.isNotEmpty('x') && String.join(new List<String>{'one', 'two', 'three'}, '/') == 'one/two/three' && String.format('{0} {1}', new List<Object>{'one', 'two'}) == 'one two' && String.getCommonPrefix(new List<String>{'spruce', 'spring', 'sprout'}) == 'spr' && 'gumbo'.getLevenshteinDistance('gambol') == 2 && 'gumbo'.getLevenshteinDistance('gambol', 1) == -1 && String.fromCharArray(new List<Integer>{65, 66, 67}) == 'ABC' && String.escapeSingleQuotes('don\\'t') == 'don\\\\\\'t';\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "comparisons": [{
+    "caseId": "cb189-system-json-type-api67",
+    "status": "pass",
+    "surfaceIds": [
+      "apex:System.JSON",
+      "apex:System.JSON.serialize",
+      "apex:System.JSON.serialize(Object)",
+      "apex:System.JSON.serializePretty",
+      "apex:System.JSON.serializePretty(Object)",
+      "apex:System.JSON.deserializeUntyped",
+      "apex:System.JSON.deserializeUntyped(String)",
+      "apex:System.JSON.deserialize",
+      "apex:System.JSON.deserialize(String,Type)",
+      "apex:System.Type",
+      "apex:System.Type.forName",
+      "apex:System.Type.forName(String)",
+      "apex:System.Type.forName(String,String)",
+      "apex:System.Type.forName(namespace,name)"
+    ],
+    "expectedObservation": "Four API 67 anonymous-Apex return values and one caught System.NullPointerException match byte-for-byte between Salesforce and the candidate",
+    "sfObservation": "API 67.0 Salesforce anonymous Apex: cb189-json-serialize-compact returned String [\"trail\",7,true]; cb189-json-serialize-pretty returned String [ \"trail\", 7, true ]; cb189-json-deserialize-untyped returned String {\"s\":\"trail\",\"n\":7}; cb189-json-deserialize-typed returned Boolean true; cb189-type-forname caught System.NullPointerException with message Attempt to de-reference a null object.",
+    "gladeObservation": "Exact candidate source commit d4af92179693e5b1d9f9b67ee692914cc62606dc, binary SHA-256 18bb46f704d8d837e45ab5eddde2aa745ae71b98d180737dc86e19b65affe9e5: cb189-json-serialize-compact returned String [\"trail\",7,true]; cb189-json-serialize-pretty returned String [ \"trail\", 7, true ]; cb189-json-deserialize-untyped returned String {\"s\":\"trail\",\"n\":7}; cb189-json-deserialize-typed returned Boolean true; cb189-type-forname caught System.NullPointerException with message Attempt to de-reference a null object."
+  }]
+}

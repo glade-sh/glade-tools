@@ -1,0 +1,62 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:QueueableDuplicateSignature",
+      "symbol": "QueueableDuplicateSignature"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder",
+      "symbol": "QueueableDuplicateSignature.Builder"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.Builder()",
+      "symbol": "QueueableDuplicateSignature.Builder.Builder()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:QueueableDuplicateSignature.Builder.clone()",
+      "symbol": "QueueableDuplicateSignature.Builder.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:QueueableDuplicateSignature.clone()",
+      "symbol": "QueueableDuplicateSignature.clone()"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-queueable-duplicate-signature-local-runtime-001-api67",
+  "notes": "Current-base lane current-base-local-runtime-required-QueueableDuplicateSignature-001: five uncovered value-object rows.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-local-runtime-required-QueueableDuplicateSignature-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 5,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade's local QueueableDuplicateSignature value-object contract only; it does not claim hosted queue scheduling.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseQueueableDuplicateSignatureLocalRuntime001Test { @isTest static void queueableDuplicateSignatureLocalRuntime001Witness() { QueueableDuplicateSignature signature = QueueableDuplicateSignature.builder().addString('fixture').build(); System.assertNotEquals(null, signature); System.assertNotEquals(null, signature.clone()); QueueableDuplicateSignature.Builder builder = new QueueableDuplicateSignature.Builder(); System.assertNotEquals(null, builder); System.assertNotEquals(null, builder.clone()); } }",
+      "path": "force-app/main/default/classes/CurrentBaseQueueableDuplicateSignatureLocalRuntime001Test.cls"
+    }
+  ]
+}

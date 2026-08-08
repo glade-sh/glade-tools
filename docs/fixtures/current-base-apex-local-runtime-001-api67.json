@@ -1,0 +1,67 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Apex.EmptyStackException",
+      "symbol": "Apex.EmptyStackException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Apex.EmptyStackException.EmptyStackException()",
+      "symbol": "Apex.EmptyStackException.EmptyStackException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Apex.EmptyStackException.EmptyStackException(Exception)",
+      "symbol": "Apex.EmptyStackException.EmptyStackException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Apex.EmptyStackException.EmptyStackException(String)",
+      "symbol": "Apex.EmptyStackException.EmptyStackException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Apex.EmptyStackException.EmptyStackException(String,Exception)",
+      "symbol": "Apex.EmptyStackException.EmptyStackException(String,Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Apex.EmptyStackException.clone()",
+      "symbol": "Apex.EmptyStackException.clone()"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-apex-local-runtime-001-api67",
+  "notes": "Current-base lane current-base-local-runtime-required-Apex-001: six uncovered EmptyStackException rows.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-local-runtime-required-Apex-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 6,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves the local Apex exception value contract only; it does not claim hosted Apex namespace execution.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseApexLocalRuntime001Test { @isTest static void apexLocalRuntime001Witness() { Apex.EmptyStackException empty0 = new Apex.EmptyStackException(); Apex.EmptyStackException empty1 = new Apex.EmptyStackException(new QueryException('cause')); Apex.EmptyStackException empty2 = new Apex.EmptyStackException('empty'); Apex.EmptyStackException empty3 = new Apex.EmptyStackException('empty', new QueryException('cause')); System.assertNotEquals(null, empty0); System.assertNotEquals(null, empty1); System.assertNotEquals(null, empty2); System.assertNotEquals(null, empty3); System.assertNotEquals(null, empty0.clone()); } }",
+      "path": "force-app/main/default/classes/CurrentBaseApexLocalRuntime001Test.cls"
+    }
+  ]
+}

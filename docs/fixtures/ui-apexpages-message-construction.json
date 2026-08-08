@@ -2,7 +2,7 @@
   "name": "ui-apexpages-message-construction",
   "evidence": [
     {
-      "surfaceId": "apex:System.ApexPages.Message",
+      "surfaceId": "apex:ApexPages.Message",
       "symbol": "ApexPages.Message",
       "kind": "test",
       "notes": "ApexPages.Message construction and getSummary/getSeverity in local test."

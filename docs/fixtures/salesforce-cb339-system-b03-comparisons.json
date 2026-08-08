@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "packetId": "CB339",
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "7b9c1019ab13874f373a765006957f2d560d3c21",
+    "sha256": "360a1928b5b1941e659328cc5c41d68d99f039255db7b1571304f77536db0221",
+    "toolsCommit": "066f87ee6bd9c9769552244c2d7da128549c855a"
+  },
+  "salesforceExecution": "fresh-execute-anonymous-api67",
+  "comparisons": [
+    {
+      "caseId": "scalar-constructor-rejection-cb339",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:System.Date.Date()",
+        "apex:System.Datetime.Datetime()",
+        "apex:System.Decimal.Decimal()",
+        "apex:System.Double.Double()"
+      ],
+      "sfObservation": "Date: Type cannot be constructed; Datetime: Type cannot be constructed; Decimal: Type cannot be constructed; Double: Type cannot be constructed",
+      "gladeObservation": "Date: Type cannot be constructed; Datetime: Type cannot be constructed; Decimal: Type cannot be constructed; Double: Type cannot be constructed"
+    },
+    {
+      "caseId": "system-exception-runtime-cb339",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:System.Date.toEndOfMonth()",
+        "apex:System.Datetime.formatGmt",
+        "apex:System.Decimal.valueOf",
+        "apex:System.DmlException.DmlException()",
+        "apex:System.DuplicateMessageException",
+        "apex:System.DuplicateMessageException.DuplicateMessageException()",
+        "apex:System.DuplicateMessageException.DuplicateMessageException(Exception)",
+        "apex:System.DuplicateMessageException.DuplicateMessageException(String)",
+        "apex:System.DuplicateMessageException.DuplicateMessageException(String,Exception)",
+        "apex:System.DuplicateMessageException.equals(Object)",
+        "apex:System.DuplicateMessageException.hashCode()",
+        "apex:System.DuplicateMessageException.toString()",
+        "apex:System.EmailException.EmailException()",
+        "apex:System.EmailException.EmailException(Exception)",
+        "apex:System.EmailException.EmailException(String)",
+        "apex:System.EmailException.EmailException(String,Exception)",
+        "apex:System.EmailException.equals(Object)",
+        "apex:System.EmailException.hashCode()",
+        "apex:System.EmailException.toString()",
+        "apex:System.EmailTemplateRenderException",
+        "apex:System.EmailTemplateRenderException.EmailTemplateRenderException()",
+        "apex:System.EmailTemplateRenderException.EmailTemplateRenderException(Exception)",
+        "apex:System.EmailTemplateRenderException.EmailTemplateRenderException(String)",
+        "apex:System.EmailTemplateRenderException.EmailTemplateRenderException(String,Exception)",
+        "apex:System.EmailTemplateRenderException.equals(Object)",
+        "apex:System.EmailTemplateRenderException.hashCode()",
+        "apex:System.EmailTemplateRenderException.toString()",
+        "apex:System.EventObjectException",
+        "apex:System.EventObjectException.EventObjectException()",
+        "apex:System.EventObjectException.EventObjectException(Exception)",
+        "apex:System.EventObjectException.EventObjectException(String)",
+        "apex:System.EventObjectException.EventObjectException(String,Exception)",
+        "apex:System.EventObjectException.equals(Object)",
+        "apex:System.EventObjectException.hashCode()",
+        "apex:System.EventObjectException.toString()",
+        "apex:System.ExternalObjectException",
+        "apex:System.ExternalObjectException.ExternalObjectException()",
+        "apex:System.ExternalObjectException.ExternalObjectException(Exception)",
+        "apex:System.ExternalObjectException.ExternalObjectException(String)",
+        "apex:System.ExternalObjectException.ExternalObjectException(String,Exception)",
+        "apex:System.ExternalObjectException.equals(Object)",
+        "apex:System.ExternalObjectException.hashCode()"
+      ],
+      "sfObservation": "DmlException|System.DmlException: Script-thrown exception; DuplicateMessageException|0|System.DuplicateMessageException: Script-thrown exception; DuplicateMessageException|S|System.DuplicateMessageException: message; DuplicateMessageException|E|System.DuplicateMessageException: Script-thrown exception; DuplicateMessageException|SE|System.DuplicateMessageException: message; EmailException|System.EmailException: email; EmailTemplateRenderException|System.EmailTemplateRenderException: render; EventObjectException|System.EventObjectException: event; ExternalObjectException|System.ExternalObjectException: external; equals=true",
+      "gladeObservation": "DmlException|System.DmlException: Script-thrown exception; DuplicateMessageException|0|System.DuplicateMessageException: Script-thrown exception; DuplicateMessageException|S|System.DuplicateMessageException: message; DuplicateMessageException|E|System.DuplicateMessageException: Script-thrown exception; DuplicateMessageException|SE|System.DuplicateMessageException: message; EmailException|System.EmailException: email; EmailTemplateRenderException|System.EmailTemplateRenderException: render; EventObjectException|System.EventObjectException: event; ExternalObjectException|System.ExternalObjectException: external; equals=true"
+    }
+  ]
+}

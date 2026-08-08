@@ -1,0 +1,1033 @@
+{
+  "schemaVersion": 1,
+  "previousRelease": "Spring '26",
+  "currentRelease": "Summer '26",
+  "classifications": [
+    {
+      "surfaceId": "apex:commercepayments.AuthorizationRequest.paymentMethodData",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-REQUEST"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.additionalAttributes",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.discountAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.dutyAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.equals(Object)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.hashCode()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.invoiceNumber",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.lineItems",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.referenceId",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.salesTaxAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shipFromZip",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shippingAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shipToCountry",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shipToZip",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.taxRate",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.toString()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.totalTaxAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.additionalAttributes",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.commodityCode",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.description",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.discount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.discountIndicator",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.dutyAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.equals(Object)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.grossNetIndicator",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.hashCode()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.lineItemId",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.lineItemTotal",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.name",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.quantity",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.shippingAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.sku",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.taxAmount",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.taxRate",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.toString()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.unitPrice",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.LineItemInput.uom",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-LINE-ITEM"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleRequest.enhancedPaymentData",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-REQUEST"
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleRequest.paymentInitiationSourceId",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-COMMERCE-PAYMENT-REQUEST"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.AssignedResourcesInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BestLocationPerSKUOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BuyerProductSummaryRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CartFromQuoteInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CartFromQuoteOutput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderAdjustmentGroupSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderDeliveryGroupSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderItemAdjustmentLineSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderItemSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderItemTaxLineItemSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceNote",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceNoteInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteCollection",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteDetail",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteLineItem",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteWithProductDetail",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CompositeCommerceVariationInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromCartInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromCartOutput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromProductInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromProductOutput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeliveryRoutingEngineInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.DeliveryRoutingEngineOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.EinsteinPromptTemplateAttachmentExclusionInfo",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.EinsteinPromptTemplateMergeFieldInformationContext",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.fetchFilesInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FetchFilesOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.LocationListInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PreviewChangeOrderSummaryOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ProductVariationAttributesRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.QuoteError",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RouteLocationOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RouteOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RouteProductOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RoutingProductInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SubmitChangeOrderSummaryOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.updateQuoteInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:ConnectApi.UpdateQuoteOutput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getApexClass()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getDataType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getIsCollection()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValue()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsBooleanList()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsDateList()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsDoubleList()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsIntegerList()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsList()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsLongList()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsStringList()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getAction()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getAllowsTransactionControl()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getCapabilityTypes()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getCategory()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getConfigurationEditor()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getDescription()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getGenericTypes()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getHasCallout()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getHasSystemGeneratedOutput()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getIconId()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getIconName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getInputs()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getLabel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getMethodDescription()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getMethodLabel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getMethodName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getOutputs()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getTargetEntityName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.DescribeResult.getType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.GenericType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.GenericType.getDescription()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.GenericType.getLabel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.GenericType.getName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.GenericType.getSuperType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.getDescribe()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getAdditionalAttributes()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getApexClass()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getByteLength()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getConfiguration()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getDefaultValue()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getDescription()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getLabel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getMaxOccurs()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getPicklistValues()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getPlaceholderText()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getRequired()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getSetupReferenceType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getSObjectType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getToolingType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.InputParameter.getType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getAdditionalAttributes()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getApexClass()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getDescription()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getLabel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getMaxOccurs()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getName()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getPicklistValues()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getSObjectType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.OutputParameter.getType()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.PicklistValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.PicklistValue.getActive()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.PicklistValue.getDefaultValue()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.PicklistValue.getLabel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.PicklistValue.getValidFor()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.PicklistValue.getValue()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+    },
+    {
+      "surfaceId": "apex:System.Database.convertLead(leadsToConvert,accessLevel)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-DATABASE-CONVERT-LEAD-ACCESS"
+    },
+    {
+      "surfaceId": "apex:System.Database.convertLead(leadToConvert,accessLevel)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-DATABASE-CONVERT-LEAD-ACCESS"
+    },
+    {
+      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(SObject,Object,AccessLevel)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-EVENTBUS-PUBLISH-ACCESS"
+    },
+    {
+      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<SObject>,Object,AccessLevel)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-EVENTBUS-PUBLISH-ACCESS"
+    },
+    {
+      "surfaceId": "apex:System.Finalizer",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.Finalizer.execute(finalizerContext)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getAsyncApexJobId()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getException()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getRequestId()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getResult()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.IntegrationTest",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-INTEGRATION-TEST"
+    },
+    {
+      "surfaceId": "apex:System.IntegrationTest.commitTestOnly()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-INTEGRATION-TEST"
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "apex:System.String.template(valueMap)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-STRING-TEMPLATE"
+    },
+    {
+      "surfaceId": "apex:System.System.attachFinalizer(finalizer)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "caseId": "SF67-FINALIZER"
+    },
+    {
+      "surfaceId": "lwc:`experience/blockBuilderApi`",
+      "scope": "t1",
+      "disposition": "new-case",
+      "caseId": "SF67-LWC-BLOCK-BUILDER"
+    },
+    {
+      "surfaceId": "tooling:PlatformEventMigration",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api"
+    }
+  ]
+}

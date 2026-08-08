@@ -1,0 +1,81 @@
+{
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String)",
+      "symbol": "ConnectApi.ChatterUsers.getFollowings"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer)",
+      "symbol": "ConnectApi.ChatterUsers.getFollowings"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer,Integer)",
+      "symbol": "ConnectApi.ChatterUsers.getFollowings"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String)",
+      "symbol": "ConnectApi.ChatterUsers.getFollowings"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer)",
+      "symbol": "ConnectApi.ChatterUsers.getFollowings"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer,Integer)",
+      "symbol": "ConnectApi.ChatterUsers.getFollowings"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ManagedContent.getAllManagedContent(String,Integer,Integer,String,String)",
+      "symbol": "ConnectApi.ManagedContent.getAllManagedContent"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ManagedContent.getAllManagedContent(String,Integer,Integer,String,String,Boolean)",
+      "symbol": "ConnectApi.ManagedContent.getAllManagedContent"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.ManagedContent.getManagedContentByContentKeys(String,List<String>,Integer,Integer,String,String,Boolean)",
+      "symbol": "ConnectApi.ManagedContent.getManagedContentByContentKeys"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.UserProfiles.setPhoto(String,String,ConnectApi.BinaryInput)",
+      "symbol": "ConnectApi.UserProfiles.setPhoto"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ConnectApi.UserProfiles.setPhoto(String,String,String,Integer)",
+      "symbol": "ConnectApi.UserProfiles.setPhoto"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "name": "apex-connectapi-corpus-local-mocks",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The calls require a real Salesforce network or site and managed-content context; a scratch org cannot provide portable hosted data for this local mock corpus. Retain the deterministic local proof and exclude hosted runtime.",
+  "source": [
+    {
+      "content": "@isTest private class ApexConnectApiCorpusLocalMocksTest { @isTest(SeeAllData=true) static void rows() { ConnectApi.FollowingPage byUser = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId()); ConnectApi.FollowingPage byPage = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), 0); ConnectApi.FollowingPage byPageSize = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), 0, 10); ConnectApi.FollowingPage byFilter = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), '005'); ConnectApi.FollowingPage byFilterPage = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), '005', 0); ConnectApi.FollowingPage byFilterPageSize = ConnectApi.ChatterUsers.getFollowings(null, UserInfo.getUserId(), '005', 0, 10); String base = '/services/data/vXX.X/chatter/users/' + UserInfo.getUserId() + '/following'; System.assertNotEquals(null, byUser); System.assertEquals(0, byUser.total); System.assertEquals(0, byUser.following.size()); System.assertEquals(base, byUser.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base, byPage.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?pageSize=10', byPageSize.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?filterType=005', byFilter.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?filterType=005', byFilterPage.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?pageSize=10&filterType=005', byFilterPageSize.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); ConnectApi.ManagedContentVersionCollection allFive = ConnectApi.ManagedContent.getAllManagedContent(null, 0, 1, 'en_US', 'News'); ConnectApi.ManagedContentVersionCollection allSix = ConnectApi.ManagedContent.getAllManagedContent(null, 0, 1, 'en_US', 'News', false); List<String> keys = new List<String>{ 'home-hero' }; ConnectApi.ManagedContentVersionCollection byKeys = ConnectApi.ManagedContent.getManagedContentByContentKeys(null, keys, 0, 1, 'en_US', 'News', false); System.assertNotEquals(null, allFive); System.assertNotEquals(null, allSix); System.assertNotEquals(null, byKeys); System.assertEquals(0, allFive.items.size()); System.assertEquals(0, allSix.items.size()); System.assertEquals(0, byKeys.items.size()); Integer versionNumber = null; ConnectApi.UserProfiles.setPhoto(null, UserInfo.getUserId(), new ConnectApi.BinaryInput(Blob.valueOf('bytes'), 'image/png', 'avatar.png')); ConnectApi.UserProfiles.setPhoto(null, UserInfo.getUserId(), '069000000000001', versionNumber); } }",
+      "path": "force-app/main/classes/ApexConnectApiCorpusLocalMocksTest.cls"
+    }
+  ]
+}

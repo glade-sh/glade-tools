@@ -1,8 +1,10 @@
 {
   "name": "ui-lwc-vf-local-bridge-evidence",
+  "proofObligation": "external-unit-test-required",
+  "proofObligationReason": "The fixture source is a bounded Go test selection; local Glade test output with zero cases is not credited.",
   "evidence": [
     {
-      "surfaceId": "apex:System.ApexPages.Message",
+      "surfaceId": "apex:ApexPages.Message",
       "symbol": "ApexPages.Message",
       "kind": "test",
       "notes": "Local page messages are collected during Visualforce actions and reset between action lifecycles."

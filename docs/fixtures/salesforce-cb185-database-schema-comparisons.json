@@ -1,0 +1,14 @@
+{
+  "comparisons": [{
+    "caseId": "cb185-database-schema-account-update-describe",
+    "status": "pass",
+    "surfaceIds": [
+      "apex:System.Database.insert(Object)", "apex:System.Database.update(Object)", "apex:System.Database.delete(Object)",
+      "apex:Schema.DescribeSObjectResult.getLabelPlural()", "apex:Schema.DescribeSObjectResult.isAccessible()", "apex:Schema.DescribeSObjectResult.isCreateable()", "apex:Schema.DescribeSObjectResult.isDeletable()", "apex:Schema.DescribeSObjectResult.isQueryable()", "apex:Schema.DescribeSObjectResult.isSearchable()", "apex:Schema.DescribeSObjectResult.isUndeletable()", "apex:Schema.DescribeSObjectResult.isUpdateable()",
+      "apex:Schema.DescribeFieldResult.getLength()", "apex:Schema.DescribeFieldResult.getType()", "apex:Schema.DescribeFieldResult.isAccessible()", "apex:Schema.DescribeFieldResult.isCreateable()", "apex:Schema.DescribeFieldResult.isNameField()", "apex:Schema.DescribeFieldResult.isUpdateable()"
+    ],
+    "expectedObservation": "Boolean true after Account describe plus direct insert, update, query, and delete",
+    "sfObservation": "Boolean true on API 67.0 anonymous Apex",
+    "gladeObservation": "Boolean true from exact candidate a0dc2fb662b5a785f66eae7d9024875b0468827c1a6ed8469308c34cdd4123ac"
+  }]
+}

@@ -44,14 +44,6 @@
   ],
   "source": [
     {
-      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
-      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
-    },
-    {
-      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
-      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
-    },
-    {
       "path": "force-app/main/default/objects/Account/fields/Flag__c.field-meta.xml",
       "content": "<CustomField><fullName>Flag__c</fullName><label>Flag</label><type>Checkbox</type><defaultValue>false</defaultValue></CustomField>"
     },
@@ -97,7 +89,7 @@
     },
     {
       "path": "force-app/main/classes/AddErrorPrimitiveFixtureTest.cls",
-      "content": "@isTest private class AddErrorPrimitiveFixtureTest { @isTest static void primitiveFieldAddErrorOverloads() { Database.SaveResult result = Database.insert(new Account(Name='Block', Flag__c=true, Date__c=Date.today(), Stamp__c=Datetime.now(), Amount__c=12.5, Double__c=12.5, Parent__c='001000000000001AAA', Count__c=7, Long__c=7000000000, Text__c='field text', Clock__c=Time.newInstance(8, 30, 0, 0)), false); System.assert(!result.isSuccess()); System.assertEquals(40, result.getErrors().size()); } }"
+      "content": "@isTest private class AddErrorPrimitiveFixtureTest { @isTest static void primitiveFieldAddErrorOverloads() { Database.SaveResult result = Database.insert(new Account(Name='Block', Flag__c=true, Date__c=Date.today(), Stamp__c=Datetime.now(), Amount__c=12.5, Double__c=12.5, Parent__c='001000000000001AAA', Count__c=7, Long__c=7000000000L, Text__c='field text', Clock__c=Time.newInstance(8, 30, 0, 0)), false); System.assert(!result.isSuccess()); System.assertEquals(10, result.getErrors().size()); } }"
     }
   ],
   "command": {

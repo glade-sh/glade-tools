@@ -1,0 +1,112 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.CalculationMatrixMigrationService",
+      "symbol": "BusinessRule.CalculationMatrixMigrationService"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.CalculationMatrixMigrationService.CalculationMatrixMigrationService()",
+      "symbol": "BusinessRule.CalculationMatrixMigrationService.CalculationMatrixMigrationService()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.CalculationMatrixMigrationService.clone()",
+      "symbol": "BusinessRule.CalculationMatrixMigrationService.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.CalculationProcedureMigrationService",
+      "symbol": "BusinessRule.CalculationProcedureMigrationService"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.CalculationProcedureMigrationService.CalculationProcedureMigrationService()",
+      "symbol": "BusinessRule.CalculationProcedureMigrationService.CalculationProcedureMigrationService()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.CalculationProcedureMigrationService.clone()",
+      "symbol": "BusinessRule.CalculationProcedureMigrationService.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DecisionMatrixRowMigratorService",
+      "symbol": "BusinessRule.DecisionMatrixRowMigratorService"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DecisionMatrixRowMigratorService.DecisionMatrixRowMigratorService()",
+      "symbol": "BusinessRule.DecisionMatrixRowMigratorService.DecisionMatrixRowMigratorService()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DecisionMatrixRowMigratorService.clone()",
+      "symbol": "BusinessRule.DecisionMatrixRowMigratorService.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DynamicRuleDebugService",
+      "symbol": "BusinessRule.DynamicRuleDebugService"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DynamicRuleDebugService.DynamicRuleDebugService()",
+      "symbol": "BusinessRule.DynamicRuleDebugService.DynamicRuleDebugService()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DynamicRuleDebugService.clone()",
+      "symbol": "BusinessRule.DynamicRuleDebugService.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DynamicRuleDebugService.getInputDataTableMapFromContextInstance(String,String,String)",
+      "symbol": "BusinessRule.DynamicRuleDebugService.getInputDataTableMapFromContextInstance(String,String,String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DynamicRuleDebugService.getRuleLibraryContents(String,String)",
+      "symbol": "BusinessRule.DynamicRuleDebugService.getRuleLibraryContents(String,String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessRule.DynamicRuleDebugService.getRulePayloads(List<String>,String)",
+      "symbol": "BusinessRule.DynamicRuleDebugService.getRulePayloads(List<String>,String)"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-businessrule-deterministic-001-api67",
+  "notes": "Wave26 current-base lane current-base-deterministic-mock-required-BusinessRule-001: 15 uncovered apex:BusinessRule rows covered with local deterministic-mock evidence (construction, clone, and static debug-service accessors). No hosted rule-evaluation or migration service call is exercised.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-BusinessRule-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "selectedRowCount": 15,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "BusinessRule is a Salesforce-internal Apex namespace; the Salesforce compile oracle rejects Apex references to BusinessRule.* types, so this fixture preserves local deterministic-mock evidence without claiming a Salesforce namespace contract.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseBusinessRuleDeterministic001Test {\n    @isTest static void businessRuleDeterministic001Witness() {\n        BusinessRule.CalculationMatrixMigrationService matrixMigration = new BusinessRule.CalculationMatrixMigrationService();\n        System.assertNotEquals(null, matrixMigration);\n        System.assertNotEquals(null, matrixMigration.clone());\n\n        BusinessRule.CalculationProcedureMigrationService procedureMigration = new BusinessRule.CalculationProcedureMigrationService();\n        System.assertNotEquals(null, procedureMigration);\n        System.assertNotEquals(null, procedureMigration.clone());\n\n        BusinessRule.DecisionMatrixRowMigratorService rowMigrator = new BusinessRule.DecisionMatrixRowMigratorService();\n        System.assertNotEquals(null, rowMigrator);\n        System.assertNotEquals(null, rowMigrator.clone());\n\n        BusinessRule.DynamicRuleDebugService debugService = new BusinessRule.DynamicRuleDebugService();\n        System.assertNotEquals(null, debugService);\n        System.assertNotEquals(null, debugService.clone());\n        Map<String,Object> inputDataTable = BusinessRule.DynamicRuleDebugService.getInputDataTableMapFromContextInstance('ctx-instance', 'rule-library', 'ns');\n        System.assertEquals(0, inputDataTable.size());\n        Map<String,Object> ruleLibrary = BusinessRule.DynamicRuleDebugService.getRuleLibraryContents('rule-library', 'ns');\n        System.assertEquals(0, ruleLibrary.size());\n        Map<String,Object> rulePayloads = BusinessRule.DynamicRuleDebugService.getRulePayloads(new List<String>{'rule-a'}, 'ns');\n        System.assertEquals(0, rulePayloads.size());\n    }\n}\n",
+      "path": "force-app/main/default/classes/CurrentBaseBusinessRuleDeterministic001Test.cls"
+    }
+  ]
+}

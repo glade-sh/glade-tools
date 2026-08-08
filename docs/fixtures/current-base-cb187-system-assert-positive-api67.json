@@ -1,0 +1,31 @@
+{
+  "name": "current-base-cb187-system-assert-positive-api67",
+  "evidence": [
+    {"surfaceId": "apex:System.Assert", "symbol": "System.Assert", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.areEqual", "symbol": "System.Assert.areEqual", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.areNotEqual", "symbol": "System.Assert.areNotEqual", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.fail", "symbol": "System.Assert.fail", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.fail()", "symbol": "System.Assert.fail", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.fail(String)", "symbol": "System.Assert.fail", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isFalse", "symbol": "System.Assert.isFalse", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNotNull", "symbol": "System.Assert.isNotNull", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isNull", "symbol": "System.Assert.isNull", "kind": "exec"},
+    {"surfaceId": "apex:System.Assert.isTrue", "symbol": "System.Assert.isTrue", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException", "symbol": "System.AssertException", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.AssertException()", "symbol": "System.AssertException.AssertException", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.AssertException(Exception)", "symbol": "System.AssertException.AssertException", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.AssertException(String)", "symbol": "System.AssertException.AssertException", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.AssertException(String,Exception)", "symbol": "System.AssertException.AssertException", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.getCause()", "symbol": "System.AssertException.getCause", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.getInaccessibleFields()", "symbol": "System.AssertException.getInaccessibleFields", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.getMessage()", "symbol": "System.AssertException.getMessage", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.getTypeName()", "symbol": "System.AssertException.getTypeName", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.initCause(Exception)", "symbol": "System.AssertException.initCause", "kind": "exec"},
+    {"surfaceId": "apex:System.AssertException.setMessage(String)", "symbol": "System.AssertException.setMessage", "kind": "exec"}
+  ],
+  "source": [{
+    "path": "probe.apex",
+    "content": "System.Assert.areEqual('same', 'same');\nSystem.Assert.areNotEqual('left', 'right');\nSystem.Assert.isFalse(false);\nSystem.Assert.isNotNull('value');\nSystem.Assert.isNull(null);\nSystem.Assert.isTrue(true);\nif (false) { System.Assert.fail(); }\nif (false) { System.Assert.fail('message'); }\nException emptyException = new AssertException();\nException exceptionOnly = new AssertException(new DmlException('cause only'));\nException stringOnly = new AssertException('message only');\nException stringAndCause = new AssertException('message and cause', new DmlException('cause'));\nSystem.assertEquals('System.AssertException', emptyException.getTypeName());\nSystem.assertEquals('System.AssertException', exceptionOnly.getTypeName());\nSystem.assertEquals('message only', stringOnly.getMessage());\nSystem.assertEquals('message and cause', stringAndCause.getMessage());\nif (false) { new AssertException('assert message').getInaccessibleFields(); }\nException assertException = new AssertException('assert message');\nSystem.assertEquals(null, assertException.getCause());\nSystem.assertEquals('System.AssertException', assertException.getTypeName());\nassertException.setMessage('changed assert');\nSystem.assertEquals('changed assert', assertException.getMessage());\nassertException.initCause(new DmlException('assert cause'));"
+  }],
+  "command": {"kind": "exec", "args": ["System.Assert.areEqual('same', 'same');\nSystem.Assert.areNotEqual('left', 'right');\nSystem.Assert.isFalse(false);\nSystem.Assert.isNotNull('value');\nSystem.Assert.isNull(null);\nSystem.Assert.isTrue(true);\nif (false) { System.Assert.fail(); }\nif (false) { System.Assert.fail('message'); }\nException emptyException = new AssertException();\nException exceptionOnly = new AssertException(new DmlException('cause only'));\nException stringOnly = new AssertException('message only');\nException stringAndCause = new AssertException('message and cause', new DmlException('cause'));\nSystem.assertEquals('System.AssertException', emptyException.getTypeName());\nSystem.assertEquals('System.AssertException', exceptionOnly.getTypeName());\nSystem.assertEquals('message only', stringOnly.getMessage());\nSystem.assertEquals('message and cause', stringAndCause.getMessage());\nif (false) { new AssertException('assert message').getInaccessibleFields(); }\nException assertException = new AssertException('assert message');\nSystem.assertEquals(null, assertException.getCause());\nSystem.assertEquals('System.AssertException', assertException.getTypeName());\nassertException.setMessage('changed assert');\nSystem.assertEquals('changed assert', assertException.getMessage());\nassertException.initCause(new DmlException('assert cause'));"]}
+}

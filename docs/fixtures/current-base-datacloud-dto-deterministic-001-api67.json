@@ -1,0 +1,287 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap",
+      "symbol": "Datacloud.AdditionalInformationMap"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.AdditionalInformationMap()",
+      "symbol": "Datacloud.AdditionalInformationMap.AdditionalInformationMap()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.equals(Object)",
+      "symbol": "Datacloud.AdditionalInformationMap.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.getName()",
+      "symbol": "Datacloud.AdditionalInformationMap.getName()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.getValue()",
+      "symbol": "Datacloud.AdditionalInformationMap.getValue()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.hashCode()",
+      "symbol": "Datacloud.AdditionalInformationMap.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.name",
+      "symbol": "Datacloud.AdditionalInformationMap.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.toString()",
+      "symbol": "Datacloud.AdditionalInformationMap.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.AdditionalInformationMap.value",
+      "symbol": "Datacloud.AdditionalInformationMap.value"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult",
+      "symbol": "Datacloud.DuplicateResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.DuplicateResult()",
+      "symbol": "Datacloud.DuplicateResult.DuplicateResult()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.allowsave",
+      "symbol": "Datacloud.DuplicateResult.allowsave"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.duplicaterule",
+      "symbol": "Datacloud.DuplicateResult.duplicaterule"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.duplicateruleentitytype",
+      "symbol": "Datacloud.DuplicateResult.duplicateruleentitytype"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.equals(Object)",
+      "symbol": "Datacloud.DuplicateResult.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.errormessage",
+      "symbol": "Datacloud.DuplicateResult.errormessage"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.getDuplicateRule()",
+      "symbol": "Datacloud.DuplicateResult.getDuplicateRule()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.getDuplicateRuleEntityType()",
+      "symbol": "Datacloud.DuplicateResult.getDuplicateRuleEntityType()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.getErrorMessage()",
+      "symbol": "Datacloud.DuplicateResult.getErrorMessage()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.getMatchResults()",
+      "symbol": "Datacloud.DuplicateResult.getMatchResults()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.hashCode()",
+      "symbol": "Datacloud.DuplicateResult.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.isAllowSave()",
+      "symbol": "Datacloud.DuplicateResult.isAllowSave()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.matchresults",
+      "symbol": "Datacloud.DuplicateResult.matchresults"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.DuplicateResult.toString()",
+      "symbol": "Datacloud.DuplicateResult.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff",
+      "symbol": "Datacloud.FieldDiff"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.FieldDiff()",
+      "symbol": "Datacloud.FieldDiff.FieldDiff()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.difference",
+      "symbol": "Datacloud.FieldDiff.difference"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.equals(Object)",
+      "symbol": "Datacloud.FieldDiff.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.getDifference()",
+      "symbol": "Datacloud.FieldDiff.getDifference()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.getName()",
+      "symbol": "Datacloud.FieldDiff.getName()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.hashCode()",
+      "symbol": "Datacloud.FieldDiff.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.name",
+      "symbol": "Datacloud.FieldDiff.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDiff.toString()",
+      "symbol": "Datacloud.FieldDiff.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDifferenceType",
+      "symbol": "Datacloud.FieldDifferenceType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDifferenceType.FieldDifferenceType()",
+      "symbol": "Datacloud.FieldDifferenceType.FieldDifferenceType()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDifferenceType.equals(Object)",
+      "symbol": "Datacloud.FieldDifferenceType.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDifferenceType.getName()",
+      "symbol": "Datacloud.FieldDifferenceType.getName()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDifferenceType.hashCode()",
+      "symbol": "Datacloud.FieldDifferenceType.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDifferenceType.name",
+      "symbol": "Datacloud.FieldDifferenceType.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FieldDifferenceType.toString()",
+      "symbol": "Datacloud.FieldDifferenceType.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicates.FindDuplicates()",
+      "symbol": "Datacloud.FindDuplicates.FindDuplicates()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesByIds.FindDuplicatesByIds()",
+      "symbol": "Datacloud.FindDuplicatesByIds.FindDuplicatesByIds()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult.FindDuplicatesResult()",
+      "symbol": "Datacloud.FindDuplicatesResult.FindDuplicatesResult()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult.duplicateresults",
+      "symbol": "Datacloud.FindDuplicatesResult.duplicateresults"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult.equals(Object)",
+      "symbol": "Datacloud.FindDuplicatesResult.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult.errors",
+      "symbol": "Datacloud.FindDuplicatesResult.errors"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult.hashCode()",
+      "symbol": "Datacloud.FindDuplicatesResult.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult.success",
+      "symbol": "Datacloud.FindDuplicatesResult.success"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult.toString()",
+      "symbol": "Datacloud.FindDuplicatesResult.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Datacloud.MatchRecord",
+      "symbol": "Datacloud.MatchRecord"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-datacloud-dto-deterministic-001-api67",
+  "notes": "Wave26 current-base lane current-base-deterministic-mock-required-Datacloud-001: 50 uncovered apex:Datacloud rows covered with local deterministic-mock DTO evidence (construction, public fields, getters, equals/hashCode/toString). No hosted duplicate matching or Data.com service call is exercised.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Datacloud-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "selectedRowCount": 50,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce Summer '26 Apex reference documents the Datacloud DTO classes but does not document Datacloud.FieldDifferenceType or the System.Datacloud alias; this fixture preserves local deterministic-mock evidence without claiming Salesforce availability for every row in the lane.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseDatacloudDtoDeterministic001Test {\n    @isTest static void datacloudDtoDeterministic001Witness() {\n        Datacloud.AdditionalInformationMap aim = new Datacloud.AdditionalInformationMap();\n        System.assertNotEquals(null, aim);\n        aim.name = 'Country';\n        aim.value = 'US';\n        System.assertEquals('Country', aim.name);\n        System.assertEquals('US', aim.value);\n        System.assertEquals('Country', aim.getName());\n        System.assertEquals('US', aim.getValue());\n        System.assertEquals(true, aim.equals(aim));\n        System.assertNotEquals(null, aim.hashCode());\n        System.assertNotEquals(null, aim.toString());\n\n        Datacloud.DuplicateResult dr = new Datacloud.DuplicateResult();\n        System.assertNotEquals(null, dr);\n        dr.allowsave = true;\n        dr.duplicaterule = 'Rule1';\n        dr.duplicateruleentitytype = 'Account';\n        dr.errormessage = 'duplicate detected';\n        dr.matchresults = new List<Datacloud.MatchResult>();\n        System.assertEquals(true, dr.allowsave);\n        System.assertEquals('Rule1', dr.duplicaterule);\n        System.assertEquals('Account', dr.duplicateruleentitytype);\n        System.assertEquals('duplicate detected', dr.errormessage);\n        System.assertEquals(true, dr.isAllowSave());\n        System.assertEquals('Rule1', dr.getDuplicateRule());\n        System.assertEquals('Account', dr.getDuplicateRuleEntityType());\n        System.assertEquals('duplicate detected', dr.getErrorMessage());\n        System.assertEquals(0, dr.matchresults.size());\n        System.assertEquals(true, dr.getMatchResults() == null || dr.getMatchResults().isEmpty());\n        System.assertEquals(true, dr.equals(dr));\n        System.assertNotEquals(null, dr.hashCode());\n        System.assertNotEquals(null, dr.toString());\n\n        Datacloud.FieldDiff fd = new Datacloud.FieldDiff();\n        System.assertNotEquals(null, fd);\n        fd.name = 'Name';\n        fd.difference = 'Changed';\n        System.assertEquals('Name', fd.name);\n        System.assertEquals('Changed', fd.difference);\n        System.assertEquals('Name', fd.getName());\n        System.assertEquals('Changed', fd.getDifference());\n        System.assertEquals(true, fd.equals(fd));\n        System.assertNotEquals(null, fd.hashCode());\n        System.assertNotEquals(null, fd.toString());\n\n        Datacloud.FieldDifferenceType fdt = new Datacloud.FieldDifferenceType();\n        System.assertNotEquals(null, fdt);\n        fdt.name = 'SAME';\n        System.assertEquals('SAME', fdt.name);\n        System.assertEquals('SAME', fdt.getName());\n        System.assertEquals(true, fdt.equals(fdt));\n        System.assertNotEquals(null, fdt.hashCode());\n        System.assertNotEquals(null, fdt.toString());\n\n        Datacloud.FindDuplicates finder = new Datacloud.FindDuplicates();\n        System.assertNotEquals(null, finder);\n        Datacloud.FindDuplicatesByIds finderByIds = new Datacloud.FindDuplicatesByIds();\n        System.assertNotEquals(null, finderByIds);\n\n        Datacloud.FindDuplicatesResult fdr = new Datacloud.FindDuplicatesResult();\n        System.assertNotEquals(null, fdr);\n        fdr.duplicateresults = new List<Datacloud.DuplicateResult>{dr};\n        fdr.errors = new List<Database.Error>();\n        fdr.success = true;\n        System.assertEquals(1, fdr.duplicateresults.size());\n        System.assertEquals(0, fdr.errors.size());\n        System.assertEquals(true, fdr.success);\n        System.assertEquals(true, fdr.equals(fdr));\n        System.assertNotEquals(null, fdr.hashCode());\n        System.assertNotEquals(null, fdr.toString());\n\n        Datacloud.MatchRecord mr = new Datacloud.MatchRecord();\n        System.assertNotEquals(null, mr);\n    }\n}\n",
+      "path": "force-app/main/default/classes/CurrentBaseDatacloudDtoDeterministic001Test.cls"
+    }
+  ]
+}

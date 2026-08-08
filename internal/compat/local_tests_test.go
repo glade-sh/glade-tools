@@ -655,6 +655,19 @@ func TestRefusedLocalTestSafetyContractsRejectUnsafeMismatch(t *testing.T) {
 	}
 }
 
+func TestRefusedLocalTestSafetyContractsRejectZeroDiscoveredTests(t *testing.T) {
+	baseReport, candidateReport, baseRoot, candidateRoot := newEmptyLocalTestSafetyReports()
+	baseRaw := marshalLocalTestSafetyReport(t, baseReport)
+	candidateRaw := marshalLocalTestSafetyReport(t, candidateReport)
+	baseArtifact, candidateArtifact := writeLocalTestSafetyArtifacts(t, baseRaw, baseRoot, candidateRaw, candidateRoot)
+
+	comparison := CompareLocalTestSafetyContracts(baseArtifact, candidateArtifact)
+
+	if comparison.Status != "refused" || comparison.ContractSHA256 != "" {
+		t.Fatalf("CompareLocalTestSafetyContracts = %#v, want refused without digest for zero discovered tests", comparison)
+	}
+}
+
 func TestRefusedLocalTestSafetyComparisonRecordsReasonAndOmitsClaims(t *testing.T) {
 	baseReport, candidateReport, baseRoot, candidateRoot := newLocalTestSafetyReports()
 	candidateReport.CasesRun--

@@ -1,6 +1,7 @@
 {
   "name": "http-callout-mock-edges",
   "evidence": [
+    {"surfaceId": "apex:System.Test.setMock(String,Object)", "symbol": "Test.setMock(String,Object)", "kind": "test"},
     {
       "symbol": "HttpRequest",
       "kind": "test",

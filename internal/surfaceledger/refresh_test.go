@@ -34,6 +34,34 @@ func TestRefreshWritesLedgerReportsAndSnapshots(t *testing.T) {
 	}
 }
 
+func TestSurfaceRefreshWithoutOracleEvidenceKeepsFixtureEvidence(t *testing.T) {
+	docs := t.TempDir()
+	out := t.TempDir()
+	writeDoc(t, docs, "apex/system_label.md", "# Label Class\n")
+	fixture := filepath.Join(t.TempDir(), "fixture.json")
+	if err := os.WriteFile(fixture, []byte(`{
+  "name": "cb41-fixture-only",
+  "evidence": [{"symbol":"System.Label.get","surfaceId":"apex:System.Label.get(String,String)","kind":"exec"}],
+  "command": {"kind":"exec"},
+  "expected": {"stdout":""}
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := Refresh(RefreshOptions{
+		DocsSource:          docs,
+		EvidenceFixtureGlob: []string{fixture},
+		OutputDir:           out,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	row := rowsByID(result.Ledger.Rows)["apex:System.Label.get(String,String)"]
+	if row.Evidence != EvidenceFixture {
+		t.Fatalf("fixture-only row evidence = %s, want fixture", row.Evidence)
+	}
+}
+
 func writeTooling(t *testing.T, path string) {
 	t.Helper()
 	completions := capability.ToolingCompletions{

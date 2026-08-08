@@ -237,6 +237,27 @@ func TestBuildEvidenceSnapshotMarksApexShapeEvidenceAsShapeOnly(t *testing.T) {
 	}
 }
 
+func TestBuildEvidenceSnapshotExcludesAPI67RemovedSiteHelpers(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-site-local-contracts.json")
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:System.Site.getCurrentSiteUrl",
+		"apex:System.Site.getCustomWebAddress",
+		"apex:System.Site.getPrefix",
+	} {
+		if _, present := byID[id]; present {
+			t.Errorf("removed Site helper entered positive evidence snapshot: %s", id)
+		}
+		if _, present := byID[id+"()"]; present {
+			t.Errorf("removed Site helper entered positive evidence snapshot: %s()", id)
+		}
+	}
+}
+
 func TestBuildEvidenceSnapshotReadsTrailblazerIdentityFixture(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-trailblazer-identity-local-evidence.json")
 	rows, err := BuildEvidenceSnapshot([]string{path})
@@ -424,7 +445,6 @@ func TestBuildEvidenceSnapshotReadsApexTailShapeEvidence(t *testing.T) {
 		"apex:System.Set.addAll(Set<Object>)",
 		"apex:System.Set.containsAll(Set<Object>)",
 		"apex:System.Set.removeAll(Set<Object>)",
-		"apex:System.String.template()",
 		"apex:System.System.runAs(User)",
 	} {
 		row, ok := byID[id]
@@ -781,5 +801,85 @@ func TestBuildEvidenceSnapshotTreatsNoParenDescribeMemberAsProperty(t *testing.T
 	row := rowsByID(rows)[id]
 	if row.Kind != KindProperty || row.Namespace != "Schema" || row.TypeName != "DescribeTabSetResult" || row.MemberName != "name" {
 		t.Fatalf("property row = kind:%s namespace:%s type:%s member:%s rows:%#v", row.Kind, row.Namespace, row.TypeName, row.MemberName, rows)
+	}
+}
+
+func TestBuildEvidenceSnapshotReadsApexPagesSeverityLocalEvidence(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "apex-apexpages-severity-local-evidence.json")
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:ApexPages.Severity.ERROR",
+		"apex:ApexPages.Severity.INFO",
+		"apex:ApexPages.Severity.WARNING",
+		"apex:ApexPages.Severity.CONFIRM",
+		"apex:ApexPages.Severity.FATAL",
+	} {
+		row := byID[id]
+		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
+			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/supported", id, row.Evidence, row.GladeBehavior)
+		}
+	}
+}
+
+func TestBuildEvidenceSnapshotReadsAnswersFindSimilarLocalEvidence(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-answers-find-similar-local-evidence.json")
+	rows, err := BuildEvidenceSnapshot([]string{path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+
+	exactRow := byID["apex:Answers.findSimilar(Object)"]
+	if exactRow.Evidence != EvidenceFixture || exactRow.GladeBehavior != BehaviorSupported {
+		t.Fatalf("exact Answers.findSimilar(Object) evidence/behavior = %s/%s, want fixture/supported", exactRow.Evidence, exactRow.GladeBehavior)
+	}
+
+	// Raw evidence has two family rows: one shape-only, one behavior-supported.
+	familyID := "apex:Answers.findSimilar"
+	var familyShapeRow, familyTestRow *SurfaceLedgerRow
+	for i := range rows {
+		if rows[i].SurfaceID == familyID {
+			if rows[i].GladeBehavior == BehaviorNone {
+				familyShapeRow = &rows[i]
+			} else if rows[i].GladeBehavior == BehaviorSupported {
+				familyTestRow = &rows[i]
+			}
+		}
+	}
+	if familyShapeRow == nil {
+		t.Fatalf("missing shape-only family row for %s", familyID)
+	}
+	if familyShapeRow.GladeShape == ShapeAbsent || familyShapeRow.GladeBehavior != BehaviorNone || familyShapeRow.Evidence != EvidenceFixture {
+		t.Fatalf("shape-only family row shape/behavior/evidence = %s/%s/%s, want non-absent/none/fixture", familyShapeRow.GladeShape, familyShapeRow.GladeBehavior, familyShapeRow.Evidence)
+	}
+	if familyTestRow == nil {
+		t.Fatalf("missing behavior-supported family row for %s", familyID)
+	}
+	if familyTestRow.GladeBehavior != BehaviorSupported || familyTestRow.Evidence != EvidenceFixture {
+		t.Fatalf("behavior family row behavior/evidence = %s/%s, want supported/fixture", familyTestRow.GladeBehavior, familyTestRow.Evidence)
+	}
+
+	// After merge, the single family row closes the gap.
+	ledger := Merge(nil, nil, nil, rows)
+	mergedByID := rowsByID(ledger.Rows)
+	familyMerged := mergedByID[familyID]
+	if familyMerged.GladeShape == ShapeAbsent {
+		t.Fatalf("merged family row shape is absent, want non-absent")
+	}
+	if familyMerged.GladeBehavior != BehaviorSupported {
+		t.Fatalf("merged family row behavior = %s, want %s", familyMerged.GladeBehavior, BehaviorSupported)
+	}
+	if familyMerged.Evidence != EvidenceFixture {
+		t.Fatalf("merged family row evidence = %s, want %s", familyMerged.Evidence, EvidenceFixture)
+	}
+	if familyMerged.Bucket != BucketImplemented {
+		t.Fatalf("merged family row bucket = %s, want %s", familyMerged.Bucket, BucketImplemented)
+	}
+	if familyMerged.GapClass != "" {
+		t.Fatalf("merged family row gap = %s, want empty", familyMerged.GapClass)
 	}
 }

@@ -1,0 +1,174 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "sha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadata.CustomMetadata()",
+      "symbol": "Metadata.CustomMetadata.CustomMetadata()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadata.description",
+      "symbol": "Metadata.CustomMetadata.description"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadata.fullName",
+      "symbol": "Metadata.CustomMetadata.fullName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadata.label",
+      "symbol": "Metadata.CustomMetadata.label"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadata.protected_x",
+      "symbol": "Metadata.CustomMetadata.protected_x"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadata.values",
+      "symbol": "Metadata.CustomMetadata.values"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadataValue.CustomMetadataValue()",
+      "symbol": "Metadata.CustomMetadataValue.CustomMetadataValue()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadataValue.field",
+      "symbol": "Metadata.CustomMetadataValue.field"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomMetadataValue.value",
+      "symbol": "Metadata.CustomMetadataValue.value"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject",
+      "symbol": "Metadata.CustomObject"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.CustomObject()",
+      "symbol": "Metadata.CustomObject.CustomObject()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.deploymentStatus",
+      "symbol": "Metadata.CustomObject.deploymentStatus"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.description",
+      "symbol": "Metadata.CustomObject.description"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.enableActivities",
+      "symbol": "Metadata.CustomObject.enableActivities"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.enableReports",
+      "symbol": "Metadata.CustomObject.enableReports"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.fullName",
+      "symbol": "Metadata.CustomObject.fullName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.label",
+      "symbol": "Metadata.CustomObject.label"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.CustomObject.pluralLabel",
+      "symbol": "Metadata.CustomObject.pluralLabel"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployCallback",
+      "symbol": "Metadata.DeployCallback"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployCallbackContext.getCallbackJobId()",
+      "symbol": "Metadata.DeployCallbackContext.getCallbackJobId()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployContainer.DeployContainer()",
+      "symbol": "Metadata.DeployContainer.DeployContainer()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployContainer.addMetadata(Metadata.Metadata)",
+      "symbol": "Metadata.DeployContainer.addMetadata(Metadata.Metadata)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployContainer.getMetadata()",
+      "symbol": "Metadata.DeployContainer.getMetadata()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployContainer.removeMetadata(Metadata.Metadata)",
+      "symbol": "Metadata.DeployContainer.removeMetadata(Metadata.Metadata)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployContainer.removeMetadataByFullName(String)",
+      "symbol": "Metadata.DeployContainer.removeMetadataByFullName(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployMessage.id",
+      "symbol": "Metadata.DeployMessage.id"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.DeployMessage.problemType",
+      "symbol": "Metadata.DeployMessage.problemType"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-deterministic-mock-required-Metadata-001",
+  "notes": "Current-base Metadata-001 covers only the 27 queue rows not already present in existing fixture evidence. The source exercises local DTO construction, member access, callback shape, and deploy-container collection behavior.",
+  "profile": {
+    "laneId": "current-base-deterministic-mock-required-Metadata-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 27,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The current Salesforce compile oracle does not accept the Metadata DTO surface in this lane; this fixture records local deterministic-mock construction and member behavior only and makes no Salesforce compile claim.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseDeterministicMockRequiredMetadata001Test { private class CallbackProbe implements Metadata.DeployCallback { public void handleResult(Metadata.DeployResult result, Metadata.DeployCallbackContext context) { System.assertNotEquals(null, context); } } @isTest static void metadata001Witness() { Metadata.CustomMetadata custom = new Metadata.CustomMetadata(); custom.description = 'Feature description'; custom.fullName = 'Feature.Default'; custom.label = 'Feature'; custom.protected_x = true; Metadata.CustomMetadataValue value = new Metadata.CustomMetadataValue(); value.field = 'Enabled__c'; value.value = true; custom.values = new List<Metadata.CustomMetadataValue>{value}; System.assertEquals('Feature', custom.label); System.assertEquals('Enabled__c', custom.values[0].field); System.assertEquals(true, custom.values[0].value); Metadata.CustomObject objectDef = new Metadata.CustomObject(); objectDef.deploymentStatus = 'Deployed'; objectDef.description = 'Object description'; objectDef.enableActivities = true; objectDef.enableReports = true; objectDef.fullName = 'Fixture__c'; objectDef.label = 'Fixture'; objectDef.pluralLabel = 'Fixtures'; System.assertEquals('Fixture__c', objectDef.fullName); System.assertEquals(true, objectDef.enableActivities); System.assertEquals(true, objectDef.enableReports); Metadata.DeployCallback callback = new CallbackProbe(); Metadata.DeployCallbackContext context = new Metadata.DeployCallbackContext(); System.assertEquals(null, context.getCallbackJobId()); Metadata.DeployContainer container = new Metadata.DeployContainer(); container.addMetadata(objectDef); System.assertEquals(1, container.getMetadata().size()); System.assertEquals(true, container.removeMetadata(objectDef)); container.addMetadata(custom); System.assertEquals(true, container.removeMetadataByFullName('Feature.Default')); Metadata.DeployMessage message = new Metadata.DeployMessage(); message.id = '0Af000000000001AAA'; message.problemType = Metadata.DeployProblemType.Info; System.assertEquals('0Af000000000001AAA', message.id); System.assertEquals(Metadata.DeployProblemType.Info, message.problemType); System.assertNotEquals(null, callback); } }",
+      "path": "force-app/main/classes/CurrentBaseDeterministicMockRequiredMetadata001Test.cls"
+    }
+  ]
+}

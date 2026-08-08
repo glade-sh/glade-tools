@@ -1,0 +1,228 @@
+{
+  "name": "core-runtime-metadata-deploy-dto-api67",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Metadata.DeployMessage message = new Metadata.DeployMessage();\nmessage.changed = true;\nmessage.columnNumber = 4;\nmessage.componentType = 'ApexClass';\nmessage.created = true;\nmessage.createdDate = Datetime.newInstance(2026, 1, 2, 3, 4, 5);\nmessage.deleted = false;\nmessage.fileName = 'Example.cls';\nmessage.fullName = 'Example';\nmessage.lineNumber = 9;\nmessage.problem = 'none';\nmessage.success = true;\nSystem.assertEquals(true, message.changed);\nSystem.assertEquals(4, message.columnNumber);\nSystem.assertEquals('ApexClass', message.componentType);\nSystem.assertEquals(true, message.created);\nSystem.assertEquals(false, message.deleted);\nSystem.assertEquals('Example.cls', message.fileName);\nSystem.assertEquals('Example', message.fullName);\nSystem.assertEquals(9, message.lineNumber);\nSystem.assertEquals('none', message.problem);\nSystem.assertEquals(true, message.success);\n\nMetadata.DeployDetails details = new Metadata.DeployDetails();\ndetails.componentFailures = new List<Metadata.DeployMessage>{ message };\ndetails.componentSuccesses = new List<Metadata.DeployMessage>{ message };\nSystem.assertEquals(1, details.componentFailures.size());\nSystem.assertEquals(1, details.componentSuccesses.size());\n\nMetadata.DeployResult result = new Metadata.DeployResult();\nresult.canceledBy = 'operator';\nresult.canceledByName = 'Operator';\nresult.checkOnly = false;\nresult.createdBy = '005000000000000';\nresult.createdByName = 'Operator';\nresult.details = details;\nresult.done = true;\nresult.errorMessage = null;\nresult.ignoreWarnings = true;\nresult.numberComponentErrors = 0;\nresult.numberComponentsDeployed = 1;\nresult.numberComponentsTotal = 1;\nresult.rollbackOnError = true;\nresult.stateDetail = 'complete';\nresult.status = Metadata.DeployStatus.Succeeded;\nresult.success = true;\nSystem.assertEquals('operator', result.canceledBy);\nSystem.assertEquals('Operator', result.canceledByName);\nSystem.assertEquals(false, result.checkOnly);\nSystem.assertEquals('Operator', result.createdByName);\nSystem.assertEquals(1, result.details.componentSuccesses.size());\nSystem.assertEquals(true, result.done);\nSystem.assertEquals(true, result.ignoreWarnings);\nSystem.assertEquals(0, result.numberComponentErrors);\nSystem.assertEquals(1, result.numberComponentsDeployed);\nSystem.assertEquals(1, result.numberComponentsTotal);\nSystem.assertEquals(true, result.rollbackOnError);\nSystem.assertEquals('complete', result.stateDetail);\nSystem.assertEquals(Metadata.DeployStatus.Succeeded, result.status);\nSystem.assertEquals(true, result.success);\n"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Metadata.DeployMessage message = new Metadata.DeployMessage();\nmessage.changed = true;\nmessage.columnNumber = 4;\nmessage.componentType = 'ApexClass';\nmessage.created = true;\nmessage.createdDate = Datetime.newInstance(2026, 1, 2, 3, 4, 5);\nmessage.deleted = false;\nmessage.fileName = 'Example.cls';\nmessage.fullName = 'Example';\nmessage.lineNumber = 9;\nmessage.problem = 'none';\nmessage.success = true;\nSystem.assertEquals(true, message.changed);\nSystem.assertEquals(4, message.columnNumber);\nSystem.assertEquals('ApexClass', message.componentType);\nSystem.assertEquals(true, message.created);\nSystem.assertEquals(false, message.deleted);\nSystem.assertEquals('Example.cls', message.fileName);\nSystem.assertEquals('Example', message.fullName);\nSystem.assertEquals(9, message.lineNumber);\nSystem.assertEquals('none', message.problem);\nSystem.assertEquals(true, message.success);\n\nMetadata.DeployDetails details = new Metadata.DeployDetails();\ndetails.componentFailures = new List<Metadata.DeployMessage>{ message };\ndetails.componentSuccesses = new List<Metadata.DeployMessage>{ message };\nSystem.assertEquals(1, details.componentFailures.size());\nSystem.assertEquals(1, details.componentSuccesses.size());\n\nMetadata.DeployResult result = new Metadata.DeployResult();\nresult.canceledBy = 'operator';\nresult.canceledByName = 'Operator';\nresult.checkOnly = false;\nresult.createdBy = '005000000000000';\nresult.createdByName = 'Operator';\nresult.details = details;\nresult.done = true;\nresult.errorMessage = null;\nresult.ignoreWarnings = true;\nresult.numberComponentErrors = 0;\nresult.numberComponentsDeployed = 1;\nresult.numberComponentsTotal = 1;\nresult.rollbackOnError = true;\nresult.stateDetail = 'complete';\nresult.status = Metadata.DeployStatus.Succeeded;\nresult.success = true;\nSystem.assertEquals('operator', result.canceledBy);\nSystem.assertEquals('Operator', result.canceledByName);\nSystem.assertEquals(false, result.checkOnly);\nSystem.assertEquals('Operator', result.createdByName);\nSystem.assertEquals(1, result.details.componentSuccesses.size());\nSystem.assertEquals(true, result.done);\nSystem.assertEquals(true, result.ignoreWarnings);\nSystem.assertEquals(0, result.numberComponentErrors);\nSystem.assertEquals(1, result.numberComponentsDeployed);\nSystem.assertEquals(1, result.numberComponentsTotal);\nSystem.assertEquals(true, result.rollbackOnError);\nSystem.assertEquals('complete', result.stateDetail);\nSystem.assertEquals(Metadata.DeployStatus.Succeeded, result.status);\nSystem.assertEquals(true, result.success);\n"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Metadata.DeployDetails",
+      "symbol": "Metadata.DeployDetails",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployDetails.DeployDetails()",
+      "symbol": "Metadata.DeployDetails.DeployDetails()",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployDetails.componentFailures",
+      "symbol": "Metadata.DeployDetails.componentFailures",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployDetails.componentSuccesses",
+      "symbol": "Metadata.DeployDetails.componentSuccesses",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage",
+      "symbol": "Metadata.DeployMessage",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.DeployMessage()",
+      "symbol": "Metadata.DeployMessage.DeployMessage()",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.changed",
+      "symbol": "Metadata.DeployMessage.changed",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.columnNumber",
+      "symbol": "Metadata.DeployMessage.columnNumber",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.componentType",
+      "symbol": "Metadata.DeployMessage.componentType",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.created",
+      "symbol": "Metadata.DeployMessage.created",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.createdDate",
+      "symbol": "Metadata.DeployMessage.createdDate",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.deleted",
+      "symbol": "Metadata.DeployMessage.deleted",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.fileName",
+      "symbol": "Metadata.DeployMessage.fileName",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.fullName",
+      "symbol": "Metadata.DeployMessage.fullName",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.lineNumber",
+      "symbol": "Metadata.DeployMessage.lineNumber",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.problem",
+      "symbol": "Metadata.DeployMessage.problem",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage.success",
+      "symbol": "Metadata.DeployMessage.success",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.DeployResult()",
+      "symbol": "Metadata.DeployResult.DeployResult()",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.canceledBy",
+      "symbol": "Metadata.DeployResult.canceledBy",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.canceledByName",
+      "symbol": "Metadata.DeployResult.canceledByName",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.checkOnly",
+      "symbol": "Metadata.DeployResult.checkOnly",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.createdBy",
+      "symbol": "Metadata.DeployResult.createdBy",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.createdByName",
+      "symbol": "Metadata.DeployResult.createdByName",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.details",
+      "symbol": "Metadata.DeployResult.details",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.done",
+      "symbol": "Metadata.DeployResult.done",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.errorMessage",
+      "symbol": "Metadata.DeployResult.errorMessage",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.ignoreWarnings",
+      "symbol": "Metadata.DeployResult.ignoreWarnings",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.numberComponentErrors",
+      "symbol": "Metadata.DeployResult.numberComponentErrors",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.numberComponentsDeployed",
+      "symbol": "Metadata.DeployResult.numberComponentsDeployed",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.numberComponentsTotal",
+      "symbol": "Metadata.DeployResult.numberComponentsTotal",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.rollbackOnError",
+      "symbol": "Metadata.DeployResult.rollbackOnError",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.stateDetail",
+      "symbol": "Metadata.DeployResult.stateDetail",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.status",
+      "symbol": "Metadata.DeployResult.status",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployResult.success",
+      "symbol": "Metadata.DeployResult.success",
+      "kind": "exec",
+      "notes": "API 67 dual-oracle Metadata deploy DTO construction/accessor batch."
+    }
+  ],
+  "notes": "Salesforce API 67 and Glade anonymous Apex dual-oracle Metadata deploy DTO construction/accessor batch. Excludes removed or unsupported properties problemType, messages, and id/date-only fields until a dual-valid contract is available."
+}

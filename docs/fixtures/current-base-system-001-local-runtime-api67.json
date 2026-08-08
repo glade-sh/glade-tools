@@ -1,0 +1,142 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "The executable uses the unqualified BusinessHours and AsyncInfo names supplied by the default System namespace import.",
+      "surfaceId": "apex-language:SystemNamespaceDefaultImport",
+      "symbol": "SystemNamespaceDefaultImport"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessHours",
+      "symbol": "BusinessHours"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessHours.BusinessHours()",
+      "symbol": "BusinessHours.BusinessHours()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:BusinessHours.clone()",
+      "symbol": "BusinessHours.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.AsyncInfo.AsyncInfo()",
+      "symbol": "System.AsyncInfo.AsyncInfo()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.AsyncInfo.clone()",
+      "symbol": "System.AsyncInfo.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Blob.Blob()",
+      "symbol": "System.Blob.Blob()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Boolean.Boolean()",
+      "symbol": "System.Boolean.Boolean()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Enum",
+      "symbol": "System.Enum"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.ExternalServiceTest",
+      "symbol": "System.ExternalServiceTest"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.ExternalServiceTest.ExternalServiceTest()",
+      "symbol": "System.ExternalServiceTest.ExternalServiceTest()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.ExternalServiceTest.clone()",
+      "symbol": "System.ExternalServiceTest.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.FatalCursorException",
+      "symbol": "System.FatalCursorException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.FinalException",
+      "symbol": "System.FinalException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.FinalizerContext.FinalizerContext()",
+      "symbol": "System.FinalizerContext.FinalizerContext()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.FlowException",
+      "symbol": "System.FlowException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.FormulaEvaluationException",
+      "symbol": "System.FormulaEvaluationException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.FormulaValidationException",
+      "symbol": "System.FormulaValidationException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.HandledException",
+      "symbol": "System.HandledException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.HttpCalloutMock",
+      "symbol": "System.HttpCalloutMock"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-system-001-local-runtime-api67",
+  "notes": "Current-base lane current-base-local-runtime-required-System-001: exactly the 20 queue rows absent from existing fixture evidence. The test exercises default System namespace resolution, value construction/cloning, external-service callback behavior, and catchable exception construction.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-local-runtime-required-System-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 20,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture records Glade local-runtime behavior only; it does not claim hosted Salesforce execution for the local mock and passive runtime contracts.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseSystem001Test { @isTest static void localRuntime001Witness() { BusinessHours hours = new BusinessHours(); System.assertNotEquals(null, hours); System.assertNotEquals(null, hours.clone()); AsyncInfo asyncInfo = new AsyncInfo(); Object asyncCopy = asyncInfo.clone(); System.assertNotEquals(null, asyncInfo); System.assertNotEquals(null, asyncCopy); Blob emptyBlob = new Blob(); System.assertNotEquals(null, emptyBlob); Boolean defaultBoolean = new Boolean(); System.assertNotEquals(null, defaultBoolean); System.Enum enumValue = null; System.assertEquals(null, enumValue); ExternalServiceTest service = new ExternalServiceTest(); System.assertNotEquals(null, service); System.assertNotEquals(null, service.clone()); HttpResponse callback = service.sendCallback(new HttpRequest()); System.assertEquals(200, callback.getStatusCode()); Exception cause = new QueryException('cause'); FatalCursorException fatal0 = new FatalCursorException(); FatalCursorException fatal1 = new FatalCursorException(cause); FatalCursorException fatal2 = new FatalCursorException('fatal', cause); FatalCursorException fatal3 = new FatalCursorException('fatal', cause); System.assertNotEquals(null, fatal0); System.assertNotEquals(null, fatal1); System.assertEquals('fatal', fatal2.getMessage()); System.assertEquals('fatal', fatal3.getMessage()); FinalizerContext finalizerContext = new FinalizerContext(); System.assertNotEquals(null, finalizerContext); FlowException flow0 = new FlowException(); FlowException flow1 = new FlowException(cause); FlowException flow2 = new FlowException('flow'); FlowException flow3 = new FlowException('flow', cause); System.assertEquals('flow', flow2.getMessage()); System.assertNotEquals(null, flow0); System.assertNotEquals(null, flow1); System.assertNotEquals(null, flow3); FormulaEvaluationException evaluation0 = new FormulaEvaluationException(); FormulaEvaluationException evaluation1 = new FormulaEvaluationException(cause); FormulaEvaluationException evaluation2 = new FormulaEvaluationException('evaluation'); FormulaEvaluationException evaluation3 = new FormulaEvaluationException('evaluation', cause); System.assertEquals('evaluation', evaluation2.getMessage()); System.assertNotEquals(null, evaluation0); System.assertNotEquals(null, evaluation1); System.assertNotEquals(null, evaluation3); FormulaValidationException validation0 = new FormulaValidationException(); FormulaValidationException validation1 = new FormulaValidationException(cause); FormulaValidationException validation2 = new FormulaValidationException('validation'); FormulaValidationException validation3 = new FormulaValidationException('validation', cause); System.assertEquals('validation', validation2.getMessage()); System.assertNotEquals(null, validation0); System.assertNotEquals(null, validation1); System.assertNotEquals(null, validation3); HandledException handled0 = new HandledException(); HandledException handled1 = new HandledException(cause); HandledException handled2 = new HandledException('handled'); HandledException handled3 = new HandledException('handled', cause); System.assertEquals('handled', handled2.getMessage()); System.assertNotEquals(null, handled0); System.assertNotEquals(null, handled1); System.assertNotEquals(null, handled3); } }",
+      "path": "force-app/main/default/classes/CurrentBaseSystem001Test.cls"
+    },
+    {
+      "content": "public class CurrentBaseSystem001Mock implements HttpCalloutMock { public HttpResponse respond(HttpRequest request) { HttpResponse response = new HttpResponse(); response.setStatusCode(202); response.setBody('mock'); return response; } }",
+      "path": "force-app/main/default/classes/CurrentBaseSystem001Mock.cls"
+    }
+  ]
+}

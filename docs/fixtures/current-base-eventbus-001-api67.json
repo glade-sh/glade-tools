@@ -1,0 +1,59 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254"
+  },
+  "command": {
+    "args": [
+      "System.EventBus bus = new System.EventBus(); System.assertNotEquals(null, bus); Database.SaveResult result = EventBus.publish(new Event_Recipes_Demo__e()); System.assert(result.isSuccess());"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.EventBus",
+      "symbol": "System.EventBus"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.EventBus.EventBus()",
+      "symbol": "System.EventBus.EventBus"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.EventBus.publish",
+      "symbol": "System.EventBus.publish"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-eventbus-001-api67",
+  "notes": "Covers the three missing rows from current-base-local-runtime-required-EventBus-001: the System.EventBus type, its local constructor shape, and the canonical publish entry point.",
+  "profile": {
+    "laneId": "current-base-local-runtime-required-EventBus-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 3,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves the deterministic local EventBus type, constructor, and platform-event publish contract; hosted delivery is not claimed.",
+  "schema": [
+    {
+      "content": "<CustomObject><label>Event Recipes Demo</label><pluralLabel>Event Recipes Demos</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>",
+      "path": "force-app/main/default/objects/Event_Recipes_Demo__e/Event_Recipes_Demo__e.object-meta.xml"
+    }
+  ],
+  "source": [
+    {
+      "content": "System.EventBus bus = new System.EventBus(); System.assertNotEquals(null, bus); Database.SaveResult result = EventBus.publish(new Event_Recipes_Demo__e()); System.assert(result.isSuccess());",
+      "path": "anonymous.apex"
+    }
+  ]
+}

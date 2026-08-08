@@ -1,0 +1,57 @@
+{
+  "name": "salesforce-cb192-system-test-limits-comparisons",
+  "packetId": "CB192",
+  "apiVersion": "67.0",
+  "mode": "test-class",
+  "candidate": {
+    "commit": "381e27e47e720ac7dbecb906bf275d2d5bcdd37f",
+    "sha256": "976c2ceceb2a0936889129d2dc7314d2065fbc538caf54bbb534f20e4f588166"
+  },
+  "canonicalSnapshot": {
+    "name": "GLADE_SNAPSHOT.json",
+    "path": "evidence/current-base/surface-381e27e4-cb191-20260802-1505/GLADE_SNAPSHOT.json",
+    "sha256": "07389a70201b1e14020278c7bea88e24afaa98398864861ddfc36b02ae8dd7e4"
+  },
+  "salesforceExecution": {
+    "orgAlias": "glade-cb190-schema-20260802",
+    "orgId": "00Ddq00000EcrPpEAJ",
+    "orgApiVersion": "67.0",
+    "className": "CB192SystemTestLimitsOracle",
+    "methodName": "broadSystemTestLimits",
+    "result": "Pass",
+    "debugLog": "evidence/sf-cb192-system-test-limits-current-oracle/runs/salesforce-test-debug-rerun.log",
+    "debugLogId": "07Ldq00000WGx6XEAT"
+  },
+  "comparisons": [
+    {
+      "caseId": "cb192-broad-test-class-system-test-limits",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:System.Test.isRunningTest()",
+        "apex:System.Test.setMock(Type,Object)",
+        "apex:System.Test.startTest()",
+        "apex:System.Test.stopTest()",
+        "apex:System.Limits.getDmlRows",
+        "apex:System.Limits.getDmlStatements",
+        "apex:System.Limits.getQueries()",
+        "apex:System.Limits.getQueryRows()",
+        "apex:System.Assert.areEqual(Object,Object)"
+      ],
+      "expectedObservation": "Test context is true before, inside, and after start/stop; startTest resets the observed DML/query counters; one Account insert produces DML statements=1 and DML rows=1; one Account query produces queries=1 and query rows=1; stopTest restores the observed counters to zero.",
+      "sfObservation": "API 67.0 Salesforce test-class run passed. Debug markers: pre test=true dml=0 dmlRows=0 queries=0 queryRows=0; start test=true dml=0 dmlRows=0 queries=0 queryRows=0; after-insert test=true dml=1 dmlRows=1 queries=0 queryRows=0; after-query test=true dml=1 dmlRows=1 queries=1 queryRows=1; stop test=true dml=0 dmlRows=0 queries=0 queryRows=0.",
+      "gladeObservation": "Pinned candidate test-class run passed with the same source and assertions for the boolean context, start/stop reset, one-row DML increment, and one-row query increment; trace records one Account insert and one Account SOQL operation."
+    }
+  ],
+  "excluded": [
+    {
+      "caseId": "cb192-uncalled-system-test-limits-profile-rows",
+      "status": "inconclusive",
+      "credited": false,
+      "surfaceIds": [],
+      "reason": "The broad class directly called only the nine surface IDs above. Uncalled System.Test overloads, passive types, limit getters, ceilings, async/callout delivery, and package-dependent behavior remain open.",
+      "mismatchStatus": "none",
+      "mismatchFamily": "not-exercised"
+    }
+  ],
+  "mismatches": []
+}

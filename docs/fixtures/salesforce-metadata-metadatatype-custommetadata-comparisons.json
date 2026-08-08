@@ -1,0 +1,38 @@
+{
+  "name": "salesforce-metadata-metadatatype-custommetadata-comparisons",
+  "apiVersion": "67.0",
+  "mode": "anonymous",
+  "candidate": {
+    "commit": "98ef01033dde700661fa150e3bae05116fa62ab8",
+    "sha256": "ab3b86d0fb96c92068de7ba82d56378e6ebac468ebe5129813c600a7e832607a"
+  },
+  "salesforceExecution": "retained-reuse-no-reexecution",
+  "retainedOracle": {
+    "path": "evidence/current-base/luna-max-cb57-oracle-run/runtime-comparisons.json",
+    "sha256": "6e277ec4d136830fbb232d966c37a4e5b372df42421aad71b6d412ccd16d44b4",
+    "caseId": "metadata-metadatatype-custommetadata"
+  },
+  "localFixtures": [
+    {
+      "path": "docs/fixtures/core-runtime-cb62-metadata-evidence.json",
+      "sha256": "514752b058e47e855c00b796d0fc2b461203d937fb2a7da468d8a3b171a04822"
+    },
+    {
+      "path": "docs/fixtures/core-runtime-metadata-operations-custommetadata.json",
+      "sha256": "884ad46d1d385303ef9500eea28fcce29ada827e5d6a910d554fce666e611964"
+    }
+  ],
+  "comparisons": [
+    {
+      "caseId": "metadata-metadatatype-custommetadata",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Metadata.MetadataType",
+        "apex:Metadata.MetadataType.CustomMetadata"
+      ],
+      "expectedObservation": "value Metadata.MetadataType",
+      "sfObservation": "value CustomMetadata Metadata.MetadataType",
+      "gladeObservation": "value CustomMetadata Metadata.MetadataType"
+    }
+  ]
+}

@@ -10,6 +10,13 @@ func Merge(docs, org, glade, evidence []SurfaceLedgerRow) SurfaceLedger {
 	for _, group := range [][]SurfaceLedgerRow{docs, org, glade, evidence} {
 		for _, row := range group {
 			row = withDefaults(row)
+			row = normalizeEventBusSurfaceRow(row)
+			if isAPI67RemovedSurfaceID(row.SurfaceID) {
+				continue
+			}
+			if isNonCanonicalGeneratedSurfaceID(row.SurfaceID) {
+				continue
+			}
 			if row.SurfaceID == "" {
 				continue
 			}
@@ -71,6 +78,30 @@ func mergeRow(base, next SurfaceLedgerRow) SurfaceLedgerRow {
 	}
 	base.Sources = mergeStrings(base.Sources, next.Sources)
 	return withDefaults(base)
+}
+
+func normalizeEventBusSurfaceRow(row SurfaceLedgerRow) SurfaceLedgerRow {
+	if row.Product != ProductApex {
+		return row
+	}
+	if row.Namespace == "" || row.TypeName == "" || row.MemberName == "" {
+		fillFromApexID(&row)
+	}
+	if row.Namespace != "System" || row.TypeName != "EventBus" || canonicalApexMemberName(row.MemberName) != "publishWithAccessLevel" {
+		return row
+	}
+	row.Parameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.Parameters)
+	if row.DocsParameters != nil {
+		row.DocsParameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.DocsParameters)
+	}
+	if row.OrgParameters != nil {
+		row.OrgParameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.OrgParameters)
+	}
+	if row.GladeParameters != nil {
+		row.GladeParameters = canonicalApexMemberParameters(row.Namespace, row.TypeName, row.MemberName, row.GladeParameters)
+	}
+	row.SurfaceID = ApexMemberID(row.Namespace, row.TypeName, row.MemberName, row.Parameters)
+	return row
 }
 
 func fillIdentity(base, next SurfaceLedgerRow) SurfaceLedgerRow {
@@ -284,6 +315,9 @@ func concreteComparableTypeForRow(row SurfaceLedgerRow, value string) string {
 	if comparableMessagingGenericBuilderBuildRow(row) && (value == "messaging.actionresult" || value == "messaging.actionablenotification") {
 		return "messaging.builder.result"
 	}
+	if comparableSystemListGetRow(row) {
+		return "list-element"
+	}
 	if value == "object" {
 		return ""
 	}
@@ -339,6 +373,16 @@ func genericCollectionComparableRow(row SurfaceLedgerRow) bool {
 	return row.Product == ProductApex &&
 		strings.EqualFold(row.Namespace, "System") &&
 		(strings.EqualFold(row.TypeName, "List") || strings.EqualFold(row.TypeName, "Set") || strings.EqualFold(row.TypeName, "Map"))
+}
+
+func comparableSystemListGetRow(row SurfaceLedgerRow) bool {
+	return row.Product == ProductApex &&
+		row.Kind == KindMethod &&
+		strings.EqualFold(row.Namespace, "System") &&
+		strings.EqualFold(row.TypeName, "List") &&
+		strings.EqualFold(row.MemberName, "get") &&
+		len(row.Parameters) == 1 &&
+		strings.EqualFold(canonicalComparableType(row.Parameters[0]), "Integer")
 }
 
 func comparableSystemVersionRow(row SurfaceLedgerRow) bool {

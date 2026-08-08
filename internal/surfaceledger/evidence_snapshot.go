@@ -29,6 +29,12 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 			if id == "" {
 				continue
 			}
+			if isNonCanonicalGeneratedSurfaceID(id) {
+				continue
+			}
+			if isAPI67RemovedSurfaceID(id) {
+				continue
+			}
 			product := productFromID(id)
 			kind := evidenceKindFromSurfaceID(id)
 			area := evidenceAreaForProduct(product)
@@ -73,6 +79,12 @@ func BuildEvidenceSnapshot(paths []string) ([]SurfaceLedgerRow, error) {
 
 func evidenceAreaForProduct(product string) string {
 	return areaForProduct(product)
+}
+
+// SortEvidenceRows sorts rows in the deterministic order used by evidence
+// snapshots and ledger outputs.
+func SortEvidenceRows(rows []SurfaceLedgerRow) {
+	sortRows(rows)
 }
 
 func fixtureEvidenceExpectsUnsupportedFeature(fixture compat.Fixture, evidence compat.FixtureEvidence, id string) bool {

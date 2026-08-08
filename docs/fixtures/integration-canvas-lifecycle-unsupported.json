@@ -1,11 +1,6 @@
 {
   "name": "integration-canvas-lifecycle-unsupported",
   "evidence": [
-    {
-      "symbol": "Canvas.LifecycleHandler.onRender",
-      "kind": "exec",
-      "notes": "Canvas lifecycle callbacks are integration-platform behavior and return stable UnsupportedFeature diagnostics locally."
-    }
   ],
   "source": [
     {

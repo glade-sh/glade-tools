@@ -1,195 +1,198 @@
 {
-  "name": "integration-platform-local-shape-cleanup",
+  "command": {
+    "args": [],
+    "kind": "test"
+  },
   "evidence": [
     {
+      "kind": "test",
+      "notes": "Local constructors expose deterministic empty body/header defaults and response OK status without network transport.",
       "surfaceId": "apex:System.HttpRequest.HttpRequest()",
-      "symbol": "HttpRequest / HttpResponse defaults",
-      "kind": "test",
-      "notes": "Local constructors expose deterministic empty body/header defaults and response OK status without network transport."
+      "symbol": "HttpRequest / HttpResponse defaults"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.getBody()",
-      "symbol": "HttpRequest.getBody",
-      "kind": "test"
+      "symbol": "HttpRequest.getBody"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.getBodyAsBlob()",
-      "symbol": "HttpRequest.getBodyAsBlob",
-      "kind": "test"
+      "symbol": "HttpRequest.getBodyAsBlob"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.getBodyDocument()",
-      "symbol": "HttpRequest.getBodyDocument",
-      "kind": "test"
+      "symbol": "HttpRequest.getBodyDocument"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.getCompressed()",
-      "symbol": "HttpRequest.getCompressed",
-      "kind": "test"
+      "symbol": "HttpRequest.getCompressed"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.getEndpoint()",
-      "symbol": "HttpRequest.getEndpoint",
-      "kind": "test"
+      "symbol": "HttpRequest.getEndpoint"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.getHeader(String)",
-      "symbol": "HttpRequest.getHeader(String)",
-      "kind": "test"
+      "symbol": "HttpRequest.getHeader(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.getMethod()",
-      "symbol": "HttpRequest.getMethod",
-      "kind": "test"
+      "symbol": "HttpRequest.getMethod"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setBody(String)",
-      "symbol": "HttpRequest.setBody(String)",
-      "kind": "test"
+      "symbol": "HttpRequest.setBody(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setBodyAsBlob(Blob)",
-      "symbol": "HttpRequest.setBodyAsBlob(Blob)",
-      "kind": "test"
+      "symbol": "HttpRequest.setBodyAsBlob(Blob)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setBodyDocument(Dom.Document)",
-      "symbol": "HttpRequest.setBodyDocument(Dom.Document)",
-      "kind": "test"
+      "symbol": "HttpRequest.setBodyDocument(Dom.Document)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setBodyDocument(Object)",
-      "symbol": "HttpRequest.setBodyDocument(Object)",
-      "kind": "test"
+      "symbol": "HttpRequest.setBodyDocument(Object)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setCompressed(Boolean)",
-      "symbol": "HttpRequest.setCompressed(Boolean)",
-      "kind": "test"
+      "symbol": "HttpRequest.setCompressed(Boolean)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setEndpoint(String)",
-      "symbol": "HttpRequest.setEndpoint(String)",
-      "kind": "test"
+      "symbol": "HttpRequest.setEndpoint(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setHeader(String,String)",
-      "symbol": "HttpRequest.setHeader(String,String)",
-      "kind": "test"
+      "symbol": "HttpRequest.setHeader(String,String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setMethod(String)",
-      "symbol": "HttpRequest.setMethod(String)",
-      "kind": "test"
+      "symbol": "HttpRequest.setMethod(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpRequest.setTimeout(Integer)",
-      "symbol": "HttpRequest.setTimeout(Integer)",
-      "kind": "test"
+      "symbol": "HttpRequest.setTimeout(Integer)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.HttpResponse()",
-      "symbol": "HttpResponse.HttpResponse",
-      "kind": "test"
+      "symbol": "HttpResponse.HttpResponse"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getBody()",
-      "symbol": "HttpResponse.getBody",
-      "kind": "test"
+      "symbol": "HttpResponse.getBody"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getBodyAsBlob()",
-      "symbol": "HttpResponse.getBodyAsBlob",
-      "kind": "test"
+      "symbol": "HttpResponse.getBodyAsBlob"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getBodyDocument()",
-      "symbol": "HttpResponse.getBodyDocument",
-      "kind": "test"
+      "symbol": "HttpResponse.getBodyDocument"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getHeader(String)",
-      "symbol": "HttpResponse.getHeader(String)",
-      "kind": "test"
+      "symbol": "HttpResponse.getHeader(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getHeaderKeys()",
-      "symbol": "HttpResponse.getHeaderKeys",
-      "kind": "test"
+      "symbol": "HttpResponse.getHeaderKeys"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getStatus()",
-      "symbol": "HttpResponse.getStatus",
-      "kind": "test"
+      "symbol": "HttpResponse.getStatus"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getStatusCode()",
-      "symbol": "HttpResponse.getStatusCode",
-      "kind": "test"
+      "symbol": "HttpResponse.getStatusCode"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.getXmlStreamReader()",
-      "symbol": "HttpResponse.getXmlStreamReader",
-      "kind": "test"
+      "symbol": "HttpResponse.getXmlStreamReader"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.setBody(String)",
-      "symbol": "HttpResponse.setBody(String)",
-      "kind": "test"
+      "symbol": "HttpResponse.setBody(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.setBodyAsBlob(Blob)",
-      "symbol": "HttpResponse.setBodyAsBlob(Blob)",
-      "kind": "test"
+      "symbol": "HttpResponse.setBodyAsBlob(Blob)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.setHeader(String,String)",
-      "symbol": "HttpResponse.setHeader(String,String)",
-      "kind": "test"
+      "symbol": "HttpResponse.setHeader(String,String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.setStatus(String)",
-      "symbol": "HttpResponse.setStatus(String)",
-      "kind": "test"
+      "symbol": "HttpResponse.setStatus(String)"
     },
     {
+      "kind": "test",
       "surfaceId": "apex:System.HttpResponse.setStatusCode(Integer)",
-      "symbol": "HttpResponse.setStatusCode(Integer)",
-      "kind": "test"
+      "symbol": "HttpResponse.setStatusCode(Integer)"
     },
     {
-      "symbol": "Messaging.MassEmailMessage",
       "kind": "test",
-      "notes": "Mass email setters populate the same local no-transport sendEmail result path as single email messages."
+      "notes": "Mass email setters populate the same local no-transport sendEmail result path as single email messages.",
+      "symbol": "Messaging.MassEmailMessage"
     },
     {
-      "symbol": "PageReference local maps",
       "kind": "test",
-      "notes": "Blank PageReference instances expose stable local URL, parameter, and header maps without Visualforce rendering."
+      "notes": "Blank PageReference instances expose stable local URL, parameter, and header maps without Visualforce rendering.",
+      "symbol": "PageReference local maps"
     },
     {
-      "symbol": "RestContext request/response replacement",
       "kind": "test",
-      "notes": "Fresh request/response objects remain assignable after prior lifecycle work without invoking Apex REST dispatch."
+      "notes": "Fresh request/response objects remain assignable after prior lifecycle work without invoking Apex REST dispatch.",
+      "symbol": "RestContext request/response replacement"
     }
   ],
-  "source": [
-    {
-      "path": "force-app/main/classes/PlatformLocalShapeCleanupFixtureTest.cls",
-      "content": "@isTest private class PlatformLocalShapeCleanupFixtureTest { @isTest static void shapes() { HttpRequest req = new HttpRequest(); System.assertEquals('', req.getEndpoint()); System.assertEquals('', req.getMethod()); System.assertEquals('', req.getBody()); System.assertEquals('', req.getBodyAsBlob().toString()); System.assertEquals(0, req.getHeaderKeys().size()); System.assertEquals(false, req.getCompressed()); System.assertEquals(10000, req.getTimeout()); req.setEndpoint('https://example.test'); req.setMethod('post'); req.setHeader('X-Test', 'yes'); req.setCompressed(true); req.setTimeout(2500); req.setBody('plain'); System.assertEquals('https://example.test', req.getEndpoint()); System.assertEquals('POST', req.getMethod()); System.assertEquals('yes', req.getHeader('x-test')); System.assertEquals(true, req.getCompressed()); System.assertEquals(2500, req.getTimeout()); System.assertEquals('plain', req.getBody()); req.setBodyAsBlob(Blob.valueOf('blob-body')); System.assertEquals('blob-body', req.getBodyAsBlob().toString()); Dom.Document reqDoc = new Dom.Document(); reqDoc.createRootElement('root', null, null); req.setBodyDocument(reqDoc); System.assertNotEquals(null, req.getBodyDocument()); Object reqDocObject = reqDoc; req.setBodyDocument(reqDocObject); System.assertNotEquals(null, req.getBodyDocument()); HttpResponse res = new HttpResponse(); System.assertEquals(200, res.getStatusCode()); System.assertEquals('OK', res.getStatus()); System.assertEquals('', res.getBody()); System.assertEquals('', res.getBodyAsBlob().toString()); System.assertEquals(0, res.getHeaderKeys().size()); res.setStatusCode(202); res.setStatus('Accepted'); res.setHeader('Content-Type', 'text/xml'); res.setBody('<root/>'); System.assertEquals(202, res.getStatusCode()); System.assertEquals('Accepted', res.getStatus()); System.assertEquals('text/xml', res.getHeader('content-type')); System.assert(res.getHeaderKeys().contains('content-type')); System.assertNotEquals(null, res.getBodyDocument()); System.assertNotEquals(null, res.getXmlStreamReader()); res.setBodyAsBlob(Blob.valueOf('blob-response')); System.assertEquals('blob-response', res.getBodyAsBlob().toString()); Messaging.MassEmailMessage mass = new Messaging.MassEmailMessage(); mass.setTargetObjectIds(new List<String>{'003000000000001', '003000000000002'}); mass.setWhatIds(new List<String>{'001000000000001'}); mass.setTemplateId('00X000000000001'); mass.setDescription('Trail mass email'); mass.setOptOutPolicy('FILTER'); mass.setSaveAsActivity(false); List<Messaging.SendEmailResult> results = Messaging.sendEmail(new List<Messaging.MassEmailMessage>{mass}); System.assertEquals(1, results.size()); System.assert(results.get(0).isSuccess()); PageReference page = new PageReference(); System.assertEquals('', page.getUrl()); System.assertEquals(0, page.getParameters().size()); System.assertEquals(0, page.getHeaders().size()); page.getParameters().put('id', '001B000001DVM9t'); page.getHeaders().put('Accept', 'text/html'); System.assertEquals('001B000001DVM9t', page.getParameters().get('id')); System.assertEquals('text/html', page.getHeaders().get('Accept')); RestContext.request = new RestRequest(); RestContext.request.addParameter('after', 'reset'); RestContext.response = new RestResponse(); RestContext.response.addHeader('X-Reset', 'yes'); System.assertEquals('reset', RestContext.request.getParameter('after')); System.assertEquals('yes', RestContext.response.getHeader('x-reset')); } }"
-    }
-  ],
-  "command": {
-    "kind": "test",
-    "args": []
-  },
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "name": "integration-platform-local-shape-cleanup",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects multiple local platform helper members in this cleanup fixture; retained as local evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "@isTest private class PlatformLocalShapeCleanupFixtureTest { @isTest static void shapes() { HttpRequest req = new HttpRequest(); System.assertEquals('', req.getEndpoint()); System.assertEquals('', req.getMethod()); System.assertEquals('', req.getBody()); System.assertEquals('', req.getBodyAsBlob().toString()); System.assertEquals(0, req.getHeaderKeys().size()); System.assertEquals(false, req.getCompressed()); System.assertEquals(10000, req.getTimeout()); req.setEndpoint('https://example.test'); req.setMethod('post'); req.setHeader('X-Test', 'yes'); req.setCompressed(true); req.setTimeout(2500); req.setBody('plain'); System.assertEquals('https://example.test', req.getEndpoint()); System.assertEquals('POST', req.getMethod()); System.assertEquals('yes', req.getHeader('X-Test')); System.assertEquals(true, req.getCompressed()); System.assertEquals(2500, req.getTimeout()); System.assertEquals('plain', req.getBody()); req.setBodyAsBlob(Blob.valueOf('blob-body')); System.assertEquals('blob-body', req.getBodyAsBlob().toString()); Dom.Document reqDoc = new Dom.Document(); reqDoc.createRootElement('root', null, null); req.setBodyDocument(reqDoc); System.assertNotEquals(null, req.getBodyDocument()); Object reqDocObject = reqDoc; req.setBodyDocument(reqDocObject); System.assertNotEquals(null, req.getBodyDocument()); HttpResponse res = new HttpResponse(); System.assertEquals(200, res.getStatusCode()); System.assertEquals('OK', res.getStatus()); System.assertEquals('', res.getBody()); System.assertEquals('', res.getBodyAsBlob().toString()); System.assertEquals(0, res.getHeaderKeys().size()); res.setStatusCode(202); res.setStatus('Accepted'); res.setHeader('Content-Type', 'text/xml'); res.setBody('<root/>'); System.assertEquals(202, res.getStatusCode()); System.assertEquals('Accepted', res.getStatus()); System.assertEquals('text/xml', res.getHeader('Content-Type')); System.assert(res.getHeaderKeys().contains('Content-Type')); System.assertNotEquals(null, res.getBodyDocument()); System.assertNotEquals(null, res.getXmlStreamReader()); res.setBodyAsBlob(Blob.valueOf('blob-response')); System.assertEquals('blob-response', res.getBodyAsBlob().toString()); Messaging.MassEmailMessage mass = new Messaging.MassEmailMessage(); mass.setTargetObjectIds(new List<String>{'003000000000001', '003000000000002'}); mass.setWhatIds(new List<String>{'001000000000001'}); mass.setTemplateId('00X000000000001'); mass.setDescription('Trail mass email'); mass.setOptOutPolicy('FILTER'); mass.setSaveAsActivity(false); List<Messaging.SendEmailResult> results = Messaging.sendEmail(new List<Messaging.MassEmailMessage>{mass}); System.assertEquals(1, results.size()); System.assert(results.get(0).isSuccess()); PageReference page = new PageReference('/apex/LocalShape'); System.assertEquals('/apex/LocalShape', page.getUrl()); System.assertEquals(0, page.getParameters().size()); System.assertEquals(0, page.getHeaders().size()); page.getParameters().put('id', '001B000001DVM9t'); page.getHeaders().put('Accept', 'text/html'); System.assertEquals('001B000001DVM9t', page.getParameters().get('id')); System.assertEquals('text/html', page.getHeaders().get('Accept')); RestContext.request = new RestRequest(); RestContext.request.addParameter('after', 'reset'); RestContext.response = new RestResponse(); RestContext.response.addHeader('X-Reset', 'yes'); System.assertEquals('reset', RestContext.request.getParameter('after')); System.assertEquals('yes', RestContext.response.getHeader('x-reset')); } }",
+      "path": "force-app/main/classes/PlatformLocalShapeCleanupFixtureTest.cls"
+    }
+  ]
 }

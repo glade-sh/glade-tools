@@ -22,6 +22,18 @@ func WriteRowsJSON(w io.Writer, rows []SurfaceLedgerRow) error {
 	return enc.Encode(rows)
 }
 
+// WriteStrictCurrentBaseJSON writes a StrictCurrentBase view as indented
+// JSON with a trailing newline, mirroring the pretty pattern used by the
+// ledger and rows writers.
+func WriteStrictCurrentBaseJSON(w io.Writer, base StrictCurrentBase) error {
+	data, err := marshalPretty(base)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(data)
+	return err
+}
+
 func ReadRowsJSON(path string) ([]SurfaceLedgerRow, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -43,14 +55,26 @@ func ReadLedgerJSON(path string) (SurfaceLedger, error) {
 	if err := json.Unmarshal(data, &ledger); err != nil {
 		return SurfaceLedger{}, err
 	}
+	pinnedFailures := ledger.Summary.Failures
 	for i := range ledger.Rows {
 		Classify(&ledger.Rows[i])
 	}
 	ledger.Summary = Summarize(ledger.Rows)
+	if pinnedFailures != nil {
+		ledger.Summary.Failures = cloneFailureCounts(pinnedFailures)
+	}
 	if ledger.SchemaVersion == 0 {
 		ledger.SchemaVersion = SchemaVersion
 	}
 	return ledger, nil
+}
+
+func cloneFailureCounts(counts map[string]int) map[string]int {
+	clone := make(map[string]int, len(counts))
+	for key, count := range counts {
+		clone[key] = count
+	}
+	return clone
 }
 
 func marshalPretty(v any) ([]byte, error) {

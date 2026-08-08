@@ -7358,42 +7358,6 @@
       "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
     },
     {
-      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer,Integer)",
-      "symbol": "ConnectApi.ChatterUsers.getFollowings",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer)",
-      "symbol": "ConnectApi.ChatterUsers.getFollowings",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer,Integer)",
-      "symbol": "ConnectApi.ChatterUsers.getFollowings",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer)",
-      "symbol": "ConnectApi.ChatterUsers.getFollowings",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String)",
-      "symbol": "ConnectApi.ChatterUsers.getFollowings",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String)",
-      "symbol": "ConnectApi.ChatterUsers.getFollowings",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
       "surfaceId": "apex:ConnectApi.ChatterUsers.getGroups(String,String,Integer,Integer)",
       "symbol": "ConnectApi.ChatterUsers.getGroups",
       "kind": "unsupported",
@@ -17618,18 +17582,6 @@
       "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
     },
     {
-      "surfaceId": "apex:ConnectApi.ManagedContent.getAllManagedContent(String,Integer,Integer,String,String,Boolean)",
-      "symbol": "ConnectApi.ManagedContent.getAllManagedContent",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ManagedContent.getAllManagedContent(String,Integer,Integer,String,String)",
-      "symbol": "ConnectApi.ManagedContent.getAllManagedContent",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
       "surfaceId": "apex:ConnectApi.ManagedContent.getContentByContentKeys(String,List<String>,Integer,Integer,String,String,Boolean,String,String,Boolean)",
       "symbol": "ConnectApi.ManagedContent.getContentByContentKeys",
       "kind": "unsupported",
@@ -17644,12 +17596,6 @@
     {
       "surfaceId": "apex:ConnectApi.ManagedContent.getContentByIds(String,List<String>,Integer,Integer,String,String,Boolean,String,String)",
       "symbol": "ConnectApi.ManagedContent.getContentByIds",
-      "kind": "unsupported",
-      "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
-    },
-    {
-      "surfaceId": "apex:ConnectApi.ManagedContent.getManagedContentByContentKeys(String,List<String>,Integer,Integer,String,String,Boolean)",
-      "symbol": "ConnectApi.ManagedContent.getManagedContentByContentKeys",
       "kind": "unsupported",
       "notes": "ConnectApi methods depend on Salesforce-hosted Connect REST services outside local Apex execution."
     },

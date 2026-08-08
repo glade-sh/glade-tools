@@ -1,0 +1,118 @@
+{
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "LeadConvert is constructible and exposes writable public fields.",
+      "surfaceId": "apex:Database.LeadConvert.LeadConvert()",
+      "symbol": "Database.LeadConvert"
+    },
+    {
+      "kind": "test",
+      "notes": "Public accountid field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.accountid",
+      "symbol": "Database.accountid"
+    },
+    {
+      "kind": "test",
+      "notes": "Public contactid field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.contactid",
+      "symbol": "Database.contactid"
+    },
+    {
+      "kind": "test",
+      "notes": "Public leadid field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.leadid",
+      "symbol": "Database.leadid"
+    },
+    {
+      "kind": "test",
+      "notes": "Public opportunityid field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.opportunityid",
+      "symbol": "Database.opportunityid"
+    },
+    {
+      "kind": "test",
+      "notes": "Public opportunityname field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.opportunityname",
+      "symbol": "Database.opportunityname"
+    },
+    {
+      "kind": "test",
+      "notes": "Public overwriteleadsource field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.overwriteleadsource",
+      "symbol": "Database.overwriteleadsource"
+    },
+    {
+      "kind": "test",
+      "notes": "Public ownerid field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.ownerid",
+      "symbol": "Database.ownerid"
+    },
+    {
+      "kind": "test",
+      "notes": "Public relatedpersonaccountid field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.relatedpersonaccountid",
+      "symbol": "Database.relatedpersonaccountid"
+    },
+    {
+      "kind": "test",
+      "notes": "Public sendnotificationemail field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.LeadConvert.sendnotificationemail",
+      "symbol": "Database.sendnotificationemail"
+    },
+    {
+      "kind": "test",
+      "notes": "MergeRequest is constructible and exposes writable public fields.",
+      "surfaceId": "apex:Database.MergeRequest.MergeRequest()",
+      "symbol": "Database.MergeRequest"
+    },
+    {
+      "kind": "test",
+      "notes": "Public additionalinformationmap field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.MergeRequest.additionalinformationmap",
+      "symbol": "Database.additionalinformationmap"
+    },
+    {
+      "kind": "test",
+      "notes": "Public masterrecord field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.MergeRequest.masterrecord",
+      "symbol": "Database.masterrecord"
+    },
+    {
+      "kind": "test",
+      "notes": "Public recordtomergeids field round-trips on a locally constructed Database request DTO.",
+      "surfaceId": "apex:Database.MergeRequest.recordtomergeids",
+      "symbol": "Database.recordtomergeids"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 2,
+      "total": 2
+    }
+  },
+  "name": "data-platform-database-request-field-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The LeadConvert field half passes in Salesforce, but the MergeRequest field half returns an Internal Salesforce Error in the API 67 scratch org. Keep the complete local DTO-field proof and exclude this mixed hosted fixture until Salesforce provides a stable runtime path.",
+  "source": [
+    {
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/objects/Account/Account.object-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>",
+      "path": "force-app/main/objects/Account/fields/Name.field-meta.xml"
+    },
+    {
+      "content": "@isTest private class DatabaseRequestFieldEvidenceTest {\n @isTest static void leadConvertFieldsWitness() {\n  Database.LeadConvert convert = new Database.LeadConvert();\n  convert.accountid = '001000000000001AAA';\n  convert.contactid = '003000000000001AAA';\n  convert.leadid = '00Q000000000001AAA';\n  convert.opportunityid = '006000000000001AAA';\n  convert.opportunityname = 'Opp Name';\n  convert.overwriteleadsource = true;\n  convert.ownerid = '005000000000001AAA';\n  convert.relatedpersonaccountid = '001000000000002AAA';\n  convert.sendnotificationemail = false;\n  System.assertEquals('001000000000001AAA', convert.accountid);\n  System.assertEquals('003000000000001AAA', convert.contactid);\n  System.assertEquals('00Q000000000001AAA', convert.leadid);\n  System.assertEquals('006000000000001AAA', convert.opportunityid);\n  System.assertEquals('Opp Name', convert.opportunityname);\n  System.assertEquals(true, convert.overwriteleadsource);\n  System.assertEquals('005000000000001AAA', convert.ownerid);\n  System.assertEquals('001000000000002AAA', convert.relatedpersonaccountid);\n  System.assertEquals(false, convert.sendnotificationemail);\n }\n @isTest static void mergeRequestFieldsWitness() {\n  Account master = new Account(Name = 'Master');\n  Database.MergeRequest request = new Database.MergeRequest();\n  request.masterrecord = master;\n  request.recordtomergeids = new List<String>{'001000000000001AAA', '001000000000002AAA'};\n  request.additionalinformationmap = new List<Datacloud.AdditionalInformationMap>();\n  System.assertEquals(master, request.masterrecord);\n  System.assertEquals(2, request.recordtomergeids.size());\n  System.assertEquals(0, request.additionalinformationmap.size());\n }\n}\n",
+      "path": "force-app/main/classes/DatabaseRequestFieldEvidenceTest.cls"
+    }
+  ]
+}

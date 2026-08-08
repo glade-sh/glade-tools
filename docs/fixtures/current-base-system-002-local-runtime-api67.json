@@ -1,0 +1,226 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Id.Id()",
+      "symbol": "System.Id.Id()"
+    },
+    {
+      "kind": "test",
+      "notes": "Retained as an exact current-base row; Glade local semantic analysis rejects this method as unsupported, so the executable witness records Id construction only.",
+      "surfaceId": "apex:System.Id.to18",
+      "symbol": "System.Id.to18"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.IllegalArgumentException",
+      "symbol": "System.IllegalArgumentException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException()",
+      "symbol": "System.IllegalArgumentException.IllegalArgumentException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(Exception)",
+      "symbol": "System.IllegalArgumentException.IllegalArgumentException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(String)",
+      "symbol": "System.IllegalArgumentException.IllegalArgumentException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(String,Exception)",
+      "symbol": "System.IllegalArgumentException.IllegalArgumentException(String,Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.IllegalArgumentException.clone()",
+      "symbol": "System.IllegalArgumentException.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.IllegalStateException",
+      "symbol": "System.IllegalStateException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InstallContext",
+      "symbol": "System.InstallContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InstallHandler",
+      "symbol": "System.InstallHandler"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InstallHandler.onInstall(InstallContext)",
+      "symbol": "System.InstallHandler.onInstall(InstallContext)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Integer.Integer()",
+      "symbol": "System.Integer.Integer()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Integer.MAX_VALUE",
+      "symbol": "System.Integer.MAX_VALUE"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Integer.MIN_VALUE",
+      "symbol": "System.Integer.MIN_VALUE"
+    },
+    {
+      "kind": "test",
+      "notes": "Retained as an exact current-base row; Glade local semantic analysis rejects this method as unsupported, so the executable witness records Integer construction and constants only.",
+      "surfaceId": "apex:System.Integer.doubleValue",
+      "symbol": "System.Integer.doubleValue"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidHeaderException",
+      "symbol": "System.InvalidHeaderException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException()",
+      "symbol": "System.InvalidHeaderException.InvalidHeaderException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(Exception)",
+      "symbol": "System.InvalidHeaderException.InvalidHeaderException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(String)",
+      "symbol": "System.InvalidHeaderException.InvalidHeaderException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(String,Exception)",
+      "symbol": "System.InvalidHeaderException.InvalidHeaderException(String,Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidHeaderException.clone()",
+      "symbol": "System.InvalidHeaderException.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidParameterValueException",
+      "symbol": "System.InvalidParameterValueException"
+    },
+    {
+      "kind": "test",
+      "notes": "Retained as an exact current-base row; the local runtime exposes the type but rejects constructing an instance with the documented argument, so no local instance-method claim is made.",
+      "surfaceId": "apex:System.InvalidParameterValueException.equals(Object)",
+      "symbol": "System.InvalidParameterValueException.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "notes": "Retained as an exact current-base row; the local runtime exposes the type but rejects constructing an instance with the documented argument, so no local instance-method claim is made.",
+      "surfaceId": "apex:System.InvalidParameterValueException.hashCode()",
+      "symbol": "System.InvalidParameterValueException.hashCode()"
+    },
+    {
+      "kind": "test",
+      "notes": "Retained as an exact current-base row; the local runtime exposes the type but rejects constructing an instance with the documented argument, so no local instance-method claim is made.",
+      "surfaceId": "apex:System.InvalidParameterValueException.toString()",
+      "symbol": "System.InvalidParameterValueException.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException",
+      "symbol": "System.InvalidReadOnlyUserDmlException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException()",
+      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(Exception)",
+      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String)",
+      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String,Exception)",
+      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String,Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.JSONException",
+      "symbol": "System.JSONException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.JSONException.JSONException()",
+      "symbol": "System.JSONException.JSONException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.JSONException.JSONException(Exception)",
+      "symbol": "System.JSONException.JSONException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.JSONException.JSONException(String)",
+      "symbol": "System.JSONException.JSONException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.JSONException.JSONException(String,Exception)",
+      "symbol": "System.JSONException.JSONException(String,Exception)"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-system-002-local-runtime-api67",
+  "notes": "Current-base lane current-base-local-runtime-required-System-002: exactly the 36 queue rows absent from existing fixture evidence. Assertions cover scalar and exception contracts plus the deterministic local install harness.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-local-runtime-required-System-002",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 36,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture records Glade local-runtime behavior only and makes no hosted Salesforce package-lifecycle claim.",
+  "source": [
+    {
+      "content": "public class CurrentBaseSystem002Install implements InstallHandler { public static Boolean called; public void onInstall(InstallContext context) { called = context != null && context.previousVersion() == null && !context.isPush() && context.installerId() == null && context.InstallerId == null; } }",
+      "path": "force-app/main/default/classes/CurrentBaseSystem002Install.cls"
+    },
+    {
+      "content": "@isTest private class CurrentBaseSystem002Test { @isTest static void localRuntime002Witness() { Id idValue = Id.valueOf('001B000001DVM9t'); System.assertNotEquals(null, idValue); IllegalArgumentException argument0 = new IllegalArgumentException(); IllegalArgumentException argument1 = new IllegalArgumentException(new QueryException('cause')); IllegalArgumentException argument2 = new IllegalArgumentException('argument'); IllegalArgumentException argument3 = new IllegalArgumentException('argument', new QueryException('cause')); System.assertEquals('argument', argument2.getMessage()); System.assertNotEquals(null, argument0.clone()); System.assertNotEquals(null, argument1); System.assertNotEquals(null, argument3); IllegalStateException state = new IllegalStateException('state'); System.assertEquals('state', state.getMessage()); Test.testInstall(new CurrentBaseSystem002Install(), null); System.assertEquals(true, CurrentBaseSystem002Install.called); Integer integerValue = new Integer(); System.assertEquals(2147483647, Integer.MAX_VALUE); System.assertEquals(-2147483648L, Integer.MIN_VALUE); System.assertEquals(7, Integer.valueOf('7')); InvalidHeaderException header0 = new InvalidHeaderException(); InvalidHeaderException header1 = new InvalidHeaderException(new QueryException('cause')); InvalidHeaderException header2 = new InvalidHeaderException('header'); InvalidHeaderException header3 = new InvalidHeaderException('header', new QueryException('cause')); System.assertEquals('header', header2.getMessage()); System.assertNotEquals(null, header0.clone()); System.assertNotEquals(null, header1); System.assertNotEquals(null, header3); InvalidParameterValueException parameter = null; System.assertEquals(null, parameter); InvalidReadOnlyUserDmlException readOnly0 = new InvalidReadOnlyUserDmlException(); InvalidReadOnlyUserDmlException readOnly1 = new InvalidReadOnlyUserDmlException(new QueryException('cause')); InvalidReadOnlyUserDmlException readOnly2 = new InvalidReadOnlyUserDmlException('read-only'); InvalidReadOnlyUserDmlException readOnly3 = new InvalidReadOnlyUserDmlException('read-only', new QueryException('cause')); System.assertEquals('read-only', readOnly2.getMessage()); System.assertNotEquals(null, readOnly0); System.assertNotEquals(null, readOnly1); System.assertNotEquals(null, readOnly3); JSONException json0 = new JSONException(); JSONException json1 = new JSONException(new QueryException('cause')); JSONException json2 = new JSONException('json'); JSONException json3 = new JSONException('json', new QueryException('cause')); System.assertEquals('json', json2.getMessage()); System.assertNotEquals(null, json0); System.assertNotEquals(null, json1); System.assertNotEquals(null, json3); } }",
+      "path": "force-app/main/default/classes/CurrentBaseSystem002Test.cls"
+    }
+  ]
+}

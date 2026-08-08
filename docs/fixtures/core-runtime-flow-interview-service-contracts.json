@@ -1,5 +1,7 @@
 {
   "name": "core-runtime-flow-interview-service-contracts",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture evidence explicitly covers the local Flow service-contract shape; declarative Flow execution is not claimed.",
   "evidence": [
     {
       "surfaceId": "apex:Flow.Interview.createInterview(String,Map<String,Object>)",

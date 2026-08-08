@@ -1,0 +1,94 @@
+{
+  "name": "core-runtime-metadata-status-code-constants-api67-05",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertNotEquals(null, Metadata.StatusCode.WEBLINK_SIZE_LIMIT_EXCEEDED);\nSystem.assertNotEquals(null, Metadata.StatusCode.WEBLINK_URL_INVALID);\nSystem.assertNotEquals(null, Metadata.StatusCode.WEM_SEGMENTS_CAN_NOT_HAVE_NON_ACTIVE_SEGMENT_TYPE);\nSystem.assertNotEquals(null, Metadata.StatusCode.WEM_SHIFT_SEGMENT_TIME_IS_OUTSIDE_OF_THE_SHIFT_DURATION);\nSystem.assertNotEquals(null, Metadata.StatusCode.WEM_USER_NOT_ORG_ADMIN);\nSystem.assertNotEquals(null, Metadata.StatusCode.WORKSPACE_NOT_FOUND);\nSystem.assertNotEquals(null, Metadata.StatusCode.WRONG_CONTROLLER_TYPE);\nSystem.assertNotEquals(null, Metadata.StatusCode.XCLEAN_DJ_MATCH_IGNORABLE_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.XCLEAN_DJ_MATCH_INTERNAL_DJ_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.XCLEAN_DJ_MATCH_NON_RETRIABLE_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.XCLEAN_DJ_MATCH_RETRIABLE_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.XCLEAN_DJ_MATCH_UNKNOWN_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.XCLEAN_UNEXPECTED_ERROR);\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Metadata.StatusCode.WEBLINK_SIZE_LIMIT_EXCEEDED",
+      "symbol": "Metadata.StatusCode.WEBLINK_SIZE_LIMIT_EXCEEDED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.WEBLINK_URL_INVALID",
+      "symbol": "Metadata.StatusCode.WEBLINK_URL_INVALID",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.WEM_SEGMENTS_CAN_NOT_HAVE_NON_ACTIVE_SEGMENT_TYPE",
+      "symbol": "Metadata.StatusCode.WEM_SEGMENTS_CAN_NOT_HAVE_NON_ACTIVE_SEGMENT_TYPE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.WEM_SHIFT_SEGMENT_TIME_IS_OUTSIDE_OF_THE_SHIFT_DURATION",
+      "symbol": "Metadata.StatusCode.WEM_SHIFT_SEGMENT_TIME_IS_OUTSIDE_OF_THE_SHIFT_DURATION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.WEM_USER_NOT_ORG_ADMIN",
+      "symbol": "Metadata.StatusCode.WEM_USER_NOT_ORG_ADMIN",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.WORKSPACE_NOT_FOUND",
+      "symbol": "Metadata.StatusCode.WORKSPACE_NOT_FOUND",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.WRONG_CONTROLLER_TYPE",
+      "symbol": "Metadata.StatusCode.WRONG_CONTROLLER_TYPE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.XCLEAN_DJ_MATCH_IGNORABLE_ERROR",
+      "symbol": "Metadata.StatusCode.XCLEAN_DJ_MATCH_IGNORABLE_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.XCLEAN_DJ_MATCH_INTERNAL_DJ_ERROR",
+      "symbol": "Metadata.StatusCode.XCLEAN_DJ_MATCH_INTERNAL_DJ_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.XCLEAN_DJ_MATCH_NON_RETRIABLE_ERROR",
+      "symbol": "Metadata.StatusCode.XCLEAN_DJ_MATCH_NON_RETRIABLE_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.XCLEAN_DJ_MATCH_RETRIABLE_ERROR",
+      "symbol": "Metadata.StatusCode.XCLEAN_DJ_MATCH_RETRIABLE_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.XCLEAN_DJ_MATCH_UNKNOWN_ERROR",
+      "symbol": "Metadata.StatusCode.XCLEAN_DJ_MATCH_UNKNOWN_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.XCLEAN_UNEXPECTED_ERROR",
+      "symbol": "Metadata.StatusCode.XCLEAN_UNEXPECTED_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    }
+  ]
+}

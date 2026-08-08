@@ -1,0 +1,7 @@
+{
+  "name": "current-base-limits-child-relationships-unsupported",
+  "command": {"kind": "exec", "args": ["Limits.getChildRelationshipsDescribes();"]},
+  "source": [{"path": "anonymous.apex", "content": "Limits.getChildRelationshipsDescribes();"}],
+  "expected": {"error": {"type": "UnsupportedFeature", "message": "unsupported call \"Limits.getChildRelationshipsDescribes\""}},
+  "evidence": [{"surfaceId": "apex:System.Limits.getChildRelationshipsDescribes()", "symbol": "Limits.getChildRelationshipsDescribes", "kind": "exec", "notes": "Current Salesforce reports this method as removed."}]
+}

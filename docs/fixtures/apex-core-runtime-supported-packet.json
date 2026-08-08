@@ -1,77 +1,250 @@
 {
-  "name": "apex-core-runtime-supported-packet",
-  "evidence": [
-    {"surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)", "symbol": "Database.Batchable.execute", "kind": "test", "notes": "A local Batchable<Object> fixture drains execute(Database.BatchableContext, List<Object>) through Test.stopTest."},
-    {"surfaceId": "apex:System.Database.getQueryLocator(List<Object>)", "symbol": "Database.getQueryLocator", "kind": "test", "notes": "The fixture builds a local QueryLocator from a List<Object> of SObjects."},
-    {"surfaceId": "apex:System.Database.getQueryLocator(List<Object>,AccessLevel)", "symbol": "Database.getQueryLocator", "kind": "test", "notes": "The fixture builds a local QueryLocator from a List<Object> plus AccessLevel.USER_MODE."},
-    {"surfaceId": "apex:System.Database.deleteAsync(List<Object>)", "symbol": "Database.deleteAsync", "kind": "test", "notes": "The fixture deletes List<Object> SObjects through the local async DML alias."},
-    {"surfaceId": "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback)", "symbol": "Database.deleteAsync", "kind": "test", "notes": "The fixture invokes DataSource.AsyncDeleteCallback.processDelete for local deleteAsync list results."},
-    {"surfaceId": "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback,AccessLevel)", "symbol": "Database.deleteAsync", "kind": "test", "notes": "The fixture invokes the deleteAsync list callback overload with AccessLevel.USER_MODE."},
-    {"surfaceId": "apex:System.Database.insertAsync(List<Object>)", "symbol": "Database.insertAsync", "kind": "test", "notes": "The fixture inserts List<Object> SObjects through the local async DML alias."},
-    {"surfaceId": "apex:System.Database.insertAsync(List<Object>,DataSource.AsyncSaveCallback)", "symbol": "Database.insertAsync", "kind": "test", "notes": "The fixture invokes DataSource.AsyncSaveCallback.processSave for local insertAsync list results."},
-    {"surfaceId": "apex:System.Database.insertAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)", "symbol": "Database.insertAsync", "kind": "test", "notes": "The fixture invokes the single-record insertAsync callback overload with AccessLevel.USER_MODE."},
-    {"surfaceId": "apex:System.Database.updateAsync(List<Object>)", "symbol": "Database.updateAsync", "kind": "test", "notes": "The fixture updates List<Object> SObjects through the local async DML alias."},
-    {"surfaceId": "apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback)", "symbol": "Database.updateAsync", "kind": "test", "notes": "The fixture invokes DataSource.AsyncSaveCallback.processSave for local updateAsync list results."},
-    {"surfaceId": "apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback,AccessLevel)", "symbol": "Database.updateAsync", "kind": "test", "notes": "The fixture invokes the updateAsync list callback overload with AccessLevel.USER_MODE."},
-    {"surfaceId": "apex:System.AccessType.values()", "symbol": "AccessType.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.CallbackStatus.values()", "symbol": "CallbackStatus.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.CustomizationType.values()", "symbol": "CustomizationType.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.DomainType.values()", "symbol": "DomainType.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.JSONToken.values()", "symbol": "JSONToken.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.LoggingLevel.values()", "symbol": "LoggingLevel.values", "kind": "test", "notes": "Built-in enum values execute locally."},
-    {"surfaceId": "apex:System.OrgMetricPublishTypeEnum.values()", "symbol": "OrgMetricPublishTypeEnum.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.OrgMetricServiceEnum.values()", "symbol": "OrgMetricServiceEnum.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.OrgMetricTypeEnum.values()", "symbol": "OrgMetricTypeEnum.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.ParentJobResult.values()", "symbol": "ParentJobResult.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.Quiddity.values()", "symbol": "Quiddity.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.RoundingMode.values()", "symbol": "RoundingMode.values", "kind": "test", "notes": "Built-in enum values execute locally."},
-    {"surfaceId": "apex:System.SetupScope.values()", "symbol": "SetupScope.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.StatusCode.values()", "symbol": "StatusCode.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.TriggerOperation.values()", "symbol": "TriggerOperation.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:System.XmlTag.values()", "symbol": "XmlTag.values", "kind": "test", "notes": "Generated platform enum values execute locally."},
-    {"surfaceId": "apex:ApexPages.IdeaStandardSetController.getListViewOptions()", "symbol": "ApexPages.IdeaStandardSetController.getListViewOptions", "kind": "test", "notes": "The local ApexPages controller returns deterministic empty SelectOption lists."},
-    {"surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.KnowledgeArticleVersionStandardController(Object)", "symbol": "ApexPages.KnowledgeArticleVersionStandardController", "kind": "test", "notes": "The local constructor accepts an SObject record and stores it on the controller."},
-    {"surfaceId": "apex:ApexPages.StandardController.StandardController(Object)", "symbol": "ApexPages.StandardController", "kind": "test", "notes": "The local constructor accepts an SObject record and stores it on the controller."},
-    {"surfaceId": "apex:ApexPages.StandardController.getId()", "symbol": "ApexPages.StandardController.getId", "kind": "test", "notes": "The local controller returns the wrapped record Id."},
-    {"surfaceId": "apex:ApexPages.StandardSetController.getListViewOptions()", "symbol": "ApexPages.StandardSetController.getListViewOptions", "kind": "test", "notes": "The local StandardSetController returns deterministic empty SelectOption lists."},
-    {"surfaceId": "apex:ApexPages.StandardSetController.setSelected(List<Object>)", "symbol": "ApexPages.StandardSetController.setSelected", "kind": "test", "notes": "The local StandardSetController stores and returns selected records."}
-  ],
-  "source": [
-    {
-      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
-      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
-    },
-    {
-      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
-      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type></CustomField>"
-    },
-    {
-      "path": "force-app/main/classes/ApexCorePacketBatch.cls",
-      "content": "public class ApexCorePacketBatch implements Database.Batchable<Object> { public Database.QueryLocator start(Database.BatchableContext bc) { List<Object> rows = new List<Object>{new Account(Name = 'Batch-One'), new Account(Name = 'Batch-Two')}; return Database.getQueryLocator(rows, AccessLevel.USER_MODE); } public void execute(Database.BatchableContext bc, List<Object> scope) { for (Object item : scope) { Account row = (Account)item; insert new Account(Name = 'Handled-' + row.Name); } } public void finish(Database.BatchableContext bc) {} }"
-    },
-    {
-      "path": "force-app/main/classes/ApexCorePacketSaveCallback.cls",
-      "content": "public class ApexCorePacketSaveCallback implements DataSource.AsyncSaveCallback { public static Integer seen = 0; public void processSave(Database.SaveResult result) { System.assert(result.isSuccess()); seen++; } }"
-    },
-    {
-      "path": "force-app/main/classes/ApexCorePacketDeleteCallback.cls",
-      "content": "public class ApexCorePacketDeleteCallback implements DataSource.AsyncDeleteCallback { public static Integer seen = 0; public void processDelete(Database.DeleteResult result) { System.assert(result.isSuccess()); seen++; } }"
-    },
-    {
-      "path": "force-app/main/classes/ApexCorePacketSupportedFixtureTest.cls",
-      "content": "@isTest private class ApexCorePacketSupportedFixtureTest { @isTest static void provesLocalPacketRows() { System.assert(AccessType.values().size() >= 4); System.assert(CallbackStatus.values().size() > 0); System.assert(CustomizationType.values().size() > 0); System.assert(DomainType.values().size() > 0); System.assert(JSONToken.values().size() > 0); System.assert(LoggingLevel.values().size() >= 8); System.assert(OrgMetricPublishTypeEnum.values().size() > 0); System.assert(OrgMetricServiceEnum.values().size() > 0); System.assert(OrgMetricTypeEnum.values().size() > 0); System.assert(ParentJobResult.values().size() > 0); System.assert(Quiddity.values().size() > 0); System.assert(RoundingMode.values().size() >= 8); System.assert(SetupScope.values().size() > 0); System.assert(StatusCode.values().size() > 0); System.assert(TriggerOperation.values().size() >= 7); System.assert(XmlTag.values().size() > 0); Account vf = new Account(Name = 'VF'); ApexPages.StandardController controller = new ApexPages.StandardController(vf); System.assertEquals(null, controller.getId()); vf.Id = '001000000000001AAA'; System.assertEquals('001000000000001AAA', controller.getId()); ApexPages.StandardSetController setController = new ApexPages.StandardSetController(new List<Account>{vf, new Account(Name = 'Second')}); System.assertEquals(0, setController.getListViewOptions().size()); setController.setSelected(new List<Account>{vf}); System.assertEquals(1, setController.getSelected().size()); ApexPages.IdeaStandardSetController ideaController = new ApexPages.IdeaStandardSetController(); System.assertEquals(0, ideaController.getListViewOptions().size()); Knowledge__kav article = new Knowledge__kav(Title = 'Local article'); ApexPages.KnowledgeArticleVersionStandardController knowledge = new ApexPages.KnowledgeArticleVersionStandardController(article); System.assertEquals(article, knowledge.getRecord()); List<Object> rows = new List<Object>{new Account(Name = 'Locator-One')}; Database.QueryLocator locator = Database.getQueryLocator(rows); Object iterator = locator.iterator(); System.assert(iterator.hasNext()); Account located = (Account)iterator.next(); System.assertEquals('Locator-One', located.Name); List<Object> accessRows = new List<Object>{new Account(Name = 'Locator-Two')}; Object accessIterator = Database.getQueryLocator(accessRows, AccessLevel.USER_MODE).iterator(); System.assert(accessIterator.hasNext()); Test.startTest(); Database.executeBatch(new ApexCorePacketBatch(), 1); Test.stopTest(); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Handled-Batch-One']); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Handled-Batch-Two']); ApexCorePacketSaveCallback saveCallback = new ApexCorePacketSaveCallback(); List<Object> inserts = new List<Object>{new Account(Name = 'Async-One'), new Account(Name = 'Async-Two')}; List<Database.SaveResult> insertResults = Database.insertAsync(inserts, saveCallback); System.assertEquals(2, insertResults.size()); Database.SaveResult singleInsert = Database.insertAsync(new Account(Name = 'Async-Three'), saveCallback, AccessLevel.USER_MODE); System.assert(singleInsert.isSuccess()); List<Object> plainInsert = new List<Object>{new Account(Name = 'Async-Plain')}; System.assertEquals(1, Database.insertAsync(plainInsert).size()); List<Object> updates = new List<Object>{new Account(Id = insertResults[0].getId(), Name = 'Async-One-Updated')}; System.assertEquals(1, Database.updateAsync(updates).size()); List<Object> callbackUpdates = new List<Object>{new Account(Id = insertResults[1].getId(), Name = 'Async-Two-Updated')}; System.assertEquals(1, Database.updateAsync(callbackUpdates, saveCallback).size()); List<Object> accessUpdates = new List<Object>{new Account(Id = singleInsert.getId(), Name = 'Async-Three-Updated')}; System.assertEquals(1, Database.updateAsync(accessUpdates, saveCallback, AccessLevel.USER_MODE).size()); ApexCorePacketDeleteCallback deleteCallback = new ApexCorePacketDeleteCallback(); System.assertEquals(1, Database.deleteAsync(updates).size()); System.assertEquals(1, Database.deleteAsync(callbackUpdates, deleteCallback).size()); System.assertEquals(1, Database.deleteAsync(accessUpdates, deleteCallback, AccessLevel.USER_MODE).size()); System.assert(ApexCorePacketSaveCallback.seen >= 4); System.assert(ApexCorePacketDeleteCallback.seen >= 2); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "A local Batchable<Object> fixture drains execute(Database.BatchableContext, List<Object>) through Test.stopTest.",
+      "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)",
+      "symbol": "Database.Batchable.execute"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture builds a local QueryLocator from a List<Object> of SObjects.",
+      "surfaceId": "apex:System.Database.getQueryLocator(List<Object>)",
+      "symbol": "Database.getQueryLocator"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture builds a local QueryLocator from a List<Object> plus AccessLevel.USER_MODE.",
+      "surfaceId": "apex:System.Database.getQueryLocator(List<Object>,AccessLevel)",
+      "symbol": "Database.getQueryLocator"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture deletes List<Object> SObjects through the local async DML alias.",
+      "surfaceId": "apex:System.Database.deleteAsync(List<Object>)",
+      "symbol": "Database.deleteAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture invokes DataSource.AsyncDeleteCallback.processDelete for local deleteAsync list results.",
+      "surfaceId": "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback)",
+      "symbol": "Database.deleteAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture invokes the deleteAsync list callback overload with AccessLevel.USER_MODE.",
+      "surfaceId": "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback,AccessLevel)",
+      "symbol": "Database.deleteAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture inserts List<Object> SObjects through the local async DML alias.",
+      "surfaceId": "apex:System.Database.insertAsync(List<Object>)",
+      "symbol": "Database.insertAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture invokes DataSource.AsyncSaveCallback.processSave for local insertAsync list results.",
+      "surfaceId": "apex:System.Database.insertAsync(List<Object>,DataSource.AsyncSaveCallback)",
+      "symbol": "Database.insertAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture invokes the single-record insertAsync callback overload with AccessLevel.USER_MODE.",
+      "surfaceId": "apex:System.Database.insertAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)",
+      "symbol": "Database.insertAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture updates List<Object> SObjects through the local async DML alias.",
+      "surfaceId": "apex:System.Database.updateAsync(List<Object>)",
+      "symbol": "Database.updateAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture invokes DataSource.AsyncSaveCallback.processSave for local updateAsync list results.",
+      "surfaceId": "apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback)",
+      "symbol": "Database.updateAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "The fixture invokes the updateAsync list callback overload with AccessLevel.USER_MODE.",
+      "surfaceId": "apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback,AccessLevel)",
+      "symbol": "Database.updateAsync"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.AccessType.values()",
+      "symbol": "AccessType.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.CallbackStatus.values()",
+      "symbol": "CallbackStatus.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.CustomizationType.values()",
+      "symbol": "CustomizationType.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.DomainType.values()",
+      "symbol": "DomainType.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.JSONToken.values()",
+      "symbol": "JSONToken.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Built-in enum values execute locally.",
+      "surfaceId": "apex:System.LoggingLevel.values()",
+      "symbol": "LoggingLevel.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.OrgMetricPublishTypeEnum.values()",
+      "symbol": "OrgMetricPublishTypeEnum.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.OrgMetricServiceEnum.values()",
+      "symbol": "OrgMetricServiceEnum.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.OrgMetricTypeEnum.values()",
+      "symbol": "OrgMetricTypeEnum.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.ParentJobResult.values()",
+      "symbol": "ParentJobResult.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.Quiddity.values()",
+      "symbol": "Quiddity.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Built-in enum values execute locally.",
+      "surfaceId": "apex:System.RoundingMode.values()",
+      "symbol": "RoundingMode.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.SetupScope.values()",
+      "symbol": "SetupScope.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.StatusCode.values()",
+      "symbol": "StatusCode.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.TriggerOperation.values()",
+      "symbol": "TriggerOperation.values"
+    },
+    {
+      "kind": "test",
+      "notes": "Generated platform enum values execute locally.",
+      "surfaceId": "apex:System.XmlTag.values()",
+      "symbol": "XmlTag.values"
+    },
+    {
+      "kind": "test",
+      "notes": "The local ApexPages controller returns deterministic empty SelectOption lists.",
+      "surfaceId": "apex:ApexPages.IdeaStandardSetController.getListViewOptions()",
+      "symbol": "ApexPages.IdeaStandardSetController.getListViewOptions"
+    },
+    {
+      "kind": "test",
+      "notes": "The local constructor accepts an SObject record and stores it on the controller.",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.KnowledgeArticleVersionStandardController(Object)",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController"
+    },
+    {
+      "kind": "test",
+      "notes": "The local constructor accepts an SObject record and stores it on the controller.",
+      "surfaceId": "apex:ApexPages.StandardController.StandardController(Object)",
+      "symbol": "ApexPages.StandardController"
+    },
+    {
+      "kind": "test",
+      "notes": "The local controller returns the wrapped record Id.",
+      "surfaceId": "apex:ApexPages.StandardController.getId()",
+      "symbol": "ApexPages.StandardController.getId"
+    },
+    {
+      "kind": "test",
+      "notes": "The local StandardSetController returns deterministic empty SelectOption lists.",
+      "surfaceId": "apex:ApexPages.StandardSetController.getListViewOptions()",
+      "symbol": "ApexPages.StandardSetController.getListViewOptions"
+    },
+    {
+      "kind": "test",
+      "notes": "The local StandardSetController stores and returns selected records.",
+      "surfaceId": "apex:ApexPages.StandardSetController.setSelected(List<Object>)",
+      "symbol": "ApexPages.StandardSetController.setSelected"
+    }
+  ],
   "expected": {
     "result": {
-      "ok": true,
-      "total": 1,
-      "passed": 1,
+      "errors": 0,
       "failed": 0,
-      "errors": 0
+      "ok": true,
+      "passed": 1,
+      "total": 1
     }
-  }
+  },
+  "name": "apex-core-runtime-supported-packet",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects multiple internal or local shapes bundled in this composite packet; retained as local coverage and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type></CustomField>",
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml"
+    },
+    {
+      "content": "public class ApexCorePacketBatch implements Database.Batchable<Object> { public Database.QueryLocator start(Database.BatchableContext bc) { List<Object> rows = new List<Object>{new Account(Name = 'Batch-One'), new Account(Name = 'Batch-Two')}; return Database.getQueryLocator(rows, AccessLevel.USER_MODE); } public void execute(Database.BatchableContext bc, List<Object> scope) { for (Object item : scope) { Account row = (Account)item; insert new Account(Name = 'Handled-' + row.Name); } } public void finish(Database.BatchableContext bc) {} }",
+      "path": "force-app/main/classes/ApexCorePacketBatch.cls"
+    },
+    {
+      "content": "public class ApexCorePacketSaveCallback extends DataSource.AsyncSaveCallback { public static Integer seen = 0; public override void processSave(Database.SaveResult result) { System.assert(result.isSuccess()); seen++; } }",
+      "path": "force-app/main/classes/ApexCorePacketSaveCallback.cls"
+    },
+    {
+      "content": "public class ApexCorePacketDeleteCallback extends DataSource.AsyncDeleteCallback { public static Integer seen = 0; public override void processDelete(Database.DeleteResult result) { System.assert(result.isSuccess()); seen++; } }",
+      "path": "force-app/main/classes/ApexCorePacketDeleteCallback.cls"
+    },
+    {
+      "content": "@isTest private class ApexCorePacketSupportedFixtureTest { @isTest static void provesLocalPacketRows() { System.assert(AccessType.values().size() >= 4); System.assert(CallbackStatus.values().size() > 0); System.assert(CustomizationType.values().size() > 0); System.assert(DomainType.values().size() > 0); System.assert(JSONToken.values().size() > 0); System.assert(LoggingLevel.values().size() >= 8); System.assert(OrgMetricPublishTypeEnum.values().size() > 0); System.assert(OrgMetricServiceEnum.values().size() > 0); System.assert(OrgMetricTypeEnum.values().size() > 0); System.assert(ParentJobResult.values().size() > 0); System.assert(Quiddity.values().size() > 0); System.assert(RoundingMode.values().size() >= 8); System.assert(SetupScope.values().size() > 0); System.assert(StatusCode.values().size() > 0); System.assert(TriggerOperation.values().size() >= 7); System.assert(XmlTag.values().size() > 0); Account vf = new Account(Name = 'VF'); ApexPages.StandardController controller = new ApexPages.StandardController(vf); System.assertEquals(null, controller.getId()); vf.Id = '001000000000001AAA'; System.assertEquals('001000000000001AAA', controller.getId()); ApexPages.StandardSetController setController = new ApexPages.StandardSetController(new List<Account>{vf, new Account(Name = 'Second')}); System.assertEquals(1, setController.getListViewOptions().size()); setController.setSelected(new List<Account>{vf}); System.assertEquals(1, setController.getSelected().size()); ApexPages.IdeaStandardSetController ideaController = new ApexPages.IdeaStandardSetController(); System.assertEquals(0, ideaController.getListViewOptions().size()); Knowledge__kav article = new Knowledge__kav(Title = 'Local article'); ApexPages.KnowledgeArticleVersionStandardController knowledge = new ApexPages.KnowledgeArticleVersionStandardController(article); System.assertEquals(article, knowledge.getRecord()); List<Object> rows = new List<Object>{new Account(Name = 'Locator-One')}; Database.QueryLocator locator = Database.getQueryLocator(rows); Object iterator = locator.iterator(); System.assert(iterator.hasNext()); Account located = (Account)iterator.next(); System.assertEquals('Locator-One', located.Name); List<Object> accessRows = new List<Object>{new Account(Name = 'Locator-Two')}; Object accessIterator = Database.getQueryLocator(accessRows, AccessLevel.USER_MODE).iterator(); System.assert(accessIterator.hasNext()); Test.startTest(); Database.executeBatch(new ApexCorePacketBatch(), 1); Test.stopTest(); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Handled-Batch-One']); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Handled-Batch-Two']); ApexCorePacketSaveCallback saveCallback = new ApexCorePacketSaveCallback(); List<Object> inserts = new List<Object>{new Account(Name = 'Async-One'), new Account(Name = 'Async-Two')}; List<Database.SaveResult> insertResults = Database.insertAsync(inserts, saveCallback); System.assertEquals(2, insertResults.size()); Database.SaveResult singleInsert = Database.insertAsync(new Account(Name = 'Async-Three'), saveCallback, AccessLevel.USER_MODE); System.assert(singleInsert.isSuccess()); List<Object> plainInsert = new List<Object>{new Account(Name = 'Async-Plain')}; System.assertEquals(1, Database.insertAsync(plainInsert).size()); List<Object> updates = new List<Object>{new Account(Id = insertResults[0].getId(), Name = 'Async-One-Updated')}; System.assertEquals(1, Database.updateAsync(updates).size()); List<Object> callbackUpdates = new List<Object>{new Account(Id = insertResults[1].getId(), Name = 'Async-Two-Updated')}; System.assertEquals(1, Database.updateAsync(callbackUpdates, saveCallback).size()); List<Object> accessUpdates = new List<Object>{new Account(Id = singleInsert.getId(), Name = 'Async-Three-Updated')}; System.assertEquals(1, Database.updateAsync(accessUpdates, saveCallback, AccessLevel.USER_MODE).size()); ApexCorePacketDeleteCallback deleteCallback = new ApexCorePacketDeleteCallback(); System.assertEquals(1, Database.deleteAsync(updates).size()); System.assertEquals(1, Database.deleteAsync(callbackUpdates, deleteCallback).size()); System.assertEquals(1, Database.deleteAsync(accessUpdates, deleteCallback, AccessLevel.USER_MODE).size()); System.assert(ApexCorePacketSaveCallback.seen >= 4); System.assert(ApexCorePacketDeleteCallback.seen >= 2); } }",
+      "path": "force-app/main/classes/ApexCorePacketSupportedFixtureTest.cls"
+    }
+  ]
 }

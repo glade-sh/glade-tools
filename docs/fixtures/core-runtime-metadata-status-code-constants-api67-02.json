@@ -1,0 +1,616 @@
+{
+  "name": "core-runtime-metadata-status-code-constants-api67-02",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertNotEquals(null, Metadata.StatusCode.INVALID_CONTENT_TYPE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_CREDIT_CARD_INFO);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_CROSS_REFERENCE_KEY);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_CURRENCY_CONV_RATE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_CURRENCY_CORP_RATE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_CURRENCY_ISO);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_DATASET_REFERENCE_INPUT);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_DATA_CATEGORY_GROUP_REFERENCE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_DATA_URI);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EBV_OPERATION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EMAIL_ADDRESS);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EMPTY_KEY_OWNER);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_ENTITY_FOR_MATCH_ENGINE_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_ENTITY_FOR_MATCH_OPERATION_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_ENTITY_FOR_UPSERT);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_ENVIRONMENT_HUB_MEMBER);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EVENT_DELIVERY);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EVENT_INPUT);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EVENT_SUBSCRIPTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EXTENSION_ID);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_EXTERNAL_ID_FIELD_NAME);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_FIELD);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_FIELD_FOR_INSERT_UPDATE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_FIELD_WHEN_USING_TEMPLATE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_FILTER_ACTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_GOOGLE_DOCS_URL);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_ID_FIELD);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_INET_ADDRESS);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_INPUT);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_INPUT_FORMAT);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_KEY_FIELD_INPUT);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_LINEITEM_CLONE_STATE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_MARKUP);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_MASTER_OR_TRANSLATED_SOLUTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE_OR_STATUS);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_MERGE_RECORD);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_MESSAGE_ID_REFERENCE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_NAMESPACE_PREFIX);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_OAUTH_URL);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_OPERATION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_OPERATOR);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_OWNER);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PACKAGE_LICENSE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PACKAGE_VERSION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PARTNER_NETWORK_STATUS);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PAYLOAD_VERSION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PERSON_ACCOUNT_OPERATION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PROFILE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PROMOTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_PROVIDER_TYPE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_QUERY_KEY);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_QUERY_LOCATOR);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_QUERY_VALUE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_READ_ONLY_USER_DML);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_RECEIVEDDOCUMENTID_ATTACHMENT);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_RECORD_ATTRIBUTE_VALUE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_RECORD_TYPE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_REFRESH_TOKEN);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_REQUEST_STATE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_RUNTIME_VALUE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SAVE_AS_ACTIVITY_FLAG);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SCS_INBOUND_USER);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SEARCH_PROVIDER_REQUEST);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SESSION_ID);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SETUP_OWNER);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SIGNUP_COUNTRY);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SIGNUP_OPTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SITE_DELETE_EXCEPTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SITE_FILE_IMPORTED_EXCEPTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SITE_FILE_TYPE_EXCEPTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SOURCE_OBJECT_ID);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_STATUS);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_SUBDOMAIN);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_TARGET_OBJECT_NAME);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_TEXT_REPRESENTATION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_TYPE);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_TYPE_FOR_OPERATION);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_TYPE_ON_FIELD_IN_RECORD);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_UNMERGE_RECORD);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_USERID);\nSystem.assertNotEquals(null, Metadata.StatusCode.INVALID_USER_OBJECT);\nSystem.assertNotEquals(null, Metadata.StatusCode.IP_RANGE_LIMIT_EXCEEDED);\nSystem.assertNotEquals(null, Metadata.StatusCode.ITEM_NOT_FOUND);\nSystem.assertNotEquals(null, Metadata.StatusCode.JIGSAW_IMPORT_LIMIT_EXCEEDED);\nSystem.assertNotEquals(null, Metadata.StatusCode.LICENSE_LIMIT_EXCEEDED);\nSystem.assertNotEquals(null, Metadata.StatusCode.LIGHT_PORTAL_USER_EXCEPTION);\nSystem.assertNotEquals(null, Metadata.StatusCode.LIMIT_EXCEEDED);\nSystem.assertNotEquals(null, Metadata.StatusCode.LIST_PRICE_NOT_FOUND);\nSystem.assertNotEquals(null, Metadata.StatusCode.MALFORMED_ID);\nSystem.assertNotEquals(null, Metadata.StatusCode.MANAGER_NOT_DEFINED);\nSystem.assertNotEquals(null, Metadata.StatusCode.MASSMAIL_RETRY_LIMIT_EXCEEDED);\nSystem.assertNotEquals(null, Metadata.StatusCode.MASS_MAIL_LIMIT_EXCEEDED);\nSystem.assertNotEquals(null, Metadata.StatusCode.MATCH_DEFINITION_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.MATCH_OPERATION_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.MATCH_OPERATION_INVALID_ENGINE_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.MATCH_OPERATION_INVALID_RULE_ERROR);\nSystem.assertNotEquals(null, Metadata.StatusCode.MATCH_OPERATION_MISSING_ENGINE_ERROR);\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_CONTENT_TYPE",
+      "symbol": "Metadata.StatusCode.INVALID_CONTENT_TYPE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_CREDIT_CARD_INFO",
+      "symbol": "Metadata.StatusCode.INVALID_CREDIT_CARD_INFO",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_CROSS_REFERENCE_KEY",
+      "symbol": "Metadata.StatusCode.INVALID_CROSS_REFERENCE_KEY",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD",
+      "symbol": "Metadata.StatusCode.INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_CURRENCY_CONV_RATE",
+      "symbol": "Metadata.StatusCode.INVALID_CURRENCY_CONV_RATE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_CURRENCY_CORP_RATE",
+      "symbol": "Metadata.StatusCode.INVALID_CURRENCY_CORP_RATE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_CURRENCY_ISO",
+      "symbol": "Metadata.StatusCode.INVALID_CURRENCY_ISO",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_DATASET_REFERENCE_INPUT",
+      "symbol": "Metadata.StatusCode.INVALID_DATASET_REFERENCE_INPUT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_DATA_CATEGORY_GROUP_REFERENCE",
+      "symbol": "Metadata.StatusCode.INVALID_DATA_CATEGORY_GROUP_REFERENCE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_DATA_URI",
+      "symbol": "Metadata.StatusCode.INVALID_DATA_URI",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EBV_OPERATION",
+      "symbol": "Metadata.StatusCode.INVALID_EBV_OPERATION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EMAIL_ADDRESS",
+      "symbol": "Metadata.StatusCode.INVALID_EMAIL_ADDRESS",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EMPTY_KEY_OWNER",
+      "symbol": "Metadata.StatusCode.INVALID_EMPTY_KEY_OWNER",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_ENTITY_FOR_MATCH_ENGINE_ERROR",
+      "symbol": "Metadata.StatusCode.INVALID_ENTITY_FOR_MATCH_ENGINE_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_ENTITY_FOR_MATCH_OPERATION_ERROR",
+      "symbol": "Metadata.StatusCode.INVALID_ENTITY_FOR_MATCH_OPERATION_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_ENTITY_FOR_UPSERT",
+      "symbol": "Metadata.StatusCode.INVALID_ENTITY_FOR_UPSERT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_ENVIRONMENT_HUB_MEMBER",
+      "symbol": "Metadata.StatusCode.INVALID_ENVIRONMENT_HUB_MEMBER",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EVENT_DELIVERY",
+      "symbol": "Metadata.StatusCode.INVALID_EVENT_DELIVERY",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EVENT_INPUT",
+      "symbol": "Metadata.StatusCode.INVALID_EVENT_INPUT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EVENT_SUBSCRIPTION",
+      "symbol": "Metadata.StatusCode.INVALID_EVENT_SUBSCRIPTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EXTENSION_ID",
+      "symbol": "Metadata.StatusCode.INVALID_EXTENSION_ID",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_EXTERNAL_ID_FIELD_NAME",
+      "symbol": "Metadata.StatusCode.INVALID_EXTERNAL_ID_FIELD_NAME",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_FIELD",
+      "symbol": "Metadata.StatusCode.INVALID_FIELD",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_FIELD_FOR_INSERT_UPDATE",
+      "symbol": "Metadata.StatusCode.INVALID_FIELD_FOR_INSERT_UPDATE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_FIELD_WHEN_USING_TEMPLATE",
+      "symbol": "Metadata.StatusCode.INVALID_FIELD_WHEN_USING_TEMPLATE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_FILTER_ACTION",
+      "symbol": "Metadata.StatusCode.INVALID_FILTER_ACTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_GOOGLE_DOCS_URL",
+      "symbol": "Metadata.StatusCode.INVALID_GOOGLE_DOCS_URL",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_ID_FIELD",
+      "symbol": "Metadata.StatusCode.INVALID_ID_FIELD",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_INET_ADDRESS",
+      "symbol": "Metadata.StatusCode.INVALID_INET_ADDRESS",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_INPUT",
+      "symbol": "Metadata.StatusCode.INVALID_INPUT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_INPUT_FORMAT",
+      "symbol": "Metadata.StatusCode.INVALID_INPUT_FORMAT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_KEY_FIELD_INPUT",
+      "symbol": "Metadata.StatusCode.INVALID_KEY_FIELD_INPUT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_LINEITEM_CLONE_STATE",
+      "symbol": "Metadata.StatusCode.INVALID_LINEITEM_CLONE_STATE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_MARKUP",
+      "symbol": "Metadata.StatusCode.INVALID_MARKUP",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_MASTER_OR_TRANSLATED_SOLUTION",
+      "symbol": "Metadata.StatusCode.INVALID_MASTER_OR_TRANSLATED_SOLUTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE",
+      "symbol": "Metadata.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE_OR_STATUS",
+      "symbol": "Metadata.StatusCode.INVALID_MERCHANT_ACCOUNT_MODE_OR_STATUS",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_MERGE_RECORD",
+      "symbol": "Metadata.StatusCode.INVALID_MERGE_RECORD",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_MESSAGE_ID_REFERENCE",
+      "symbol": "Metadata.StatusCode.INVALID_MESSAGE_ID_REFERENCE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_NAMESPACE_PREFIX",
+      "symbol": "Metadata.StatusCode.INVALID_NAMESPACE_PREFIX",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_OAUTH_URL",
+      "symbol": "Metadata.StatusCode.INVALID_OAUTH_URL",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_OPERATION",
+      "symbol": "Metadata.StatusCode.INVALID_OPERATION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_OPERATOR",
+      "symbol": "Metadata.StatusCode.INVALID_OPERATOR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST",
+      "symbol": "Metadata.StatusCode.INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_OWNER",
+      "symbol": "Metadata.StatusCode.INVALID_OWNER",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PACKAGE_LICENSE",
+      "symbol": "Metadata.StatusCode.INVALID_PACKAGE_LICENSE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PACKAGE_VERSION",
+      "symbol": "Metadata.StatusCode.INVALID_PACKAGE_VERSION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PARTNER_NETWORK_STATUS",
+      "symbol": "Metadata.StatusCode.INVALID_PARTNER_NETWORK_STATUS",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PAYLOAD_VERSION",
+      "symbol": "Metadata.StatusCode.INVALID_PAYLOAD_VERSION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PERSON_ACCOUNT_OPERATION",
+      "symbol": "Metadata.StatusCode.INVALID_PERSON_ACCOUNT_OPERATION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PROFILE",
+      "symbol": "Metadata.StatusCode.INVALID_PROFILE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PROMOTION",
+      "symbol": "Metadata.StatusCode.INVALID_PROMOTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_PROVIDER_TYPE",
+      "symbol": "Metadata.StatusCode.INVALID_PROVIDER_TYPE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_QUERY_KEY",
+      "symbol": "Metadata.StatusCode.INVALID_QUERY_KEY",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_QUERY_LOCATOR",
+      "symbol": "Metadata.StatusCode.INVALID_QUERY_LOCATOR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_QUERY_VALUE",
+      "symbol": "Metadata.StatusCode.INVALID_QUERY_VALUE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_READ_ONLY_USER_DML",
+      "symbol": "Metadata.StatusCode.INVALID_READ_ONLY_USER_DML",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_RECEIVEDDOCUMENTID_ATTACHMENT",
+      "symbol": "Metadata.StatusCode.INVALID_RECEIVEDDOCUMENTID_ATTACHMENT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_RECORD_ATTRIBUTE_VALUE",
+      "symbol": "Metadata.StatusCode.INVALID_RECORD_ATTRIBUTE_VALUE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_RECORD_TYPE",
+      "symbol": "Metadata.StatusCode.INVALID_RECORD_TYPE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_REFRESH_TOKEN",
+      "symbol": "Metadata.StatusCode.INVALID_REFRESH_TOKEN",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_REQUEST_STATE",
+      "symbol": "Metadata.StatusCode.INVALID_REQUEST_STATE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_RUNTIME_VALUE",
+      "symbol": "Metadata.StatusCode.INVALID_RUNTIME_VALUE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SAVE_AS_ACTIVITY_FLAG",
+      "symbol": "Metadata.StatusCode.INVALID_SAVE_AS_ACTIVITY_FLAG",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SCS_INBOUND_USER",
+      "symbol": "Metadata.StatusCode.INVALID_SCS_INBOUND_USER",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SEARCH_PROVIDER_REQUEST",
+      "symbol": "Metadata.StatusCode.INVALID_SEARCH_PROVIDER_REQUEST",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SESSION_ID",
+      "symbol": "Metadata.StatusCode.INVALID_SESSION_ID",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SETUP_OWNER",
+      "symbol": "Metadata.StatusCode.INVALID_SETUP_OWNER",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SIGNUP_COUNTRY",
+      "symbol": "Metadata.StatusCode.INVALID_SIGNUP_COUNTRY",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SIGNUP_OPTION",
+      "symbol": "Metadata.StatusCode.INVALID_SIGNUP_OPTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SITE_DELETE_EXCEPTION",
+      "symbol": "Metadata.StatusCode.INVALID_SITE_DELETE_EXCEPTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SITE_FILE_IMPORTED_EXCEPTION",
+      "symbol": "Metadata.StatusCode.INVALID_SITE_FILE_IMPORTED_EXCEPTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SITE_FILE_TYPE_EXCEPTION",
+      "symbol": "Metadata.StatusCode.INVALID_SITE_FILE_TYPE_EXCEPTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SOURCE_OBJECT_ID",
+      "symbol": "Metadata.StatusCode.INVALID_SOURCE_OBJECT_ID",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_STATUS",
+      "symbol": "Metadata.StatusCode.INVALID_STATUS",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_SUBDOMAIN",
+      "symbol": "Metadata.StatusCode.INVALID_SUBDOMAIN",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_TARGET_OBJECT_NAME",
+      "symbol": "Metadata.StatusCode.INVALID_TARGET_OBJECT_NAME",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_TEXT_REPRESENTATION",
+      "symbol": "Metadata.StatusCode.INVALID_TEXT_REPRESENTATION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_TYPE",
+      "symbol": "Metadata.StatusCode.INVALID_TYPE",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_TYPE_FOR_OPERATION",
+      "symbol": "Metadata.StatusCode.INVALID_TYPE_FOR_OPERATION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_TYPE_ON_FIELD_IN_RECORD",
+      "symbol": "Metadata.StatusCode.INVALID_TYPE_ON_FIELD_IN_RECORD",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_UNMERGE_RECORD",
+      "symbol": "Metadata.StatusCode.INVALID_UNMERGE_RECORD",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_USERID",
+      "symbol": "Metadata.StatusCode.INVALID_USERID",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.INVALID_USER_OBJECT",
+      "symbol": "Metadata.StatusCode.INVALID_USER_OBJECT",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.IP_RANGE_LIMIT_EXCEEDED",
+      "symbol": "Metadata.StatusCode.IP_RANGE_LIMIT_EXCEEDED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.ITEM_NOT_FOUND",
+      "symbol": "Metadata.StatusCode.ITEM_NOT_FOUND",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.JIGSAW_IMPORT_LIMIT_EXCEEDED",
+      "symbol": "Metadata.StatusCode.JIGSAW_IMPORT_LIMIT_EXCEEDED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.LICENSE_LIMIT_EXCEEDED",
+      "symbol": "Metadata.StatusCode.LICENSE_LIMIT_EXCEEDED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.LIGHT_PORTAL_USER_EXCEPTION",
+      "symbol": "Metadata.StatusCode.LIGHT_PORTAL_USER_EXCEPTION",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.LIMIT_EXCEEDED",
+      "symbol": "Metadata.StatusCode.LIMIT_EXCEEDED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.LIST_PRICE_NOT_FOUND",
+      "symbol": "Metadata.StatusCode.LIST_PRICE_NOT_FOUND",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MALFORMED_ID",
+      "symbol": "Metadata.StatusCode.MALFORMED_ID",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MANAGER_NOT_DEFINED",
+      "symbol": "Metadata.StatusCode.MANAGER_NOT_DEFINED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MASSMAIL_RETRY_LIMIT_EXCEEDED",
+      "symbol": "Metadata.StatusCode.MASSMAIL_RETRY_LIMIT_EXCEEDED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MASS_MAIL_LIMIT_EXCEEDED",
+      "symbol": "Metadata.StatusCode.MASS_MAIL_LIMIT_EXCEEDED",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MATCH_DEFINITION_ERROR",
+      "symbol": "Metadata.StatusCode.MATCH_DEFINITION_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MATCH_OPERATION_ERROR",
+      "symbol": "Metadata.StatusCode.MATCH_OPERATION_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MATCH_OPERATION_INVALID_ENGINE_ERROR",
+      "symbol": "Metadata.StatusCode.MATCH_OPERATION_INVALID_ENGINE_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MATCH_OPERATION_INVALID_RULE_ERROR",
+      "symbol": "Metadata.StatusCode.MATCH_OPERATION_INVALID_RULE_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    },
+    {
+      "surfaceId": "apex:Metadata.StatusCode.MATCH_OPERATION_MISSING_ENGINE_ERROR",
+      "symbol": "Metadata.StatusCode.MATCH_OPERATION_MISSING_ENGINE_ERROR",
+      "kind": "exec",
+      "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
+    }
+  ]
+}

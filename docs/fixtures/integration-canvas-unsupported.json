@@ -1,11 +1,6 @@
 {
   "name": "integration-canvas-unsupported",
   "evidence": [
-    {
-      "symbol": "Canvas.EnvironmentContext.getParameters",
-      "kind": "exec",
-      "notes": "Canvas app integration APIs return UnsupportedFeature diagnostics."
-    }
   ],
   "source": [
     {

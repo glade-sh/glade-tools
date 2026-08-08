@@ -1,0 +1,28 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "Site.ExternalUserCreateException externalError; System.assertEquals(null, externalError);"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "Local runtime can construct and observe the public Salesforce exception type without claiming hosted Sites execution.",
+      "surfaceId": "apex:Site.ExternalUserCreateException",
+      "symbol": "Site.ExternalUserCreateException"
+    }
+  ],
+  "mode": "local-runtime",
+  "name": "current-base-site-external-user-create-exception-local-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture records the local public Site exception type only; it does not claim hosted Sites execution.",
+  "source": [
+    {
+      "content": "Site.ExternalUserCreateException externalError; System.assertEquals(null, externalError);",
+      "path": "anonymous.apex"
+    }
+  ]
+}

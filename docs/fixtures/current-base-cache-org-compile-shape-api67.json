@@ -1,0 +1,47 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "check"
+  },
+  "evidence": [
+    {
+      "kind": "shape",
+      "surfaceId": "apex:Cache.Org.Org()",
+      "symbol": "Cache.Org.Org()"
+    },
+    {
+      "kind": "shape",
+      "surfaceId": "apex:Cache.Org.clone()",
+      "symbol": "Cache.Org.clone()"
+    }
+  ],
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  },
+  "mode": "compile-shape",
+  "name": "current-base-cache-org-compile-shape-api67",
+  "notes": "The generated API-67 shape accepts the Cache.Org constructor and clone member for compile-shape accounting; runtime treats Cache.Org as a static local namespace.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "laneId": "current-base-deterministic-mock-required-cache-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 2,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture mode and evidence are compile-shape probes; runtime Cache construction is not claimed.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Cache.Org is a static Platform Cache namespace boundary and is not a hosted Platform Cache oracle.",
+  "source": [
+    {
+      "content": "public class CurrentBaseCacheOrgCompileShapeApi67 { public static Object probe() { if (false) { Cache.Org org = new Cache.Org(); return ((Cache.Org)null).clone(); } return null; } }",
+      "path": "force-app/main/default/classes/CurrentBaseCacheOrgCompileShapeApi67.cls"
+    }
+  ]
+}

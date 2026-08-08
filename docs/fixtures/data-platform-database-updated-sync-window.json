@@ -1,34 +1,27 @@
 {
-  "name": "data-platform-database-updated-sync-window",
-  "evidence": [
-    {
-      "surfaceId": "apex:System.Database.getUpdated(String,Datetime,Datetime)",
-      "symbol": "Database.getUpdated(String,Datetime,Datetime)",
-      "kind": "test",
-      "notes": "Local Database.getUpdated returns IDs whose system-modified timestamp falls inside the requested sync window."
-    },
-    {
-      "surfaceId": "apex:System.Database.GetUpdatedResult.getIds()",
-      "symbol": "Database.GetUpdatedResult.getIds()",
-      "kind": "test",
-      "notes": "GetUpdatedResult exposes the matching local record IDs."
-    },
-    {
-      "surfaceId": "apex:System.Database.GetUpdatedResult.getLatestDateCovered()",
-      "symbol": "Database.GetUpdatedResult.getLatestDateCovered()",
-      "kind": "test",
-      "notes": "GetUpdatedResult carries the requested latest covered DateTime."
-    }
-  ],
-  "source": [
-    {
-      "path": "force-app/main/classes/DatabaseUpdatedSyncWindowFixtureTest.cls",
-      "content": "@isTest private class DatabaseUpdatedSyncWindowFixtureTest { @isTest static void updatedWindowReturnsMatchingIds() { Account account = new Account(Name = 'Before'); insert account; account.Name = 'After'; update account; Datetime startWindow = Datetime.newInstanceGmt(2026, 5, 2, 11, 59, 0); Datetime endWindow = Datetime.newInstanceGmt(2026, 5, 2, 12, 5, 0); Database.GetUpdatedResult inside = Database.getUpdated('Account', startWindow, endWindow); System.assert(inside.getIds().contains(account.Id)); System.assertEquals(endWindow, inside.getLatestDateCovered()); Database.GetUpdatedResult outside = Database.getUpdated('Account', Datetime.newInstanceGmt(2026, 5, 1, 0, 0, 0), Datetime.newInstanceGmt(2026, 5, 1, 1, 0, 0)); System.assertEquals(0, outside.getIds().size()); } }"
-    }
-  ],
   "command": {
     "kind": "test"
   },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "Local Database.getUpdated returns IDs whose system-modified timestamp falls inside the requested sync window.",
+      "surfaceId": "apex:System.Database.getUpdated(String,Datetime,Datetime)",
+      "symbol": "Database.getUpdated(String,Datetime,Datetime)"
+    },
+    {
+      "kind": "test",
+      "notes": "GetUpdatedResult exposes the matching local record IDs.",
+      "surfaceId": "apex:System.Database.GetUpdatedResult.getIds()",
+      "symbol": "Database.GetUpdatedResult.getIds()"
+    },
+    {
+      "kind": "test",
+      "notes": "GetUpdatedResult carries the requested latest covered DateTime.",
+      "surfaceId": "apex:System.Database.GetUpdatedResult.getLatestDateCovered()",
+      "symbol": "Database.GetUpdatedResult.getLatestDateCovered()"
+    }
+  ],
   "expected": {
     "result": {
       "errors": 0,
@@ -37,5 +30,13 @@
       "passed": 1,
       "total": 1
     }
-  }
+  },
+  "name": "data-platform-database-updated-sync-window",
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "@isTest private class DatabaseUpdatedSyncWindowFixtureTest { @isTest static void updatedWindowReturnsMatchingIds() { Datetime startWindow = Datetime.now().addMinutes(-1); Account account = new Account(Name = 'Before'); insert account; account.Name = 'After'; update account; Datetime endWindow = Datetime.now().addMinutes(1); Database.GetUpdatedResult inside = Database.getUpdated('Account', startWindow, endWindow); System.assert(inside.getIds().contains(account.Id)); System.assertNotEquals(null, inside.getLatestDateCovered()); Database.GetUpdatedResult outside = Database.getUpdated('Account', Datetime.now().addDays(-2), Datetime.now().addDays(-1)); System.assertEquals(0, outside.getIds().size()); } }",
+      "path": "force-app/main/classes/DatabaseUpdatedSyncWindowFixtureTest.cls"
+    }
+  ]
 }

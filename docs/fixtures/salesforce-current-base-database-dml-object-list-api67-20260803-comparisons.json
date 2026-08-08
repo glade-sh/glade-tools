@@ -1,0 +1,67 @@
+{
+  "apiVersion": "67.0",
+  "name": "current-base-database-dml-object-list-api67-20260803",
+  "mode": "dual-oracle",
+  "comparisons": [
+    {
+      "caseId": "database-dml-object-list-api67",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:System.Database.insert(Object)",
+        "apex:System.Database.insert(List<Object>)",
+        "apex:System.Database.update(Object)",
+        "apex:System.Database.update(Object,Boolean)",
+        "apex:System.Database.update(Object,Boolean,AccessLevel)",
+        "apex:System.Database.update(List<Object>)",
+        "apex:System.Database.update(List<Object>,Boolean)",
+        "apex:System.Database.update(List<Object>,AccessLevel)",
+        "apex:System.Database.update(List<Object>,Boolean,AccessLevel)",
+        "apex:System.Database.delete(Object)",
+        "apex:System.Database.delete(Object,AccessLevel)",
+        "apex:System.Database.delete(List<Object>)",
+        "apex:System.Database.delete(List<Object>,Boolean)",
+        "apex:System.Database.delete(List<Object>,AccessLevel)",
+        "apex:System.Database.delete(List<Object>,Boolean,AccessLevel)",
+        "apex:System.Database.undelete(Object)",
+        "apex:System.Database.undelete(Object,AccessLevel)",
+        "apex:System.Database.undelete(List<Object>)",
+        "apex:System.Database.undelete(List<Object>,AccessLevel)",
+        "apex:System.Database.undelete(List<Object>,Boolean,AccessLevel)"
+      ],
+      "expectedObservation": "Synchronous insert, update, delete, and undelete Object/List<Object> overloads, allOrNone variants, and AccessLevel variants return successful typed results and restore records to the same final state.",
+      "sfObservation": "Salesforce API 67.0 synchronous Apex test DatabaseDmlObjectListParityTest passed (1/1; 2875 ms) after deploy to glade-sf-correctness.",
+      "gladeObservation": "Exact candidate glade-candidate-current-base-0a0f624-cgo local test DatabaseDmlObjectListParityTest passed (1/1; no compile/runtime errors).",
+      "sourcePath": "evidence/current-base/database-runtime-batch-20260803/project/force-app/main/default/classes/DatabaseDmlObjectListParityTest.cls",
+      "sourceSha256": "ab4c3e4466cb83b84a550081ab172ea8517d5fa0a393477f7f7c41b4ec7bbb59",
+      "gladeReportPath": "evidence/current-base/rebind-0a0f624-cgo/local-dml-parity.json",
+      "gladeReportSha256": "a621dc23ab45ee10ef0d479d5b5b19b93690924663a2361d5acaaa539ce5c4a6",
+      "salesforceReportPath": "evidence/current-base/database-runtime-batch-20260803/sf-test-dml-parity.json",
+      "salesforceReportSha256": "257d2671743ecdf0b2c6ad1dfcddeed6d5b786f88fdccd811b05f83291921730"
+    }
+  ],
+  "profile": {
+    "fixture": "current-base-database-dml-object-list-api67-20260803",
+    "creditScope": "all 20 fixture rows; profile net-new expected 17 because 3 rows already carry fixture-and-oracle evidence."
+  },
+  "candidate": {
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
+  },
+  "localFixtures": [
+    {
+      "path": "docs/fixtures/current-base-database-dml-object-list-api67-20260803.json",
+      "sha256": "f26b95ba8d6666dbaad9178a705cea08dc79d80fb1523bbf70a6120f8e33b427"
+    }
+  ],
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "apiVersion": "67.0",
+    "orgId": "00DO400000bt08ZMAQ",
+    "testClass": "DatabaseDmlObjectListParityTest",
+    "testRun": {
+      "outcome": "Passed",
+      "testsRan": 1,
+      "testExecutionTimeMs": 2875
+    }
+  }
+}

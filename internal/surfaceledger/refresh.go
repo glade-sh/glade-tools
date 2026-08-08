@@ -14,6 +14,7 @@ type RefreshOptions struct {
 	Release             string
 	DiffFrom            string
 	EvidenceFixtureGlob []string
+	OracleEvidenceGlob  []string
 }
 
 type RefreshResult struct {
@@ -58,6 +59,13 @@ func Refresh(options RefreshOptions) (RefreshResult, error) {
 	if err != nil {
 		return RefreshResult{}, err
 	}
+	if len(options.OracleEvidenceGlob) > 0 {
+		oracleRows, err := BuildOracleEvidenceSnapshot(defaultEvidenceFixtures(options.OracleEvidenceGlob))
+		if err != nil {
+			return RefreshResult{}, err
+		}
+		evidenceRows = append(evidenceRows, oracleRows...)
+	}
 	ledger := Merge(docsRows, orgRows, gladeRows, evidenceRows)
 	AssignPriorities(ledger.Rows)
 	ledger.Summary = Summarize(ledger.Rows)
@@ -82,6 +90,12 @@ func defaultEvidenceFixtures(patterns []string) []string {
 		matches, _ := filepath.Glob(filepath.Join("docs", "fixtures", "*.json"))
 		return matches
 	}
+	return ExpandEvidencePaths(patterns)
+}
+
+// ExpandEvidencePaths expands glob patterns to concrete file paths, keeping
+// non-matching paths as-is so that downstream readers can report the error.
+func ExpandEvidencePaths(patterns []string) []string {
 	var out []string
 	for _, pattern := range patterns {
 		matches, err := filepath.Glob(pattern)

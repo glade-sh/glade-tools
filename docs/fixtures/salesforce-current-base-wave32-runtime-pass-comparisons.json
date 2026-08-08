@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "name": "salesforce-current-base-wave32-runtime-pass-comparisons",
+  "apiVersion": "67.0",
+  "mode": "current-base-runtime",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "sha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5"
+  },
+  "salesforce": {
+    "orgAlias": "glade-sf-wave32-casper3",
+    "orgId": "00DO400000cMLG2MAO",
+    "apiVersion": "67.0",
+    "packet": "evidence/current-base/recovery-dispatch-20260807/wave32/packet-casper-v3/salesforce/results.json",
+    "packetSha256": "f63692452a8369ab22cf5357dea45002ed666d61d777fdba3d01f66696f8d696"
+  },
+  "local": {
+    "packet": "evidence/current-base/recovery-dispatch-20260807/wave32/packet-local-v2/local/SUMMARY.json",
+    "packetSha256": "1460ad5baf1e1dab886b1675eec4043cba9c908ffa85efd09bef686f53b1efc5"
+  },
+  "comparisons": [
+    {
+      "caseId": "wave32-core-runtime-cache-builder-evidence",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 runtime passed (status=Passed, exit=0).",
+      "gladeObservation": "Exact candidate local fixture passed (status=exit-0, exit=0).",
+      "surfaceIds": [
+        "apex:Cache.OrgPartition.validateCacheBuilder(Type)",
+        "apex:Cache.Partition.validateCacheBuilder(Type)",
+        "apex:Cache.SessionPartition.validateCacheBuilder(Type)"
+      ]
+    },
+    {
+      "caseId": "wave32-core-runtime-callable-interface-dispatch",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 runtime passed (status=Passed, exit=0).",
+      "gladeObservation": "Exact candidate local fixture passed (status=exit-0, exit=0).",
+      "surfaceIds": [
+        "apex:System.Callable.call(String,Map<String,Object>)"
+      ]
+    },
+    {
+      "caseId": "wave32-core-runtime-metadata-dto-service-contracts",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 runtime passed (status=Passed, exit=0).",
+      "gladeObservation": "Exact candidate local fixture passed (status=exit-0, exit=0).",
+      "surfaceIds": [
+        "apex:Metadata.DeployCallback.handleResult(Metadata.DeployResult,Metadata.DeployCallbackContext)",
+        "apex:Metadata.Metadata.clone()",
+        "apex:Metadata.MetadataType.Layout",
+        "apex:Metadata.MetadataType.OmniInteractionAccessConfig"
+      ]
+    },
+    {
+      "caseId": "wave32-current-base-system-dom-local-runtime-001-api67",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 runtime passed (status=Passed, exit=0).",
+      "gladeObservation": "Exact candidate local fixture passed (status=exit-0, exit=0).",
+      "surfaceIds": [
+        "apex:System.Dom"
+      ]
+    },
+    {
+      "caseId": "wave32-http-send-local-mock-closeout",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 runtime passed (status=Passed, exit=0).",
+      "gladeObservation": "Exact candidate local fixture passed (status=exit-0, exit=0).",
+      "surfaceIds": [
+        "apex:System.HttpCalloutMock.respond(HttpRequest)"
+      ]
+    },
+    {
+      "caseId": "wave32-test-helper-load-data-fixed-search-evidence",
+      "status": "pass",
+      "sfObservation": "Salesforce API 67 runtime passed (status=Passed, exit=0).",
+      "gladeObservation": "Exact candidate local fixture passed (status=exit-0, exit=0).",
+      "surfaceIds": [
+        "apex:System.Test.loadData",
+        "apex:System.Test.loadData(Schema.SObjectType,String)"
+      ]
+    }
+  ]
+}

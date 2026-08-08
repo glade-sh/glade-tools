@@ -1,50 +1,53 @@
 {
-  "name": "async-batchable-impl-and-chunk-iterator",
-  "evidence": [
-    {
-      "symbol": "Database.BatchableContextImpl.getJobId",
-      "surfaceId": "apex:Database.BatchableContextImpl.getJobId()",
-      "kind": "exec"
-    },
-    {
-      "symbol": "Database.BatchableContextImpl.getChildJobId",
-      "surfaceId": "apex:Database.BatchableContextImpl.getChildJobId()",
-      "kind": "exec"
-    },
-    {
-      "symbol": "Database.BatchableContextImpl.clone",
-      "surfaceId": "apex:Database.BatchableContextImpl.clone()",
-      "kind": "exec"
-    },
-    {
-      "symbol": "Database.QueryLocatorChunkIterator.hasNext",
-      "surfaceId": "apex:Database.QueryLocatorChunkIterator.hasNext()",
-      "kind": "exec"
-    },
-    {
-      "symbol": "Database.QueryLocatorChunkIterator.next",
-      "surfaceId": "apex:Database.QueryLocatorChunkIterator.next()",
-      "kind": "exec"
-    },
-    {
-      "symbol": "Database.QueryLocatorChunkIterator.clone",
-      "surfaceId": "apex:Database.QueryLocatorChunkIterator.clone()",
-      "kind": "exec"
-    }
-  ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "Database.BatchableContextImpl ctx = new Database.BatchableContextImpl(); System.assertEquals('', ctx.getJobId()); System.assertEquals('', ctx.getChildJobId()); Database.BatchableContextImpl copiedContext = (Database.BatchableContextImpl)ctx.clone(); System.assertEquals('', copiedContext.getJobId()); Database.QueryLocatorChunkIterator iterator = new Database.QueryLocatorChunkIterator(); System.assertEquals(false, iterator.hasNext()); try { iterator.next(); System.assert(false, 'empty chunk iterator should throw on next'); } catch (System.NoSuchElementException e) { System.assert(e.getMessage().contains('Iterator has no more elements')); } Database.QueryLocatorChunkIterator copiedIterator = (Database.QueryLocatorChunkIterator)iterator.clone(); System.assertEquals(false, copiedIterator.hasNext());"
-    }
-  ],
   "command": {
-    "kind": "exec",
     "args": [
       "Database.BatchableContextImpl ctx = new Database.BatchableContextImpl(); System.assertEquals('', ctx.getJobId()); System.assertEquals('', ctx.getChildJobId()); Database.BatchableContextImpl copiedContext = (Database.BatchableContextImpl)ctx.clone(); System.assertEquals('', copiedContext.getJobId()); Database.QueryLocatorChunkIterator iterator = new Database.QueryLocatorChunkIterator(); System.assertEquals(false, iterator.hasNext()); try { iterator.next(); System.assert(false, 'empty chunk iterator should throw on next'); } catch (System.NoSuchElementException e) { System.assert(e.getMessage().contains('Iterator has no more elements')); } Database.QueryLocatorChunkIterator copiedIterator = (Database.QueryLocatorChunkIterator)iterator.clone(); System.assertEquals(false, copiedIterator.hasNext());"
-    ]
+    ],
+    "kind": "exec"
   },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.BatchableContextImpl.getJobId()",
+      "symbol": "Database.BatchableContextImpl.getJobId"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.BatchableContextImpl.getChildJobId()",
+      "symbol": "Database.BatchableContextImpl.getChildJobId"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.BatchableContextImpl.clone()",
+      "symbol": "Database.BatchableContextImpl.clone"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.QueryLocatorChunkIterator.hasNext()",
+      "symbol": "Database.QueryLocatorChunkIterator.hasNext"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.QueryLocatorChunkIterator.next()",
+      "symbol": "Database.QueryLocatorChunkIterator.next"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.QueryLocatorChunkIterator.clone()",
+      "symbol": "Database.QueryLocatorChunkIterator.clone"
+    }
+  ],
   "expected": {
     "ok": true
-  }
+  },
+  "name": "async-batchable-impl-and-chunk-iterator",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects construction of the internal BatchableContext implementation; retained as local async evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "Database.BatchableContextImpl ctx = new Database.BatchableContextImpl(); System.assertEquals('', ctx.getJobId()); System.assertEquals('', ctx.getChildJobId()); Database.BatchableContextImpl copiedContext = (Database.BatchableContextImpl)ctx.clone(); System.assertEquals('', copiedContext.getJobId()); Database.QueryLocatorChunkIterator iterator = new Database.QueryLocatorChunkIterator(); System.assertEquals(false, iterator.hasNext()); try { iterator.next(); System.assert(false, 'empty chunk iterator should throw on next'); } catch (System.NoSuchElementException e) { System.assert(e.getMessage().contains('Iterator has no more elements')); } Database.QueryLocatorChunkIterator copiedIterator = (Database.QueryLocatorChunkIterator)iterator.clone(); System.assertEquals(false, copiedIterator.hasNext());",
+      "path": "anonymous.apex"
+    }
+  ]
 }

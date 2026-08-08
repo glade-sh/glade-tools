@@ -1,0 +1,19 @@
+{
+  "name": "apex-connectapi-chatterusers-followings-oracle",
+  "evidence": [
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,Integer,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" },
+    { "surfaceId": "apex:ConnectApi.ChatterUsers.getFollowings(String,String,String,Integer,Integer)", "symbol": "ConnectApi.ChatterUsers.getFollowings", "kind": "test" }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/ApexConnectApiChatterUsersFollowingsOracleTest.cls",
+      "content": "@isTest private class ApexConnectApiChatterUsersFollowingsOracleTest { @isTest(SeeAllData=true) static void rows() { String userId = UserInfo.getUserId(); ConnectApi.FollowingPage byUser = ConnectApi.ChatterUsers.getFollowings(null, userId); ConnectApi.FollowingPage byPage = ConnectApi.ChatterUsers.getFollowings(null, userId, 0); ConnectApi.FollowingPage byPageSize = ConnectApi.ChatterUsers.getFollowings(null, userId, 0, 10); ConnectApi.FollowingPage byFilter = ConnectApi.ChatterUsers.getFollowings(null, userId, '005'); ConnectApi.FollowingPage byFilterPage = ConnectApi.ChatterUsers.getFollowings(null, userId, '005', 0); ConnectApi.FollowingPage byFilterPageSize = ConnectApi.ChatterUsers.getFollowings(null, userId, '005', 0, 10); String base = '/services/data/vXX.X/chatter/users/' + userId + '/following'; System.assertNotEquals(null, byUser); System.assertEquals(0, byUser.total); System.assertEquals(0, byUser.following.size()); System.assertEquals(base, byUser.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base, byPage.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?pageSize=10', byPageSize.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?filterType=005', byFilter.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?filterType=005', byFilterPage.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(base + '?pageSize=10&filterType=005', byFilterPageSize.currentPageUrl.replace('/services/data/v67.0', '/services/data/vXX.X')); System.assertEquals(0, byPage.total); System.assertEquals(0, byPageSize.total); System.assertEquals(0, byFilter.total); System.assertEquals(0, byFilterPage.total); System.assertEquals(0, byFilterPageSize.total); } }"
+    }
+  ],
+  "command": { "kind": "test" },
+  "expected": { "result": { "ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0 } }
+}

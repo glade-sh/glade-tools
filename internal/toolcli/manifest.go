@@ -92,6 +92,7 @@ func writeCompatManifest(w io.Writer) error {
 			{Path: []string{"evidence"}, Summary: "Compare fixture evidence with a catalog."},
 			{Path: []string{"oracle-stdlib"}, Summary: "Run scratch-org standard-library oracle probes."},
 			{Path: []string{"apex-rules"}, Summary: "Compare checked Apex language-rule probes with Salesforce."},
+			{Path: []string{"salesforce", "verify"}, Summary: "Run unified Salesforce correctness verification."},
 		},
 		Editor: &pluginEditorManifest{
 			Actions: []pluginEditorActionManifest{

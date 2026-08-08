@@ -20,9 +20,9 @@ test("Apex language-rule evidence is documented and discoverable", () => {
   assert.equal(reservedCount, 121);
   assert.equal(acceptCount, 68);
   assert.equal(rejectCount, 354);
-  assert.equal(supportedCount, 410);
-  assert.equal(gapCount, 3);
-  assert.equal(pendingCount, 9);
+  assert.equal(supportedCount, 422);
+  assert.equal(gapCount, 0);
+  assert.equal(pendingCount, 0);
   assert.ok(catalog.rules.some((rule) => rule.id === "APEX-RESERVED-CURRENCY"));
 
   assert.match(readme, /\[Apex language-rule evidence\]\(docs\/apex-language-rules\.md\)/);

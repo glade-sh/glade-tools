@@ -38,6 +38,94 @@ func TestCompatSurfaceRefreshWritesReports(t *testing.T) {
 	}
 }
 
+func TestCompatSurfaceRefreshOracleEvidenceIsOptIn(t *testing.T) {
+	root := t.TempDir()
+	docs := filepath.Join(root, "docs")
+	if err := os.MkdirAll(filepath.Join(docs, "apex"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(docs, "apex", "system_label.md"), []byte("# Label Class\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	oracle := filepath.Join(root, "oracle.json")
+	if err := os.WriteFile(oracle, []byte(`[{"caseId":"cb41-synthetic","status":"pass","sfObservation":"sf","gladeObservation":"gl","surfaceIds":["apex:System.CB41Synthetic.probe()"]}]`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	withoutOut := filepath.Join(root, "without")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "refresh", "--docs", docs, "--out", withoutOut}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("without oracle exit %d stderr=%q", code, stderr.String())
+	}
+	without := readRefreshLedger(t, filepath.Join(withoutOut, "SURFACE_LEDGER.json"))
+	if hasSurface(without, "apex:System.CB41Synthetic.probe()") {
+		t.Fatal("oracle row appeared without --oracle-evidence")
+	}
+
+	withOut := filepath.Join(root, "with")
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"compat", "surface", "refresh", "--docs", docs, "--out", withOut, "--oracle-evidence", oracle, "--oracle-evidence", oracle}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("with oracle exit %d stderr=%q", code, stderr.String())
+	}
+	with := readRefreshLedger(t, filepath.Join(withOut, "SURFACE_LEDGER.json"))
+	row := findSurface(with, "apex:System.CB41Synthetic.probe()")
+	if row == nil || row.Evidence != "oracle" {
+		t.Fatalf("oracle row = %#v", row)
+	}
+}
+
+func readRefreshLedger(t *testing.T, path string) struct {
+	Rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	} `json:"rows"`
+} {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ledger struct {
+		Rows []struct {
+			SurfaceID string `json:"surfaceId"`
+			Evidence  string `json:"evidence"`
+		} `json:"rows"`
+	}
+	if err := json.Unmarshal(data, &ledger); err != nil {
+		t.Fatal(err)
+	}
+	return ledger
+}
+
+func hasSurface(ledger struct {
+	Rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	} `json:"rows"`
+}, id string) bool {
+	return findSurface(ledger, id) != nil
+}
+
+func findSurface(ledger struct {
+	Rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	} `json:"rows"`
+}, id string) *struct {
+	SurfaceID string `json:"surfaceId"`
+	Evidence  string `json:"evidence"`
+} {
+	for i := range ledger.Rows {
+		if ledger.Rows[i].SurfaceID == id {
+			return &ledger.Rows[i]
+		}
+	}
+	return nil
+}
+
 func TestCompatSurfaceDryRunPrintsTempDir(t *testing.T) {
 	root := t.TempDir()
 	docs := filepath.Join(root, "docs")
@@ -401,5 +489,912 @@ func writeSurfaceSourceFixture(t *testing.T, docs string) {
 	}
 	if err := os.WriteFile(filepath.Join(docs, "search-index.json"), []byte(`{}`), 0o644); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestCompatSurfaceStrictCurrentBasePrintsJSON(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	// One strict-closed supported+evidenced row, one open missing-shape row.
+	data := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.Done.doIt","product":"apex","area":"runtime","kind":"method","namespace":"System","typeName":"Done","memberName":"doIt","signature":"String doIt()","returnType":"String","gladeReturnType":"String","gladeShape":"signature-known","gladeBehavior":"supported","evidence":"fixture"},
+    {"surfaceId":"apex:System.Missing.kind","product":"apex","area":"runtime","kind":"method","docs":"present","gladeShape":"absent","priority":10}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--ledger", ledger, "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+
+	var decoded struct {
+		Total        int `json:"total"`
+		StrictClosed int `json:"strictClosed"`
+		StrictOpen   int `json:"strictOpen"`
+		OpenRows     []struct {
+			SurfaceID string   `json:"surfaceId"`
+			Reasons   []string `json:"reasons"`
+		} `json:"openRows"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+		t.Fatalf("decode JSON: %v\n%s", err, stdout.String())
+	}
+	if decoded.Total != 2 || decoded.StrictClosed != 1 || decoded.StrictOpen != 1 {
+		t.Fatalf("counts: total=%d closed=%d open=%d", decoded.Total, decoded.StrictClosed, decoded.StrictOpen)
+	}
+	if len(decoded.OpenRows) != 1 || decoded.OpenRows[0].SurfaceID != "apex:System.Missing.kind" {
+		t.Fatalf("openRows: %#v", decoded.OpenRows)
+	}
+	if len(decoded.OpenRows[0].Reasons) == 0 || decoded.OpenRows[0].Reasons[0] != "missing-shape" {
+		t.Fatalf("open reasons: %#v", decoded.OpenRows[0].Reasons)
+	}
+}
+
+func TestCompatSurfaceStrictCurrentBaseWritesOutputAtomically(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	out := filepath.Join(root, "nested", "strict-current-base.json")
+	data := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.Done.doIt","product":"apex","area":"runtime","kind":"method","namespace":"System","typeName":"Done","memberName":"doIt","signature":"String doIt()","returnType":"String","gladeReturnType":"String","gladeShape":"signature-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(data), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--ledger", ledger, "--output", out}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "surface strict-current-base: ") {
+		t.Fatalf("summary missing: %q", stdout.String())
+	}
+	written, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("read output: %v", err)
+	}
+	var decoded struct {
+		Total        int `json:"total"`
+		StrictClosed int `json:"strictClosed"`
+	}
+	if err := json.Unmarshal(written, &decoded); err != nil {
+		t.Fatalf("decode output: %v\n%s", err, written)
+	}
+	if decoded.Total != 1 || decoded.StrictClosed != 1 {
+		t.Fatalf("counts: total=%d closed=%d", decoded.Total, decoded.StrictClosed)
+	}
+}
+
+func TestCompatSurfaceStrictCurrentBaseRejectsOutputAndJSON(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--ledger", ledger, "--output", filepath.Join(root, "out.json"), "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "use only one of --output or --json") {
+		t.Fatalf("missing mutual-exclusion error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceStrictCurrentBaseRequiresLedger(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "strict-current-base", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "--ledger is required") {
+		t.Fatalf("missing ledger-required error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileJSONOutput(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"},
+    {"surfaceId":"apex:Messaging.Email","product":"apex","area":"runtime","namespace":"Messaging","typeName":"Email","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"},
+    {"namespace":"Messaging","disposition":"deterministic-mock-required","reason":"messaging mock"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+
+	var decoded struct {
+		Total int `json:"total"`
+		Rows  []struct {
+			SurfaceID   string `json:"surfaceId"`
+			Disposition string `json:"disposition"`
+		} `json:"rows"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+		t.Fatalf("decode JSON: %v\n%s", err, stdout.String())
+	}
+	if decoded.Total != 2 {
+		t.Fatalf("total: want 2 got %d", decoded.Total)
+	}
+	dispByID := map[string]string{}
+	for _, r := range decoded.Rows {
+		dispByID[r.SurfaceID] = r.Disposition
+	}
+	if dispByID["apex:System.String"] != "local-runtime-required" {
+		t.Fatalf("System.String disposition: got %q", dispByID["apex:System.String"])
+	}
+	if dispByID["apex:Messaging.Email"] != "deterministic-mock-required" {
+		t.Fatalf("Messaging.Email disposition: got %q", dispByID["apex:Messaging.Email"])
+	}
+}
+
+func TestCompatSurfaceSupportProfileInputDigests(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	corpusUsage := filepath.Join(root, "corpus-usage.json")
+	snapshots := filepath.Join(root, "snapshots")
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if err := os.MkdirAll(snapshots, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(snapshots, name), []byte(name+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[{"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(`{"rules":[{"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(corpusUsage, []byte(`{"usage":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	args := []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--corpus-usage", corpusUsage, "--snapshot-dir", snapshots, "--json"}
+	run := func() map[string]string {
+		var stdout, stderr bytes.Buffer
+		if code := Run(context.Background(), args, &stdout, &stderr); code != 0 {
+			t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+		}
+		var decoded struct {
+			Inputs struct {
+				Files []struct {
+					Name   string `json:"name"`
+					SHA256 string `json:"sha256"`
+				} `json:"files"`
+			} `json:"inputs"`
+		}
+		if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+			t.Fatalf("decode JSON: %v\n%s", err, stdout.String())
+		}
+		got := make(map[string]string, len(decoded.Inputs.Files))
+		for _, file := range decoded.Inputs.Files {
+			if len(file.SHA256) != 64 || strings.ToLower(file.SHA256) != file.SHA256 {
+				t.Fatalf("invalid digest for %q: %q", file.Name, file.SHA256)
+			}
+			got[file.Name] = file.SHA256
+		}
+		return got
+	}
+
+	first := run()
+	second := run()
+	if len(first) != 7 {
+		t.Fatalf("input digest count = %d, want 7: %#v", len(first), first)
+	}
+	if len(second) != len(first) {
+		t.Fatalf("repeat input digest count = %d, want %d", len(second), len(first))
+	}
+	for name, digest := range first {
+		if second[name] != digest {
+			t.Fatalf("digest for %q changed across identical runs: %q != %q", name, digest, second[name])
+		}
+	}
+	for _, name := range []string{"ledger", "policy", "corpus-usage", "DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if first[name] == "" {
+			t.Fatalf("missing input digest %q: %#v", name, first)
+		}
+	}
+	if err := os.WriteFile(policy, []byte(`{"rules":[{"namespace":"System","disposition":"compile-shape-required","reason":"changed policy"}]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	changed := run()
+	if changed["policy"] == first["policy"] {
+		t.Fatalf("policy digest did not change: %q", changed["policy"])
+	}
+}
+
+func TestCompatSurfaceSupportProfileMissingSnapshotFails(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	snapshots := filepath.Join(root, "snapshots")
+	if err := os.MkdirAll(snapshots, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(`{"rules":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if err := os.WriteFile(filepath.Join(snapshots, name), []byte("{}\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--snapshot-dir", snapshots, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected missing snapshot failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "DOCS_SNAPSHOT.json") {
+		t.Fatalf("missing snapshot name in error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileMarkdownOutput(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--markdown"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"# Apex Local Support Profile",
+		"local-runtime-required",
+		"Total Apex rows: 1",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("Markdown missing %q:\n%s", want, out)
+		}
+	}
+}
+
+func TestCompatSurfaceSupportProfileFailsOnUnclassified(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:UnknownNS.SomeType","product":"apex","area":"runtime","namespace":"UnknownNS","typeName":"SomeType","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure for unclassified row, got stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "support profile validation failed") {
+		t.Fatalf("missing validation failure: %q", stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "apex:UnknownNS.SomeType") {
+		t.Fatalf("missing unclassified row ID: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileFailsOnOverlappingRules(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"},
+    {"namespace":"System","disposition":"hosted-deferred","reason":"overlapping"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure for overlapping rules, got stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "support profile validation failed") {
+		t.Fatalf("missing validation failure: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileFailsOnStaleException(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:ConnectApi.SomeDTO","product":"apex","area":"runtime","namespace":"ConnectApi","typeName":"SomeDTO","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {
+      "namespace":"ConnectApi",
+      "disposition":"hosted-deferred",
+      "reason":"connect-api deferred",
+      "memberExceptions": [
+        {"typeName":"NonexistentType","memberName":"noSuchMethod","disposition":"deterministic-mock-required","reason":"stale"}
+      ]
+    }
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure for stale exception, got stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "stale member exception") {
+		t.Fatalf("missing stale exception error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileRequiresLedger(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--policy", "policy.json", "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "--ledger is required") {
+		t.Fatalf("missing ledger-required error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileRequiresPolicy(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "--policy is required") {
+		t.Fatalf("missing policy-required error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileRejectsJSONAndMarkdown(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(`{"rules":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--json", "--markdown"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "use only one of --json or --markdown") {
+		t.Fatalf("missing mutual-exclusion error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceSupportProfileWritesOutputAtomically(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	out := filepath.Join(root, "nested", "support-profile.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--output", out}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "surface support-profile: ") {
+		t.Fatalf("summary missing: %q", stdout.String())
+	}
+	written, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("read output: %v", err)
+	}
+	var decoded struct {
+		Total int `json:"total"`
+	}
+	if err := json.Unmarshal(written, &decoded); err != nil {
+		t.Fatalf("decode output: %v\n%s", err, written)
+	}
+	if decoded.Total != 1 {
+		t.Fatalf("total: want 1 got %d", decoded.Total)
+	}
+}
+
+func TestCompatSurfaceSupportProfileNonApexRowsIgnored(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"},
+    {"surfaceId":"rest:/services/data","product":"rest","area":"server","kind":"resource","docs":"present"},
+    {"surfaceId":"lwc:lightning-button","product":"lwc","area":"ui","kind":"module"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+
+	var decoded struct {
+		Total int `json:"total"`
+		Rows  []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"rows"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+		t.Fatalf("decode JSON: %v\n%s", err, stdout.String())
+	}
+	if decoded.Total != 1 {
+		t.Fatalf("total: want 1 (apex only) got %d", decoded.Total)
+	}
+	if len(decoded.Rows) != 1 {
+		t.Fatalf("rows: want 1 got %d", len(decoded.Rows))
+	}
+	if decoded.Rows[0].SurfaceID != "apex:System.String" {
+		t.Fatalf("expected apex row, got %q", decoded.Rows[0].SurfaceID)
+	}
+}
+
+// --- corpus-usage CLI tests ---
+
+func TestCompatSurfaceCorpusUsageRequiresLedger(t *testing.T) {
+	root := t.TempDir()
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "corpus-usage", "--public-root", root, "--output", filepath.Join(root, "out.json")}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "--ledger") {
+		t.Fatalf("missing ledger-required error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceCorpusUsageRequiresOutput(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[]}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "corpus-usage", "--ledger", ledger, "--public-root", root}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "--output") {
+		t.Fatalf("missing output-required error: %q", stderr.String())
+	}
+}
+
+func TestCompatSurfaceCorpusUsageWritesJSON(t *testing.T) {
+	root := t.TempDir()
+	pubRoot := filepath.Join(root, "public")
+	ledger := filepath.Join(root, "ledger.json")
+	out := filepath.Join(root, "out.json")
+
+	// Create a ledger with one namespace.
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a public Apex project.
+	projDir := filepath.Join(pubRoot, "myproj")
+	if err := os.MkdirAll(projDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(projDir, "MyClass.cls"), []byte(`public class MyClass { public void m() { System.debug('hi'); } }`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "corpus-usage", "--ledger", ledger, "--public-root", pubRoot, "--output", out}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "surface corpus-usage:") {
+		t.Fatalf("summary missing: %q", stdout.String())
+	}
+
+	// Verify output file exists and is valid JSON.
+	data, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("read output: %v", err)
+	}
+	var decoded CorpusUsageValidation
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		t.Fatalf("decode output: %v\n%s", err, data)
+	}
+	if len(decoded.Usage) == 0 {
+		t.Fatalf("usage must not be empty")
+	}
+	if decoded.PublicRootSHA256 == "" {
+		t.Fatalf("publicRootSha256 must be populated")
+	}
+}
+
+// CorpusUsageValidation matches the output structure for validation.
+type CorpusUsageValidation struct {
+	PublicRootSHA256     string `json:"publicRootSha256,omitempty"`
+	PublicFailRootSHA256 string `json:"publicFailRootSha256,omitempty"`
+	PrivateRootSHA256    string `json:"privateRootSha256,omitempty"`
+	Usage                []struct {
+		UsageKey  string `json:"usageKey"`
+		Namespace string `json:"namespace"`
+	} `json:"usage"`
+}
+
+// --- support-profile with --corpus-usage tests ---
+
+func TestCompatSurfaceSupportProfileWithCorpusUsage(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	cuPath := filepath.Join(root, "corpus-usage.json")
+
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}
+  ]
+}`
+	cuData := `{
+  "publicRootSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "usage": [
+    {"usageKey":"System.String","namespace":"System","typeName":"String","pubProdRefs":42}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(cuPath, []byte(cuData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--corpus-usage", cuPath, "--json"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+
+	var decoded struct {
+		Total       int `json:"total"`
+		CorpusUsage []struct {
+			UsageKey string `json:"usageKey"`
+		} `json:"corpusUsage"`
+		Rows []struct {
+			SurfaceID string `json:"surfaceId"`
+			UsageKey  string `json:"usageKey"`
+		} `json:"rows"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &decoded); err != nil {
+		t.Fatalf("decode JSON: %v\n%s", err, stdout.String())
+	}
+	if decoded.Total != 1 {
+		t.Fatalf("total: want 1 got %d", decoded.Total)
+	}
+	if decoded.Rows[0].UsageKey != "System.String" {
+		t.Fatalf("UsageKey: want System.String got %q", decoded.Rows[0].UsageKey)
+	}
+	if len(decoded.CorpusUsage) != 1 {
+		t.Fatalf("corpusUsage entries: want 1 got %d", len(decoded.CorpusUsage))
+	}
+}
+
+func TestCompatSurfaceEvidenceWithoutOracleEvidenceHasNoOracleRows(t *testing.T) {
+	root := t.TempDir()
+	fixture := filepath.Join(root, "fixture.json")
+	if err := os.WriteFile(fixture, []byte(`{
+  "name": "fixture-only",
+  "evidence": [{"symbol": "System.Label", "surfaceId": "apex:System.Label", "kind": "test"}],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", fixture}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	var rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &rows); err != nil {
+		t.Fatalf("decode: %v\n%s", err, stdout.String())
+	}
+	for _, row := range rows {
+		if row.Evidence == "oracle" {
+			t.Fatalf("unexpected oracle row without --oracle-evidence: %#v", row)
+		}
+	}
+}
+
+func TestCompatSurfaceEvidenceWithOracleEvidenceProducesOracleRows(t *testing.T) {
+	root := t.TempDir()
+	fixture := filepath.Join(root, "fixture.json")
+	if err := os.WriteFile(fixture, []byte(`{
+  "name": "fixture-only",
+  "evidence": [{"symbol": "System.Label", "surfaceId": "apex:System.Label", "kind": "test"}],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true}}
+}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	oracle := filepath.Join(root, "oracle.json")
+	if err := os.WriteFile(oracle, []byte(`[{"caseId":"cb-test","status":"pass","sfObservation":"sf","gladeObservation":"gl","surfaceIds":["apex:System.OracleTest.probe()"]}]`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", "--oracle-evidence", oracle, fixture}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	var rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &rows); err != nil {
+		t.Fatalf("decode: %v\n%s", err, stdout.String())
+	}
+	found := false
+	for _, row := range rows {
+		if row.SurfaceID == "apex:System.OracleTest.probe()" && row.Evidence == "oracle" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("missing oracle row in output: %#v", rows)
+	}
+}
+
+func TestCompatSurfaceEvidenceRepeatedOracleEvidenceDoesNotDuplicate(t *testing.T) {
+	root := t.TempDir()
+	oracle := filepath.Join(root, "oracle.json")
+	if err := os.WriteFile(oracle, []byte(`[{"caseId":"cb-test","status":"pass","sfObservation":"sf","gladeObservation":"gl","surfaceIds":["apex:System.DedupTest.probe()"]}]`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", "--oracle-evidence", oracle, "--oracle-evidence", oracle}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("exit %d stderr=%q stdout=%q", code, stderr.String(), stdout.String())
+	}
+	var rows []struct {
+		SurfaceID string `json:"surfaceId"`
+		Evidence  string `json:"evidence"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &rows); err != nil {
+		t.Fatalf("decode: %v\n%s", err, stdout.String())
+	}
+	count := 0
+	for _, row := range rows {
+		if row.SurfaceID == "apex:System.DedupTest.probe()" && row.Evidence == "oracle" {
+			count++
+		}
+	}
+	if count != 1 {
+		t.Fatalf("oracle row count = %d, want 1 (no duplicates): %#v", count, rows)
+	}
+}
+
+func TestCompatSurfaceEvidenceRejectsMissingOracleEvidencePath(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "evidence", "--json", "--oracle-evidence", "/no/such/file.json"}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected failure stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "oracle-evidence") {
+		t.Fatalf("missing oracle-evidence error: %q", stderr.String())
+	}
+}
+
+//  9. an invalid support profile is written atomically by --output but the CLI
+//     still exits nonzero.
+func TestCompatSurfaceSupportProfileAtomicWriteOnInvalid(t *testing.T) {
+	root := t.TempDir()
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	out := filepath.Join(root, "nested", "profile.json")
+
+	// Ledger has an unclassified row.
+	ledgerData := `{
+  "schemaVersion": 1,
+  "rows": [
+    {"surfaceId":"apex:UnknownNS.SomeType","product":"apex","area":"runtime","namespace":"UnknownNS","typeName":"SomeType","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}
+  ]
+}`
+	policyData := `{
+  "rules": [
+    {"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}
+  ]
+}`
+	if err := os.WriteFile(ledger, []byte(ledgerData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(policy, []byte(policyData), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"compat", "surface", "support-profile", "--ledger", ledger, "--policy", policy, "--output", out}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatalf("expected nonzero exit for invalid profile, got stdout=%q stderr=%q", stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "support profile validation failed") {
+		t.Fatalf("missing validation failure: %q", stderr.String())
+	}
+
+	// The output file must exist and contain the invalid profile.
+	written, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("output file must exist: %v", err)
+	}
+	var decoded struct {
+		Total            int `json:"total"`
+		UnclassifiedRows []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"unclassifiedRows"`
+		ValidationErrors []string `json:"validationErrors"`
+	}
+	if err := json.Unmarshal(written, &decoded); err != nil {
+		t.Fatalf("decode output: %v\n%s", err, written)
+	}
+	if decoded.Total != 1 {
+		t.Fatalf("total: want 1 got %d", decoded.Total)
+	}
+	if len(decoded.UnclassifiedRows) != 1 {
+		t.Fatalf("unclassified rows: want 1 got %d", len(decoded.UnclassifiedRows))
+	}
+	if decoded.UnclassifiedRows[0].SurfaceID != "apex:UnknownNS.SomeType" {
+		t.Fatalf("unclassified row: got %q", decoded.UnclassifiedRows[0].SurfaceID)
+	}
+	if len(decoded.ValidationErrors) == 0 {
+		t.Fatalf("validation errors must be present")
 	}
 }

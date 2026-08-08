@@ -1,0 +1,34 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.SparkPlugApi.SparkPlugDescribeResult",
+      "symbol": "Process.SparkPlugApi.SparkPlugDescribeResult"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-process-sparkplug-api-deterministic-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-Process.SparkPlugApi-001: the nested SparkPlugDescribeResult type is constructible in the local deterministic mock. No hosted SparkPlug discovery is exercised.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Process mock shape only and makes no Salesforce parity claim.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseProcessSparkPlugApiDeterministicTest { @isTest static void nestedTypeWitness() { Process.SparkPlugApi.SparkPlugDescribeResult result = new Process.SparkPlugApi.SparkPlugDescribeResult(); System.assertNotEquals(null, result); } }",
+      "path": "force-app/main/default/classes/CurrentBaseProcessSparkPlugApiDeterministicTest.cls"
+    }
+  ]
+}

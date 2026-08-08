@@ -1,22 +1,15 @@
 {
-  "name": "async-batchable-contract-validation",
-  "evidence": [
-    {
-      "symbol": "Database.Batchable.execute",
-      "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)",
-      "kind": "check",
-      "notes": "Database.Batchable<T> enforces the execute scope item type at compile time."
-    }
-  ],
-  "source": [
-    {
-      "path": "classes/WrongScopeBatch.cls",
-      "content": "public class WrongScopeBatch implements Database.Batchable<Integer> { public Iterable<Integer> start(Database.BatchableContext context) { return new List<Integer>{1}; } public void execute(Database.BatchableContext context, List<String> scope) {} public void finish(Database.BatchableContext context) {} }"
-    }
-  ],
   "command": {
     "kind": "check"
   },
+  "evidence": [
+    {
+      "kind": "check",
+      "notes": "Database.Batchable<T> enforces the execute scope item type at compile time.",
+      "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)",
+      "symbol": "Database.Batchable.execute"
+    }
+  ],
   "expected": {
     "result": {
       "diagnostics": 1,
@@ -24,5 +17,17 @@
       "ok": false,
       "types": 1
     }
-  }
+  },
+  "name": "async-batchable-contract-validation",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "The negative contract is a deliberate compile rejection; no local or Salesforce runtime construction is claimed.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce compile rejection is the contract: the deliberately wrong Batchable execute scope type must remain a local negative fixture.",
+  "source": [
+    {
+      "content": "public class WrongScopeBatch implements Database.Batchable<Integer> { public Iterable<Integer> start(Database.BatchableContext context) { return new List<Integer>{1}; } public void execute(Database.BatchableContext context, List<String> scope) {} public void finish(Database.BatchableContext context) {} }",
+      "path": "force-app/main/default/classes/WrongScopeBatch.cls"
+    }
+  ]
 }

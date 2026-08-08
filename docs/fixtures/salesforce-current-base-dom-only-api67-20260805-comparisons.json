@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "salesforce-current-base-dom-only-api67-20260805",
+  "packetId": "SF-DOM-ONLY-20260805",
+  "candidate": {
+    "path": "evidence/current-base/candidates/glade-ea0ece72",
+    "commit": "ea0ece72",
+    "sha256": "2ed53c8e9b5230d35fa12d9f62dda4cf7d1d1d1977318c95c34c2ad2180d02c9"
+  },
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "apiVersion": "67.0",
+    "executePath": "evidence/current-base/current-28219829/replay-cb316-fixtures-20260805/dom-only.salesforce.json"
+  },
+  "comparisons": [
+    {
+      "caseId": "dom-only-api67-exact",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Dom.Document",
+        "apex:Dom.Document.Document()",
+        "apex:Dom.Document.createRootElement(String,String,String)",
+        "apex:Dom.Document.getRootElement()",
+        "apex:Dom.Document.load(String)",
+        "apex:Dom.Document.toXmlString()",
+        "apex:Dom.XmlNode",
+        "apex:Dom.XmlNode.addChildElement(String,String,String)",
+        "apex:Dom.XmlNode.addCommentNode(String)",
+        "apex:Dom.XmlNode.addTextNode(String)",
+        "apex:Dom.XmlNode.getAttribute(String,String)",
+        "apex:Dom.XmlNode.getAttributeCount()",
+        "apex:Dom.XmlNode.getAttributeKeyAt(Integer)",
+        "apex:Dom.XmlNode.getAttributeKeyNsAt(Integer)",
+        "apex:Dom.XmlNode.getAttributeValue(String,String)",
+        "apex:Dom.XmlNode.getAttributeValueNs(String,String)",
+        "apex:Dom.XmlNode.getChildElement(String,String)",
+        "apex:Dom.XmlNode.getChildElements()",
+        "apex:Dom.XmlNode.getChildren()",
+        "apex:Dom.XmlNode.getName()",
+        "apex:Dom.XmlNode.getNamespace()",
+        "apex:Dom.XmlNode.getNamespaceFor(String)",
+        "apex:Dom.XmlNode.getNodeType()",
+        "apex:Dom.XmlNode.getParent()",
+        "apex:Dom.XmlNode.getPrefixFor(String)",
+        "apex:Dom.XmlNode.getText()",
+        "apex:Dom.XmlNode.insertBefore(Dom.XmlNode,Dom.XmlNode)",
+        "apex:Dom.XmlNode.removeAttribute(String,String)",
+        "apex:Dom.XmlNode.removeChild(Dom.XmlNode)",
+        "apex:Dom.XmlNode.setAttribute(String,String)",
+        "apex:Dom.XmlNode.setAttributeNs(String,String,String,String)",
+        "apex:Dom.XmlNode.setNamespace(String,String)",
+        "apex:Dom.XmlNodeType",
+        "apex:dom.XmlNode.insertBefore(Object,Object)",
+        "apex:dom.XmlNode.removeChild(Object)"
+      ],
+      "sfObservation": "Dom-only Apex fixture passed on Salesforce API 67.",
+      "gladeObservation": "Dom-only Apex fixture passed on the exact fixed candidate ea0ece72."
+    }
+  ],
+  "local": {
+    "candidatePath": "evidence/current-base/candidates/glade-ea0ece72",
+    "reportPath": "evidence/current-base/current-28219829/replay-cb316-fixtures-20260805/dom-only.latest.local.json"
+  }
+}

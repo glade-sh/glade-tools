@@ -1,0 +1,351 @@
+{
+  "name": "current-base-schema-g02-cb146-api67-20260803",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Map<String, Object> cb146e2Result = new Map<String, Object>();\ntry {\n    cb146e2Result.put('family', CB146E2_SchemaDescribeProbe.run());\n} catch (Exception e) {\n    cb146e2Result.put('familyError', new Map<String, Object>{'type' => e.getTypeName(), 'message' => e.getMessage(), 'stage' => 'CB146E2_SchemaDescribeProbe.run'});\n}\nSystem.debug(LoggingLevel.ERROR, 'CB146E2_RESULT:' + JSON.serialize(cb146e2Result));\n"
+    ]
+  },
+  "source": [
+    {
+      "path": "G02-schema-describe.apex",
+      "content": "Map<String, Object> cb146e2Result = new Map<String, Object>();\ntry {\n    cb146e2Result.put('family', CB146E2_SchemaDescribeProbe.run());\n} catch (Exception e) {\n    cb146e2Result.put('familyError', new Map<String, Object>{'type' => e.getTypeName(), 'message' => e.getMessage(), 'stage' => 'CB146E2_SchemaDescribeProbe.run'});\n}\nSystem.debug(LoggingLevel.ERROR, 'CB146E2_RESULT:' + JSON.serialize(cb146e2Result));\n"
+    },
+    {
+      "path": "CB146E2_SchemaDescribeProbe.cls",
+      "content": "public class CB146E2_SchemaDescribeProbe {\n    public static Map<String, Object> run() {\n        Map<String, Object> result = new Map<String, Object>();\n        List<Object> rows = new List<Object>();\n        Integer order = 1;\n        Schema.SObjectType token = CB146E2_Broad__c.SObjectType;\n        Schema.DescribeSObjectResult objectDescribe = token.getDescribe();\n        Map<String, Schema.SObjectField> fields = token.getDescribe().fields.getMap();\n        Schema.DescribeFieldResult fieldDescribe = fields.get('CB146E2_Text__c').getDescribe();\n\n        rows.add(observe('apex:Schema.DescribeFieldResult.aipredictionfield', 'Boolean', fieldDescribe.aipredictionfield, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.bytelength', 'Integer', fieldDescribe.bytelength, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.cascadedelete', 'Boolean', fieldDescribe.cascadedelete, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.casesensitive', 'Boolean', fieldDescribe.casesensitive, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.compoundfieldname', 'String', fieldDescribe.compoundfieldname, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.controller', 'Schema.SObjectField', fieldDescribe.controller, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.datatranslationenabled', 'Boolean', fieldDescribe.datatranslationenabled, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.defaultvalue', 'Object', fieldDescribe.defaultvalue, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.defaultvalueformula', 'String', fieldDescribe.defaultvalueformula, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.deprecatedandhidden', 'Boolean', fieldDescribe.deprecatedandhidden, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.digits', 'Integer', fieldDescribe.digits, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.displaylocationindecimal', 'Boolean', fieldDescribe.displaylocationindecimal, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.encrypted', 'Boolean', fieldDescribe.encrypted, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.filterable', 'Boolean', fieldDescribe.filterable, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.formulatreatnullnumberaszero', 'Boolean', fieldDescribe.formulatreatnullnumberaszero, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.highscalenumber', 'Boolean', fieldDescribe.highscalenumber, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.htmlformatted', 'Boolean', fieldDescribe.htmlformatted, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.inlinehelptext', 'String', fieldDescribe.inlinehelptext, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.label', 'String', fieldDescribe.label, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.length', 'Integer', fieldDescribe.length, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.localname', 'String', fieldDescribe.localname, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.mask', 'String', fieldDescribe.mask, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.masktype', 'String', fieldDescribe.masktype, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.namefield', 'Boolean', fieldDescribe.namefield, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.namepointing', 'Boolean', fieldDescribe.namepointing, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.permissionable', 'Boolean', fieldDescribe.permissionable, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.querybydistance', 'Boolean', fieldDescribe.querybydistance, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.referencetargetfield', 'String', fieldDescribe.referencetargetfield, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.relationshiporder', 'Integer', fieldDescribe.relationshiporder, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.restricteddelete', 'Boolean', fieldDescribe.restricteddelete, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.restrictedpicklist', 'Boolean', fieldDescribe.restrictedpicklist, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.searchprefilterable', 'Boolean', fieldDescribe.searchprefilterable, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.sobjectfield', 'Schema.SObjectField', fieldDescribe.sobjectfield, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.sobjecttype', 'Schema.SObjectType', fieldDescribe.sobjecttype, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.sortable', 'Boolean', fieldDescribe.sortable, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeFieldResult.writerequiresmasterread', 'Boolean', fieldDescribe.writerequiresmasterread, 'none', order++));\n\n        rows.add(observe('apex:Schema.DescribeSObjectResult.associateentitytype', 'String', objectDescribe.associateentitytype, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.associateparententity', 'String', objectDescribe.associateparententity, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.datatranslationenabled', 'Boolean', objectDescribe.datatranslationenabled, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.defaultimplementation', 'String', objectDescribe.defaultimplementation, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.deprecatedandhidden', 'Boolean', objectDescribe.deprecatedandhidden, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.feedenabled', 'Boolean', objectDescribe.feedenabled, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.hassubtypes', 'Boolean', objectDescribe.hassubtypes, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.implementedby', 'String', objectDescribe.implementedby, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.implementsinterfaces', 'List<String>', objectDescribe.implementsinterfaces, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.isinterface', 'Boolean', objectDescribe.isinterface, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.issubtype', 'Boolean', objectDescribe.issubtype, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.keyprefix', 'String', objectDescribe.keyprefix, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.label', 'String', objectDescribe.label, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.labelplural', 'String', objectDescribe.labelplural, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.localname', 'String', objectDescribe.localname, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.mergeable', 'Boolean', objectDescribe.mergeable, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.mruenabled', 'Boolean', objectDescribe.mruenabled, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.name', 'String', objectDescribe.name, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.sobjectdescribeoption', 'Schema.SObjectDescribeOptions', objectDescribe.sobjectdescribeoption, 'none', order++));\n        rows.add(observe('apex:Schema.DescribeSObjectResult.sobjecttype', 'Schema.SObjectType', objectDescribe.sobjecttype, 'none', order++));\n\n        Schema.FieldSet fieldSet = objectDescribe.fieldSets.getMap().get('CB146E2_Summary');\n        rows.add(observe('apex:Schema.FieldSet.fields', 'List<Schema.FieldSetMember>', fieldSet.fields, 'none', order++));\n        Schema.FieldSetMember fieldSetMember = fieldSet.getFields().get(0);\n        rows.add(observe('apex:Schema.FieldSetMember.type', 'Schema.DisplayType', fieldSetMember.type, 'none', order++));\n        result.put('family', 'G02');\n        result.put('familyStatus', 'executed');\n        result.put('rows', rows);\n        return result;\n    }\n\n    private static Map<String, Object> observe(String rowId, String actualType, Object actualValue, String mutation, Integer order) {\n        Map<String, Object> result = new Map<String, Object>();\n        result.put('rowId', rowId);\n        result.put('status', 'executed');\n        result.put('actualType', actualType);\n        result.put('actualValueText', actualValue == null ? null : String.valueOf(actualValue));\n        result.put('actualValueJson', serializeSafely(actualValue));\n        result.put('errorType', null);\n        result.put('errorMessage', null);\n        result.put('mutation', mutation);\n        result.put('order', order);\n        return result;\n    }\n\n    private static String serializeSafely(Object value) {\n        try {\n            return JSON.serialize(value);\n        } catch (Exception e) {\n            return value == null ? null : String.valueOf(value);\n        }\n    }\n}\n"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.aipredictionfield",
+      "symbol": "Schema.DescribeFieldResult.aipredictionfield",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.bytelength",
+      "symbol": "Schema.DescribeFieldResult.bytelength",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.cascadedelete",
+      "symbol": "Schema.DescribeFieldResult.cascadedelete",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.casesensitive",
+      "symbol": "Schema.DescribeFieldResult.casesensitive",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.compoundfieldname",
+      "symbol": "Schema.DescribeFieldResult.compoundfieldname",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.controller",
+      "symbol": "Schema.DescribeFieldResult.controller",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.datatranslationenabled",
+      "symbol": "Schema.DescribeFieldResult.datatranslationenabled",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.defaultvalue",
+      "symbol": "Schema.DescribeFieldResult.defaultvalue",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.defaultvalueformula",
+      "symbol": "Schema.DescribeFieldResult.defaultvalueformula",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.deprecatedandhidden",
+      "symbol": "Schema.DescribeFieldResult.deprecatedandhidden",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.digits",
+      "symbol": "Schema.DescribeFieldResult.digits",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.displaylocationindecimal",
+      "symbol": "Schema.DescribeFieldResult.displaylocationindecimal",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.encrypted",
+      "symbol": "Schema.DescribeFieldResult.encrypted",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.filterable",
+      "symbol": "Schema.DescribeFieldResult.filterable",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.formulatreatnullnumberaszero",
+      "symbol": "Schema.DescribeFieldResult.formulatreatnullnumberaszero",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.highscalenumber",
+      "symbol": "Schema.DescribeFieldResult.highscalenumber",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.htmlformatted",
+      "symbol": "Schema.DescribeFieldResult.htmlformatted",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.inlinehelptext",
+      "symbol": "Schema.DescribeFieldResult.inlinehelptext",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.label",
+      "symbol": "Schema.DescribeFieldResult.label",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.length",
+      "symbol": "Schema.DescribeFieldResult.length",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.localname",
+      "symbol": "Schema.DescribeFieldResult.localname",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.mask",
+      "symbol": "Schema.DescribeFieldResult.mask",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.masktype",
+      "symbol": "Schema.DescribeFieldResult.masktype",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.namefield",
+      "symbol": "Schema.DescribeFieldResult.namefield",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.namepointing",
+      "symbol": "Schema.DescribeFieldResult.namepointing",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.permissionable",
+      "symbol": "Schema.DescribeFieldResult.permissionable",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.querybydistance",
+      "symbol": "Schema.DescribeFieldResult.querybydistance",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.referencetargetfield",
+      "symbol": "Schema.DescribeFieldResult.referencetargetfield",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.relationshiporder",
+      "symbol": "Schema.DescribeFieldResult.relationshiporder",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.restricteddelete",
+      "symbol": "Schema.DescribeFieldResult.restricteddelete",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.restrictedpicklist",
+      "symbol": "Schema.DescribeFieldResult.restrictedpicklist",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.searchprefilterable",
+      "symbol": "Schema.DescribeFieldResult.searchprefilterable",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.sobjectfield",
+      "symbol": "Schema.DescribeFieldResult.sobjectfield",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.sortable",
+      "symbol": "Schema.DescribeFieldResult.sortable",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.writerequiresmasterread",
+      "symbol": "Schema.DescribeFieldResult.writerequiresmasterread",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.associateentitytype",
+      "symbol": "Schema.DescribeSObjectResult.associateentitytype",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.associateparententity",
+      "symbol": "Schema.DescribeSObjectResult.associateparententity",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.datatranslationenabled",
+      "symbol": "Schema.DescribeSObjectResult.datatranslationenabled",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.defaultimplementation",
+      "symbol": "Schema.DescribeSObjectResult.defaultimplementation",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.deprecatedandhidden",
+      "symbol": "Schema.DescribeSObjectResult.deprecatedandhidden",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.feedenabled",
+      "symbol": "Schema.DescribeSObjectResult.feedenabled",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.hassubtypes",
+      "symbol": "Schema.DescribeSObjectResult.hassubtypes",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.implementedby",
+      "symbol": "Schema.DescribeSObjectResult.implementedby",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.implementsinterfaces",
+      "symbol": "Schema.DescribeSObjectResult.implementsinterfaces",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.isinterface",
+      "symbol": "Schema.DescribeSObjectResult.isinterface",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.issubtype",
+      "symbol": "Schema.DescribeSObjectResult.issubtype",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.keyprefix",
+      "symbol": "Schema.DescribeSObjectResult.keyprefix",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.label",
+      "symbol": "Schema.DescribeSObjectResult.label",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.labelplural",
+      "symbol": "Schema.DescribeSObjectResult.labelplural",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.localname",
+      "symbol": "Schema.DescribeSObjectResult.localname",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.mergeable",
+      "symbol": "Schema.DescribeSObjectResult.mergeable",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.name",
+      "symbol": "Schema.DescribeSObjectResult.name",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.sobjectdescribeoption",
+      "symbol": "Schema.DescribeSObjectResult.sobjectdescribeoption",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldSetMember.type",
+      "symbol": "Schema.FieldSetMember.type",
+      "kind": "exec",
+      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  },
+  "notes": "Rebound from CB146 G02 to current candidate 35c3cd0c and glade-sf-correctness API 67. Four rows remain excluded because current Salesforce observations are context/projection mismatches: DescribeFieldResult.sobjecttype, DescribeSObjectResult.mruenabled, DescribeSObjectResult.sobjecttype, FieldSet.fields."
+}

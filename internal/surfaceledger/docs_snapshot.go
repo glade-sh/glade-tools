@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -13,6 +14,9 @@ import (
 var apiVersionPattern = regexp.MustCompile(`(?i)Available in API version\s+([0-9]+(?:\.[0-9]+)?)`)
 
 func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
+	if err := validateDocsSource(source); err != nil {
+		return nil, err
+	}
 	inv, err := apexdocs.BuildInventory(source)
 	if err != nil {
 		return nil, err
@@ -20,6 +24,18 @@ func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
 	rows := RowsFromDocsInventory(inv)
 	applyApexDeclarationSignatures(rows, source)
 	rows = filterUnresolvedApexHeadingRows(rows)
+	if len(rows) == 0 {
+		return nil, fmt.Errorf("docs source produced zero inventory rows: %s", source)
+	}
+	apexRows := 0
+	for _, row := range rows {
+		if row.Product == ProductApex {
+			apexRows++
+		}
+	}
+	if apexRows == 0 {
+		return nil, fmt.Errorf("docs source produced no Apex inventory rows: %s", source)
+	}
 	for i := range rows {
 		if rows[i].DocsSource == "" {
 			continue
@@ -27,6 +43,37 @@ func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
 		rows[i].APIVersion = readAPIVersion(filepath.Join(source, filepath.FromSlash(rows[i].DocsSource)))
 	}
 	return rows, nil
+}
+
+// validateDocsSource prevents an empty or missing docs cache from being
+// treated as a valid zero-row Salesforce inventory. A zero-row docs snapshot
+// changes the denominator and can make a refresh look complete while omitting
+// the public Apex surface entirely.
+func validateDocsSource(source string) error {
+	info, err := os.Stat(source)
+	if err != nil {
+		return fmt.Errorf("docs source: %w", err)
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("docs source is not a directory: %s", source)
+	}
+	files := 0
+	err = filepath.WalkDir(source, func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if path != source && entry.Type().IsRegular() {
+			files++
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("scan docs source: %w", err)
+	}
+	if files == 0 {
+		return fmt.Errorf("docs source is empty: %s", source)
+	}
+	return nil
 }
 
 func applyApexDeclarationSignatures(rows []SurfaceLedgerRow, source string) {
@@ -219,6 +266,11 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 		for _, member := range doc.Members {
 			if product == ProductApex && isApexHeadingOnlySignature(member.Signature) && apexRealSignatures[member.Name] {
 				continue
+			}
+			if product == ProductApex && member.Kind == "member" && member.ReturnType == "" && member.PropertyType == "" && !isApexRealSignature(member.Signature) {
+				if rest := strings.TrimSpace(strings.TrimPrefix(member.Signature, member.Name)); rest != "" {
+					continue
+				}
 			}
 			params := docsMemberParameters(member)
 			returnType := docsMemberReturnType(member)
@@ -589,6 +641,7 @@ func inferApexIdentityFromSource(sourcePath, name string) (string, string, strin
 	}{
 		{key: "apex_system_", namespace: "System"},
 		{key: "apex_messaging_", namespace: "Messaging"},
+		{key: "apex_connectapi_", namespace: "ConnectApi"},
 		{key: "apex_industriesnlpsvc_", namespace: "industriesNlpSvc"},
 		{key: "apex_commercepayments_", namespace: "commercepayments"},
 		{key: "apex_canvas_", namespace: "Canvas"},

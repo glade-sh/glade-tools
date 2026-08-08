@@ -2,12 +2,6 @@
   "name": "apex-industry-addon-unsupported-surfaces",
   "evidence": [
     {
-      "surfaceId": "apex:Canvas.Test_constants",
-      "symbol": "Canvas.Test_constants",
-      "kind": "unsupported",
-      "notes": "Setup, quick action, and Canvas hosted service shapes require Salesforce UI/app hosting services and stay outside local Apex execution."
-    },
-    {
       "surfaceId": "apex:CartExtension.CommerceObject.getDelegate()",
       "symbol": "CartExtension.CommerceObject.getDelegate()",
       "kind": "unsupported",

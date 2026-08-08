@@ -1,0 +1,26 @@
+{
+  "name": "current-base-cb190-schema-broad-positive-api67",
+  "evidence": [
+    {"surfaceId": "apex:Schema.SObjectType", "symbol": "Schema.SObjectType", "kind": "exec"},
+    {"surfaceId": "apex:Schema.SObjectType.getDescribe()", "symbol": "Schema.SObjectType.getDescribe", "kind": "exec"},
+    {"surfaceId": "apex:Schema.SObjectField", "symbol": "Schema.SObjectField", "kind": "exec"},
+    {"surfaceId": "apex:Schema.SObjectField.getDescribe()", "symbol": "Schema.SObjectField.getDescribe", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult", "symbol": "Schema.DescribeSObjectResult", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult", "symbol": "Schema.DescribeFieldResult", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DisplayType", "symbol": "Schema.DisplayType", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DisplayType.STRING", "symbol": "Schema.DisplayType.STRING", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.getRecordTypeInfos()", "symbol": "Schema.DescribeSObjectResult.getRecordTypeInfos", "kind": "exec"},
+    {"surfaceId": "apex:Schema.RecordTypeInfo", "symbol": "Schema.RecordTypeInfo", "kind": "exec"},
+    {"surfaceId": "apex:Schema.RecordTypeInfo.getName()", "symbol": "Schema.RecordTypeInfo.getName", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeFieldResult.getPicklistValues()", "symbol": "Schema.DescribeFieldResult.getPicklistValues", "kind": "exec"},
+    {"surfaceId": "apex:Schema.PicklistEntry", "symbol": "Schema.PicklistEntry", "kind": "exec"},
+    {"surfaceId": "apex:Schema.PicklistEntry.getValue()", "symbol": "Schema.PicklistEntry.getValue", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DisplayType.PICKLIST", "symbol": "Schema.DisplayType.PICKLIST", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.getChildRelationships()", "symbol": "Schema.DescribeSObjectResult.getChildRelationships", "kind": "exec"},
+    {"surfaceId": "apex:Schema.ChildRelationship", "symbol": "Schema.ChildRelationship", "kind": "exec"},
+    {"surfaceId": "apex:Schema.ChildRelationship.getChildSObject()", "symbol": "Schema.ChildRelationship.getChildSObject", "kind": "exec"}
+  ],
+  "source": [{"path": "anonymous.apex", "content": "Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe();\nSchema.DescribeFieldResult nameDescribe = Account.Name.getDescribe();\nList<Schema.RecordTypeInfo> recordTypes = accountDescribe.getRecordTypeInfos();\nSchema.DescribeFieldResult industryDescribe = Account.Industry.getDescribe();\nList<Schema.PicklistEntry> picklistValues = industryDescribe.getPicklistValues();\nList<Schema.ChildRelationship> childRelationships = accountDescribe.getChildRelationships();\nBoolean tokenDescribeOk = accountDescribe.getName() == 'Account' && nameDescribe.getName() == 'Name' && nameDescribe.getType() == Schema.DisplayType.STRING;\nBoolean recordTypeOk = !recordTypes.isEmpty() && recordTypes[0].getName() != null;\nBoolean picklistOk = industryDescribe.getType() == Schema.DisplayType.PICKLIST && !picklistValues.isEmpty() && picklistValues[0].getValue() != null;\nBoolean childRelationshipOk = !childRelationships.isEmpty() && childRelationships[0].getChildSObject() != null;\nSystem.debug(tokenDescribeOk && recordTypeOk && picklistOk && childRelationshipOk);\n"}],
+  "command": {"kind": "exec", "args": ["Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe();\nSchema.DescribeFieldResult nameDescribe = Account.Name.getDescribe();\nList<Schema.RecordTypeInfo> recordTypes = accountDescribe.getRecordTypeInfos();\nSchema.DescribeFieldResult industryDescribe = Account.Industry.getDescribe();\nList<Schema.PicklistEntry> picklistValues = industryDescribe.getPicklistValues();\nList<Schema.ChildRelationship> childRelationships = accountDescribe.getChildRelationships();\nBoolean tokenDescribeOk = accountDescribe.getName() == 'Account' && nameDescribe.getName() == 'Name' && nameDescribe.getType() == Schema.DisplayType.STRING;\nBoolean recordTypeOk = !recordTypes.isEmpty() && recordTypes[0].getName() != null;\nBoolean picklistOk = industryDescribe.getType() == Schema.DisplayType.PICKLIST && !picklistValues.isEmpty() && picklistValues[0].getValue() != null;\nBoolean childRelationshipOk = !childRelationships.isEmpty() && childRelationships[0].getChildSObject() != null;\nSystem.debug(tokenDescribeOk && recordTypeOk && picklistOk && childRelationshipOk);\n"]},
+  "expected": {"result": {"debug": ["true"], "ok": true}}
+}

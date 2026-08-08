@@ -6,12 +6,6 @@
       "symbol": "Messaging.sendEmail",
       "kind": "test",
       "notes": "Single and mass email DTOs are captured locally with recipients, reply/sender names, template/target/what IDs, attachments, flags, SendEmailOptions, success results, and email limit increments."
-    },
-    {
-      "surfaceId": "apex:System.Messaging.SendEmailOptions",
-      "symbol": "Messaging.SendEmailOptions",
-      "kind": "test",
-      "notes": "TriggerUserEmail, TriggerOtherEmail, and TriggerAutoResponseEmail are local getter/setter values available to send capture."
     }
   ],
   "source": [

@@ -214,6 +214,13 @@
         "apex-rules"
       ],
       "summary": "Compare checked Apex language-rule probes with Salesforce."
+    },
+    {
+      "path": [
+        "salesforce",
+        "verify"
+      ],
+      "summary": "Run unified Salesforce correctness verification."
     }
   ],
   "editor": {

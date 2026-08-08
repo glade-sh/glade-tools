@@ -1,0 +1,30 @@
+{
+  "name": "current-base-system-exception-tail-20260805-unsupported-constructors",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "compile-shape probes for Salesforce-rejected TouchHandledException constructors",
+      "candidate=f90bbcea273c281902ee4f79366079b225b17a01"
+    ]
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "Salesforce rejects these constructor shapes at compile time"
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:System.TouchHandledException.TouchHandledException()",
+      "symbol": "apex:System.TouchHandledException.TouchHandledException()",
+      "kind": "exec",
+      "notes": "Both Salesforce and Glade reject this constructor shape before execution."
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.TouchHandledException(String,Exception)",
+      "symbol": "apex:System.TouchHandledException.TouchHandledException(String,Exception)",
+      "kind": "exec",
+      "notes": "Both Salesforce and Glade reject this constructor shape before execution."
+    }
+  ]
+}

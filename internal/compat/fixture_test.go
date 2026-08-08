@@ -80,6 +80,49 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("apex-language-rules") {
 		t.Fatal("Apex language rule catalog should stay out of documented fixture execution")
 	}
+	if shouldRunDocumentedFixture("apex-local-support-policy") {
+		t.Fatal("apex-local-support-policy should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-runtime-correctness") {
+		t.Fatal("Salesforce runtime correctness catalog should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-release-next") {
+		t.Fatal("Salesforce release inventory should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-release-current") {
+		t.Fatal("Salesforce release current should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-docs-inventory-spring-26") {
+		t.Fatal("Salesforce docs inventory spring 26 should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-docs-inventory-summer-26") {
+		t.Fatal("Salesforce docs inventory summer 26 should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-release-classifications-spring-to-summer-26") {
+		t.Fatal("Salesforce release classifications should stay out of documented fixture execution")
+	}
+	if shouldRunDocumentedFixture("salesforce-release-previous") {
+		t.Fatal("Salesforce release previous should stay out of documented fixture execution")
+	}
+	for _, name := range []string{
+		"salesforce-cb187-system-assert-comparisons",
+		"apex-api67-removals",
+	} {
+		if !skipDocumentedFixture(name) {
+			t.Fatalf("oracle evidence document %s should stay out of runnable fixture validation", name)
+		}
+		if shouldRunDocumentedFixture(name) {
+			t.Fatalf("oracle evidence document %s should never run as compat fixture", name)
+		}
+	}
+	for _, path := range documentedFixturePaths(t) {
+		name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+		switch name {
+		case "current-base-cb192-system-test-limits-positive-api67",
+			"core-runtime-exception-api67-safe-family-accessors":
+			t.Fatalf("evidence-only document %s should be excluded by schema", name)
+		}
+	}
 }
 
 func TestDocumentedFixtureJSONLoadAndValidate(t *testing.T) {
@@ -135,18 +178,75 @@ func documentedFixturePaths(t *testing.T) []string {
 	if len(paths) == 0 {
 		t.Fatal("no documented fixtures matched ../../docs/fixtures/*.json")
 	}
-	return paths
+	runnable := make([]string, 0, len(paths))
+	for _, path := range paths {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var document struct {
+			Command struct {
+				Kind string `json:"kind"`
+			} `json:"command"`
+			Source         []json.RawMessage `json:"source"`
+			Schema         []json.RawMessage `json:"schema"`
+			Metadata       json.RawMessage   `json:"metadata"`
+			SeedData       []json.RawMessage `json:"seedData"`
+			ServerRequests []json.RawMessage `json:"serverRequests"`
+		}
+		if err := json.Unmarshal(data, &document); err != nil {
+			t.Fatal(err)
+		}
+		if isRunnableDocument(document) {
+			runnable = append(runnable, path)
+		}
+	}
+	if len(runnable) == 0 {
+		t.Fatal("no runnable documented fixtures matched ../../docs/fixtures/*.json")
+	}
+	return runnable
+}
+
+func isRunnableDocument(document struct {
+	Command struct {
+		Kind string `json:"kind"`
+	} `json:"command"`
+	Source         []json.RawMessage `json:"source"`
+	Schema         []json.RawMessage `json:"schema"`
+	Metadata       json.RawMessage   `json:"metadata"`
+	SeedData       []json.RawMessage `json:"seedData"`
+	ServerRequests []json.RawMessage `json:"serverRequests"`
+}) bool {
+	if document.Command.Kind == "policy-evidence" {
+		return true
+	}
+	return len(document.Source) > 0 ||
+		len(document.Schema) > 0 ||
+		(len(document.Metadata) > 0 && string(document.Metadata) != "{}") ||
+		len(document.SeedData) > 0 ||
+		len(document.ServerRequests) > 0
 }
 
 func skipDocumentedFixture(name string) bool {
+	if isOracleEvidenceDocument(name) {
+		return true
+	}
 	switch name {
 	case "apex-language-rules",
+		"apex-local-support-policy",
 		"async-test-harness-local-evidence",
 		"core-runtime-json-dto-lwc-evidence",
 		"data-platform-schema-lwc-record-wire-evidence",
 		"local-tests-corpus",
 		documentedFixtureExampleProjectsName,
 		"query-runtime-local-search-sosl-evidence",
+		"salesforce-docs-inventory-spring-26",
+		"salesforce-docs-inventory-summer-26",
+		"salesforce-release-classifications-spring-to-summer-26",
+		"salesforce-release-current",
+		"salesforce-release-next",
+		"salesforce-release-previous",
+		"salesforce-runtime-correctness",
 		"ui-controller-discovery",
 		"ui-lwc-vf-local-bridge-evidence",
 		"post-parity-trace-events":
@@ -154,6 +254,15 @@ func skipDocumentedFixture(name string) bool {
 	default:
 		return false
 	}
+}
+
+// isOracleEvidenceDocument identifies catalog, comparison, and API-67 oracle
+// packets that are consumed by focused evidence tests rather than by the
+// generic runnable-fixture sweep. Keep this schema-family rule centralized so
+// new oracle packets do not become accidental local test inputs.
+func isOracleEvidenceDocument(name string) bool {
+	return strings.HasSuffix(name, "-comparisons") ||
+		name == "apex-api67-removals"
 }
 
 func shouldRunDocumentedFixture(name string) bool {

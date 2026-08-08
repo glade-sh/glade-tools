@@ -1,0 +1,32 @@
+{
+  "command": {
+    "args": [
+      "Blob value = Blob.valueOf('value');\nCrypto.areEqualConstantTime(value, value);\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "API-67 Salesforce rejects the Blob/Blob signature with a method-not-found diagnostic.",
+      "surfaceId": "apex:System.Crypto.areEqualConstantTime(Blob,Blob)",
+      "symbol": "Crypto.areEqualConstantTime"
+    }
+  ],
+  "expected": {
+    "error": {
+      "message": "unsupported call \"Crypto.areEqualConstantTime local key, certificate, encryption, and random surfaces\"",
+      "type": "UnsupportedFeature"
+    }
+  },
+  "name": "core-blob-crypto-unsupported-constant-time",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 rejects this Crypto signature; retain the method-not-found result as local negative evidence.",
+  "source": [
+    {
+      "content": "Blob value = Blob.valueOf('value');\nCrypto.areEqualConstantTime(value, value);\n",
+      "path": "anonymous.apex"
+    }
+  ]
+}

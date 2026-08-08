@@ -440,7 +440,6 @@ func TestStdlibSupportedRowsDoNotClaimPlaceholderOrNoOpBehavior(t *testing.T) {
 
 func TestCoreServiceContextStdlibRowsAreExplicitUnsupported(t *testing.T) {
 	watched := map[string]bool{
-		"Answers.findSimilar(Question)":     true,
 		"ResetPasswordResult.getPassword()": true,
 	}
 	for _, entry := range StdlibMatrix() {
@@ -455,6 +454,26 @@ func TestCoreServiceContextStdlibRowsAreExplicitUnsupported(t *testing.T) {
 	if len(watched) > 0 {
 		t.Fatalf("missing explicit unsupported core service/context rows: %#v", watched)
 	}
+}
+
+func TestAnswersFindSimilarStdlibRowIsLocalDeterministic(t *testing.T) {
+	for _, entry := range StdlibMatrix() {
+		if entry.API != "Answers.findSimilar(Question)" {
+			continue
+		}
+		if entry.Status != StatusSupported {
+			t.Fatalf("Answers.findSimilar status = %s, want %s", entry.Status, StatusSupported)
+		}
+		notes := strings.ToLower(entry.Notes)
+		if !strings.Contains(notes, "empty") || !strings.Contains(notes, "list<id>") || !strings.Contains(notes, "deterministic") {
+			t.Fatalf("Answers.findSimilar notes do not describe local deterministic empty List<Id> behavior: %s", entry.Notes)
+		}
+		if strings.Contains(notes, "unsupported") {
+			t.Fatalf("Answers.findSimilar notes still carry unsupported language: %s", entry.Notes)
+		}
+		return
+	}
+	t.Fatal("missing Answers.findSimilar stdlib row")
 }
 
 func TestNoPartialRowsRemainForNoPartialsCloseoutLanes(t *testing.T) {
@@ -572,19 +591,42 @@ func TestAsyncSearchApprovalBusinessHoursStdlibRowsArePromoted(t *testing.T) {
 		"TrailblazerIdentity.generateUserEmailVerificationToken(String,String,String)": StatusSupported,
 		"TrailblazerIdentity.getUserOrgInfo(List<String>)":                             StatusSupported,
 		"TrailblazerIdentity.splunkLog(String,String)":                                 StatusSupported,
-		"BusinessHours.add(String, Datetime, Long)":                                    StatusSupported,
-		"BusinessHours.addGmt(String, Datetime, Long)":                                 StatusSupported,
+		"BusinessHours.add(Id, Datetime, Long)":                                        StatusSupported,
+		"BusinessHours.addGmt(Id, Datetime, Long)":                                     StatusSupported,
 		"BusinessHours.diff(String, Datetime, Datetime)":                               StatusSupported,
 		"BusinessHours.isWithin(String, Datetime)":                                     StatusSupported,
-		"BusinessHours.nextStartDate(String, Datetime)":                                StatusSupported,
+		"BusinessHours.nextStartDate(Id, Datetime)":                                    StatusSupported,
 	}
 	assertStdlibStatuses(t, watched)
+}
+
+func TestEventBusPublishWithAccessLevelStubBehaviorIsImplemented(t *testing.T) {
+	want := map[string]bool{
+		"EventBus.publishWithAccessLevel(SObject,AccessLevel)":              false,
+		"EventBus.publishWithAccessLevel(SObject,Object,AccessLevel)":       false,
+		"EventBus.publishWithAccessLevel(List<SObject>,AccessLevel)":        false,
+		"EventBus.publishWithAccessLevel(List<SObject>,Object,AccessLevel)": false,
+	}
+	report := BuildStubBehaviorReport()
+	for _, entry := range report.Entries {
+		if _, ok := want[entry.ID]; !ok {
+			continue
+		}
+		if entry.Status != StubBehaviorImplemented {
+			t.Errorf("%s status = %s, want %s", entry.ID, entry.Status, StubBehaviorImplemented)
+		}
+		want[entry.ID] = true
+	}
+	for id, found := range want {
+		if !found {
+			t.Errorf("missing EventBus publishWithAccessLevel stub-behavior entry: %s", id)
+		}
+	}
 }
 
 func TestLWCStdlibIntegrationRowsArePromotedOrBounded(t *testing.T) {
 	watched := map[string]Status{
 		"AccessLevel.withPermissionSetId(String)":               StatusSupported,
-		"Type.newInstance":                                      StatusSupported,
 		"PageReference(record)":                                 StatusSupported,
 		"JSON.deserialize":                                      StatusSupported,
 		"JSON.deserializeStrict":                                StatusSupported,

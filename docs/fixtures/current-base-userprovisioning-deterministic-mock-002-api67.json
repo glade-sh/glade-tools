@@ -1,0 +1,222 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.CollectingBatchable",
+      "symbol": "UserProvisioning.CollectingBatchable"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.CollectingBatchable.CollectingBatchable(String,String,String)",
+      "symbol": "UserProvisioning.CollectingBatchable.CollectingBatchable(String,String,String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.CollectingBatchable.nextReconOffset",
+      "symbol": "UserProvisioning.CollectingBatchable.nextReconOffset"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.CollectingBatchable.reconOffset",
+      "symbol": "UserProvisioning.CollectingBatchable.reconOffset"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.CollectingBatchable.status",
+      "symbol": "UserProvisioning.CollectingBatchable.status"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.CommittingBatchable",
+      "symbol": "UserProvisioning.CommittingBatchable"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.CommittingBatchable.CommittingBatchable(String)",
+      "symbol": "UserProvisioning.CommittingBatchable.CommittingBatchable(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil",
+      "symbol": "UserProvisioning.ConnectorTestUtil"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.ConnectorTestUtil()",
+      "symbol": "UserProvisioning.ConnectorTestUtil.ConnectorTestUtil()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.clone()",
+      "symbol": "UserProvisioning.ConnectorTestUtil.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
+      "symbol": "UserProvisioning.ConnectorTestUtil.createConnectedApp(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.DeletingBatchable",
+      "symbol": "UserProvisioning.DeletingBatchable"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.DeletingBatchable.DeletingBatchable(String)",
+      "symbol": "UserProvisioning.DeletingBatchable.DeletingBatchable(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler",
+      "symbol": "UserProvisioning.DummyConnectorApexHandler"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.DummyConnectorApexHandler()",
+      "symbol": "UserProvisioning.DummyConnectorApexHandler.DummyConnectorApexHandler()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.clone()",
+      "symbol": "UserProvisioning.DummyConnectorApexHandler.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)",
+      "symbol": "UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase",
+      "symbol": "UserProvisioning.FlowProvisionBase"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.FlowProvisionBase(String)",
+      "symbol": "UserProvisioning.FlowProvisionBase.FlowProvisionBase(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.clone()",
+      "symbol": "UserProvisioning.FlowProvisionBase.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.getFlowName()",
+      "symbol": "UserProvisioning.FlowProvisionBase.getFlowName()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.getFlowNamespace()",
+      "symbol": "UserProvisioning.FlowProvisionBase.getFlowNamespace()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.hasFlow()",
+      "symbol": "UserProvisioning.FlowProvisionBase.hasFlow()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.hasFlowOrApex()",
+      "symbol": "UserProvisioning.FlowProvisionBase.hasFlowOrApex()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.LinkingBatchable",
+      "symbol": "UserProvisioning.LinkingBatchable"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.LinkingBatchable.LinkingBatchable(String)",
+      "symbol": "UserProvisioning.LinkingBatchable.LinkingBatchable(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.ProvisioningBatchable",
+      "symbol": "UserProvisioning.ProvisioningBatchable"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.ProvisioningBatchable.ProvisioningBatchable(List<Object>)",
+      "symbol": "UserProvisioning.ProvisioningBatchable.ProvisioningBatchable(List<Object>)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.RequestingBatchable",
+      "symbol": "UserProvisioning.RequestingBatchable"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.RequestingBatchable.RequestingBatchable(List<Object>)",
+      "symbol": "UserProvisioning.RequestingBatchable.RequestingBatchable(List<Object>)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.UPASCleaningBatchable",
+      "symbol": "UserProvisioning.UPASCleaningBatchable"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.UPASCleaningBatchable.UPASCleaningBatchable(String)",
+      "symbol": "UserProvisioning.UPASCleaningBatchable.UPASCleaningBatchable(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningLog.clone()",
+      "symbol": "UserProvisioning.UserProvisioningLog.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler",
+      "symbol": "UserProvisioning.UserProvisioningProcessHandler"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.UserProvisioningProcessHandler()",
+      "symbol": "UserProvisioning.UserProvisioningProcessHandler.UserProvisioningProcessHandler()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.clone()",
+      "symbol": "UserProvisioning.UserProvisioningProcessHandler.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)",
+      "symbol": "UserProvisioning.UserProvisioningProcessHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-userprovisioning-deterministic-mock-002-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: 28 uncovered concrete runtime rows after existing log evidence. PluginBatchable and the abstract UserProvisioningPlugin shape are retained in companion compile-shape fixtures.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-UserProvisioning-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 28,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "UserProvisioning is retained as local deterministic-mock compatibility evidence; this fixture does not claim hosted provisioning behavior.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseUserProvisioningDeterministic002Test { @isTest static void userProvisioningDeterministic002Witness() { UserProvisioning.CollectingBatchable collecting = new UserProvisioning.CollectingBatchable('0', 'upr', 'app'); UserProvisioning.CommittingBatchable committing = new UserProvisioning.CommittingBatchable('upr'); UserProvisioning.ConnectorTestUtil util = new UserProvisioning.ConnectorTestUtil(); UserProvisioning.DeletingBatchable deleting = new UserProvisioning.DeletingBatchable('upr'); UserProvisioning.DummyConnectorApexHandler dummy = new UserProvisioning.DummyConnectorApexHandler(); UserProvisioning.FlowProvisionBase flowBase = new UserProvisioning.FlowProvisionBase(''); UserProvisioning.LinkingBatchable linking = new UserProvisioning.LinkingBatchable('upr'); UserProvisioning.ProvisioningBatchable provisioning = new UserProvisioning.ProvisioningBatchable(new List<SObject>()); UserProvisioning.RequestingBatchable requesting = new UserProvisioning.RequestingBatchable(new List<SObject>()); UserProvisioning.UPASCleaningBatchable cleaning = new UserProvisioning.UPASCleaningBatchable('upr'); UserProvisioning.UserProvisioningLog log = new UserProvisioning.UserProvisioningLog(); UserProvisioning.UserProvisioningProcessHandler handler = new UserProvisioning.UserProvisioningProcessHandler(); } }",
+      "path": "force-app/main/default/classes/CurrentBaseUserProvisioningDeterministic002Test.cls"
+    }
+  ]
+}

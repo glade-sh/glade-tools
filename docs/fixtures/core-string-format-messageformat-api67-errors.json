@@ -1,0 +1,28 @@
+{
+  "name": "core-string-format-messageformat-api67-errors",
+  "evidence": [
+    {
+      "symbol": "String.format",
+      "kind": "exec",
+      "notes": "API 67 executable error-contract evidence covers catchable typed number/date/time/choice errors, unknown and empty types, and missing-index behavior without claiming Java-style typed formatting success."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "List<Object> numberArgs = new List<Object>{ 2 };\nBoolean caughtNumber = false;\ntry {\n  String.format('{0,number,#.00}', numberArgs);\n} catch (StringException e) {\n  caughtNumber = true;\n  System.assertEquals('Cannot format given Object as a Number', e.getMessage());\n}\nSystem.assert(caughtNumber);\n\nList<Object> dateArgs = new List<Object>{ Datetime.newInstance(2024, 1, 2, 3, 4, 5) };\nBoolean caughtDate = false;\ntry {\n  String.format('{0,date,yyyy-MM-dd}', dateArgs);\n} catch (StringException e) {\n  caughtDate = true;\n  System.assertEquals('Cannot format given Object (java.lang.String) as a Date', e.getMessage());\n}\nSystem.assert(caughtDate);\n\nBoolean caughtTime = false;\ntry {\n  String.format('{0,time,HH:mm}', dateArgs);\n} catch (StringException e) {\n  caughtTime = true;\n  System.assertEquals('Cannot format given Object (java.lang.String) as a Date', e.getMessage());\n}\nSystem.assert(caughtTime);\n\nBoolean caughtChoice = false;\ntry {\n  String.format('{0,choice,0#none|1#one|1<many}', numberArgs);\n} catch (StringException e) {\n  caughtChoice = true;\n  System.assertEquals('''2'' is not a Number', e.getMessage());\n}\nSystem.assert(caughtChoice);\n\nBoolean caughtUnknown = false;\ntry {\n  String.format('{0,unknown}', numberArgs);\n} catch (StringException e) {\n  caughtUnknown = true;\n  System.assertEquals('Unknown format type \"unknown\"', e.getMessage());\n}\nSystem.assert(caughtUnknown);\n\nBoolean caughtEmptyType = false;\ntry {\n  String.format('{0,}', new List<Object>{ '2' });\n} catch (StringException e) {\n  caughtEmptyType = true;\n  System.assertEquals('Bad argument syntax: [at pattern index 1] \"0,}\"', e.getMessage());\n}\nSystem.assert(caughtEmptyType);\n\nSystem.assertEquals('{3}', String.format('{3,number}', new List<Object>{ '2' }));\n\nBoolean caughtMissingUnknown = false;\ntry {\n  String.format('{3,unknown}', new List<Object>{ '2' });\n} catch (StringException e) {\n  caughtMissingUnknown = true;\n  System.assertEquals('Unknown format type \"unknown\"', e.getMessage());\n}\nSystem.assert(caughtMissingUnknown);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Object> numberArgs = new List<Object>{ 2 };\nBoolean caughtNumber = false;\ntry {\n  String.format('{0,number,#.00}', numberArgs);\n} catch (StringException e) {\n  caughtNumber = true;\n  System.assertEquals('Cannot format given Object as a Number', e.getMessage());\n}\nSystem.assert(caughtNumber);\n\nList<Object> dateArgs = new List<Object>{ Datetime.newInstance(2024, 1, 2, 3, 4, 5) };\nBoolean caughtDate = false;\ntry {\n  String.format('{0,date,yyyy-MM-dd}', dateArgs);\n} catch (StringException e) {\n  caughtDate = true;\n  System.assertEquals('Cannot format given Object (java.lang.String) as a Date', e.getMessage());\n}\nSystem.assert(caughtDate);\n\nBoolean caughtTime = false;\ntry {\n  String.format('{0,time,HH:mm}', dateArgs);\n} catch (StringException e) {\n  caughtTime = true;\n  System.assertEquals('Cannot format given Object (java.lang.String) as a Date', e.getMessage());\n}\nSystem.assert(caughtTime);\n\nBoolean caughtChoice = false;\ntry {\n  String.format('{0,choice,0#none|1#one|1<many}', numberArgs);\n} catch (StringException e) {\n  caughtChoice = true;\n  System.assertEquals('''2'' is not a Number', e.getMessage());\n}\nSystem.assert(caughtChoice);\n\nBoolean caughtUnknown = false;\ntry {\n  String.format('{0,unknown}', numberArgs);\n} catch (StringException e) {\n  caughtUnknown = true;\n  System.assertEquals('Unknown format type \"unknown\"', e.getMessage());\n}\nSystem.assert(caughtUnknown);\n\nBoolean caughtEmptyType = false;\ntry {\n  String.format('{0,}', new List<Object>{ '2' });\n} catch (StringException e) {\n  caughtEmptyType = true;\n  System.assertEquals('Bad argument syntax: [at pattern index 1] \"0,}\"', e.getMessage());\n}\nSystem.assert(caughtEmptyType);\n\nSystem.assertEquals('{3}', String.format('{3,number}', new List<Object>{ '2' }));\n\nBoolean caughtMissingUnknown = false;\ntry {\n  String.format('{3,unknown}', new List<Object>{ '2' });\n} catch (StringException e) {\n  caughtMissingUnknown = true;\n  System.assertEquals('Unknown format type \"unknown\"', e.getMessage());\n}\nSystem.assert(caughtMissingUnknown);\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

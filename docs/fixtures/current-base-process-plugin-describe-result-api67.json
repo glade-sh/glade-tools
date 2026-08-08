@@ -1,0 +1,143 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.InputParameter(String,Process.PluginDescribeResult.ParameterType,Boolean)",
+      "symbol": "Process.PluginDescribeResult.InputParameter.InputParameter"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.InputParameter(String,String,Process.PluginDescribeResult.ParameterType,Boolean)",
+      "symbol": "Process.PluginDescribeResult.InputParameter.InputParameter"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.OutputParameter.OutputParameter(String,Process.PluginDescribeResult.ParameterType)",
+      "symbol": "Process.PluginDescribeResult.OutputParameter.OutputParameter"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.OutputParameter.OutputParameter(String,String,Process.PluginDescribeResult.ParameterType)",
+      "symbol": "Process.PluginDescribeResult.OutputParameter.OutputParameter"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType",
+      "symbol": "Process.PluginDescribeResult.ParameterType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.BOOLEAN",
+      "symbol": "Process.PluginDescribeResult.ParameterType.BOOLEAN"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.DATE",
+      "symbol": "Process.PluginDescribeResult.ParameterType.DATE"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.DATETIME",
+      "symbol": "Process.PluginDescribeResult.ParameterType.DATETIME"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.DECIMAL",
+      "symbol": "Process.PluginDescribeResult.ParameterType.DECIMAL"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.DOUBLE",
+      "symbol": "Process.PluginDescribeResult.ParameterType.DOUBLE"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.FLOAT",
+      "symbol": "Process.PluginDescribeResult.ParameterType.FLOAT"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.ID",
+      "symbol": "Process.PluginDescribeResult.ParameterType.ID"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.INTEGER",
+      "symbol": "Process.PluginDescribeResult.ParameterType.INTEGER"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.LONG",
+      "symbol": "Process.PluginDescribeResult.ParameterType.LONG"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.STRING",
+      "symbol": "Process.PluginDescribeResult.ParameterType.STRING"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.TIME",
+      "symbol": "Process.PluginDescribeResult.ParameterType.TIME"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.equals(Object)",
+      "symbol": "Process.PluginDescribeResult.ParameterType.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.hashCode()",
+      "symbol": "Process.PluginDescribeResult.ParameterType.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.ordinal()",
+      "symbol": "Process.PluginDescribeResult.ParameterType.ordinal"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.valueOf(String)",
+      "symbol": "Process.PluginDescribeResult.ParameterType.valueOf"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.values()",
+      "symbol": "Process.PluginDescribeResult.ParameterType.values"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-process-plugin-describe-result-api67",
+  "notes": "Covers the 21 missing rows from current-base-deterministic-mock-required-Process.PluginDescribeResult-001: both DTO constructor overload pairs and the nested ParameterType enum.",
+  "profile": {
+    "laneId": "current-base-deterministic-mock-required-Process.PluginDescribeResult-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 21,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Process.PluginDescribeResult DTO and enum behavior are deterministic local contracts; this fixture makes no hosted Salesforce runtime claim.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseProcessPluginDescribeResultTest { @isTest static void constructorsAndEnum() { Process.PluginDescribeResult.ParameterType parameterType = Process.PluginDescribeResult.ParameterType.STRING; System.assertEquals(parameterType, Process.PluginDescribeResult.ParameterType.valueOf('STRING')); System.assert(parameterType.equals(Process.PluginDescribeResult.ParameterType.STRING)); System.assertNotEquals(null, parameterType.hashCode()); System.assert(parameterType.ordinal() >= 0); System.assert(Process.PluginDescribeResult.ParameterType.values().size() > 0); Process.PluginDescribeResult.InputParameter inputShort = new Process.PluginDescribeResult.InputParameter('recordId', Process.PluginDescribeResult.ParameterType.ID, true); Process.PluginDescribeResult.InputParameter inputLong = new Process.PluginDescribeResult.InputParameter('amount', 'Amount', Process.PluginDescribeResult.ParameterType.DECIMAL, false); Process.PluginDescribeResult.OutputParameter outputShort = new Process.PluginDescribeResult.OutputParameter('message', Process.PluginDescribeResult.ParameterType.STRING); Process.PluginDescribeResult.OutputParameter outputLong = new Process.PluginDescribeResult.OutputParameter('done', 'Done', Process.PluginDescribeResult.ParameterType.BOOLEAN); System.assertEquals('recordId', inputShort.Name); System.assertEquals(true, inputShort.Required); System.assertEquals('amount', inputLong.Name); System.assertEquals('Amount', inputLong.Description); System.assertEquals('message', outputShort.Name); System.assertEquals('done', outputLong.Name); System.assertEquals('Done', outputLong.Description); } }",
+      "path": "force-app/main/default/classes/CurrentBaseProcessPluginDescribeResultTest.cls"
+    }
+  ]
+}
