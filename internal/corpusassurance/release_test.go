@@ -234,6 +234,28 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 	}
 }
 
+func TestFixedReleaseCommandsRejectAmbientGOROOT(t *testing.T) {
+	t.Setenv("GOROOT", t.TempDir())
+	if _, err := fixedReleaseCommands(t.TempDir(), t.TempDir()); err == nil {
+		t.Fatal("accepted ambient GOROOT")
+	}
+}
+
+func TestValidateToolsLocalReplacementsRejectsQuotedOutsidePath(t *testing.T) {
+	root := t.TempDir()
+	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n"})
+	toolsRoot := filepath.Join(root, "tools")
+	if err := os.MkdirAll(toolsRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(toolsRoot, "go.mod"), []byte("module example.com/tools\n\ngo 1.23.0\n\nreplace example.com/outside => \"../outside dir\"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateToolsLocalReplacements(toolsRoot, gladeRoot); err == nil {
+		t.Fatal("accepted quoted replacement outside sealed roots")
+	}
+}
+
 func writeReleaseAttempt(t *testing.T, root, candidatePath, candidateCommit, toolsPath, toolsCommit string) string {
 	t.Helper()
 	candidate, err := runtimeArtifactFor(candidatePath, candidateCommit)

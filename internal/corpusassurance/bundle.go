@@ -27,6 +27,7 @@ type OracleBundleRequest struct {
 	ScratchDefinitionPath string
 	ToolsRoot             string
 	OutputPath            string
+	expectedFilterSHA256  string
 }
 
 // OracleBundle is the acyclic receipt for the self-contained Razor staging
@@ -171,7 +172,11 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		}
 		inputs[path] = hash
 	}
-	if err := validateOracleFilterContract(request.FilterScriptPath); err != nil {
+	expectedFilterSHA256 := request.expectedFilterSHA256
+	if expectedFilterSHA256 == "" {
+		expectedFilterSHA256 = "494f1def8b631c415b413e748672707eac038f213657c1ac8cada39a6ea2cd5d"
+	}
+	if err := validateOracleFilterContract(request.FilterScriptPath, expectedFilterSHA256); err != nil {
 		return OracleBundle{}, err
 	}
 	scratchDefinition, err := os.ReadFile(request.ScratchDefinitionPath)
@@ -274,13 +279,14 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	return bundle, nil
 }
 
-func validateOracleFilterContract(path string) error {
+func validateOracleFilterContract(path, expectedSHA256 string) error {
 	info, err := os.Stat(path)
 	if err != nil || !info.Mode().IsRegular() {
 		return fmt.Errorf("Salesforce filter is unavailable")
 	}
+	hash, hashErr := sha256File(path)
 	help, err := exec.Command("python3", path, "--help").CombinedOutput()
-	if err != nil || !strings.Contains(string(help), "--tools-amd64-sha256") {
+	if hashErr != nil || hash != expectedSHA256 || err != nil || !strings.Contains(string(help), "--tools-amd64-sha256") {
 		return fmt.Errorf("Salesforce filter lacks the sealed amd64 tools contract")
 	}
 	return nil

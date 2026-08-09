@@ -11,6 +11,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"golang.org/x/mod/modfile"
 )
 
 const releaseValidationTimeout = 20 * time.Minute
@@ -156,6 +158,9 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 }
 
 func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error) {
+	if os.Getenv("GOROOT") != "" {
+		return nil, fmt.Errorf("ambient GOROOT is not permitted")
+	}
 	goBin := filepath.Join(runtime.GOROOT(), "bin", "go")
 	env := fixedReleaseEnvironment()
 	commands := []releaseCommand{
@@ -261,23 +266,21 @@ func validateToolsLocalReplacements(toolsRoot, gladeRoot string) error {
 	if err != nil {
 		return err
 	}
-	for _, line := range strings.Split(string(data), "\n") {
-		fields := strings.Fields(strings.SplitN(line, "//", 2)[0])
-		for index, field := range fields {
-			if field != "=>" || index+1 >= len(fields) {
-				continue
-			}
-			target := fields[index+1]
-			if !filepath.IsAbs(target) && !strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../") {
-				continue
-			}
-			if !filepath.IsAbs(target) {
-				target = filepath.Join(toolsRoot, target)
-			}
-			target, err = filepath.EvalSymlinks(target)
-			if err != nil || (!pathWithin(gladeRoot, target) && !pathWithin(toolsRoot, target)) {
-				return fmt.Errorf("local replacement is outside sealed roots")
-			}
+	parsed, err := modfile.Parse("go.mod", data, nil)
+	if err != nil {
+		return err
+	}
+	for _, replacement := range parsed.Replace {
+		target := replacement.New.Path
+		if replacement.New.Version != "" || (!filepath.IsAbs(target) && !strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../")) {
+			continue
+		}
+		if !filepath.IsAbs(target) {
+			target = filepath.Join(toolsRoot, target)
+		}
+		target, err = filepath.EvalSymlinks(target)
+		if err != nil || (!pathWithin(gladeRoot, target) && !pathWithin(toolsRoot, target)) {
+			return fmt.Errorf("local replacement is outside sealed roots")
 		}
 	}
 	return nil

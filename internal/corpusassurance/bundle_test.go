@@ -118,6 +118,7 @@ type oracleBundleTestInputs struct {
 	toolsRoot           string
 	localProofPath      string
 	fixtureManifestPath string
+	filterSHA256        string
 }
 
 func (inputs oracleBundleTestInputs) request(outputPath string) OracleBundleRequest {
@@ -132,7 +133,7 @@ func (inputs oracleBundleTestInputs) request(outputPath string) OracleBundleRequ
 		FilterScriptPath:      inputs.filterPath,
 		ScratchDefinitionPath: inputs.scratchPath,
 		ToolsRoot:             inputs.toolsRoot,
-		OutputPath:            outputPath,
+		OutputPath:            outputPath, expectedFilterSHA256: inputs.filterSHA256,
 	}
 }
 
@@ -183,6 +184,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	if err := os.WriteFile(inputs.filterPath, []byte("#!/usr/bin/env python3\nimport argparse\np=argparse.ArgumentParser()\np.add_argument('--tools-amd64-sha256')\np.parse_args()\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
+	inputs.filterSHA256 = localProofFileSHA256(t, inputs.filterPath)
 	if err := os.WriteFile(inputs.scratchPath, []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
