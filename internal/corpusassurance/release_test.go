@@ -97,7 +97,7 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 		t.Fatalf("validation = %#v, commands = %#v", validation, commands)
 	}
 	for _, command := range validation.Commands {
-		if !command.Passed || command.WorkingDirectory == "" || len(command.Environment) != 3 || command.TimeoutMS != releaseValidationTimeout.Milliseconds() {
+		if !command.Passed || command.WorkingDirectory == "" || len(command.Environment) != 5 || command.TimeoutMS != releaseValidationTimeout.Milliseconds() {
 			t.Fatalf("release command = %#v", command)
 		}
 	}
@@ -143,5 +143,27 @@ func TestRunReleaseCommandCapturesBothOutputStreams(t *testing.T) {
 	output, err := runReleaseCommand(context.Background(), releaseCommand{Path: script, WorkingDirectory: root, Environment: []string{"PATH=/usr/bin:/bin"}})
 	if err != nil || !bytes.Equal(output.Stdout, []byte("out")) || !bytes.Equal(output.Stderr, []byte("err")) {
 		t.Fatalf("runReleaseCommand = %#v, %v", output, err)
+	}
+}
+
+func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
+	root := t.TempDir()
+	for _, path := range []string{filepath.Join(root, "glade", "scripts", "smoke.sh"), filepath.Join(root, "tools", "scripts", "release-check.sh")} {
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte("#!/bin/sh\n"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	t.Setenv("PATH", "/attacker/bin")
+	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "tools"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, command := range commands {
+		if strings.Contains(strings.Join(command.Environment, "\n"), "/attacker/bin") {
+			t.Fatalf("release environment inherits PATH: %#v", command.Environment)
+		}
 	}
 }

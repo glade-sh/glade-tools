@@ -130,7 +130,11 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 
 func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error) {
 	goBin := filepath.Join(runtime.GOROOT(), "bin", "go")
-	env := []string{"HOME=" + os.Getenv("HOME"), "PATH=" + os.Getenv("PATH"), "TMPDIR=" + os.TempDir()}
+	home, err := os.UserHomeDir()
+	if err != nil || !filepath.IsAbs(home) {
+		return nil, fmt.Errorf("resolve Go module cache home")
+	}
+	env := []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=" + filepath.Join(home, "go", "pkg", "mod")}
 	commands := []releaseCommand{
 		{Path: goBin, Args: []string{"test", "./..."}, WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
 		{Path: filepath.Join(gladeRoot, "scripts", "smoke.sh"), WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
