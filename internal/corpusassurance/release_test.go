@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -226,6 +227,9 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 	for _, command := range commands {
 		if strings.Contains(strings.Join(command.Environment, "\n"), "/attacker/bin") {
 			t.Fatalf("release environment inherits PATH: %#v", command.Environment)
+		}
+		if !strings.Contains(strings.Join(command.Environment, "\n"), "PATH="+filepath.Join(runtime.GOROOT(), "bin")+":") {
+			t.Fatalf("release environment cannot resolve Go: %#v", command.Environment)
 		}
 	}
 }
