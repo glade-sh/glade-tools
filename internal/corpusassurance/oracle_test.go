@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
 func TestPlanOracleClassifiesEverySupportedDisposition(t *testing.T) {
@@ -161,6 +163,60 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	}
 	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != directives.ProfileSHA256 || plan.Candidate != candidate || plan.Tools != tools {
 		t.Fatalf("plan = %#v", plan)
+	}
+}
+
+func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
+	root := t.TempDir()
+	profilePath := filepath.Join(root, "profile.json")
+	usagePath := filepath.Join(root, "usage.json")
+	ledgerPath := filepath.Join(root, "ledger.json")
+	manifestPath := filepath.Join(root, "fixtures.json")
+	proofPath := filepath.Join(root, "proof.json")
+	outputPath := filepath.Join(root, "ASSURANCE_PROFILE.json")
+	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.run()","namespace":"System","disposition":"local-runtime-required","reason":"current","corpusUsage":["stale"]},{"surfaceId":"apex:Auth.hosted()","namespace":"Auth","disposition":"hosted-deferred","reason":"hosted"}]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), LedgerSHA256: strings.Repeat("a", 64), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{
+		{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"},
+		{UsageEntry: UsageEntry{UsageKey: "Auth.hosted", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:Auth.hosted()"},
+	}}}); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: 1, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.run()"}, {SurfaceID: "apex:Auth.hosted()"}}}); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(manifestPath, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{{ID: "system", Name: "system", SHA256: strings.Repeat("b", 64), OwnedSurfaceIDs: []string{"apex:System.run()"}}, {ID: "auth", Name: "auth", SHA256: strings.Repeat("c", 64), OwnedSurfaceIDs: []string{"apex:Auth.hosted()"}}}}); err != nil {
+		t.Fatal(err)
+	}
+	candidate := RuntimeArtifact{Commit: strings.Repeat("d", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("e", 64)}
+	if err := WriteNewJSON(proofPath, LocalProof{Status: "pass", Candidate: candidate, Tools: candidate, FixtureManifestSHA256: localProofFileSHA256(t, manifestPath), Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}); err != nil {
+		t.Fatal(err)
+	}
+	usage, err := readExactJSON[SealedCorpusUsage](usagePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	usage.LedgerSHA256 = localProofFileSHA256(t, ledgerPath)
+	if err := os.Remove(usagePath); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(usagePath, usage); err != nil {
+		t.Fatal(err)
+	}
+	profile, err := BuildAssuranceProfile(profilePath, usagePath, ledgerPath, manifestPath, proofPath, outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if profile.Total != 2 || len(profile.Rows) != 2 || len(profile.NonDeferredGaps) != 1 || len(profile.HostedDeferred) != 1 || profile.ByDisposition[localRuntimeRequired] != 1 || profile.ByDisposition["hosted-deferred"] != 1 {
+		t.Fatalf("profile = %#v", profile)
+	}
+	data, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(data), "corpusUsage") {
+		t.Fatalf("projected profile retained stale corpus usage: %s", data)
 	}
 }
 

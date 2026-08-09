@@ -1,9 +1,15 @@
 package corpusassurance
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"path/filepath"
 	"sort"
+
+	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
 const (
@@ -47,6 +53,38 @@ type OracleProfileRow struct {
 	Disposition string `json:"disposition"`
 }
 
+// AssuranceProfile is the fresh, reduced profile sent to the Salesforce
+// oracle. It contains only current required rows and the bindings that made
+// them eligible; historical corpus and queue data is intentionally absent.
+type AssuranceProfile struct {
+	SchemaVersion         int                   `json:"schemaVersion"`
+	SourceProfileSHA256   string                `json:"sourceProfileSha256"`
+	SealedUsageSHA256     string                `json:"sealedUsageSha256"`
+	LedgerSHA256          string                `json:"ledgerSha256"`
+	FixtureManifestSHA256 string                `json:"fixtureManifestSha256"`
+	LocalProofSHA256      string                `json:"localProofSha256"`
+	Total                 int                   `json:"total"`
+	ByDisposition         map[string]int        `json:"byDisposition"`
+	NonDeferredGaps       []AssuranceProfileRow `json:"nonDeferredGaps"`
+	HostedDeferred        []AssuranceProfileRow `json:"hostedDeferred"`
+	Rows                  []AssuranceProfileRow `json:"rows"`
+}
+
+// AssuranceProfileRow is the allowlisted, public support-profile projection.
+type AssuranceProfileRow struct {
+	SurfaceID   string `json:"surfaceId"`
+	Namespace   string `json:"namespace,omitempty"`
+	TypeFamily  string `json:"typeFamily,omitempty"`
+	LedgerShape string `json:"ledgerShape,omitempty"`
+	Behavior    string `json:"behavior,omitempty"`
+	Evidence    string `json:"evidence,omitempty"`
+	Disposition string `json:"disposition"`
+	MatchRule   string `json:"matchRule,omitempty"`
+	Reason      string `json:"reason,omitempty"`
+	Obligation  string `json:"obligation,omitempty"`
+	GapClass    string `json:"gapClass,omitempty"`
+}
+
 // OracleDirective records the classification not available from local proof:
 // a deterministic mock is deployable unless it names an explicit exclusion.
 type OracleDirective struct {
@@ -81,6 +119,185 @@ type ExclusionAuthority struct {
 	PolicySHA256           string               `json:"policySha256"`
 	SalesforceParityCredit int                  `json:"salesforceParityCredit"`
 	Rows                   []ExclusionPolicyRow `json:"rows"`
+}
+
+// BuildAssuranceProfile rebuilds the Salesforce profile from the current
+// private-required set. It accepts no caller-selected rows and omits all
+// historical profile fields not needed by the oracle.
+func BuildAssuranceProfile(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, outputPath string) (AssuranceProfile, error) {
+	for _, path := range []string{sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return AssuranceProfile{}, fmt.Errorf("absolute assurance-profile paths are required")
+		}
+	}
+	if _, err := os.Lstat(outputPath); err == nil {
+		return AssuranceProfile{}, fmt.Errorf("assurance profile output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return AssuranceProfile{}, err
+	}
+	sourceRows, sourceBytes, err := readAssuranceProfileRows(sourceProfilePath)
+	if err != nil {
+		return AssuranceProfile{}, fmt.Errorf("read source profile: %w", err)
+	}
+	sealedUsage, sealedUsageBytes, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath)
+	if err != nil {
+		return AssuranceProfile{}, fmt.Errorf("read sealed usage: %w", err)
+	}
+	ledger, ledgerBytes, err := readExactJSONBytes[surfaceledger.SurfaceLedger](ledgerPath)
+	if err != nil {
+		return AssuranceProfile{}, fmt.Errorf("read ledger: %w", err)
+	}
+	manifest, manifestBytes, err := readExactJSONBytes[LocalProofFixtureManifest](fixtureManifestPath)
+	if err != nil {
+		return AssuranceProfile{}, fmt.Errorf("read fixture manifest: %w", err)
+	}
+	proof, proofBytes, err := readExactJSONBytes[LocalProof](localProofPath)
+	if err != nil {
+		return AssuranceProfile{}, fmt.Errorf("read local proof: %w", err)
+	}
+	sourceSHA, usageSHA := replayBytesSHA256(sourceBytes), replayBytesSHA256(sealedUsageBytes)
+	ledgerSHA, manifestSHA, proofSHA := replayBytesSHA256(ledgerBytes), replayBytesSHA256(manifestBytes), replayBytesSHA256(proofBytes)
+	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != sourceSHA || sealedUsage.LedgerSHA256 != ledgerSHA || proof.Status != "pass" || ValidateRuntimeArtifact(proof.Candidate) != nil || ValidateRuntimeArtifact(proof.Tools) != nil || proof.FixtureManifestSHA256 != manifestSHA {
+		return AssuranceProfile{}, fmt.Errorf("assurance profile inputs do not bind")
+	}
+	required, err := oracleRequiredSurfaceIDs(sealedUsage.Reconciliation)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
+	source := make(map[string]AssuranceProfileRow, len(sourceRows))
+	for _, row := range sourceRows {
+		if row.SurfaceID == "" || row.Disposition == "" || source[row.SurfaceID].SurfaceID != "" {
+			return AssuranceProfile{}, fmt.Errorf("invalid or duplicate source profile surface %q", row.SurfaceID)
+		}
+		source[row.SurfaceID] = row
+	}
+	ledgerIDs := make(map[string]bool, len(ledger.Rows))
+	for _, row := range ledger.Rows {
+		if row.SurfaceID == "" || ledgerIDs[row.SurfaceID] {
+			return AssuranceProfile{}, fmt.Errorf("invalid or duplicate ledger surface %q", row.SurfaceID)
+		}
+		ledgerIDs[row.SurfaceID] = true
+	}
+	owned, err := ownedFixtureSurfaces(manifest)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
+	local := make(map[string]LocalSurfaceProof, len(proof.Surfaces))
+	for _, row := range proof.Surfaces {
+		if row.SurfaceID == "" || local[row.SurfaceID].SurfaceID != "" {
+			return AssuranceProfile{}, fmt.Errorf("invalid or duplicate local proof surface %q", row.SurfaceID)
+		}
+		local[row.SurfaceID] = row
+	}
+	result := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: sourceSHA, SealedUsageSHA256: usageSHA, LedgerSHA256: ledgerSHA, FixtureManifestSHA256: manifestSHA, LocalProofSHA256: proofSHA, ByDisposition: map[string]int{}}
+	for _, surfaceID := range required {
+		row, exists := source[surfaceID]
+		if !exists || !ledgerIDs[surfaceID] || !owned[surfaceID] {
+			return AssuranceProfile{}, fmt.Errorf("required surface %q is not current-profile, ledger, and fixture owned", surfaceID)
+		}
+		if row.Disposition != "hosted-deferred" {
+			proofRow, exists := local[surfaceID]
+			if !exists || proofRow.Disposition != row.Disposition {
+				return AssuranceProfile{}, fmt.Errorf("required surface %q lacks matching local proof", surfaceID)
+			}
+		}
+		result.Rows = append(result.Rows, row)
+		result.ByDisposition[row.Disposition]++
+		if row.Disposition == "hosted-deferred" {
+			result.HostedDeferred = append(result.HostedDeferred, row)
+		} else {
+			result.NonDeferredGaps = append(result.NonDeferredGaps, row)
+		}
+	}
+	sort.Slice(result.Rows, func(i, j int) bool { return result.Rows[i].SurfaceID < result.Rows[j].SurfaceID })
+	sort.Slice(result.NonDeferredGaps, func(i, j int) bool { return result.NonDeferredGaps[i].SurfaceID < result.NonDeferredGaps[j].SurfaceID })
+	sort.Slice(result.HostedDeferred, func(i, j int) bool { return result.HostedDeferred[i].SurfaceID < result.HostedDeferred[j].SurfaceID })
+	result.Total = len(result.Rows)
+	if err := verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA); err != nil {
+		return AssuranceProfile{}, err
+	}
+	if err := WriteNewJSON(outputPath, result); err != nil {
+		return AssuranceProfile{}, err
+	}
+	return result, nil
+}
+
+func oracleRequiredSurfaceIDs(reconciled UsageReconciliation) ([]string, error) {
+	set := make(map[string]bool, len(reconciled.Usage))
+	for _, row := range reconciled.Usage {
+		switch row.Class {
+		case usageClassExact, usageClassCaseAlias, usageClassAggregateParent, usageClassCanonicalAlias:
+			if row.SurfaceID == "" {
+				return nil, fmt.Errorf("reconciled usage %q lacks a surface", row.UsageKey)
+			}
+			set[row.SurfaceID] = true
+		case usageClassLocalSymbol, usageClassNonSalesforceGenerated:
+			if row.SurfaceID != "" {
+				return nil, fmt.Errorf("non-Salesforce usage %q selects a surface", row.UsageKey)
+			}
+		default:
+			return nil, fmt.Errorf("reconciled usage %q has unknown class %q", row.UsageKey, row.Class)
+		}
+	}
+	if len(set) == 0 {
+		return nil, fmt.Errorf("no reconciled Salesforce surfaces require an assurance profile")
+	}
+	ids := make([]string, 0, len(set))
+	for id := range set {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids, nil
+}
+
+func ownedFixtureSurfaces(manifest LocalProofFixtureManifest) (map[string]bool, error) {
+	owned := make(map[string]bool)
+	fixtures := make(map[string]bool, len(manifest.Fixtures))
+	for _, fixture := range manifest.Fixtures {
+		if fixture.ID == "" || fixtures[fixture.ID] || !sha256Pattern.MatchString(fixture.SHA256) || len(fixture.OwnedSurfaceIDs) == 0 {
+			return nil, fmt.Errorf("invalid or duplicate fixture %q", fixture.ID)
+		}
+		fixtures[fixture.ID] = true
+		for _, surfaceID := range fixture.OwnedSurfaceIDs {
+			if surfaceID == "" || owned[surfaceID] {
+				return nil, fmt.Errorf("invalid or duplicate fixture-owned surface %q", surfaceID)
+			}
+			owned[surfaceID] = true
+		}
+	}
+	return owned, nil
+}
+
+func readAssuranceProfileRows(path string) ([]AssuranceProfileRow, []byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, nil, err
+	}
+	var document struct {
+		Rows []AssuranceProfileRow `json:"rows"`
+	}
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	if err := decoder.Decode(&document); err != nil {
+		return nil, nil, err
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		if err == nil {
+			return nil, nil, fmt.Errorf("multiple JSON values")
+		}
+		return nil, nil, err
+	}
+	return document.Rows, data, nil
+}
+
+func verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA string) error {
+	for _, input := range []struct{ path, sha string }{{sourceProfilePath, sourceSHA}, {sealedUsagePath, usageSHA}, {ledgerPath, ledgerSHA}, {fixtureManifestPath, manifestSHA}, {localProofPath, proofSHA}} {
+		data, err := os.ReadFile(input.path)
+		if err != nil || replayBytesSHA256(data) != input.sha {
+			return fmt.Errorf("assurance profile input changed during projection")
+		}
+	}
+	return nil
 }
 
 // PlanOracle assigns exactly one Salesforce action to every locally proven
