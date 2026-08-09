@@ -37,6 +37,30 @@ func TestRunReleaseValidationRejectsToolsHeadThatDoesNotMatchFrozenCommit(t *tes
 	}
 }
 
+func TestRunReleaseValidationRequiresReadOnlyFrozenToolsCommit(t *testing.T) {
+	root := t.TempDir()
+	gladeRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidatePath, toolsPath := filepath.Join(root, "glade"), filepath.Join(root, "glade-tools")
+	for _, path := range []string{candidatePath, toolsPath} {
+		if err := os.WriteFile(path, []byte("binary"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	toolsCommit := testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	freezePath := filepath.Join(root, "FINAL_TOOLS_COMMIT")
+	if err := os.WriteFile(freezePath, []byte(toolsCommit+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunReleaseValidation(ReleaseValidationRequest{
+		GladeRoot: gladeRoot, CandidatePath: candidatePath, CandidateCommit: testGitOutput(t, gladeRoot, "rev-parse", "HEAD"),
+		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsCommit: toolsCommit, ToolsFreezePath: freezePath, OutputPath: filepath.Join(root, "RELEASE_VALIDATION.json"),
+	})
+	if err == nil || !strings.Contains(err.Error(), "frozen tools commit must be mode 0400") {
+		t.Fatalf("RunReleaseValidation error = %v", err)
+	}
+}
+
 func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	root := t.TempDir()
 	gladeRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})

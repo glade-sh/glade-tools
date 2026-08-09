@@ -66,6 +66,10 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	} else if !os.IsNotExist(err) {
 		return ReleaseValidation{}, err
 	}
+	freezeInfo, err := os.Stat(request.ToolsFreezePath)
+	if err != nil || !freezeInfo.Mode().IsRegular() || freezeInfo.Mode().Perm() != 0o400 {
+		return ReleaseValidation{}, fmt.Errorf("frozen tools commit must be mode 0400")
+	}
 	freezeBytes, err := os.ReadFile(request.ToolsFreezePath)
 	if err != nil || strings.TrimSpace(string(freezeBytes)) != request.ToolsCommit {
 		return ReleaseValidation{}, fmt.Errorf("frozen tools commit does not match requested tools commit")
