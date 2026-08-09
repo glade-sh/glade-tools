@@ -90,12 +90,13 @@ type ReplayBindings struct {
 }
 
 type ReplayMerge struct {
-	Candidate          RuntimeArtifact   `json:"candidate"`
-	Tools              RuntimeArtifact   `json:"tools"`
-	Inventory          InventoryManifest `json:"inventory"`
-	RootManifestSHA256 string            `json:"rootManifestSha256"`
-	HostManifestSHA256 map[string]string `json:"hostManifestSha256"`
-	Repositories       []RepositorySpec  `json:"repositories"`
+	Candidate             RuntimeArtifact   `json:"candidate"`
+	Tools                 RuntimeArtifact   `json:"tools"`
+	Inventory             InventoryManifest `json:"inventory"`
+	RootManifestSHA256    string            `json:"rootManifestSha256"`
+	HostManifestSHA256    map[string]string `json:"hostManifestSha256"`
+	Repositories          []RepositorySpec  `json:"repositories"`
+	TestReadyByRepository map[string]bool   `json:"testReadyByRepository"`
 }
 
 // ValidateReplayFiles is the reconciliation entrypoint. It reads each sealed
@@ -190,6 +191,11 @@ func loadReplayMergeFromFiles(inventoryPath, rootManifestPath string, hostManife
 		return ReplayMerge{}, fmt.Errorf("replay shards are required")
 	}
 	merge := ReplayMerge{Candidate: shards[0].Candidate, Tools: shards[0].Tools, Inventory: root, RootManifestSHA256: replayBytesSHA256(rootBytes), HostManifestSHA256: hostHashes, Repositories: root.Repositories}
+	testReady, err := repositoryTestReadiness(merge, shards)
+	if err != nil {
+		return ReplayMerge{}, err
+	}
+	merge.TestReadyByRepository = testReady
 	if err := ValidateReplayMerge(merge, shards); err != nil {
 		return ReplayMerge{}, err
 	}
@@ -293,6 +299,9 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 	if err := validateReplayDenominator(merge); err != nil {
 		return err
 	}
+	if len(merge.TestReadyByRepository) != len(merge.Repositories) {
+		return fmt.Errorf("replay merge test readiness is incomplete")
+	}
 	expected := repositoryIndex(merge.Inventory.Repositories)
 	seen := make(map[string]bool, len(expected))
 	seenHosts := make(map[string]bool, len(merge.HostManifestSHA256))
@@ -330,6 +339,9 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 	for id := range expected {
 		if !seen[id] {
 			return fmt.Errorf("missing repository result %q", id)
+		}
+		if _, exists := merge.TestReadyByRepository[id]; !exists {
+			return fmt.Errorf("missing repository test readiness for %q", id)
 		}
 	}
 	for host := range merge.HostManifestSHA256 {

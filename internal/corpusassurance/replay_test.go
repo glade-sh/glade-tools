@@ -252,7 +252,7 @@ func TestValidateReplayFilesLoadsAuthoritativeInputs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("MergeReplayFromFiles: %v", err)
 	}
-	if len(merged.Repositories) != 2 || fileSHA256(t, outputPath) == "" {
+	if len(merged.Repositories) != 2 || !merged.TestReadyByRepository["private-corpus-001"] || !merged.TestReadyByRepository["private-corpus-002"] || fileSHA256(t, outputPath) == "" {
 		t.Fatalf("merged replay = %#v", merged)
 	}
 }
