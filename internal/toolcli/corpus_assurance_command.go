@@ -59,15 +59,17 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		sourceProfile, usage := flags.String("source-profile", "", ""), flags.String("sealed-usage", "", "")
 		ledger, policy := flags.String("ledger", "", ""), flags.String("policy", "", "")
 		decisions, fixtures := flags.String("decisions", "", ""), flags.String("fixture-manifest", "", "")
+		localProfile, localUsage := flags.String("local-profile", "", ""), flags.String("local-usage", "", "")
+		localDecision := flags.String("local-decision", "", "")
 		proof, directives := flags.String("local-proof", "", ""), flags.String("directives", "", "")
 		profileOutput, output := flags.String("profile-output", "", ""), flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*inventory, *rootManifest, *sourceProfile, *usage, *ledger, *policy, *decisions, *fixtures, *proof, *directives, *profileOutput, *output); err != nil {
+		if err := requiredAssuranceFlags(*inventory, *rootManifest, *sourceProfile, *usage, *ledger, *policy, *decisions, *localProfile, *localUsage, *localDecision, *fixtures, *proof, *directives, *profileOutput, *output); err != nil {
 			return err
 		}
-		if _, err := corpusassurance.BuildAssuranceProfile(*inventory, *rootManifest, *sourceProfile, *usage, *ledger, *policy, *decisions, *fixtures, *proof, *profileOutput); err != nil {
+		if _, err := corpusassurance.BuildAssuranceProfile(*inventory, *rootManifest, *sourceProfile, *usage, *ledger, *policy, *decisions, *localProfile, *localUsage, *localDecision, *fixtures, *proof, *profileOutput); err != nil {
 			return err
 		}
 		plan, err := corpusassurance.PlanOracleFromFiles(*profileOutput, *usage, *fixtures, *proof, *directives, *output)

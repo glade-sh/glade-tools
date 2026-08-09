@@ -224,8 +224,8 @@ func verifyExclusionRequestInputs(planPath, profilePath, usagePath, planSHA, pro
 // BuildAssuranceProfile rebuilds the Salesforce profile from the current
 // private-required set. It accepts no caller-selected rows and omits all
 // historical profile fields not needed by the oracle.
-func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, fixtureManifestPath, localProofPath, outputPath string) (AssuranceProfile, error) {
-	for _, path := range []string{inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, fixtureManifestPath, localProofPath, outputPath} {
+func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, localProfilePath, localUsagePath, localDecisionPath, fixtureManifestPath, localProofPath, outputPath string) (AssuranceProfile, error) {
+	for _, path := range []string{inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, localProfilePath, localUsagePath, localDecisionPath, fixtureManifestPath, localProofPath, outputPath} {
 		if !filepath.IsAbs(path) {
 			return AssuranceProfile{}, fmt.Errorf("absolute assurance-profile paths are required")
 		}
@@ -263,6 +263,21 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	proof, proofBytes, err := readExactJSONBytes[LocalProof](localProofPath)
 	if err != nil {
 		return AssuranceProfile{}, fmt.Errorf("read local proof: %w", err)
+	}
+	localProfileSHA, err := proofInputSHA256(localProfilePath)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
+	localUsageSHA, err := proofInputSHA256(localUsagePath)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
+	localDecisionSHA, err := proofInputSHA256(localDecisionPath)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
+	if proof.ProfilePath != localProfilePath || proof.UsagePath != localUsagePath || proof.DecisionPath != localDecisionPath || proof.FixtureManifestPath != fixtureManifestPath || localProfileSHA != proof.ProfileSHA256 || localUsageSHA != proof.UsageSHA256 || localDecisionSHA != proof.DecisionSHA256 {
+		return AssuranceProfile{}, fmt.Errorf("local proof does not bind authoritative replay inputs")
 	}
 	sourceSHA, usageSHA := replayBytesSHA256(sourceBytes), replayBytesSHA256(sealedUsageBytes)
 	ledgerSHA, manifestSHA, proofSHA := replayBytesSHA256(ledgerBytes), replayBytesSHA256(manifestBytes), replayBytesSHA256(proofBytes)
@@ -400,6 +415,14 @@ func readAssuranceProfileRows(path string) ([]AssuranceProfileRow, []byte, error
 		return nil, nil, err
 	}
 	return document.Rows, data, nil
+}
+
+func proofInputSHA256(path string) (string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	return replayBytesSHA256(data), nil
 }
 
 func verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA string) error {
