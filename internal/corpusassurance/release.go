@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -85,7 +86,7 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	if err != nil {
 		return ReleaseValidation{}, fmt.Errorf("candidate: %w", err)
 	}
-	tools, err := runtimeArtifactFor(request.ToolsPath, request.ToolsCommit)
+	tools, err := releaseExecutingTools(request.ToolsPath, request.ToolsCommit)
 	if err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools: %w", err)
 	}
@@ -128,10 +129,7 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 }
 
 func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error) {
-	goBin, err := exec.LookPath("go")
-	if err != nil {
-		return nil, fmt.Errorf("find go: %w", err)
-	}
+	goBin := filepath.Join(runtime.GOROOT(), "bin", "go")
 	env := []string{"HOME=" + os.Getenv("HOME"), "PATH=" + os.Getenv("PATH"), "TMPDIR=" + os.TempDir()}
 	commands := []releaseCommand{
 		{Path: goBin, Args: []string{"test", "./..."}, WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
@@ -146,6 +144,25 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 		}
 	}
 	return commands, nil
+}
+
+func releaseExecutingTools(path, commit string) (RuntimeArtifact, error) {
+	requested, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		return RuntimeArtifact{}, fmt.Errorf("resolve tools path: %w", err)
+	}
+	executable, err := os.Executable()
+	if err != nil {
+		return RuntimeArtifact{}, fmt.Errorf("locate executing glade-tools binary: %w", err)
+	}
+	executing, err := filepath.EvalSymlinks(executable)
+	if err != nil {
+		return RuntimeArtifact{}, fmt.Errorf("resolve executing glade-tools binary: %w", err)
+	}
+	if filepath.Clean(requested) != filepath.Clean(executing) {
+		return RuntimeArtifact{}, fmt.Errorf("tools path does not identify the executing glade-tools binary")
+	}
+	return runtimeArtifactFor(executable, commit)
 }
 
 func runReleaseValidationCommand(runner releaseCommandRunner, command releaseCommand) (ReleaseCommandResult, error) {

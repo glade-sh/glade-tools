@@ -24,6 +24,15 @@ type RemoteAttemptCleanupRequest struct {
 	runner      salesforceCommandRunner
 }
 
+// RemoteAttemptAuthority is the create-only authority for one host and one
+// remote attempt root. Cleanup refuses arbitrary file bytes.
+type RemoteAttemptAuthority struct {
+	SchemaVersion int    `json:"schemaVersion"`
+	Host          string `json:"host"`
+	Parent        string `json:"parent"`
+	AttemptRoot   string `json:"attemptRoot"`
+}
+
 // RemoteAttemptCleanupReceipt seals the one exact ssh command, its execution
 // result, and the unchanged binding hash for a completed remote attempt.
 type RemoteAttemptCleanupReceipt struct {
@@ -52,9 +61,12 @@ func RunRemoteAttemptCleanup(request RemoteAttemptCleanupRequest) (RemoteAttempt
 	} else if !os.IsNotExist(err) {
 		return RemoteAttemptCleanupReceipt{}, err
 	}
-	bindingBytes, err := os.ReadFile(request.BindingPath)
+	authority, bindingBytes, err := readRemoteAttemptAuthority(request.BindingPath)
 	if err != nil {
-		return RemoteAttemptCleanupReceipt{}, fmt.Errorf("read remote cleanup binding: %w", err)
+		return RemoteAttemptCleanupReceipt{}, err
+	}
+	if authority.Host != request.Host || authority.Parent != remoteCleanupParent || authority.AttemptRoot != attemptRoot {
+		return RemoteAttemptCleanupReceipt{}, fmt.Errorf("remote cleanup authority does not bind requested attempt")
 	}
 	bindingSHA := replayBytesSHA256(bindingBytes)
 
@@ -82,12 +94,12 @@ func RunRemoteAttemptCleanup(request RemoteAttemptCleanupRequest) (RemoteAttempt
 		return RemoteAttemptCleanupReceipt{}, fmt.Errorf("remote cleanup command failed")
 	}
 
-	postBindingBytes, err := os.ReadFile(request.BindingPath)
+	postAuthority, postBindingBytes, err := readRemoteAttemptAuthority(request.BindingPath)
 	if err != nil {
-		return RemoteAttemptCleanupReceipt{}, fmt.Errorf("re-read remote cleanup binding: %w", err)
+		return RemoteAttemptCleanupReceipt{}, err
 	}
 	postBindingSHA := replayBytesSHA256(postBindingBytes)
-	if postBindingSHA != bindingSHA {
+	if postAuthority != authority || postBindingSHA != bindingSHA {
 		return RemoteAttemptCleanupReceipt{}, fmt.Errorf("remote cleanup binding changed during execution")
 	}
 
@@ -130,12 +142,20 @@ func validateRemoteAttemptCleanupRequest(request RemoteAttemptCleanupRequest, at
 
 func remoteAttemptCleanupShellCommand(basename string) string {
 	parent := shellQuote(remoteCleanupParent)
-	attempt := shellQuote(remoteCleanupParent + "/" + basename)
+	attempt := shellQuote("./" + basename)
 	return "set -e\n" +
-		"test -d " + parent + " && test ! -L " + parent + "\n" +
+		"test -d " + parent + " && test ! -L " + parent + " && cd " + parent + "\n" +
 		"test -d " + attempt + " && test ! -L " + attempt + "\n" +
 		"rm -r -- " + attempt + "\n" +
-		"test ! -e " + attempt
+		"test ! -e " + attempt + " && test ! -L " + attempt
+}
+
+func readRemoteAttemptAuthority(path string) (RemoteAttemptAuthority, []byte, error) {
+	authority, data, err := readExactJSONBytes[RemoteAttemptAuthority](path)
+	if err != nil || authority.SchemaVersion != 1 || (authority.Host != "matt@casper.local" && authority.Host != "matt@razor.local") || authority.Parent != remoteCleanupParent || filepath.Dir(authority.AttemptRoot) != remoteCleanupParent || !strings.HasPrefix(filepath.Base(authority.AttemptRoot), remoteCleanupPrefix) {
+		return RemoteAttemptAuthority{}, nil, fmt.Errorf("invalid remote cleanup authority")
+	}
+	return authority, data, nil
 }
 
 func shellQuote(value string) string {
