@@ -87,3 +87,18 @@ func TestDeriveAssuranceRowsSeparatesCompileTestRuntimeAndNonParity(t *testing.T
 		t.Fatalf("rows = %#v", rows)
 	}
 }
+
+func TestRepositoryTestReadinessKeepsRepositoriesWithoutTestsCompileOnly(t *testing.T) {
+	artifact := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	merge := ReplayMerge{Candidate: artifact, Tools: artifact, Inventory: InventoryManifest{SchemaVersion: 1, InventorySHA256: strings.Repeat("c", 64)}, Repositories: []RepositorySpec{{ID: "private-corpus-001", LocalTests: "required"}, {ID: "private-corpus-002", LocalTests: "none"}}}
+	check := CommandResult{Command: []string{"check"}, CommandSpecSHA256: commandSpecSHA256(replayCommandFor("", "check")), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("d", 64), StderrSHA256: strings.Repeat("e", 64)}
+	test := CommandResult{Command: []string{"test"}, CommandSpecSHA256: commandSpecSHA256(replayCommandFor("", "test")), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("f", 64), StderrSHA256: strings.Repeat("1", 64)}
+	shards := []ReplayShard{{Candidate: artifact, Tools: artifact, Host: "local", OS: "darwin", Arch: "arm64", Status: "pass", Repositories: []ReplayRepositoryResult{{RepositoryID: "private-corpus-001", Check: check, CheckSpecSHA256: check.CommandSpecSHA256, LocalTest: &test, LocalTestSpecSHA256: test.CommandSpecSHA256}, {RepositoryID: "private-corpus-002", Check: check, CheckSpecSHA256: check.CommandSpecSHA256}}}}
+	ready, err := repositoryTestReadiness(merge, shards)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ready["private-corpus-001"] || ready["private-corpus-002"] {
+		t.Fatalf("readiness = %#v", ready)
+	}
+}

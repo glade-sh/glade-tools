@@ -72,6 +72,39 @@ func ValidateAssuranceOutcomes(rows []AssuranceSurfaceRow) error {
 	return nil
 }
 
+func repositoryTestReadiness(merge ReplayMerge, shards []ReplayShard) (map[string]bool, error) {
+	repositories := make(map[string]RepositorySpec, len(merge.Repositories))
+	for _, repository := range merge.Repositories {
+		if repository.ID == "" || repositories[repository.ID].ID != "" || (repository.LocalTests != "required" && repository.LocalTests != "none") {
+			return nil, fmt.Errorf("invalid replay repository %q", repository.ID)
+		}
+		repositories[repository.ID] = repository
+	}
+	ready := make(map[string]bool, len(repositories))
+	for _, shard := range shards {
+		for _, result := range shard.Repositories {
+			repository, exists := repositories[result.RepositoryID]
+			if !exists || ready[result.RepositoryID] || !result.Check.Passed || result.Check.ExitCode != 0 {
+				return nil, fmt.Errorf("invalid replay result for %q", result.RepositoryID)
+			}
+			if repository.LocalTests == "required" {
+				if result.LocalTest == nil || !result.LocalTest.Passed || result.LocalTest.ExitCode != 0 {
+					return nil, fmt.Errorf("required local test failed for %q", result.RepositoryID)
+				}
+				ready[result.RepositoryID] = true
+			} else if result.LocalTest != nil {
+				return nil, fmt.Errorf("repository %q unexpectedly ran local tests", result.RepositoryID)
+			} else {
+				ready[result.RepositoryID] = false
+			}
+		}
+	}
+	if len(ready) != len(repositories) {
+		return nil, fmt.Errorf("replay result coverage is incomplete")
+	}
+	return ready, nil
+}
+
 // deriveAssuranceRows joins only the sealed reconciliation inputs. It never
 // accepts a caller-selected surface list; every mapped usage surface gets one
 // explicit readiness or non-parity outcome.
