@@ -38,7 +38,7 @@ func TestWriteAssuranceHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, text := range []string{"private-corpus-001", "apex:Example.run", "id=\"assurance-data\"", "filter"} {
+	for _, text := range []string{"private-corpus-001", "apex:Example.run", "id=\"assurance-data\"", "id=\"namespace\"", "id=\"disposition\"", "id=\"repository\"", "id=\"evidence\"", "id=\"exclusion\"", "id=\"text\""} {
 		if !strings.Contains(string(html), text) {
 			t.Fatalf("HTML misses %q", text)
 		}
