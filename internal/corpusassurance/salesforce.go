@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -287,6 +289,36 @@ func salesforcePreflightArgs(alias string) [][]string {
 		args = append(args, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", alias, "--json"})
 	}
 	return args
+}
+
+func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias string, bundle OracleBundle, bundleSHA string, shardIndex, shardCount int) ([]string, error) {
+	if !filepath.IsAbs(filterPath) || !filepath.IsAbs(bundleRoot) || !filepath.IsAbs(executorRoot) || !strings.Contains(filepath.ToSlash(executorRoot), "/executor/") || runID == "" || orgAlias == "" || !sha256Pattern.MatchString(bundleSHA) || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || !sha256Pattern.MatchString(bundle.OraclePlanSHA256) || !sha256Pattern.MatchString(bundle.TransportManifestSHA256) || !sha256Pattern.MatchString(bundle.LocalProofSummarySHA256) || len(bundle.Fixtures) == 0 || shardCount != 2 || shardIndex < 0 || shardIndex >= shardCount {
+		return nil, fmt.Errorf("invalid sealed Salesforce filter inputs")
+	}
+	return []string{filterPath,
+		"--profile", filepath.Join(bundleRoot, "profile.json"),
+		"--fixtures", filepath.Join(bundleRoot, "fixtures"),
+		"--manifest", filepath.Join(bundleRoot, "fixture-manifest.json"),
+		"--root", bundleRoot,
+		"--out", filepath.Join(executorRoot, "filter"),
+		"--limit", strconv.Itoa(len(bundle.Fixtures)),
+		"--orgs", orgAlias,
+		"--ssh-host", "razor.local",
+		"--ssh-user", "matt",
+		"--remote-root", executorRoot,
+		"--remote-run-id", runID,
+		"--remote-sf-bin", "/usr/local/bin/sf",
+		"--candidate-commit", bundle.Candidate.Commit,
+		"--candidate-sha256", bundle.Candidate.SHA256,
+		"--tools-commit", bundle.Tools.Commit,
+		"--queue-sha256", bundle.OraclePlanSHA256,
+		"--selector-sha256", bundle.OraclePlanSHA256,
+		"--selector-receipt-sha256", bundleSHA,
+		"--runtime",
+		"--local-summary", filepath.Join(bundleRoot, "LOCAL_PROOF_SUMMARY.json"),
+		"--manifest-index-modulus", strconv.Itoa(shardCount),
+		"--manifest-index-remainder", strconv.Itoa(shardIndex),
+	}, nil
 }
 
 // ValidateSalesforceShardFiles derives the runtime and compile denominator

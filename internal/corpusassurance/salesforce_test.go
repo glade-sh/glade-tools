@@ -149,3 +149,25 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 		t.Fatal("accepted a preflight receipt without the exact org-display command")
 	}
 }
+
+func TestSalesforceFilterArgsDeriveEveryIdentityFromTheSealedBundle(t *testing.T) {
+	bundle := OracleBundle{Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}, Tools: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}, OraclePlanSHA256: strings.Repeat("e", 64), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), Fixtures: []OracleBundleFixture{{ID: "system"}}}
+	args, err := salesforceFilterArgs("/private/tmp/assurance/transport/salesforce-first-filter.py", "/private/tmp/assurance/bundle", "/private/tmp/assurance/executor/shard-0", "attempt-shard-0", "assurance-sf0", bundle, strings.Repeat("2", 64), 0, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"--candidate-commit", bundle.Candidate.Commit, "--candidate-sha256", bundle.Candidate.SHA256, "--tools-commit", bundle.Tools.Commit, "--queue-sha256", bundle.OraclePlanSHA256, "--selector-receipt-sha256", strings.Repeat("2", 64), "--manifest-index-modulus", "2", "--manifest-index-remainder", "0", "--remote-sf-bin", "/usr/local/bin/sf", "--runtime"} {
+		if !containsString(args, want) {
+			t.Fatalf("filter args omit %q: %v", want, args)
+		}
+	}
+}
+
+func containsString(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
+}
