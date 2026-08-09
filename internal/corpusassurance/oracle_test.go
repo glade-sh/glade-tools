@@ -224,24 +224,57 @@ func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
 
 func TestAuthorizeExclusionsFromFilesSealsExactNonParityRows(t *testing.T) {
 	root := t.TempDir()
-	planPath, usagePath, policyPath, outputPath := filepath.Join(root, "plan.json"), filepath.Join(root, "usage.json"), filepath.Join(root, "policy.json"), filepath.Join(root, "authority.json")
-	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1}); err != nil {
+	planPath, profilePath, usagePath := filepath.Join(root, "plan.json"), filepath.Join(root, "profile.json"), filepath.Join(root, "usage.json")
+	requestPath, policyPath, outputPath := filepath.Join(root, "request.json"), filepath.Join(root, "policy.json"), filepath.Join(root, "authority.json")
+	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1, DecisionSHA256: strings.Repeat("a", 64)}); err != nil {
 		t.Fatal(err)
 	}
 	candidate := RuntimeArtifact{Commit: strings.Repeat("b", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("c", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("d", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("e", 64)}
-	plan := OraclePlan{Candidate: candidate, Tools: tools, SealedUsageSHA256: localProofFileSHA256(t, usagePath), Rows: []OraclePlanRow{{SurfaceID: "apex:Auth.hosted", Action: oracleWaiver, ExclusionClass: "hosted-identity", ExclusionReason: "requires credentials"}}}
+	if err := WriteNewJSON(profilePath, AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("f", 64), SealedUsageSHA256: localProofFileSHA256(t, usagePath), LedgerSHA256: strings.Repeat("1", 64), FixtureManifestSHA256: strings.Repeat("2", 64), LocalProofSHA256: strings.Repeat("3", 64), Total: 1, ByDisposition: map[string]int{"hosted-deferred": 1}, HostedDeferred: []AssuranceProfileRow{{SurfaceID: "apex:Auth.hosted", Disposition: "hosted-deferred"}}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:Auth.hosted", Disposition: "hosted-deferred"}}}); err != nil {
+		t.Fatal(err)
+	}
+	plan := OraclePlan{Candidate: candidate, Tools: tools, ProfileSHA256: localProofFileSHA256(t, profilePath), SealedUsageSHA256: localProofFileSHA256(t, usagePath), LocalProofSHA256: strings.Repeat("3", 64), Rows: []OraclePlanRow{{SurfaceID: "apex:Auth.hosted", Action: oracleWaiver, ExclusionClass: "hosted-identity", ExclusionReason: "requires credentials"}}}
 	if err := WriteNewJSON(planPath, plan); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := BuildExclusionRequest(planPath, profilePath, usagePath, requestPath); err != nil {
 		t.Fatal(err)
 	}
 	if err := WriteNewJSON(policyPath, ExclusionPolicy{SchemaVersion: 1, Rows: []ExclusionPolicyRow{{SurfaceID: "apex:Auth.hosted", Class: "hosted-identity", Reason: "requires credentials"}}}); err != nil {
 		t.Fatal(err)
 	}
-	authority, err := AuthorizeExclusionsFromFiles(planPath, usagePath, policyPath, candidate, outputPath)
+	authority, err := AuthorizeExclusionsFromFiles(requestPath, planPath, profilePath, usagePath, policyPath, outputPath)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if authority.PlanSHA256 != localProofFileSHA256(t, planPath) || authority.SalesforceParityCredit != 0 || len(authority.Rows) != 1 {
+	if authority.PlanSHA256 != localProofFileSHA256(t, planPath) || authority.ProfileSHA256 != localProofFileSHA256(t, profilePath) || authority.Tools != tools || authority.DecisionSHA256 != strings.Repeat("a", 64) || authority.SalesforceParityCredit != 0 || len(authority.Rows) != 1 {
 		t.Fatalf("authority = %#v", authority)
+	}
+}
+
+func TestBuildExclusionRequestBindsCurrentPlanProfileAndUsage(t *testing.T) {
+	root := t.TempDir()
+	usagePath := filepath.Join(root, "usage.json")
+	profilePath := filepath.Join(root, "profile.json")
+	planPath := filepath.Join(root, "plan.json")
+	outputPath := filepath.Join(root, "EXCLUSION_REQUEST.json")
+	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
+	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1, DecisionSHA256: strings.Repeat("e", 64)}); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(profilePath, AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("f", 64), SealedUsageSHA256: localProofFileSHA256(t, usagePath), LedgerSHA256: strings.Repeat("1", 64), FixtureManifestSHA256: strings.Repeat("2", 64), LocalProofSHA256: strings.Repeat("3", 64), Total: 1, ByDisposition: map[string]int{"hosted-deferred": 1}, HostedDeferred: []AssuranceProfileRow{{SurfaceID: "apex:Auth.hosted()", Disposition: "hosted-deferred"}}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:Auth.hosted()", Disposition: "hosted-deferred"}}}); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(planPath, OraclePlan{Candidate: candidate, Tools: tools, ProfileSHA256: localProofFileSHA256(t, profilePath), SealedUsageSHA256: localProofFileSHA256(t, usagePath), LocalProofSHA256: strings.Repeat("3", 64), Rows: []OraclePlanRow{{SurfaceID: "apex:Auth.hosted()", Action: oracleWaiver, ExclusionClass: "hosted-identity", ExclusionReason: "requires credentials"}}}); err != nil {
+		t.Fatal(err)
+	}
+	request, err := BuildExclusionRequest(planPath, profilePath, usagePath, outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if request.Candidate != candidate || request.Tools != tools || request.DecisionSHA256 != strings.Repeat("e", 64) || len(request.Rows) != 1 || request.Rows[0].SurfaceID != "apex:Auth.hosted()" || localProofFileSHA256(t, outputPath) == "" {
+		t.Fatalf("request = %#v", request)
 	}
 }

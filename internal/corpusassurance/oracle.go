@@ -112,13 +112,111 @@ type ExclusionPolicy struct {
 	Rows          []ExclusionPolicyRow `json:"rows"`
 }
 
+// ExclusionRequest is the planner's non-authoritative list of explicit
+// non-parity rows. A separately checked policy is still required to grant it.
+type ExclusionRequest struct {
+	SchemaVersion     int                  `json:"schemaVersion"`
+	Candidate         RuntimeArtifact      `json:"candidate"`
+	Tools             RuntimeArtifact      `json:"tools"`
+	PlanSHA256        string               `json:"planSha256"`
+	ProfileSHA256     string               `json:"profileSha256"`
+	SealedUsageSHA256 string               `json:"sealedUsageSha256"`
+	DecisionSHA256    string               `json:"decisionSha256"`
+	LocalProofSHA256  string               `json:"localProofSha256"`
+	Rows              []ExclusionPolicyRow `json:"rows"`
+}
+
 type ExclusionAuthority struct {
 	Candidate              RuntimeArtifact      `json:"candidate"`
+	Tools                  RuntimeArtifact      `json:"tools"`
 	PlanSHA256             string               `json:"planSha256"`
+	ProfileSHA256          string               `json:"profileSha256"`
 	SealedUsageSHA256      string               `json:"sealedUsageSha256"`
+	DecisionSHA256         string               `json:"decisionSha256"`
+	LocalProofSHA256       string               `json:"localProofSha256"`
 	PolicySHA256           string               `json:"policySha256"`
 	SalesforceParityCredit int                  `json:"salesforceParityCredit"`
 	Rows                   []ExclusionPolicyRow `json:"rows"`
+}
+
+// BuildExclusionRequest derives every non-parity row from the sealed plan.
+// It cannot accept a caller-selected subset and has no authority to grant
+// Salesforce credit.
+func BuildExclusionRequest(planPath, profilePath, sealedUsagePath, outputPath string) (ExclusionRequest, error) {
+	for _, path := range []string{planPath, profilePath, sealedUsagePath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return ExclusionRequest{}, fmt.Errorf("absolute exclusion-request paths are required")
+		}
+	}
+	if _, err := os.Lstat(outputPath); err == nil {
+		return ExclusionRequest{}, fmt.Errorf("exclusion request output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return ExclusionRequest{}, err
+	}
+	plan, planBytes, err := readExactJSONBytes[OraclePlan](planPath)
+	if err != nil {
+		return ExclusionRequest{}, err
+	}
+	profile, profileBytes, err := readExactJSONBytes[AssuranceProfile](profilePath)
+	if err != nil {
+		return ExclusionRequest{}, err
+	}
+	usage, usageBytes, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath)
+	if err != nil {
+		return ExclusionRequest{}, err
+	}
+	planSHA, profileSHA, usageSHA := replayBytesSHA256(planBytes), replayBytesSHA256(profileBytes), replayBytesSHA256(usageBytes)
+	if ValidateRuntimeArtifact(plan.Candidate) != nil || ValidateRuntimeArtifact(plan.Tools) != nil || profile.SchemaVersion != 1 || profile.SealedUsageSHA256 != usageSHA || plan.ProfileSHA256 != profileSHA || plan.SealedUsageSHA256 != usageSHA || plan.LocalProofSHA256 != profile.LocalProofSHA256 || !sha256Pattern.MatchString(usage.DecisionSHA256) {
+		return ExclusionRequest{}, fmt.Errorf("exclusion request inputs do not bind")
+	}
+	rows, err := exclusionRowsFromPlan(plan)
+	if err != nil {
+		return ExclusionRequest{}, err
+	}
+	request := ExclusionRequest{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, PlanSHA256: planSHA, ProfileSHA256: profileSHA, SealedUsageSHA256: usageSHA, DecisionSHA256: usage.DecisionSHA256, LocalProofSHA256: plan.LocalProofSHA256, Rows: rows}
+	if err := verifyExclusionRequestInputs(planPath, profilePath, sealedUsagePath, planSHA, profileSHA, usageSHA); err != nil {
+		return ExclusionRequest{}, err
+	}
+	if err := WriteNewJSON(outputPath, request); err != nil {
+		return ExclusionRequest{}, err
+	}
+	return request, nil
+}
+
+func exclusionRowsFromPlan(plan OraclePlan) ([]ExclusionPolicyRow, error) {
+	seen := make(map[string]bool, len(plan.Rows))
+	rows := make([]ExclusionPolicyRow, 0)
+	for _, row := range plan.Rows {
+		if row.SurfaceID == "" || seen[row.SurfaceID] {
+			return nil, fmt.Errorf("invalid or duplicate oracle plan surface %q", row.SurfaceID)
+		}
+		seen[row.SurfaceID] = true
+		switch row.Action {
+		case oracleRuntime, oracleCompile:
+			if row.ExclusionClass != "" || row.ExclusionReason != "" {
+				return nil, fmt.Errorf("Salesforce row %q carries an exclusion", row.SurfaceID)
+			}
+		case oracleLocalContractOnly, oracleWaiver:
+			if row.ExclusionClass == "" || row.ExclusionReason == "" {
+				return nil, fmt.Errorf("non-parity row %q lacks an exclusion", row.SurfaceID)
+			}
+			rows = append(rows, ExclusionPolicyRow{SurfaceID: row.SurfaceID, Class: row.ExclusionClass, Reason: row.ExclusionReason})
+		default:
+			return nil, fmt.Errorf("oracle plan row %q has unsupported action %q", row.SurfaceID, row.Action)
+		}
+	}
+	sort.Slice(rows, func(i, j int) bool { return rows[i].SurfaceID < rows[j].SurfaceID })
+	return rows, nil
+}
+
+func verifyExclusionRequestInputs(planPath, profilePath, usagePath, planSHA, profileSHA, usageSHA string) error {
+	for _, input := range []struct{ path, sha string }{{planPath, planSHA}, {profilePath, profileSHA}, {usagePath, usageSHA}} {
+		data, err := os.ReadFile(input.path)
+		if err != nil || replayBytesSHA256(data) != input.sha {
+			return fmt.Errorf("exclusion request input changed during planning")
+		}
+	}
+	return nil
 }
 
 // BuildAssuranceProfile rebuilds the Salesforce profile from the current
@@ -586,16 +684,29 @@ func authorizeExclusions(plan OraclePlan, policy ExclusionPolicy) (ExclusionAuth
 	return authority, nil
 }
 
-// AuthorizeExclusionsFromFiles seals only the plan's non-parity rows against
-// an independently checked policy. The authority carries no parity credit.
-func AuthorizeExclusionsFromFiles(planPath, sealedUsagePath, policyPath string, candidate RuntimeArtifact, outputPath string) (ExclusionAuthority, error) {
-	if !filepath.IsAbs(planPath) || !filepath.IsAbs(sealedUsagePath) || !filepath.IsAbs(policyPath) || !filepath.IsAbs(outputPath) {
-		return ExclusionAuthority{}, fmt.Errorf("absolute exclusion paths are required")
+// AuthorizeExclusionsFromFiles seals only the plan-derived request against an
+// independently checked policy. It derives all bindings from current files;
+// no caller-selected artifact or parity credit is accepted.
+func AuthorizeExclusionsFromFiles(requestPath, planPath, profilePath, sealedUsagePath, policyPath, outputPath string) (ExclusionAuthority, error) {
+	for _, path := range []string{requestPath, planPath, profilePath, sealedUsagePath, policyPath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return ExclusionAuthority{}, fmt.Errorf("absolute exclusion paths are required")
+		}
 	}
-	if err := ValidateRuntimeArtifact(candidate); err != nil {
-		return ExclusionAuthority{}, fmt.Errorf("candidate: %w", err)
+	if _, err := os.Lstat(outputPath); err == nil {
+		return ExclusionAuthority{}, fmt.Errorf("exclusion authority output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return ExclusionAuthority{}, err
+	}
+	request, requestBytes, err := readExactJSONBytes[ExclusionRequest](requestPath)
+	if err != nil {
+		return ExclusionAuthority{}, err
 	}
 	plan, planBytes, err := readExactJSONBytes[OraclePlan](planPath)
+	if err != nil {
+		return ExclusionAuthority{}, err
+	}
+	profile, profileBytes, err := readExactJSONBytes[AssuranceProfile](profilePath)
 	if err != nil {
 		return ExclusionAuthority{}, err
 	}
@@ -607,29 +718,51 @@ func AuthorizeExclusionsFromFiles(planPath, sealedUsagePath, policyPath string, 
 	if err != nil {
 		return ExclusionAuthority{}, err
 	}
-	usageSHA := replayBytesSHA256(usageBytes)
-	if usage.SchemaVersion != 1 || plan.SealedUsageSHA256 != usageSHA {
-		return ExclusionAuthority{}, fmt.Errorf("plan does not bind sealed corpus usage")
+	planSHA, profileSHA, usageSHA, policySHA := replayBytesSHA256(planBytes), replayBytesSHA256(profileBytes), replayBytesSHA256(usageBytes), replayBytesSHA256(policyBytes)
+	if request.SchemaVersion != 1 || ValidateRuntimeArtifact(request.Candidate) != nil || ValidateRuntimeArtifact(request.Tools) != nil || usage.SchemaVersion != 1 || profile.SchemaVersion != 1 || request.PlanSHA256 != planSHA || request.ProfileSHA256 != profileSHA || request.SealedUsageSHA256 != usageSHA || request.DecisionSHA256 != usage.DecisionSHA256 || request.Candidate != plan.Candidate || request.Tools != plan.Tools || request.LocalProofSHA256 != plan.LocalProofSHA256 || plan.ProfileSHA256 != profileSHA || plan.SealedUsageSHA256 != usageSHA || profile.SealedUsageSHA256 != usageSHA || profile.LocalProofSHA256 != plan.LocalProofSHA256 {
+		return ExclusionAuthority{}, fmt.Errorf("exclusion request does not bind current authority inputs")
 	}
-	if plan.Candidate != candidate || ValidateRuntimeArtifact(plan.Tools) != nil {
-		return ExclusionAuthority{}, fmt.Errorf("candidate does not match oracle plan")
+	expected, err := exclusionRowsFromPlan(plan)
+	if err != nil || !sameExclusionRows(request.Rows, expected) {
+		return ExclusionAuthority{}, fmt.Errorf("exclusion request does not match oracle plan")
 	}
 	authority, err := authorizeExclusions(plan, policy)
 	if err != nil {
 		return ExclusionAuthority{}, err
 	}
-	authority.Candidate, authority.PlanSHA256, authority.SealedUsageSHA256, authority.PolicySHA256 = candidate, replayBytesSHA256(planBytes), usageSHA, replayBytesSHA256(policyBytes)
-	if _, after, err := readExactJSONBytes[OraclePlan](planPath); err != nil || replayBytesSHA256(after) != authority.PlanSHA256 {
-		return ExclusionAuthority{}, fmt.Errorf("oracle plan changed during authorization")
+	if !sameExclusionRows(authority.Rows, request.Rows) {
+		return ExclusionAuthority{}, fmt.Errorf("exclusion policy changed requested rows")
 	}
-	if _, after, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath); err != nil || replayBytesSHA256(after) != usageSHA {
-		return ExclusionAuthority{}, fmt.Errorf("sealed corpus usage changed during authorization")
-	}
-	if _, after, err := readExactJSONBytes[ExclusionPolicy](policyPath); err != nil || replayBytesSHA256(after) != authority.PolicySHA256 {
-		return ExclusionAuthority{}, fmt.Errorf("exclusion policy changed during authorization")
+	authority.Candidate, authority.Tools = request.Candidate, request.Tools
+	authority.PlanSHA256, authority.ProfileSHA256, authority.SealedUsageSHA256 = planSHA, profileSHA, usageSHA
+	authority.DecisionSHA256, authority.LocalProofSHA256, authority.PolicySHA256 = usage.DecisionSHA256, plan.LocalProofSHA256, policySHA
+	if err := verifyExclusionAuthorityInputs([]sealedUsageInput{{requestPath, requestBytes}, {planPath, planBytes}, {profilePath, profileBytes}, {sealedUsagePath, usageBytes}, {policyPath, policyBytes}}); err != nil {
+		return ExclusionAuthority{}, err
 	}
 	if err := WriteNewJSON(outputPath, authority); err != nil {
 		return ExclusionAuthority{}, err
 	}
 	return authority, nil
+}
+
+func sameExclusionRows(left, right []ExclusionPolicyRow) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for i := range left {
+		if left[i] != right[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func verifyExclusionAuthorityInputs(inputs []sealedUsageInput) error {
+	for _, input := range inputs {
+		data, err := os.ReadFile(input.path)
+		if err != nil || replayBytesSHA256(data) != replayBytesSHA256(input.data) {
+			return fmt.Errorf("exclusion authority input changed during authorization")
+		}
+	}
+	return nil
 }
