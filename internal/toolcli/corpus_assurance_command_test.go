@@ -13,7 +13,7 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
-	for _, command := range []string{"prepare", "usage", "replay", "merge-replay", "local-proof", "oracle-plan", "exclusion-request", "authorize-exclusions", "oracle-bundle", "org-create", "org-preflight", "salesforce-run", "org-cleanup"} {
+	for _, command := range []string{"prepare", "usage", "replay", "merge-replay", "local-proof", "release-validate", "oracle-plan", "exclusion-request", "authorize-exclusions", "oracle-bundle", "org-create", "org-preflight", "salesforce-run", "org-cleanup"} {
 		if !strings.Contains(stdout.String(), command) {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}

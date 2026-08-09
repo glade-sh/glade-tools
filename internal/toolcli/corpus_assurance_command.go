@@ -128,6 +128,23 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "local-proof", len(proof.Surfaces), *output)
+	case "release-validate":
+		flags := flag.NewFlagSet("corpus assurance release-validate", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		gladeRoot, candidate, candidateCommit := flags.String("glade-root", "", ""), flags.String("candidate", "", ""), flags.String("candidate-commit", "", "")
+		toolsRoot, tools, toolsCommit := flags.String("tools-root", "", ""), flags.String("tools", "", ""), flags.String("tools-commit", "", "")
+		freeze, output := flags.String("tools-freeze", "", ""), flags.String("output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*gladeRoot, *candidate, *candidateCommit, *toolsRoot, *tools, *toolsCommit, *freeze, *output); err != nil {
+			return err
+		}
+		validation, err := corpusassurance.RunReleaseValidation(corpusassurance.ReleaseValidationRequest{GladeRoot: *gladeRoot, CandidatePath: *candidate, CandidateCommit: *candidateCommit, ToolsRoot: *toolsRoot, ToolsPath: *tools, ToolsCommit: *toolsCommit, ToolsFreezePath: *freeze, OutputPath: *output})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "release-validate", len(validation.Commands), *output)
 	case "oracle-plan":
 		flags := flag.NewFlagSet("corpus assurance oracle-plan", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -310,6 +327,7 @@ Usage:
   glade-tools corpus assurance replay --host <local|casper> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
+	  glade-tools corpus assurance release-validate --glade-root <glade-root> --candidate <glade> --candidate-commit <commit> --tools-root <glade-tools-root> --tools <glade-tools> --tools-commit <commit> --tools-freeze <FINAL_TOOLS_COMMIT> --output <RELEASE_VALIDATION.json>
   glade-tools corpus assurance oracle-plan --inventory <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <decisions.json> --local-profile <profile.json> --local-usage <usage.json> --local-decision <decision.json> --fixture-manifest <fixtures.json> --local-proof <LOCAL_PROOF.json> --candidate <glade> --tools <glade-tools> --directives <directives.json> --profile-output <ASSURANCE_PROFILE.json> --output <ORACLE_PLAN.json>
   glade-tools corpus assurance exclusion-request --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --output <EXCLUSION_REQUEST.json>
   glade-tools corpus assurance authorize-exclusions --request <EXCLUSION_REQUEST.json> --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --policy <policy.json> --output <EXCLUSION_AUTHORITY.json>
