@@ -114,14 +114,14 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err != nil {
 		return AssuranceReceipt{}, err
 	}
-	inputs := map[string]string{request.InventoryPath: replayBytesSHA256(inventoryBytes), request.RootManifestPath: replayBytesSHA256(rootBytes), request.UsagePath: replayBytesSHA256(usageBytes), request.ProfilePath: replayBytesSHA256(profileBytes), request.FixtureManifestPath: replayBytesSHA256(manifestBytes), request.ReplayPath: replayBytesSHA256(mergeBytes), request.LocalProofPath: replayBytesSHA256(proofBytes), request.OraclePlanPath: replayBytesSHA256(planBytes), request.AuthorityPath: replayBytesSHA256(authorityBytes), request.BundlePath: replayBytesSHA256(bundleBytes)}
-	for _, files := range request.SalesforceFiles {
-		for _, path := range []string{files.ShardPath, files.DispatchPath, files.CreationPath, files.CleanupPath} {
+	inputs := map[string]string{"IN_SCOPE.json": replayBytesSHA256(inventoryBytes), "MANIFEST.json": replayBytesSHA256(rootBytes), "CORPUS_USAGE.json": replayBytesSHA256(usageBytes), "ASSURANCE_PROFILE.json": replayBytesSHA256(profileBytes), "FIXTURE_MANIFEST.json": replayBytesSHA256(manifestBytes), "REPLAY.json": replayBytesSHA256(mergeBytes), "LOCAL_PROOF.json": replayBytesSHA256(proofBytes), "ORACLE_PLAN.json": replayBytesSHA256(planBytes), "EXCLUSION_AUTHORITY.json": replayBytesSHA256(authorityBytes), "ORACLE_BUNDLE.json": replayBytesSHA256(bundleBytes)}
+	for index, files := range request.SalesforceFiles {
+		for name, path := range map[string]string{"shard": files.ShardPath, "dispatch": files.DispatchPath, "creation": files.CreationPath, "cleanup": files.CleanupPath} {
 			hash, err := sha256File(path)
 			if err != nil {
 				return AssuranceReceipt{}, err
 			}
-			inputs[path] = hash
+			inputs[fmt.Sprintf("salesforce-%s-%d.json", name, index)] = hash
 		}
 	}
 	return writeAssuranceArtifacts(AssuranceReport{SchemaVersion: 1, Rows: rows}, request.JSONPath, request.HTMLPath, request.ReceiptPath, inputs)
@@ -352,6 +352,11 @@ func writeAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receipt
 	}
 	if err := ValidateAssuranceOutcomes(report.Rows); err != nil {
 		return AssuranceReceipt{}, err
+	}
+	for name, hash := range inputs {
+		if name == "" || filepath.IsAbs(name) || containsPrivateReportPath([]byte(name)) || !sha256Pattern.MatchString(hash) {
+			return AssuranceReceipt{}, fmt.Errorf("assurance receipt input is not public-safe")
+		}
 	}
 	reportJSON, err := json.Marshal(report)
 	if err != nil {

@@ -70,6 +70,14 @@ func TestWriteAssuranceArtifactsWritesAnAcyclicReceiptLast(t *testing.T) {
 	}
 }
 
+func TestWriteAssuranceArtifactsRejectsPrivateReceiptKeys(t *testing.T) {
+	root := t.TempDir()
+	report := AssuranceReport{SchemaVersion: 1, Rows: []AssuranceSurfaceRow{{SurfaceID: "apex:Example.run", CompileReady: true}}}
+	if _, err := writeAssuranceArtifacts(report, filepath.Join(root, "ASSURANCE.json"), filepath.Join(root, "ASSURANCE.html"), filepath.Join(root, "RECEIPT.json"), map[string]string{"/Users/matt/private": strings.Repeat("a", 64)}); err == nil {
+		t.Fatal("WriteAssuranceArtifacts accepted a private receipt key")
+	}
+}
+
 func TestDeriveAssuranceRowsSeparatesCompileTestRuntimeAndNonParity(t *testing.T) {
 	usage := UsageReconciliation{Usage: []ReconciledUsageEntry{
 		{UsageEntry: UsageEntry{UsageKey: "Runtime.run", Namespace: "Runtime", PrivateProdRefs: 1, RepositoryIDs: []string{"private-corpus-001"}}, Class: usageClassExact, SurfaceID: "apex:Runtime.run()"},
