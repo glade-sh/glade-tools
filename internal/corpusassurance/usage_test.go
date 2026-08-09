@@ -121,7 +121,7 @@ func TestUsageReconciliationLoadsAndBindsAuthoritativeFiles(t *testing.T) {
 	if err := WriteNewJSON(usagePath, usage); err != nil {
 		t.Fatal(err)
 	}
-	combined, err := CombineRepositoryUsageFromFiles(inventoryPath, ledgerPath, manifestPath, []string{usagePath})
+	combined, err := combineRepositoryUsageFromFiles(inventoryPath, ledgerPath, manifestPath, []string{usagePath})
 	if err != nil {
 		t.Fatalf("CombineRepositoryUsageFromFiles: %v", err)
 	}
@@ -180,7 +180,7 @@ func TestReconcileUsageDerivesAutomaticMatchesAndRequiresManualDecisions(t *test
 		{UsageKey: "Schema.Account", Namespace: "Schema", PrivateTestRefs: 1},
 		{UsageKey: "Local.Thing", Namespace: "Local", PrivateProdRefs: 1},
 	}
-	reconciled, err := ReconcileUsage(profile, usage, []UsageDecision{
+	reconciled, err := reconcileUsage(profile, usage, []UsageDecision{
 		{UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: "aggregate source reference"},
 		{UsageKey: "Local.Thing", Class: usageClassLocalSymbol, Reason: "application symbol"},
 	})
@@ -205,8 +205,8 @@ func TestReconcileUsageDerivesAutomaticMatchesAndRequiresManualDecisions(t *test
 func TestReconcileUsageRejectsUnclassifiedAndInvalidDecisions(t *testing.T) {
 	profile := []UsageProfileRow{{SurfaceID: "apex:Schema.Account", UsageKey: "Schema.Account"}, {SurfaceID: "apex:Schema.Account.Name", UsageKey: "Schema.Account"}}
 	usage := []UsageEntry{{UsageKey: "Schema.Account", Namespace: "Schema", PrivateProdRefs: 1}}
-	if _, err := ReconcileUsage(profile, usage, nil); err == nil {
-		t.Fatal("ReconcileUsage accepted an ambiguous usage key")
+	if _, err := reconcileUsage(profile, usage, nil); err == nil {
+		t.Fatal("reconcileUsage accepted an ambiguous usage key")
 	}
 	for _, decisions := range [][]UsageDecision{
 		{{UsageKey: "Schema.Account", Class: "unknown", SurfaceID: "apex:Schema.Account", Reason: "bad"}},
@@ -214,8 +214,8 @@ func TestReconcileUsageRejectsUnclassifiedAndInvalidDecisions(t *testing.T) {
 		{{UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: ""}},
 		{{UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: "one"}, {UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: "two"}},
 	} {
-		if _, err := ReconcileUsage(profile, usage, decisions); err == nil {
-			t.Fatalf("ReconcileUsage accepted %#v", decisions)
+		if _, err := reconcileUsage(profile, usage, decisions); err == nil {
+			t.Fatalf("reconcileUsage accepted %#v", decisions)
 		}
 	}
 }
@@ -236,7 +236,7 @@ func TestReconcileUsageFromFilesBindsSingleReadInputs(t *testing.T) {
 	if err := WriteNewJSON(decisionPath, decision); err != nil {
 		t.Fatal(err)
 	}
-	reconciled, err := ReconcileUsageFromFiles(profilePath, usagePath, decisionPath)
+	reconciled, err := reconcileUsageFromFiles(profilePath, usagePath, decisionPath)
 	if err != nil {
 		t.Fatal(err)
 	}

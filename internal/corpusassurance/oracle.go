@@ -78,7 +78,7 @@ type ExclusionAuthority struct {
 
 // PlanOracle assigns exactly one Salesforce action to every locally proven
 // surface. Exclusions receive no parity action and require a reason.
-func PlanOracle(rows []OracleInputRow) (OraclePlan, error) {
+func planOracle(rows []OracleInputRow) (OraclePlan, error) {
 	if len(rows) == 0 {
 		return OraclePlan{}, fmt.Errorf("oracle rows are required")
 	}
@@ -131,7 +131,7 @@ func PlanOracle(rows []OracleInputRow) (OraclePlan, error) {
 // PlanOracleForUsage derives the complete private-required set from fresh
 // reconciliation, profile rows, and local proof. Directives may only refine
 // deterministic-mock and hosted rows; they cannot select a usage subset.
-func PlanOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileRow, proof LocalProof, directives []OracleDirective) (OraclePlan, error) {
+func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileRow, proof LocalProof, directives []OracleDirective) (OraclePlan, error) {
 	profiles := make(map[string]OracleProfileRow, len(profile))
 	for _, row := range profile {
 		if row.SurfaceID == "" || row.Disposition == "" || profiles[row.SurfaceID].SurfaceID != "" {
@@ -199,7 +199,7 @@ func PlanOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 	if len(directiveBySurface) != 0 {
 		return OraclePlan{}, fmt.Errorf("oracle directives contain absent surfaces")
 	}
-	return PlanOracle(inputs)
+	return planOracle(inputs)
 }
 
 // PlanOracleFromFiles loads the profile, fresh reconciliation, local proof,
@@ -233,7 +233,7 @@ func PlanOracleFromFiles(profilePath, reconciliationPath, proofPath, directivePa
 	for i, row := range profile {
 		projected[i] = OracleProfileRow{SurfaceID: row.SurfaceID, Disposition: row.Disposition}
 	}
-	plan, err := PlanOracleForUsage(reconciliation, projected, proof, directive.Directives)
+	plan, err := planOracleForUsage(reconciliation, projected, proof, directive.Directives)
 	if err != nil {
 		return OraclePlan{}, err
 	}
@@ -265,7 +265,7 @@ func setOracleExclusion(out *OraclePlanRow, input OracleInputRow) error {
 // AuthorizeExclusions selects only the plan's explicit non-parity rows from
 // the independently supplied policy. No runtime or compile row can appear in
 // the authority.
-func AuthorizeExclusions(plan OraclePlan, policy ExclusionPolicy) (ExclusionAuthority, error) {
+func authorizeExclusions(plan OraclePlan, policy ExclusionPolicy) (ExclusionAuthority, error) {
 	if policy.SchemaVersion != 1 {
 		return ExclusionAuthority{}, fmt.Errorf("invalid exclusion policy schema")
 	}

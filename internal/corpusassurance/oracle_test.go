@@ -7,7 +7,7 @@ import (
 )
 
 func TestPlanOracleClassifiesEverySupportedDisposition(t *testing.T) {
-	plan, err := PlanOracle([]OracleInputRow{
+	plan, err := planOracle([]OracleInputRow{
 		{SurfaceID: "apex:System.runtime", Disposition: localRuntimeRequired, RuntimeObserved: true},
 		{SurfaceID: "apex:System.compile", Disposition: compileShapeRequired, CompilePassed: true},
 		{SurfaceID: "apex:System.mock", Disposition: deterministicMockRequired, BehaviorObserved: true, Deployable: true},
@@ -47,8 +47,8 @@ func TestPlanOracleRejectsMissingEvidenceAndUnjustifiedExclusions(t *testing.T) 
 		{SurfaceID: "apex:System.mock", Disposition: deterministicMockRequired, BehaviorObserved: true, ExclusionClass: "nonportable-mock"},
 		{SurfaceID: "apex:Auth.hosted", Disposition: "hosted-deferred", ExclusionReason: "requires credentials"},
 	} {
-		if _, err := PlanOracle([]OracleInputRow{row}); err == nil {
-			t.Fatalf("PlanOracle accepted %#v", row)
+		if _, err := planOracle([]OracleInputRow{row}); err == nil {
+			t.Fatalf("planOracle accepted %#v", row)
 		}
 	}
 }
@@ -59,7 +59,7 @@ func TestAuthorizeExclusionsRequiresExactNonParityPolicy(t *testing.T) {
 		{SurfaceID: "apex:Auth.hosted", Action: oracleWaiver, ExclusionClass: "hosted-identity", ExclusionReason: "requires org credentials"},
 		{SurfaceID: "apex:System.runtime", Action: oracleRuntime},
 	}}
-	authority, err := AuthorizeExclusions(plan, ExclusionPolicy{SchemaVersion: 1, Rows: []ExclusionPolicyRow{
+	authority, err := authorizeExclusions(plan, ExclusionPolicy{SchemaVersion: 1, Rows: []ExclusionPolicyRow{
 		{SurfaceID: "apex:Auth.hosted", Class: "hosted-identity", Reason: "requires org credentials"},
 		{SurfaceID: "apex:ConnectApi.mock", Class: "nonportable-mock", Reason: "requires hosted identity"},
 	}})
@@ -78,8 +78,8 @@ func TestAuthorizeExclusionsRejectsMissingAndMismatchedRows(t *testing.T) {
 		{SchemaVersion: 1, Rows: []ExclusionPolicyRow{{SurfaceID: "apex:Auth.hosted", Class: "hosted-identity", Reason: "different"}}},
 		{SchemaVersion: 1, Rows: []ExclusionPolicyRow{{SurfaceID: "apex:Auth.hosted", Class: "hosted-identity", Reason: "requires credentials"}, {SurfaceID: "apex:Auth.hosted", Class: "hosted-identity", Reason: "requires credentials"}}},
 	} {
-		if _, err := AuthorizeExclusions(plan, policy); err == nil {
-			t.Fatalf("AuthorizeExclusions accepted %#v", policy)
+		if _, err := authorizeExclusions(plan, policy); err == nil {
+			t.Fatalf("authorizeExclusions accepted %#v", policy)
 		}
 	}
 }
@@ -98,7 +98,7 @@ func TestPlanOracleForUsageRequiresReconciledProfileAndLocalEvidence(t *testing.
 		{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true},
 		{SurfaceID: "apex:ConnectApi.fetch()", Disposition: deterministicMockRequired, BehaviorObserved: true},
 	}}
-	plan, err := PlanOracleForUsage(reconciled, profile, proof, []OracleDirective{{SurfaceID: "apex:ConnectApi.fetch()", ExclusionClass: "nonportable-mock", ExclusionReason: "requires hosted identity"}})
+	plan, err := planOracleForUsage(reconciled, profile, proof, []OracleDirective{{SurfaceID: "apex:ConnectApi.fetch()", ExclusionClass: "nonportable-mock", ExclusionReason: "requires hosted identity"}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,11 +110,11 @@ func TestPlanOracleForUsageRequiresReconciledProfileAndLocalEvidence(t *testing.
 func TestPlanOracleForUsageRejectsMissingOrMismatchedEvidence(t *testing.T) {
 	reconciled := UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}
 	profile := []OracleProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}
-	if _, err := PlanOracleForUsage(reconciled, profile, LocalProof{}, nil); err == nil {
-		t.Fatal("PlanOracleForUsage accepted missing local proof")
+	if _, err := planOracleForUsage(reconciled, profile, LocalProof{}, nil); err == nil {
+		t.Fatal("planOracleForUsage accepted missing local proof")
 	}
-	if _, err := PlanOracleForUsage(reconciled, profile, LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: compileShapeRequired, CompilePassed: true}}}, nil); err == nil {
-		t.Fatal("PlanOracleForUsage accepted mismatched proof disposition")
+	if _, err := planOracleForUsage(reconciled, profile, LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: compileShapeRequired, CompilePassed: true}}}, nil); err == nil {
+		t.Fatal("planOracleForUsage accepted mismatched proof disposition")
 	}
 }
 
@@ -122,7 +122,7 @@ func TestPlanOracleForUsageTreatsUndirectedMockAsDeployable(t *testing.T) {
 	reconciled := UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "Cache.read", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:Cache.read()"}}}
 	profile := []OracleProfileRow{{SurfaceID: "apex:Cache.read()", Disposition: deterministicMockRequired}}
 	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:Cache.read()", Disposition: deterministicMockRequired, BehaviorObserved: true}}}
-	plan, err := PlanOracleForUsage(reconciled, profile, proof, nil)
+	plan, err := planOracleForUsage(reconciled, profile, proof, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

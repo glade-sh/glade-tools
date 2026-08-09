@@ -150,7 +150,7 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != replayBytesSHA256(profileBytes) || decision.UsageSHA256 != replayBytesSHA256(firstBytes) {
 		return SealedCorpusUsage{}, fmt.Errorf("usage decisions do not bind fresh extraction")
 	}
-	reconciliation, err := ReconcileUsage(profile, first.Usage, decision.Decisions)
+	reconciliation, err := reconcileUsage(profile, first.Usage, decision.Decisions)
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
@@ -203,7 +203,7 @@ func verifySealedUsageInputs(inputs []sealedUsageInput) error {
 // ReconcileUsageFromFiles reads and binds the authoritative profile, fresh
 // usage, and decision bytes before returning a reconciliation. Source-profile
 // fields outside the allowlisted row projection are deliberately ignored.
-func ReconcileUsageFromFiles(profilePath, usagePath, decisionPath string) (UsageReconciliation, error) {
+func reconcileUsageFromFiles(profilePath, usagePath, decisionPath string) (UsageReconciliation, error) {
 	if !filepath.IsAbs(profilePath) || !filepath.IsAbs(usagePath) || !filepath.IsAbs(decisionPath) {
 		return UsageReconciliation{}, fmt.Errorf("absolute profile, usage, and decision paths are required")
 	}
@@ -223,7 +223,7 @@ func ReconcileUsageFromFiles(profilePath, usagePath, decisionPath string) (Usage
 	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != profileSHA256 || decision.UsageSHA256 != usageSHA256 {
 		return UsageReconciliation{}, fmt.Errorf("usage decisions do not bind authoritative inputs")
 	}
-	reconciled, err := ReconcileUsage(profile, usage.Usage, decision.Decisions)
+	reconciled, err := reconcileUsage(profile, usage.Usage, decision.Decisions)
 	if err != nil {
 		return UsageReconciliation{}, err
 	}
@@ -265,7 +265,7 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []byte, error) {
 // ReconcileUsage binds every fresh private usage key to exactly one profile
 // surface or an explicit non-Salesforce decision. Exact, case-only, and
 // unambiguous aggregate-parent matches are derived, never caller-selected.
-func ReconcileUsage(profile []UsageProfileRow, usage []UsageEntry, decisions []UsageDecision) (UsageReconciliation, error) {
+func reconcileUsage(profile []UsageProfileRow, usage []UsageEntry, decisions []UsageDecision) (UsageReconciliation, error) {
 	profilesByKey := make(map[string][]UsageProfileRow, len(profile))
 	profilesByFoldedKey := make(map[string][]UsageProfileRow, len(profile))
 	profilesByID := make(map[string]bool, len(profile))
@@ -397,7 +397,7 @@ func ExtractRepositoryUsageFromFiles(inventoryPath, ledgerPath, rootManifestPath
 
 // CombineRepositoryUsageFromFiles performs the merge from sealed raw files and
 // records their exact hashes for downstream reconciliation.
-func CombineRepositoryUsageFromFiles(inventoryPath, ledgerPath, rootManifestPath string, repositoryUsagePaths []string) (CombinedRepositoryUsage, error) {
+func combineRepositoryUsageFromFiles(inventoryPath, ledgerPath, rootManifestPath string, repositoryUsagePaths []string) (CombinedRepositoryUsage, error) {
 	inventory, inventoryBytes, err := readInventorySpec(inventoryPath)
 	if err != nil {
 		return CombinedRepositoryUsage{}, fmt.Errorf("read IN_SCOPE inventory: %w", err)
