@@ -72,6 +72,10 @@ func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 				}
 			}
 		},
+		"forged output and digest": func(proof *LocalProof) {
+			proof.RawFixtureResults[0].Stdout = `{}`
+			proof.RawFixtureResults[0].Receipt.StdoutSHA256 = replayBytesSHA256([]byte(`{}`))
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			request, _ := localProofRequest(t)
@@ -147,7 +151,7 @@ func TestLocalProofRejectsTamperingWrongExecutablesInvalidReceiptsAndExistingOut
 			request.executor = func(command localProofCommand) localProofExecution {
 				result := localProofReceipt(command)
 				result.CommandSpecSHA256 = strings.Repeat("f", 64)
-				return localProofExecution{Receipt: result, Validated: true}
+				return localProofExecution{Receipt: result, Validated: true, Stdout: localProofSuccessOutput}
 			}
 		},
 		"create only": func(t *testing.T, request *LocalProofRequest) {
@@ -226,7 +230,7 @@ func localProofRequest(t *testing.T) (LocalProofRequest, *[]localProofCommand) {
 	}
 	request.executor = func(command localProofCommand) localProofExecution {
 		calls = append(calls, command)
-		return localProofExecution{Receipt: localProofReceipt(command), Validated: true}
+		return localProofExecution{Receipt: localProofReceipt(command), Validated: true, Stdout: localProofSuccessOutput}
 	}
 	return request, &calls
 }
@@ -271,11 +275,13 @@ func localProofRuntime(t *testing.T, path, commitByte string) RuntimeArtifact {
 	return RuntimeArtifact{Commit: strings.Repeat(commitByte, 40), OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: localProofFileSHA256(t, path)}
 }
 
+const localProofSuccessOutput = `{"status":"passed","exitCode":0}`
+
 func localProofReceipt(command localProofCommand) CommandResult {
 	return CommandResult{
 		Command: []string{command.Args[0]}, CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: command.Path, Args: command.Args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute}),
 		ExitCode: 0, DurationMS: 0, Passed: true,
-		StdoutSHA256: strings.Repeat("a", 64), StderrSHA256: strings.Repeat("b", 64),
+		StdoutSHA256: replayBytesSHA256([]byte(localProofSuccessOutput)), StderrSHA256: strings.Repeat("b", 64),
 	}
 }
 
