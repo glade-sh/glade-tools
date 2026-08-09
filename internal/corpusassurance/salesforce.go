@@ -725,7 +725,7 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 			if !exists || bySurface[surfaceID].SurfaceIDs != nil {
 				return SalesforceShard{}, fmt.Errorf("unexpected or duplicate Salesforce surface %q", surfaceID)
 			}
-			if action == oracleRuntime && result.Kind != "exec" && (result.RuntimePassed == nil || !*result.RuntimePassed) {
+			if action == oracleRuntime && (result.Kind != "exec" || result.RuntimePassed == nil || !*result.RuntimePassed) {
 				return SalesforceShard{}, fmt.Errorf("runtime surface %q lacks Salesforce runtime proof", surfaceID)
 			}
 			bySurface[surfaceID] = result
