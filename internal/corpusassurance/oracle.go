@@ -33,11 +33,11 @@ type OraclePlanRow struct {
 }
 
 type OraclePlan struct {
-	ProfileSHA256        string          `json:"profileSha256,omitempty"`
-	ReconciliationSHA256 string          `json:"reconciliationSha256,omitempty"`
-	LocalProofSHA256     string          `json:"localProofSha256,omitempty"`
-	DirectiveSHA256      string          `json:"directiveSha256,omitempty"`
-	Rows                 []OraclePlanRow `json:"rows"`
+	ProfileSHA256     string          `json:"profileSha256,omitempty"`
+	SealedUsageSHA256 string          `json:"sealedUsageSha256,omitempty"`
+	LocalProofSHA256  string          `json:"localProofSha256,omitempty"`
+	DirectiveSHA256   string          `json:"directiveSha256,omitempty"`
+	Rows              []OraclePlanRow `json:"rows"`
 }
 
 type OracleProfileRow struct {
@@ -54,11 +54,11 @@ type OracleDirective struct {
 }
 
 type OracleDirectiveFile struct {
-	SchemaVersion        int               `json:"schemaVersion"`
-	ProfileSHA256        string            `json:"profileSha256"`
-	ReconciliationSHA256 string            `json:"reconciliationSha256"`
-	LocalProofSHA256     string            `json:"localProofSha256"`
-	Directives           []OracleDirective `json:"directives"`
+	SchemaVersion     int               `json:"schemaVersion"`
+	ProfileSHA256     string            `json:"profileSha256"`
+	SealedUsageSHA256 string            `json:"sealedUsageSha256"`
+	LocalProofSHA256  string            `json:"localProofSha256"`
+	Directives        []OracleDirective `json:"directives"`
 }
 
 type ExclusionPolicyRow struct {
@@ -204,17 +204,17 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 
 // PlanOracleFromFiles loads the profile, fresh reconciliation, local proof,
 // and directives from one sealed byte sequence each, then revalidates them.
-func PlanOracleFromFiles(profilePath, reconciliationPath, proofPath, directivePath string) (OraclePlan, error) {
-	if !filepath.IsAbs(profilePath) || !filepath.IsAbs(reconciliationPath) || !filepath.IsAbs(proofPath) || !filepath.IsAbs(directivePath) {
+func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath string) (OraclePlan, error) {
+	if !filepath.IsAbs(profilePath) || !filepath.IsAbs(sealedUsagePath) || !filepath.IsAbs(proofPath) || !filepath.IsAbs(directivePath) {
 		return OraclePlan{}, fmt.Errorf("absolute oracle input paths are required")
 	}
 	profile, profileBytes, err := readUsageProfileRows(profilePath)
 	if err != nil {
 		return OraclePlan{}, fmt.Errorf("read oracle profile: %w", err)
 	}
-	reconciliation, reconciliationBytes, err := readExactJSONBytes[UsageReconciliation](reconciliationPath)
+	sealedUsage, sealedUsageBytes, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath)
 	if err != nil {
-		return OraclePlan{}, fmt.Errorf("read usage reconciliation: %w", err)
+		return OraclePlan{}, fmt.Errorf("read sealed corpus usage: %w", err)
 	}
 	proof, proofBytes, err := readExactJSONBytes[LocalProof](proofPath)
 	if err != nil {
@@ -224,24 +224,24 @@ func PlanOracleFromFiles(profilePath, reconciliationPath, proofPath, directivePa
 	if err != nil {
 		return OraclePlan{}, fmt.Errorf("read oracle directives: %w", err)
 	}
-	profileSHA256, reconciliationSHA256 := replayBytesSHA256(profileBytes), replayBytesSHA256(reconciliationBytes)
+	profileSHA256, sealedUsageSHA256 := replayBytesSHA256(profileBytes), replayBytesSHA256(sealedUsageBytes)
 	proofSHA256, directiveSHA256 := replayBytesSHA256(proofBytes), replayBytesSHA256(directiveBytes)
-	if directive.SchemaVersion != 1 || directive.ProfileSHA256 != profileSHA256 || directive.ReconciliationSHA256 != reconciliationSHA256 || directive.LocalProofSHA256 != proofSHA256 {
+	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != profileSHA256 || directive.SchemaVersion != 1 || directive.ProfileSHA256 != profileSHA256 || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives do not bind authoritative inputs")
 	}
 	projected := make([]OracleProfileRow, len(profile))
 	for i, row := range profile {
 		projected[i] = OracleProfileRow{SurfaceID: row.SurfaceID, Disposition: row.Disposition}
 	}
-	plan, err := planOracleForUsage(reconciliation, projected, proof, directive.Directives)
+	plan, err := planOracleForUsage(sealedUsage.Reconciliation, projected, proof, directive.Directives)
 	if err != nil {
 		return OraclePlan{}, err
 	}
 	if _, after, err := readUsageProfileRows(profilePath); err != nil || replayBytesSHA256(after) != profileSHA256 {
 		return OraclePlan{}, fmt.Errorf("profile changed during oracle planning")
 	}
-	if _, after, err := readExactJSONBytes[UsageReconciliation](reconciliationPath); err != nil || replayBytesSHA256(after) != reconciliationSHA256 {
-		return OraclePlan{}, fmt.Errorf("usage reconciliation changed during oracle planning")
+	if _, after, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath); err != nil || replayBytesSHA256(after) != sealedUsageSHA256 {
+		return OraclePlan{}, fmt.Errorf("sealed corpus usage changed during oracle planning")
 	}
 	if _, after, err := readExactJSONBytes[LocalProof](proofPath); err != nil || replayBytesSHA256(after) != proofSHA256 {
 		return OraclePlan{}, fmt.Errorf("local proof changed during oracle planning")
@@ -249,7 +249,7 @@ func PlanOracleFromFiles(profilePath, reconciliationPath, proofPath, directivePa
 	if _, after, err := readExactJSONBytes[OracleDirectiveFile](directivePath); err != nil || replayBytesSHA256(after) != directiveSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives changed during planning")
 	}
-	plan.ProfileSHA256, plan.ReconciliationSHA256, plan.LocalProofSHA256, plan.DirectiveSHA256 = profileSHA256, reconciliationSHA256, proofSHA256, directiveSHA256
+	plan.ProfileSHA256, plan.SealedUsageSHA256, plan.LocalProofSHA256, plan.DirectiveSHA256 = profileSHA256, sealedUsageSHA256, proofSHA256, directiveSHA256
 	return plan, nil
 }
 

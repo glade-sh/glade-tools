@@ -134,25 +134,25 @@ func TestPlanOracleForUsageTreatsUndirectedMockAsDeployable(t *testing.T) {
 func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	root := t.TempDir()
 	profilePath := filepath.Join(root, "profile.json")
-	reconciliationPath := filepath.Join(root, "reconciliation.json")
+	sealedUsagePath := filepath.Join(root, "CORPUS_USAGE.json")
 	proofPath := filepath.Join(root, "proof.json")
 	directivePath := filepath.Join(root, "directives.json")
 	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.run()","usageKey":"System.run","disposition":"local-runtime-required"}],"corpusUsage":["old"]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	reconciliation := UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}
-	if err := WriteNewJSON(reconciliationPath, reconciliation); err != nil {
+	sealedUsage := SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}}
+	if err := WriteNewJSON(sealedUsagePath, sealedUsage); err != nil {
 		t.Fatal(err)
 	}
 	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}
 	if err := WriteNewJSON(proofPath, proof); err != nil {
 		t.Fatal(err)
 	}
-	directives := OracleDirectiveFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), ReconciliationSHA256: localProofFileSHA256(t, reconciliationPath), LocalProofSHA256: localProofFileSHA256(t, proofPath)}
+	directives := OracleDirectiveFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LocalProofSHA256: localProofFileSHA256(t, proofPath)}
 	if err := WriteNewJSON(directivePath, directives); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := PlanOracleFromFiles(profilePath, reconciliationPath, proofPath, directivePath)
+	plan, err := PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath)
 	if err != nil {
 		t.Fatal(err)
 	}
