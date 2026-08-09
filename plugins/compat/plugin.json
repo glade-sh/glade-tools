@@ -55,6 +55,13 @@
     },
     {
       "path": [
+        "corpus",
+        "assurance"
+      ],
+      "summary": "Run sealed private-corpus daily-development assurance."
+    },
+    {
+      "path": [
         "matrix"
       ],
       "summary": "Print the full capability matrix."

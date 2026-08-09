@@ -65,6 +65,7 @@ func writeCompatManifest(w io.Writer) error {
 			{Path: []string{"compat", "lwc", "parity"}, Summary: "Generate the Native LWC API parity ledger."},
 			{Path: []string{"surface"}, Summary: "Refresh and inspect the Salesforce surface ledger."},
 			{Path: []string{"corpus"}, Summary: "Run Glade over public corpora and classify diagnostics."},
+			{Path: []string{"corpus", "assurance"}, Summary: "Run sealed private-corpus daily-development assurance."},
 			{Path: []string{"matrix"}, Summary: "Print the full capability matrix."},
 			{Path: []string{"mvp"}, Summary: "Print MVP readiness status."},
 			{Path: []string{"local-tests"}, Summary: "Report local Apex test execution readiness."},
