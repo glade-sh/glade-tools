@@ -158,31 +158,54 @@ type SalesforceBindings struct {
 }
 
 type SalesforceShard struct {
-	Bindings      SalesforceBindings        `json:"bindings"`
-	Candidate     RuntimeArtifact           `json:"candidate"`
-	Tools         RuntimeArtifact           `json:"tools"`
-	ExecutorRoot  string                    `json:"executorRoot"`
-	RunID         string                    `json:"runId"`
-	ShardIndex    int                       `json:"shardIndex"`
-	ShardCount    int                       `json:"shardCount"`
-	OrgAlias      string                    `json:"orgAlias"`
-	OrgID         string                    `json:"orgId"`
-	OrgStatus     string                    `json:"orgStatus"`
-	Preflight     SalesforceOrgPreflight    `json:"preflight"`
-	PreInventory  SalesforceInventory       `json:"preInventory"`
-	Commands      []CommandResult           `json:"commands"`
-	Postflight    SalesforceOrgPreflight    `json:"postflight"`
-	PostInventory SalesforceInventory       `json:"postInventory"`
-	Results       []SalesforceSurfaceResult `json:"results"`
-	Cleanup       CleanupReceipt            `json:"cleanup"`
+	Bindings       SalesforceBindings        `json:"bindings"`
+	Candidate      RuntimeArtifact           `json:"candidate"`
+	Tools          RuntimeArtifact           `json:"tools"`
+	DispatchSHA256 string                    `json:"dispatchSha256"`
+	ExecutorRoot   string                    `json:"executorRoot"`
+	RunID          string                    `json:"runId"`
+	ShardIndex     int                       `json:"shardIndex"`
+	ShardCount     int                       `json:"shardCount"`
+	OrgAlias       string                    `json:"orgAlias"`
+	OrgID          string                    `json:"orgId"`
+	OrgStatus      string                    `json:"orgStatus"`
+	Preflight      SalesforceOrgPreflight    `json:"preflight"`
+	PreInventory   SalesforceInventory       `json:"preInventory"`
+	Commands       []CommandResult           `json:"commands"`
+	Postflight     SalesforceOrgPreflight    `json:"postflight"`
+	PostInventory  SalesforceInventory       `json:"postInventory"`
+	Results        []SalesforceSurfaceResult `json:"results"`
+	Cleanup        CleanupReceipt            `json:"cleanup"`
 }
 
 // SalesforceShardFiles names the complete file-backed lifecycle evidence for
 // one Salesforce oracle shard. Reconciliation never trusts embedded copies.
 type SalesforceShardFiles struct {
 	ShardPath    string
+	DispatchPath string
 	CreationPath string
 	CleanupPath  string
+}
+
+type SalesforceDispatch struct {
+	SchemaVersion           int    `json:"schemaVersion"`
+	BundleSHA256            string `json:"bundleSha256"`
+	OrgAlias                string `json:"orgAlias"`
+	ExecutorRoot            string `json:"executorRoot"`
+	RunID                   string `json:"runId"`
+	ShardIndex              int    `json:"shardIndex"`
+	ShardCount              int    `json:"shardCount"`
+	FilterCommandSpecSHA256 string `json:"filterCommandSpecSha256"`
+}
+
+type SalesforceDispatchRequest struct {
+	BundlePath   string
+	OrgAlias     string
+	ExecutorRoot string
+	RunID        string
+	ShardIndex   int
+	ShardCount   int
+	OutputPath   string
 }
 
 const salesforceCommandTimeout = 30 * time.Second
@@ -190,6 +213,7 @@ const salesforceFilterTimeout = 15 * time.Minute
 
 type SalesforceShardRequest struct {
 	BundlePath     string
+	DispatchPath   string
 	PreflightPath  string
 	TargetOrg      string
 	SFBin          string
@@ -203,21 +227,50 @@ type SalesforceShardRequest struct {
 	sfRunner       salesforceCommandRunner
 }
 
+// CreateSalesforceDispatch seals the only permitted filter invocation before
+// a shard can execute it.
+func CreateSalesforceDispatch(request SalesforceDispatchRequest) (SalesforceDispatch, error) {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.ExecutorRoot) || !filepath.IsAbs(request.OutputPath) || !strings.Contains(filepath.ToSlash(request.ExecutorRoot), "/executor/") || request.OrgAlias == "" || request.RunID == "" || request.ShardCount != 2 || request.ShardIndex < 0 || request.ShardIndex >= request.ShardCount {
+		return SalesforceDispatch{}, fmt.Errorf("invalid Salesforce dispatch request")
+	}
+	if _, err := os.Lstat(request.OutputPath); err == nil {
+		return SalesforceDispatch{}, fmt.Errorf("Salesforce dispatch output already exists: %s", request.OutputPath)
+	} else if !os.IsNotExist(err) {
+		return SalesforceDispatch{}, err
+	}
+	if err := ValidateOracleBundle(request.BundlePath); err != nil {
+		return SalesforceDispatch{}, fmt.Errorf("validate staged bundle: %w", err)
+	}
+	bundle, bundleBytes, err := readExactJSONBytes[OracleBundle](request.BundlePath)
+	if err != nil {
+		return SalesforceDispatch{}, err
+	}
+	bundleSHA := replayBytesSHA256(bundleBytes)
+	filterPath := filepath.Join(filepath.Dir(filepath.Dir(request.BundlePath)), "transport", "salesforce-first-filter.py")
+	args, err := salesforceFilterArgs(filterPath, filepath.Dir(request.BundlePath), request.ExecutorRoot, request.RunID, request.OrgAlias, bundle, bundleSHA, request.ShardIndex, request.ShardCount)
+	if err != nil {
+		return SalesforceDispatch{}, err
+	}
+	environment, err := fixedSalesforceEnvironment()
+	if err != nil {
+		return SalesforceDispatch{}, err
+	}
+	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: request.OrgAlias, ExecutorRoot: request.ExecutorRoot, RunID: request.RunID, ShardIndex: request.ShardIndex, ShardCount: request.ShardCount, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(request.BundlePath), environment)}
+	if err := WriteNewJSON(request.OutputPath, dispatch); err != nil {
+		return SalesforceDispatch{}, err
+	}
+	return dispatch, nil
+}
+
 // RunSalesforceShard executes one sealed filter partition, obtains a fresh
 // eight-type postflight receipt, and writes the normalized shard only after
 // the staged bundle still validates.
 func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.PreflightPath) || !filepath.IsAbs(request.ExecutorRoot) || !filepath.IsAbs(request.OutputPath) || !strings.Contains(filepath.ToSlash(request.ExecutorRoot), "/executor/") || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" || request.RunID == "" || request.ShardCount != 2 || request.ShardIndex < 0 || request.ShardIndex >= request.ShardCount {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.DispatchPath) || !filepath.IsAbs(request.PreflightPath) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
 		return SalesforceShard{}, fmt.Errorf("invalid Salesforce shard request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
 		return SalesforceShard{}, fmt.Errorf("Salesforce shard output already exists: %s", request.OutputPath)
-	} else if !os.IsNotExist(err) {
-		return SalesforceShard{}, err
-	}
-	filterOutput := filepath.Join(request.ExecutorRoot, "filter")
-	if _, err := os.Lstat(filterOutput); err == nil {
-		return SalesforceShard{}, fmt.Errorf("Salesforce filter output already exists: %s", filterOutput)
 	} else if !os.IsNotExist(err) {
 		return SalesforceShard{}, err
 	}
@@ -238,12 +291,23 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 		return SalesforceShard{}, fmt.Errorf("staged oracle plan does not bind bundle")
 	}
 	bundleSHA := replayBytesSHA256(bundleBytes)
+	dispatch, dispatchBytes, err := readExactJSONBytes[SalesforceDispatch](request.DispatchPath)
+	if err != nil || !validSalesforceDispatch(dispatch, bundle, request.BundlePath) || dispatch.BundleSHA256 != bundleSHA || dispatch.OrgAlias != request.TargetOrg {
+		return SalesforceShard{}, fmt.Errorf("invalid sealed Salesforce dispatch")
+	}
+	dispatchSHA := replayBytesSHA256(dispatchBytes)
+	filterOutput := filepath.Join(dispatch.ExecutorRoot, "filter")
+	if _, err := os.Lstat(filterOutput); err == nil {
+		return SalesforceShard{}, fmt.Errorf("Salesforce filter output already exists: %s", filterOutput)
+	} else if !os.IsNotExist(err) {
+		return SalesforceShard{}, err
+	}
 	preflight, preflightBytes, err := readExactJSONBytes[SalesforceOrgPreflight](request.PreflightPath)
 	if err != nil || !validSalesforceOrgPreflight(preflight, bundleSHA, request.BundlePath) || preflight.OrgAlias != request.TargetOrg {
 		return SalesforceShard{}, fmt.Errorf("invalid sealed Salesforce preflight")
 	}
 	filterPath := filepath.Join(filepath.Dir(filepath.Dir(request.BundlePath)), "transport", "salesforce-first-filter.py")
-	args, err := salesforceFilterArgs(filterPath, filepath.Dir(request.BundlePath), request.ExecutorRoot, request.RunID, request.TargetOrg, bundle, bundleSHA, request.ShardIndex, request.ShardCount)
+	args, err := salesforceFilterArgs(filterPath, filepath.Dir(request.BundlePath), dispatch.ExecutorRoot, dispatch.RunID, request.TargetOrg, bundle, bundleSHA, dispatch.ShardIndex, dispatch.ShardCount)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
@@ -260,7 +324,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
-	postflightPath := filepath.Join(request.ExecutorRoot, "postflight.json")
+	postflightPath := filepath.Join(dispatch.ExecutorRoot, "postflight.json")
 	postflight, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: request.BundlePath, TargetOrg: request.TargetOrg, SFBin: request.SFBin, OutputPath: postflightPath, validateBundle: validate, runner: request.sfRunner})
 	if err != nil {
 		return SalesforceShard{}, fmt.Errorf("Salesforce postflight: %w", err)
@@ -272,18 +336,19 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if err != nil || !reflect.DeepEqual(postflightRead, postflight) {
 		return SalesforceShard{}, fmt.Errorf("read sealed Salesforce postflight")
 	}
-	shard, err := NormalizeSalesforceFilterResults(plan, bundle, request.BundlePath, request.ExecutorRoot, request.RunID, preflight, postflight, filter, command, request.ShardIndex, request.ShardCount)
+	shard, err := NormalizeSalesforceFilterResults(plan, bundle, request.BundlePath, dispatch.ExecutorRoot, dispatch.RunID, preflight, postflight, filter, command, dispatch.ShardIndex, dispatch.ShardCount)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
 	for _, input := range []struct {
 		path string
 		hash string
-	}{{request.BundlePath, bundleSHA}, {planPath, replayBytesSHA256(planBytes)}, {request.PreflightPath, replayBytesSHA256(preflightBytes)}, {filterPathResult, replayBytesSHA256(filterBytes)}, {postflightPath, replayBytesSHA256(postflightBytes)}} {
+	}{{request.BundlePath, bundleSHA}, {request.DispatchPath, dispatchSHA}, {planPath, replayBytesSHA256(planBytes)}, {request.PreflightPath, replayBytesSHA256(preflightBytes)}, {filterPathResult, replayBytesSHA256(filterBytes)}, {postflightPath, replayBytesSHA256(postflightBytes)}} {
 		if hash, err := sha256File(input.path); err != nil || hash != input.hash {
 			return SalesforceShard{}, fmt.Errorf("Salesforce shard input changed during execution")
 		}
 	}
+	shard.DispatchSHA256 = dispatchSHA
 	if err := WriteNewJSON(request.OutputPath, shard); err != nil {
 		return SalesforceShard{}, err
 	}
@@ -799,6 +864,16 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 	}, nil
 }
 
+func validSalesforceDispatch(dispatch SalesforceDispatch, bundle OracleBundle, bundlePath string) bool {
+	if dispatch.SchemaVersion != 1 || dispatch.BundleSHA256 == "" || dispatch.OrgAlias == "" || dispatch.ExecutorRoot == "" || dispatch.RunID == "" {
+		return false
+	}
+	filterPath := filepath.Join(filepath.Dir(filepath.Dir(bundlePath)), "transport", "salesforce-first-filter.py")
+	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), dispatch.ExecutorRoot, dispatch.RunID, dispatch.OrgAlias, bundle, dispatch.BundleSHA256, dispatch.ShardIndex, dispatch.ShardCount)
+	environment, environmentErr := fixedSalesforceEnvironment()
+	return err == nil && environmentErr == nil && dispatch.FilterCommandSpecSHA256 == salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), environment)
+}
+
 // ValidateSalesforceShardFiles derives the runtime and compile denominator
 // from the sealed oracle plan, then validates every raw shard against it.
 // Callers cannot choose a smaller expected set.
@@ -829,17 +904,21 @@ func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 	}
 	bundleSHA := replayBytesSHA256(bundleBytes)
 	shards := make([]SalesforceShard, 0, len(shardFiles))
-	files := make([][3]string, 0, len(shardFiles))
-	fileHashes := make([][3]string, 0, len(shardFiles))
+	files := make([][4]string, 0, len(shardFiles))
+	fileHashes := make([][4]string, 0, len(shardFiles))
 	seenPaths := map[string]bool{}
 	for _, evidence := range shardFiles {
-		if !filepath.IsAbs(evidence.ShardPath) || !filepath.IsAbs(evidence.CreationPath) || !filepath.IsAbs(evidence.CleanupPath) || seenPaths[evidence.ShardPath] || seenPaths[evidence.CreationPath] || seenPaths[evidence.CleanupPath] {
+		if !filepath.IsAbs(evidence.ShardPath) || !filepath.IsAbs(evidence.DispatchPath) || !filepath.IsAbs(evidence.CreationPath) || !filepath.IsAbs(evidence.CleanupPath) || seenPaths[evidence.ShardPath] || seenPaths[evidence.DispatchPath] || seenPaths[evidence.CreationPath] || seenPaths[evidence.CleanupPath] {
 			return fmt.Errorf("absolute Salesforce shard paths are required")
 		}
-		seenPaths[evidence.ShardPath], seenPaths[evidence.CreationPath], seenPaths[evidence.CleanupPath] = true, true, true
+		seenPaths[evidence.ShardPath], seenPaths[evidence.DispatchPath], seenPaths[evidence.CreationPath], seenPaths[evidence.CleanupPath] = true, true, true, true
 		shard, shardBytes, err := readExactJSONBytes[SalesforceShard](evidence.ShardPath)
 		if err != nil {
 			return fmt.Errorf("read Salesforce shard: %w", err)
+		}
+		dispatch, dispatchBytes, err := readExactJSONBytes[SalesforceDispatch](evidence.DispatchPath)
+		if err != nil {
+			return fmt.Errorf("read Salesforce dispatch: %w", err)
 		}
 		creation, creationBytes, err := readExactJSONBytes[SalesforceOrgCreation](evidence.CreationPath)
 		if err != nil {
@@ -849,12 +928,12 @@ func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 		if err != nil {
 			return fmt.Errorf("read Salesforce org cleanup: %w", err)
 		}
-		if shard.Bindings.OraclePlanSHA256 != planSHA || shard.Bindings.BundleSHA256 != bundleSHA || shard.Candidate != plan.Candidate || shard.Tools != plan.Tools || !validSalesforceOrgPreflight(shard.Preflight, bundleSHA, bundlePath) || !validSalesforceOrgPreflight(shard.Postflight, bundleSHA, bundlePath) || !validSealedFilterCommand(shard, bundle, bundlePath) || creation.Invalidated || !validSalesforceOrgCreation(creation, bundleSHA, bundlePath, "glade-dev-hub4", shard.OrgAlias) || creation.OrgID != shard.OrgID || !validSalesforceOrgCleanup(cleanup, bundleSHA, bundlePath, creation) || cleanup.OrgAlias != shard.OrgAlias || cleanup.OrgID != shard.OrgID || !cleanup.ResidueAbsent {
+		if shard.Bindings.OraclePlanSHA256 != planSHA || shard.Bindings.BundleSHA256 != bundleSHA || shard.Candidate != plan.Candidate || shard.Tools != plan.Tools || shard.DispatchSHA256 != replayBytesSHA256(dispatchBytes) || !validSalesforceDispatch(dispatch, bundle, bundlePath) || dispatch.BundleSHA256 != bundleSHA || dispatch.OrgAlias != shard.OrgAlias || dispatch.ShardIndex != shard.ShardIndex || dispatch.ShardCount != shard.ShardCount || dispatch.ExecutorRoot != shard.ExecutorRoot || dispatch.RunID != shard.RunID || !validSalesforceOrgPreflight(shard.Preflight, bundleSHA, bundlePath) || !validSalesforceOrgPreflight(shard.Postflight, bundleSHA, bundlePath) || !validSealedFilterCommand(shard, bundle, bundlePath) || creation.Invalidated || !validSalesforceOrgCreation(creation, bundleSHA, bundlePath, "glade-dev-hub4", shard.OrgAlias) || creation.OrgID != shard.OrgID || !validSalesforceOrgCleanup(cleanup, bundleSHA, bundlePath, creation) || cleanup.OrgAlias != shard.OrgAlias || cleanup.OrgID != shard.OrgID || !cleanup.ResidueAbsent {
 			return fmt.Errorf("Salesforce shard does not bind sealed oracle plan")
 		}
 		shards = append(shards, shard)
-		files = append(files, [3]string{evidence.ShardPath, evidence.CreationPath, evidence.CleanupPath})
-		fileHashes = append(fileHashes, [3]string{replayBytesSHA256(shardBytes), replayBytesSHA256(creationBytes), replayBytesSHA256(cleanupBytes)})
+		files = append(files, [4]string{evidence.ShardPath, evidence.DispatchPath, evidence.CreationPath, evidence.CleanupPath})
+		fileHashes = append(fileHashes, [4]string{replayBytesSHA256(shardBytes), replayBytesSHA256(dispatchBytes), replayBytesSHA256(creationBytes), replayBytesSHA256(cleanupBytes)})
 	}
 	if err := ValidateSalesforceShards(shards, expected); err != nil {
 		return err

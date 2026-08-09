@@ -253,20 +253,37 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "org-create", 1, *output)
-	case "salesforce-run":
-		flags := flag.NewFlagSet("corpus assurance salesforce-run", flag.ContinueOnError)
+	case "salesforce-dispatch":
+		flags := flag.NewFlagSet("corpus assurance salesforce-dispatch", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
-		bundle, preflight := flags.String("bundle", "", ""), flags.String("org-preflight", "", "")
-		target, sfbin, executor, runID := flags.String("target-org", "", ""), flags.String("sf-bin", "", ""), flags.String("executor-root", "", ""), flags.String("run-id", "", "")
+		bundle, target := flags.String("bundle", "", ""), flags.String("target-org", "", "")
+		executor, runID := flags.String("executor-root", "", ""), flags.String("run-id", "", "")
 		shardIndex, shardCount := flags.Int("shard-index", -1, ""), flags.Int("shard-count", 0, "")
 		output := flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*bundle, *preflight, *target, *sfbin, *executor, *runID, *output); err != nil {
+		if err := requiredAssuranceFlags(*bundle, *target, *executor, *runID, *output); err != nil {
 			return err
 		}
-		shard, err := corpusassurance.RunSalesforceShard(corpusassurance.SalesforceShardRequest{BundlePath: *bundle, PreflightPath: *preflight, TargetOrg: *target, SFBin: *sfbin, ExecutorRoot: *executor, RunID: *runID, ShardIndex: *shardIndex, ShardCount: *shardCount, OutputPath: *output})
+		_, err := corpusassurance.CreateSalesforceDispatch(corpusassurance.SalesforceDispatchRequest{BundlePath: *bundle, OrgAlias: *target, ExecutorRoot: *executor, RunID: *runID, ShardIndex: *shardIndex, ShardCount: *shardCount, OutputPath: *output})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "salesforce-dispatch", 1, *output)
+	case "salesforce-run":
+		flags := flag.NewFlagSet("corpus assurance salesforce-run", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		bundle, dispatch, preflight := flags.String("bundle", "", ""), flags.String("dispatch", "", ""), flags.String("org-preflight", "", "")
+		target, sfbin := flags.String("target-org", "", ""), flags.String("sf-bin", "", "")
+		output := flags.String("output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*bundle, *dispatch, *preflight, *target, *sfbin, *output); err != nil {
+			return err
+		}
+		shard, err := corpusassurance.RunSalesforceShard(corpusassurance.SalesforceShardRequest{BundlePath: *bundle, DispatchPath: *dispatch, PreflightPath: *preflight, TargetOrg: *target, SFBin: *sfbin, OutputPath: *output})
 		if err != nil {
 			return err
 		}
@@ -291,22 +308,23 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		flags := flag.NewFlagSet("corpus assurance salesforce-reconcile", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
 		plan := flags.String("oracle-plan", "", "")
-		var shards, creations, cleanups assurancePathList
+		var shards, dispatches, creations, cleanups assurancePathList
 		flags.Var(&shards, "shard", "")
+		flags.Var(&dispatches, "dispatch", "")
 		flags.Var(&creations, "creation", "")
 		flags.Var(&cleanups, "cleanup", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*plan); err != nil || len(shards) == 0 || len(shards) != len(creations) || len(shards) != len(cleanups) {
+		if err := requiredAssuranceFlags(*plan); err != nil || len(shards) == 0 || len(shards) != len(dispatches) || len(shards) != len(creations) || len(shards) != len(cleanups) {
 			if err != nil {
 				return err
 			}
-			return errors.New("paired Salesforce shard, creation, and cleanup paths are required")
+			return errors.New("paired Salesforce shard, dispatch, creation, and cleanup paths are required")
 		}
 		files := make([]corpusassurance.SalesforceShardFiles, len(shards))
 		for index := range shards {
-			files[index] = corpusassurance.SalesforceShardFiles{ShardPath: shards[index], CreationPath: creations[index], CleanupPath: cleanups[index]}
+			files[index] = corpusassurance.SalesforceShardFiles{ShardPath: shards[index], DispatchPath: dispatches[index], CreationPath: creations[index], CleanupPath: cleanups[index]}
 		}
 		if err := corpusassurance.ValidateSalesforceShardFiles(*plan, files); err != nil {
 			return err
@@ -376,9 +394,10 @@ Usage:
   glade-tools corpus assurance oracle-bundle --attempt <ATTEMPT.json> --profile <ASSURANCE_PROFILE.json> --oracle-plan <ORACLE_PLAN.json> --exclusion-authority <EXCLUSION_AUTHORITY.json> --release-validation <RELEASE_VALIDATION.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --filter-script <filter.py> --scratch-definition <scratch.json> --tools-amd64 <glade-tools> --output <new-dir>
   glade-tools corpus assurance org-create --bundle <bundle.json> --dev-hub glade-dev-hub4 --alias <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_CREATION.json>
   glade-tools corpus assurance org-preflight --bundle <bundle.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_PREFLIGHT.json>
-  glade-tools corpus assurance salesforce-run --bundle <bundle.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --executor-root <attempt/executor/shard-N> --run-id <attempt-shard-N> --shard-index <0|1> --shard-count 2 --output <SALESFORCE_SHARD.json>
+  glade-tools corpus assurance salesforce-dispatch --bundle <bundle.json> --target-org <scratch-alias> --executor-root <attempt/executor/shard-N> --run-id <attempt-shard-N> --shard-index <0|1> --shard-count 2 --output <SALESFORCE_DISPATCH.json>
+  glade-tools corpus assurance salesforce-run --bundle <bundle.json> --dispatch <SALESFORCE_DISPATCH.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <SALESFORCE_SHARD.json>
   glade-tools corpus assurance org-cleanup --bundle <bundle.json> --creation <ORG_CREATION.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --dev-hub glade-dev-hub4 --sf-bin /usr/local/bin/sf --output <ORG_CLEANUP.json>
-  glade-tools corpus assurance salesforce-reconcile --oracle-plan <ORACLE_PLAN.json> --shard <SALESFORCE_SHARD.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --shard <SALESFORCE_SHARD.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json>
+  glade-tools corpus assurance salesforce-reconcile --oracle-plan <ORACLE_PLAN.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json>
 	  glade-tools corpus assurance cleanup --host <matt@casper.local|matt@razor.local> --parent /private/tmp/glade-assurance-1afce500 --attempt-root <remote-attempt-root> --binding <sealed-file> --output <REMOTE_CLEANUP.json>
 `)
 }
