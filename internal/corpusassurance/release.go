@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"time"
@@ -20,6 +21,10 @@ type ReleaseValidation struct {
 	Candidate         RuntimeArtifact        `json:"candidate"`
 	Tools             RuntimeArtifact        `json:"tools"`
 	ToolsFreezeSHA256 string                 `json:"toolsFreezeSha256"`
+	GladeRoot         string                 `json:"gladeRoot"`
+	CandidatePath     string                 `json:"candidatePath"`
+	ToolsRoot         string                 `json:"toolsRoot"`
+	ToolsPath         string                 `json:"toolsPath"`
 	Commands          []ReleaseCommandResult `json:"commands"`
 }
 
@@ -131,7 +136,7 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	if current, err := sha256File(request.AttemptPath); err != nil || current != replayBytesSHA256(attemptBytes) {
 		return ReleaseValidation{}, fmt.Errorf("sealed assurance attempt changed during release validation")
 	}
-	validation := ReleaseValidation{SchemaVersion: 1, AttemptSHA256: replayBytesSHA256(attemptBytes), Candidate: candidate, Tools: tools, ToolsFreezeSHA256: freezeSHA, Commands: results}
+	validation := ReleaseValidation{SchemaVersion: 1, AttemptSHA256: replayBytesSHA256(attemptBytes), Candidate: candidate, Tools: tools, ToolsFreezeSHA256: freezeSHA, GladeRoot: request.GladeRoot, CandidatePath: request.CandidatePath, ToolsRoot: request.ToolsRoot, ToolsPath: request.ToolsPath, Commands: results}
 	if err := WriteNewJSON(request.OutputPath, validation); err != nil {
 		return ReleaseValidation{}, err
 	}
@@ -140,11 +145,7 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 
 func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error) {
 	goBin := filepath.Join(runtime.GOROOT(), "bin", "go")
-	home, err := os.UserHomeDir()
-	if err != nil || !filepath.IsAbs(home) {
-		return nil, fmt.Errorf("resolve Go module cache home")
-	}
-	env := []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=" + filepath.Join(home, "go", "pkg", "mod")}
+	env := fixedReleaseEnvironment()
 	commands := []releaseCommand{
 		{Path: goBin, Args: []string{"test", "./..."}, WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
 		{Path: filepath.Join(gladeRoot, "scripts", "smoke.sh"), WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
@@ -158,6 +159,10 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 		}
 	}
 	return commands, nil
+}
+
+func fixedReleaseEnvironment() []string {
+	return []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/private/tmp/glade-assurance-go-mod"}
 }
 
 func releaseExecutingTools(path, commit string) (RuntimeArtifact, error) {
@@ -180,15 +185,49 @@ func releaseExecutingTools(path, commit string) (RuntimeArtifact, error) {
 }
 
 func runReleaseValidationCommand(runner releaseCommandRunner, command releaseCommand) (ReleaseCommandResult, error) {
+	before, err := sha256File(command.Path)
+	if err != nil {
+		return ReleaseCommandResult{}, err
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), command.Timeout)
 	defer cancel()
 	started := time.Now()
 	output, err := runner(ctx, command)
-	receipt := ReleaseCommandResult{CommandResult: CommandResult{Command: append([]string{command.Path}, command.Args...), CommandSpecSHA256: releaseCommandSpecSHA256(command), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}, WorkingDirectory: command.WorkingDirectory, Environment: append([]string(nil), command.Environment...), TimeoutMS: command.Timeout.Milliseconds()}
+	after, hashErr := sha256File(command.Path)
+	receipt := ReleaseCommandResult{CommandResult: CommandResult{Command: append([]string{command.Path}, command.Args...), ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: releaseCommandSpecSHA256(command), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && hashErr == nil && before == after && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}, WorkingDirectory: command.WorkingDirectory, Environment: append([]string(nil), command.Environment...), TimeoutMS: command.Timeout.Milliseconds()}
 	if !receipt.Passed || receipt.TimedOut {
 		return ReleaseCommandResult{}, fmt.Errorf("release validation command failed")
 	}
 	return receipt, nil
+}
+
+func validateOracleReleaseSources(validation ReleaseValidation, plan OraclePlan) error {
+	if err := validateCleanGitRoot(validation.GladeRoot, plan.Candidate.Commit); err != nil {
+		return fmt.Errorf("candidate source: %w", err)
+	}
+	if err := validateCleanGitRoot(validation.ToolsRoot, plan.Tools.Commit); err != nil {
+		return fmt.Errorf("tools source: %w", err)
+	}
+	if current, err := runtimeArtifactFor(validation.CandidatePath, plan.Candidate.Commit); err != nil || current != plan.Candidate {
+		return fmt.Errorf("candidate executable does not match sealed release validation")
+	}
+	if current, err := releaseExecutingTools(validation.ToolsPath, plan.Tools.Commit); err != nil || current != plan.Tools {
+		return fmt.Errorf("tools executable does not match sealed release validation")
+	}
+	commands, err := fixedReleaseCommands(validation.GladeRoot, validation.ToolsRoot)
+	if err != nil || len(commands) != len(validation.Commands) {
+		return fmt.Errorf("fixed release command contract is unavailable")
+	}
+	for index, command := range commands {
+		result := validation.Commands[index]
+		if !reflect.DeepEqual(result.Command, append([]string{command.Path}, command.Args...)) || result.WorkingDirectory != command.WorkingDirectory || !reflect.DeepEqual(result.Environment, command.Environment) || result.TimeoutMS != command.Timeout.Milliseconds() || result.CommandSpecSHA256 != releaseCommandSpecSHA256(command) {
+			return fmt.Errorf("release command %d does not match fixed contract", index+1)
+		}
+		if current, err := sha256File(command.Path); err != nil || current != result.ExecutableSHA256 || current != result.ExecutableAfterSHA256 {
+			return fmt.Errorf("release command %d executable changed", index+1)
+		}
+	}
+	return nil
 }
 
 func releaseCommandSpecSHA256(command releaseCommand) string {

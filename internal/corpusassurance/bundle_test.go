@@ -1,10 +1,10 @@
 package corpusassurance
 
 import (
+	"context"
+	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 )
@@ -30,9 +30,26 @@ func TestBuildOracleBundleRejectsEmptyAndFabricatedReleaseValidation(t *testing.
 	}
 }
 
+func TestBuildOracleBundleRejectsReleaseValidationWithoutSourceProvenance(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	validation, _, err := readExactJSONBytes[ReleaseValidation](inputs.releasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	validation.GladeRoot = ""
+	data, err := json.Marshal(validation)
+	if err != nil || os.WriteFile(inputs.releasePath, append(data, '\n'), 0o600) != nil {
+		t.Fatal(err)
+	}
+	if _, err := BuildOracleBundle(inputs.request(filepath.Join(t.TempDir(), "bundle"))); err == nil {
+		t.Fatal("BuildOracleBundle accepted a release validation without sealed source provenance")
+	}
+}
+
 func TestBuildOracleBundleRequiresTheAttemptBoundByReleaseValidation(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
-	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	request := inputs.request(filepath.Join(t.TempDir(), "bundle"))
 	request.AttemptPath = filepath.Join(t.TempDir(), "missing-ATTEMPT.json")
 	if _, err := BuildOracleBundle(request); err == nil {
@@ -42,7 +59,7 @@ func TestBuildOracleBundleRequiresTheAttemptBoundByReleaseValidation(t *testing.
 
 func TestBuildOracleBundleRejectsAReplacementAttempt(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
-	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	bytes, err := os.ReadFile(inputs.attemptPath)
 	if err != nil {
 		t.Fatal(err)
@@ -69,7 +86,7 @@ func TestBuildOracleBundleRejectsReleaseValidationFromAnotherValidAttempt(t *tes
 	if err := WriteNewJSON(otherAttemptPath, attempt); err != nil {
 		t.Fatal(err)
 	}
-	writeSealedReleaseValidation(t, inputs.releasePath, otherAttemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	writeSealedReleaseValidation(t, inputs, otherAttemptPath)
 	request := inputs.request(filepath.Join(t.TempDir(), "bundle"))
 	request.AttemptPath = otherAttemptPath
 	if _, err := BuildOracleBundle(request); err == nil {
@@ -77,39 +94,20 @@ func TestBuildOracleBundleRejectsReleaseValidationFromAnotherValidAttempt(t *tes
 	}
 }
 
-func TestBuildOracleBundleAcceptsTheSealedAMD64ToolsBuild(t *testing.T) {
+func TestBuildOracleBundleRejectsAnUnsealedToolsSourceRoot(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
-	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
-	amd64Tools := buildAMD64ToolsForTest(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	request := inputs.request(filepath.Join(t.TempDir(), "bundle"))
-	request.ToolsAMD64Path = amd64Tools
-	bundle, err := BuildOracleBundle(request)
-	if err != nil {
-		t.Fatalf("BuildOracleBundle: %v", err)
+	request.ToolsRoot = t.TempDir()
+	if _, err := BuildOracleBundle(request); err == nil {
+		t.Fatal("BuildOracleBundle accepted an unsealed tools source root")
 	}
-	if bundle.ToolsAMD64SHA256 != localProofFileSHA256(t, amd64Tools) || bundle.ToolsAMD64SHA256 == inputs.plan.Tools.SHA256 {
-		t.Fatalf("bundle does not retain the distinct amd64 tools hash: %#v", bundle)
-	}
-}
-
-func buildAMD64ToolsForTest(t *testing.T) string {
-	t.Helper()
-	root := t.TempDir()
-	source, output := filepath.Join(root, "main.go"), filepath.Join(root, "glade-tools-darwin-amd64")
-	if err := os.WriteFile(source, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	command := exec.Command(filepath.Join(runtime.GOROOT(), "bin", "go"), "build", "-o", output, source)
-	command.Env = append(os.Environ(), "CGO_ENABLED=0", "GOOS=darwin", "GOARCH=amd64")
-	if data, err := command.CombinedOutput(); err != nil {
-		t.Fatalf("build amd64 tools fixture: %v: %s", err, data)
-	}
-	return output
 }
 
 type oracleBundleTestInputs struct {
 	proof               LocalProof
 	plan                OraclePlan
+	gladeRoot           string
 	attemptPath         string
 	profilePath         string
 	planPath            string
@@ -117,7 +115,7 @@ type oracleBundleTestInputs struct {
 	releasePath         string
 	filterPath          string
 	scratchPath         string
-	toolsAMD64Path      string
+	toolsRoot           string
 	localProofPath      string
 	fixtureManifestPath string
 }
@@ -133,7 +131,7 @@ func (inputs oracleBundleTestInputs) request(outputPath string) OracleBundleRequ
 		FixtureManifestPath:   inputs.fixtureManifestPath,
 		FilterScriptPath:      inputs.filterPath,
 		ScratchDefinitionPath: inputs.scratchPath,
-		ToolsAMD64Path:        inputs.toolsAMD64Path,
+		ToolsRoot:             inputs.toolsRoot,
 		OutputPath:            outputPath,
 	}
 }
@@ -146,7 +144,19 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 		t.Fatal(err)
 	}
 	root := filepath.Dir(request.OutputPath)
+	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "scripts/smoke.sh": "#!/bin/sh\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade-tools\n\ngo 1.23.0\n", "cmd/glade-tools/main.go": "package main\nfunc main() {}\n", "scripts/release-check.sh": "#!/bin/sh\n"})
+	candidate, tools := proof.Candidate, proof.Tools
+	candidate.Commit, tools.Commit = testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	replaceAssuranceAttemptForRuntimes(t, request.AttemptPath, candidate, tools)
+	proof.Candidate, proof.Tools = candidate, tools
+	proof.AttemptSHA256 = attemptHash(AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools})
+	if data, err := json.Marshal(proof); err != nil || os.WriteFile(request.OutputPath, append(data, '\n'), 0o600) != nil {
+		t.Fatal(err)
+	}
 	inputs := oracleBundleTestInputs{
+		proof:               proof,
+		gladeRoot:           gladeRoot,
 		attemptPath:         request.AttemptPath,
 		profilePath:         filepath.Join(root, "BUNDLE_PROFILE.json"),
 		planPath:            filepath.Join(root, "ORACLE_PLAN.json"),
@@ -154,7 +164,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 		releasePath:         filepath.Join(root, "RELEASE_VALIDATION.json"),
 		filterPath:          filepath.Join(root, "filter.py"),
 		scratchPath:         filepath.Join(root, "scratch.json"),
-		toolsAMD64Path:      buildAMD64ToolsForTest(t),
+		toolsRoot:           toolsRoot,
 		localProofPath:      request.OutputPath,
 		fixtureManifestPath: request.FixtureManifestPath,
 	}
@@ -179,38 +189,15 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	return inputs
 }
 
-func writeSealedReleaseValidation(t *testing.T, path, attemptPath string, candidate, tools RuntimeArtifact) {
+func writeSealedReleaseValidation(t *testing.T, inputs oracleBundleTestInputs, attemptPath string) {
 	t.Helper()
-	environment := []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/Users/matt/go/pkg/mod"}
-	commands := []releaseCommand{
-		{Path: "/usr/local/bin/go", Args: []string{"test", "./..."}, WorkingDirectory: "/glade", Environment: environment, Timeout: releaseValidationTimeout},
-		{Path: "/glade/scripts/smoke.sh", WorkingDirectory: "/glade", Environment: environment, Timeout: releaseValidationTimeout},
-		{Path: "/usr/local/bin/go", Args: []string{"test", "./..."}, WorkingDirectory: "/glade-tools", Environment: environment, Timeout: releaseValidationTimeout},
-		{Path: "/glade-tools/scripts/release-check.sh", WorkingDirectory: "/glade-tools", Environment: environment, Timeout: releaseValidationTimeout},
-	}
-	results := make([]ReleaseCommandResult, 0, len(commands))
-	for _, command := range commands {
-		results = append(results, ReleaseCommandResult{
-			CommandResult: CommandResult{
-				Command:           append([]string{command.Path}, command.Args...),
-				CommandSpecSHA256: releaseCommandSpecSHA256(command),
-				ExitCode:          0,
-				DurationMS:        1,
-				StdoutSHA256:      strings.Repeat("1", 64),
-				StderrSHA256:      strings.Repeat("2", 64),
-				Passed:            true,
-			},
-			WorkingDirectory: command.WorkingDirectory,
-			Environment:      append([]string(nil), command.Environment...),
-			TimeoutMS:        command.Timeout.Milliseconds(),
-		})
-	}
-	attemptHash, err := sha256File(attemptPath)
-	if err != nil {
+	freezePath := filepath.Join(filepath.Dir(inputs.releasePath), "FINAL_TOOLS_COMMIT")
+	if err := os.WriteFile(freezePath, []byte(inputs.plan.Tools.Commit+"\n"), 0o400); err != nil {
 		t.Fatal(err)
 	}
-	validation := ReleaseValidation{SchemaVersion: 1, AttemptSHA256: attemptHash, Candidate: candidate, Tools: tools, ToolsFreezeSHA256: strings.Repeat("a", 64), Commands: results}
-	if err := WriteNewJSON(path, validation); err != nil {
+	if _, err := RunReleaseValidation(ReleaseValidationRequest{AttemptPath: attemptPath, GladeRoot: inputs.gladeRoot, CandidatePath: inputs.proof.CandidatePath, ToolsRoot: inputs.toolsRoot, ToolsPath: inputs.proof.ToolsPath, ToolsFreezePath: freezePath, OutputPath: inputs.releasePath, runner: func(context.Context, releaseCommand) (salesforceCommandOutput, error) {
+		return salesforceCommandOutput{}, nil
+	}}); err != nil {
 		t.Fatal(err)
 	}
 }

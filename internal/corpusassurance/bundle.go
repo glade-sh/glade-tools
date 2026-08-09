@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -23,7 +25,7 @@ type OracleBundleRequest struct {
 	FixtureManifestPath   string
 	FilterScriptPath      string
 	ScratchDefinitionPath string
-	ToolsAMD64Path        string
+	ToolsRoot             string
 	OutputPath            string
 }
 
@@ -85,7 +87,7 @@ type oracleSourceFile struct {
 // BuildOracleBundle stages only the derived Salesforce-required fixtures and
 // their sealed dependencies, then atomically publishes the new output tree.
 func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
-	paths := []string{request.AttemptPath, request.ProfilePath, request.PlanPath, request.AuthorityPath, request.ReleaseValidationPath, request.LocalProofPath, request.FixtureManifestPath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.OutputPath}
+	paths := []string{request.AttemptPath, request.ProfilePath, request.PlanPath, request.AuthorityPath, request.ReleaseValidationPath, request.LocalProofPath, request.FixtureManifestPath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsRoot, request.OutputPath}
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return OracleBundle{}, fmt.Errorf("absolute oracle bundle paths are required")
@@ -139,8 +141,20 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := ValidateLocalProof(proof, manifest); err != nil {
 		return OracleBundle{}, fmt.Errorf("validate local proof: %w", err)
 	}
+	if err := validateCleanGitRoot(request.ToolsRoot, attempt.Tools.Commit); err != nil {
+		return OracleBundle{}, fmt.Errorf("tools source: %w", err)
+	}
+	if current, err := runtimeArtifactFor(proof.CandidatePath, attempt.Candidate.Commit); err != nil || current != attempt.Candidate {
+		return OracleBundle{}, fmt.Errorf("candidate does not match sealed attempt")
+	}
+	if current, err := executingToolsArtifact(attempt.Tools.Commit); err != nil || current != attempt.Tools {
+		return OracleBundle{}, fmt.Errorf("executing tools do not match sealed attempt")
+	}
 	if err := validateOracleReleaseValidation(release, plan); err != nil {
 		return OracleBundle{}, fmt.Errorf("validate release validation: %w", err)
+	}
+	if err := validateOracleReleaseSources(release, plan); err != nil {
+		return OracleBundle{}, fmt.Errorf("validate release provenance: %w", err)
 	}
 	if current, err := sha256File(request.ReleaseValidationPath); err != nil || current != releaseSHA {
 		return OracleBundle{}, fmt.Errorf("release validation changed after validation")
@@ -150,7 +164,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		return OracleBundle{}, err
 	}
 	inputs := map[string]string{request.AttemptPath: replayBytesSHA256(attemptBytes), proof.AttemptPath: replayBytesSHA256(attemptBytes), request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
-	for _, path := range []string{request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path} {
+	for _, path := range []string{request.FilterScriptPath, request.ScratchDefinitionPath} {
 		hash, err := sha256File(path)
 		if err != nil {
 			return OracleBundle{}, err
@@ -163,10 +177,6 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	}
 	if !json.Valid(scratchDefinition) {
 		return OracleBundle{}, fmt.Errorf("scratch definition is not valid JSON")
-	}
-	toolsAMD64, err := amd64ToolsArtifactFor(request.ToolsAMD64Path, attempt.Tools.Commit)
-	if err != nil || toolsAMD64.Commit != plan.Tools.Commit {
-		return OracleBundle{}, fmt.Errorf("amd64 tools binary does not bind sealed tools commit")
 	}
 	for _, fixture := range fixtures {
 		if hash, err := sha256File(fixture.Path); err != nil || hash != fixture.SHA256 {
@@ -197,8 +207,13 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := copyOracleBundleFile(request.FilterScriptPath, filepath.Join(transportRoot, "salesforce-first-filter.py"), 0o700); err != nil {
 		return OracleBundle{}, err
 	}
-	if err := copyOracleBundleFile(request.ToolsAMD64Path, filepath.Join(binRoot, "glade-tools-darwin-amd64"), 0o700); err != nil {
-		return OracleBundle{}, err
+	toolsAMD64Path := filepath.Join(binRoot, "glade-tools-darwin-amd64")
+	toolsAMD64, err := buildAMD64Tools(request.ToolsRoot, toolsAMD64Path, attempt.Tools.Commit)
+	if err != nil {
+		return OracleBundle{}, fmt.Errorf("build amd64 tools from sealed source: %w", err)
+	}
+	if toolsAMD64.Commit != plan.Tools.Commit {
+		return OracleBundle{}, fmt.Errorf("built amd64 tools do not bind sealed tools commit")
 	}
 	transport := oracleTransportManifest{Fixtures: make([]oracleTransportFixture, 0, len(fixtures))}
 	for _, fixture := range fixtures {
@@ -231,7 +246,22 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := verifyOracleBundleInputs(inputs); err != nil {
 		return OracleBundle{}, err
 	}
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], ToolsAMD64SHA256: inputs[request.ToolsAMD64Path], Fixtures: fixtures}
+	if err := validateOracleReleaseSources(release, plan); err != nil {
+		return OracleBundle{}, fmt.Errorf("release provenance changed during staging: %w", err)
+	}
+	if err := validateCleanGitRoot(request.ToolsRoot, attempt.Tools.Commit); err != nil {
+		return OracleBundle{}, fmt.Errorf("tools source changed during staging: %w", err)
+	}
+	if current, err := runtimeArtifactFor(proof.CandidatePath, attempt.Candidate.Commit); err != nil || current != attempt.Candidate {
+		return OracleBundle{}, fmt.Errorf("candidate changed during staging")
+	}
+	if current, err := executingToolsArtifact(attempt.Tools.Commit); err != nil || current != attempt.Tools {
+		return OracleBundle{}, fmt.Errorf("executing tools changed during staging")
+	}
+	if current, err := amd64ToolsArtifactFor(toolsAMD64Path, attempt.Tools.Commit); err != nil || current != toolsAMD64 {
+		return OracleBundle{}, fmt.Errorf("amd64 tools changed during staging")
+	}
+	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
 	if err := WriteNewJSON(filepath.Join(bundleRoot, "bundle.json"), bundle); err != nil {
 		return OracleBundle{}, err
 	}
@@ -241,8 +271,39 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	return bundle, nil
 }
 
+func executingToolsArtifact(commit string) (RuntimeArtifact, error) {
+	path, err := os.Executable()
+	if err != nil {
+		return RuntimeArtifact{}, err
+	}
+	return releaseExecutingTools(path, commit)
+}
+
+func buildAMD64Tools(root, output, commit string) (RuntimeArtifact, error) {
+	if err := validateCleanGitRoot(root, commit); err != nil {
+		return RuntimeArtifact{}, err
+	}
+	command := exec.Command(filepath.Join(runtime.GOROOT(), "bin", "go"), "build", "-o", output, "./cmd/glade-tools")
+	command.Dir = root
+	command.Env = toolsAMD64BuildEnvironment()
+	if data, err := command.CombinedOutput(); err != nil {
+		return RuntimeArtifact{}, fmt.Errorf("build darwin/amd64 glade-tools: %w: %s", err, data)
+	}
+	return amd64ToolsArtifactFor(output, commit)
+}
+
+func toolsAMD64BuildEnvironment() []string {
+	environment := make([]string, 0, len(os.Environ())+5)
+	for _, entry := range os.Environ() {
+		if !strings.HasPrefix(entry, "CGO_ENABLED=") && !strings.HasPrefix(entry, "GOOS=") && !strings.HasPrefix(entry, "GOARCH=") && !strings.HasPrefix(entry, "GOFLAGS=") && !strings.HasPrefix(entry, "GOWORK=") {
+			environment = append(environment, entry)
+		}
+	}
+	return append(environment, "CGO_ENABLED=0", "GOOS=darwin", "GOARCH=amd64", "GOFLAGS=", "GOWORK=off")
+}
+
 func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePlan) error {
-	if validation.SchemaVersion != 1 {
+	if validation.SchemaVersion != 1 || !filepath.IsAbs(validation.GladeRoot) || !filepath.IsAbs(validation.CandidatePath) || !filepath.IsAbs(validation.ToolsRoot) || !filepath.IsAbs(validation.ToolsPath) {
 		return fmt.Errorf("release validation schema is invalid")
 	}
 	if len(validation.Commands) != 4 {
@@ -255,27 +316,32 @@ func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePl
 		return fmt.Errorf("release validation freeze hash is invalid")
 	}
 	for index, result := range validation.Commands {
-		if !validOracleReleaseCommand(index, result) {
+		if !validOracleReleaseCommand(validation, index, result) {
 			return fmt.Errorf("release validation check %d is not a passing fixed release check", index+1)
 		}
 	}
 	return nil
 }
 
-func validOracleReleaseCommand(index int, result ReleaseCommandResult) bool {
-	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != releaseValidationTimeout.Milliseconds() || !filepath.IsAbs(result.WorkingDirectory) || len(result.Command) == 0 || len(result.Environment) != 5 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
+func validOracleReleaseCommand(validation ReleaseValidation, index int, result ReleaseCommandResult) bool {
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != releaseValidationTimeout.Milliseconds() || len(result.Command) == 0 || !equalStrings(result.Environment, fixedReleaseEnvironment()) || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
 		return false
 	}
 	switch index {
-	case 0, 2:
-		if len(result.Command) != 3 || result.Command[1] != "test" || result.Command[2] != "./..." {
+	case 0:
+		if len(result.Command) != 3 || result.Command[1] != "test" || result.Command[2] != "./..." || result.WorkingDirectory != validation.GladeRoot {
 			return false
 		}
-	case 1, 3:
-		if len(result.Command) != 1 || result.WorkingDirectory != filepath.Dir(filepath.Dir(result.Command[0])) || filepath.Base(filepath.Dir(result.Command[0])) != "scripts" {
+	case 1:
+		if len(result.Command) != 1 || result.Command[0] != filepath.Join(validation.GladeRoot, "scripts", "smoke.sh") || result.WorkingDirectory != validation.GladeRoot {
 			return false
 		}
-		if (index == 1 && filepath.Base(result.Command[0]) != "smoke.sh") || (index == 3 && filepath.Base(result.Command[0]) != "release-check.sh") {
+	case 2:
+		if len(result.Command) != 3 || result.Command[1] != "test" || result.Command[2] != "./..." || result.WorkingDirectory != validation.ToolsRoot {
+			return false
+		}
+	case 3:
+		if len(result.Command) != 1 || result.Command[0] != filepath.Join(validation.ToolsRoot, "scripts", "release-check.sh") || result.WorkingDirectory != validation.ToolsRoot {
 			return false
 		}
 	default:
@@ -299,6 +365,9 @@ func ValidateOracleBundle(bundlePath string) error {
 		return fmt.Errorf("invalid oracle bundle")
 	}
 	bundleRoot, outputRoot := filepath.Dir(bundlePath), filepath.Dir(filepath.Dir(bundlePath))
+	if staged, err := amd64ToolsArtifactFor(filepath.Join(outputRoot, "bin", "glade-tools-darwin-amd64"), bundle.Tools.Commit); err != nil || staged != bundle.ToolsAMD64 {
+		return fmt.Errorf("invalid staged amd64 tools")
+	}
 	for _, item := range []struct {
 		path string
 		hash string

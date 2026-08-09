@@ -82,7 +82,7 @@ func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(
 
 func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
-	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	root := filepath.Dir(inputs.releasePath)
 	outputPath := filepath.Join(root, "razor")
 	bundle, err := BuildOracleBundle(inputs.request(outputPath))
@@ -107,14 +107,10 @@ func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
 	if err := ValidateOracleBundle(bundlePath); err == nil {
 		t.Fatal("accepted a bundle whose staged profile changed")
 	}
-	wrongToolsPath := filepath.Join(root, "wrong-tools")
-	if err := os.WriteFile(wrongToolsPath, []byte("wrong"), 0o700); err != nil {
-		t.Fatal(err)
-	}
 	wrongToolsRequest := inputs.request(filepath.Join(root, "wrong-razor"))
-	wrongToolsRequest.ToolsAMD64Path = wrongToolsPath
+	wrongToolsRequest.ToolsRoot = newInventoryRepository(t, map[string]string{"go.mod": "module example.com/wrong\n\ngo 1.23.0\n", "cmd/glade-tools/main.go": "package main\nfunc main() {}\n"})
 	if _, err := BuildOracleBundle(wrongToolsRequest); err == nil {
-		t.Fatal("accepted a tool binary that does not match the sealed tools artifact")
+		t.Fatal("accepted a tools source root that does not match the sealed tools artifact")
 	}
 }
 
