@@ -114,7 +114,8 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 		t.Fatal(err)
 	}
 	environment := mustFixedSalesforceEnvironment(t)
-	command := CommandResult{Command: append([]string{"python3"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), environment), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64)}
+	pythonSHA := mustSealedPythonSHA(t)
+	command := CommandResult{Command: append([]string{"/usr/bin/python3"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: pythonSHA, ExecutableAfterSHA256: pythonSHA, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64)}
 	bindings := SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}
 	lifecycle := salesforcePreflightForTest(t, alias, bundleSHA, bundlePath)
 	shard := SalesforceShard{Bindings: bindings, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, OrgAlias: alias, OrgID: lifecycle.OrgID, OrgStatus: "Active", Preflight: lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
@@ -124,7 +125,7 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err != nil {
 		t.Fatal(err)
 	}
-	shard1Command := CommandResult{Command: append([]string{"python3"}, shard1Args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", shard1Args, filepath.Dir(bundlePath), environment), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("4", 64), StderrSHA256: strings.Repeat("5", 64)}
+	shard1Command := CommandResult{Command: append([]string{"/usr/bin/python3"}, shard1Args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: pythonSHA, ExecutableAfterSHA256: pythonSHA, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", shard1Args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("4", 64), StderrSHA256: strings.Repeat("5", 64)}
 	shard1Lifecycle := salesforcePreflightForTest(t, shard1Alias, bundleSHA, bundlePath)
 	shard1 := SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: shard1Command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: shard1Executor, RunID: shard1RunID, ShardIndex: 1, ShardCount: 2, OrgAlias: shard1Alias, OrgID: "00D1", OrgStatus: "Active", Preflight: shard1Lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{shard1Command}, Postflight: shard1Lifecycle, PostInventory: SalesforceInventory{}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
 	shard1.Preflight.OrgID, shard1.Postflight.OrgID = shard1.OrgID, shard1.OrgID
@@ -148,8 +149,9 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err != nil {
 		t.Fatal(err)
 	}
-	rewritten.Commands[0].Command = append([]string{"python3"}, rewrittenArgs...)
-	rewritten.Commands[0].CommandSpecSHA256 = salesforceFilterCommandSpecSHA256("python3", rewrittenArgs, filepath.Dir(bundlePath), environment)
+	rewritten.Commands[0].Command = append([]string{"/usr/bin/python3"}, rewrittenArgs...)
+	rewritten.Commands[0].ExecutableSHA256, rewritten.Commands[0].ExecutableAfterSHA256 = pythonSHA, pythonSHA
+	rewritten.Commands[0].CommandSpecSHA256 = salesforceFilterCommandSpecSHA256("/usr/bin/python3", rewrittenArgs, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA)
 	rewritten.Bindings.FilterCommandSpecSHA256 = rewritten.Commands[0].CommandSpecSHA256
 	rewrittenPath := filepath.Join(t.TempDir(), "rewritten-dispatch.json")
 	if err := WriteNewJSON(rewrittenPath, rewritten); err != nil {
@@ -626,7 +628,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		if !ok || execution.workingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(execution.environment, mustFixedSalesforceEnvironment(t)) {
 			return salesforceCommandOutput{}, fmt.Errorf("unsealed Salesforce filter execution")
 		}
-		if path != "python3" {
+		if path != "/usr/bin/python3" {
 			return salesforceCommandOutput{}, fmt.Errorf("unexpected filter runner %q", path)
 		}
 		out := ""
@@ -668,7 +670,8 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: "assurance-sf0", ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t))}
+	pythonSHA := mustSealedPythonSHA(t)
+	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: "assurance-sf0", ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t), pythonSHA, pythonSHA)}
 	if err := os.MkdirAll(executorRoot, 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -746,6 +749,15 @@ func mustFixedSalesforceEnvironment(t *testing.T) []string {
 		t.Fatal(err)
 	}
 	return environment
+}
+
+func mustSealedPythonSHA(t *testing.T) string {
+	t.Helper()
+	hash, err := sealedPythonSHA256()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return hash
 }
 
 func shardLifecycleForTest(alias, id, bundleSHA string) SalesforceOrgPreflight {

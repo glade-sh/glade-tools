@@ -265,7 +265,11 @@ func CreateSalesforceDispatch(request SalesforceDispatchRequest) (SalesforceDisp
 	if err != nil {
 		return SalesforceDispatch{}, err
 	}
-	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: request.OrgAlias, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: request.ShardIndex, ShardCount: request.ShardCount, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(request.BundlePath), environment)}
+	pythonSHA, pythonErr := sealedPythonSHA256()
+	if pythonErr != nil {
+		return SalesforceDispatch{}, pythonErr
+	}
+	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: request.OrgAlias, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: request.ShardIndex, ShardCount: request.ShardCount, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(request.BundlePath), environment, pythonSHA, pythonSHA)}
 	if err := WriteNewJSON(request.OutputPath, dispatch); err != nil {
 		return SalesforceDispatch{}, err
 	}
@@ -404,7 +408,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if filterRunner == nil {
 		filterRunner = runSalesforceCLI
 	}
-	_, command, err := runSalesforceFilterCommand(filterRunner, "python3", filepath.Dir(request.BundlePath), args...)
+	_, command, err := runSalesforceFilterCommand(filterRunner, "/usr/bin/python3", filepath.Dir(request.BundlePath), args...)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
@@ -605,26 +609,33 @@ func runSalesforceFilterCommand(runner salesforceCommandRunner, binary, workingD
 	if err != nil || !filepath.IsAbs(workingDirectory) {
 		return salesforceCommandOutput{}, CommandResult{}, fmt.Errorf("invalid Salesforce filter execution")
 	}
+	before, hashErr := sha256File(binary)
+	if hashErr != nil || !filepath.IsAbs(binary) {
+		return salesforceCommandOutput{}, CommandResult{}, fmt.Errorf("sealed Python interpreter is unavailable")
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), salesforceFilterTimeout)
 	defer cancel()
 	started := time.Now()
 	ctx = context.WithValue(ctx, salesforceExecutionKey{}, salesforceExecution{workingDirectory: workingDirectory, environment: environment})
 	output, err := runner(ctx, binary, args...)
-	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, CommandSpecSHA256: salesforceFilterCommandSpecSHA256(binary, args, workingDirectory, environment), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
+	after, afterErr := sha256File(binary)
+	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: salesforceFilterCommandSpecSHA256(binary, args, workingDirectory, environment, before, after), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && afterErr == nil && before == after && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
 	if err != nil || output.ExitCode != 0 || receipt.TimedOut {
 		return output, receipt, fmt.Errorf("Salesforce filter command failed")
 	}
 	return output, receipt, nil
 }
 
-func salesforceFilterCommandSpecSHA256(binary string, args []string, workingDirectory string, environment []string) string {
+func salesforceFilterCommandSpecSHA256(binary string, args []string, workingDirectory string, environment []string, executableSHA256, executableAfterSHA256 string) string {
 	data, _ := json.Marshal(struct {
-		Binary           string   `json:"binary"`
-		Arguments        []string `json:"arguments"`
-		WorkingDirectory string   `json:"workingDirectory"`
-		Environment      []string `json:"environment"`
-		TimeoutNS        int64    `json:"timeoutNs"`
-	}{binary, args, workingDirectory, environment, salesforceFilterTimeout.Nanoseconds()})
+		Binary                string   `json:"binary"`
+		Arguments             []string `json:"arguments"`
+		WorkingDirectory      string   `json:"workingDirectory"`
+		Environment           []string `json:"environment"`
+		ExecutableSHA256      string   `json:"executableSha256"`
+		ExecutableAfterSHA256 string   `json:"executableAfterSha256"`
+		TimeoutNS             int64    `json:"timeoutNs"`
+	}{binary, args, workingDirectory, environment, executableSHA256, executableAfterSHA256, salesforceFilterTimeout.Nanoseconds()})
 	return replayBytesSHA256(data)
 }
 
@@ -975,8 +986,9 @@ func validSalesforceDispatch(dispatch SalesforceDispatch, bundle OracleBundle, b
 	executorRoot, runID, identityErr := sealedSalesforceDispatchLayout(bundlePath, bundle.AttemptSHA256, dispatch.ShardIndex)
 	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), executorRoot, runID, dispatch.OrgAlias, bundle, dispatch.BundleSHA256, dispatch.ShardIndex, dispatch.ShardCount)
 	environment, environmentErr := fixedSalesforceEnvironment()
+	pythonSHA, pythonErr := sealedPythonSHA256()
 	dispatchExecutorRoot, dispatchErr := canonicalSalesforceExecutorRoot(dispatch.ExecutorRoot)
-	return identityErr == nil && dispatchErr == nil && dispatchExecutorRoot == executorRoot && dispatch.RunID == runID && err == nil && environmentErr == nil && dispatch.FilterCommandSpecSHA256 == salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), environment)
+	return identityErr == nil && dispatchErr == nil && pythonErr == nil && dispatchExecutorRoot == executorRoot && dispatch.RunID == runID && err == nil && environmentErr == nil && dispatch.FilterCommandSpecSHA256 == salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA)
 }
 
 // ValidateSalesforceShardFiles derives the runtime and compile denominator
@@ -1175,7 +1187,16 @@ func validSealedFilterCommand(shard SalesforceShard, bundle OracleBundle, bundle
 	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), shard.ExecutorRoot, shard.RunID, shard.OrgAlias, bundle, shard.Bindings.BundleSHA256, shard.ShardIndex, shard.ShardCount)
 	environment, environmentErr := fixedSalesforceEnvironment()
 	command := shard.Commands[0]
-	return err == nil && environmentErr == nil && equalStrings(command.Command, append([]string{"python3"}, args...)) && command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(command.Environment, environment) && command.CommandSpecSHA256 == salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), environment) && command.CommandSpecSHA256 == shard.Bindings.FilterCommandSpecSHA256 && command.ExitCode == 0 && command.Passed && !command.TimedOut && sha256Pattern.MatchString(command.StdoutSHA256) && sha256Pattern.MatchString(command.StderrSHA256)
+	pythonSHA, pythonErr := sealedPythonSHA256()
+	return err == nil && environmentErr == nil && pythonErr == nil && equalStrings(command.Command, append([]string{"/usr/bin/python3"}, args...)) && command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(command.Environment, environment) && command.ExecutableSHA256 == pythonSHA && command.ExecutableAfterSHA256 == pythonSHA && command.CommandSpecSHA256 == salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA) && command.CommandSpecSHA256 == shard.Bindings.FilterCommandSpecSHA256 && command.ExitCode == 0 && command.Passed && !command.TimedOut && sha256Pattern.MatchString(command.StdoutSHA256) && sha256Pattern.MatchString(command.StderrSHA256)
+}
+
+func sealedPythonSHA256() (string, error) {
+	info, err := os.Stat("/usr/bin/python3")
+	if err != nil || !info.Mode().IsRegular() {
+		return "", fmt.Errorf("sealed Python interpreter is unavailable")
+	}
+	return sha256File("/usr/bin/python3")
 }
 
 func zeroInventory(inventory SalesforceInventory) bool {

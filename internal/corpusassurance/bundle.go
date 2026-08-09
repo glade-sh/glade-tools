@@ -285,8 +285,7 @@ func validateOracleFilterContract(path, expectedSHA256 string) error {
 		return fmt.Errorf("Salesforce filter is unavailable")
 	}
 	hash, hashErr := sha256File(path)
-	help, err := exec.Command("python3", path, "--help").CombinedOutput()
-	if hashErr != nil || hash != expectedSHA256 || err != nil || !strings.Contains(string(help), "--tools-amd64-sha256") {
+	if hashErr != nil || hash != expectedSHA256 {
 		return fmt.Errorf("Salesforce filter lacks the sealed amd64 tools contract")
 	}
 	return nil
