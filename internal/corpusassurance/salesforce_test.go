@@ -465,7 +465,7 @@ func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 			return salesforceCommandOutput{}, fmt.Errorf("unexpected sf path %q", path)
 		}
 		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
-			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active"}}`)}, nil
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
 		}
 		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
 	}
@@ -503,7 +503,7 @@ func TestRunSalesforceOrgPreflightRejectsBundleChangedDuringCommands(t *testing.
 		},
 		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
 			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
-				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active"}}`)}, nil
+				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
 			}
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
 		},
@@ -527,7 +527,7 @@ func TestRunSalesforceOrgPreflightRejectsBundleHashChangedDuringCommands(t *test
 		validateBundle: func(string) error { return nil },
 		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
 			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
-				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active"}}`)}, nil
+				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
 			}
 			if err := os.WriteFile(bundlePath, []byte(`{"bundle":false}`), 0o600); err != nil {
 				t.Fatal(err)
@@ -731,7 +731,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 	plan := OraclePlan{Candidate: candidate, Tools: tools, Rows: []OraclePlanRow{{SurfaceID: "apex:System.run()", Action: oracleRuntime}, {SurfaceID: "apex:System.compile()", Action: oracleCompile}}}
 	bundle := OracleBundle{Candidate: candidate, Tools: tools, ToolsAMD64: RuntimeArtifact{Commit: tools.Commit, OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("9", 64)}, ToolsAMD64SHA256: strings.Repeat("9", 64), ProfileSHA256: strings.Repeat("e", 64), OraclePlanSHA256: strings.Repeat("f", 64), TransportManifestSHA256: strings.Repeat("1", 64), LocalProofSummarySHA256: strings.Repeat("2", 64), FilterSHA256: strings.Repeat("3", 64)}
 	bundlePath := "/private/tmp/bundle.json"
-	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: strings.Repeat("4", 64), OrgAlias: "assurance-sf0", OrgID: "00D0", OrgStatus: "Active", Inventory: SalesforceInventory{Counts: map[string]int{}}}
+	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: strings.Repeat("4", 64), OrgAlias: "assurance-sf0", OrgID: "00D0", OrgUsername: "assurance-sf0@example.invalid", OrgStatus: "Active", Inventory: SalesforceInventory{Counts: map[string]int{}}}
 	preflightArgs := [][]string{{"org", "display", "--target-org", preflight.OrgAlias, "--json"}}
 	for _, kind := range salesforceInventoryTypes {
 		preflightArgs = append(preflightArgs, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", preflight.OrgAlias, "--json"})
@@ -919,7 +919,9 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		}
 		remoteProject := filepath.Join(remoteRoot, "projects", runID, "fixture-runtime")
 		zero, runtimePassed := 0, true
-		filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: salesforceRunCleanupForTest(filepath.Join(remoteRoot, "projects", runID)), OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{Fixture: "fixture-runtime.json", FixtureSHA256: fixtureSHA, OrgIdentity: salesforceFilterOrgIdentity{Alias: preflight.OrgAlias, OrgID: preflight.OrgID, Username: preflight.OrgUsername}, Project: project, RemoteProject: remoteProject, RemoteInvocation: salesforceRemoteInvocationForTest(remoteRoot, remoteProject, preflight.OrgUsername, "exec"), SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RuntimeResult: json.RawMessage(`{"status":0,"result":{"success":true,"compiled":true}}`), RemoteCleanup: salesforceFixtureCleanupForTest(remoteProject), OrgCleanup: salesforceOrgCleanupForTest()}}}
+		anonymous := []byte("System.debug('fixture');\n")
+		projectManifest := []salesforceExecutorFile{{Path: "anonymous.apex", SHA256: replayBytesSHA256(anonymous)}}
+		filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: salesforceRunCleanupForTest(filepath.Join(remoteRoot, "projects", runID)), OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{Fixture: "fixture-runtime.json", FixtureSHA256: fixtureSHA, OrgIdentity: salesforceFilterOrgIdentity{Alias: preflight.OrgAlias, OrgID: preflight.OrgID, Username: preflight.OrgUsername}, Project: project, RemoteProject: remoteProject, RemoteInvocation: salesforceRemoteInvocationForTest(remoteRoot, remoteProject, preflight.OrgUsername, "exec"), ProjectManifest: projectManifest, RemoteProjectManifest: append([]salesforceExecutorFile(nil), projectManifest...), SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RuntimeResult: json.RawMessage(`{"status":0,"result":{"success":true,"compiled":true}}`), RemoteCleanup: salesforceFixtureCleanupForTest(remoteProject), OrgCleanup: salesforceOrgCleanupForTest()}}}
 		data, err := json.Marshal(filter)
 		if err != nil {
 			return salesforceCommandOutput{}, err
@@ -937,7 +939,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		if err := os.MkdirAll(project, 0o700); err != nil {
 			return salesforceCommandOutput{}, err
 		}
-		if err := os.WriteFile(filepath.Join(project, "anonymous.apex"), []byte("System.debug('fixture');\n"), 0o600); err != nil {
+		if err := os.WriteFile(filepath.Join(project, "anonymous.apex"), anonymous, 0o600); err != nil {
 			return salesforceCommandOutput{}, err
 		}
 		for path, data := range map[string][]byte{filepath.Join(project, "salesforce-assurance-sf0.json"): []byte(`{"status":0,"result":{"success":true,"compiled":true}}`), filepath.Join(project, "salesforce-assurance-sf0.stderr"): nil, filepath.Join(project, "salesforce-assurance-sf0.setup"): nil} {

@@ -1020,18 +1020,19 @@ def run_one(
             target = remote_target(remote)
             mkdir = subprocess.run(
                 remote_ssh_args(remote, f"mkdir -p -- {shlex.quote(remote_project)}"),
-                stdout=setup.open("w"), stderr=subprocess.STDOUT,
-                timeout=30, check=False,
+                capture_output=True, text=True, timeout=30, check=False,
             )
+            setup.write_text((mkdir.stdout or "") + (mkdir.stderr or ""))
             if mkdir.returncode:
                 proc = None
                 payload = {"status": "remote-setup-failed", "setupExitCode": mkdir.returncode}
             else:
                 copy = subprocess.run(
                     remote_scp_args(remote, f"{project}/.", scp_destination(target, remote_project)),
-                    stdout=setup.open("a"), stderr=subprocess.STDOUT,
-                    timeout=120, check=False,
+                    capture_output=True, text=True, timeout=120, check=False,
                 )
+                with setup.open("a") as handle:
+                    handle.write((copy.stdout or "") + (copy.stderr or ""))
                 if copy.returncode:
                     proc = None
                     payload = {"status": "remote-copy-failed", "setupExitCode": copy.returncode}
