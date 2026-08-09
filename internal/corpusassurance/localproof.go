@@ -78,7 +78,9 @@ type LocalProofFixtureResult struct {
 	Disposition     string        `json:"disposition"`
 	CandidateSHA256 string        `json:"candidateSha256"`
 	ToolsSHA256     string        `json:"toolsSha256"`
-	Receipt         CommandResult `json:"receipt"`
+	Receipt         CommandResult `json:"-"`
+	Operation       string        `json:"operation"`
+	StdoutSHA256    string        `json:"stdoutSha256"`
 	Stdout          string        `json:"stdout"`
 }
 
@@ -179,7 +181,7 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 	raw := make(map[string]LocalProofFixtureResult, len(proof.RawFixtureResults))
 	for _, result := range proof.RawFixtureResults {
 		fixture, exists := fixtures[result.FixtureID]
-		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || !validLocalProofReceipt(result.Receipt, fixture.Disposition) || replayBytesSHA256([]byte(result.Stdout)) != result.Receipt.StdoutSHA256 || !validatesCandidateJSON([]byte(result.Stdout), localProofOperation(fixture.Disposition)) {
+		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || result.Operation != localProofOperation(fixture.Disposition) || replayBytesSHA256([]byte(result.Stdout)) != result.StdoutSHA256 || !validatesCandidateJSON([]byte(result.Stdout), result.Operation) {
 			return fmt.Errorf("invalid local proof fixture receipt %q", result.FixtureID)
 		}
 		raw[result.FixtureID] = result
@@ -230,7 +232,7 @@ func verifyLocalProofReplay(proof LocalProof, manifest LocalProofFixtureManifest
 	}
 	for i, result := range proof.RawFixtureResults {
 		actual := replayed.RawFixtureResults[i]
-		if result.FixtureID != actual.FixtureID || result.FixtureSHA256 != actual.FixtureSHA256 || result.Disposition != actual.Disposition || result.Stdout != actual.Stdout || result.Receipt.StdoutSHA256 != actual.Receipt.StdoutSHA256 {
+		if result.FixtureID != actual.FixtureID || result.FixtureSHA256 != actual.FixtureSHA256 || result.Disposition != actual.Disposition || result.Operation != actual.Operation || result.Stdout != actual.Stdout || result.StdoutSHA256 != actual.StdoutSHA256 {
 			return fmt.Errorf("replayed local proof differs for fixture %q", result.FixtureID)
 		}
 	}
@@ -305,8 +307,9 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		result := LocalProofFixtureResult{
 			FixtureID: fixture.ID, FixtureSHA256: fixture.SHA256, Disposition: fixture.Disposition,
 			CandidateSHA256: request.Candidate.SHA256, ToolsSHA256: request.Tools.SHA256,
-			Receipt: execution.Receipt,
-			Stdout:  execution.Stdout,
+			Receipt:   execution.Receipt,
+			Operation: command.Args[0], StdoutSHA256: execution.Receipt.StdoutSHA256,
+			Stdout: execution.Stdout,
 		}
 		if err := validateLocalProofFixtureResult(fixture, result, command, execution.Validated); err != nil {
 			return LocalProof{}, err

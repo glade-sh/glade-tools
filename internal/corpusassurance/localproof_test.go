@@ -68,13 +68,13 @@ func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 		"wrong fixture operation": func(proof *LocalProof) {
 			for i := range proof.RawFixtureResults {
 				if proof.RawFixtureResults[i].FixtureID == "runtime" {
-					proof.RawFixtureResults[i].Receipt.Command = []string{"test"}
+					proof.RawFixtureResults[i].Operation = "test"
 				}
 			}
 		},
 		"forged output and digest": func(proof *LocalProof) {
 			proof.RawFixtureResults[0].Stdout = `{}`
-			proof.RawFixtureResults[0].Receipt.StdoutSHA256 = replayBytesSHA256([]byte(`{}`))
+			proof.RawFixtureResults[0].StdoutSHA256 = replayBytesSHA256([]byte(`{}`))
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -107,7 +107,7 @@ func TestVerifyLocalProofReplayRejectsForgedRetainedOutput(t *testing.T) {
 		t.Fatalf("VerifyLocalProofReplay(valid): %v", err)
 	}
 	proof.RawFixtureResults[0].Stdout = `{"status":"passed","exitCode":0,"tests":{"total":2,"failed":0,"errors":0}}`
-	proof.RawFixtureResults[0].Receipt.StdoutSHA256 = replayBytesSHA256([]byte(proof.RawFixtureResults[0].Stdout))
+	proof.RawFixtureResults[0].StdoutSHA256 = replayBytesSHA256([]byte(proof.RawFixtureResults[0].Stdout))
 	if err := verifyLocalProofReplay(proof, manifest, request.architecture); err == nil {
 		t.Fatal("VerifyLocalProofReplay accepted forged retained output")
 	}
