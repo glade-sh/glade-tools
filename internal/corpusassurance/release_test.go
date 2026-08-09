@@ -21,13 +21,14 @@ func TestRunReleaseValidationRejectsToolsHeadThatDoesNotMatchFrozenCommit(t *tes
 	if err != nil {
 		t.Fatal(err)
 	}
+	attemptPath := writeReleaseAttempt(t, root, candidatePath, testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), toolsPath, testGitOutput(t, toolsRoot, "rev-parse", "HEAD"))
 	freezePath := filepath.Join(root, "FINAL_TOOLS_COMMIT")
 	if err := os.WriteFile(freezePath, []byte(strings.Repeat("f", 40)+"\n"), 0o400); err != nil {
 		t.Fatal(err)
 	}
 	_, err = RunReleaseValidation(ReleaseValidationRequest{
-		GladeRoot: gladeRoot, CandidatePath: candidatePath, CandidateCommit: testGitOutput(t, gladeRoot, "rev-parse", "HEAD"),
-		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsCommit: testGitOutput(t, toolsRoot, "rev-parse", "HEAD"), ToolsFreezePath: freezePath,
+		AttemptPath: attemptPath, GladeRoot: gladeRoot, CandidatePath: candidatePath,
+		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsFreezePath: freezePath,
 		OutputPath: filepath.Join(root, "RELEASE_VALIDATION.json"),
 		runner: func(context.Context, releaseCommand) (salesforceCommandOutput, error) {
 			t.Fatal("release validation ran checks before validating the frozen tools commit")
@@ -50,16 +51,59 @@ func TestRunReleaseValidationRequiresReadOnlyFrozenToolsCommit(t *testing.T) {
 		}
 	}
 	toolsCommit := testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	attemptPath := writeReleaseAttempt(t, root, candidatePath, testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), toolsPath, toolsCommit)
 	freezePath := filepath.Join(root, "FINAL_TOOLS_COMMIT")
 	if err := os.WriteFile(freezePath, []byte(toolsCommit+"\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	_, err := RunReleaseValidation(ReleaseValidationRequest{
-		GladeRoot: gladeRoot, CandidatePath: candidatePath, CandidateCommit: testGitOutput(t, gladeRoot, "rev-parse", "HEAD"),
-		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsCommit: toolsCommit, ToolsFreezePath: freezePath, OutputPath: filepath.Join(root, "RELEASE_VALIDATION.json"),
+		AttemptPath: attemptPath, GladeRoot: gladeRoot, CandidatePath: candidatePath,
+		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsFreezePath: freezePath, OutputPath: filepath.Join(root, "RELEASE_VALIDATION.json"),
 	})
 	if err == nil || !strings.Contains(err.Error(), "frozen tools commit must be mode 0400") {
 		t.Fatalf("RunReleaseValidation error = %v", err)
+	}
+}
+
+func TestRunReleaseValidationDerivesArtifactsAndFreezeFromSealedAttempt(t *testing.T) {
+	root := t.TempDir()
+	gladeRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
+	candidatePath := filepath.Join(root, "glade")
+	if err := os.WriteFile(candidatePath, []byte("binary"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	toolsPath, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	candidateCommit, toolsCommit := testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	candidate, err := runtimeArtifactFor(candidatePath, candidateCommit)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tools, err := runtimeArtifactFor(toolsPath, toolsCommit)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attemptPath := filepath.Join(root, "ATTEMPT.json")
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools}
+	if err := WriteNewJSON(attemptPath, attempt); err != nil {
+		t.Fatal(err)
+	}
+	freezePath := filepath.Join(root, "FINAL_TOOLS_COMMIT")
+	if err := os.WriteFile(freezePath, []byte(toolsCommit+"\n"), 0o400); err != nil {
+		t.Fatal(err)
+	}
+	validation, err := RunReleaseValidation(ReleaseValidationRequest{
+		AttemptPath: attemptPath, GladeRoot: gladeRoot, CandidatePath: candidatePath,
+		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsFreezePath: freezePath, OutputPath: filepath.Join(root, "RELEASE_VALIDATION.json"),
+		runner: func(context.Context, releaseCommand) (salesforceCommandOutput, error) {
+			return salesforceCommandOutput{}, nil
+		},
+	})
+	if err != nil || validation.Candidate != candidate || validation.Tools != tools {
+		t.Fatalf("RunReleaseValidation = %#v, %v", validation, err)
 	}
 }
 
@@ -76,6 +120,7 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 		t.Fatal(err)
 	}
 	toolsCommit := testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	attemptPath := writeReleaseAttempt(t, root, candidatePath, testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), toolsPath, toolsCommit)
 	freezePath := filepath.Join(root, "FINAL_TOOLS_COMMIT")
 	if err := os.WriteFile(freezePath, []byte(toolsCommit+"\n"), 0o400); err != nil {
 		t.Fatal(err)
@@ -83,8 +128,8 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	var commands []releaseCommand
 	outputPath := filepath.Join(root, "RELEASE_VALIDATION.json")
 	validation, err := RunReleaseValidation(ReleaseValidationRequest{
-		GladeRoot: gladeRoot, CandidatePath: candidatePath, CandidateCommit: testGitOutput(t, gladeRoot, "rev-parse", "HEAD"),
-		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsCommit: toolsCommit, ToolsFreezePath: freezePath, OutputPath: outputPath,
+		AttemptPath: attemptPath, GladeRoot: gladeRoot, CandidatePath: candidatePath,
+		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsFreezePath: freezePath, OutputPath: outputPath,
 		runner: func(_ context.Context, command releaseCommand) (salesforceCommandOutput, error) {
 			commands = append(commands, command)
 			return salesforceCommandOutput{Stdout: []byte("ok")}, nil
@@ -117,13 +162,14 @@ func TestRunReleaseValidationRejectsToolsPathThatIsNotTheExecutingBinary(t *test
 		}
 	}
 	toolsCommit := testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	attemptPath := writeReleaseAttempt(t, root, candidatePath, testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), toolsPath, toolsCommit)
 	freezePath := filepath.Join(root, "FINAL_TOOLS_COMMIT")
 	if err := os.WriteFile(freezePath, []byte(toolsCommit+"\n"), 0o400); err != nil {
 		t.Fatal(err)
 	}
 	_, err := RunReleaseValidation(ReleaseValidationRequest{
-		GladeRoot: gladeRoot, CandidatePath: candidatePath, CandidateCommit: testGitOutput(t, gladeRoot, "rev-parse", "HEAD"),
-		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsCommit: toolsCommit, ToolsFreezePath: freezePath, OutputPath: filepath.Join(root, "RELEASE_VALIDATION.json"),
+		AttemptPath: attemptPath, GladeRoot: gladeRoot, CandidatePath: candidatePath,
+		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsFreezePath: freezePath, OutputPath: filepath.Join(root, "RELEASE_VALIDATION.json"),
 		runner: func(context.Context, releaseCommand) (salesforceCommandOutput, error) {
 			t.Fatal("release validation ran checks before binding the executor")
 			return salesforceCommandOutput{}, nil
@@ -166,4 +212,22 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 			t.Fatalf("release environment inherits PATH: %#v", command.Environment)
 		}
 	}
+}
+
+func writeReleaseAttempt(t *testing.T, root, candidatePath, candidateCommit, toolsPath, toolsCommit string) string {
+	t.Helper()
+	candidate, err := runtimeArtifactFor(candidatePath, candidateCommit)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tools, err := runtimeArtifactFor(toolsPath, toolsCommit)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(root, "ATTEMPT.json")
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools}
+	if err := WriteNewJSON(path, attempt); err != nil {
+		t.Fatal(err)
+	}
+	return path
 }

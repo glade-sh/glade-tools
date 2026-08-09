@@ -235,7 +235,7 @@ func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePl
 	if validation.Candidate != plan.Candidate || validation.Tools != plan.Tools {
 		return fmt.Errorf("release validation artifacts do not match oracle plan")
 	}
-	if !sha256Pattern.MatchString(validation.ToolsFreezeSHA256) {
+	if !sha256Pattern.MatchString(validation.AttemptSHA256) || !sha256Pattern.MatchString(validation.ToolsFreezeSHA256) {
 		return fmt.Errorf("release validation freeze hash is invalid")
 	}
 	for index, result := range validation.Commands {
@@ -247,7 +247,7 @@ func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePl
 }
 
 func validOracleReleaseCommand(index int, result ReleaseCommandResult) bool {
-	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != releaseValidationTimeout.Milliseconds() || !filepath.IsAbs(result.WorkingDirectory) || len(result.Command) == 0 || len(result.Environment) != 3 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != releaseValidationTimeout.Milliseconds() || !filepath.IsAbs(result.WorkingDirectory) || len(result.Command) == 0 || len(result.Environment) != 5 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
 		return false
 	}
 	switch index {

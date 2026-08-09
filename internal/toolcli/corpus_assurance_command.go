@@ -131,16 +131,17 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 	case "release-validate":
 		flags := flag.NewFlagSet("corpus assurance release-validate", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
-		gladeRoot, candidate, candidateCommit := flags.String("glade-root", "", ""), flags.String("candidate", "", ""), flags.String("candidate-commit", "", "")
-		toolsRoot, tools, toolsCommit := flags.String("tools-root", "", ""), flags.String("tools", "", ""), flags.String("tools-commit", "", "")
+		attempt := flags.String("attempt", "", "")
+		gladeRoot, candidate := flags.String("glade-root", "", ""), flags.String("candidate", "", "")
+		toolsRoot, tools := flags.String("tools-root", "", ""), flags.String("tools", "", "")
 		freeze, output := flags.String("tools-freeze", "", ""), flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*gladeRoot, *candidate, *candidateCommit, *toolsRoot, *tools, *toolsCommit, *freeze, *output); err != nil {
+		if err := requiredAssuranceFlags(*attempt, *gladeRoot, *candidate, *toolsRoot, *tools, *freeze, *output); err != nil {
 			return err
 		}
-		validation, err := corpusassurance.RunReleaseValidation(corpusassurance.ReleaseValidationRequest{GladeRoot: *gladeRoot, CandidatePath: *candidate, CandidateCommit: *candidateCommit, ToolsRoot: *toolsRoot, ToolsPath: *tools, ToolsCommit: *toolsCommit, ToolsFreezePath: *freeze, OutputPath: *output})
+		validation, err := corpusassurance.RunReleaseValidation(corpusassurance.ReleaseValidationRequest{AttemptPath: *attempt, GladeRoot: *gladeRoot, CandidatePath: *candidate, ToolsRoot: *toolsRoot, ToolsPath: *tools, ToolsFreezePath: *freeze, OutputPath: *output})
 		if err != nil {
 			return err
 		}
@@ -343,7 +344,7 @@ Usage:
   glade-tools corpus assurance replay --host <local|casper> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
-	  glade-tools corpus assurance release-validate --glade-root <glade-root> --candidate <glade> --candidate-commit <commit> --tools-root <glade-tools-root> --tools <glade-tools> --tools-commit <commit> --tools-freeze <FINAL_TOOLS_COMMIT> --output <RELEASE_VALIDATION.json>
+	  glade-tools corpus assurance release-validate --attempt <ATTEMPT.json> --glade-root <glade-root> --candidate <glade> --tools-root <glade-tools-root> --tools <glade-tools> --tools-freeze <FINAL_TOOLS_COMMIT> --output <RELEASE_VALIDATION.json>
   glade-tools corpus assurance oracle-plan --inventory <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <decisions.json> --local-profile <profile.json> --local-usage <usage.json> --local-decision <decision.json> --fixture-manifest <fixtures.json> --local-proof <LOCAL_PROOF.json> --candidate <glade> --tools <glade-tools> --directives <directives.json> --profile-output <ASSURANCE_PROFILE.json> --output <ORACLE_PLAN.json>
   glade-tools corpus assurance exclusion-request --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --output <EXCLUSION_REQUEST.json>
   glade-tools corpus assurance authorize-exclusions --request <EXCLUSION_REQUEST.json> --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --policy <policy.json> --output <EXCLUSION_AUTHORITY.json>

@@ -16,6 +16,7 @@ const releaseValidationTimeout = 20 * time.Minute
 
 type ReleaseValidation struct {
 	SchemaVersion     int                    `json:"schemaVersion"`
+	AttemptSHA256     string                 `json:"attemptSha256"`
 	Candidate         RuntimeArtifact        `json:"candidate"`
 	Tools             RuntimeArtifact        `json:"tools"`
 	ToolsFreezeSHA256 string                 `json:"toolsFreezeSha256"`
@@ -30,12 +31,11 @@ type ReleaseCommandResult struct {
 }
 
 type ReleaseValidationRequest struct {
+	AttemptPath     string
 	GladeRoot       string
 	CandidatePath   string
-	CandidateCommit string
 	ToolsRoot       string
 	ToolsPath       string
-	ToolsCommit     string
 	ToolsFreezePath string
 	OutputPath      string
 	runner          releaseCommandRunner
@@ -54,41 +54,48 @@ type releaseCommandRunner func(context.Context, releaseCommand) (salesforceComma
 // RunReleaseValidation seals the complete fixed release checks only after the
 // frozen tools commit, clean source roots, and executable hashes agree.
 func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, error) {
-	for _, path := range []string{request.GladeRoot, request.CandidatePath, request.ToolsRoot, request.ToolsPath, request.ToolsFreezePath, request.OutputPath} {
+	for _, path := range []string{request.AttemptPath, request.GladeRoot, request.CandidatePath, request.ToolsRoot, request.ToolsPath, request.ToolsFreezePath, request.OutputPath} {
 		if !filepath.IsAbs(path) {
 			return ReleaseValidation{}, fmt.Errorf("absolute release-validation paths are required")
 		}
-	}
-	if !commitPattern.MatchString(request.CandidateCommit) || !commitPattern.MatchString(request.ToolsCommit) {
-		return ReleaseValidation{}, fmt.Errorf("release-validation commits are invalid")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
 		return ReleaseValidation{}, fmt.Errorf("release-validation output already exists: %s", request.OutputPath)
 	} else if !os.IsNotExist(err) {
 		return ReleaseValidation{}, err
 	}
+	attempt, attemptBytes, err := readExactJSONBytes[AssuranceAttempt](request.AttemptPath)
+	if err != nil || ValidateAssuranceAttempt(attempt) != nil {
+		return ReleaseValidation{}, fmt.Errorf("invalid sealed assurance attempt")
+	}
 	freezeInfo, err := os.Stat(request.ToolsFreezePath)
 	if err != nil || !freezeInfo.Mode().IsRegular() || freezeInfo.Mode().Perm() != 0o400 {
 		return ReleaseValidation{}, fmt.Errorf("frozen tools commit must be mode 0400")
 	}
 	freezeBytes, err := os.ReadFile(request.ToolsFreezePath)
-	if err != nil || strings.TrimSpace(string(freezeBytes)) != request.ToolsCommit {
-		return ReleaseValidation{}, fmt.Errorf("frozen tools commit does not match requested tools commit")
+	if err != nil || strings.TrimSpace(string(freezeBytes)) != attempt.Tools.Commit {
+		return ReleaseValidation{}, fmt.Errorf("frozen tools commit does not match sealed attempt")
 	}
 	freezeSHA := replayBytesSHA256(freezeBytes)
-	if err := validateCleanGitRoot(request.GladeRoot, request.CandidateCommit); err != nil {
+	if err := validateCleanGitRoot(request.GladeRoot, attempt.Candidate.Commit); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("candidate source: %w", err)
 	}
-	if err := validateCleanGitRoot(request.ToolsRoot, request.ToolsCommit); err != nil {
+	if err := validateCleanGitRoot(request.ToolsRoot, attempt.Tools.Commit); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools source: %w", err)
 	}
-	candidate, err := runtimeArtifactFor(request.CandidatePath, request.CandidateCommit)
+	candidate, err := runtimeArtifactFor(request.CandidatePath, attempt.Candidate.Commit)
 	if err != nil {
 		return ReleaseValidation{}, fmt.Errorf("candidate: %w", err)
 	}
-	tools, err := releaseExecutingTools(request.ToolsPath, request.ToolsCommit)
+	if candidate != attempt.Candidate {
+		return ReleaseValidation{}, fmt.Errorf("candidate does not match sealed attempt")
+	}
+	tools, err := releaseExecutingTools(request.ToolsPath, attempt.Tools.Commit)
 	if err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools: %w", err)
+	}
+	if tools != attempt.Tools {
+		return ReleaseValidation{}, fmt.Errorf("tools do not match sealed attempt")
 	}
 	commands, err := fixedReleaseCommands(request.GladeRoot, request.ToolsRoot)
 	if err != nil {
@@ -106,22 +113,25 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 		}
 		results = append(results, result)
 	}
-	if err := validateCleanGitRoot(request.GladeRoot, request.CandidateCommit); err != nil {
+	if err := validateCleanGitRoot(request.GladeRoot, attempt.Candidate.Commit); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("candidate source changed during release validation: %w", err)
 	}
-	if err := validateCleanGitRoot(request.ToolsRoot, request.ToolsCommit); err != nil {
+	if err := validateCleanGitRoot(request.ToolsRoot, attempt.Tools.Commit); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools source changed during release validation: %w", err)
 	}
-	if current, err := runtimeArtifactFor(request.CandidatePath, request.CandidateCommit); err != nil || current != candidate {
+	if current, err := runtimeArtifactFor(request.CandidatePath, attempt.Candidate.Commit); err != nil || current != candidate || current != attempt.Candidate {
 		return ReleaseValidation{}, fmt.Errorf("candidate changed during release validation")
 	}
-	if current, err := runtimeArtifactFor(request.ToolsPath, request.ToolsCommit); err != nil || current != tools {
+	if current, err := releaseExecutingTools(request.ToolsPath, attempt.Tools.Commit); err != nil || current != tools || current != attempt.Tools {
 		return ReleaseValidation{}, fmt.Errorf("tools changed during release validation")
 	}
 	if current, err := sha256File(request.ToolsFreezePath); err != nil || current != freezeSHA {
 		return ReleaseValidation{}, fmt.Errorf("frozen tools commit changed during release validation")
 	}
-	validation := ReleaseValidation{SchemaVersion: 1, Candidate: candidate, Tools: tools, ToolsFreezeSHA256: freezeSHA, Commands: results}
+	if current, err := sha256File(request.AttemptPath); err != nil || current != replayBytesSHA256(attemptBytes) {
+		return ReleaseValidation{}, fmt.Errorf("sealed assurance attempt changed during release validation")
+	}
+	validation := ReleaseValidation{SchemaVersion: 1, AttemptSHA256: replayBytesSHA256(attemptBytes), Candidate: candidate, Tools: tools, ToolsFreezeSHA256: freezeSHA, Commands: results}
 	if err := WriteNewJSON(request.OutputPath, validation); err != nil {
 		return ReleaseValidation{}, err
 	}

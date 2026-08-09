@@ -99,7 +99,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 
 func writeSealedReleaseValidation(t *testing.T, path string, candidate, tools RuntimeArtifact) {
 	t.Helper()
-	environment := []string{"HOME=/var/empty", "PATH=/usr/bin:/bin", "TMPDIR=/tmp"}
+	environment := []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/Users/matt/go/pkg/mod"}
 	commands := []releaseCommand{
 		{Path: "/usr/local/bin/go", Args: []string{"test", "./..."}, WorkingDirectory: "/glade", Environment: environment, Timeout: releaseValidationTimeout},
 		{Path: "/glade/scripts/smoke.sh", WorkingDirectory: "/glade", Environment: environment, Timeout: releaseValidationTimeout},
@@ -123,7 +123,7 @@ func writeSealedReleaseValidation(t *testing.T, path string, candidate, tools Ru
 			TimeoutMS:        command.Timeout.Milliseconds(),
 		})
 	}
-	validation := ReleaseValidation{SchemaVersion: 1, Candidate: candidate, Tools: tools, ToolsFreezeSHA256: strings.Repeat("a", 64), Commands: results}
+	validation := ReleaseValidation{SchemaVersion: 1, AttemptSHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, ToolsFreezeSHA256: strings.Repeat("a", 64), Commands: results}
 	if err := WriteNewJSON(path, validation); err != nil {
 		t.Fatal(err)
 	}
