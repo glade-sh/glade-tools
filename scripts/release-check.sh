@@ -19,6 +19,7 @@ go test \
 	./internal/apexrules \
 	./internal/capability \
 	./internal/compat \
+	./internal/corpusassurance \
 	./internal/corpuscheck \
 	./internal/examplescan \
 	./internal/lwcparity \
@@ -30,6 +31,7 @@ go test \
 	./internal/producttestverify \
 	./internal/projectscan \
 	./internal/uicontroller \
+	./internal/toolcli \
 	./scripts
 go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json
 go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json
