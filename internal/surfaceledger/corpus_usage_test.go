@@ -114,8 +114,8 @@ public class BlockComment {
 	t.Fatalf("Database entry not found in usage")
 }
 
-// 3. public production, public test, private production, private test, and
-//    expected-failure counts remain distinct
+//  3. public production, public test, private production, private test, and
+//     expected-failure counts remain distinct
 func TestCorpusUsageDistinctCountCategories(t *testing.T) {
 	pubRoot := t.TempDir()
 	priRoot := t.TempDir()
@@ -204,6 +204,96 @@ func TestCorpusUsageDistinctCountCategories(t *testing.T) {
 	t.Fatalf("System entry not found in usage")
 }
 
+func TestCorpusUsageClassifiesCaseInsensitiveTestMarkers(t *testing.T) {
+	tests := []struct {
+		name    string
+		content string
+	}{
+		{
+			name:    "camel_case_is_test_annotation",
+			content: `@IsTest private class Marker { static void verify() { System.debug('x'); } }`,
+		},
+		{
+			name:    "upper_case_is_test_annotation",
+			content: `@ISTEST private class Marker { static void verify() { System.debug('x'); } }`,
+		},
+		{
+			name:    "mixed_case_legacy_test_method",
+			content: `private class Marker { TeStMeThOd static void verify() { System.debug('x'); } }`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root := t.TempDir()
+			writeApexFile(t, root, "project", "Marker.cls", tt.content)
+
+			cu, err := BuildCorpusUsage(ledgerWithNamespaces("System"), root, "", "")
+			if err != nil {
+				t.Fatalf("BuildCorpusUsage: %v", err)
+			}
+
+			for _, entry := range cu.Usage {
+				if entry.UsageKey != "System" {
+					continue
+				}
+				if entry.PubProdRefs != 0 {
+					t.Fatalf("PubProdRefs: want 0 for a test file, got %d", entry.PubProdRefs)
+				}
+				if entry.PubTestRefs != 1 {
+					t.Fatalf("PubTestRefs: want 1, got %d", entry.PubTestRefs)
+				}
+				return
+			}
+			t.Fatal("System entry not found in usage")
+		})
+	}
+}
+
+func TestCorpusUsageDoesNotClassifyEmbeddedOrNonCodeTestMarkers(t *testing.T) {
+	tests := []struct {
+		name    string
+		content string
+	}{
+		{
+			name:    "embedded identifier",
+			content: `private class Marker { void contestMethod() { System.debug('x'); } }`,
+		},
+		{
+			name: "comments and strings",
+			content: `// @iStEsT
+/* TeStMeThOd */
+private class Marker { void verify() { String marker = '@iStEsT TeStMeThOd'; System.debug('x'); } }`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root := t.TempDir()
+			writeApexFile(t, root, "project", "Marker.cls", tt.content)
+
+			cu, err := BuildCorpusUsage(ledgerWithNamespaces("System"), root, "", "")
+			if err != nil {
+				t.Fatalf("BuildCorpusUsage: %v", err)
+			}
+
+			for _, entry := range cu.Usage {
+				if entry.UsageKey != "System" {
+					continue
+				}
+				if entry.PubProdRefs != 1 {
+					t.Fatalf("PubProdRefs: want 1 for a production file, got %d", entry.PubProdRefs)
+				}
+				if entry.PubTestRefs != 0 {
+					t.Fatalf("PubTestRefs: want 0 for a production file, got %d", entry.PubTestRefs)
+				}
+				return
+			}
+			t.Fatal("System entry not found in usage")
+		})
+	}
+}
+
 // 4. a local DataSource.cls shadows DataSource. within that project
 func TestCorpusUsageLocalShadowing(t *testing.T) {
 	root := t.TempDir()
@@ -252,6 +342,7 @@ public class App {
         Database.update(rec);
     }
 }
+
 `)
 
 	cu, err := BuildCorpusUsage(ledger, root, "", "")
@@ -295,11 +386,42 @@ public class App {
 		}
 	}
 
-	checkEntry("ConnectApi", 2)                          // 2 calls via ConnectApi
-	checkEntry("ConnectApi.ChatterUsers", 2)             // 2 calls on ChatterUsers
+	checkEntry("ConnectApi", 2)                            // 2 calls via ConnectApi
+	checkEntry("ConnectApi.ChatterUsers", 2)               // 2 calls on ChatterUsers
 	checkEntry("ConnectApi.ChatterUsers.getFollowings", 1) // 1 call
 	checkEntry("ConnectApi.ChatterUsers.getFollowers", 1)  // 1 call
-	checkEntry("Database", 2)                            // insert + update
+	checkEntry("Database", 2)                              // insert + update
+}
+
+func TestCorpusUsageUsesLongestNestedNamespace(t *testing.T) {
+	root := t.TempDir()
+	ledger := []SurfaceLedgerRow{
+		{SurfaceID: "apex:Database.Root", Product: ProductApex, Namespace: "Database"},
+		{SurfaceID: "apex:Database.Cursor.Root", Product: ProductApex, Namespace: "Database.Cursor"},
+	}
+	writeApexFile(t, root, "project", "App.cls", `public class App {
+	void run() {
+		Database.Cursor.DeleteFilter.values();
+		Database.DeleteFilter.values();
+	}
+}`)
+
+	usage, err := BuildCorpusUsage(ledger, root, "", "")
+	if err != nil {
+		t.Fatalf("BuildCorpusUsage: %v", err)
+	}
+	byKey := map[string]CorpusUsageEntry{}
+	for _, entry := range usage.Usage {
+		byKey[entry.UsageKey] = entry
+	}
+	for _, key := range []string{"Database.Cursor", "Database.Cursor.DeleteFilter", "Database.Cursor.DeleteFilter.values", "Database.DeleteFilter.values"} {
+		if _, ok := byKey[key]; !ok {
+			t.Fatalf("missing usage key %q: %#v", key, usage.Usage)
+		}
+	}
+	if got := byKey["Database.Cursor.DeleteFilter"]; got.TypeName != "DeleteFilter" || got.MemberName != "" {
+		t.Fatalf("nested type identity = %#v, want Database.Cursor/DeleteFilter", got)
+	}
 }
 
 // helper for the test above — TotalRefs sums all ref categories
@@ -354,8 +476,8 @@ func TestCorpusUsageDeterministicOutput(t *testing.T) {
 	_ = h
 }
 
-// 7. a missing root, unreadable root, or zero eligible Apex projects is a
-//    blocking operational error
+//  7. a missing root, unreadable root, or zero eligible Apex projects is a
+//     blocking operational error
 func TestCorpusUsageBlockingErrors(t *testing.T) {
 	ledger := ledgerWithNamespaces("System")
 
@@ -376,6 +498,44 @@ func TestCorpusUsageBlockingErrors(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "no Apex") && !strings.Contains(err.Error(), "eligible") {
 		t.Fatalf("error should mention no eligible projects: %v", err)
+	}
+}
+
+func TestCorpusUsageFailsWhenTrackedApexFileCannotBeRead(t *testing.T) {
+	root := t.TempDir()
+	missing := filepath.Join(root, "project", "Missing.cls")
+	if err := os.MkdirAll(filepath.Dir(missing), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(root, "does-not-exist.cls"), missing); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := BuildCorpusUsage(ledgerWithNamespaces("System"), root, "", "")
+	if err == nil {
+		t.Fatal("expected error when tracked Apex file cannot be read")
+	}
+	if !strings.Contains(err.Error(), missing) {
+		t.Fatalf("error must identify unreadable Apex file %q: %v", missing, err)
+	}
+}
+
+func TestRootDigestFailsWhenTrackedApexFileCannotBeRead(t *testing.T) {
+	root := t.TempDir()
+	missing := filepath.Join(root, "project", "Missing.cls")
+	if err := os.MkdirAll(filepath.Dir(missing), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(root, "does-not-exist.cls"), missing); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := rootDigest(root)
+	if err == nil {
+		t.Fatal("expected error when tracked Apex file cannot be read")
+	}
+	if !strings.Contains(err.Error(), missing) {
+		t.Fatalf("error must identify unreadable Apex file %q: %v", missing, err)
 	}
 }
 

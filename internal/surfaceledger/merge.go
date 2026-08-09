@@ -394,7 +394,7 @@ func comparableSystemVersionRow(row SurfaceLedgerRow) bool {
 
 func comparableDatabaseDeleteFilterRow(row SurfaceLedgerRow) bool {
 	return row.Product == ProductApex &&
-		strings.EqualFold(row.Namespace, "Database") &&
+		strings.EqualFold(row.Namespace, "Database.Cursor") &&
 		strings.EqualFold(row.TypeName, "DeleteFilter") &&
 		(strings.EqualFold(row.MemberName, "valueOf") || strings.EqualFold(row.MemberName, "values"))
 }

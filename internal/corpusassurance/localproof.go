@@ -1,0 +1,515 @@
+package corpusassurance
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
+	"time"
+)
+
+const (
+	localRuntimeRequired      = "local-runtime-required"
+	deterministicMockRequired = "deterministic-mock-required"
+	compileShapeRequired      = "compile-shape-required"
+)
+
+// LocalProofFixtureManifest records the explicit surfaces a fixture owns.
+// Ownership is the only source of fixture-to-surface credit.
+type LocalProofFixtureManifest struct {
+	Fixtures []LocalProofFixture `json:"fixtures"`
+}
+
+type LocalProofFixture struct {
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Path            string   `json:"path"`
+	SHA256          string   `json:"sha256"`
+	OwnedSurfaceIDs []string `json:"ownedSurfaceIds"`
+	Disposition     string   `json:"disposition"`
+}
+
+// LocalProofProfile and LocalProofUsage independently name every surface that
+// needs local evidence. The decision file binds their exact bytes and the
+// selected fixture manifest, so callers cannot narrow a proof run.
+type LocalProofProfile struct {
+	SchemaVersion int                    `json:"schemaVersion"`
+	Rows          []LocalProofProfileRow `json:"rows"`
+}
+
+type LocalProofProfileRow struct {
+	SurfaceID string `json:"surfaceId"`
+}
+
+type LocalProofUsage struct {
+	SchemaVersion int                    `json:"schemaVersion"`
+	Usage         []LocalProofUsageEntry `json:"usage"`
+}
+
+type LocalProofUsageEntry struct {
+	SurfaceID string `json:"surfaceId"`
+}
+
+type LocalProofDecision struct {
+	SchemaVersion         int                     `json:"schemaVersion"`
+	ProfileSHA256         string                  `json:"profileSha256"`
+	UsageSHA256           string                  `json:"usageSha256"`
+	FixtureManifestSHA256 string                  `json:"fixtureManifestSha256"`
+	Decisions             []LocalProofDecisionRow `json:"decisions"`
+}
+
+type LocalProofDecisionRow struct {
+	SurfaceID         string `json:"surfaceId"`
+	RequireLocalProof bool   `json:"requireLocalProof"`
+}
+
+type localProofInputs struct {
+	ProfileSHA256         string
+	UsageSHA256           string
+	DecisionSHA256        string
+	FixtureManifestSHA256 string
+	RequiredSurfaceIDs    []string
+}
+
+// LocalProofFixtureResult is the receipt produced once per selected fixture.
+type LocalProofFixtureResult struct {
+	FixtureID       string        `json:"fixtureId"`
+	FixtureSHA256   string        `json:"fixtureSha256"`
+	Disposition     string        `json:"disposition"`
+	CandidateSHA256 string        `json:"candidateSha256"`
+	ToolsSHA256     string        `json:"toolsSha256"`
+	Receipt         CommandResult `json:"receipt"`
+}
+
+// LocalSurfaceProof is the normalized local receipt for one required surface.
+type LocalSurfaceProof struct {
+	SurfaceID        string `json:"surfaceId"`
+	FixtureID        string `json:"fixtureId"`
+	FixtureSHA256    string `json:"fixtureSha256"`
+	Disposition      string `json:"disposition"`
+	CandidateSHA256  string `json:"candidateSha256"`
+	ToolsSHA256      string `json:"toolsSha256"`
+	RuntimeObserved  bool   `json:"runtimeObserved,omitempty"`
+	BehaviorObserved bool   `json:"behaviorObserved,omitempty"`
+	CompilePassed    bool   `json:"compilePassed,omitempty"`
+	CheckPassed      bool   `json:"checkPassed,omitempty"`
+}
+
+type LocalProofRequest struct {
+	ProfilePath         string          `json:"profilePath"`
+	UsagePath           string          `json:"usagePath"`
+	DecisionPath        string          `json:"decisionPath"`
+	FixtureManifestPath string          `json:"fixtureManifestPath"`
+	Candidate           RuntimeArtifact `json:"candidate"`
+	CandidatePath       string          `json:"candidatePath"`
+	Tools               RuntimeArtifact `json:"tools"`
+	ToolsPath           string          `json:"toolsPath"`
+	ProfileSHA256       string          `json:"profileSha256"`
+	UsageSHA256         string          `json:"usageSha256"`
+	DecisionSHA256      string          `json:"decisionSha256"`
+	OutputPath          string          `json:"-"`
+	architecture        func(string) (string, error)
+	executor            localProofExecutor
+}
+
+type LocalProof struct {
+	Status                string                    `json:"status"`
+	Candidate             RuntimeArtifact           `json:"candidate"`
+	Tools                 RuntimeArtifact           `json:"tools"`
+	ProfileSHA256         string                    `json:"profileSha256"`
+	UsageSHA256           string                    `json:"usageSha256"`
+	DecisionSHA256        string                    `json:"decisionSha256"`
+	FixtureManifestSHA256 string                    `json:"fixtureManifestSha256"`
+	SelectedSurfaceIDs    []string                  `json:"selectedSurfaceIds"`
+	RawFixtureResults     []LocalProofFixtureResult `json:"rawFixtureResults"`
+	Surfaces              []LocalSurfaceProof       `json:"surfaces"`
+}
+
+type localProofCommand struct {
+	Path string
+	Args []string
+	Dir  string
+}
+
+type localProofExecution struct {
+	Receipt   CommandResult
+	Validated bool
+}
+
+type localProofExecutor func(localProofCommand) localProofExecution
+
+// RunLocalProof runs each explicitly mapped fixture once and writes a
+// create-only normalized proof after every selected surface has valid evidence.
+func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
+	inputs, fixturesBySurface, fixtures, selected, err := validateLocalProofRequest(request)
+	if err != nil {
+		return LocalProof{}, err
+	}
+	if _, err := os.Lstat(request.OutputPath); err == nil {
+		return LocalProof{}, fmt.Errorf("local proof output already exists: %s", request.OutputPath)
+	} else if !os.IsNotExist(err) {
+		return LocalProof{}, err
+	}
+
+	executor := request.executor
+	if executor == nil {
+		executor = runLocalProofCommand
+	}
+	raw := make([]LocalProofFixtureResult, 0, len(fixtures))
+	byFixtureID := make(map[string]LocalProofFixtureResult, len(fixtures))
+	for _, fixture := range fixtures {
+		command, cleanup, err := materializeLocalProofFixture(fixture, request.CandidatePath)
+		if err != nil {
+			return LocalProof{}, err
+		}
+		if err := validateReplayRuntimeBindings(ReplayRequest{Candidate: request.Candidate, CandidatePath: request.CandidatePath, Tools: request.Tools, ToolsPath: request.ToolsPath, architecture: request.architecture}); err != nil {
+			cleanup()
+			return LocalProof{}, err
+		}
+		execution := executor(command)
+		cleanup()
+		result := LocalProofFixtureResult{
+			FixtureID: fixture.ID, FixtureSHA256: fixture.SHA256, Disposition: fixture.Disposition,
+			CandidateSHA256: request.Candidate.SHA256, ToolsSHA256: request.Tools.SHA256,
+			Receipt: execution.Receipt,
+		}
+		if err := validateLocalProofFixtureResult(fixture, result, command, execution.Validated); err != nil {
+			return LocalProof{}, err
+		}
+		raw = append(raw, result)
+		byFixtureID[fixture.ID] = result
+	}
+	if err := verifyLocalProofFiles(request, inputs, fixtures); err != nil {
+		return LocalProof{}, err
+	}
+	if err := validateReplayRuntimeBindings(ReplayRequest{Candidate: request.Candidate, CandidatePath: request.CandidatePath, Tools: request.Tools, ToolsPath: request.ToolsPath, architecture: request.architecture}); err != nil {
+		return LocalProof{}, err
+	}
+
+	proof := LocalProof{
+		Status: "pass", Candidate: request.Candidate, Tools: request.Tools,
+		ProfileSHA256: inputs.ProfileSHA256, UsageSHA256: inputs.UsageSHA256,
+		DecisionSHA256: inputs.DecisionSHA256, FixtureManifestSHA256: inputs.FixtureManifestSHA256,
+		SelectedSurfaceIDs: selected, RawFixtureResults: raw,
+	}
+	for _, surfaceID := range selected {
+		fixture := fixturesBySurface[surfaceID]
+		result := byFixtureID[fixture.ID]
+		surface := LocalSurfaceProof{
+			SurfaceID: surfaceID, FixtureID: fixture.ID, FixtureSHA256: fixture.SHA256, Disposition: fixture.Disposition,
+			CandidateSHA256: result.CandidateSHA256, ToolsSHA256: result.ToolsSHA256,
+		}
+		switch fixture.Disposition {
+		case localRuntimeRequired:
+			surface.RuntimeObserved = true
+		case deterministicMockRequired:
+			surface.BehaviorObserved = true
+		case compileShapeRequired:
+			surface.CompilePassed = true
+		}
+		proof.Surfaces = append(proof.Surfaces, surface)
+	}
+	if err := WriteNewJSON(request.OutputPath, proof); err != nil {
+		return LocalProof{}, fmt.Errorf("write local proof: %w", err)
+	}
+	return proof, nil
+}
+
+func validateLocalProofRequest(request LocalProofRequest) (localProofInputs, map[string]LocalProofFixture, []LocalProofFixture, []string, error) {
+	if request.OutputPath == "" || !filepath.IsAbs(request.OutputPath) || request.ProfilePath == "" || !filepath.IsAbs(request.ProfilePath) || request.UsagePath == "" || !filepath.IsAbs(request.UsagePath) || request.DecisionPath == "" || !filepath.IsAbs(request.DecisionPath) || request.FixtureManifestPath == "" || !filepath.IsAbs(request.FixtureManifestPath) {
+		return localProofInputs{}, nil, nil, nil, fmt.Errorf("absolute input and output paths are required")
+	}
+	if err := ValidateRuntimeArtifact(request.Candidate); err != nil {
+		return localProofInputs{}, nil, nil, nil, fmt.Errorf("candidate: %w", err)
+	}
+	if err := ValidateRuntimeArtifact(request.Tools); err != nil {
+		return localProofInputs{}, nil, nil, nil, fmt.Errorf("tools: %w", err)
+	}
+	if err := validateReplayRuntimeBindings(ReplayRequest{Candidate: request.Candidate, CandidatePath: request.CandidatePath, Tools: request.Tools, ToolsPath: request.ToolsPath, architecture: request.architecture}); err != nil {
+		return localProofInputs{}, nil, nil, nil, err
+	}
+	inputs, err := loadLocalProofInputs(request)
+	if err != nil {
+		return localProofInputs{}, nil, nil, nil, err
+	}
+
+	manifest, err := loadLocalProofFixtureManifest(request.FixtureManifestPath, inputs.FixtureManifestSHA256)
+	if err != nil {
+		return localProofInputs{}, nil, nil, nil, err
+	}
+	selected := append([]string(nil), inputs.RequiredSurfaceIDs...)
+	selectedSet := stringSet(selected)
+
+	bySurface := make(map[string]LocalProofFixture, len(selectedSet))
+	selectedFixtures := make([]LocalProofFixture, 0, len(manifest.Fixtures))
+	fixtureIDs := make(map[string]bool, len(manifest.Fixtures))
+	for _, fixture := range manifest.Fixtures {
+		if fixture.ID == "" || fixture.Name == "" || fixtureIDs[fixture.ID] || !sha256Pattern.MatchString(fixture.SHA256) || !validLocalProofDisposition(fixture.Disposition) {
+			return localProofInputs{}, nil, nil, nil, fmt.Errorf("invalid or duplicate fixture %q", fixture.ID)
+		}
+		fixtureIDs[fixture.ID] = true
+		if err := validateLocalProofFixtureFile(fixture); err != nil {
+			return localProofInputs{}, nil, nil, nil, err
+		}
+		owned := make(map[string]bool, len(fixture.OwnedSurfaceIDs))
+		selectedFixture := false
+		for _, surfaceID := range fixture.OwnedSurfaceIDs {
+			if surfaceID == "" || owned[surfaceID] {
+				return localProofInputs{}, nil, nil, nil, fmt.Errorf("fixture %q has invalid or duplicate owned surface %q", fixture.ID, surfaceID)
+			}
+			owned[surfaceID] = true
+			if !selectedSet[surfaceID] {
+				continue
+			}
+			if _, exists := bySurface[surfaceID]; exists {
+				return localProofInputs{}, nil, nil, nil, fmt.Errorf("duplicate fixture evidence for %q", surfaceID)
+			}
+			bySurface[surfaceID] = fixture
+			selectedFixture = true
+		}
+		if len(owned) == 0 {
+			return localProofInputs{}, nil, nil, nil, fmt.Errorf("fixture %q has no owned surfaces", fixture.ID)
+		}
+		if selectedFixture {
+			selectedFixtures = append(selectedFixtures, fixture)
+		}
+	}
+	for _, surfaceID := range selected {
+		if _, exists := bySurface[surfaceID]; !exists {
+			return localProofInputs{}, nil, nil, nil, fmt.Errorf("missing fixture evidence for %q", surfaceID)
+		}
+	}
+	sort.Slice(selectedFixtures, func(i, j int) bool { return selectedFixtures[i].ID < selectedFixtures[j].ID })
+	return inputs, bySurface, selectedFixtures, selected, nil
+}
+
+func loadLocalProofFixtureManifest(path, expectedSHA256 string) (LocalProofFixtureManifest, error) {
+	manifest, data, err := readExactJSONBytes[LocalProofFixtureManifest](path)
+	if err != nil {
+		return LocalProofFixtureManifest{}, fmt.Errorf("read fixture manifest: %w", err)
+	}
+	if replayBytesSHA256(data) != expectedSHA256 {
+		return LocalProofFixtureManifest{}, fmt.Errorf("fixture manifest binding mismatch")
+	}
+	return manifest, nil
+}
+
+func loadLocalProofInputs(request LocalProofRequest) (localProofInputs, error) {
+	profile, profileBytes, err := readExactJSONBytes[LocalProofProfile](request.ProfilePath)
+	if err != nil {
+		return localProofInputs{}, fmt.Errorf("read local-proof profile: %w", err)
+	}
+	usage, usageBytes, err := readExactJSONBytes[LocalProofUsage](request.UsagePath)
+	if err != nil {
+		return localProofInputs{}, fmt.Errorf("read local-proof usage: %w", err)
+	}
+	decision, decisionBytes, err := readExactJSONBytes[LocalProofDecision](request.DecisionPath)
+	if err != nil {
+		return localProofInputs{}, fmt.Errorf("read local-proof decision: %w", err)
+	}
+	inputs := localProofInputs{
+		ProfileSHA256:  replayBytesSHA256(profileBytes),
+		UsageSHA256:    replayBytesSHA256(usageBytes),
+		DecisionSHA256: replayBytesSHA256(decisionBytes),
+	}
+	if profile.SchemaVersion != 1 || usage.SchemaVersion != 1 || decision.SchemaVersion != 1 || decision.ProfileSHA256 != inputs.ProfileSHA256 || decision.UsageSHA256 != inputs.UsageSHA256 || !sha256Pattern.MatchString(decision.FixtureManifestSHA256) {
+		return localProofInputs{}, fmt.Errorf("sealed local-proof inputs do not bind")
+	}
+	profileIDs, err := localProofProfileIDs(profile.Rows)
+	if err != nil {
+		return localProofInputs{}, err
+	}
+	usageIDs, err := localProofUsageIDs(usage.Usage)
+	if err != nil {
+		return localProofInputs{}, err
+	}
+	decisions, err := localProofDecisions(decision.Decisions)
+	if err != nil {
+		return localProofInputs{}, err
+	}
+	usageSet := stringSet(usageIDs)
+	for _, surfaceID := range usageIDs {
+		if !profileIDs[surfaceID] {
+			return localProofInputs{}, fmt.Errorf("usage surface %q is absent from profile", surfaceID)
+		}
+	}
+	required := make([]string, 0, len(profileIDs))
+	for surfaceID := range profileIDs {
+		if !usageSet[surfaceID] {
+			return localProofInputs{}, fmt.Errorf("profile surface %q is absent from usage", surfaceID)
+		}
+		require, ok := decisions[surfaceID]
+		if !ok || !require {
+			return localProofInputs{}, fmt.Errorf("profile surface %q is not required by decisions", surfaceID)
+		}
+		required = append(required, surfaceID)
+	}
+	sort.Strings(required)
+	if len(required) == 0 {
+		return localProofInputs{}, fmt.Errorf("no usage surface requires local proof")
+	}
+	inputs.FixtureManifestSHA256 = decision.FixtureManifestSHA256
+	inputs.RequiredSurfaceIDs = required
+	return inputs, nil
+}
+
+func localProofProfileIDs(rows []LocalProofProfileRow) (map[string]bool, error) {
+	ids := make(map[string]bool, len(rows))
+	for _, row := range rows {
+		if row.SurfaceID == "" || ids[row.SurfaceID] {
+			return nil, fmt.Errorf("invalid or duplicate profile surface %q", row.SurfaceID)
+		}
+		ids[row.SurfaceID] = true
+	}
+	return ids, nil
+}
+func localProofUsageIDs(rows []LocalProofUsageEntry) ([]string, error) {
+	ids := make([]string, 0, len(rows))
+	for _, row := range rows {
+		ids = append(ids, row.SurfaceID)
+	}
+	return normalizedSurfaceIDs(ids)
+}
+func localProofDecisions(rows []LocalProofDecisionRow) (map[string]bool, error) {
+	values := make(map[string]bool, len(rows))
+	for _, row := range rows {
+		if row.SurfaceID == "" {
+			return nil, fmt.Errorf("invalid decision surface")
+		}
+		if _, exists := values[row.SurfaceID]; exists {
+			return nil, fmt.Errorf("duplicate decision surface %q", row.SurfaceID)
+		}
+		values[row.SurfaceID] = row.RequireLocalProof
+	}
+	return values, nil
+}
+
+func normalizedSurfaceIDs(ids []string) ([]string, error) {
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("at least one required surface is needed")
+	}
+	result := append([]string(nil), ids...)
+	sort.Strings(result)
+	for i, id := range result {
+		if id == "" || i > 0 && id == result[i-1] {
+			return nil, fmt.Errorf("invalid or duplicate required surface %q", id)
+		}
+	}
+	return result, nil
+}
+
+func stringSet(values []string) map[string]bool {
+	result := make(map[string]bool, len(values))
+	for _, value := range values {
+		result[value] = true
+	}
+	return result
+}
+
+func equalStrings(left, right []string) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for i := range left {
+		if left[i] != right[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func verifyLocalProofFiles(request LocalProofRequest, inputs localProofInputs, fixtures []LocalProofFixture) error {
+	refreshed, err := loadLocalProofInputs(request)
+	if err != nil || refreshed.ProfileSHA256 != inputs.ProfileSHA256 || refreshed.UsageSHA256 != inputs.UsageSHA256 || refreshed.DecisionSHA256 != inputs.DecisionSHA256 || refreshed.FixtureManifestSHA256 != inputs.FixtureManifestSHA256 || !equalStrings(refreshed.RequiredSurfaceIDs, inputs.RequiredSurfaceIDs) {
+		return fmt.Errorf("sealed local-proof inputs changed during execution")
+	}
+	if _, err := loadLocalProofFixtureManifest(request.FixtureManifestPath, inputs.FixtureManifestSHA256); err != nil {
+		return err
+	}
+	for _, fixture := range fixtures {
+		if err := validateLocalProofFixtureFile(fixture); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateLocalProofFixtureFile(fixture LocalProofFixture) error {
+	if fixture.Path == "" || !filepath.IsAbs(fixture.Path) {
+		return fmt.Errorf("fixture %q path must be absolute", fixture.ID)
+	}
+	data, err := os.ReadFile(fixture.Path)
+	if err != nil {
+		return fmt.Errorf("read fixture %q: %w", fixture.ID, err)
+	}
+	if replayBytesSHA256(data) != fixture.SHA256 {
+		return fmt.Errorf("fixture binding mismatch for %q", fixture.ID)
+	}
+	var identity struct {
+		Name     string `json:"name"`
+		Evidence []struct {
+			SurfaceID string `json:"surfaceId"`
+			Kind      string `json:"kind"`
+		} `json:"evidence"`
+	}
+	if err := json.Unmarshal(data, &identity); err != nil {
+		return fmt.Errorf("decode fixture %q: %w", fixture.ID, err)
+	}
+	if identity.Name == "" || identity.Name != fixture.Name {
+		return fmt.Errorf("fixture name mismatch for %q", fixture.ID)
+	}
+	evidence := make(map[string]string, len(identity.Evidence))
+	for _, item := range identity.Evidence {
+		if item.SurfaceID == "" || item.Kind == "" || evidence[item.SurfaceID] != "" {
+			return fmt.Errorf("fixture %q has invalid evidence", fixture.ID)
+		}
+		evidence[item.SurfaceID] = item.Kind
+	}
+	wantKind := localProofEvidenceKind(fixture.Disposition)
+	for _, surfaceID := range fixture.OwnedSurfaceIDs {
+		if evidence[surfaceID] != wantKind {
+			return fmt.Errorf("fixture %q lacks %s evidence for %q", fixture.ID, wantKind, surfaceID)
+		}
+	}
+	return nil
+}
+
+func localProofEvidenceKind(disposition string) string {
+	switch disposition {
+	case localRuntimeRequired:
+		return "runtime"
+	case deterministicMockRequired:
+		return "behavior"
+	case compileShapeRequired:
+		return "compile"
+	default:
+		return ""
+	}
+}
+
+func runLocalProofCommand(command localProofCommand) localProofExecution {
+	receipt, stdout, _ := runReplayCommandOutput(command.Dir, ReplayCommand{Path: command.Path, Args: command.Args, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 2 * time.Minute})
+	return localProofExecution{Receipt: receipt, Validated: receipt.Passed && validatesCandidateJSON(stdout)}
+}
+
+func validateLocalProofFixtureResult(fixture LocalProofFixture, result LocalProofFixtureResult, command localProofCommand, validated bool) error {
+	if result.FixtureID != fixture.ID || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition {
+		return fmt.Errorf("stale fixture result for %q", fixture.ID)
+	}
+	operation := command.Args[0]
+	expectedSpecSHA256 := commandSpecSHA256(ReplayCommand{Path: command.Path, Args: command.Args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute})
+	if !validated || !validReplayReceipt(result.Receipt, operation, expectedSpecSHA256) {
+		return fmt.Errorf("fixture %q lacks a valid %s receipt", fixture.ID, operation)
+	}
+	return nil
+}
+
+func validLocalProofDisposition(disposition string) bool {
+	switch disposition {
+	case localRuntimeRequired, deterministicMockRequired, compileShapeRequired:
+		return true
+	default:
+		return false
+	}
+}

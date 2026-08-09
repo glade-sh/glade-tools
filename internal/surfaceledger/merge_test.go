@@ -299,8 +299,8 @@ func TestMergeTreatsTailTypeSpellingsAsComparable(t *testing.T) {
 	}{
 		{
 			name:        "database delete filter values",
-			id:          ApexMemberID("Database", "DeleteFilter", "values", []string{}),
-			namespace:   "Database",
+			id:          ApexMemberID("Database.Cursor", "DeleteFilter", "values", []string{}),
+			namespace:   "Database.Cursor",
 			typeName:    "DeleteFilter",
 			memberName:  "values",
 			docsReturn:  "List<Cursor.DeleteFilter>",
@@ -308,8 +308,8 @@ func TestMergeTreatsTailTypeSpellingsAsComparable(t *testing.T) {
 		},
 		{
 			name:        "database delete filter valueOf",
-			id:          ApexMemberID("Database", "DeleteFilter", "valueOf", []string{"String"}),
-			namespace:   "Database",
+			id:          ApexMemberID("Database.Cursor", "DeleteFilter", "valueOf", []string{"String"}),
+			namespace:   "Database.Cursor",
 			typeName:    "DeleteFilter",
 			memberName:  "valueOf",
 			orgReturn:   "Database.Cursor.DeleteFilter",

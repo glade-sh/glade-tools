@@ -1,0 +1,361 @@
+package corpusassurance
+
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"reflect"
+	"runtime"
+	"strings"
+	"testing"
+	"time"
+)
+
+func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSurface(t *testing.T) {
+	request, calls := localProofRequest(t)
+	proof, err := RunLocalProof(request)
+	if err != nil {
+		t.Fatalf("RunLocalProof: %v", err)
+	}
+	if proof.Status != "pass" {
+		t.Fatalf("status = %q", proof.Status)
+	}
+	if got, want := localProofCommandShapes(*calls), [][]string{
+		{"test", "--project", ".", "--json", "--no-progress"},
+		{"exec", "--project", ".", "--json", "System.debug('ok');"},
+		{"check", "--project", ".", "--json", "--no-progress"},
+	}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("commands = %v, want %v", got, want)
+	}
+	if got, want := surfaceIDs(proof.Surfaces), []string{"apex:Mock.run", "apex:Runtime.extra", "apex:Runtime.run", "apex:Shape.run"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("proof surface IDs = %v, want %v", got, want)
+	}
+	decision := readLocalProofDecision(t, request.DecisionPath)
+	if proof.Candidate != request.Candidate || proof.Tools != request.Tools || proof.FixtureManifestSHA256 != decision.FixtureManifestSHA256 {
+		t.Fatalf("proof bindings = %#v", proof)
+	}
+	if !proof.Surfaces[0].BehaviorObserved || !proof.Surfaces[1].RuntimeObserved || !proof.Surfaces[3].CompilePassed {
+		t.Fatalf("receipt-derived observations = %#v", proof.Surfaces)
+	}
+	if _, err := os.Stat(request.OutputPath); err != nil {
+		t.Fatalf("proof output was not written: %v", err)
+	}
+}
+
+func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
+	request, _ := localProofRequest(t)
+	request.executor = nil
+	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\nfor arg in \"$@\"; do [ \"$arg\" != --fixture ] || exit 17; done\nprintf '{\"status\":\"passed\",\"exitCode\":0,\"tests\":{\"total\":1,\"failed\":0,\"errors\":0}}'\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	request.Candidate.SHA256 = localProofFileSHA256(t, request.CandidatePath)
+	proof, err := RunLocalProof(request)
+	if err != nil {
+		t.Fatalf("RunLocalProof: %v", err)
+	}
+	if proof.Status != "pass" || len(proof.RawFixtureResults) != 3 {
+		t.Fatalf("proof = %#v", proof)
+	}
+}
+
+func TestLocalProofRejectsNarrowedOrUnboundSealedSurfaceInputs(t *testing.T) {
+	for _, updateDecision := range []bool{false, true} {
+		t.Run(map[bool]string{false: "stale decision hash", true: "narrowed usage set"}[updateDecision], func(t *testing.T) {
+			request, _ := localProofRequest(t)
+			writeLocalProofJSON(t, request.UsagePath, LocalProofUsage{SchemaVersion: 1, Usage: []LocalProofUsageEntry{{SurfaceID: "apex:Mock.run"}}})
+			if updateDecision {
+				decision := readLocalProofDecision(t, request.DecisionPath)
+				decision.UsageSHA256 = localProofFileSHA256(t, request.UsagePath)
+				writeLocalProofJSON(t, request.DecisionPath, decision)
+			}
+			if _, err := RunLocalProof(request); err == nil {
+				t.Fatal("RunLocalProof accepted a caller-narrowed required surface set")
+			}
+		})
+	}
+}
+
+func TestLocalProofRejectsTamperingWrongExecutablesInvalidReceiptsAndExistingOutput(t *testing.T) {
+	for name, mutate := range map[string]func(t *testing.T, request *LocalProofRequest){
+		"modified fixture": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			if err := os.WriteFile(requestFixturePath(t, *request, "runtime"), []byte(`{"name":"runtime","changed":true}`), 0o600); err != nil {
+				t.Fatal(err)
+			}
+		},
+		"manifest hash tampering": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			manifest := readLocalProofManifest(t, request.FixtureManifestPath)
+			manifest.Fixtures[0].OwnedSurfaceIDs = []string{"apex:Tampered.run"}
+			writeLocalProofManifest(t, request.FixtureManifestPath, manifest)
+		},
+		"fixture name ownership tampering": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			manifest := readLocalProofManifest(t, request.FixtureManifestPath)
+			manifest.Fixtures[0].Name = "different"
+			writeLocalProofManifest(t, request.FixtureManifestPath, manifest)
+			updateLocalProofDecisionFixtureHash(t, request)
+		},
+		"wrong candidate executable": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			writeLocalProofExecutable(t, request.CandidatePath, "candidate replacement")
+		},
+		"wrong tools executable": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			path := filepath.Join(filepath.Dir(request.OutputPath), "other-tools")
+			writeLocalProofExecutable(t, path, "tools replacement")
+			request.ToolsPath = path
+		},
+		"claimed pass without a validated result": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			request.executor = func(command localProofCommand) localProofExecution {
+				return localProofExecution{Receipt: CommandResult{Command: []string{command.Args[0]}, ExitCode: 0, DurationMS: 0, Passed: true}}
+			}
+		},
+		"well-formed wrong command specification": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			request.executor = func(command localProofCommand) localProofExecution {
+				result := localProofReceipt(command)
+				result.CommandSpecSHA256 = strings.Repeat("f", 64)
+				return localProofExecution{Receipt: result, Validated: true}
+			}
+		},
+		"create only": func(t *testing.T, request *LocalProofRequest) {
+			t.Helper()
+			if err := os.WriteFile(request.OutputPath, []byte("keep"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			request, calls := localProofRequest(t)
+			mutate(t, &request)
+			if _, err := RunLocalProof(request); err == nil {
+				t.Fatal("RunLocalProof accepted invalid local evidence")
+			}
+			if name == "create only" {
+				if got, err := os.ReadFile(request.OutputPath); err != nil || string(got) != "keep" {
+					t.Fatalf("output = %q, %v", got, err)
+				}
+				if len(*calls) != 0 {
+					t.Fatalf("executor calls = %v, want none", *calls)
+				}
+				return
+			}
+			if _, err := os.Stat(request.OutputPath); !os.IsNotExist(err) {
+				t.Fatalf("invalid proof wrote output: %v", err)
+			}
+		})
+	}
+}
+
+func localProofRequest(t *testing.T) (LocalProofRequest, *[]localProofCommand) {
+	t.Helper()
+	root := t.TempDir()
+	candidatePath := filepath.Join(root, "candidate")
+	writeLocalProofExecutable(t, candidatePath, "candidate")
+	toolsPath, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixtures := []LocalProofFixture{
+		localProofFixture(t, root, "unused", []string{"apex:Unused.run"}, compileShapeRequired),
+		localProofFixture(t, root, "runtime", []string{"apex:Runtime.run", "apex:Runtime.extra"}, localRuntimeRequired),
+		localProofFixture(t, root, "mock", []string{"apex:Mock.run"}, deterministicMockRequired),
+		localProofFixture(t, root, "shape", []string{"apex:Shape.run"}, compileShapeRequired),
+	}
+	manifestPath := filepath.Join(root, "fixtures.json")
+	writeLocalProofManifest(t, manifestPath, LocalProofFixtureManifest{Fixtures: fixtures})
+	selected := []string{"apex:Runtime.extra", "apex:Shape.run", "apex:Mock.run", "apex:Runtime.run"}
+	profilePath := filepath.Join(root, "ASSURANCE_PROFILE.json")
+	usagePath := filepath.Join(root, "USAGE_RECONCILIATION.json")
+	decisionPath := filepath.Join(root, "DECISIONS.json")
+	profileRows := make([]LocalProofProfileRow, 0, len(selected))
+	usageRows := make([]LocalProofUsageEntry, 0, len(selected))
+	decisionRows := make([]LocalProofDecisionRow, 0, len(selected))
+	for _, id := range selected {
+		profileRows = append(profileRows, LocalProofProfileRow{SurfaceID: id})
+		usageRows = append(usageRows, LocalProofUsageEntry{SurfaceID: id})
+		decisionRows = append(decisionRows, LocalProofDecisionRow{SurfaceID: id, RequireLocalProof: true})
+	}
+	writeLocalProofJSON(t, profilePath, LocalProofProfile{SchemaVersion: 1, Rows: profileRows})
+	writeLocalProofJSON(t, usagePath, LocalProofUsage{SchemaVersion: 1, Usage: usageRows})
+	writeLocalProofJSON(t, decisionPath, LocalProofDecision{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), UsageSHA256: localProofFileSHA256(t, usagePath), FixtureManifestSHA256: localProofFileSHA256(t, manifestPath), Decisions: decisionRows})
+	calls := []localProofCommand{}
+	request := LocalProofRequest{
+		ProfilePath:         profilePath,
+		UsagePath:           usagePath,
+		DecisionPath:        decisionPath,
+		FixtureManifestPath: manifestPath,
+		Candidate:           localProofRuntime(t, candidatePath, "a"),
+		CandidatePath:       candidatePath,
+		Tools:               localProofRuntime(t, toolsPath, "b"),
+		ToolsPath:           toolsPath,
+		OutputPath:          filepath.Join(root, "LOCAL_PROOF.json"),
+		architecture:        func(string) (string, error) { return runtime.GOARCH, nil },
+	}
+	request.executor = func(command localProofCommand) localProofExecution {
+		calls = append(calls, command)
+		return localProofExecution{Receipt: localProofReceipt(command), Validated: true}
+	}
+	return request, &calls
+}
+
+func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, disposition string) LocalProofFixture {
+	t.Helper()
+	path := filepath.Join(root, name+".json")
+	command := `{"kind":"check"}`
+	source := "public class " + strings.Title(name) + " {}"
+	if disposition == localRuntimeRequired {
+		command = `{"kind":"exec","args":["System.debug('ok');"]}`
+	} else if disposition == deterministicMockRequired {
+		command = `{"kind":"test"}`
+		source = "@IsTest private class " + strings.Title(name) + " { @IsTest static void prove() {} }"
+	}
+	evidence := make([]map[string]string, 0, len(surfaceIDs))
+	for _, id := range surfaceIDs {
+		evidence = append(evidence, map[string]string{"symbol": id, "surfaceId": id, "kind": localProofEvidenceKind(disposition)})
+	}
+	evidenceJSON, err := json.Marshal(evidence)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data := `{"name":"` + name + `","evidence":` + string(evidenceJSON) + `,"source":[{"path":"force-app/main/default/classes/` + strings.Title(name) + `.cls","content":` + mustJSON(t, source) + `}],"command":` + command + `}`
+	if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return LocalProofFixture{ID: name, Name: name, Path: path, SHA256: localProofFileSHA256(t, path), OwnedSurfaceIDs: surfaceIDs, Disposition: disposition}
+}
+
+func mustJSON(t *testing.T, value string) string {
+	t.Helper()
+	data, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(data)
+}
+
+func localProofRuntime(t *testing.T, path, commitByte string) RuntimeArtifact {
+	t.Helper()
+	return RuntimeArtifact{Commit: strings.Repeat(commitByte, 40), OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: localProofFileSHA256(t, path)}
+}
+
+func localProofReceipt(command localProofCommand) CommandResult {
+	return CommandResult{
+		Command: []string{command.Args[0]}, CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: command.Path, Args: command.Args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute}),
+		ExitCode: 0, DurationMS: 0, Passed: true,
+		StdoutSHA256: strings.Repeat("a", 64), StderrSHA256: strings.Repeat("b", 64),
+	}
+}
+
+func localProofCommands(commands []localProofCommand) [][]string {
+	result := make([][]string, 0, len(commands))
+	for _, command := range commands {
+		result = append(result, command.Args)
+	}
+	return result
+}
+
+func localProofCommandShapes(commands []localProofCommand) [][]string {
+	result := localProofCommands(commands)
+	for _, command := range result {
+		if len(command) >= 3 && command[1] == "--project" {
+			command[2] = "."
+		}
+	}
+	return result
+}
+
+func requestFixturePath(t *testing.T, request LocalProofRequest, id string) string {
+	t.Helper()
+	for _, fixture := range readLocalProofManifest(t, request.FixtureManifestPath).Fixtures {
+		if fixture.ID == id {
+			return fixture.Path
+		}
+	}
+	t.Fatalf("fixture %q not found", id)
+	return ""
+}
+
+func readLocalProofManifest(t *testing.T, path string) LocalProofFixtureManifest {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest LocalProofFixtureManifest
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	return manifest
+}
+
+func writeLocalProofManifest(t *testing.T, path string, manifest LocalProofFixtureManifest) {
+	t.Helper()
+	data, err := json.Marshal(manifest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeLocalProofJSON(t *testing.T, path string, value any) {
+	t.Helper()
+	data, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func readLocalProofDecision(t *testing.T, path string) LocalProofDecision {
+	t.Helper()
+	var decision LocalProofDecision
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &decision); err != nil {
+		t.Fatal(err)
+	}
+	return decision
+}
+
+func updateLocalProofDecisionFixtureHash(t *testing.T, request *LocalProofRequest) {
+	t.Helper()
+	decision := readLocalProofDecision(t, request.DecisionPath)
+	decision.FixtureManifestSHA256 = localProofFileSHA256(t, request.FixtureManifestPath)
+	writeLocalProofJSON(t, request.DecisionPath, decision)
+}
+
+func writeLocalProofExecutable(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), 0o700); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func localProofFileSHA256(t *testing.T, path string) string {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:])
+}
+
+func surfaceIDs(proofs []LocalSurfaceProof) []string {
+	ids := make([]string, 0, len(proofs))
+	for _, proof := range proofs {
+		ids = append(ids, proof.SurfaceID)
+	}
+	return ids
+}

@@ -136,14 +136,14 @@ func BuildCorpusUsage(ledgerRows []SurfaceLedgerRow, publicRoot, publicFailRoot,
 			projUsedByCat := make(map[string]map[string]bool)
 
 			for _, f := range pFiles {
-				cat := categoryForFile(f)
-				if cat == "" {
-					continue
+				cat, err := categoryForFile(f)
+				if err != nil {
+					return CorpusUsage{}, err
 				}
 
 				content, err := os.ReadFile(f.absPath)
 				if err != nil {
-					continue
+					return CorpusUsage{}, fmt.Errorf("read Apex file %s: %w", f.absPath, err)
 				}
 				stripped := stripCommentsAndStrings(string(content))
 				refs := scanner.findRefs(stripped, localTypes)
@@ -184,9 +184,19 @@ func BuildCorpusUsage(ledgerRows []SurfaceLedgerRow, publicRoot, publicFailRoot,
 
 	// Build sorted slice.
 	cu := CorpusUsage{}
-	cu.PublicRootSHA256 = rootDigest(publicRoot)
-	cu.PublicFailRootSHA256 = rootDigest(publicFailRoot)
-	cu.PrivateRootSHA256 = rootDigest(privateRoot)
+	var err error
+	cu.PublicRootSHA256, err = rootDigest(publicRoot)
+	if err != nil {
+		return CorpusUsage{}, err
+	}
+	cu.PublicFailRootSHA256, err = rootDigest(publicFailRoot)
+	if err != nil {
+		return CorpusUsage{}, err
+	}
+	cu.PrivateRootSHA256, err = rootDigest(privateRoot)
+	if err != nil {
+		return CorpusUsage{}, err
+	}
 
 	for _, entry := range acc {
 		cu.Usage = append(cu.Usage, *entry)
@@ -256,23 +266,23 @@ func scanApexFiles(root string) ([]apexFile, error) {
 }
 
 // categoryForFile returns the category for a single file.
-func categoryForFile(f apexFile) string {
+func categoryForFile(f apexFile) (string, error) {
 	// Determine test vs production.
 	content, err := os.ReadFile(f.absPath)
 	if err != nil {
-		return ""
+		return "", fmt.Errorf("read Apex file %s: %w", f.absPath, err)
 	}
 	stripped := stripCommentsAndStrings(string(content))
 	isTest := isTestFile(f.name, stripped)
 	if isTest {
-		return "test"
+		return "test", nil
 	}
-	return "production"
+	return "production", nil
 }
 
 func isTestFile(name string, strippedContent string) bool {
-	// @isTest annotation.
-	if strings.Contains(strippedContent, "@isTest") || strings.Contains(strippedContent, "@Istest") {
+	// @isTest annotation and legacy testMethod keyword.
+	if containsApexTestMarker(strippedContent) {
 		return true
 	}
 	// Test filename pattern.
@@ -281,6 +291,26 @@ func isTestFile(name string, strippedContent string) bool {
 		return true
 	}
 	return false
+}
+
+func containsApexTestMarker(source string) bool {
+	lower := strings.ToLower(source)
+	return containsApexToken(lower, "@istest") || containsApexToken(lower, "testmethod")
+}
+
+func containsApexToken(source, token string) bool {
+	for offset := 0; ; {
+		index := strings.Index(source[offset:], token)
+		if index < 0 {
+			return false
+		}
+		index += offset
+		end := index + len(token)
+		if (index == 0 || !isIdentChar(source[index-1])) && (end == len(source) || !isIdentChar(source[end])) {
+			return true
+		}
+		offset = end
+	}
 }
 
 // stripCommentsAndStrings removes line comments, block comments, and Apex string literals.
@@ -372,7 +402,7 @@ func (s *corpusScanner) findRefs(stripped string, localTypes map[string]bool) []
 			continue
 		}
 		firstLower := strings.ToLower(parts[0])
-		canonical, ok := s.namespaces[firstLower]
+		canonical, namespaceParts, ok := s.longestNamespace(parts)
 		if !ok {
 			continue
 		}
@@ -386,18 +416,29 @@ func (s *corpusScanner) findRefs(stripped string, localTypes map[string]bool) []
 		refs = append(refs, refKey{usageKey: canonical, namespace: canonical})
 
 		// Namespace.Type ref.
-		if len(parts) >= 2 {
-			nsTypeKey := canonical + "." + parts[1]
-			refs = append(refs, refKey{usageKey: nsTypeKey, namespace: canonical, typeName: parts[1]})
+		if len(parts) > namespaceParts {
+			typeName := parts[namespaceParts]
+			nsTypeKey := canonical + "." + typeName
+			refs = append(refs, refKey{usageKey: nsTypeKey, namespace: canonical, typeName: typeName})
 		}
 
 		// Namespace.Type.member ref.
-		if len(parts) >= 3 {
-			nsTypeMemKey := canonical + "." + parts[1] + "." + parts[2]
-			refs = append(refs, refKey{usageKey: nsTypeMemKey, namespace: canonical, typeName: parts[1], memberName: parts[2]})
+		if len(parts) > namespaceParts+1 {
+			typeName, memberName := parts[namespaceParts], parts[namespaceParts+1]
+			nsTypeMemKey := canonical + "." + typeName + "." + memberName
+			refs = append(refs, refKey{usageKey: nsTypeMemKey, namespace: canonical, typeName: typeName, memberName: memberName})
 		}
 	}
 	return refs
+}
+
+func (s *corpusScanner) longestNamespace(parts []string) (string, int, bool) {
+	for count := len(parts); count > 0; count-- {
+		if canonical, ok := s.namespaces[strings.ToLower(strings.Join(parts[:count], "."))]; ok {
+			return canonical, count, true
+		}
+	}
+	return "", 0, false
 }
 
 func isIdentChar(c byte) bool {
@@ -469,13 +510,16 @@ func addProject(entry *CorpusUsageEntry, label corpusRootLabel, projCat string, 
 	}
 }
 
-func rootDigest(root string) string {
+func rootDigest(root string) (string, error) {
 	if root == "" {
-		return ""
+		return "", nil
 	}
 	files, err := scanApexFiles(root)
-	if err != nil || len(files) == 0 {
-		return ""
+	if err != nil {
+		return "", fmt.Errorf("scan root %s for digest: %w", root, err)
+	}
+	if len(files) == 0 {
+		return "", nil
 	}
 	// Sort by relative path for deterministic hash.
 	sort.Slice(files, func(i, j int) bool {
@@ -485,13 +529,13 @@ func rootDigest(root string) string {
 	for _, f := range files {
 		content, err := os.ReadFile(f.absPath)
 		if err != nil {
-			continue
+			return "", fmt.Errorf("read Apex file %s for digest: %w", f.absPath, err)
 		}
 		h.Write([]byte(f.relPath))
 		h.Write([]byte{0})
 		h.Write(content)
 	}
-	return hex.EncodeToString(h.Sum(nil))
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 // UsageKeyForRow returns the stable usage key for a profile row.
