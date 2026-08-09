@@ -82,7 +82,7 @@ func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(
 
 func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
-	writeSealedReleaseValidation(t, inputs.releasePath, inputs.plan.Candidate, inputs.plan.Tools)
+	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
 	root := filepath.Dir(inputs.releasePath)
 	outputPath := filepath.Join(root, "razor")
 	bundle, err := BuildOracleBundle(inputs.request(outputPath))

@@ -13,6 +13,7 @@ import (
 // OracleBundleRequest names the sealed inputs staged for Razor. Every input is
 // rehashed before publication; OutputPath must be a new private directory.
 type OracleBundleRequest struct {
+	AttemptPath           string
 	ProfilePath           string
 	PlanPath              string
 	AuthorityPath         string
@@ -35,6 +36,7 @@ type OracleBundle struct {
 	OraclePlanSHA256         string                `json:"oraclePlanSha256"`
 	ExclusionAuthoritySHA256 string                `json:"exclusionAuthoritySha256"`
 	ReleaseValidationSHA256  string                `json:"releaseValidationSha256"`
+	AttemptSHA256            string                `json:"attemptSha256"`
 	LocalProofSHA256         string                `json:"localProofSha256"`
 	LocalProofSummarySHA256  string                `json:"localProofSummarySha256"`
 	FixtureManifestSHA256    string                `json:"fixtureManifestSha256"`
@@ -81,7 +83,7 @@ type oracleSourceFile struct {
 // BuildOracleBundle stages only the derived Salesforce-required fixtures and
 // their sealed dependencies, then atomically publishes the new output tree.
 func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
-	paths := []string{request.ProfilePath, request.PlanPath, request.AuthorityPath, request.ReleaseValidationPath, request.LocalProofPath, request.FixtureManifestPath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.OutputPath}
+	paths := []string{request.AttemptPath, request.ProfilePath, request.PlanPath, request.AuthorityPath, request.ReleaseValidationPath, request.LocalProofPath, request.FixtureManifestPath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.OutputPath}
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return OracleBundle{}, fmt.Errorf("absolute oracle bundle paths are required")
@@ -116,6 +118,13 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err != nil {
 		return OracleBundle{}, fmt.Errorf("read release validation: %w", err)
 	}
+	attempt, attemptBytes, err := readExactJSONBytes[AssuranceAttempt](request.AttemptPath)
+	if err != nil || ValidateAssuranceAttempt(attempt) != nil {
+		return OracleBundle{}, fmt.Errorf("read sealed assurance attempt")
+	}
+	if release.AttemptSHA256 != replayBytesSHA256(attemptBytes) || release.Candidate != attempt.Candidate || release.Tools != attempt.Tools {
+		return OracleBundle{}, fmt.Errorf("release validation does not bind sealed assurance attempt")
+	}
 	releaseSHA := replayBytesSHA256(releaseBytes)
 	profileSHA, planSHA, authoritySHA, proofSHA, manifestSHA := replayBytesSHA256(profileBytes), replayBytesSHA256(planBytes), replayBytesSHA256(authorityBytes), replayBytesSHA256(proofBytes), replayBytesSHA256(manifestBytes)
 	if profile.SchemaVersion != 1 || profile.FixtureManifestSHA256 != manifestSHA || profile.LocalProofSHA256 != proofSHA || plan.ProfileSHA256 != profileSHA || plan.Candidate != proof.Candidate || plan.Tools != proof.Tools || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.PlanSHA256 != planSHA || authority.ProfileSHA256 != profileSHA || authority.LocalProofSHA256 != proofSHA {
@@ -134,7 +143,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err != nil {
 		return OracleBundle{}, err
 	}
-	inputs := map[string]string{request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
+	inputs := map[string]string{request.AttemptPath: replayBytesSHA256(attemptBytes), request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
 	for _, path := range []string{request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path} {
 		hash, err := sha256File(path)
 		if err != nil {
@@ -173,7 +182,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 			return OracleBundle{}, err
 		}
 	}
-	for _, item := range []struct{ path, name string }{{request.ProfilePath, "profile.json"}, {request.PlanPath, "ORACLE_PLAN.json"}, {request.AuthorityPath, "EXCLUSION_AUTHORITY.json"}, {request.ReleaseValidationPath, "RELEASE_VALIDATION.json"}, {request.ScratchDefinitionPath, "corpus-assurance-scratch-def.json"}} {
+	for _, item := range []struct{ path, name string }{{request.AttemptPath, "ATTEMPT.json"}, {request.ProfilePath, "profile.json"}, {request.PlanPath, "ORACLE_PLAN.json"}, {request.AuthorityPath, "EXCLUSION_AUTHORITY.json"}, {request.ReleaseValidationPath, "RELEASE_VALIDATION.json"}, {request.ScratchDefinitionPath, "corpus-assurance-scratch-def.json"}} {
 		if err := copyOracleBundleFile(item.path, filepath.Join(bundleRoot, item.name), 0o600); err != nil {
 			return OracleBundle{}, err
 		}
@@ -215,7 +224,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := verifyOracleBundleInputs(inputs); err != nil {
 		return OracleBundle{}, err
 	}
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], ToolsAMD64SHA256: inputs[request.ToolsAMD64Path], Fixtures: fixtures}
+	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], ToolsAMD64SHA256: inputs[request.ToolsAMD64Path], Fixtures: fixtures}
 	if err := WriteNewJSON(filepath.Join(bundleRoot, "bundle.json"), bundle); err != nil {
 		return OracleBundle{}, err
 	}
@@ -291,6 +300,7 @@ func ValidateOracleBundle(bundlePath string) error {
 		{filepath.Join(bundleRoot, "ORACLE_PLAN.json"), bundle.OraclePlanSHA256},
 		{filepath.Join(bundleRoot, "EXCLUSION_AUTHORITY.json"), bundle.ExclusionAuthoritySHA256},
 		{filepath.Join(bundleRoot, "RELEASE_VALIDATION.json"), bundle.ReleaseValidationSHA256},
+		{filepath.Join(bundleRoot, "ATTEMPT.json"), bundle.AttemptSHA256},
 		{filepath.Join(bundleRoot, "LOCAL_PROOF_SUMMARY.json"), bundle.LocalProofSummarySHA256},
 		{filepath.Join(bundleRoot, "fixture-manifest.json"), bundle.TransportManifestSHA256},
 		{filepath.Join(bundleRoot, "corpus-assurance-scratch-def.json"), bundle.ScratchDefinitionSHA256},
@@ -316,6 +326,14 @@ func ValidateOracleBundle(bundlePath string) error {
 	authority, _, err := readExactJSONBytes[ExclusionAuthority](filepath.Join(bundleRoot, "EXCLUSION_AUTHORITY.json"))
 	if err != nil || authority.Candidate != bundle.Candidate || authority.Tools != bundle.Tools || authority.PlanSHA256 != bundle.OraclePlanSHA256 || authority.ProfileSHA256 != bundle.ProfileSHA256 || authority.LocalProofSHA256 != bundle.LocalProofSHA256 {
 		return fmt.Errorf("invalid staged exclusion authority")
+	}
+	attempt, attemptBytes, err := readExactJSONBytes[AssuranceAttempt](filepath.Join(bundleRoot, "ATTEMPT.json"))
+	if err != nil || ValidateAssuranceAttempt(attempt) != nil || attempt.Candidate != bundle.Candidate || attempt.Tools != bundle.Tools {
+		return fmt.Errorf("invalid staged assurance attempt")
+	}
+	release, _, err := readExactJSONBytes[ReleaseValidation](filepath.Join(bundleRoot, "RELEASE_VALIDATION.json"))
+	if err != nil || replayBytesSHA256(attemptBytes) != release.AttemptSHA256 || validateOracleReleaseValidation(release, plan) != nil {
+		return fmt.Errorf("invalid staged release validation")
 	}
 	manifest, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(bundleRoot, "fixture-manifest.json"))
 	if err != nil || !validOracleTransportManifest(bundleRoot, manifest, bundle.Fixtures) {

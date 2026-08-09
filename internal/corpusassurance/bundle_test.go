@@ -28,9 +28,38 @@ func TestBuildOracleBundleRejectsEmptyAndFabricatedReleaseValidation(t *testing.
 	}
 }
 
+func TestBuildOracleBundleRequiresTheAttemptBoundByReleaseValidation(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	request := inputs.request(filepath.Join(t.TempDir(), "bundle"))
+	request.AttemptPath = filepath.Join(t.TempDir(), "missing-ATTEMPT.json")
+	if _, err := BuildOracleBundle(request); err == nil {
+		t.Fatal("BuildOracleBundle accepted a release validation without its authoritative attempt")
+	}
+}
+
+func TestBuildOracleBundleRejectsAReplacementAttempt(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	bytes, err := os.ReadFile(inputs.attemptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := filepath.Join(t.TempDir(), "ATTEMPT.json")
+	if err := os.WriteFile(replacement, append(bytes, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	request := inputs.request(filepath.Join(t.TempDir(), "bundle"))
+	request.AttemptPath = replacement
+	if _, err := BuildOracleBundle(request); err == nil {
+		t.Fatal("BuildOracleBundle accepted a replacement attempt")
+	}
+}
+
 type oracleBundleTestInputs struct {
 	proof               LocalProof
 	plan                OraclePlan
+	attemptPath         string
 	profilePath         string
 	planPath            string
 	authorityPath       string
@@ -44,6 +73,7 @@ type oracleBundleTestInputs struct {
 
 func (inputs oracleBundleTestInputs) request(outputPath string) OracleBundleRequest {
 	return OracleBundleRequest{
+		AttemptPath:           inputs.attemptPath,
 		ProfilePath:           inputs.profilePath,
 		PlanPath:              inputs.planPath,
 		AuthorityPath:         inputs.authorityPath,
@@ -66,6 +96,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	}
 	root := filepath.Dir(request.OutputPath)
 	inputs := oracleBundleTestInputs{
+		attemptPath:         request.AttemptPath,
 		profilePath:         filepath.Join(root, "BUNDLE_PROFILE.json"),
 		planPath:            filepath.Join(root, "ORACLE_PLAN.json"),
 		authorityPath:       filepath.Join(root, "EXCLUSION_AUTHORITY.json"),
@@ -97,7 +128,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	return inputs
 }
 
-func writeSealedReleaseValidation(t *testing.T, path string, candidate, tools RuntimeArtifact) {
+func writeSealedReleaseValidation(t *testing.T, path, attemptPath string, candidate, tools RuntimeArtifact) {
 	t.Helper()
 	environment := []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/Users/matt/go/pkg/mod"}
 	commands := []releaseCommand{
@@ -123,7 +154,11 @@ func writeSealedReleaseValidation(t *testing.T, path string, candidate, tools Ru
 			TimeoutMS:        command.Timeout.Milliseconds(),
 		})
 	}
-	validation := ReleaseValidation{SchemaVersion: 1, AttemptSHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, ToolsFreezeSHA256: strings.Repeat("a", 64), Commands: results}
+	attemptHash, err := sha256File(attemptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	validation := ReleaseValidation{SchemaVersion: 1, AttemptSHA256: attemptHash, Candidate: candidate, Tools: tools, ToolsFreezeSHA256: strings.Repeat("a", 64), Commands: results}
 	if err := WriteNewJSON(path, validation); err != nil {
 		t.Fatal(err)
 	}
