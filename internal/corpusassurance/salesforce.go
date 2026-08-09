@@ -43,6 +43,43 @@ type salesforceCommandOutput struct {
 }
 
 type salesforceCommandRunner func(context.Context, string, ...string) (salesforceCommandOutput, error)
+
+type salesforceFilterBinding struct {
+	ManifestSHA256        string `json:"manifestSha256"`
+	ProfileSHA256         string `json:"profileSha256"`
+	QueueSHA256           string `json:"queueSha256"`
+	SelectorSHA256        string `json:"selectorSha256"`
+	SelectorReceiptSHA256 string `json:"selectorReceiptSha256"`
+	CandidateCommit       string `json:"candidateCommit"`
+	CandidateSHA256       string `json:"candidateSha256"`
+	ToolsCommit           string `json:"toolsCommit"`
+	WorkflowScriptSHA256  string `json:"workflowScriptSha256"`
+	LocalSummarySHA256    string `json:"localSummarySha256"`
+}
+
+type salesforceFilterFixtureResult struct {
+	SurfaceIDs    []string       `json:"surfaceIds"`
+	Org           string         `json:"org"`
+	Kind          string         `json:"kind"`
+	ExitCode      *int           `json:"exitCode"`
+	Deployable    bool           `json:"deployable"`
+	RuntimePassed *bool          `json:"runtimePassed"`
+	RemoteCleanup CleanupReceipt `json:"remoteCleanup"`
+	OrgCleanup    CleanupReceipt `json:"orgCleanup"`
+}
+
+type salesforceFilterPostflight struct {
+	MatchesPreflight bool `json:"matchesPreflight"`
+}
+
+type salesforceFilterResults struct {
+	Sealed        bool                            `json:"sealed"`
+	Orgs          []string                        `json:"orgs"`
+	Binding       salesforceFilterBinding         `json:"binding"`
+	RemoteCleanup CleanupReceipt                  `json:"remoteCleanup"`
+	OrgPostflight salesforceFilterPostflight      `json:"orgPostflight"`
+	Results       []salesforceFilterFixtureResult `json:"results"`
+}
 type SalesforceSurfaceResult struct {
 	SurfaceID string `json:"surfaceId"`
 	Kind      string `json:"kind"`
@@ -106,7 +143,8 @@ func RunSalesforceOrgPreflight(request SalesforceOrgPreflightRequest) (Salesforc
 	if runner == nil {
 		runner = runSalesforceCLI
 	}
-	display, displayReceipt, err := runSalesforcePreflightCommand(runner, request.SFBin, "org", "display", "--target-org", request.TargetOrg, "--json")
+	commands := salesforcePreflightArgs(request.TargetOrg)
+	display, displayReceipt, err := runSalesforcePreflightCommand(runner, request.SFBin, commands[0]...)
 	if err != nil {
 		return SalesforceOrgPreflight{}, err
 	}
@@ -115,8 +153,8 @@ func RunSalesforceOrgPreflight(request SalesforceOrgPreflightRequest) (Salesforc
 		return SalesforceOrgPreflight{}, fmt.Errorf("scratch org is not Active")
 	}
 	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: request.TargetOrg, OrgID: orgID, OrgStatus: status, Inventory: SalesforceInventory{Counts: make(map[string]int)}, Commands: []CommandResult{displayReceipt}}
-	for _, kind := range salesforceInventoryTypes {
-		output, receipt, err := runSalesforcePreflightCommand(runner, request.SFBin, "data", "query", "--query", "SELECT count() FROM "+kind, "--target-org", request.TargetOrg, "--json")
+	for index, kind := range salesforceInventoryTypes {
+		output, receipt, err := runSalesforcePreflightCommand(runner, request.SFBin, commands[index+1]...)
 		if err != nil {
 			return SalesforceOrgPreflight{}, err
 		}
@@ -184,6 +222,71 @@ func parseSalesforceCount(data []byte) (int, error) {
 		return 0, fmt.Errorf("invalid Salesforce count JSON")
 	}
 	return payload.Result.TotalSize, nil
+}
+
+// NormalizeSalesforceFilterResults turns the filter's raw fixture results into
+// the only per-surface evidence eligible for final assurance reconciliation.
+func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, preflight, postflight SalesforceOrgPreflight, filter salesforceFilterResults, command CommandResult, shardIndex, shardCount int) (SalesforceShard, error) {
+	expected, err := oracleSalesforceResultKinds(plan)
+	if err != nil {
+		return SalesforceShard{}, err
+	}
+	if !validSalesforceOrgPreflight(preflight, preflight.BundleSHA256) || !validSalesforceOrgPreflight(postflight, preflight.BundleSHA256) || preflight.OrgAlias != postflight.OrgAlias || preflight.OrgID != postflight.OrgID || !filter.Sealed || len(filter.Orgs) != 1 || filter.Orgs[0] != preflight.OrgAlias || !filter.RemoteCleanup.ResidueAbsent || !filter.OrgPostflight.MatchesPreflight || !command.Passed || command.ExitCode != 0 || command.TimedOut {
+		return SalesforceShard{}, fmt.Errorf("invalid Salesforce filter or org evidence")
+	}
+	if filter.Binding.ManifestSHA256 != bundle.TransportManifestSHA256 || filter.Binding.ProfileSHA256 != bundle.ProfileSHA256 || filter.Binding.QueueSHA256 != bundle.OraclePlanSHA256 || filter.Binding.SelectorSHA256 != bundle.OraclePlanSHA256 || filter.Binding.SelectorReceiptSHA256 != preflight.BundleSHA256 || filter.Binding.CandidateCommit != bundle.Candidate.Commit || filter.Binding.CandidateSHA256 != bundle.Candidate.SHA256 || filter.Binding.ToolsCommit != bundle.Tools.Commit || filter.Binding.WorkflowScriptSHA256 != bundle.FilterSHA256 || filter.Binding.LocalSummarySHA256 != bundle.LocalProofSummarySHA256 {
+		return SalesforceShard{}, fmt.Errorf("Salesforce filter bindings do not match the staged bundle")
+	}
+	bySurface := make(map[string]salesforceFilterFixtureResult, len(expected))
+	for _, result := range filter.Results {
+		if result.Org != preflight.OrgAlias || result.ExitCode == nil || *result.ExitCode != 0 || !result.Deployable || !result.RemoteCleanup.ResidueAbsent || !result.OrgCleanup.ResidueAbsent || len(result.SurfaceIDs) == 0 {
+			return SalesforceShard{}, fmt.Errorf("invalid Salesforce filter fixture result")
+		}
+		for _, surfaceID := range result.SurfaceIDs {
+			action, exists := expected[surfaceID]
+			if !exists || bySurface[surfaceID].SurfaceIDs != nil {
+				return SalesforceShard{}, fmt.Errorf("unexpected or duplicate Salesforce surface %q", surfaceID)
+			}
+			if action == oracleRuntime && result.Kind != "exec" && (result.RuntimePassed == nil || !*result.RuntimePassed) {
+				return SalesforceShard{}, fmt.Errorf("runtime surface %q lacks Salesforce runtime proof", surfaceID)
+			}
+			bySurface[surfaceID] = result
+		}
+	}
+	if len(bySurface) != len(expected) {
+		return SalesforceShard{}, fmt.Errorf("Salesforce filter surface coverage is incomplete")
+	}
+	results := make([]SalesforceSurfaceResult, 0, len(expected))
+	for _, row := range plan.Rows {
+		if action, exists := expected[row.SurfaceID]; exists {
+			results = append(results, SalesforceSurfaceResult{SurfaceID: row.SurfaceID, Kind: action, Passed: true})
+		}
+	}
+	bundleSHA := preflight.BundleSHA256
+	return SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ShardIndex: shardIndex, ShardCount: shardCount, OrgAlias: preflight.OrgAlias, OrgID: preflight.OrgID, OrgStatus: preflight.OrgStatus, PreInventory: preflight.Inventory, Commands: []CommandResult{command}, PostInventory: postflight.Inventory, Results: results, Cleanup: CleanupReceipt{ResidueAbsent: true}}, nil
+}
+
+func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA string) bool {
+	if preflight.SchemaVersion != 1 || preflight.BundleSHA256 != bundleSHA || preflight.OrgAlias == "" || preflight.OrgID == "" || preflight.OrgStatus != "Active" || !zeroInventory(preflight.Inventory) || len(preflight.Inventory.Counts) != len(salesforceInventoryTypes) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 {
+		return false
+	}
+	for index, args := range salesforcePreflightArgs(preflight.OrgAlias) {
+		command := preflight.Commands[index]
+		expectedCommand := append([]string{"/usr/local/bin/sf"}, args...)
+		expectedSpec := commandSpecSHA256(ReplayCommand{Path: "/usr/local/bin/sf", Args: args, Env: []string{"SF_USE_GENERIC_UNIX_KEYCHAIN=true"}, Timeout: salesforceCommandTimeout})
+		if !equalStrings(command.Command, expectedCommand) || command.CommandSpecSHA256 != expectedSpec || !command.Passed || command.ExitCode != 0 || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
+			return false
+		}
+	}
+	return true
+}
+
+func salesforcePreflightArgs(alias string) [][]string {
+	args := [][]string{{"org", "display", "--target-org", alias, "--json"}}
+	for _, kind := range salesforceInventoryTypes {
+		args = append(args, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", alias, "--json"})
+	}
+	return args
 }
 
 // ValidateSalesforceShardFiles derives the runtime and compile denominator
