@@ -116,7 +116,7 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	}
 	inputs := map[string]string{"IN_SCOPE.json": replayBytesSHA256(inventoryBytes), "MANIFEST.json": replayBytesSHA256(rootBytes), "CORPUS_USAGE.json": replayBytesSHA256(usageBytes), "ASSURANCE_PROFILE.json": replayBytesSHA256(profileBytes), "FIXTURE_MANIFEST.json": replayBytesSHA256(manifestBytes), "REPLAY.json": replayBytesSHA256(mergeBytes), "LOCAL_PROOF.json": replayBytesSHA256(proofBytes), "ORACLE_PLAN.json": replayBytesSHA256(planBytes), "EXCLUSION_AUTHORITY.json": replayBytesSHA256(authorityBytes), "ORACLE_BUNDLE.json": replayBytesSHA256(bundleBytes)}
 	for index, files := range request.SalesforceFiles {
-		for name, path := range map[string]string{"shard": files.ShardPath, "dispatch": files.DispatchPath, "creation": files.CreationPath, "cleanup": files.CleanupPath} {
+		for name, path := range map[string]string{"shard": files.ShardPath, "dispatch": files.DispatchPath, "preflight": files.PreflightPath, "creation": files.CreationPath, "cleanup": files.CleanupPath} {
 			hash, err := sha256File(path)
 			if err != nil {
 				return AssuranceReceipt{}, err
