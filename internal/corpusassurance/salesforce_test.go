@@ -447,12 +447,13 @@ func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 		if len(args) >= 3 && args[0] == "org" && args[1] == "delete" {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0}`)}, nil
 		}
-		return salesforceCommandOutput{ExitCode: 1, Stderr: []byte("not found")}, nil
+		t.Fatal("cleanup used an org-display failure as absence evidence")
+		return salesforceCommandOutput{}, nil
 	}})
 	if err != nil {
 		t.Fatalf("RunSalesforceOrgCleanup: %v", err)
 	}
-	if !cleanup.ResidueAbsent || cleanup.OrgID != creation.OrgID || len(cleanup.Commands) != 2 {
+	if !cleanup.ResidueAbsent || cleanup.OrgID != creation.OrgID || len(cleanup.Commands) != 1 {
 		t.Fatalf("cleanup = %#v", cleanup)
 	}
 	if _, err := os.Stat(outputPath); err != nil {
@@ -660,9 +661,7 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 		t.Fatal(err)
 	}
 	deleted := salesforceCommandForTest(t, bundlePath, []string{"org", "delete", "scratch", "--target-org", alias, "--no-prompt", "--json"})
-	absent := salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", alias, "--json"})
-	absent.ExitCode, absent.Passed = 1, false
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", OrgAlias: alias, OrgID: orgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", OrgAlias: alias, OrgID: orgID, Commands: []CommandResult{deleted}, ResidueAbsent: true}
 	if err := WriteNewJSON(cleanupPath, cleanup); err != nil {
 		t.Fatal(err)
 	}

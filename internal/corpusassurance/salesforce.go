@@ -456,10 +456,6 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 	if err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
-	_, absent, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), false, "org", "display", "--target-org", creation.Alias, "--json")
-	if err != nil {
-		return SalesforceOrgCleanup{}, err
-	}
 	if err := validate(request.BundlePath); err != nil {
 		return SalesforceOrgCleanup{}, fmt.Errorf("staged bundle changed during cleanup: %w", err)
 	}
@@ -468,7 +464,7 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 			return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce cleanup input changed during execution")
 		}
 	}
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted}, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
@@ -488,14 +484,10 @@ func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (Sa
 	if err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
-	_, absent, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), false, "org", "display", "--target-org", creation.Alias, "--json")
-	if err != nil {
-		return SalesforceOrgCleanup{}, err
-	}
 	if after, err := sha256File(request.CreationPath); err != nil || after != replayBytesSHA256(creationBytes) {
 		return SalesforceOrgCleanup{}, fmt.Errorf("invalidated creation receipt changed during cleanup")
 	}
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted}, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
@@ -788,7 +780,7 @@ func validSalesforceOrgCreation(creation SalesforceOrgCreation, bundleSHA, bundl
 }
 
 func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePath string, creation SalesforceOrgCreation) bool {
-	if cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != "glade-dev-hub4" || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 2 {
+	if cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != "glade-dev-hub4" || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 1 {
 		return false
 	}
 	expected := []struct {
@@ -797,7 +789,6 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 		exitCode int
 	}{
 		{[]string{"org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json"}, true, 0},
-		{[]string{"org", "display", "--target-org", creation.Alias, "--json"}, false, 1},
 	}
 	environment, err := fixedSalesforceEnvironment()
 	if err != nil {
