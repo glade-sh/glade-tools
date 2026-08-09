@@ -166,8 +166,10 @@ type SalesforceShard struct {
 	OrgAlias      string                    `json:"orgAlias"`
 	OrgID         string                    `json:"orgId"`
 	OrgStatus     string                    `json:"orgStatus"`
+	Preflight     SalesforceOrgPreflight    `json:"preflight"`
 	PreInventory  SalesforceInventory       `json:"preInventory"`
 	Commands      []CommandResult           `json:"commands"`
+	Postflight    SalesforceOrgPreflight    `json:"postflight"`
 	PostInventory SalesforceInventory       `json:"postInventory"`
 	Results       []SalesforceSurfaceResult `json:"results"`
 	Cleanup       CleanupReceipt            `json:"cleanup"`
@@ -656,7 +658,7 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 		}
 	}
 	bundleSHA := preflight.BundleSHA256
-	return SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ShardIndex: shardIndex, ShardCount: shardCount, OrgAlias: preflight.OrgAlias, OrgID: preflight.OrgID, OrgStatus: preflight.OrgStatus, PreInventory: preflight.Inventory, Commands: []CommandResult{command}, PostInventory: postflight.Inventory, Results: results, Cleanup: CleanupReceipt{ResidueAbsent: true}}, nil
+	return SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ShardIndex: shardIndex, ShardCount: shardCount, OrgAlias: preflight.OrgAlias, OrgID: preflight.OrgID, OrgStatus: preflight.OrgStatus, Preflight: preflight, PreInventory: preflight.Inventory, Commands: []CommandResult{command}, Postflight: postflight, PostInventory: postflight.Inventory, Results: results, Cleanup: CleanupReceipt{ResidueAbsent: true}}, nil
 }
 
 func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bundlePath string) bool {
@@ -764,6 +766,12 @@ func ValidateSalesforceShardFiles(planPath string, shardPaths []string) error {
 		expected = append(expected, surfaceID)
 	}
 	planSHA := replayBytesSHA256(planBytes)
+	bundlePath := filepath.Join(filepath.Dir(planPath), "bundle.json")
+	bundle, bundleBytes, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil || bundle.SchemaVersion != 1 || bundle.OraclePlanSHA256 != planSHA || bundle.Candidate != plan.Candidate || bundle.Tools != plan.Tools {
+		return fmt.Errorf("staged Oracle bundle does not bind the sealed plan")
+	}
+	bundleSHA := replayBytesSHA256(bundleBytes)
 	shards := make([]SalesforceShard, 0, len(shardPaths))
 	shardHashes := make([]string, 0, len(shardPaths))
 	for _, path := range shardPaths {
@@ -774,7 +782,7 @@ func ValidateSalesforceShardFiles(planPath string, shardPaths []string) error {
 		if err != nil {
 			return fmt.Errorf("read Salesforce shard: %w", err)
 		}
-		if shard.Bindings.OraclePlanSHA256 != planSHA || shard.Candidate != plan.Candidate || shard.Tools != plan.Tools {
+		if shard.Bindings.OraclePlanSHA256 != planSHA || shard.Bindings.BundleSHA256 != bundleSHA || shard.Candidate != plan.Candidate || shard.Tools != plan.Tools || !validSalesforceOrgPreflight(shard.Preflight, bundleSHA, bundlePath) || !validSalesforceOrgPreflight(shard.Postflight, bundleSHA, bundlePath) {
 			return fmt.Errorf("Salesforce shard does not bind sealed oracle plan")
 		}
 		shards, shardHashes = append(shards, shard), append(shardHashes, replayBytesSHA256(data))
@@ -856,7 +864,7 @@ func ValidateSalesforceShards(shards []SalesforceShard, expected []string) error
 	}
 	first := shards[0]
 	for _, shard := range shards {
-		if ValidateRuntimeArtifact(shard.Candidate) != nil || ValidateRuntimeArtifact(shard.Tools) != nil || !validSalesforceBindings(shard.Bindings) || shard.Candidate != first.Candidate || shard.Tools != first.Tools || shard.Bindings != first.Bindings || shard.ShardCount != len(shards) || shard.ShardIndex < 0 || shard.ShardIndex >= shard.ShardCount || indexes[shard.ShardIndex] || shard.OrgAlias == "" || aliases[shard.OrgAlias] || shard.OrgID == "" || orgs[shard.OrgID] || shard.OrgStatus != "Active" || !validSalesforceCommands(shard.Commands, shard.Bindings.FilterCommandSpecSHA256) || !zeroInventory(shard.PreInventory) || !sameInventory(shard.PreInventory, shard.PostInventory) || !shard.Cleanup.ResidueAbsent {
+		if ValidateRuntimeArtifact(shard.Candidate) != nil || ValidateRuntimeArtifact(shard.Tools) != nil || !validSalesforceBindings(shard.Bindings) || shard.Candidate != first.Candidate || shard.Tools != first.Tools || shard.Bindings != first.Bindings || shard.ShardCount != len(shards) || shard.ShardIndex < 0 || shard.ShardIndex >= shard.ShardCount || indexes[shard.ShardIndex] || shard.OrgAlias == "" || aliases[shard.OrgAlias] || shard.OrgID == "" || orgs[shard.OrgID] || shard.OrgStatus != "Active" || !validShardLifecycle(shard) || !validSalesforceCommands(shard.Commands, shard.Bindings.FilterCommandSpecSHA256) || !zeroInventory(shard.PreInventory) || !sameInventory(shard.PreInventory, shard.PostInventory) || !shard.Cleanup.ResidueAbsent {
 			return fmt.Errorf("invalid Salesforce shard %d", shard.ShardIndex)
 		}
 		indexes[shard.ShardIndex], aliases[shard.OrgAlias], orgs[shard.OrgID] = true, true, true
@@ -871,6 +879,15 @@ func ValidateSalesforceShards(shards []SalesforceShard, expected []string) error
 		return fmt.Errorf("Salesforce shard coverage is incomplete")
 	}
 	return nil
+}
+
+func validShardLifecycle(shard SalesforceShard) bool {
+	for _, receipt := range []SalesforceOrgPreflight{shard.Preflight, shard.Postflight} {
+		if receipt.SchemaVersion != 1 || receipt.BundleSHA256 != shard.Bindings.BundleSHA256 || receipt.OrgAlias != shard.OrgAlias || receipt.OrgID != shard.OrgID || receipt.OrgStatus != shard.OrgStatus || len(receipt.Commands) != len(salesforceInventoryTypes)+1 || !zeroInventory(receipt.Inventory) {
+			return false
+		}
+	}
+	return sameInventory(shard.Preflight.Inventory, shard.PreInventory) && sameInventory(shard.Postflight.Inventory, shard.PostInventory)
 }
 
 func validSalesforceBindings(bindings SalesforceBindings) bool {
