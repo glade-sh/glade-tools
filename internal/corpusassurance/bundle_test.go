@@ -185,6 +185,9 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 		t.Fatal(err)
 	}
 	inputs.filterSHA256 = localProofFileSHA256(t, inputs.filterPath)
+	previousFilterAuthority := testApprovedSalesforceFilterSHA256
+	testApprovedSalesforceFilterSHA256 = inputs.filterSHA256
+	t.Cleanup(func() { testApprovedSalesforceFilterSHA256 = previousFilterAuthority })
 	if err := os.WriteFile(inputs.scratchPath, []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -199,6 +202,19 @@ func TestBuildOracleBundleRequiresExecutableAMD64FilterContract(t *testing.T) {
 	}
 	if _, err := BuildOracleBundle(inputs.request(filepath.Join(t.TempDir(), "razor"))); err == nil {
 		t.Fatal("accepted a filter without the amd64 tools contract")
+	}
+}
+
+func TestValidateOracleBundleRejectsCallerForgedFilterAuthority(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	outputRoot := filepath.Join(t.TempDir(), "razor")
+	if _, err := BuildOracleBundle(inputs.request(outputRoot)); err != nil {
+		t.Fatal(err)
+	}
+	testApprovedSalesforceFilterSHA256 = ""
+	if err := ValidateOracleBundle(filepath.Join(outputRoot, "bundle", "bundle.json")); err == nil {
+		t.Fatal("accepted a bundle whose caller-selected filter hash differs from production authority")
 	}
 }
 

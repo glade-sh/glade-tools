@@ -201,32 +201,34 @@ type SalesforceDispatch struct {
 }
 
 type SalesforceDispatchRequest struct {
-	BundlePath   string
-	OrgAlias     string
-	ExecutorRoot string
-	RunID        string
-	ShardIndex   int
-	ShardCount   int
-	OutputPath   string
+	BundlePath           string
+	OrgAlias             string
+	ExecutorRoot         string
+	RunID                string
+	ShardIndex           int
+	ShardCount           int
+	OutputPath           string
+	approvedFilterSHA256 string
 }
 
 const salesforceCommandTimeout = 30 * time.Second
 const salesforceFilterTimeout = 15 * time.Minute
 
 type SalesforceShardRequest struct {
-	BundlePath     string
-	DispatchPath   string
-	PreflightPath  string
-	TargetOrg      string
-	SFBin          string
-	ExecutorRoot   string
-	RunID          string
-	ShardIndex     int
-	ShardCount     int
-	OutputPath     string
-	validateBundle func(string) error
-	filterRunner   salesforceCommandRunner
-	sfRunner       salesforceCommandRunner
+	BundlePath           string
+	DispatchPath         string
+	PreflightPath        string
+	TargetOrg            string
+	SFBin                string
+	ExecutorRoot         string
+	RunID                string
+	ShardIndex           int
+	ShardCount           int
+	OutputPath           string
+	validateBundle       func(string) error
+	filterRunner         salesforceCommandRunner
+	sfRunner             salesforceCommandRunner
+	approvedFilterSHA256 string
 }
 
 // CreateSalesforceDispatch seals the only permitted filter invocation before
@@ -248,6 +250,9 @@ func CreateSalesforceDispatch(request SalesforceDispatchRequest) (SalesforceDisp
 		return SalesforceDispatch{}, err
 	}
 	bundleSHA := replayBytesSHA256(bundleBytes)
+	if bundle.FilterSHA256 != approvedFilterSHA256(request.approvedFilterSHA256) {
+		return SalesforceDispatch{}, fmt.Errorf("Salesforce bundle filter is not independently authorized")
+	}
 	executorRoot, runID, err := sealedSalesforceDispatchLayout(request.BundlePath, bundle.AttemptSHA256, request.ShardIndex)
 	requestExecutorRoot, requestErr := canonicalSalesforceExecutorRoot(request.ExecutorRoot)
 	if err != nil || requestErr != nil || requestExecutorRoot != executorRoot || request.RunID != runID {
@@ -256,7 +261,7 @@ func CreateSalesforceDispatch(request SalesforceDispatchRequest) (SalesforceDisp
 	if err := createSealedSalesforceExecutorRoot(filepath.Dir(filepath.Dir(executorRoot)), executorRoot); err != nil {
 		return SalesforceDispatch{}, err
 	}
-	filterPath := filepath.Join(filepath.Dir(filepath.Dir(request.BundlePath)), "transport", "salesforce-first-filter.py")
+	filterPath := filepath.Join(executorRoot, "filter", "salesforce-first-filter.py")
 	args, err := salesforceFilterArgs(filterPath, filepath.Dir(request.BundlePath), executorRoot, runID, request.OrgAlias, bundle, bundleSHA, request.ShardIndex, request.ShardCount)
 	if err != nil {
 		return SalesforceDispatch{}, err
@@ -378,6 +383,9 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 		return SalesforceShard{}, fmt.Errorf("staged oracle plan does not bind bundle")
 	}
 	bundleSHA := replayBytesSHA256(bundleBytes)
+	if bundle.FilterSHA256 != approvedFilterSHA256(request.approvedFilterSHA256) {
+		return SalesforceShard{}, fmt.Errorf("Salesforce bundle filter is not independently authorized")
+	}
 	dispatch, dispatchBytes, err := readExactJSONBytes[SalesforceDispatch](request.DispatchPath)
 	if err != nil || !validSalesforceDispatch(dispatch, bundle, request.BundlePath) || dispatch.BundleSHA256 != bundleSHA || dispatch.OrgAlias != request.TargetOrg {
 		return SalesforceShard{}, fmt.Errorf("invalid sealed Salesforce dispatch")
@@ -399,7 +407,17 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if err != nil || !validSalesforceOrgPreflight(preflight, bundleSHA, request.BundlePath) || preflight.OrgAlias != request.TargetOrg {
 		return SalesforceShard{}, fmt.Errorf("invalid sealed Salesforce preflight")
 	}
-	filterPath := filepath.Join(filepath.Dir(filepath.Dir(request.BundlePath)), "transport", "salesforce-first-filter.py")
+	stagedFilterPath := filepath.Join(filepath.Dir(filepath.Dir(request.BundlePath)), "transport", "salesforce-first-filter.py")
+	filterPath := filepath.Join(filterOutput, "salesforce-first-filter.py")
+	if err := validateOracleFilterContract(stagedFilterPath, approvedFilterSHA256(request.approvedFilterSHA256)); err != nil {
+		return SalesforceShard{}, fmt.Errorf("validate independently authorized Salesforce filter: %w", err)
+	}
+	if err := copyOracleBundleFile(stagedFilterPath, filterPath, 0o500); err != nil {
+		return SalesforceShard{}, fmt.Errorf("copy independently authorized Salesforce filter: %w", err)
+	}
+	if err := validateOracleFilterContract(filterPath, approvedFilterSHA256(request.approvedFilterSHA256)); err != nil {
+		return SalesforceShard{}, fmt.Errorf("verify sealed Salesforce filter copy: %w", err)
+	}
 	args, err := salesforceFilterArgs(filterPath, filepath.Dir(request.BundlePath), dispatch.ExecutorRoot, dispatch.RunID, request.TargetOrg, bundle, bundleSHA, dispatch.ShardIndex, dispatch.ShardCount)
 	if err != nil {
 		return SalesforceShard{}, err
@@ -411,6 +429,9 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	_, command, err := runSalesforceFilterCommand(filterRunner, "/usr/bin/python3", filepath.Dir(request.BundlePath), args...)
 	if err != nil {
 		return SalesforceShard{}, err
+	}
+	if command.CommandSpecSHA256 != dispatch.FilterCommandSpecSHA256 {
+		return SalesforceShard{}, fmt.Errorf("Salesforce filter command does not match sealed dispatch")
 	}
 	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
 		return SalesforceShard{}, fmt.Errorf("sealed Salesforce executor changed during filter execution")
@@ -620,7 +641,7 @@ func runSalesforceFilterCommand(runner salesforceCommandRunner, binary, workingD
 	output, err := runner(ctx, binary, args...)
 	after, afterErr := sha256File(binary)
 	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: salesforceFilterCommandSpecSHA256(binary, args, workingDirectory, environment, before, after), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && afterErr == nil && before == after && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
-	if err != nil || output.ExitCode != 0 || receipt.TimedOut {
+	if err != nil || output.ExitCode != 0 || receipt.TimedOut || !receipt.Passed {
 		return output, receipt, fmt.Errorf("Salesforce filter command failed")
 	}
 	return output, receipt, nil
@@ -982,8 +1003,11 @@ func validSalesforceDispatch(dispatch SalesforceDispatch, bundle OracleBundle, b
 	if dispatch.SchemaVersion != 1 || dispatch.BundleSHA256 == "" || dispatch.OrgAlias == "" || dispatch.ExecutorRoot == "" || dispatch.RunID == "" {
 		return false
 	}
-	filterPath := filepath.Join(filepath.Dir(filepath.Dir(bundlePath)), "transport", "salesforce-first-filter.py")
+	if validateApprovedOracleBundleFilter(bundle) != nil {
+		return false
+	}
 	executorRoot, runID, identityErr := sealedSalesforceDispatchLayout(bundlePath, bundle.AttemptSHA256, dispatch.ShardIndex)
+	filterPath := filepath.Join(executorRoot, "filter", "salesforce-first-filter.py")
 	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), executorRoot, runID, dispatch.OrgAlias, bundle, dispatch.BundleSHA256, dispatch.ShardIndex, dispatch.ShardCount)
 	environment, environmentErr := fixedSalesforceEnvironment()
 	pythonSHA, pythonErr := sealedPythonSHA256()
@@ -1183,7 +1207,10 @@ func validSealedFilterCommand(shard SalesforceShard, bundle OracleBundle, bundle
 	if len(shard.Commands) != 1 || shard.ExecutorRoot == "" || shard.RunID == "" {
 		return false
 	}
-	filterPath := filepath.Join(filepath.Dir(filepath.Dir(bundlePath)), "transport", "salesforce-first-filter.py")
+	if validateApprovedOracleBundleFilter(bundle) != nil {
+		return false
+	}
+	filterPath := filepath.Join(shard.ExecutorRoot, "filter", "salesforce-first-filter.py")
 	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), shard.ExecutorRoot, shard.RunID, shard.OrgAlias, bundle, shard.Bindings.BundleSHA256, shard.ShardIndex, shard.ShardCount)
 	environment, environmentErr := fixedSalesforceEnvironment()
 	command := shard.Commands[0]

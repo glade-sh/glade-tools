@@ -13,6 +13,12 @@ import (
 	"time"
 )
 
+const approvedSalesforceFilterSHA256 = "494f1def8b631c415b413e748672707eac038f213657c1ac8cada39a6ea2cd5d"
+
+// testApprovedSalesforceFilterSHA256 is package-private so synthetic unit
+// fixtures can exercise the sealing protocol without exposing a caller choice.
+var testApprovedSalesforceFilterSHA256 string
+
 // OracleBundleRequest names the sealed inputs staged for Razor. Every input is
 // rehashed before publication; OutputPath must be a new private directory.
 type OracleBundleRequest struct {
@@ -172,10 +178,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		}
 		inputs[path] = hash
 	}
-	expectedFilterSHA256 := request.expectedFilterSHA256
-	if expectedFilterSHA256 == "" {
-		expectedFilterSHA256 = "494f1def8b631c415b413e748672707eac038f213657c1ac8cada39a6ea2cd5d"
-	}
+	expectedFilterSHA256 := approvedFilterSHA256(request.expectedFilterSHA256)
 	if err := validateOracleFilterContract(request.FilterScriptPath, expectedFilterSHA256); err != nil {
 		return OracleBundle{}, err
 	}
@@ -280,7 +283,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 }
 
 func validateOracleFilterContract(path, expectedSHA256 string) error {
-	info, err := os.Stat(path)
+	info, err := os.Lstat(path)
 	if err != nil || !info.Mode().IsRegular() {
 		return fmt.Errorf("Salesforce filter is unavailable")
 	}
@@ -289,6 +292,23 @@ func validateOracleFilterContract(path, expectedSHA256 string) error {
 		return fmt.Errorf("Salesforce filter lacks the sealed amd64 tools contract")
 	}
 	return nil
+}
+
+func validateApprovedOracleBundleFilter(bundle OracleBundle) error {
+	if bundle.FilterSHA256 != approvedFilterSHA256("") {
+		return fmt.Errorf("Salesforce bundle filter is not independently authorized")
+	}
+	return nil
+}
+
+func approvedFilterSHA256(testOverride string) string {
+	if testOverride != "" {
+		return testOverride
+	}
+	if testApprovedSalesforceFilterSHA256 != "" {
+		return testApprovedSalesforceFilterSHA256
+	}
+	return approvedSalesforceFilterSHA256
 }
 
 func executingToolsArtifact(commit string) (RuntimeArtifact, error) {
@@ -383,6 +403,9 @@ func ValidateOracleBundle(bundlePath string) error {
 	}
 	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.Tools.Arch != "arm64" || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 {
 		return fmt.Errorf("invalid oracle bundle")
+	}
+	if err := validateApprovedOracleBundleFilter(bundle); err != nil {
+		return err
 	}
 	bundleRoot, outputRoot := filepath.Dir(bundlePath), filepath.Dir(filepath.Dir(bundlePath))
 	if staged, err := amd64ToolsArtifactFor(filepath.Join(outputRoot, "bin", "glade-tools-darwin-amd64"), bundle.Tools.Commit); err != nil || staged != bundle.ToolsAMD64 {
