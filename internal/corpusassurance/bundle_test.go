@@ -2,7 +2,9 @@ package corpusassurance
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -75,6 +77,36 @@ func TestBuildOracleBundleRejectsReleaseValidationFromAnotherValidAttempt(t *tes
 	}
 }
 
+func TestBuildOracleBundleAcceptsTheSealedAMD64ToolsBuild(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	amd64Tools := buildAMD64ToolsForTest(t)
+	request := inputs.request(filepath.Join(t.TempDir(), "bundle"))
+	request.ToolsAMD64Path = amd64Tools
+	bundle, err := BuildOracleBundle(request)
+	if err != nil {
+		t.Fatalf("BuildOracleBundle: %v", err)
+	}
+	if bundle.ToolsAMD64SHA256 != localProofFileSHA256(t, amd64Tools) || bundle.ToolsAMD64SHA256 == inputs.plan.Tools.SHA256 {
+		t.Fatalf("bundle does not retain the distinct amd64 tools hash: %#v", bundle)
+	}
+}
+
+func buildAMD64ToolsForTest(t *testing.T) string {
+	t.Helper()
+	root := t.TempDir()
+	source, output := filepath.Join(root, "main.go"), filepath.Join(root, "glade-tools-darwin-amd64")
+	if err := os.WriteFile(source, []byte("package main\nfunc main() {}\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	command := exec.Command(filepath.Join(runtime.GOROOT(), "bin", "go"), "build", "-o", output, source)
+	command.Env = append(os.Environ(), "CGO_ENABLED=0", "GOOS=darwin", "GOARCH=amd64")
+	if data, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("build amd64 tools fixture: %v: %s", err, data)
+	}
+	return output
+}
+
 type oracleBundleTestInputs struct {
 	proof               LocalProof
 	plan                OraclePlan
@@ -85,7 +117,7 @@ type oracleBundleTestInputs struct {
 	releasePath         string
 	filterPath          string
 	scratchPath         string
-	toolsPath           string
+	toolsAMD64Path      string
 	localProofPath      string
 	fixtureManifestPath string
 }
@@ -101,7 +133,7 @@ func (inputs oracleBundleTestInputs) request(outputPath string) OracleBundleRequ
 		FixtureManifestPath:   inputs.fixtureManifestPath,
 		FilterScriptPath:      inputs.filterPath,
 		ScratchDefinitionPath: inputs.scratchPath,
-		ToolsAMD64Path:        inputs.toolsPath,
+		ToolsAMD64Path:        inputs.toolsAMD64Path,
 		OutputPath:            outputPath,
 	}
 }
@@ -122,7 +154,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 		releasePath:         filepath.Join(root, "RELEASE_VALIDATION.json"),
 		filterPath:          filepath.Join(root, "filter.py"),
 		scratchPath:         filepath.Join(root, "scratch.json"),
-		toolsPath:           request.ToolsPath,
+		toolsAMD64Path:      buildAMD64ToolsForTest(t),
 		localProofPath:      request.OutputPath,
 		fixtureManifestPath: request.FixtureManifestPath,
 	}

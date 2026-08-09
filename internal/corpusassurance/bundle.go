@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"debug/macho"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -32,6 +33,7 @@ type OracleBundle struct {
 	SchemaVersion            int                   `json:"schemaVersion"`
 	Candidate                RuntimeArtifact       `json:"candidate"`
 	Tools                    RuntimeArtifact       `json:"tools"`
+	ToolsAMD64               RuntimeArtifact       `json:"toolsAmd64"`
 	ProfileSHA256            string                `json:"profileSha256"`
 	OraclePlanSHA256         string                `json:"oraclePlanSha256"`
 	ExclusionAuthoritySHA256 string                `json:"exclusionAuthoritySha256"`
@@ -162,8 +164,9 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if !json.Valid(scratchDefinition) {
 		return OracleBundle{}, fmt.Errorf("scratch definition is not valid JSON")
 	}
-	if inputs[request.ToolsAMD64Path] != plan.Tools.SHA256 {
-		return OracleBundle{}, fmt.Errorf("amd64 tools binary does not match sealed tools artifact")
+	toolsAMD64, err := amd64ToolsArtifactFor(request.ToolsAMD64Path, attempt.Tools.Commit)
+	if err != nil || toolsAMD64.Commit != plan.Tools.Commit {
+		return OracleBundle{}, fmt.Errorf("amd64 tools binary does not bind sealed tools commit")
 	}
 	for _, fixture := range fixtures {
 		if hash, err := sha256File(fixture.Path); err != nil || hash != fixture.SHA256 {
@@ -228,7 +231,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := verifyOracleBundleInputs(inputs); err != nil {
 		return OracleBundle{}, err
 	}
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], ToolsAMD64SHA256: inputs[request.ToolsAMD64Path], Fixtures: fixtures}
+	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], ToolsAMD64SHA256: inputs[request.ToolsAMD64Path], Fixtures: fixtures}
 	if err := WriteNewJSON(filepath.Join(bundleRoot, "bundle.json"), bundle); err != nil {
 		return OracleBundle{}, err
 	}
@@ -292,7 +295,7 @@ func ValidateOracleBundle(bundlePath string) error {
 	if err != nil {
 		return fmt.Errorf("read oracle bundle: %w", err)
 	}
-	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil {
+	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.Tools.Arch != "arm64" || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 {
 		return fmt.Errorf("invalid oracle bundle")
 	}
 	bundleRoot, outputRoot := filepath.Dir(bundlePath), filepath.Dir(filepath.Dir(bundlePath))
@@ -348,6 +351,25 @@ func ValidateOracleBundle(bundlePath string) error {
 		return fmt.Errorf("invalid staged local proof summary")
 	}
 	return nil
+}
+
+func amd64ToolsArtifactFor(path, commit string) (RuntimeArtifact, error) {
+	if !commitPattern.MatchString(commit) {
+		return RuntimeArtifact{}, fmt.Errorf("invalid tools commit")
+	}
+	info, err := os.Stat(path)
+	if err != nil || !info.Mode().IsRegular() || info.Mode().Perm()&0o111 == 0 {
+		return RuntimeArtifact{}, fmt.Errorf("amd64 tools must be an executable regular file")
+	}
+	file, err := macho.Open(path)
+	if err != nil || file.Cpu != macho.CpuAmd64 {
+		return RuntimeArtifact{}, fmt.Errorf("tools binary is not darwin/amd64")
+	}
+	hash, err := sha256File(path)
+	if err != nil {
+		return RuntimeArtifact{}, err
+	}
+	return RuntimeArtifact{Commit: commit, OS: "darwin", Arch: "amd64", SHA256: hash}, nil
 }
 
 func validOracleTransportManifest(bundleRoot string, manifest oracleTransportManifest, selected []OracleBundleFixture) bool {
