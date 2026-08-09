@@ -145,7 +145,9 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	if err := WriteNewJSON(sealedUsagePath, sealedUsage); err != nil {
 		t.Fatal(err)
 	}
-	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}
+	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)}
+	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: tools, Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}
 	if err := WriteNewJSON(proofPath, proof); err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +159,7 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != directives.ProfileSHA256 {
+	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != directives.ProfileSHA256 || plan.Candidate != candidate || plan.Tools != tools {
 		t.Fatalf("plan = %#v", plan)
 	}
 }
@@ -168,14 +170,15 @@ func TestAuthorizeExclusionsFromFilesSealsExactNonParityRows(t *testing.T) {
 	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1}); err != nil {
 		t.Fatal(err)
 	}
-	plan := OraclePlan{SealedUsageSHA256: localProofFileSHA256(t, usagePath), Rows: []OraclePlanRow{{SurfaceID: "apex:Auth.hosted", Action: oracleWaiver, ExclusionClass: "hosted-identity", ExclusionReason: "requires credentials"}}}
+	candidate := RuntimeArtifact{Commit: strings.Repeat("b", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("c", 64)}
+	tools := RuntimeArtifact{Commit: strings.Repeat("d", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("e", 64)}
+	plan := OraclePlan{Candidate: candidate, Tools: tools, SealedUsageSHA256: localProofFileSHA256(t, usagePath), Rows: []OraclePlanRow{{SurfaceID: "apex:Auth.hosted", Action: oracleWaiver, ExclusionClass: "hosted-identity", ExclusionReason: "requires credentials"}}}
 	if err := WriteNewJSON(planPath, plan); err != nil {
 		t.Fatal(err)
 	}
 	if err := WriteNewJSON(policyPath, ExclusionPolicy{SchemaVersion: 1, Rows: []ExclusionPolicyRow{{SurfaceID: "apex:Auth.hosted", Class: "hosted-identity", Reason: "requires credentials"}}}); err != nil {
 		t.Fatal(err)
 	}
-	candidate := RuntimeArtifact{Commit: strings.Repeat("b", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("c", 64)}
 	authority, err := AuthorizeExclusionsFromFiles(planPath, usagePath, policyPath, candidate, outputPath)
 	if err != nil {
 		t.Fatal(err)

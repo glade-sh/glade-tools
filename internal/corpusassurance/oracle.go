@@ -33,6 +33,8 @@ type OraclePlanRow struct {
 }
 
 type OraclePlan struct {
+	Candidate         RuntimeArtifact `json:"candidate"`
+	Tools             RuntimeArtifact `json:"tools"`
 	ProfileSHA256     string          `json:"profileSha256,omitempty"`
 	SealedUsageSHA256 string          `json:"sealedUsageSha256,omitempty"`
 	LocalProofSHA256  string          `json:"localProofSha256,omitempty"`
@@ -225,6 +227,9 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath 
 	if err != nil {
 		return OraclePlan{}, fmt.Errorf("read local proof: %w", err)
 	}
+	if proof.Status != "pass" || ValidateRuntimeArtifact(proof.Candidate) != nil || ValidateRuntimeArtifact(proof.Tools) != nil {
+		return OraclePlan{}, fmt.Errorf("local proof has invalid runtime bindings")
+	}
 	directive, directiveBytes, err := readExactJSONBytes[OracleDirectiveFile](directivePath)
 	if err != nil {
 		return OraclePlan{}, fmt.Errorf("read oracle directives: %w", err)
@@ -254,6 +259,7 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath 
 	if _, after, err := readExactJSONBytes[OracleDirectiveFile](directivePath); err != nil || replayBytesSHA256(after) != directiveSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives changed during planning")
 	}
+	plan.Candidate, plan.Tools = proof.Candidate, proof.Tools
 	plan.ProfileSHA256, plan.SealedUsageSHA256, plan.LocalProofSHA256, plan.DirectiveSHA256 = profileSHA256, sealedUsageSHA256, proofSHA256, directiveSHA256
 	return plan, nil
 }
@@ -325,6 +331,9 @@ func AuthorizeExclusionsFromFiles(planPath, sealedUsagePath, policyPath string, 
 	usageSHA := replayBytesSHA256(usageBytes)
 	if usage.SchemaVersion != 1 || plan.SealedUsageSHA256 != usageSHA {
 		return ExclusionAuthority{}, fmt.Errorf("plan does not bind sealed corpus usage")
+	}
+	if plan.Candidate != candidate || ValidateRuntimeArtifact(plan.Tools) != nil {
+		return ExclusionAuthority{}, fmt.Errorf("candidate does not match oracle plan")
 	}
 	authority, err := authorizeExclusions(plan, policy)
 	if err != nil {
