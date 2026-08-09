@@ -72,7 +72,9 @@ func TestReplayRejectsMissingTestsSourceTamperingAndWrongArchitecture(t *testing
 				t.Fatal(err)
 			}
 		},
-		"wrong architecture":       func(request *ReplayRequest) { request.Candidate.Arch = otherArch() },
+		"wrong architecture": func(request *ReplayRequest) {
+			request.architecture = func(string) (string, error) { return otherArch(), nil }
+		},
 		"missing manifest binding": func(request *ReplayRequest) { request.RootManifestPath = "" },
 		"unsealed snapshot": func(request *ReplayRequest) {
 			if err := os.WriteFile(filepath.Join(filepath.Dir(request.HostManifestPath), "snapshots", "private-corpus-001", "Source.cls"), []byte("changed"), 0o600); err != nil {
@@ -292,13 +294,13 @@ func replayRequest(t *testing.T, host, exit string) (ReplayRequest, string) {
 	repo := RepositorySpec{
 		ID: "private-corpus-001", ExpectedCommit: strings.Repeat("a", 40), ArchiveSHA256: fileSHA256(t, source), TreeSHA256: treeSHA256, AssignedHost: host, SnapshotPath: "snapshots/private-corpus-001", LocalTests: "required",
 	}
-	inventoryPath, rootManifestPath, hostManifestPath := writeReplayManifests(t, root, repo)
+	inventoryPath, rootManifestPath, hostManifestPath := writeReplayManifests(t, root, repo, AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: candidate, Tools: tools})
 	return ReplayRequest{
 		Host: host, Candidate: candidate, CandidatePath: candidatePath, Tools: tools, ToolsPath: toolsPath, OutputPath: filepath.Join(root, "shard.json"), InventoryPath: inventoryPath, RootManifestPath: rootManifestPath, HostManifestPath: hostManifestPath, architecture: func(string) (string, error) { return runtime.GOARCH, nil },
 	}, capture
 }
 
-func writeReplayManifests(t *testing.T, root string, repository RepositorySpec) (string, string, string) {
+func writeReplayManifests(t *testing.T, root string, repository RepositorySpec, attempt AssuranceAttempt) (string, string, string) {
 	t.Helper()
 	inventoryPath := filepath.Join(root, "IN_SCOPE.json")
 	inventory := InventorySpec{SchemaVersion: 1, Scope: "private-corpus-assurance", Repositories: []InventoryEntry{{ID: repository.ID, CheckoutPath: filepath.Join(root, "checkout"), ExpectedCommit: repository.ExpectedCommit}}}
@@ -306,7 +308,8 @@ func writeReplayManifests(t *testing.T, root string, repository RepositorySpec) 
 		t.Fatal(err)
 	}
 	rootPath := filepath.Join(root, "MANIFEST.json")
-	if err := WriteNewJSON(rootPath, InventoryManifest{SchemaVersion: 1, InventorySHA256: fileSHA256(t, inventoryPath), Repositories: []RepositorySpec{repository}}); err != nil {
+	attempt.InventorySHA256 = fileSHA256(t, inventoryPath)
+	if err := WriteNewJSON(rootPath, InventoryManifest{SchemaVersion: 1, InventorySHA256: fileSHA256(t, inventoryPath), Attempt: attempt, Repositories: []RepositorySpec{repository}}); err != nil {
 		t.Fatal(err)
 	}
 	hostPath := filepath.Join(root, "hosts", repository.AssignedHost, "manifest.json")

@@ -2,14 +2,10 @@ package toolcli
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
-	"os"
-	"runtime"
 
 	"github.com/glade-sh/glade/tools/internal/corpusassurance"
 )
@@ -23,17 +19,34 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		return nil
 	}
 	switch args[0] {
-	case "prepare":
-		flags := flag.NewFlagSet("corpus assurance prepare", flag.ContinueOnError)
+	case "attempt":
+		flags := flag.NewFlagSet("corpus assurance attempt", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
-		inventory, output := flags.String("inventory-spec", "", ""), flags.String("output", "", "")
+		inventory, authority := flags.String("inventory-spec", "", ""), flags.String("candidate-authority", "", "")
+		candidate, candidateRoot := flags.String("candidate", "", ""), flags.String("candidate-root", "", "")
+		tools, toolsRoot, output := flags.String("tools", "", ""), flags.String("tools-root", "", ""), flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*inventory, *output); err != nil {
+		if err := requiredAssuranceFlags(*inventory, *authority, *candidate, *candidateRoot, *tools, *toolsRoot, *output); err != nil {
 			return err
 		}
-		manifest, err := corpusassurance.PrepareInventory(*inventory, *output)
+		_, err := corpusassurance.CreateAssuranceAttempt(corpusassurance.AssuranceAttemptRequest{InventoryPath: *inventory, CandidateAuthorityPath: *authority, CandidatePath: *candidate, CandidateRoot: *candidateRoot, ToolsPath: *tools, ToolsRoot: *toolsRoot, OutputPath: *output})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "attempt", 1, *output)
+	case "prepare":
+		flags := flag.NewFlagSet("corpus assurance prepare", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		inventory, attempt, output := flags.String("inventory-spec", "", ""), flags.String("attempt", "", ""), flags.String("output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*inventory, *attempt, *output); err != nil {
+			return err
+		}
+		manifest, err := corpusassurance.PrepareInventory(*inventory, *attempt, *output)
 		if err != nil {
 			return err
 		}
@@ -61,24 +74,16 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		flags.SetOutput(io.Discard)
 		host := flags.String("host", "", "")
 		inventory, root, manifest := flags.String("inventory-spec", "", ""), flags.String("root-manifest", "", ""), flags.String("host-manifest", "", "")
-		candidatePath, candidateCommit := flags.String("candidate", "", ""), flags.String("candidate-commit", "", "")
-		toolsPath, toolsCommit := flags.String("tools", "", ""), flags.String("tools-commit", "", "")
+		candidatePath := flags.String("candidate", "", "")
+		toolsPath := flags.String("tools", "", "")
 		output := flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*host, *inventory, *root, *manifest, *candidatePath, *candidateCommit, *toolsPath, *toolsCommit, *output); err != nil {
+		if err := requiredAssuranceFlags(*host, *inventory, *root, *manifest, *candidatePath, *toolsPath, *output); err != nil {
 			return err
 		}
-		candidate, err := assuranceRuntimeArtifact(*candidatePath, *candidateCommit)
-		if err != nil {
-			return err
-		}
-		tools, err := assuranceRuntimeArtifact(*toolsPath, *toolsCommit)
-		if err != nil {
-			return err
-		}
-		shard, err := corpusassurance.RunReplay(corpusassurance.ReplayRequest{Host: *host, Candidate: candidate, CandidatePath: *candidatePath, Tools: tools, ToolsPath: *toolsPath, InventoryPath: *inventory, RootManifestPath: *root, HostManifestPath: *manifest, OutputPath: *output})
+		shard, err := corpusassurance.RunReplay(corpusassurance.ReplayRequest{Host: *host, CandidatePath: *candidatePath, ToolsPath: *toolsPath, InventoryPath: *inventory, RootManifestPath: *root, HostManifestPath: *manifest, OutputPath: *output})
 		if err != nil {
 			return err
 		}
@@ -108,24 +113,17 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		flags := flag.NewFlagSet("corpus assurance local-proof", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
 		profile, usage, decision, fixtures := flags.String("profile", "", ""), flags.String("usage", "", ""), flags.String("decision", "", ""), flags.String("fixture-manifest", "", "")
-		candidatePath, candidateCommit := flags.String("candidate", "", ""), flags.String("candidate-commit", "", "")
-		toolsPath, toolsCommit := flags.String("tools", "", ""), flags.String("tools-commit", "", "")
+		attemptPath := flags.String("attempt", "", "")
+		candidatePath := flags.String("candidate", "", "")
+		toolsPath := flags.String("tools", "", "")
 		output := flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*profile, *usage, *decision, *fixtures, *candidatePath, *candidateCommit, *toolsPath, *toolsCommit, *output); err != nil {
+		if err := requiredAssuranceFlags(*attemptPath, *profile, *usage, *decision, *fixtures, *candidatePath, *toolsPath, *output); err != nil {
 			return err
 		}
-		candidate, err := assuranceRuntimeArtifact(*candidatePath, *candidateCommit)
-		if err != nil {
-			return err
-		}
-		tools, err := assuranceRuntimeArtifact(*toolsPath, *toolsCommit)
-		if err != nil {
-			return err
-		}
-		proof, err := corpusassurance.RunLocalProof(corpusassurance.LocalProofRequest{ProfilePath: *profile, UsagePath: *usage, DecisionPath: *decision, FixtureManifestPath: *fixtures, Candidate: candidate, CandidatePath: *candidatePath, Tools: tools, ToolsPath: *toolsPath, OutputPath: *output})
+		proof, err := corpusassurance.RunLocalProof(corpusassurance.LocalProofRequest{AttemptPath: *attemptPath, ProfilePath: *profile, UsagePath: *usage, DecisionPath: *decision, FixtureManifestPath: *fixtures, CandidatePath: *candidatePath, ToolsPath: *toolsPath, OutputPath: *output})
 		if err != nil {
 			return err
 		}
@@ -220,24 +218,16 @@ func (paths *assurancePathList) Set(value string) error {
 	return nil
 }
 
-func assuranceRuntimeArtifact(path, commit string) (corpusassurance.RuntimeArtifact, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return corpusassurance.RuntimeArtifact{}, err
-	}
-	sum := sha256.Sum256(data)
-	return corpusassurance.RuntimeArtifact{Commit: commit, OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: hex.EncodeToString(sum[:])}, nil
-}
-
 func printCorpusAssuranceHelp(w io.Writer) {
 	fmt.Fprint(w, `Run the sealed private-corpus assurance workflow.
 
 Usage:
-  glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --output <new-dir>
+  glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --output <ATTEMPT.json>
+  glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --attempt <ATTEMPT.json> --output <new-dir>
   glade-tools corpus assurance usage --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --decisions <USAGE_DECISIONS.json> --output <CORPUS_USAGE.json>
-  glade-tools corpus assurance replay --host <local|casper> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --candidate-commit <commit> --tools <glade-tools> --tools-commit <commit> --output <REPLAY_SHARD.json>
+  glade-tools corpus assurance replay --host <local|casper> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>
-  glade-tools corpus assurance local-proof --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --candidate-commit <commit> --tools <glade-tools> --tools-commit <commit> --output <LOCAL_PROOF.json>
+  glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
   glade-tools corpus assurance oracle-plan --inventory <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <decisions.json> --local-profile <profile.json> --local-usage <usage.json> --local-decision <decision.json> --fixture-manifest <fixtures.json> --local-proof <LOCAL_PROOF.json> --candidate <glade> --tools <glade-tools> --directives <directives.json> --profile-output <ASSURANCE_PROFILE.json> --output <ORACLE_PLAN.json>
   glade-tools corpus assurance exclusion-request --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --output <EXCLUSION_REQUEST.json>
   glade-tools corpus assurance authorize-exclusions --request <EXCLUSION_REQUEST.json> --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --policy <policy.json> --output <EXCLUSION_AUTHORITY.json>

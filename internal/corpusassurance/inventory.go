@@ -17,6 +17,7 @@ import (
 type InventoryManifest struct {
 	SchemaVersion   int              `json:"schemaVersion"`
 	InventorySHA256 string           `json:"inventorySha256"`
+	Attempt         AssuranceAttempt `json:"attempt"`
 	Repositories    []RepositorySpec `json:"repositories"`
 }
 
@@ -34,7 +35,7 @@ type checkout struct {
 
 // PrepareInventory creates immutable source snapshots and sealed per-host manifests.
 // inventoryPath must name an already-created, valid IN_SCOPE.json.
-func PrepareInventory(inventoryPath, output string) (InventoryManifest, error) {
+func PrepareInventory(inventoryPath, attemptPath, output string) (InventoryManifest, error) {
 	if filepath.Base(inventoryPath) != "IN_SCOPE.json" {
 		return InventoryManifest{}, fmt.Errorf("inventory input must be named IN_SCOPE.json")
 	}
@@ -43,6 +44,10 @@ func PrepareInventory(inventoryPath, output string) (InventoryManifest, error) {
 		return InventoryManifest{}, fmt.Errorf("read inventory: %w", err)
 	}
 	inventorySHA256 := replayBytesSHA256(inventoryBytes)
+	attempt, err := LoadAssuranceAttempt(attemptPath)
+	if err != nil || attempt.InventorySHA256 != inventorySHA256 {
+		return InventoryManifest{}, fmt.Errorf("attempt does not bind frozen inventory")
+	}
 
 	checkouts := make([]checkout, 0, len(spec.Repositories))
 	seenRoots := make([]checkout, 0, len(spec.Repositories))
@@ -110,6 +115,7 @@ func PrepareInventory(inventoryPath, output string) (InventoryManifest, error) {
 	manifest := InventoryManifest{
 		SchemaVersion:   1,
 		InventorySHA256: inventorySHA256,
+		Attempt:         attempt,
 		Repositories:    repositories,
 	}
 	rootPath := filepath.Join(output, "MANIFEST.json")

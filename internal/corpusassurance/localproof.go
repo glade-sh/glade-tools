@@ -102,6 +102,7 @@ type LocalSurfaceProof struct {
 }
 
 type LocalProofRequest struct {
+	AttemptPath         string          `json:"attemptPath"`
 	ProfilePath         string          `json:"profilePath"`
 	UsagePath           string          `json:"usagePath"`
 	DecisionPath        string          `json:"decisionPath"`
@@ -120,6 +121,7 @@ type LocalProofRequest struct {
 
 type LocalProof struct {
 	Status                string                    `json:"status"`
+	AttemptSHA256         string                    `json:"attemptSha256"`
 	Candidate             RuntimeArtifact           `json:"candidate"`
 	Tools                 RuntimeArtifact           `json:"tools"`
 	ProfileSHA256         string                    `json:"profileSha256"`
@@ -130,6 +132,7 @@ type LocalProof struct {
 	UsagePath             string                    `json:"usagePath"`
 	DecisionPath          string                    `json:"decisionPath"`
 	FixtureManifestPath   string                    `json:"fixtureManifestPath"`
+	AttemptPath           string                    `json:"attemptPath"`
 	CandidatePath         string                    `json:"candidatePath"`
 	ToolsPath             string                    `json:"toolsPath"`
 	SelectedSurfaceIDs    []string                  `json:"selectedSurfaceIds"`
@@ -154,6 +157,10 @@ type localProofExecution struct {
 // ValidateLocalProof rechecks the complete normalized fixture/receipt graph
 // before another workflow stage may rely on local evidence.
 func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) error {
+	attempt, err := LoadAssuranceAttempt(proof.AttemptPath)
+	if err != nil || proof.AttemptSHA256 != attemptHash(attempt) || proof.Candidate != attempt.Candidate || proof.Tools != attempt.Tools {
+		return fmt.Errorf("local proof attempt binding is invalid")
+	}
 	if proof.Status != "pass" || ValidateRuntimeArtifact(proof.Candidate) != nil || ValidateRuntimeArtifact(proof.Tools) != nil || !sha256Pattern.MatchString(proof.ProfileSHA256) || !sha256Pattern.MatchString(proof.UsageSHA256) || !sha256Pattern.MatchString(proof.DecisionSHA256) || !sha256Pattern.MatchString(proof.FixtureManifestSHA256) {
 		return fmt.Errorf("invalid local proof bindings")
 	}
@@ -244,7 +251,7 @@ func verifyLocalProofReplay(proof LocalProof, manifest LocalProofFixtureManifest
 		return err
 	}
 	defer os.RemoveAll(temp)
-	replayed, err := RunLocalProof(LocalProofRequest{ProfilePath: proof.ProfilePath, UsagePath: proof.UsagePath, DecisionPath: proof.DecisionPath, FixtureManifestPath: proof.FixtureManifestPath, Candidate: proof.Candidate, CandidatePath: candidatePath, Tools: proof.Tools, ToolsPath: toolsPath, OutputPath: filepath.Join(temp, "LOCAL_PROOF.json"), architecture: architecture})
+	replayed, err := RunLocalProof(LocalProofRequest{AttemptPath: proof.AttemptPath, ProfilePath: proof.ProfilePath, UsagePath: proof.UsagePath, DecisionPath: proof.DecisionPath, FixtureManifestPath: proof.FixtureManifestPath, CandidatePath: candidatePath, ToolsPath: toolsPath, OutputPath: filepath.Join(temp, "LOCAL_PROOF.json"), architecture: architecture})
 	if err != nil {
 		return fmt.Errorf("replay local proof: %w", err)
 	}
@@ -299,6 +306,11 @@ type localProofExecutor func(localProofCommand) localProofExecution
 // RunLocalProof runs each explicitly mapped fixture once and writes a
 // create-only normalized proof after every selected surface has valid evidence.
 func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
+	attempt, err := LoadAssuranceAttempt(request.AttemptPath)
+	if err != nil {
+		return LocalProof{}, fmt.Errorf("load assurance attempt: %w", err)
+	}
+	request.Candidate, request.Tools = attempt.Candidate, attempt.Tools
 	inputs, fixturesBySurface, fixtures, selected, err := validateLocalProofRequest(request)
 	if err != nil {
 		return LocalProof{}, err
@@ -358,11 +370,11 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 	}
 
 	proof := LocalProof{
-		Status: "pass", Candidate: request.Candidate, Tools: request.Tools,
+		Status: "pass", AttemptSHA256: attemptHash(attempt), Candidate: request.Candidate, Tools: request.Tools,
 		ProfileSHA256: inputs.ProfileSHA256, UsageSHA256: inputs.UsageSHA256,
 		DecisionSHA256: inputs.DecisionSHA256, FixtureManifestSHA256: inputs.FixtureManifestSHA256,
 		ProfilePath: request.ProfilePath, UsagePath: request.UsagePath, DecisionPath: request.DecisionPath,
-		FixtureManifestPath: request.FixtureManifestPath, CandidatePath: request.CandidatePath, ToolsPath: request.ToolsPath,
+		FixtureManifestPath: request.FixtureManifestPath, AttemptPath: request.AttemptPath, CandidatePath: request.CandidatePath, ToolsPath: request.ToolsPath,
 		SelectedSurfaceIDs: selected, RawFixtureResults: raw,
 	}
 	for _, surfaceID := range selected {

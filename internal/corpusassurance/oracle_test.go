@@ -144,6 +144,11 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	}
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)}
+	attemptPath := assuranceAttemptForRuntimes(t, root, candidate, tools)
+	attempt, err := LoadAssuranceAttempt(attemptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
 	fixture := localProofFixture(t, root, "system", []string{"apex:System.run()"}, localRuntimeRequired)
 	if err := WriteNewJSON(fixtureManifestPath, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{fixture}}); err != nil {
 		t.Fatal(err)
@@ -158,7 +163,7 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	}
 	stdout := `{"status":"passed","exitCode":0}`
 	receipt := CommandResult{Command: []string{"exec"}, CommandSpecSHA256: localProofReceiptSpecSHA256(command), ExitCode: 0, DurationMS: 1, StdoutSHA256: replayBytesSHA256([]byte(stdout)), StderrSHA256: replayBytesSHA256(nil), Passed: true}
-	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: tools, ProfileSHA256: strings.Repeat("b", 64), UsageSHA256: strings.Repeat("c", 64), DecisionSHA256: strings.Repeat("d", 64), FixtureManifestSHA256: localProofFileSHA256(t, fixtureManifestPath), SelectedSurfaceIDs: []string{"apex:System.run()"}, RawFixtureResults: []LocalProofFixtureResult{{FixtureID: "system", FixtureSHA256: fixture.SHA256, Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, Receipt: receipt, Operation: "exec", StdoutSHA256: receipt.StdoutSHA256, Stdout: stdout, StderrSHA256: receipt.StderrSHA256}}, Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", FixtureID: "system", FixtureSHA256: fixture.SHA256, Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, RuntimeObserved: true}}}
+	proof := LocalProof{Status: "pass", AttemptSHA256: attemptHash(attempt), AttemptPath: attemptPath, Candidate: candidate, Tools: tools, ProfileSHA256: strings.Repeat("b", 64), UsageSHA256: strings.Repeat("c", 64), DecisionSHA256: strings.Repeat("d", 64), FixtureManifestSHA256: localProofFileSHA256(t, fixtureManifestPath), SelectedSurfaceIDs: []string{"apex:System.run()"}, RawFixtureResults: []LocalProofFixtureResult{{FixtureID: "system", FixtureSHA256: fixture.SHA256, Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, Receipt: receipt, Operation: "exec", StdoutSHA256: receipt.StdoutSHA256, Stdout: stdout, StderrSHA256: receipt.StderrSHA256}}, Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", FixtureID: "system", FixtureSHA256: fixture.SHA256, Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, RuntimeObserved: true}}}
 	if err := WriteNewJSON(proofPath, proof); err != nil {
 		t.Fatal(err)
 	}

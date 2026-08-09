@@ -217,6 +217,7 @@ func RunReplay(request ReplayRequest) (ReplayShard, error) {
 	if err != nil {
 		return ReplayShard{}, err
 	}
+	request.Candidate, request.Tools = inputs.Root.Attempt.Candidate, inputs.Root.Attempt.Tools
 	repositories, err := validateReplayRequest(request, inputs)
 	if err != nil {
 		return ReplayShard{}, err

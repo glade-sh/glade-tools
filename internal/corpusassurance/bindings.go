@@ -35,7 +35,7 @@ func LoadSealedHostInputs(inventoryPath, rootPath, hostPath, expectedHost string
 	inventorySHA256 := replayBytesSHA256(inventoryBytes)
 	rootSHA256 := replayBytesSHA256(rootBytes)
 	hostSHA256 := replayBytesSHA256(hostBytes)
-	if root.SchemaVersion != 1 || root.InventorySHA256 != inventorySHA256 || !sha256Pattern.MatchString(rootSHA256) || host.SchemaVersion != 1 || host.Host != expectedHost || host.RootManifestSHA256 != rootSHA256 {
+	if root.SchemaVersion != 1 || root.InventorySHA256 != inventorySHA256 || ValidateAssuranceAttempt(root.Attempt) != nil || root.Attempt.InventorySHA256 != inventorySHA256 || !sha256Pattern.MatchString(rootSHA256) || host.SchemaVersion != 1 || host.Host != expectedHost || host.RootManifestSHA256 != rootSHA256 {
 		return SealedHostInputs{}, fmt.Errorf("sealed manifest bindings do not match")
 	}
 	if err := ValidateInventoryCoverage(inventory, root.Repositories); err != nil {

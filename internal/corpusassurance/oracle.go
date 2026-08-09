@@ -235,6 +235,22 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	} else if !os.IsNotExist(err) {
 		return AssuranceProfile{}, err
 	}
+	inventory, inventoryBytes, err := readInventorySpec(inventoryPath)
+	if err != nil {
+		return AssuranceProfile{}, fmt.Errorf("read IN_SCOPE inventory: %w", err)
+	}
+	root, rootBytes, err := readExactJSONBytes[InventoryManifest](rootManifestPath)
+	if err != nil || root.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateAssuranceAttempt(root.Attempt) != nil || root.Attempt.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateInventoryCoverage(inventory, root.Repositories) != nil {
+		return AssuranceProfile{}, fmt.Errorf("root manifest does not bind frozen inventory and attempt")
+	}
+	policySHA, err := proofInputSHA256(policyPath)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
+	decisionSHA, err := proofInputSHA256(decisionPath)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
 	sourceRows, sourceBytes, err := readAssuranceProfileRows(sourceProfilePath)
 	if err != nil {
 		return AssuranceProfile{}, fmt.Errorf("read source profile: %w", err)
@@ -278,6 +294,9 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	}
 	if proof.ProfilePath != localProfilePath || proof.UsagePath != localUsagePath || proof.DecisionPath != localDecisionPath || proof.FixtureManifestPath != fixtureManifestPath || localProfileSHA != proof.ProfileSHA256 || localUsageSHA != proof.UsageSHA256 || localDecisionSHA != proof.DecisionSHA256 {
 		return AssuranceProfile{}, fmt.Errorf("local proof does not bind authoritative replay inputs")
+	}
+	if proof.AttemptSHA256 != attemptHash(root.Attempt) || proof.Candidate != root.Attempt.Candidate || proof.Tools != root.Attempt.Tools || proof.CandidatePath != candidatePath || proof.ToolsPath != toolsPath {
+		return AssuranceProfile{}, fmt.Errorf("local proof does not bind the sealed attempt runtimes")
 	}
 	sourceSHA, usageSHA := replayBytesSHA256(sourceBytes), replayBytesSHA256(sealedUsageBytes)
 	ledgerSHA, manifestSHA, proofSHA := replayBytesSHA256(ledgerBytes), replayBytesSHA256(manifestBytes), replayBytesSHA256(proofBytes)
@@ -340,7 +359,7 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	sort.Slice(result.NonDeferredGaps, func(i, j int) bool { return result.NonDeferredGaps[i].SurfaceID < result.NonDeferredGaps[j].SurfaceID })
 	sort.Slice(result.HostedDeferred, func(i, j int) bool { return result.HostedDeferred[i].SurfaceID < result.HostedDeferred[j].SurfaceID })
 	result.Total = len(result.Rows)
-	if err := verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, localProfilePath, localUsagePath, localDecisionPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA, localProfileSHA, localUsageSHA, localDecisionSHA); err != nil {
+	if err := verifyAssuranceProfileInputs([]assuranceProfileInput{{inventoryPath, replayBytesSHA256(inventoryBytes)}, {rootManifestPath, replayBytesSHA256(rootBytes)}, {sourceProfilePath, sourceSHA}, {sealedUsagePath, usageSHA}, {ledgerPath, ledgerSHA}, {policyPath, policySHA}, {decisionPath, decisionSHA}, {fixtureManifestPath, manifestSHA}, {localProofPath, proofSHA}, {proof.AttemptPath, proof.AttemptSHA256}, {candidatePath, proof.Candidate.SHA256}, {toolsPath, proof.Tools.SHA256}, {localProfilePath, localProfileSHA}, {localUsagePath, localUsageSHA}, {localDecisionPath, localDecisionSHA}}); err != nil {
 		return AssuranceProfile{}, err
 	}
 	if err := WriteNewJSON(outputPath, result); err != nil {
@@ -425,8 +444,10 @@ func proofInputSHA256(path string) (string, error) {
 	return replayBytesSHA256(data), nil
 }
 
-func verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, localProfilePath, localUsagePath, localDecisionPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA, localProfileSHA, localUsageSHA, localDecisionSHA string) error {
-	for _, input := range []struct{ path, sha string }{{sourceProfilePath, sourceSHA}, {sealedUsagePath, usageSHA}, {ledgerPath, ledgerSHA}, {fixtureManifestPath, manifestSHA}, {localProofPath, proofSHA}, {localProfilePath, localProfileSHA}, {localUsagePath, localUsageSHA}, {localDecisionPath, localDecisionSHA}} {
+type assuranceProfileInput struct{ path, sha string }
+
+func verifyAssuranceProfileInputs(inputs []assuranceProfileInput) error {
+	for _, input := range inputs {
 		data, err := os.ReadFile(input.path)
 		if err != nil || replayBytesSHA256(data) != input.sha {
 			return fmt.Errorf("assurance profile input changed during projection")

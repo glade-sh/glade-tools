@@ -33,7 +33,7 @@ func TestInventoryCreatesSnapshotsAndHostManifests(t *testing.T) {
 	})
 	output := filepath.Join(t.TempDir(), "prepared")
 
-	manifest, err := PrepareInventory(input, output)
+	manifest, err := PrepareInventory(input, assuranceAttemptForTest(t, input), output)
 	if err != nil {
 		t.Fatalf("PrepareInventory: %v", err)
 	}
@@ -122,7 +122,7 @@ func TestInventoryRejectsDirtyOrWrongCommitRepository(t *testing.T) {
 			entry := InventoryEntry{ID: "private-corpus-001", CheckoutPath: repository, ExpectedCommit: testGitOutput(t, repository, "rev-parse", "HEAD")}
 			scenario.mutate(t, repository, &entry)
 			input := writeInventoryInput(t, InventorySpec{SchemaVersion: 1, Scope: "private-corpus-assurance", Repositories: []InventoryEntry{entry}})
-			if _, err := PrepareInventory(input, filepath.Join(t.TempDir(), "prepared")); err == nil {
+			if _, err := PrepareInventory(input, assuranceAttemptForTest(t, input), filepath.Join(t.TempDir(), "prepared")); err == nil {
 				t.Fatal("PrepareInventory accepted an unsafe repository")
 			}
 		})
@@ -161,7 +161,7 @@ func TestPrepareInventoryRejectsDuplicateCheckoutRoot(t *testing.T) {
 				{ID: "private-corpus-001", CheckoutPath: repository, ExpectedCommit: commit},
 				{ID: "private-corpus-002", CheckoutPath: scenario.alias(t, repository), ExpectedCommit: commit},
 			}})
-			if _, err := PrepareInventory(input, filepath.Join(t.TempDir(), "prepared")); err == nil {
+			if _, err := PrepareInventory(input, assuranceAttemptForTest(t, input), filepath.Join(t.TempDir(), "prepared")); err == nil {
 				t.Fatal("PrepareInventory accepted two aliases for the same checkout")
 			}
 		})
@@ -277,7 +277,7 @@ func TestSnapshotVerificationRejectsModifiedArchiveAndTree(t *testing.T) {
 	repository := newInventoryRepository(t, map[string]string{"classes/Only.cls": "public class Only {}\n"})
 	input := writeInventoryInput(t, InventorySpec{SchemaVersion: 1, Scope: "private-corpus-assurance", Repositories: []InventoryEntry{{ID: "private-corpus-001", CheckoutPath: repository, ExpectedCommit: testGitOutput(t, repository, "rev-parse", "HEAD")}}})
 	output := filepath.Join(t.TempDir(), "prepared")
-	manifest, err := PrepareInventory(input, output)
+	manifest, err := PrepareInventory(input, assuranceAttemptForTest(t, input), output)
 	if err != nil {
 		t.Fatalf("PrepareInventory: %v", err)
 	}
@@ -294,11 +294,11 @@ func TestSnapshotVerificationRejectsModifiedArchiveAndTree(t *testing.T) {
 		t.Fatal("verifyRepositorySnapshot accepted a changed archive")
 	}
 
-	if _, err := PrepareInventory(input, filepath.Join(t.TempDir(), "prepared")); err != nil {
+	if _, err := PrepareInventory(input, assuranceAttemptForTest(t, input), filepath.Join(t.TempDir(), "prepared")); err != nil {
 		t.Fatalf("PrepareInventory(second output): %v", err)
 	}
 	output = filepath.Join(filepath.Dir(output), "tree-prepared")
-	manifest, err = PrepareInventory(input, output)
+	manifest, err = PrepareInventory(input, assuranceAttemptForTest(t, input), output)
 	if err != nil {
 		t.Fatalf("PrepareInventory(tree output): %v", err)
 	}

@@ -51,6 +51,7 @@ func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
 		t.Fatal(err)
 	}
 	request.Candidate.SHA256 = localProofFileSHA256(t, request.CandidatePath)
+	replaceAssuranceAttemptForRuntimes(t, request.AttemptPath, request.Candidate, request.Tools)
 	proof, err := RunLocalProof(request)
 	if err != nil {
 		t.Fatalf("RunLocalProof: %v", err)
@@ -177,6 +178,7 @@ func TestVerifyLocalProofReplayRejectsForgedRetainedOutput(t *testing.T) {
 		t.Fatal(err)
 	}
 	request.Candidate.SHA256 = localProofFileSHA256(t, request.CandidatePath)
+	replaceAssuranceAttemptForRuntimes(t, request.AttemptPath, request.Candidate, request.Tools)
 	proof, err := RunLocalProof(request)
 	if err != nil {
 		t.Fatal(err)
@@ -343,6 +345,7 @@ func localProofRequest(t *testing.T) (LocalProofRequest, *[]localProofCommand) {
 	writeLocalProofJSON(t, decisionPath, LocalProofDecision{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), UsageSHA256: localProofFileSHA256(t, usagePath), FixtureManifestSHA256: localProofFileSHA256(t, manifestPath), Decisions: decisionRows})
 	calls := []localProofCommand{}
 	request := LocalProofRequest{
+		AttemptPath:         assuranceAttemptForRuntimes(t, root, localProofRuntime(t, candidatePath, "a"), localProofRuntime(t, toolsPath, "b")),
 		ProfilePath:         profilePath,
 		UsagePath:           usagePath,
 		DecisionPath:        decisionPath,
