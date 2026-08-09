@@ -213,6 +213,116 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	return bundle, nil
 }
 
+// ValidateOracleBundle rehashes the staged Razor tree before any Salesforce
+// command may rely on it.
+func ValidateOracleBundle(bundlePath string) error {
+	if !filepath.IsAbs(bundlePath) {
+		return fmt.Errorf("absolute bundle path is required")
+	}
+	bundle, bundleBytes, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil {
+		return fmt.Errorf("read oracle bundle: %w", err)
+	}
+	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil {
+		return fmt.Errorf("invalid oracle bundle")
+	}
+	bundleRoot, outputRoot := filepath.Dir(bundlePath), filepath.Dir(filepath.Dir(bundlePath))
+	for _, item := range []struct {
+		path string
+		hash string
+	}{
+		{filepath.Join(bundleRoot, "profile.json"), bundle.ProfileSHA256},
+		{filepath.Join(bundleRoot, "ORACLE_PLAN.json"), bundle.OraclePlanSHA256},
+		{filepath.Join(bundleRoot, "EXCLUSION_AUTHORITY.json"), bundle.ExclusionAuthoritySHA256},
+		{filepath.Join(bundleRoot, "RELEASE_VALIDATION.json"), bundle.ReleaseValidationSHA256},
+		{filepath.Join(bundleRoot, "LOCAL_PROOF_SUMMARY.json"), bundle.LocalProofSummarySHA256},
+		{filepath.Join(bundleRoot, "fixture-manifest.json"), bundle.TransportManifestSHA256},
+		{filepath.Join(bundleRoot, "corpus-assurance-scratch-def.json"), bundle.ScratchDefinitionSHA256},
+		{filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), bundle.FilterSHA256},
+		{filepath.Join(outputRoot, "bin", "glade-tools-darwin-amd64"), bundle.ToolsAMD64SHA256},
+	} {
+		if !sha256Pattern.MatchString(item.hash) {
+			return fmt.Errorf("invalid oracle bundle hash")
+		}
+		actual, err := sha256File(item.path)
+		if err != nil || actual != item.hash {
+			return fmt.Errorf("oracle bundle staged input changed")
+		}
+	}
+	profile, _, err := readExactJSONBytes[AssuranceProfile](filepath.Join(bundleRoot, "profile.json"))
+	if err != nil || profile.SchemaVersion != 1 || profile.LocalProofSHA256 != bundle.LocalProofSHA256 {
+		return fmt.Errorf("invalid staged assurance profile")
+	}
+	plan, _, err := readExactJSONBytes[OraclePlan](filepath.Join(bundleRoot, "ORACLE_PLAN.json"))
+	if err != nil || plan.Candidate != bundle.Candidate || plan.Tools != bundle.Tools || plan.ProfileSHA256 != bundle.ProfileSHA256 {
+		return fmt.Errorf("invalid staged oracle plan")
+	}
+	authority, _, err := readExactJSONBytes[ExclusionAuthority](filepath.Join(bundleRoot, "EXCLUSION_AUTHORITY.json"))
+	if err != nil || authority.Candidate != bundle.Candidate || authority.Tools != bundle.Tools || authority.PlanSHA256 != bundle.OraclePlanSHA256 || authority.ProfileSHA256 != bundle.ProfileSHA256 || authority.LocalProofSHA256 != bundle.LocalProofSHA256 {
+		return fmt.Errorf("invalid staged exclusion authority")
+	}
+	manifest, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(bundleRoot, "fixture-manifest.json"))
+	if err != nil || !validOracleTransportManifest(bundleRoot, manifest, bundle.Fixtures) {
+		return fmt.Errorf("invalid staged transport manifest")
+	}
+	summary, _, err := readExactJSONBytes[oracleLocalProofSummary](filepath.Join(bundleRoot, "LOCAL_PROOF_SUMMARY.json"))
+	if err != nil || !summary.Sealed || summary.ManifestSHA256 != bundle.TransportManifestSHA256 || !validOracleLocalSummary(summary, manifest) {
+		return fmt.Errorf("invalid staged local proof summary")
+	}
+	return nil
+}
+
+func validOracleTransportManifest(bundleRoot string, manifest oracleTransportManifest, selected []OracleBundleFixture) bool {
+	if len(manifest.Fixtures) != len(selected) {
+		return false
+	}
+	expected := make(map[string][]string, len(selected))
+	for _, fixture := range selected {
+		if fixture.ID == "" || expected[fixture.ID] != nil {
+			return false
+		}
+		expected[fixture.ID] = fixture.SurfaceIDs
+	}
+	for _, fixture := range manifest.Fixtures {
+		if fixture.ID == "" || !fixture.SalesforceEligible || !equalStrings(fixture.SurfaceIDs, expected[fixture.ID]) || fixture.Path == "" || filepath.IsAbs(fixture.Path) || strings.HasPrefix(filepath.Clean(fixture.Path), "..") || !sha256Pattern.MatchString(fixture.SHA256) {
+			return false
+		}
+		actual, err := sha256File(filepath.Join(bundleRoot, filepath.FromSlash(fixture.Path)))
+		if err != nil || actual != fixture.SHA256 {
+			return false
+		}
+		for _, source := range fixture.SourceFiles {
+			if source.Path == "" || filepath.IsAbs(source.Path) || strings.HasPrefix(filepath.Clean(source.Path), "..") || !sha256Pattern.MatchString(source.SHA256) {
+				return false
+			}
+			actual, err := sha256File(filepath.Join(bundleRoot, filepath.FromSlash(source.Path)))
+			if err != nil || actual != source.SHA256 {
+				return false
+			}
+		}
+		delete(expected, fixture.ID)
+	}
+	return len(expected) == 0
+}
+
+func validOracleLocalSummary(summary oracleLocalProofSummary, manifest oracleTransportManifest) bool {
+	fixtures := make(map[string]bool, len(manifest.Fixtures))
+	for _, fixture := range manifest.Fixtures {
+		fixtures[fixture.Fixture], fixtures[fixture.Path] = true, true
+	}
+	if len(summary.Results) != len(manifest.Fixtures) {
+		return false
+	}
+	seen := make(map[string]bool, len(summary.Results))
+	for _, result := range summary.Results {
+		if result.Fixture == "" || result.Path == "" || seen[result.Fixture] || !fixtures[result.Fixture] || !fixtures[result.Path] || result.Status != "exit-0" || (result.Kind != "exec" && result.Kind != "test" && result.Kind != "check") || !json.Valid(result.Result) {
+			return false
+		}
+		seen[result.Fixture] = true
+	}
+	return len(seen) == len(manifest.Fixtures)
+}
+
 func verifyOracleBundleInputs(inputs map[string]string) error {
 	for path, expected := range inputs {
 		actual, err := sha256File(path)

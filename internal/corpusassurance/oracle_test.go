@@ -124,6 +124,16 @@ func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
 			t.Fatalf("missing staged bundle input %s: %v", path, err)
 		}
 	}
+	bundlePath := filepath.Join(outputPath, "bundle", "bundle.json")
+	if err := ValidateOracleBundle(bundlePath); err != nil {
+		t.Fatalf("ValidateOracleBundle: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(outputPath, "bundle", "profile.json"), []byte(`{"tampered":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateOracleBundle(bundlePath); err == nil {
+		t.Fatal("accepted a bundle whose staged profile changed")
+	}
 	wrongToolsPath := filepath.Join(root, "wrong-tools")
 	if err := os.WriteFile(wrongToolsPath, []byte("wrong"), 0o700); err != nil {
 		t.Fatal(err)
