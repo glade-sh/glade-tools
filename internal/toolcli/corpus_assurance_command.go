@@ -330,6 +330,37 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "salesforce-reconcile", len(files), *plan)
+	case "report":
+		flags := flag.NewFlagSet("corpus assurance report", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		inventory, root := flags.String("inventory-spec", "", ""), flags.String("root-manifest", "", "")
+		usage, profile, fixtures := flags.String("sealed-usage", "", ""), flags.String("profile", "", ""), flags.String("fixture-manifest", "", "")
+		replay, proof, plan := flags.String("replay", "", ""), flags.String("local-proof", "", ""), flags.String("oracle-plan", "", "")
+		authority, bundle := flags.String("exclusion-authority", "", ""), flags.String("bundle", "", "")
+		jsonOutput, htmlOutput, receiptOutput := flags.String("output", "", ""), flags.String("html-output", "", ""), flags.String("receipt-output", "", "")
+		var shards, dispatches, creations, cleanups assurancePathList
+		flags.Var(&shards, "shard", "")
+		flags.Var(&dispatches, "dispatch", "")
+		flags.Var(&creations, "creation", "")
+		flags.Var(&cleanups, "cleanup", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*inventory, *root, *usage, *profile, *fixtures, *replay, *proof, *plan, *authority, *bundle, *jsonOutput, *htmlOutput, *receiptOutput); err != nil || len(shards) == 0 || len(shards) != len(dispatches) || len(shards) != len(creations) || len(shards) != len(cleanups) {
+			if err != nil {
+				return err
+			}
+			return errors.New("paired Salesforce shard, dispatch, creation, and cleanup paths are required")
+		}
+		files := make([]corpusassurance.SalesforceShardFiles, len(shards))
+		for index := range files {
+			files[index] = corpusassurance.SalesforceShardFiles{ShardPath: shards[index], DispatchPath: dispatches[index], CreationPath: creations[index], CleanupPath: cleanups[index]}
+		}
+		receipt, err := corpusassurance.BuildAssuranceReport(corpusassurance.AssuranceReportRequest{InventoryPath: *inventory, RootManifestPath: *root, UsagePath: *usage, ProfilePath: *profile, FixtureManifestPath: *fixtures, ReplayPath: *replay, LocalProofPath: *proof, OraclePlanPath: *plan, AuthorityPath: *authority, BundlePath: *bundle, SalesforceFiles: files, JSONPath: *jsonOutput, HTMLPath: *htmlOutput, ReceiptPath: *receiptOutput})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "report", len(receipt.InputsSHA256), *jsonOutput)
 	case "cleanup":
 		flags := flag.NewFlagSet("corpus assurance cleanup", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -398,6 +429,7 @@ Usage:
   glade-tools corpus assurance salesforce-run --bundle <bundle.json> --dispatch <SALESFORCE_DISPATCH.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <SALESFORCE_SHARD.json>
   glade-tools corpus assurance org-cleanup --bundle <bundle.json> --creation <ORG_CREATION.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --dev-hub glade-dev-hub4 --sf-bin /usr/local/bin/sf --output <ORG_CLEANUP.json>
   glade-tools corpus assurance salesforce-reconcile --oracle-plan <ORACLE_PLAN.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json>
+	  glade-tools corpus assurance report --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --sealed-usage <CORPUS_USAGE.json> --profile <ASSURANCE_PROFILE.json> --fixture-manifest <fixtures.json> --replay <REPLAY.json> --local-proof <LOCAL_PROOF.json> --oracle-plan <ORACLE_PLAN.json> --exclusion-authority <EXCLUSION_AUTHORITY.json> --bundle <bundle.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --output <ASSURANCE.json> --html-output <ASSURANCE.html> --receipt-output <RECEIPT.json>
 	  glade-tools corpus assurance cleanup --host <matt@casper.local|matt@razor.local> --parent /private/tmp/glade-assurance-1afce500 --attempt-root <remote-attempt-root> --binding <sealed-file> --output <REMOTE_CLEANUP.json>
 `)
 }

@@ -17,10 +17,114 @@ type AssuranceReport struct {
 // AssuranceReceipt deliberately does not hash itself, keeping the sealed
 // artifact graph acyclic.
 type AssuranceReceipt struct {
-	SchemaVersion   int    `json:"schemaVersion"`
-	AssuranceSHA256 string `json:"assuranceSha256"`
-	HTMLSHA256      string `json:"htmlSha256"`
-	ReceiptSHA256   string `json:"receiptSha256,omitempty"`
+	SchemaVersion   int               `json:"schemaVersion"`
+	AssuranceSHA256 string            `json:"assuranceSha256"`
+	HTMLSHA256      string            `json:"htmlSha256"`
+	InputsSHA256    map[string]string `json:"inputsSha256"`
+	ReceiptSHA256   string            `json:"receiptSha256,omitempty"`
+}
+
+// AssuranceReportRequest names every direct, sealed input required to publish
+// the final public readiness projection.
+type AssuranceReportRequest struct {
+	InventoryPath       string
+	RootManifestPath    string
+	UsagePath           string
+	ProfilePath         string
+	FixtureManifestPath string
+	ReplayPath          string
+	LocalProofPath      string
+	OraclePlanPath      string
+	AuthorityPath       string
+	BundlePath          string
+	SalesforceFiles     []SalesforceShardFiles
+	JSONPath            string
+	HTMLPath            string
+	ReceiptPath         string
+}
+
+// BuildAssuranceReport derives public outcomes only from sealed files, then
+// writes the report, explorer, and acyclic receipt once.
+func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, error) {
+	paths := []string{request.InventoryPath, request.RootManifestPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.LocalProofPath, request.OraclePlanPath, request.AuthorityPath, request.BundlePath, request.JSONPath, request.HTMLPath, request.ReceiptPath}
+	for _, path := range paths {
+		if !filepath.IsAbs(path) {
+			return AssuranceReceipt{}, fmt.Errorf("absolute direct assurance paths are required")
+		}
+	}
+	if len(request.SalesforceFiles) == 0 {
+		return AssuranceReceipt{}, fmt.Errorf("Salesforce lifecycle evidence is required")
+	}
+	inventory, inventoryBytes, err := readInventorySpec(request.InventoryPath)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	root, rootBytes, err := readExactJSONBytes[InventoryManifest](request.RootManifestPath)
+	if err != nil || root.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateInventoryCoverage(inventory, root.Repositories) != nil {
+		return AssuranceReceipt{}, fmt.Errorf("root manifest does not bind frozen inventory")
+	}
+	usage, usageBytes, err := readExactJSONBytes[SealedCorpusUsage](request.UsagePath)
+	if err != nil || usage.InventorySHA256 != replayBytesSHA256(inventoryBytes) || usage.RootManifestSHA256 != replayBytesSHA256(rootBytes) {
+		return AssuranceReceipt{}, fmt.Errorf("sealed usage does not bind frozen inventory")
+	}
+	profile, profileBytes, err := readExactJSONBytes[AssuranceProfile](request.ProfilePath)
+	if err != nil || profile.SchemaVersion != 1 || profile.SealedUsageSHA256 != replayBytesSHA256(usageBytes) {
+		return AssuranceReceipt{}, fmt.Errorf("assurance profile does not bind sealed usage")
+	}
+	manifest, manifestBytes, err := readExactJSONBytes[LocalProofFixtureManifest](request.FixtureManifestPath)
+	if err != nil || profile.FixtureManifestSHA256 != replayBytesSHA256(manifestBytes) {
+		return AssuranceReceipt{}, fmt.Errorf("fixture manifest does not bind assurance profile")
+	}
+	proof, proofBytes, err := readExactJSONBytes[LocalProof](request.LocalProofPath)
+	if err != nil || profile.LocalProofSHA256 != replayBytesSHA256(proofBytes) || ValidateLocalProof(proof, manifest) != nil {
+		return AssuranceReceipt{}, fmt.Errorf("local proof does not bind assurance profile")
+	}
+	plan, planBytes, err := readExactJSONBytes[OraclePlan](request.OraclePlanPath)
+	if err != nil || plan.ProfileSHA256 != replayBytesSHA256(profileBytes) || plan.SealedUsageSHA256 != replayBytesSHA256(usageBytes) || plan.LocalProofSHA256 != replayBytesSHA256(proofBytes) {
+		return AssuranceReceipt{}, fmt.Errorf("oracle plan does not bind current evidence")
+	}
+	authority, authorityBytes, err := readExactJSONBytes[ExclusionAuthority](request.AuthorityPath)
+	if err != nil || authority.PlanSHA256 != replayBytesSHA256(planBytes) || authority.ProfileSHA256 != replayBytesSHA256(profileBytes) || authority.SealedUsageSHA256 != replayBytesSHA256(usageBytes) || authority.LocalProofSHA256 != replayBytesSHA256(proofBytes) || authority.SalesforceParityCredit != 0 {
+		return AssuranceReceipt{}, fmt.Errorf("exclusion authority does not bind current evidence")
+	}
+	if err := ValidateOracleBundle(request.BundlePath); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	bundle, bundleBytes, err := readExactJSONBytes[OracleBundle](request.BundlePath)
+	if err != nil || bundle.OraclePlanSHA256 != replayBytesSHA256(planBytes) || bundle.Candidate != plan.Candidate || bundle.Tools != plan.Tools {
+		return AssuranceReceipt{}, fmt.Errorf("oracle bundle does not bind current plan")
+	}
+	stagedPlanPath := filepath.Join(filepath.Dir(request.BundlePath), "ORACLE_PLAN.json")
+	if err := ValidateSalesforceShardFiles(stagedPlanPath, request.SalesforceFiles); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	shards := make([]SalesforceShard, 0, len(request.SalesforceFiles))
+	for _, files := range request.SalesforceFiles {
+		shard, _, err := readExactJSONBytes[SalesforceShard](files.ShardPath)
+		if err != nil {
+			return AssuranceReceipt{}, err
+		}
+		shards = append(shards, shard)
+	}
+	merge, mergeBytes, err := readExactJSONBytes[ReplayMerge](request.ReplayPath)
+	if err != nil || merge.RootManifestSHA256 != replayBytesSHA256(rootBytes) || merge.Candidate != plan.Candidate || merge.Tools != plan.Tools || len(merge.TestReadyByRepository) != len(root.Repositories) {
+		return AssuranceReceipt{}, fmt.Errorf("replay merge does not bind current evidence")
+	}
+	rows, err := deriveAssuranceRows(usage.Reconciliation, profile, proof, plan, shards, merge.TestReadyByRepository)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	inputs := map[string]string{request.InventoryPath: replayBytesSHA256(inventoryBytes), request.RootManifestPath: replayBytesSHA256(rootBytes), request.UsagePath: replayBytesSHA256(usageBytes), request.ProfilePath: replayBytesSHA256(profileBytes), request.FixtureManifestPath: replayBytesSHA256(manifestBytes), request.ReplayPath: replayBytesSHA256(mergeBytes), request.LocalProofPath: replayBytesSHA256(proofBytes), request.OraclePlanPath: replayBytesSHA256(planBytes), request.AuthorityPath: replayBytesSHA256(authorityBytes), request.BundlePath: replayBytesSHA256(bundleBytes)}
+	for _, files := range request.SalesforceFiles {
+		for _, path := range []string{files.ShardPath, files.DispatchPath, files.CreationPath, files.CleanupPath} {
+			hash, err := sha256File(path)
+			if err != nil {
+				return AssuranceReceipt{}, err
+			}
+			inputs[path] = hash
+		}
+	}
+	return writeAssuranceArtifacts(AssuranceReport{SchemaVersion: 1, Rows: rows}, request.JSONPath, request.HTMLPath, request.ReceiptPath, inputs)
 }
 
 // AssuranceSurfaceRow is the public, neutral per-surface release outcome.
@@ -239,6 +343,10 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 // the acyclic receipt. All targets are preflighted to avoid known no-clobber
 // failures before the first file is created.
 func WriteAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receiptPath string) (AssuranceReceipt, error) {
+	return writeAssuranceArtifacts(report, jsonPath, htmlPath, receiptPath, map[string]string{})
+}
+
+func writeAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receiptPath string, inputs map[string]string) (AssuranceReceipt, error) {
 	if report.SchemaVersion != 1 {
 		return AssuranceReceipt{}, fmt.Errorf("unsupported assurance report schema version %d", report.SchemaVersion)
 	}
@@ -282,7 +390,7 @@ func WriteAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receipt
 	if err != nil {
 		return AssuranceReceipt{}, err
 	}
-	receipt := AssuranceReceipt{SchemaVersion: 1, AssuranceSHA256: assuranceHash, HTMLSHA256: htmlHash}
+	receipt := AssuranceReceipt{SchemaVersion: 1, AssuranceSHA256: assuranceHash, HTMLSHA256: htmlHash, InputsSHA256: inputs}
 	if err := WriteNewJSON(receiptPath, receipt); err != nil {
 		return AssuranceReceipt{}, err
 	}

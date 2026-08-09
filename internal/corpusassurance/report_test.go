@@ -23,6 +23,12 @@ func TestValidateAssuranceOutcomesRequiresOneDefensibleOutcomePerSurface(t *test
 	}
 }
 
+func TestBuildAssuranceReportRequiresDirectEvidencePaths(t *testing.T) {
+	if _, err := BuildAssuranceReport(AssuranceReportRequest{}); err == nil {
+		t.Fatal("BuildAssuranceReport accepted missing direct evidence paths")
+	}
+}
+
 func TestWriteAssuranceHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 	root := t.TempDir()
 	reportPath := filepath.Join(root, "ASSURANCE.json")
