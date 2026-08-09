@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -55,5 +56,33 @@ func TestValidateSalesforceShardsRejectsReusedOrgAlias(t *testing.T) {
 	}
 	if err := ValidateSalesforceShards(shards, []string{"apex:System.run()", "apex:System.compile()"}); err == nil {
 		t.Fatal("accepted shards that reuse a scratch-org alias")
+	}
+}
+
+func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t *testing.T) {
+	root := t.TempDir()
+	planPath, shardPath := filepath.Join(root, "ORACLE_PLAN.json"), filepath.Join(root, "shard.json")
+	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
+	plan := OraclePlan{Candidate: candidate, Tools: tools, Rows: []OraclePlanRow{{SurfaceID: "apex:System.compile()", Action: oracleCompile}, {SurfaceID: "apex:System.run()", Action: oracleRuntime}, {SurfaceID: "apex:Hosted.only", Action: oracleWaiver, ExclusionClass: "hosted", ExclusionReason: "identity"}}}
+	if err := WriteNewJSON(planPath, plan); err != nil {
+		t.Fatal(err)
+	}
+	bindings := SalesforceBindings{OraclePlanSHA256: localProofFileSHA256(t, planPath), BundleSHA256: strings.Repeat("e", 64), FilterSHA256: strings.Repeat("f", 64), FilterCommandSpecSHA256: strings.Repeat("1", 64)}
+	command := CommandResult{Command: []string{"python3", "transport/salesforce-first-filter.py"}, CommandSpecSHA256: bindings.FilterCommandSpecSHA256, ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64)}
+	shard := SalesforceShard{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 0, ShardCount: 1, OrgAlias: "assurance-sf0", OrgID: "00D0", OrgStatus: "Active", PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.run()", Kind: oracleRuntime, Passed: true}, {SurfaceID: "apex:System.compile()", Kind: oracleCompile, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
+	if err := WriteNewJSON(shardPath, shard); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateSalesforceShardFiles(planPath, []string{shardPath}); err != nil {
+		t.Fatalf("ValidateSalesforceShardFiles: %v", err)
+	}
+	wrongKindPath := filepath.Join(root, "wrong-kind.json")
+	shard.Results[0].Kind = oracleCompile
+	if err := WriteNewJSON(wrongKindPath, shard); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateSalesforceShardFiles(planPath, []string{wrongKindPath}); err == nil {
+		t.Fatal("accepted a compile receipt for a runtime oracle row")
 	}
 }

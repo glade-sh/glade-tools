@@ -1,6 +1,9 @@
 package corpusassurance
 
-import "fmt"
+import (
+	"fmt"
+	"path/filepath"
+)
 
 var salesforceInventoryTypes = []string{"ApexClass", "ApexPage", "ApexTrigger", "CustomObject", "CustomField", "FieldSet", "StaticResource", "PlatformCachePartition"}
 
@@ -39,6 +42,105 @@ type SalesforceShard struct {
 	PostInventory SalesforceInventory       `json:"postInventory"`
 	Results       []SalesforceSurfaceResult `json:"results"`
 	Cleanup       CleanupReceipt            `json:"cleanup"`
+}
+
+// ValidateSalesforceShardFiles derives the runtime and compile denominator
+// from the sealed oracle plan, then validates every raw shard against it.
+// Callers cannot choose a smaller expected set.
+func ValidateSalesforceShardFiles(planPath string, shardPaths []string) error {
+	if !filepath.IsAbs(planPath) || len(shardPaths) == 0 {
+		return fmt.Errorf("absolute oracle plan and Salesforce shard paths are required")
+	}
+	plan, planBytes, err := readExactJSONBytes[OraclePlan](planPath)
+	if err != nil {
+		return fmt.Errorf("read oracle plan: %w", err)
+	}
+	expectedKinds, err := oracleSalesforceResultKinds(plan)
+	if err != nil {
+		return err
+	}
+	expected := make([]string, 0, len(expectedKinds))
+	for surfaceID := range expectedKinds {
+		expected = append(expected, surfaceID)
+	}
+	planSHA := replayBytesSHA256(planBytes)
+	shards := make([]SalesforceShard, 0, len(shardPaths))
+	shardHashes := make([]string, 0, len(shardPaths))
+	for _, path := range shardPaths {
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("absolute Salesforce shard paths are required")
+		}
+		shard, data, err := readExactJSONBytes[SalesforceShard](path)
+		if err != nil {
+			return fmt.Errorf("read Salesforce shard: %w", err)
+		}
+		if shard.Bindings.OraclePlanSHA256 != planSHA || shard.Candidate != plan.Candidate || shard.Tools != plan.Tools {
+			return fmt.Errorf("Salesforce shard does not bind sealed oracle plan")
+		}
+		shards, shardHashes = append(shards, shard), append(shardHashes, replayBytesSHA256(data))
+	}
+	if err := ValidateSalesforceShards(shards, expected); err != nil {
+		return err
+	}
+	for _, shard := range shards {
+		for _, result := range shard.Results {
+			if result.Kind != expectedKinds[result.SurfaceID] {
+				return fmt.Errorf("Salesforce result %q has wrong oracle action", result.SurfaceID)
+			}
+		}
+	}
+	if _, after, err := readExactJSONBytes[OraclePlan](planPath); err != nil || replayBytesSHA256(after) != planSHA {
+		return fmt.Errorf("oracle plan changed during Salesforce reconciliation")
+	}
+	for index, path := range shardPaths {
+		if _, after, err := readExactJSONBytes[SalesforceShard](path); err != nil || replayBytesSHA256(after) != shardHashes[index] {
+			return fmt.Errorf("Salesforce shard changed during reconciliation")
+		}
+	}
+	return nil
+}
+
+func oracleSalesforceSurfaceIDs(plan OraclePlan) ([]string, error) {
+	resultKinds, err := oracleSalesforceResultKinds(plan)
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]string, 0, len(resultKinds))
+	for id := range resultKinds {
+		ids = append(ids, id)
+	}
+	return ids, nil
+}
+
+func oracleSalesforceResultKinds(plan OraclePlan) (map[string]string, error) {
+	if ValidateRuntimeArtifact(plan.Candidate) != nil || ValidateRuntimeArtifact(plan.Tools) != nil || len(plan.Rows) == 0 {
+		return nil, fmt.Errorf("invalid oracle plan runtime bindings")
+	}
+	seen := make(map[string]bool, len(plan.Rows))
+	resultKinds := make(map[string]string, len(plan.Rows))
+	for _, row := range plan.Rows {
+		if row.SurfaceID == "" || seen[row.SurfaceID] {
+			return nil, fmt.Errorf("invalid or duplicate oracle plan surface %q", row.SurfaceID)
+		}
+		seen[row.SurfaceID] = true
+		switch row.Action {
+		case oracleRuntime, oracleCompile:
+			if row.ExclusionClass != "" || row.ExclusionReason != "" {
+				return nil, fmt.Errorf("Salesforce oracle row %q carries an exclusion", row.SurfaceID)
+			}
+			resultKinds[row.SurfaceID] = row.Action
+		case oracleLocalContractOnly, oracleWaiver:
+			if row.ExclusionClass == "" || row.ExclusionReason == "" {
+				return nil, fmt.Errorf("non-parity oracle row %q lacks an exclusion", row.SurfaceID)
+			}
+		default:
+			return nil, fmt.Errorf("oracle plan contains unresolved action %q", row.Action)
+		}
+	}
+	if len(resultKinds) == 0 {
+		return nil, fmt.Errorf("oracle plan has no Salesforce-required surfaces")
+	}
+	return resultKinds, nil
 }
 
 func ValidateSalesforceShards(shards []SalesforceShard, expected []string) error {
