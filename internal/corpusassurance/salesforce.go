@@ -28,6 +28,7 @@ type SalesforceOrgPreflight struct {
 	BundleSHA256  string              `json:"bundleSha256"`
 	OrgAlias      string              `json:"orgAlias"`
 	OrgID         string              `json:"orgId"`
+	OrgUsername   string              `json:"orgUsername"`
 	OrgStatus     string              `json:"orgStatus"`
 	Inventory     SalesforceInventory `json:"inventory"`
 	Commands      []CommandResult     `json:"commands"`
@@ -121,15 +122,51 @@ type salesforceFilterBinding struct {
 }
 
 type salesforceFilterFixtureResult struct {
-	SurfaceIDs    []string        `json:"surfaceIds"`
-	Org           string          `json:"org"`
-	Kind          string          `json:"kind"`
-	ExitCode      *int            `json:"exitCode"`
-	Deployable    bool            `json:"deployable"`
-	RuntimePassed *bool           `json:"runtimePassed"`
-	RuntimeResult json.RawMessage `json:"runtimeResult"`
-	RemoteCleanup CleanupReceipt  `json:"remoteCleanup"`
-	OrgCleanup    CleanupReceipt  `json:"orgCleanup"`
+	Fixture             string                            `json:"fixture"`
+	FixtureSHA256       string                            `json:"fixtureSha256"`
+	SourceFiles         []oracleSourceFile                `json:"sourceFiles"`
+	OrgIdentity         salesforceFilterOrgIdentity       `json:"orgIdentity"`
+	Project             string                            `json:"project"`
+	RemoteProject       string                            `json:"remoteProject"`
+	RemoteInvocation    *salesforceFilterRemoteInvocation `json:"remoteInvocation"`
+	ProjectTreeSHA256   string                            `json:"projectTreeSha256"`
+	StdoutSHA256        string                            `json:"stdoutSha256"`
+	StderrSHA256        string                            `json:"stderrSha256"`
+	SetupSHA256         string                            `json:"setupSha256"`
+	RuntimeSHA256       string                            `json:"runtimeSha256,omitempty"`
+	RuntimeStderrSHA256 string                            `json:"runtimeStderrSha256,omitempty"`
+	SurfaceIDs          []string                          `json:"surfaceIds"`
+	Org                 string                            `json:"org"`
+	Kind                string                            `json:"kind"`
+	ExitCode            *int                              `json:"exitCode"`
+	Deployable          bool                              `json:"deployable"`
+	RuntimePassed       *bool                             `json:"runtimePassed"`
+	RuntimeResult       json.RawMessage                   `json:"runtimeResult"`
+	RemoteCleanup       CleanupReceipt                    `json:"remoteCleanup"`
+	OrgCleanup          CleanupReceipt                    `json:"orgCleanup"`
+}
+
+type salesforceFilterRemoteInvocation struct {
+	SSHHost      string                          `json:"sshHost"`
+	SSHUser      string                          `json:"sshUser"`
+	SSHBatchMode bool                            `json:"sshBatchMode"`
+	RemoteRoot   string                          `json:"remoteRoot"`
+	SFBinary     string                          `json:"sfBinary"`
+	Environment  map[string]string               `json:"environment"`
+	TargetOrg    string                          `json:"targetOrg"`
+	Commands     []salesforceFilterRemoteCommand `json:"commands"`
+}
+
+type salesforceFilterRemoteCommand struct {
+	Purpose string   `json:"purpose"`
+	Command string   `json:"command"`
+	SSHArgs []string `json:"sshArgs"`
+}
+
+type salesforceFilterOrgIdentity struct {
+	Alias    string `json:"alias"`
+	OrgID    string `json:"orgId"`
+	Username string `json:"username"`
 }
 
 type salesforceFilterPostflight struct {
@@ -522,7 +559,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if !exists {
 		return SalesforceShard{}, fmt.Errorf("Salesforce executor has no filter results")
 	}
-	filter, err := deriveSalesforceFilterEvidence(bundle, request.BundlePath, preflight.OrgAlias, snapshot)
+	filter, err := deriveSalesforceFilterEvidence(bundle, request.BundlePath, preflight.OrgAlias, preflight.OrgID, preflight.OrgUsername, dispatch.ExecutorRoot, dispatch.RunID, dispatch.ShardIndex, snapshot)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
@@ -772,7 +809,7 @@ func parseSalesforceFilterResults(data []byte) (salesforceFilterResults, error) 
 	return result, nil
 }
 
-func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias string, snapshot salesforceExecutorSnapshot) (salesforceFilterResults, error) {
+func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias, orgID, orgUsername, executorRoot, runID string, shardIndex int, snapshot salesforceExecutorSnapshot) (salesforceFilterResults, error) {
 	bundleRoot := filepath.Dir(bundlePath)
 	manifest, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(bundleRoot, "fixture-manifest.json"))
 	if err != nil || !validOracleTransportManifest(bundleRoot, manifest, bundle.Fixtures) {
@@ -786,6 +823,21 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias st
 	if err := json.Unmarshal(selectionBytes, &selection); err != nil {
 		return salesforceFilterResults{}, fmt.Errorf("read Salesforce selection: %w", err)
 	}
+	resultBytes, exists := snapshot.Files["filter/results.json"]
+	if !exists {
+		return salesforceFilterResults{}, fmt.Errorf("Salesforce executor has no adapter receipt")
+	}
+	adapter, err := parseSalesforceFilterResults(resultBytes)
+	if err != nil {
+		return salesforceFilterResults{}, fmt.Errorf("read Salesforce adapter receipt: %w", err)
+	}
+	adapterByFixture := make(map[string]salesforceFilterFixtureResult, len(adapter.Results))
+	for _, result := range adapter.Results {
+		if result.Fixture == "" || adapterByFixture[result.Fixture].Fixture != "" {
+			return salesforceFilterResults{}, fmt.Errorf("invalid Salesforce adapter fixture receipt")
+		}
+		adapterByFixture[result.Fixture] = result
+	}
 	byFixture := make(map[string]oracleTransportFixture, len(manifest.Fixtures))
 	for _, fixture := range manifest.Fixtures {
 		byFixture[fixture.Fixture] = fixture
@@ -798,6 +850,10 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias st
 			return salesforceFilterResults{}, fmt.Errorf("invalid sealed Salesforce selection")
 		}
 		seenFixtures[item.Fixture] = true
+		adapterResult, hasAdapterResult := adapterByFixture[item.Fixture]
+		if !hasAdapterResult || adapterResult.FixtureSHA256 != fixture.SHA256 || !reflect.DeepEqual(adapterResult.SourceFiles, fixture.SourceFiles) || !equalStrings(sortedStrings(adapterResult.SurfaceIDs), item.SurfaceIDs) || adapterResult.Org != orgAlias || adapterResult.Kind != item.Kind || adapterResult.ExitCode == nil || *adapterResult.ExitCode != 0 {
+			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q lacks a sealed adapter receipt", item.Fixture)
+		}
 		kind, err := oracleTransportFixtureKind(bundleRoot, fixture)
 		if err != nil || kind != item.Kind {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce selection does not match sealed fixture")
@@ -812,10 +868,19 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias st
 		if err != nil {
 			return salesforceFilterResults{}, err
 		}
+		remoteRoot, err := sealedSalesforceRemoteExecutorRoot(bundle.AttemptSHA256, shardIndex)
+		if err != nil {
+			return salesforceFilterResults{}, err
+		}
+		expectedProject := filepath.Join(executorRoot, "filter", "projects", stem)
+		expectedRemoteProject := filepath.Join(remoteRoot, "projects", runID, stem)
+		if adapterResult.Project != expectedProject || adapterResult.RemoteProject != expectedRemoteProject || adapterResult.OrgIdentity != (salesforceFilterOrgIdentity{Alias: orgAlias, OrgID: orgID, Username: orgUsername}) || !validSalesforceRemoteInvocation(adapterResult.RemoteInvocation, remoteRoot, expectedRemoteProject, orgUsername, kind) {
+			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q has an unbound execution receipt", item.Fixture)
+		}
 		base := filepath.ToSlash(filepath.Join("filter", "projects", stem, "salesforce-"+orgAlias))
 		deploy, deployOK := snapshot.Files[base+".json"]
-		_, stderrOK := snapshot.Files[base+".stderr"]
-		_, setupOK := snapshot.Files[base+".setup"]
+		stderr, stderrOK := snapshot.Files[base+".stderr"]
+		setup, setupOK := snapshot.Files[base+".setup"]
 		if !deployOK || !stderrOK || !setupOK {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q lacks retained command evidence", item.Fixture)
 		}
@@ -823,10 +888,15 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias st
 			if !validSalesforceRuntimeObservation(deploy) {
 				return salesforceFilterResults{}, fmt.Errorf("Salesforce runtime fixture %q lacks raw success", item.Fixture)
 			}
-		} else if !validSalesforceDeployObservation(deploy) {
+		} else if !validSalesforceDeployObservationForProject(deploy, snapshot.Files, filepath.ToSlash(filepath.Join("filter", "projects", stem))) {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce deploy fixture %q lacks raw success", item.Fixture)
 		}
-		row := salesforceFilterFixtureResult{SurfaceIDs: append([]string(nil), item.SurfaceIDs...), Org: orgAlias, Kind: kind, ExitCode: new(int), Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}
+		projectTreeSHA, err := salesforceFixtureProjectTreeSHA256(snapshot.Files, filepath.ToSlash(filepath.Join("filter", "projects", stem)))
+		if err != nil {
+			return salesforceFilterResults{}, err
+		}
+		exitCode := *adapterResult.ExitCode
+		row := salesforceFilterFixtureResult{Fixture: item.Fixture, FixtureSHA256: fixture.SHA256, SourceFiles: append([]oracleSourceFile(nil), fixture.SourceFiles...), OrgIdentity: adapterResult.OrgIdentity, Project: expectedProject, RemoteProject: expectedRemoteProject, RemoteInvocation: adapterResult.RemoteInvocation, ProjectTreeSHA256: projectTreeSHA, StdoutSHA256: replayBytesSHA256(deploy), StderrSHA256: replayBytesSHA256(stderr), SetupSHA256: replayBytesSHA256(setup), SurfaceIDs: append([]string(nil), item.SurfaceIDs...), Org: orgAlias, Kind: kind, ExitCode: &exitCode, Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}
 		if kind == "exec" {
 			passed := true
 			row.RuntimePassed, row.RuntimeResult = &passed, append(json.RawMessage(nil), deploy...)
@@ -836,13 +906,62 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias st
 			if !ok || !validSalesforceTestObservation(runtime) {
 				return salesforceFilterResults{}, fmt.Errorf("Salesforce test fixture %q lacks raw runtime success", item.Fixture)
 			}
-			if _, ok := snapshot.Files[base+"-tests.stderr"]; !ok {
+			runtimeStderr, ok := snapshot.Files[base+"-tests.stderr"]
+			if !ok {
 				return salesforceFilterResults{}, fmt.Errorf("Salesforce test fixture %q lacks retained runtime stderr", item.Fixture)
 			}
+			row.RuntimeSHA256, row.RuntimeStderrSHA256 = replayBytesSHA256(runtime), replayBytesSHA256(runtimeStderr)
 		}
 		derived = append(derived, row)
 	}
 	return salesforceFilterResults{Sealed: true, Orgs: []string{orgAlias}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: "", CandidateCommit: bundle.Candidate.Commit, CandidateSHA256: bundle.Candidate.SHA256, ToolsCommit: bundle.Tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: derived}, nil
+}
+
+func salesforceFixtureProjectTreeSHA256(files map[string][]byte, project string) (string, error) {
+	prefix := project + "/"
+	entries := make([]salesforceExecutorFile, 0)
+	for path, data := range files {
+		if !strings.HasPrefix(path, prefix) || strings.HasPrefix(filepath.Base(path), "salesforce-") {
+			continue
+		}
+		entries = append(entries, salesforceExecutorFile{Path: strings.TrimPrefix(path, prefix), SHA256: replayBytesSHA256(data)})
+	}
+	if len(entries) == 0 {
+		return "", fmt.Errorf("Salesforce fixture project has no generated files")
+	}
+	sort.Slice(entries, func(left, right int) bool { return entries[left].Path < entries[right].Path })
+	data, err := json.Marshal(entries)
+	if err != nil {
+		return "", err
+	}
+	return replayBytesSHA256(data), nil
+}
+
+func validSalesforceRemoteInvocation(invocation *salesforceFilterRemoteInvocation, remoteRoot, project, org, kind string) bool {
+	if invocation == nil || invocation.SSHHost != "razor.local" || invocation.SSHUser != "matt" || !invocation.SSHBatchMode || invocation.RemoteRoot != remoteRoot || invocation.SFBinary != "/usr/local/bin/sf" || !reflect.DeepEqual(invocation.Environment, map[string]string{"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}) || invocation.TargetOrg != org || len(invocation.Commands) == 0 {
+		return false
+	}
+	command := expectedSalesforceRemoteCommand(project, org, kind)
+	return invocation.Commands[0].Purpose == "deploy-or-exec" && invocation.Commands[0].Command == command && equalStrings(invocation.Commands[0].SSHArgs, []string{"ssh", "-o", "BatchMode=yes", "matt@razor.local", command})
+}
+
+func expectedSalesforceRemoteCommand(project, org, kind string) string {
+	parts := []string{"cd", pythonShellQuote(project), "&&", "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true", pythonShellQuote("/usr/local/bin/sf")}
+	if kind == "exec" {
+		parts = append(parts, "apex", "run", "--file", "anonymous.apex", "--target-org", pythonShellQuote(org), "--api-version", "67.0", "--json")
+	} else {
+		parts = append(parts, "project", "deploy", "start", "--source-dir", "force-app", "--target-org", pythonShellQuote(org), "--ignore-conflicts", "--wait", "30", "--json")
+	}
+	return strings.Join(parts, " ")
+}
+
+func pythonShellQuote(value string) string {
+	if value != "" && strings.IndexFunc(value, func(r rune) bool {
+		return !strings.ContainsRune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_@%+=:,./-", r)
+	}) == -1 {
+		return value
+	}
+	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
 }
 
 func oracleTransportFixtureKind(bundleRoot string, fixture oracleTransportFixture) (string, error) {
@@ -897,6 +1016,39 @@ func validSalesforceDeployObservation(data []byte) bool {
 	return len(payload.Result) > 0 && json.Unmarshal(payload.Result, &result) == nil && (result.Status == "Succeeded" || result.Success != nil && *result.Success) && len(result.Details.ComponentSuccesses) > 0 && len(result.Details.ComponentFailures) == 0
 }
 
+func validSalesforceDeployObservationForProject(data []byte, files map[string][]byte, project string) bool {
+	if !validSalesforceDeployObservation(data) {
+		return false
+	}
+	var payload struct {
+		Result struct {
+			Details struct {
+				ComponentSuccesses []struct {
+					FileName string `json:"fileName"`
+				} `json:"componentSuccesses"`
+			} `json:"details"`
+		} `json:"result"`
+	}
+	if json.Unmarshal(data, &payload) != nil {
+		return false
+	}
+	materialized := map[string]bool{}
+	prefix := project + "/force-app/"
+	for path := range files {
+		if strings.HasPrefix(path, prefix) {
+			relative := strings.TrimPrefix(path, prefix)
+			materialized[relative] = true
+			materialized[strings.TrimPrefix(relative, "main/default/")] = true
+		}
+	}
+	for _, success := range payload.Result.Details.ComponentSuccesses {
+		if materialized[success.FileName] {
+			return true
+		}
+	}
+	return false
+}
+
 func validSalesforceTestObservation(data []byte) bool {
 	var payload struct {
 		Status *int `json:"status"`
@@ -943,11 +1095,11 @@ func RunSalesforceOrgPreflight(request SalesforceOrgPreflightRequest) (Salesforc
 	if err != nil {
 		return SalesforceOrgPreflight{}, err
 	}
-	orgID, status, err := parseSalesforceOrgDisplay(display.Stdout)
+	orgID, status, username, err := parseSalesforceOrgDisplay(display.Stdout)
 	if err != nil || status != "Active" {
 		return SalesforceOrgPreflight{}, fmt.Errorf("scratch org is not Active")
 	}
-	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: request.TargetOrg, OrgID: orgID, OrgStatus: status, Inventory: SalesforceInventory{Counts: make(map[string]int)}, Commands: []CommandResult{displayReceipt}}
+	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: request.TargetOrg, OrgID: orgID, OrgUsername: username, OrgStatus: status, Inventory: SalesforceInventory{Counts: make(map[string]int)}, Commands: []CommandResult{displayReceipt}}
 	for index, kind := range salesforceInventoryTypes {
 		output, receipt, err := runSalesforcePreflightCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), commands[index+1]...)
 		if err != nil {
@@ -1024,18 +1176,19 @@ func runSalesforceCLI(ctx context.Context, binary string, args ...string) (sales
 	return output, err
 }
 
-func parseSalesforceOrgDisplay(data []byte) (string, string, error) {
+func parseSalesforceOrgDisplay(data []byte) (string, string, string, error) {
 	var payload struct {
 		Status int `json:"status"`
 		Result struct {
-			ID     string `json:"id"`
-			Status string `json:"status"`
+			ID       string `json:"id"`
+			Status   string `json:"status"`
+			Username string `json:"username"`
 		} `json:"result"`
 	}
-	if err := json.Unmarshal(data, &payload); err != nil || payload.Status != 0 || payload.Result.ID == "" || payload.Result.Status == "" {
-		return "", "", fmt.Errorf("invalid Salesforce org display JSON")
+	if err := json.Unmarshal(data, &payload); err != nil || payload.Status != 0 || payload.Result.ID == "" || payload.Result.Status == "" || payload.Result.Username == "" {
+		return "", "", "", fmt.Errorf("invalid Salesforce org display JSON")
 	}
-	return payload.Result.ID, payload.Result.Status, nil
+	return payload.Result.ID, payload.Result.Status, payload.Result.Username, nil
 }
 
 func parseSalesforceOrgCreate(data []byte) (string, error) {
@@ -1078,7 +1231,7 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 	if err != nil {
 		return SalesforceShard{}, err
 	}
-	if !validSalesforceOrgPreflight(preflight, preflight.BundleSHA256, bundlePath) || !validSalesforceOrgPreflight(postflight, preflight.BundleSHA256, bundlePath) || preflight.OrgAlias != postflight.OrgAlias || preflight.OrgID != postflight.OrgID || !filter.Sealed || len(filter.Orgs) != 1 || filter.Orgs[0] != preflight.OrgAlias || !filter.RemoteCleanup.ResidueAbsent || !filter.OrgPostflight.MatchesPreflight || !command.Passed || command.ExitCode != 0 || command.TimedOut {
+	if !validSalesforceOrgPreflight(preflight, preflight.BundleSHA256, bundlePath) || !validSalesforceOrgPreflight(postflight, preflight.BundleSHA256, bundlePath) || preflight.OrgAlias != postflight.OrgAlias || preflight.OrgID != postflight.OrgID || preflight.OrgUsername != postflight.OrgUsername || !filter.Sealed || len(filter.Orgs) != 1 || filter.Orgs[0] != preflight.OrgAlias || !filter.RemoteCleanup.ResidueAbsent || !filter.OrgPostflight.MatchesPreflight || !command.Passed || command.ExitCode != 0 || command.TimedOut {
 		return SalesforceShard{}, fmt.Errorf("invalid Salesforce filter or org evidence")
 	}
 	if filter.Binding.ManifestSHA256 != bundle.TransportManifestSHA256 || filter.Binding.ProfileSHA256 != bundle.ProfileSHA256 || filter.Binding.QueueSHA256 != bundle.OraclePlanSHA256 || filter.Binding.SelectorSHA256 != bundle.OraclePlanSHA256 || filter.Binding.SelectorReceiptSHA256 != preflight.BundleSHA256 || filter.Binding.CandidateCommit != bundle.Candidate.Commit || filter.Binding.CandidateSHA256 != bundle.Candidate.SHA256 || filter.Binding.ToolsCommit != bundle.Tools.Commit || filter.Binding.ToolsAMD64SHA256 != bundle.ToolsAMD64SHA256 || filter.Binding.WorkflowScriptSHA256 != bundle.FilterSHA256 || filter.Binding.LocalSummarySHA256 != bundle.LocalProofSummarySHA256 {
@@ -1125,7 +1278,7 @@ func validSalesforceRuntimeObservation(raw json.RawMessage) bool {
 
 func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bundlePath string) bool {
 	environment, err := fixedSalesforceEnvironment()
-	if err != nil || !filepath.IsAbs(bundlePath) || preflight.SchemaVersion != 1 || preflight.BundleSHA256 != bundleSHA || preflight.OrgAlias == "" || preflight.OrgID == "" || preflight.OrgStatus != "Active" || !zeroInventory(preflight.Inventory) || len(preflight.Inventory.Counts) != len(salesforceInventoryTypes) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 {
+	if err != nil || !filepath.IsAbs(bundlePath) || preflight.SchemaVersion != 1 || preflight.BundleSHA256 != bundleSHA || preflight.OrgAlias == "" || preflight.OrgID == "" || preflight.OrgUsername == "" || preflight.OrgStatus != "Active" || !zeroInventory(preflight.Inventory) || len(preflight.Inventory.Counts) != len(salesforceInventoryTypes) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 {
 		return false
 	}
 	for index, args := range salesforcePreflightArgs(preflight.OrgAlias) {
@@ -1136,8 +1289,8 @@ func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bu
 			return false
 		}
 		if index == 0 {
-			orgID, status, err := parseSalesforceOrgDisplay(command.Output.Stdout)
-			if err != nil || orgID != preflight.OrgID || status != preflight.OrgStatus {
+			orgID, status, username, err := parseSalesforceOrgDisplay(command.Output.Stdout)
+			if err != nil || orgID != preflight.OrgID || status != preflight.OrgStatus || username != preflight.OrgUsername {
 				return false
 			}
 		} else if count, err := parseSalesforceCount(command.Output.Stdout); err != nil || count != preflight.Inventory.Counts[salesforceInventoryTypes[index-1]] {
@@ -1480,7 +1633,7 @@ func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 		filterBytes, filterExists := snapshot.Files["filter/results.json"]
 		filterSource, filterScriptExists := snapshot.Files[filepath.ToSlash(filepath.Join("filter-script", "salesforce-first-filter.py"))]
 		postflightBytes, postflightExists := snapshot.Files["postflight.json"]
-		filter, filterReadErr := deriveSalesforceFilterEvidence(bundle, bundlePath, preflight.OrgAlias, snapshot)
+		filter, filterReadErr := deriveSalesforceFilterEvidence(bundle, bundlePath, preflight.OrgAlias, preflight.OrgID, preflight.OrgUsername, shard.ExecutorRoot, shard.RunID, shard.ShardIndex, snapshot)
 		filter.Binding.SelectorReceiptSHA256 = preflight.BundleSHA256
 		var postflight SalesforceOrgPreflight
 		postflightErr := json.Unmarshal(postflightBytes, &postflight)
