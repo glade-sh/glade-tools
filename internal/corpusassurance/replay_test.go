@@ -245,6 +245,14 @@ func TestValidateReplayFilesLoadsAuthoritativeInputs(t *testing.T) {
 	if err := ValidateReplayFiles(inventoryPath, rootPath, hostPaths, shardPaths); err != nil {
 		t.Fatalf("ValidateReplayFiles: %v", err)
 	}
+	outputPath := filepath.Join(root, "REPLAY.json")
+	merged, err := MergeReplayFromFiles(inventoryPath, rootPath, hostPaths, shardPaths, outputPath)
+	if err != nil {
+		t.Fatalf("MergeReplayFromFiles: %v", err)
+	}
+	if len(merged.Repositories) != 2 || fileSHA256(t, outputPath) == "" {
+		t.Fatalf("merged replay = %#v", merged)
+	}
 }
 
 func replayRequest(t *testing.T, host, exit string) (ReplayRequest, string) {

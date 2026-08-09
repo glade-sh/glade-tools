@@ -86,41 +86,67 @@ type ReplayBindings struct {
 }
 
 type ReplayMerge struct {
-	Candidate          RuntimeArtifact
-	Tools              RuntimeArtifact
-	Inventory          InventoryManifest
-	RootManifestSHA256 string
-	HostManifestSHA256 map[string]string
-	Repositories       []RepositorySpec
+	Candidate          RuntimeArtifact   `json:"candidate"`
+	Tools              RuntimeArtifact   `json:"tools"`
+	Inventory          InventoryManifest `json:"inventory"`
+	RootManifestSHA256 string            `json:"rootManifestSha256"`
+	HostManifestSHA256 map[string]string `json:"hostManifestSha256"`
+	Repositories       []RepositorySpec  `json:"repositories"`
 }
 
 // ValidateReplayFiles is the reconciliation entrypoint. It reads each sealed
 // manifest and raw shard once, derives all hash bindings from those bytes, and
 // rejects a postflight change before accepting the merge.
 func ValidateReplayFiles(inventoryPath, rootManifestPath string, hostManifestPaths, shardPaths []string) error {
+	_, err := loadReplayMergeFromFiles(inventoryPath, rootManifestPath, hostManifestPaths, shardPaths)
+	return err
+}
+
+// MergeReplayFromFiles seals the validated local/Casper merge as a
+// create-only receipt for the final assurance report.
+func MergeReplayFromFiles(inventoryPath, rootManifestPath string, hostManifestPaths, shardPaths []string, outputPath string) (ReplayMerge, error) {
+	if !filepath.IsAbs(outputPath) {
+		return ReplayMerge{}, fmt.Errorf("replay merge output must be absolute")
+	}
+	if _, err := os.Lstat(outputPath); err == nil {
+		return ReplayMerge{}, fmt.Errorf("replay merge output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return ReplayMerge{}, err
+	}
+	merge, err := loadReplayMergeFromFiles(inventoryPath, rootManifestPath, hostManifestPaths, shardPaths)
+	if err != nil {
+		return ReplayMerge{}, err
+	}
+	if err := WriteNewJSON(outputPath, merge); err != nil {
+		return ReplayMerge{}, err
+	}
+	return merge, nil
+}
+
+func loadReplayMergeFromFiles(inventoryPath, rootManifestPath string, hostManifestPaths, shardPaths []string) (ReplayMerge, error) {
 	inventory, inventoryBytes, err := readInventorySpec(inventoryPath)
 	if err != nil {
-		return fmt.Errorf("read IN_SCOPE inventory: %w", err)
+		return ReplayMerge{}, fmt.Errorf("read IN_SCOPE inventory: %w", err)
 	}
 	root, rootBytes, err := readExactJSONBytes[InventoryManifest](rootManifestPath)
 	if err != nil {
-		return fmt.Errorf("read root manifest: %w", err)
+		return ReplayMerge{}, fmt.Errorf("read root manifest: %w", err)
 	}
 	if root.SchemaVersion != 1 || root.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateInventoryCoverage(inventory, root.Repositories) != nil {
-		return fmt.Errorf("invalid root manifest")
+		return ReplayMerge{}, fmt.Errorf("invalid root manifest")
 	}
 	if len(hostManifestPaths) == 0 || len(shardPaths) == 0 {
-		return fmt.Errorf("host manifests and replay shards are required")
+		return ReplayMerge{}, fmt.Errorf("host manifests and replay shards are required")
 	}
 	hostHashes := make(map[string]string, len(hostManifestPaths))
 	hostFileHashes := make([]string, 0, len(hostManifestPaths))
 	for _, path := range hostManifestPaths {
 		host, data, err := readExactJSONBytes[HostManifest](path)
 		if err != nil {
-			return fmt.Errorf("read host manifest: %w", err)
+			return ReplayMerge{}, fmt.Errorf("read host manifest: %w", err)
 		}
 		if host.SchemaVersion != 1 || host.RootManifestSHA256 != replayBytesSHA256(rootBytes) || (host.Host != "local" && host.Host != "casper") {
-			return fmt.Errorf("invalid host manifest")
+			return ReplayMerge{}, fmt.Errorf("invalid host manifest")
 		}
 		expected := make(map[string]RepositorySpec)
 		for _, repository := range root.Repositories {
@@ -129,19 +155,19 @@ func ValidateReplayFiles(inventoryPath, rootManifestPath string, hostManifestPat
 			}
 		}
 		if len(host.Repositories) != len(expected) {
-			return fmt.Errorf("host manifest repository count mismatch")
+			return ReplayMerge{}, fmt.Errorf("host manifest repository count mismatch")
 		}
 		for _, repository := range host.Repositories {
 			if expected[repository.ID] != repository {
-				return fmt.Errorf("host manifest repository does not match root")
+				return ReplayMerge{}, fmt.Errorf("host manifest repository does not match root")
 			}
 			delete(expected, repository.ID)
 		}
 		if len(expected) != 0 {
-			return fmt.Errorf("host manifest is missing root repositories")
+			return ReplayMerge{}, fmt.Errorf("host manifest is missing root repositories")
 		}
 		if _, duplicate := hostHashes[host.Host]; duplicate {
-			return fmt.Errorf("duplicate host manifest %q", host.Host)
+			return ReplayMerge{}, fmt.Errorf("duplicate host manifest %q", host.Host)
 		}
 		hostHashes[host.Host] = replayBytesSHA256(data)
 		hostFileHashes = append(hostFileHashes, replayBytesSHA256(data))
@@ -151,39 +177,39 @@ func ValidateReplayFiles(inventoryPath, rootManifestPath string, hostManifestPat
 	for _, path := range shardPaths {
 		shard, data, err := readExactJSONBytes[ReplayShard](path)
 		if err != nil {
-			return fmt.Errorf("read replay shard: %w", err)
+			return ReplayMerge{}, fmt.Errorf("read replay shard: %w", err)
 		}
 		shards = append(shards, shard)
 		shardHashes = append(shardHashes, replayBytesSHA256(data))
 	}
 	if len(shards) == 0 {
-		return fmt.Errorf("replay shards are required")
+		return ReplayMerge{}, fmt.Errorf("replay shards are required")
 	}
 	merge := ReplayMerge{Candidate: shards[0].Candidate, Tools: shards[0].Tools, Inventory: root, RootManifestSHA256: replayBytesSHA256(rootBytes), HostManifestSHA256: hostHashes, Repositories: root.Repositories}
 	if err := ValidateReplayMerge(merge, shards); err != nil {
-		return err
+		return ReplayMerge{}, err
 	}
 	_, postRoot, err := readExactJSONBytes[InventoryManifest](rootManifestPath)
 	if err != nil || replayBytesSHA256(postRoot) != replayBytesSHA256(rootBytes) {
-		return fmt.Errorf("root manifest changed during replay reconciliation")
+		return ReplayMerge{}, fmt.Errorf("root manifest changed during replay reconciliation")
 	}
 	_, postInventory, err := readInventorySpec(inventoryPath)
 	if err != nil || replayBytesSHA256(postInventory) != replayBytesSHA256(inventoryBytes) {
-		return fmt.Errorf("IN_SCOPE inventory changed during replay reconciliation")
+		return ReplayMerge{}, fmt.Errorf("IN_SCOPE inventory changed during replay reconciliation")
 	}
 	for index, path := range hostManifestPaths {
 		_, data, err := readExactJSONBytes[HostManifest](path)
 		if err != nil || replayBytesSHA256(data) != hostFileHashes[index] {
-			return fmt.Errorf("host manifest changed during replay reconciliation")
+			return ReplayMerge{}, fmt.Errorf("host manifest changed during replay reconciliation")
 		}
 	}
 	for index, path := range shardPaths {
 		_, data, err := readExactJSONBytes[ReplayShard](path)
 		if err != nil || replayBytesSHA256(data) != shardHashes[index] {
-			return fmt.Errorf("replay shard changed during reconciliation")
+			return ReplayMerge{}, fmt.Errorf("replay shard changed during reconciliation")
 		}
 	}
-	return nil
+	return merge, nil
 }
 
 func RunReplay(request ReplayRequest) (ReplayShard, error) {
