@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -120,6 +121,64 @@ func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 	}
 }
 
+func TestRunSalesforceOrgPreflightRejectsBundleChangedDuringCommands(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	validations := 0
+	_, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{
+		BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath,
+		validateBundle: func(string) error {
+			validations++
+			if validations == 2 {
+				return errors.New("bundle changed")
+			}
+			return nil
+		},
+		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active"}}`)}, nil
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
+		},
+	})
+	if err == nil || !strings.Contains(err.Error(), "bundle changed during org preflight") {
+		t.Fatalf("RunSalesforceOrgPreflight error = %v", err)
+	}
+	if _, err := os.Stat(outputPath); !os.IsNotExist(err) {
+		t.Fatalf("preflight receipt exists after changed bundle: %v", err)
+	}
+}
+
+func TestRunSalesforceOrgPreflightRejectsBundleHashChangedDuringCommands(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{
+		BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath,
+		validateBundle: func(string) error { return nil },
+		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active"}}`)}, nil
+			}
+			if err := os.WriteFile(bundlePath, []byte(`{"bundle":false}`), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
+		},
+	})
+	if err == nil || !strings.Contains(err.Error(), "staged bundle changed during org preflight") {
+		t.Fatalf("RunSalesforceOrgPreflight error = %v", err)
+	}
+	if _, err := os.Stat(outputPath); !os.IsNotExist(err) {
+		t.Fatalf("preflight receipt exists after changed bundle: %v", err)
+	}
+}
+
 func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
 	root := t.TempDir()
 	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "org-create.json")
@@ -143,6 +202,64 @@ func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
 	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRunSalesforceOrgCreateRejectsBundleChangedDuringCreation(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "org-create.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	validations := 0
+	_, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{
+		BundlePath: bundlePath, DevHub: "glade-dev-hub4", Alias: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath,
+		validateBundle: func(string) error {
+			validations++
+			if validations == 2 {
+				return errors.New("bundle changed")
+			}
+			return nil
+		},
+		runner: func(_ context.Context, _ string, _ ...string) (salesforceCommandOutput, error) {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
+		},
+	})
+	if err == nil || !strings.Contains(err.Error(), "bundle changed during org creation") {
+		t.Fatalf("RunSalesforceOrgCreate error = %v", err)
+	}
+	if _, err := os.Stat(outputPath); !os.IsNotExist(err) {
+		t.Fatalf("creation receipt exists after changed bundle: %v", err)
+	}
+}
+
+func TestRunSalesforceOrgCreateRejectsBundleHashChangedDuringCreation(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "org-create.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{
+		BundlePath: bundlePath, DevHub: "glade-dev-hub4", Alias: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath,
+		validateBundle: func(string) error { return nil },
+		runner: func(_ context.Context, _ string, _ ...string) (salesforceCommandOutput, error) {
+			if err := os.WriteFile(bundlePath, []byte(`{"bundle":false}`), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
+		},
+	})
+	if err == nil || !strings.Contains(err.Error(), "staged bundle changed during org creation") {
+		t.Fatalf("RunSalesforceOrgCreate error = %v", err)
+	}
+	if _, err := os.Stat(outputPath); !os.IsNotExist(err) {
+		t.Fatalf("creation receipt exists after changed bundle: %v", err)
 	}
 }
 

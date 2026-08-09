@@ -302,6 +302,12 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 		return SalesforceOrgCreation{}, err
 	}
 	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias, OrgID: orgID, Command: command}
+	if err := validate(request.BundlePath); err != nil {
+		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation: %w", err)
+	}
+	if hash, err := sha256File(request.BundlePath); err != nil || hash != bundleSHA {
+		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation")
+	}
 	if err := WriteNewJSON(request.OutputPath, creation); err != nil {
 		return SalesforceOrgCreation{}, err
 	}
@@ -449,6 +455,12 @@ func RunSalesforceOrgPreflight(request SalesforceOrgPreflightRequest) (Salesforc
 		}
 		preflight.Inventory.Counts[kind] = count
 		preflight.Commands = append(preflight.Commands, receipt)
+	}
+	if err := validate(request.BundlePath); err != nil {
+		return SalesforceOrgPreflight{}, fmt.Errorf("staged bundle changed during org preflight: %w", err)
+	}
+	if hash, err := sha256File(request.BundlePath); err != nil || hash != bundleSHA {
+		return SalesforceOrgPreflight{}, fmt.Errorf("staged bundle changed during org preflight")
 	}
 	if err := WriteNewJSON(request.OutputPath, preflight); err != nil {
 		return SalesforceOrgPreflight{}, err
