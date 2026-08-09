@@ -1,6 +1,26 @@
 package corpusassurance
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
+)
+
+// AssuranceReport is the public, neutral release outcome projection.
+type AssuranceReport struct {
+	SchemaVersion int                   `json:"schemaVersion"`
+	Rows          []AssuranceSurfaceRow `json:"rows"`
+}
+
+// AssuranceReceipt deliberately does not hash itself, keeping the sealed
+// artifact graph acyclic.
+type AssuranceReceipt struct {
+	SchemaVersion   int    `json:"schemaVersion"`
+	AssuranceSHA256 string `json:"assuranceSha256"`
+	HTMLSHA256      string `json:"htmlSha256"`
+	ReceiptSHA256   string `json:"receiptSha256,omitempty"`
+}
 
 // AssuranceSurfaceRow is the public, neutral per-surface release outcome.
 // Readiness is cumulative: runtime parity implies test and compile readiness;
@@ -49,4 +69,58 @@ func ValidateAssuranceOutcomes(rows []AssuranceSurfaceRow) error {
 		}
 	}
 	return nil
+}
+
+// WriteAssuranceArtifacts writes the report, its offline explorer, and then
+// the acyclic receipt. All targets are preflighted to avoid known no-clobber
+// failures before the first file is created.
+func WriteAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receiptPath string) (AssuranceReceipt, error) {
+	if report.SchemaVersion != 1 {
+		return AssuranceReceipt{}, fmt.Errorf("unsupported assurance report schema version %d", report.SchemaVersion)
+	}
+	if err := ValidateAssuranceOutcomes(report.Rows); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	reportJSON, err := json.Marshal(report)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	if containsPrivateReportPath(reportJSON) {
+		return AssuranceReceipt{}, fmt.Errorf("assurance report is not safe for public output")
+	}
+	paths := []string{jsonPath, htmlPath, receiptPath}
+	for index, path := range paths {
+		if !filepath.IsAbs(path) {
+			return AssuranceReceipt{}, fmt.Errorf("absolute assurance artifact paths are required")
+		}
+		for _, earlier := range paths[:index] {
+			if path == earlier {
+				return AssuranceReceipt{}, fmt.Errorf("assurance artifact paths must be distinct")
+			}
+		}
+		if _, err := os.Lstat(path); err == nil {
+			return AssuranceReceipt{}, fmt.Errorf("assurance artifact output already exists: %s", path)
+		} else if !os.IsNotExist(err) {
+			return AssuranceReceipt{}, err
+		}
+	}
+	if err := WriteNewJSON(jsonPath, report); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	if err := WriteAssuranceHTML(jsonPath, htmlPath); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	assuranceHash, err := sha256File(jsonPath)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	htmlHash, err := sha256File(htmlPath)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	receipt := AssuranceReceipt{SchemaVersion: 1, AssuranceSHA256: assuranceHash, HTMLSHA256: htmlHash}
+	if err := WriteNewJSON(receiptPath, receipt); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	return receipt, nil
 }

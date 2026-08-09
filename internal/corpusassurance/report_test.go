@@ -47,3 +47,19 @@ func TestWriteAssuranceHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 		t.Fatal("WriteAssuranceHTML overwrote output")
 	}
 }
+
+func TestWriteAssuranceArtifactsWritesAnAcyclicReceiptLast(t *testing.T) {
+	root := t.TempDir()
+	jsonPath, htmlPath, receiptPath := filepath.Join(root, "ASSURANCE.json"), filepath.Join(root, "ASSURANCE.html"), filepath.Join(root, "RECEIPT.json")
+	report := AssuranceReport{SchemaVersion: 1, Rows: []AssuranceSurfaceRow{{SurfaceID: "apex:Example.run", CompileReady: true}}}
+	receipt, err := WriteAssuranceArtifacts(report, jsonPath, htmlPath, receiptPath)
+	if err != nil {
+		t.Fatalf("WriteAssuranceArtifacts: %v", err)
+	}
+	if receipt.AssuranceSHA256 != localProofFileSHA256(t, jsonPath) || receipt.HTMLSHA256 != localProofFileSHA256(t, htmlPath) || receipt.ReceiptSHA256 != "" {
+		t.Fatalf("receipt = %#v", receipt)
+	}
+	if _, err := os.Stat(receiptPath); err != nil {
+		t.Fatal(err)
+	}
+}
