@@ -100,7 +100,7 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	}
 	bundlePath, planPath, shardPath := filepath.Join(outputRoot, "bundle", "bundle.json"), filepath.Join(outputRoot, "bundle", "ORACLE_PLAN.json"), filepath.Join(t.TempDir(), "shard.json")
 	bundleSHA := localProofFileSHA256(t, bundlePath)
-	executorRoot, runID, alias := filepath.Join(t.TempDir(), "executor", "shard-0"), "attempt-shard-0", "assurance-sf0"
+	executorRoot, runID, alias := filepath.Join(filepath.Dir(outputRoot), "executor", "shard-0"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-0", "assurance-sf0"
 	args, err := salesforceFilterArgs(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 0, 1)
 	if err == nil {
 		t.Fatal("salesforceFilterArgs accepted an invalid shard count")
@@ -115,7 +115,7 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	lifecycle := salesforcePreflightForTest(t, alias, bundleSHA, bundlePath)
 	shard := SalesforceShard{Bindings: bindings, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, OrgAlias: alias, OrgID: lifecycle.OrgID, OrgStatus: "Active", Preflight: lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
 	shard1Path := filepath.Join(t.TempDir(), "shard-1.json")
-	shard1Alias, shard1Executor, shard1RunID := "assurance-sf1", filepath.Join(t.TempDir(), "executor", "shard-1"), "attempt-shard-1"
+	shard1Alias, shard1Executor, shard1RunID := "assurance-sf1", filepath.Join(filepath.Dir(outputRoot), "executor", "shard-1"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-1"
 	shard1Args, err := salesforceFilterArgs(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), filepath.Dir(bundlePath), shard1Executor, shard1RunID, shard1Alias, bundle, bundleSHA, 1, 2)
 	if err != nil {
 		t.Fatal(err)
@@ -534,10 +534,31 @@ func TestSalesforceFilterArgsDeriveEveryIdentityFromTheSealedBundle(t *testing.T
 	}
 }
 
+func TestCreateSalesforceDispatchRejectsExecutorOutsideSealedAttempt(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	outputRoot := filepath.Join(t.TempDir(), "razor")
+	bundle, err := BuildOracleBundle(inputs.request(outputRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundlePath := filepath.Join(outputRoot, "bundle", "bundle.json")
+	_, err = CreateSalesforceDispatch(SalesforceDispatchRequest{
+		BundlePath: bundlePath, OrgAlias: "assurance-sf0",
+		ExecutorRoot: filepath.Join(filepath.Dir(outputRoot), "executor", "..", "outside"),
+		RunID:        "assurance-" + bundle.AttemptSHA256[:16] + "-shard-0",
+		ShardIndex:   0, ShardCount: 2, OutputPath: filepath.Join(t.TempDir(), "DISPATCH.json"),
+	})
+	if err == nil {
+		t.Fatal("accepted an executor root outside the sealed attempt")
+	}
+}
+
 func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	root, attemptRoot := t.TempDir(), ""
 	attemptRoot = filepath.Join(root, "attempt")
-	bundleRoot, executorRoot := filepath.Join(attemptRoot, "bundle"), filepath.Join(attemptRoot, "executor", "shard-0")
+	razorRoot := filepath.Join(attemptRoot, "razor")
+	bundleRoot, executorRoot := filepath.Join(razorRoot, "bundle"), filepath.Join(attemptRoot, "executor", "shard-0")
 	for _, path := range []string{bundleRoot, filepath.Join(attemptRoot, "transport"), executorRoot} {
 		if err := os.MkdirAll(path, 0o700); err != nil {
 			t.Fatal(err)
@@ -550,7 +571,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	if err := WriteNewJSON(planPath, plan); err != nil {
 		t.Fatal(err)
 	}
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: candidate, Tools: tools, ProfileSHA256: strings.Repeat("e", 64), OraclePlanSHA256: localProofFileSHA256(t, planPath), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), FilterSHA256: strings.Repeat("2", 64), Fixtures: []OracleBundleFixture{{ID: "system"}}}
+	bundle := OracleBundle{SchemaVersion: 1, Candidate: candidate, Tools: tools, ProfileSHA256: strings.Repeat("e", 64), OraclePlanSHA256: localProofFileSHA256(t, planPath), AttemptSHA256: strings.Repeat("a", 64), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), FilterSHA256: strings.Repeat("2", 64), Fixtures: []OracleBundleFixture{{ID: "system"}}}
 	if err := WriteNewJSON(bundlePath, bundle); err != nil {
 		t.Fatal(err)
 	}
@@ -601,12 +622,13 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
 	}
 	dispatchPath := filepath.Join(root, "SALESFORCE_DISPATCH.json")
-	filterPath := filepath.Join(filepath.Dir(filepath.Dir(bundlePath)), "transport", "salesforce-first-filter.py")
-	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), executorRoot, "attempt-shard-0", "assurance-sf0", bundle, bundleSHA, 0, 2)
+	runID := "assurance-" + bundle.AttemptSHA256[:16] + "-shard-0"
+	filterPath := filepath.Join(razorRoot, "transport", "salesforce-first-filter.py")
+	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), executorRoot, runID, "assurance-sf0", bundle, bundleSHA, 0, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
-	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: "assurance-sf0", ExecutorRoot: executorRoot, RunID: "attempt-shard-0", ShardIndex: 0, ShardCount: 2, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t))}
+	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: "assurance-sf0", ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t))}
 	if err := WriteNewJSON(dispatchPath, dispatch); err != nil {
 		t.Fatal(err)
 	}
