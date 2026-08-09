@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
+
+	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
 // AssuranceReport is the public, neutral release outcome projection.
@@ -27,33 +30,38 @@ type AssuranceReceipt struct {
 // AssuranceReportRequest names every direct, sealed input required to publish
 // the final public readiness projection.
 type AssuranceReportRequest struct {
-	InventoryPath       string
-	RootManifestPath    string
-	UsagePath           string
-	ProfilePath         string
-	FixtureManifestPath string
-	ReplayPath          string
-	LocalProofPath      string
-	OraclePlanPath      string
-	AuthorityPath       string
-	BundlePath          string
-	SalesforceFiles     []SalesforceShardFiles
-	JSONPath            string
-	HTMLPath            string
-	ReceiptPath         string
+	InventoryPath         string
+	RootManifestPath      string
+	LedgerPath            string
+	SourceProfilePath     string
+	PolicyPath            string
+	DecisionPath          string
+	UsagePath             string
+	ProfilePath           string
+	FixtureManifestPath   string
+	ReplayPath            string
+	LocalProofPath        string
+	OraclePlanPath        string
+	ExclusionRequestPath  string
+	ExclusionPolicyPath   string
+	AuthorityPath         string
+	ReleaseValidationPath string
+	BundlePath            string
+	FilterScriptPath      string
+	ScratchDefinitionPath string
+	ToolsAMD64Path        string
+	SalesforceFiles       []SalesforceShardFiles
+	RemoteCleanupPaths    []string
+	JSONPath              string
+	HTMLPath              string
+	ReceiptPath           string
 }
 
 // BuildAssuranceReport derives public outcomes only from sealed files, then
 // writes the report, explorer, and acyclic receipt once.
 func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, error) {
-	paths := []string{request.InventoryPath, request.RootManifestPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.LocalProofPath, request.OraclePlanPath, request.AuthorityPath, request.BundlePath, request.JSONPath, request.HTMLPath, request.ReceiptPath}
-	for _, path := range paths {
-		if !filepath.IsAbs(path) {
-			return AssuranceReceipt{}, fmt.Errorf("absolute direct assurance paths are required")
-		}
-	}
-	if len(request.SalesforceFiles) == 0 {
-		return AssuranceReceipt{}, fmt.Errorf("Salesforce lifecycle evidence is required")
+	if err := requiredReportEvidencePaths(request); err != nil {
+		return AssuranceReceipt{}, err
 	}
 	inventory, inventoryBytes, err := readInventorySpec(request.InventoryPath)
 	if err != nil {
@@ -87,6 +95,10 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err != nil || authority.PlanSHA256 != replayBytesSHA256(planBytes) || authority.ProfileSHA256 != replayBytesSHA256(profileBytes) || authority.SealedUsageSHA256 != replayBytesSHA256(usageBytes) || authority.LocalProofSHA256 != replayBytesSHA256(proofBytes) || authority.SalesforceParityCredit != 0 {
 		return AssuranceReceipt{}, fmt.Errorf("exclusion authority does not bind current evidence")
 	}
+	sidecarInputs, err := validateReportSidecarEvidence(request, usage, profile, plan, authority)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
 	if err := ValidateOracleBundle(request.BundlePath); err != nil {
 		return AssuranceReceipt{}, err
 	}
@@ -115,6 +127,9 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 		return AssuranceReceipt{}, err
 	}
 	inputs := map[string]string{"IN_SCOPE.json": replayBytesSHA256(inventoryBytes), "MANIFEST.json": replayBytesSHA256(rootBytes), "CORPUS_USAGE.json": replayBytesSHA256(usageBytes), "ASSURANCE_PROFILE.json": replayBytesSHA256(profileBytes), "FIXTURE_MANIFEST.json": replayBytesSHA256(manifestBytes), "REPLAY.json": replayBytesSHA256(mergeBytes), "LOCAL_PROOF.json": replayBytesSHA256(proofBytes), "ORACLE_PLAN.json": replayBytesSHA256(planBytes), "EXCLUSION_AUTHORITY.json": replayBytesSHA256(authorityBytes), "ORACLE_BUNDLE.json": replayBytesSHA256(bundleBytes)}
+	for name, hash := range sidecarInputs {
+		inputs[name] = hash
+	}
 	for index, files := range request.SalesforceFiles {
 		for name, path := range map[string]string{"shard": files.ShardPath, "dispatch": files.DispatchPath, "preflight": files.PreflightPath, "creation": files.CreationPath, "cleanup": files.CleanupPath} {
 			hash, err := sha256File(path)
@@ -126,6 +141,110 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	}
 	return writeAssuranceArtifacts(AssuranceReport{SchemaVersion: 1, Rows: rows}, request.JSONPath, request.HTMLPath, request.ReceiptPath, inputs)
 }
+
+func requiredReportEvidencePaths(request AssuranceReportRequest) error {
+	paths := []string{request.InventoryPath, request.RootManifestPath, request.LedgerPath, request.SourceProfilePath, request.PolicyPath, request.DecisionPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.LocalProofPath, request.OraclePlanPath, request.ExclusionRequestPath, request.ExclusionPolicyPath, request.AuthorityPath, request.ReleaseValidationPath, request.BundlePath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.JSONPath, request.HTMLPath, request.ReceiptPath}
+	for _, path := range paths {
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("absolute direct assurance paths are required")
+		}
+	}
+	if len(request.SalesforceFiles) == 0 || len(request.RemoteCleanupPaths) != 2 {
+		return fmt.Errorf("complete Salesforce and remote cleanup evidence is required")
+	}
+	for _, path := range request.RemoteCleanupPaths {
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("absolute remote cleanup paths are required")
+		}
+	}
+	return nil
+}
+
+func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedCorpusUsage, profile AssuranceProfile, plan OraclePlan, authority ExclusionAuthority) (map[string]string, error) {
+	ledger, ledgerBytes, err := readExactJSONBytes[surfaceledger.SurfaceLedger](request.LedgerPath)
+	if err != nil || len(ledger.Rows) == 0 {
+		return nil, fmt.Errorf("read report ledger")
+	}
+	_, _, sourceBytes, err := readUsageProfileRows(request.SourceProfilePath)
+	if err != nil {
+		return nil, fmt.Errorf("read report source profile: %w", err)
+	}
+	policy, policyBytes, err := readExactJSONBytes[surfaceledger.SupportPolicy](request.PolicyPath)
+	if err != nil || len(policy.Rules) == 0 {
+		return nil, fmt.Errorf("read report support policy")
+	}
+	decisions, decisionBytes, err := readExactJSONBytes[UsageDecisionFile](request.DecisionPath)
+	if err != nil || decisions.SchemaVersion != 1 {
+		return nil, fmt.Errorf("read report usage decisions")
+	}
+	ledgerSHA, sourceSHA, policySHA, decisionSHA := replayBytesSHA256(ledgerBytes), replayBytesSHA256(sourceBytes), replayBytesSHA256(policyBytes), replayBytesSHA256(decisionBytes)
+	if usage.LedgerSHA256 != ledgerSHA || usage.ProfileSHA256 != sourceSHA || usage.PolicySHA256 != policySHA || usage.DecisionSHA256 != decisionSHA || profile.LedgerSHA256 != ledgerSHA || profile.SourceProfileSHA256 != sourceSHA || profile.PolicySHA256 != policySHA || decisions.ProfileSHA256 != sourceSHA || decisions.PolicySHA256 != policySHA {
+		return nil, fmt.Errorf("report usage sidecars do not bind sealed evidence")
+	}
+	exclusion, exclusionBytes, err := readExactJSONBytes[ExclusionRequest](request.ExclusionRequestPath)
+	if err != nil {
+		return nil, fmt.Errorf("read report exclusion request: %w", err)
+	}
+	expectedExclusions, err := exclusionRowsFromPlan(plan)
+	if err != nil || exclusion.Candidate != plan.Candidate || exclusion.Tools != plan.Tools || exclusion.PlanSHA256 != replayBytesSHA256Must(request.OraclePlanPath) || exclusion.ProfileSHA256 != profileSHA256(profile, request.ProfilePath) || exclusion.SealedUsageSHA256 != usageSHA256(usage, request.UsagePath) || exclusion.DecisionSHA256 != decisionSHA || exclusion.LocalProofSHA256 != plan.LocalProofSHA256 || !reflect.DeepEqual(exclusion.Rows, expectedExclusions) || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.DecisionSHA256 != decisionSHA || authority.PolicySHA256 != policySHA || !reflect.DeepEqual(authority.Rows, exclusion.Rows) {
+		return nil, fmt.Errorf("report exclusions do not form the authorized plan partition")
+	}
+	exclusionPolicy, exclusionPolicyBytes, err := readExactJSONBytes[ExclusionPolicy](request.ExclusionPolicyPath)
+	if err != nil || exclusionPolicy.SchemaVersion != 1 || !policyAuthorizesRows(exclusionPolicy.Rows, authority.Rows) {
+		return nil, fmt.Errorf("report exclusion policy does not authorize every exclusion")
+	}
+	release, releaseBytes, err := readExactJSONBytes[ReleaseValidation](request.ReleaseValidationPath)
+	if err != nil || validateOracleReleaseValidation(release, plan) != nil {
+		return nil, fmt.Errorf("report release validation does not bind oracle plan")
+	}
+	bundle, _, err := readExactJSONBytes[OracleBundle](request.BundlePath)
+	if err != nil {
+		return nil, fmt.Errorf("read report oracle bundle: %w", err)
+	}
+	filterSHA, filterErr := sha256File(request.FilterScriptPath)
+	scratchSHA, scratchErr := sha256File(request.ScratchDefinitionPath)
+	toolsSHA, toolsErr := sha256File(request.ToolsAMD64Path)
+	if filterErr != nil || scratchErr != nil || toolsErr != nil || filterSHA != bundle.FilterSHA256 || scratchSHA != bundle.ScratchDefinitionSHA256 || toolsSHA != bundle.ToolsAMD64SHA256 || replayBytesSHA256(releaseBytes) != bundle.ReleaseValidationSHA256 {
+		return nil, fmt.Errorf("report bundle execution sidecars are unavailable")
+	}
+	cleanupInputs := map[string]string{}
+	for _, path := range request.RemoteCleanupPaths {
+		cleanup, bytes, err := readExactJSONBytes[RemoteAttemptCleanupReceipt](path)
+		if err != nil || cleanup.SchemaVersion != 1 || !cleanup.ResidueAbsent || cleanup.BindingSHA256 != cleanup.BindingPostSHA256 || cleanup.Host == "" || cleanupInputs[cleanup.Host] != "" {
+			return nil, fmt.Errorf("invalid report remote cleanup receipt")
+		}
+		cleanupInputs[cleanup.Host] = replayBytesSHA256(bytes)
+	}
+	if len(cleanupInputs) != 2 || cleanupInputs["matt@casper.local"] == "" || cleanupInputs["matt@razor.local"] == "" {
+		return nil, fmt.Errorf("report requires one cleanup receipt for each authoritative host")
+	}
+	return map[string]string{"SURFACE_LEDGER.json": ledgerSHA, "SOURCE_PROFILE.json": sourceSHA, "SUPPORT_POLICY.json": policySHA, "USAGE_DECISIONS.json": decisionSHA, "EXCLUSION_REQUEST.json": replayBytesSHA256(exclusionBytes), "EXCLUSION_POLICY.json": replayBytesSHA256(exclusionPolicyBytes), "RELEASE_VALIDATION.json": replayBytesSHA256(releaseBytes), "FILTER_SCRIPT.py": filterSHA, "SCRATCH_DEFINITION.json": scratchSHA, "TOOLS_AMD64": toolsSHA, "REMOTE_CLEANUP_CASPER.json": cleanupInputs["matt@casper.local"], "REMOTE_CLEANUP_RAZOR.json": cleanupInputs["matt@razor.local"]}, nil
+}
+
+func policyAuthorizesRows(policy, rows []ExclusionPolicyRow) bool {
+	allowed := map[string]ExclusionPolicyRow{}
+	for _, row := range policy {
+		allowed[row.SurfaceID] = row
+	}
+	for _, row := range rows {
+		if allowed[row.SurfaceID] != row {
+			return false
+		}
+	}
+	return true
+}
+
+func replayBytesSHA256Must(path string) string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	return replayBytesSHA256(data)
+}
+
+func profileSHA256(_ AssuranceProfile, path string) string { return replayBytesSHA256Must(path) }
+
+func usageSHA256(_ SealedCorpusUsage, path string) string { return replayBytesSHA256Must(path) }
 
 // AssuranceSurfaceRow is the public, neutral per-surface release outcome.
 // Readiness is cumulative: runtime parity implies test and compile readiness;
