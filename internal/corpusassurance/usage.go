@@ -1,11 +1,16 @@
 package corpusassurance
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
@@ -35,6 +40,192 @@ type CombinedRepositoryUsage struct {
 	RepositoryTreeBindingsSHA256 string       `json:"repositoryTreeBindingsSha256"`
 	RootManifestSHA256           string       `json:"rootManifestSha256,omitempty"`
 	RepositoryUsageSHA256        []string     `json:"repositoryUsageSha256,omitempty"`
+}
+
+const (
+	usageClassExact                  = "exact"
+	usageClassCaseAlias              = "case-alias"
+	usageClassAggregateParent        = "aggregate-parent"
+	usageClassCanonicalAlias         = "canonical-alias"
+	usageClassLocalSymbol            = "local-symbol"
+	usageClassNonSalesforceGenerated = "non-salesforce-generated"
+)
+
+// UsageProfileRow is the allowlisted profile information needed to reconcile
+// one fresh corpus usage key. It deliberately excludes prior corpus totals.
+type UsageProfileRow struct {
+	SurfaceID   string `json:"surfaceId"`
+	UsageKey    string `json:"usageKey"`
+	Disposition string `json:"disposition,omitempty"`
+}
+
+type UsageDecision struct {
+	UsageKey  string `json:"usageKey"`
+	Class     string `json:"class"`
+	SurfaceID string `json:"surfaceId,omitempty"`
+	Reason    string `json:"reason"`
+}
+
+type UsageDecisionFile struct {
+	SchemaVersion int             `json:"schemaVersion"`
+	ProfileSHA256 string          `json:"profileSha256"`
+	UsageSHA256   string          `json:"usageSha256"`
+	Decisions     []UsageDecision `json:"decisions"`
+}
+
+type ReconciledUsageEntry struct {
+	UsageEntry
+	Class     string `json:"class"`
+	SurfaceID string `json:"surfaceId,omitempty"`
+	Reason    string `json:"reason,omitempty"`
+}
+
+type UsageReconciliation struct {
+	ProfileSHA256  string                 `json:"profileSha256,omitempty"`
+	UsageSHA256    string                 `json:"usageSha256,omitempty"`
+	DecisionSHA256 string                 `json:"decisionSha256,omitempty"`
+	Usage          []ReconciledUsageEntry `json:"usage"`
+}
+
+// ReconcileUsageFromFiles reads and binds the authoritative profile, fresh
+// usage, and decision bytes before returning a reconciliation. Source-profile
+// fields outside the allowlisted row projection are deliberately ignored.
+func ReconcileUsageFromFiles(profilePath, usagePath, decisionPath string) (UsageReconciliation, error) {
+	if !filepath.IsAbs(profilePath) || !filepath.IsAbs(usagePath) || !filepath.IsAbs(decisionPath) {
+		return UsageReconciliation{}, fmt.Errorf("absolute profile, usage, and decision paths are required")
+	}
+	profile, profileBytes, err := readUsageProfileRows(profilePath)
+	if err != nil {
+		return UsageReconciliation{}, fmt.Errorf("read usage profile: %w", err)
+	}
+	usage, usageBytes, err := readExactJSONBytes[CombinedRepositoryUsage](usagePath)
+	if err != nil {
+		return UsageReconciliation{}, fmt.Errorf("read fresh usage: %w", err)
+	}
+	decision, decisionBytes, err := readExactJSONBytes[UsageDecisionFile](decisionPath)
+	if err != nil {
+		return UsageReconciliation{}, fmt.Errorf("read usage decisions: %w", err)
+	}
+	profileSHA256, usageSHA256, decisionSHA256 := replayBytesSHA256(profileBytes), replayBytesSHA256(usageBytes), replayBytesSHA256(decisionBytes)
+	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != profileSHA256 || decision.UsageSHA256 != usageSHA256 {
+		return UsageReconciliation{}, fmt.Errorf("usage decisions do not bind authoritative inputs")
+	}
+	reconciled, err := ReconcileUsage(profile, usage.Usage, decision.Decisions)
+	if err != nil {
+		return UsageReconciliation{}, err
+	}
+	if _, after, err := readUsageProfileRows(profilePath); err != nil || replayBytesSHA256(after) != profileSHA256 {
+		return UsageReconciliation{}, fmt.Errorf("profile changed during usage reconciliation")
+	}
+	if _, after, err := readExactJSONBytes[CombinedRepositoryUsage](usagePath); err != nil || replayBytesSHA256(after) != usageSHA256 {
+		return UsageReconciliation{}, fmt.Errorf("fresh usage changed during reconciliation")
+	}
+	if _, after, err := readExactJSONBytes[UsageDecisionFile](decisionPath); err != nil || replayBytesSHA256(after) != decisionSHA256 {
+		return UsageReconciliation{}, fmt.Errorf("usage decisions changed during reconciliation")
+	}
+	reconciled.ProfileSHA256, reconciled.UsageSHA256, reconciled.DecisionSHA256 = profileSHA256, usageSHA256, decisionSHA256
+	return reconciled, nil
+}
+
+func readUsageProfileRows(path string) ([]UsageProfileRow, []byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, nil, err
+	}
+	var profile struct {
+		Rows []UsageProfileRow `json:"rows"`
+	}
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	if err := decoder.Decode(&profile); err != nil {
+		return nil, nil, err
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		if err == nil {
+			return nil, nil, fmt.Errorf("multiple JSON values")
+		}
+		return nil, nil, err
+	}
+	return profile.Rows, data, nil
+}
+
+// ReconcileUsage binds every fresh private usage key to exactly one profile
+// surface or an explicit non-Salesforce decision. Exact, case-only, and
+// unambiguous aggregate-parent matches are derived, never caller-selected.
+func ReconcileUsage(profile []UsageProfileRow, usage []UsageEntry, decisions []UsageDecision) (UsageReconciliation, error) {
+	profilesByKey := make(map[string][]UsageProfileRow, len(profile))
+	profilesByFoldedKey := make(map[string][]UsageProfileRow, len(profile))
+	profilesByID := make(map[string]bool, len(profile))
+	for _, row := range profile {
+		if row.SurfaceID == "" || row.UsageKey == "" || profilesByID[row.SurfaceID] {
+			return UsageReconciliation{}, fmt.Errorf("invalid or duplicate profile surface %q", row.SurfaceID)
+		}
+		profilesByID[row.SurfaceID] = true
+		profilesByKey[row.UsageKey] = append(profilesByKey[row.UsageKey], row)
+		profilesByFoldedKey[strings.ToLower(row.UsageKey)] = append(profilesByFoldedKey[strings.ToLower(row.UsageKey)], row)
+	}
+	if len(profilesByID) == 0 {
+		return UsageReconciliation{}, fmt.Errorf("profile rows are required")
+	}
+	decisionsByKey := make(map[string]UsageDecision, len(decisions))
+	for _, decision := range decisions {
+		if decision.UsageKey == "" || decision.Reason == "" || decisionsByKey[decision.UsageKey].UsageKey != "" || !manualUsageClass(decision.Class) {
+			return UsageReconciliation{}, fmt.Errorf("invalid or duplicate usage decision %q", decision.UsageKey)
+		}
+		if decision.Class == usageClassCanonicalAlias {
+			if decision.SurfaceID == "" || !profilesByID[decision.SurfaceID] {
+				return UsageReconciliation{}, fmt.Errorf("usage decision %q selects an unknown surface", decision.UsageKey)
+			}
+		} else if decision.SurfaceID != "" {
+			return UsageReconciliation{}, fmt.Errorf("non-Salesforce usage decision %q must not select a surface", decision.UsageKey)
+		}
+		decisionsByKey[decision.UsageKey] = decision
+	}
+
+	seenUsage := make(map[string]bool, len(usage))
+	result := UsageReconciliation{Usage: make([]ReconciledUsageEntry, 0, len(usage))}
+	for _, entry := range usage {
+		if entry.UsageKey == "" || seenUsage[entry.UsageKey] || entry.PrivateProdRefs+entry.PrivateTestRefs <= 0 {
+			return UsageReconciliation{}, fmt.Errorf("invalid or duplicate fresh usage key %q", entry.UsageKey)
+		}
+		seenUsage[entry.UsageKey] = true
+		row := ReconciledUsageEntry{UsageEntry: entry}
+		if candidates := profilesByKey[entry.UsageKey]; len(candidates) == 1 {
+			row.Class, row.SurfaceID = usageClassExact, candidates[0].SurfaceID
+		} else if candidates := profilesByFoldedKey[strings.ToLower(entry.UsageKey)]; len(candidates) == 1 {
+			row.Class, row.SurfaceID = usageClassCaseAlias, candidates[0].SurfaceID
+		} else if candidates := aggregateUsageCandidates(entry.UsageKey, profile); len(candidates) == 1 {
+			row.Class, row.SurfaceID = usageClassAggregateParent, candidates[0].SurfaceID
+		} else {
+			decision, ok := decisionsByKey[entry.UsageKey]
+			if !ok {
+				return UsageReconciliation{}, fmt.Errorf("unclassified fresh usage key %q", entry.UsageKey)
+			}
+			row.Class, row.SurfaceID, row.Reason = decision.Class, decision.SurfaceID, decision.Reason
+			delete(decisionsByKey, entry.UsageKey)
+		}
+		result.Usage = append(result.Usage, row)
+	}
+	if len(decisionsByKey) != 0 {
+		return UsageReconciliation{}, fmt.Errorf("usage decisions contain absent keys")
+	}
+	sort.Slice(result.Usage, func(i, j int) bool { return result.Usage[i].UsageKey < result.Usage[j].UsageKey })
+	return result, nil
+}
+
+func manualUsageClass(class string) bool {
+	return class == usageClassCanonicalAlias || class == usageClassLocalSymbol || class == usageClassNonSalesforceGenerated
+}
+
+func aggregateUsageCandidates(key string, profile []UsageProfileRow) []UsageProfileRow {
+	prefix := key + "."
+	var candidates []UsageProfileRow
+	for _, row := range profile {
+		if strings.HasPrefix(row.UsageKey, prefix) {
+			candidates = append(candidates, row)
+		}
+	}
+	return candidates
 }
 
 // ExtractRepositoryUsageFromFiles is the workflow entrypoint. It obtains the

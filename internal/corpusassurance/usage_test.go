@@ -168,6 +168,85 @@ func TestCombineRepositoryUsageRejectsNegativeAndInconsistentUsage(t *testing.T)
 	}
 }
 
+func TestReconcileUsageDerivesAutomaticMatchesAndRequiresManualDecisions(t *testing.T) {
+	profile := []UsageProfileRow{
+		{SurfaceID: "apex:System.debug(Object)", UsageKey: "System.debug"},
+		{SurfaceID: "apex:Schema.Account", UsageKey: "Schema.Account"},
+		{SurfaceID: "apex:Schema.Account.Name", UsageKey: "Schema.Account"},
+	}
+	usage := []UsageEntry{
+		{UsageKey: "System.debug", Namespace: "System", PrivateProdRefs: 1},
+		{UsageKey: "Schema.Account", Namespace: "Schema", PrivateTestRefs: 1},
+		{UsageKey: "Local.Thing", Namespace: "Local", PrivateProdRefs: 1},
+	}
+	reconciled, err := ReconcileUsage(profile, usage, []UsageDecision{
+		{UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: "aggregate source reference"},
+		{UsageKey: "Local.Thing", Class: usageClassLocalSymbol, Reason: "application symbol"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(reconciled.Usage) != 3 {
+		t.Fatalf("reconciled count = %d", len(reconciled.Usage))
+	}
+	want := map[string]struct{ class, surface string }{
+		"System.debug":   {usageClassExact, "apex:System.debug(Object)"},
+		"Schema.Account": {usageClassCanonicalAlias, "apex:Schema.Account"},
+		"Local.Thing":    {usageClassLocalSymbol, ""},
+	}
+	for _, row := range reconciled.Usage {
+		if got := want[row.UsageKey]; row.Class != got.class || row.SurfaceID != got.surface {
+			t.Errorf("%s = %#v, want class=%q surface=%q", row.UsageKey, row, got.class, got.surface)
+		}
+	}
+}
+
+func TestReconcileUsageRejectsUnclassifiedAndInvalidDecisions(t *testing.T) {
+	profile := []UsageProfileRow{{SurfaceID: "apex:Schema.Account", UsageKey: "Schema.Account"}, {SurfaceID: "apex:Schema.Account.Name", UsageKey: "Schema.Account"}}
+	usage := []UsageEntry{{UsageKey: "Schema.Account", Namespace: "Schema", PrivateProdRefs: 1}}
+	if _, err := ReconcileUsage(profile, usage, nil); err == nil {
+		t.Fatal("ReconcileUsage accepted an ambiguous usage key")
+	}
+	for _, decisions := range [][]UsageDecision{
+		{{UsageKey: "Schema.Account", Class: "unknown", SurfaceID: "apex:Schema.Account", Reason: "bad"}},
+		{{UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Missing", Reason: "bad"}},
+		{{UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: ""}},
+		{{UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: "one"}, {UsageKey: "Schema.Account", Class: usageClassCanonicalAlias, SurfaceID: "apex:Schema.Account", Reason: "two"}},
+	} {
+		if _, err := ReconcileUsage(profile, usage, decisions); err == nil {
+			t.Fatalf("ReconcileUsage accepted %#v", decisions)
+		}
+	}
+}
+
+func TestReconcileUsageFromFilesBindsSingleReadInputs(t *testing.T) {
+	root := t.TempDir()
+	profilePath := filepath.Join(root, "profile.json")
+	usagePath := filepath.Join(root, "usage.json")
+	decisionPath := filepath.Join(root, "decisions.json")
+	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug(Object)","usageKey":"System.debug"}],"corpusUsage":["ignored-source-history"]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	usage := CombinedRepositoryUsage{Usage: []UsageEntry{{UsageKey: "System.debug", Namespace: "System", PrivateProdRefs: 1}}}
+	if err := WriteNewJSON(usagePath, usage); err != nil {
+		t.Fatal(err)
+	}
+	decision := UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), UsageSHA256: localProofFileSHA256(t, usagePath)}
+	if err := WriteNewJSON(decisionPath, decision); err != nil {
+		t.Fatal(err)
+	}
+	reconciled, err := ReconcileUsageFromFiles(profilePath, usagePath, decisionPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if reconciled.ProfileSHA256 != decision.ProfileSHA256 || reconciled.UsageSHA256 != decision.UsageSHA256 || reconciled.DecisionSHA256 != localProofFileSHA256(t, decisionPath) {
+		t.Fatalf("reconciliation bindings = %#v", reconciled)
+	}
+	if len(reconciled.Usage) != 1 || reconciled.Usage[0].Class != usageClassExact {
+		t.Fatalf("reconciliation usage = %#v", reconciled.Usage)
+	}
+}
+
 func writeUsageRepo(t *testing.T, source string) string {
 	t.Helper()
 	root := t.TempDir()
