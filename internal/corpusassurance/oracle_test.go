@@ -80,6 +80,59 @@ func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(
 	}
 }
 
+func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
+	request, _ := localProofRequest(t)
+	proof, err := RunLocalProof(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := filepath.Dir(request.OutputPath)
+	profilePath, planPath := filepath.Join(root, "BUNDLE_PROFILE.json"), filepath.Join(root, "ORACLE_PLAN.json")
+	authorityPath := filepath.Join(root, "EXCLUSION_AUTHORITY.json")
+	releasePath, filterPath := filepath.Join(root, "RELEASE_VALIDATION.json"), filepath.Join(root, "filter.py")
+	scratchPath, outputPath := filepath.Join(root, "scratch.json"), filepath.Join(root, "razor")
+	profile := AssuranceProfile{SchemaVersion: 1, FixtureManifestSHA256: localProofFileSHA256(t, request.FixtureManifestPath), LocalProofSHA256: localProofFileSHA256(t, request.OutputPath)}
+	if err := WriteNewJSON(profilePath, profile); err != nil {
+		t.Fatal(err)
+	}
+	plan := OraclePlan{Candidate: proof.Candidate, Tools: proof.Tools, ProfileSHA256: localProofFileSHA256(t, profilePath), Rows: []OraclePlanRow{{SurfaceID: "apex:Runtime.run", Action: oracleRuntime}}}
+	if err := WriteNewJSON(planPath, plan); err != nil {
+		t.Fatal(err)
+	}
+	authority := ExclusionAuthority{Candidate: proof.Candidate, Tools: proof.Tools, PlanSHA256: localProofFileSHA256(t, planPath), ProfileSHA256: localProofFileSHA256(t, profilePath), SealedUsageSHA256: strings.Repeat("a", 64), DecisionSHA256: strings.Repeat("b", 64), LocalProofSHA256: localProofFileSHA256(t, request.OutputPath), PolicySHA256: strings.Repeat("c", 64)}
+	if err := WriteNewJSON(authorityPath, authority); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(releasePath, []byte(`{"status":"pass"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filterPath, []byte("#!/usr/bin/env python3\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(scratchPath, []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	bundle, err := BuildOracleBundle(OracleBundleRequest{ProfilePath: profilePath, PlanPath: planPath, AuthorityPath: authorityPath, ReleaseValidationPath: releasePath, LocalProofPath: request.OutputPath, FixtureManifestPath: request.FixtureManifestPath, FilterScriptPath: filterPath, ScratchDefinitionPath: scratchPath, ToolsAMD64Path: request.ToolsPath, OutputPath: outputPath})
+	if err != nil {
+		t.Fatalf("BuildOracleBundle: %v", err)
+	}
+	if len(bundle.Fixtures) != 1 || bundle.Fixtures[0].ID != "runtime" || bundle.TransportManifestSHA256 == "" || bundle.LocalProofSummarySHA256 == "" {
+		t.Fatalf("bundle = %#v", bundle)
+	}
+	for _, path := range []string{filepath.Join(outputPath, "bundle", "bundle.json"), filepath.Join(outputPath, "bundle", "profile.json"), filepath.Join(outputPath, "bundle", "fixture-manifest.json"), filepath.Join(outputPath, "bundle", "LOCAL_PROOF_SUMMARY.json"), filepath.Join(outputPath, "transport", "salesforce-first-filter.py"), filepath.Join(outputPath, "bin", "glade-tools-darwin-amd64")} {
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("missing staged bundle input %s: %v", path, err)
+		}
+	}
+	wrongToolsPath := filepath.Join(root, "wrong-tools")
+	if err := os.WriteFile(wrongToolsPath, []byte("wrong"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := BuildOracleBundle(OracleBundleRequest{ProfilePath: profilePath, PlanPath: planPath, AuthorityPath: authorityPath, ReleaseValidationPath: releasePath, LocalProofPath: request.OutputPath, FixtureManifestPath: request.FixtureManifestPath, FilterScriptPath: filterPath, ScratchDefinitionPath: scratchPath, ToolsAMD64Path: wrongToolsPath, OutputPath: filepath.Join(root, "wrong-razor")}); err == nil {
+		t.Fatal("accepted a tool binary that does not match the sealed tools artifact")
+	}
+}
+
 func TestAuthorizeExclusionsRequiresExactNonParityPolicy(t *testing.T) {
 	plan := OraclePlan{Rows: []OraclePlanRow{
 		{SurfaceID: "apex:ConnectApi.mock", Action: oracleLocalContractOnly, ExclusionClass: "nonportable-mock", ExclusionReason: "requires hosted identity"},
