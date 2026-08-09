@@ -107,6 +107,14 @@ func TestSalesforceDeployObservationRequiresMaterializedComponent(t *testing.T) 
 	}
 }
 
+func TestValidSalesforceRemoteInvocationRejectsTestWithoutRuntimeCommand(t *testing.T) {
+	project, org := "/private/tmp/razor/projects/fixture", "assurance-sf0@example.invalid"
+	invocation := salesforceRemoteInvocationForTest("/private/tmp/razor", project, org, "test")
+	if validSalesforceRemoteInvocation(invocation, "/private/tmp/razor", project, org, "test", []string{"FixtureTest"}) {
+		t.Fatal("accepted a test receipt without its runtime-test command")
+	}
+}
+
 func TestValidateSalesforceShardsRejectsReusedOrgAlias(t *testing.T) {
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
@@ -186,6 +194,40 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err != nil {
 		t.Fatal(err)
 	}
+	missingProjectManifest := snapshot
+	missingProjectManifest.Files = make(map[string][]byte, len(snapshot.Files))
+	for path, data := range snapshot.Files {
+		missingProjectManifest.Files[path] = append([]byte(nil), data...)
+	}
+	var projectPayload map[string]any
+	if err := json.Unmarshal(missingProjectManifest.Files["filter/results.json"], &projectPayload); err != nil {
+		t.Fatal(err)
+	}
+	delete(projectPayload["results"].([]any)[0].(map[string]any), "projectManifest")
+	missingProjectManifest.Files["filter/results.json"], err = json.Marshal(projectPayload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, missingProjectManifest); err == nil {
+		t.Fatal("accepted a fixture receipt without its pre-transport project manifest")
+	}
+	tamperedRemoteProject := snapshot
+	tamperedRemoteProject.Files = make(map[string][]byte, len(snapshot.Files))
+	for path, data := range snapshot.Files {
+		tamperedRemoteProject.Files[path] = append([]byte(nil), data...)
+	}
+	var remoteProjectPayload map[string]any
+	if err := json.Unmarshal(tamperedRemoteProject.Files["filter/results.json"], &remoteProjectPayload); err != nil {
+		t.Fatal(err)
+	}
+	remoteProjectPayload["results"].([]any)[0].(map[string]any)["remoteProjectManifest"].([]any)[0].(map[string]any)["sha256"] = strings.Repeat("0", 64)
+	tamperedRemoteProject.Files["filter/results.json"], err = json.Marshal(remoteProjectPayload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, tamperedRemoteProject); err == nil {
+		t.Fatal("accepted a Razor project tree that differs from the pre-transport manifest")
+	}
 	missingReceipt := snapshot
 	missingReceipt.Files = make(map[string][]byte, len(snapshot.Files))
 	for path, data := range snapshot.Files {
@@ -230,6 +272,23 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	}
 	if _, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, tamperedCommand); err == nil {
 		t.Fatal("accepted a remote command whose target and subcommand differ from the sealed fixture execution")
+	}
+	tamperedCleanup := snapshot
+	tamperedCleanup.Files = make(map[string][]byte, len(snapshot.Files))
+	for path, data := range snapshot.Files {
+		tamperedCleanup.Files[path] = append([]byte(nil), data...)
+	}
+	var cleanupPayload map[string]any
+	if err := json.Unmarshal(tamperedCleanup.Files["filter/results.json"], &cleanupPayload); err != nil {
+		t.Fatal(err)
+	}
+	cleanupPayload["results"].([]any)[0].(map[string]any)["remoteCleanup"].(map[string]any)["residueAbsent"] = false
+	tamperedCleanup.Files["filter/results.json"], err = json.Marshal(cleanupPayload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := deriveSalesforceFilterEvidence(bundle, bundlePath, alias, lifecycle.OrgID, lifecycle.OrgUsername, executorRoot, runID, 0, tamperedCleanup); err == nil {
+		t.Fatal("accepted a fixture receipt with remote cleanup residue")
 	}
 	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err != nil {
 		t.Fatalf("ValidateSalesforceShardFiles: %v", err)
@@ -860,7 +919,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		}
 		remoteProject := filepath.Join(remoteRoot, "projects", runID, "fixture-runtime")
 		zero, runtimePassed := 0, true
-		filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{Fixture: "fixture-runtime.json", FixtureSHA256: fixtureSHA, OrgIdentity: salesforceFilterOrgIdentity{Alias: preflight.OrgAlias, OrgID: preflight.OrgID, Username: preflight.OrgUsername}, Project: project, RemoteProject: remoteProject, RemoteInvocation: salesforceRemoteInvocationForTest(remoteRoot, remoteProject, preflight.OrgUsername, "exec"), SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RuntimeResult: json.RawMessage(`{"status":0,"result":{"success":true,"compiled":true}}`), RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}}}
+		filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: salesforceRunCleanupForTest(filepath.Join(remoteRoot, "projects", runID)), OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{Fixture: "fixture-runtime.json", FixtureSHA256: fixtureSHA, OrgIdentity: salesforceFilterOrgIdentity{Alias: preflight.OrgAlias, OrgID: preflight.OrgID, Username: preflight.OrgUsername}, Project: project, RemoteProject: remoteProject, RemoteInvocation: salesforceRemoteInvocationForTest(remoteRoot, remoteProject, preflight.OrgUsername, "exec"), SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RuntimeResult: json.RawMessage(`{"status":0,"result":{"success":true,"compiled":true}}`), RemoteCleanup: salesforceFixtureCleanupForTest(remoteProject), OrgCleanup: salesforceOrgCleanupForTest()}}}
 		data, err := json.Marshal(filter)
 		if err != nil {
 			return salesforceCommandOutput{}, err
@@ -1073,6 +1132,7 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 		t.Fatal(err)
 	}
 	writeSalesforceExecutorEvidenceForTest(t, bundlePath, shard)
+	populateSalesforceProjectManifestsForTest(t, filterResultsPath, shard.ExecutorRoot)
 	postflightPath := filepath.Join(shard.ExecutorRoot, "postflight.json")
 	if err := WriteNewJSON(postflightPath, shard.Postflight); err != nil {
 		t.Fatal(err)
@@ -1127,8 +1187,43 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	return SalesforceShardFiles{ShardPath: shardPath, DispatchPath: dispatchPath, CreationPath: creationPath, CleanupPath: cleanupPath, PreflightPath: preflightPath}
 }
 
+func populateSalesforceProjectManifestsForTest(t *testing.T, resultsPath, executorRoot string) {
+	t.Helper()
+	result, _, err := readSalesforceFilterResults(resultsPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	files, _, err := readSalesforceExecutorFiles(executorRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index := range result.Results {
+		relative, err := filepath.Rel(executorRoot, result.Results[index].Project)
+		if err != nil || filepath.IsAbs(relative) || strings.HasPrefix(relative, "..") {
+			t.Fatal("invalid synthetic project path")
+		}
+		manifest, err := salesforceFixtureProjectManifest(files, filepath.ToSlash(relative))
+		if err != nil {
+			t.Fatal(err)
+		}
+		result.Results[index].ProjectManifest = manifest
+		result.Results[index].RemoteProjectManifest = append([]salesforceExecutorFile(nil), manifest...)
+	}
+	updated, err := json.Marshal(result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(resultsPath, updated, 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func salesforceFilterResultsForShard(bundlePath string, shard SalesforceShard, bundle OracleBundle, bundleSHA string) salesforceFilterResults {
 	manifest, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(filepath.Dir(bundlePath), "fixture-manifest.json"))
+	if err != nil {
+		panic(err)
+	}
+	remoteRoot, err := sealedSalesforceRemoteExecutorRoot(bundle.AttemptSHA256, shard.ShardIndex)
 	if err != nil {
 		panic(err)
 	}
@@ -1153,10 +1248,6 @@ func salesforceFilterResultsForShard(bundlePath string, shard SalesforceShard, b
 		if err != nil {
 			panic(err)
 		}
-		remoteRoot, err := sealedSalesforceRemoteExecutorRoot(bundle.AttemptSHA256, shard.ShardIndex)
-		if err != nil {
-			panic(err)
-		}
 		project := filepath.Join(shard.ExecutorRoot, "filter", "projects", stem)
 		remoteProject := filepath.Join(remoteRoot, "projects", shard.RunID, stem)
 		zero := 0
@@ -1164,7 +1255,7 @@ func salesforceFilterResultsForShard(bundlePath string, shard SalesforceShard, b
 		if result.Kind == oracleRuntime {
 			kind = "exec"
 		}
-		row := salesforceFilterFixtureResult{Fixture: fixture.Fixture, FixtureSHA256: fixture.SHA256, SourceFiles: fixture.SourceFiles, OrgIdentity: salesforceFilterOrgIdentity{Alias: shard.Preflight.OrgAlias, OrgID: shard.Preflight.OrgID, Username: shard.Preflight.OrgUsername}, Project: project, RemoteProject: remoteProject, RemoteInvocation: salesforceRemoteInvocationForTest(remoteRoot, remoteProject, shard.Preflight.OrgUsername, kind), SurfaceIDs: fixture.SurfaceIDs, Org: shard.OrgAlias, Kind: kind, ExitCode: &zero, Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}
+		row := salesforceFilterFixtureResult{Fixture: fixture.Fixture, FixtureSHA256: fixture.SHA256, SourceFiles: fixture.SourceFiles, OrgIdentity: salesforceFilterOrgIdentity{Alias: shard.Preflight.OrgAlias, OrgID: shard.Preflight.OrgID, Username: shard.Preflight.OrgUsername}, Project: project, RemoteProject: remoteProject, RemoteInvocation: salesforceRemoteInvocationForTest(remoteRoot, remoteProject, shard.Preflight.OrgUsername, kind), SurfaceIDs: fixture.SurfaceIDs, Org: shard.OrgAlias, Kind: kind, ExitCode: &zero, Deployable: true, RemoteCleanup: salesforceFixtureCleanupForTest(remoteProject), OrgCleanup: salesforceOrgCleanupForTest()}
 		if result.Kind == oracleRuntime {
 			passed := true
 			row.RuntimePassed = &passed
@@ -1172,7 +1263,22 @@ func salesforceFilterResultsForShard(bundlePath string, shard SalesforceShard, b
 		}
 		results = append(results, row)
 	}
-	return salesforceFilterResults{Sealed: true, Orgs: []string{shard.OrgAlias}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: bundle.Candidate.Commit, CandidateSHA256: bundle.Candidate.SHA256, ToolsCommit: bundle.Tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: results}
+	return salesforceFilterResults{Sealed: true, Orgs: []string{shard.OrgAlias}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: bundle.Candidate.Commit, CandidateSHA256: bundle.Candidate.SHA256, ToolsCommit: bundle.Tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: salesforceRunCleanupForTest(filepath.Join(remoteRoot, "projects", shard.RunID)), OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: results}
+}
+
+func salesforceFixtureCleanupForTest(project string) CleanupReceipt {
+	zero := 0
+	return CleanupReceipt{Path: project, CleanupExitCode: &zero, AbsenceCheckExitCode: &zero, ResidueAbsent: true}
+}
+
+func salesforceOrgCleanupForTest() CleanupReceipt {
+	zero := 0
+	return CleanupReceipt{CleanupExitCode: &zero, Verification: &salesforceCleanupCheck{}, ResidueAbsent: true}
+}
+
+func salesforceRunCleanupForTest(path string) CleanupReceipt {
+	zero := 0
+	return CleanupReceipt{Path: path, ExitCode: &zero, ResidueAbsent: true}
 }
 
 func salesforceRemoteInvocationForTest(remoteRoot, project, org, kind string) *salesforceFilterRemoteInvocation {
