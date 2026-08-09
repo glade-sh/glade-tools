@@ -121,6 +121,12 @@ type LocalProof struct {
 	UsageSHA256           string                    `json:"usageSha256"`
 	DecisionSHA256        string                    `json:"decisionSha256"`
 	FixtureManifestSHA256 string                    `json:"fixtureManifestSha256"`
+	ProfilePath           string                    `json:"profilePath"`
+	UsagePath             string                    `json:"usagePath"`
+	DecisionPath          string                    `json:"decisionPath"`
+	FixtureManifestPath   string                    `json:"fixtureManifestPath"`
+	CandidatePath         string                    `json:"candidatePath"`
+	ToolsPath             string                    `json:"toolsPath"`
 	SelectedSurfaceIDs    []string                  `json:"selectedSurfaceIds"`
 	RawFixtureResults     []LocalProofFixtureResult `json:"rawFixtureResults"`
 	Surfaces              []LocalSurfaceProof       `json:"surfaces"`
@@ -191,6 +197,42 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 	}
 	if len(surfaces) != len(selected) {
 		return fmt.Errorf("local proof surface coverage is incomplete")
+	}
+	return nil
+}
+
+// VerifyLocalProofReplay reruns the sealed fixture set and compares its
+// retained structured candidate output before a later stage grants credit.
+func VerifyLocalProofReplay(proof LocalProof, manifest LocalProofFixtureManifest) error {
+	return verifyLocalProofReplay(proof, manifest, nil)
+}
+
+func verifyLocalProofReplay(proof LocalProof, manifest LocalProofFixtureManifest, architecture func(string) (string, error)) error {
+	if err := ValidateLocalProof(proof, manifest); err != nil {
+		return err
+	}
+	for _, path := range []string{proof.ProfilePath, proof.UsagePath, proof.DecisionPath, proof.FixtureManifestPath, proof.CandidatePath, proof.ToolsPath} {
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("recorded local proof paths must be absolute")
+		}
+	}
+	temp, err := os.MkdirTemp("", "glade-assurance-proof-replay-*")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(temp)
+	replayed, err := RunLocalProof(LocalProofRequest{ProfilePath: proof.ProfilePath, UsagePath: proof.UsagePath, DecisionPath: proof.DecisionPath, FixtureManifestPath: proof.FixtureManifestPath, Candidate: proof.Candidate, CandidatePath: proof.CandidatePath, Tools: proof.Tools, ToolsPath: proof.ToolsPath, OutputPath: filepath.Join(temp, "LOCAL_PROOF.json"), architecture: architecture})
+	if err != nil {
+		return fmt.Errorf("replay local proof: %w", err)
+	}
+	if len(replayed.RawFixtureResults) != len(proof.RawFixtureResults) {
+		return fmt.Errorf("replayed local proof fixture count changed")
+	}
+	for i, result := range proof.RawFixtureResults {
+		actual := replayed.RawFixtureResults[i]
+		if result.FixtureID != actual.FixtureID || result.FixtureSHA256 != actual.FixtureSHA256 || result.Disposition != actual.Disposition || result.Stdout != actual.Stdout || result.Receipt.StdoutSHA256 != actual.Receipt.StdoutSHA256 {
+			return fmt.Errorf("replayed local proof differs for fixture %q", result.FixtureID)
+		}
 	}
 	return nil
 }
@@ -283,6 +325,8 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		Status: "pass", Candidate: request.Candidate, Tools: request.Tools,
 		ProfileSHA256: inputs.ProfileSHA256, UsageSHA256: inputs.UsageSHA256,
 		DecisionSHA256: inputs.DecisionSHA256, FixtureManifestSHA256: inputs.FixtureManifestSHA256,
+		ProfilePath: request.ProfilePath, UsagePath: request.UsagePath, DecisionPath: request.DecisionPath,
+		FixtureManifestPath: request.FixtureManifestPath, CandidatePath: request.CandidatePath, ToolsPath: request.ToolsPath,
 		SelectedSurfaceIDs: selected, RawFixtureResults: raw,
 	}
 	for _, surfaceID := range selected {

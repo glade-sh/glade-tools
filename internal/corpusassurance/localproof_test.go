@@ -92,6 +92,27 @@ func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 	}
 }
 
+func TestVerifyLocalProofReplayRejectsForgedRetainedOutput(t *testing.T) {
+	request, _ := localProofRequest(t)
+	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\nprintf '{\"status\":\"passed\",\"exitCode\":0}'\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	request.Candidate.SHA256 = localProofFileSHA256(t, request.CandidatePath)
+	proof, err := RunLocalProof(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifest := readLocalProofManifest(t, request.FixtureManifestPath)
+	if err := verifyLocalProofReplay(proof, manifest, request.architecture); err != nil {
+		t.Fatalf("VerifyLocalProofReplay(valid): %v", err)
+	}
+	proof.RawFixtureResults[0].Stdout = `{"status":"passed","exitCode":0,"tests":{"total":2,"failed":0,"errors":0}}`
+	proof.RawFixtureResults[0].Receipt.StdoutSHA256 = replayBytesSHA256([]byte(proof.RawFixtureResults[0].Stdout))
+	if err := verifyLocalProofReplay(proof, manifest, request.architecture); err == nil {
+		t.Fatal("VerifyLocalProofReplay accepted forged retained output")
+	}
+}
+
 func TestLocalProofRejectsNarrowedOrUnboundSealedSurfaceInputs(t *testing.T) {
 	for _, updateDecision := range []bool{false, true} {
 		t.Run(map[bool]string{false: "stale decision hash", true: "narrowed usage set"}[updateDecision], func(t *testing.T) {

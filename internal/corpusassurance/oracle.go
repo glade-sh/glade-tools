@@ -259,8 +259,8 @@ func BuildAssuranceProfile(sourceProfilePath, sealedUsagePath, ledgerPath, fixtu
 	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != sourceSHA || sealedUsage.LedgerSHA256 != ledgerSHA || !sha256Pattern.MatchString(sealedUsage.PolicySHA256) || proof.FixtureManifestSHA256 != manifestSHA {
 		return AssuranceProfile{}, fmt.Errorf("assurance profile inputs do not bind")
 	}
-	if err := ValidateLocalProof(proof, manifest); err != nil {
-		return AssuranceProfile{}, fmt.Errorf("validate local proof: %w", err)
+	if err := VerifyLocalProofReplay(proof, manifest); err != nil {
+		return AssuranceProfile{}, fmt.Errorf("verify local proof replay: %w", err)
 	}
 	required, err := oracleRequiredSurfaceIDs(sealedUsage.Reconciliation)
 	if err != nil {

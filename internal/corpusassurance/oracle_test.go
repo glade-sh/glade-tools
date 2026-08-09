@@ -243,19 +243,8 @@ func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
 	if err := WriteNewJSON(usagePath, usage); err != nil {
 		t.Fatal(err)
 	}
-	profile, err := BuildAssuranceProfile(profilePath, usagePath, ledgerPath, manifestPath, proofPath, outputPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if profile.Total != 2 || len(profile.Rows) != 2 || len(profile.NonDeferredGaps) != 1 || len(profile.HostedDeferred) != 1 || profile.ByDisposition[localRuntimeRequired] != 1 || profile.ByDisposition["hosted-deferred"] != 1 {
-		t.Fatalf("profile = %#v", profile)
-	}
-	data, err := os.ReadFile(outputPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if strings.Contains(string(data), "corpusUsage") {
-		t.Fatalf("projected profile retained stale corpus usage: %s", data)
+	if _, err := BuildAssuranceProfile(profilePath, usagePath, ledgerPath, manifestPath, proofPath, outputPath); err == nil {
+		t.Fatal("BuildAssuranceProfile accepted detached synthetic local proof")
 	}
 }
 
