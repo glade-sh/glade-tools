@@ -155,7 +155,7 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	if err := WriteNewJSON(profilePath, profile); err != nil {
 		t.Fatal(err)
 	}
-	directives := OracleDirectiveFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LocalProofSHA256: localProofFileSHA256(t, proofPath)}
+	directives := OracleDirectiveFile{SchemaVersion: 1, ProfileSHA256: strings.Repeat("e", 64), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LocalProofSHA256: localProofFileSHA256(t, proofPath)}
 	if err := WriteNewJSON(directivePath, directives); err != nil {
 		t.Fatal(err)
 	}
@@ -163,7 +163,7 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != directives.ProfileSHA256 || plan.Candidate != candidate || plan.Tools != tools || localProofFileSHA256(t, outputPath) == "" {
+	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != localProofFileSHA256(t, profilePath) || plan.Candidate != candidate || plan.Tools != tools || localProofFileSHA256(t, outputPath) == "" {
 		t.Fatalf("plan = %#v", plan)
 	}
 }

@@ -95,7 +95,7 @@ type OracleDirective struct {
 
 type OracleDirectiveFile struct {
 	SchemaVersion     int               `json:"schemaVersion"`
-	ProfileSHA256     string            `json:"profileSha256"`
+	ProfileSHA256     string            `json:"profileSha256"` // sealed source-profile bytes; projection does not exist yet
 	SealedUsageSHA256 string            `json:"sealedUsageSha256"`
 	LocalProofSHA256  string            `json:"localProofSha256"`
 	Directives        []OracleDirective `json:"directives"`
@@ -464,7 +464,7 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath,
 	if err := validateAssuranceOracleProfile(profile, sealedUsage, proof, sealedUsageSHA256, proofSHA256); err != nil {
 		return OraclePlan{}, err
 	}
-	if directive.SchemaVersion != 1 || directive.ProfileSHA256 != profileSHA256 || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
+	if directive.SchemaVersion != 1 || directive.ProfileSHA256 != profile.SourceProfileSHA256 || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives do not bind authoritative inputs")
 	}
 	projected := make([]OracleProfileRow, len(profile.Rows))
