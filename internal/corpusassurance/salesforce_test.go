@@ -263,6 +263,38 @@ func TestRunSalesforceOrgCreateRejectsBundleHashChangedDuringCreation(t *testing
 	}
 }
 
+func TestRunSalesforceOrgCreateSealsInvalidatedCleanupAuthorityAfterCreate(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "org-create.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	validations := 0
+	_, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{
+		BundlePath: bundlePath, DevHub: "glade-dev-hub4", Alias: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath,
+		validateBundle: func(string) error {
+			validations++
+			if validations == 2 {
+				return errors.New("bundle changed")
+			}
+			return nil
+		},
+		runner: func(_ context.Context, _ string, _ ...string) (salesforceCommandOutput, error) {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
+		},
+	})
+	if err == nil || !strings.Contains(err.Error(), "bundle changed during org creation") {
+		t.Fatalf("RunSalesforceOrgCreate error = %v", err)
+	}
+	invalidated, readErr := readExactJSON[SalesforceOrgCreation](outputPath + ".invalidated")
+	if readErr != nil || !invalidated.Invalidated || invalidated.OrgID != "00D000000000001" || invalidated.Alias != "assurance-sf0" {
+		t.Fatalf("invalidated creation = %#v, %v", invalidated, readErr)
+	}
+}
+
 func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 	root := t.TempDir()
 	bundlePath, creationPath, preflightPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "preflight.json"), filepath.Join(root, "cleanup.json")
@@ -296,6 +328,29 @@ func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRunSalesforceOrgCleanupAcceptsAnInvalidatedCreationWithoutPreflight(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.invalidated.json"), filepath.Join(root, "cleanup.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	bundleSHA := localProofFileSHA256(t, bundlePath)
+	args := salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), "glade-dev-hub4", "assurance-sf0")
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", Alias: "assurance-sf0", OrgID: "00D0", Invalidated: true, Command: CommandResult{Command: append([]string{"/usr/local/bin/sf"}, args...), CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: "/usr/local/bin/sf", Args: args, Env: []string{"SF_USE_GENERIC_UNIX_KEYCHAIN=true"}, Timeout: salesforceCommandTimeout}), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("b", 64), StderrSHA256: strings.Repeat("c", 64)}}
+	if err := WriteNewJSON(creationPath, creation); err != nil {
+		t.Fatal(err)
+	}
+	cleanup, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, TargetOrg: "assurance-sf0", DevHub: "glade-dev-hub4", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "delete" {
+			return salesforceCommandOutput{}, nil
+		}
+		return salesforceCommandOutput{ExitCode: 1}, nil
+	}})
+	if err != nil || !cleanup.ResidueAbsent || cleanup.OrgID != creation.OrgID {
+		t.Fatalf("RunSalesforceOrgCleanup = %#v, %v", cleanup, err)
 	}
 }
 

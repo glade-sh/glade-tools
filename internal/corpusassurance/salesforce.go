@@ -37,6 +37,7 @@ type SalesforceOrgCreation struct {
 	Alias         string        `json:"alias"`
 	OrgID         string        `json:"orgId"`
 	Command       CommandResult `json:"command"`
+	Invalidated   bool          `json:"invalidated,omitempty"`
 }
 
 type SalesforceOrgCreateRequest struct {
@@ -47,6 +48,13 @@ type SalesforceOrgCreateRequest struct {
 	OutputPath     string
 	validateBundle func(string) error
 	runner         salesforceCommandRunner
+}
+
+type salesforceOrgReservation struct {
+	SchemaVersion int    `json:"schemaVersion"`
+	BundleSHA256  string `json:"bundleSha256"`
+	DevHub        string `json:"devHub"`
+	Alias         string `json:"alias"`
 }
 
 type SalesforceOrgCleanup struct {
@@ -289,6 +297,9 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 	if data, err := os.ReadFile(definition); err != nil || !json.Valid(data) {
 		return SalesforceOrgCreation{}, fmt.Errorf("sealed scratch definition is unavailable")
 	}
+	if err := WriteNewJSON(request.OutputPath+".reservation", salesforceOrgReservation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias}); err != nil {
+		return SalesforceOrgCreation{}, fmt.Errorf("reserve Salesforce org creation: %w", err)
+	}
 	runner := request.runner
 	if runner == nil {
 		runner = runSalesforceCLI
@@ -303,9 +314,15 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 	}
 	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias, OrgID: orgID, Command: command}
 	if err := validate(request.BundlePath); err != nil {
+		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias, OrgID: orgID, Command: command, Invalidated: true}); sealErr != nil {
+			return SalesforceOrgCreation{}, fmt.Errorf("seal invalidated Salesforce org creation: %w", sealErr)
+		}
 		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation: %w", err)
 	}
 	if hash, err := sha256File(request.BundlePath); err != nil || hash != bundleSHA {
+		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias, OrgID: orgID, Command: command, Invalidated: true}); sealErr != nil {
+			return SalesforceOrgCreation{}, fmt.Errorf("seal invalidated Salesforce org creation: %w", sealErr)
+		}
 		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation")
 	}
 	if err := WriteNewJSON(request.OutputPath, creation); err != nil {
@@ -317,13 +334,16 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 // RunSalesforceOrgCleanup deletes only an org whose exact creation and
 // preflight receipts bind it to this bundle, then verifies the alias is gone.
 func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.CreationPath) || !filepath.IsAbs(request.PreflightPath) || !filepath.IsAbs(request.OutputPath) || request.DevHub != "glade-dev-hub4" || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.CreationPath) || (request.PreflightPath != "" && !filepath.IsAbs(request.PreflightPath)) || !filepath.IsAbs(request.OutputPath) || request.DevHub != "glade-dev-hub4" || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
 		return SalesforceOrgCleanup{}, fmt.Errorf("invalid Salesforce cleanup request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
 		return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce cleanup output already exists: %s", request.OutputPath)
 	} else if !os.IsNotExist(err) {
 		return SalesforceOrgCleanup{}, err
+	}
+	if request.PreflightPath == "" {
+		return runInvalidatedSalesforceOrgCleanup(request)
 	}
 	validate := request.validateBundle
 	if validate == nil {
@@ -365,6 +385,33 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 		}
 	}
 	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
+	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	return cleanup, nil
+}
+
+func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+	creation, creationBytes, err := readExactJSONBytes[SalesforceOrgCreation](request.CreationPath)
+	if err != nil || !creation.Invalidated || !validSalesforceOrgCreation(creation, creation.BundleSHA256, request.BundlePath, request.DevHub, request.TargetOrg) {
+		return SalesforceOrgCleanup{}, fmt.Errorf("invalidated Salesforce org creation receipt is invalid")
+	}
+	runner := request.runner
+	if runner == nil {
+		runner = runSalesforceCLI
+	}
+	_, deleted, err := runSalesforceExpectedCommand(runner, request.SFBin, true, "org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json")
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	_, absent, err := runSalesforceExpectedCommand(runner, request.SFBin, false, "org", "display", "--target-org", creation.Alias, "--json")
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	if after, err := sha256File(request.CreationPath); err != nil || after != replayBytesSHA256(creationBytes) {
+		return SalesforceOrgCleanup{}, fmt.Errorf("invalidated creation receipt changed during cleanup")
+	}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
