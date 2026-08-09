@@ -60,6 +60,26 @@ func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
 	}
 }
 
+func TestLocalProofPersistsFixtureReceipt(t *testing.T) {
+	request, _ := localProofRequest(t)
+	if _, err := RunLocalProof(request); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(request.OutputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var retained LocalProof
+	if err := json.Unmarshal(data, &retained); err != nil {
+		t.Fatal(err)
+	}
+	for _, result := range retained.RawFixtureResults {
+		if len(result.Receipt.Command) != 1 || result.Receipt.Command[0] != result.Operation || !sha256Pattern.MatchString(result.Receipt.CommandSpecSHA256) || !sha256Pattern.MatchString(result.Receipt.StdoutSHA256) || !sha256Pattern.MatchString(result.Receipt.StderrSHA256) {
+			t.Fatalf("persisted receipt for %q = %#v", result.FixtureID, result.Receipt)
+		}
+	}
+}
+
 func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 	for name, mutate := range map[string]func(*LocalProof){
 		"incomplete fixture receipts": func(proof *LocalProof) { proof.RawFixtureResults = proof.RawFixtureResults[:1] },
@@ -71,6 +91,9 @@ func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 					proof.RawFixtureResults[i].Operation = "test"
 				}
 			}
+		},
+		"forged receipt command specification": func(proof *LocalProof) {
+			proof.RawFixtureResults[0].Receipt.CommandSpecSHA256 = strings.Repeat("f", 64)
 		},
 		"forged output and digest": func(proof *LocalProof) {
 			proof.RawFixtureResults[0].Stdout = `{}`
@@ -103,12 +126,12 @@ func TestVerifyLocalProofReplayRejectsForgedRetainedOutput(t *testing.T) {
 		t.Fatal(err)
 	}
 	manifest := readLocalProofManifest(t, request.FixtureManifestPath)
-	if err := verifyLocalProofReplay(proof, manifest, request.architecture); err != nil {
+	if err := verifyLocalProofReplay(proof, manifest, request.CandidatePath, request.ToolsPath, request.architecture); err != nil {
 		t.Fatalf("VerifyLocalProofReplay(valid): %v", err)
 	}
 	proof.RawFixtureResults[0].Stdout = `{"status":"passed","exitCode":0,"tests":{"total":2,"failed":0,"errors":0}}`
 	proof.RawFixtureResults[0].StdoutSHA256 = replayBytesSHA256([]byte(proof.RawFixtureResults[0].Stdout))
-	if err := verifyLocalProofReplay(proof, manifest, request.architecture); err == nil {
+	if err := verifyLocalProofReplay(proof, manifest, request.CandidatePath, request.ToolsPath, request.architecture); err == nil {
 		t.Fatal("VerifyLocalProofReplay accepted forged retained output")
 	}
 }
@@ -127,6 +150,32 @@ func TestLocalProofRejectsNarrowedOrUnboundSealedSurfaceInputs(t *testing.T) {
 				t.Fatal("RunLocalProof accepted a caller-narrowed required surface set")
 			}
 		})
+	}
+}
+
+func TestLocalProofRejectsFixtureStateItsAdapterDoesNotMaterialize(t *testing.T) {
+	request, _ := localProofRequest(t)
+	path := requestFixturePath(t, request, "runtime")
+	var fixture map[string]any
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &fixture); err != nil {
+		t.Fatal(err)
+	}
+	fixture["expected"] = map[string]any{"stdout": "must be checked"}
+	writeLocalProofJSON(t, path, fixture)
+	manifest := readLocalProofManifest(t, request.FixtureManifestPath)
+	for i := range manifest.Fixtures {
+		if manifest.Fixtures[i].ID == "runtime" {
+			manifest.Fixtures[i].SHA256 = localProofFileSHA256(t, path)
+		}
+	}
+	writeLocalProofManifest(t, request.FixtureManifestPath, manifest)
+	updateLocalProofDecisionFixtureHash(t, &request)
+	if _, err := RunLocalProof(request); err == nil {
+		t.Fatal("RunLocalProof accepted fixture state that the adapter drops")
 	}
 }
 

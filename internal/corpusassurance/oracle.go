@@ -224,8 +224,8 @@ func verifyExclusionRequestInputs(planPath, profilePath, usagePath, planSHA, pro
 // BuildAssuranceProfile rebuilds the Salesforce profile from the current
 // private-required set. It accepts no caller-selected rows and omits all
 // historical profile fields not needed by the oracle.
-func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, localProfilePath, localUsagePath, localDecisionPath, fixtureManifestPath, localProofPath, outputPath string) (AssuranceProfile, error) {
-	for _, path := range []string{inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, localProfilePath, localUsagePath, localDecisionPath, fixtureManifestPath, localProofPath, outputPath} {
+func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, localProfilePath, localUsagePath, localDecisionPath, fixtureManifestPath, localProofPath, candidatePath, toolsPath, outputPath string) (AssuranceProfile, error) {
+	for _, path := range []string{inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, localProfilePath, localUsagePath, localDecisionPath, fixtureManifestPath, localProofPath, candidatePath, toolsPath, outputPath} {
 		if !filepath.IsAbs(path) {
 			return AssuranceProfile{}, fmt.Errorf("absolute assurance-profile paths are required")
 		}
@@ -284,7 +284,7 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != sourceSHA || sealedUsage.LedgerSHA256 != ledgerSHA || !sha256Pattern.MatchString(sealedUsage.PolicySHA256) || proof.FixtureManifestSHA256 != manifestSHA {
 		return AssuranceProfile{}, fmt.Errorf("assurance profile inputs do not bind")
 	}
-	if err := VerifyLocalProofReplay(proof, manifest); err != nil {
+	if err := verifyLocalProofReplay(proof, manifest, candidatePath, toolsPath, nil); err != nil {
 		return AssuranceProfile{}, fmt.Errorf("verify local proof replay: %w", err)
 	}
 	required, err := oracleRequiredSurfaceIDs(sealedUsage.Reconciliation)
@@ -340,7 +340,7 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	sort.Slice(result.NonDeferredGaps, func(i, j int) bool { return result.NonDeferredGaps[i].SurfaceID < result.NonDeferredGaps[j].SurfaceID })
 	sort.Slice(result.HostedDeferred, func(i, j int) bool { return result.HostedDeferred[i].SurfaceID < result.HostedDeferred[j].SurfaceID })
 	result.Total = len(result.Rows)
-	if err := verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA); err != nil {
+	if err := verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, localProfilePath, localUsagePath, localDecisionPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA, localProfileSHA, localUsageSHA, localDecisionSHA); err != nil {
 		return AssuranceProfile{}, err
 	}
 	if err := WriteNewJSON(outputPath, result); err != nil {
@@ -425,8 +425,8 @@ func proofInputSHA256(path string) (string, error) {
 	return replayBytesSHA256(data), nil
 }
 
-func verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA string) error {
-	for _, input := range []struct{ path, sha string }{{sourceProfilePath, sourceSHA}, {sealedUsagePath, usageSHA}, {ledgerPath, ledgerSHA}, {fixtureManifestPath, manifestSHA}, {localProofPath, proofSHA}} {
+func verifyAssuranceProfileInputs(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, localProfilePath, localUsagePath, localDecisionPath, sourceSHA, usageSHA, ledgerSHA, manifestSHA, proofSHA, localProfileSHA, localUsageSHA, localDecisionSHA string) error {
+	for _, input := range []struct{ path, sha string }{{sourceProfilePath, sourceSHA}, {sealedUsagePath, usageSHA}, {ledgerPath, ledgerSHA}, {fixtureManifestPath, manifestSHA}, {localProofPath, proofSHA}, {localProfilePath, localProfileSHA}, {localUsagePath, localUsageSHA}, {localDecisionPath, localDecisionSHA}} {
 		data, err := os.ReadFile(input.path)
 		if err != nil || replayBytesSHA256(data) != input.sha {
 			return fmt.Errorf("assurance profile input changed during projection")

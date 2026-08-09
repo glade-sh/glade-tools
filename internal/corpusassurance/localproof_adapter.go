@@ -53,7 +53,28 @@ func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
 	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
 		return compat.Fixture{}, err
 	}
+	if !localProofFixtureIsMaterializable(fixture) {
+		return compat.Fixture{}, fmt.Errorf("fixture %q has state the local-proof adapter does not materialize", entry.ID)
+	}
 	return fixture, nil
+}
+
+func localProofFixtureIsMaterializable(fixture compat.Fixture) bool {
+	return len(fixture.Metadata.Labels) == 0 &&
+		len(fixture.Metadata.ManagedLabelNamespaces) == 0 &&
+		len(fixture.Metadata.Tabs) == 0 &&
+		len(fixture.Metadata.DataCategoryGroups) == 0 &&
+		len(fixture.Metadata.QuickActions) == 0 &&
+		len(fixture.Metadata.FieldSets) == 0 &&
+		len(fixture.Metadata.StaticResources) == 0 &&
+		len(fixture.Metadata.ContentAssets) == 0 &&
+		len(fixture.Metadata.Endpoints) == 0 &&
+		len(fixture.Metadata.EmailTemplates) == 0 &&
+		len(fixture.SeedData) == 0 && len(fixture.ServerRequests) == 0 &&
+		fixture.Command.LimitMode == "" && fixture.Expected.Stdout == "" && fixture.Expected.Stderr == "" &&
+		len(fixture.Expected.Result) == 0 && fixture.Expected.Error == nil && len(fixture.Expected.SideEffects) == 0 &&
+		fixture.Limits.SOQLQueries == nil && fixture.Limits.SOQLRows == nil && fixture.Limits.DMLStatements == nil &&
+		fixture.Limits.DMLRows == nil && fixture.Limits.CPUTimeMS == nil && fixture.Limits.HeapBytes == nil
 }
 
 func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.Fixture) error {
