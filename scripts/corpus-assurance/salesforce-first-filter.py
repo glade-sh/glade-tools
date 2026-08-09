@@ -53,6 +53,7 @@ def verify_remote_project_manifest(remote: dict, project: str, expected: list[di
     paths = " ".join(shlex.quote(f"./{row['path']}") for row in expected)
     command = " ".join([
         "cd", shlex.quote(project), "&&",
+        "test -z \"$(find . -type l -print -quit)\" &&",
         f"test $(find . -type f | wc -l | tr -d '[:space:]') -eq {len(expected)} &&",
         "/usr/bin/shasum", "-a", "256", paths,
     ])
@@ -1019,7 +1020,7 @@ def run_one(
             remote_project = remote_project_path(remote["root"], name, remote["run_id"])
             target = remote_target(remote)
             mkdir = subprocess.run(
-                remote_ssh_args(remote, f"mkdir -p -- {shlex.quote(remote_project)}"),
+                remote_ssh_args(remote, f"test ! -e {shlex.quote(remote_project)} && mkdir -p -- {shlex.quote(remote_project)}"),
                 capture_output=True, text=True, timeout=30, check=False,
             )
             if mkdir.returncode:
