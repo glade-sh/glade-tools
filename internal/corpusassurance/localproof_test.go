@@ -47,7 +47,7 @@ func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSur
 func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
 	request, _ := localProofRequest(t)
 	request.executor = nil
-	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\nfor arg in \"$@\"; do [ \"$arg\" != --fixture ] || exit 17; done\nprintf '{\"status\":\"passed\",\"exitCode\":0,\"tests\":{\"total\":1,\"failed\":0,\"errors\":0}}'\n"), 0o700); err != nil {
+	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\nfor arg in \"$@\"; do [ \"$arg\" != --fixture ] || exit 17; done\ncase \"$1\" in\ntest) printf '{\"status\":\"passed\",\"exitCode\":0,\"summary\":{\"total\":1,\"passed\":1,\"failed\":0,\"errors\":0,\"compileErrors\":0,\"runtimeErrors\":0},\"tests\":[{}]}' ;;\ncheck) printf '{\"status\":\"passed\",\"exitCode\":0,\"summary\":{\"types\":1,\"triggers\":0}}' ;;\n*) printf '{\"status\":\"passed\",\"exitCode\":0}' ;;\nesac\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	request.Candidate.SHA256 = localProofFileSHA256(t, request.CandidatePath)
@@ -57,6 +57,25 @@ func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
 	}
 	if proof.Status != "pass" || len(proof.RawFixtureResults) != 3 {
 		t.Fatalf("proof = %#v", proof)
+	}
+}
+
+func TestLocalProofExecutesAStagedCandidateCopy(t *testing.T) {
+	request, calls := localProofRequest(t)
+	if _, err := RunLocalProof(request); err != nil {
+		t.Fatal(err)
+	}
+	if len(*calls) == 0 || (*calls)[0].Path == request.CandidatePath {
+		t.Fatalf("proof command used mutable candidate path: %#v", *calls)
+	}
+}
+
+func TestValidatesCandidateJSONUsesFrozenCandidateSummaryContract(t *testing.T) {
+	if !validatesCandidateJSON([]byte(`{"status":"passed","exitCode":0,"summary":{"total":2,"passed":2,"failed":0,"errors":0,"compileErrors":0,"runtimeErrors":0},"tests":[{},{}]}`), "test", 0) {
+		t.Fatal("validatesCandidateJSON rejected a passing frozen-candidate test result")
+	}
+	if validatesCandidateJSON([]byte(`{"status":"passed","exitCode":0,"summary":{"types":0,"triggers":0}}`), "check", 1) {
+		t.Fatal("validatesCandidateJSON accepted zero-work check output")
 	}
 }
 
@@ -95,6 +114,9 @@ func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 		"forged receipt command specification": func(proof *LocalProof) {
 			proof.RawFixtureResults[0].Receipt.CommandSpecSHA256 = strings.Repeat("f", 64)
 		},
+		"forged receipt stdout digest": func(proof *LocalProof) {
+			proof.RawFixtureResults[0].Receipt.StdoutSHA256 = strings.Repeat("f", 64)
+		},
 		"forged output and digest": func(proof *LocalProof) {
 			proof.RawFixtureResults[0].Stdout = `{}`
 			proof.RawFixtureResults[0].StdoutSHA256 = replayBytesSHA256([]byte(`{}`))
@@ -115,9 +137,43 @@ func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 	}
 }
 
+func TestLocalProofFixtureRejectsUnknownJSONFields(t *testing.T) {
+	root := t.TempDir()
+	fixture := localProofFixture(t, root, "strict", []string{"apex:Strict.run"}, compileShapeRequired)
+	data, err := os.ReadFile(fixture.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data = append(data[:len(data)-1], []byte(`,"unexpected":true}`)...)
+	if err := os.WriteFile(fixture.Path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
+	if _, err := loadLocalProofFixture(fixture); err == nil {
+		t.Fatal("loadLocalProofFixture accepted an unknown fixture field")
+	}
+}
+
+func TestWriteLocalProofProjectRejectsApexOutsidePackageDirectory(t *testing.T) {
+	root := t.TempDir()
+	fixture := localProofFixture(t, root, "outside", []string{"apex:Outside.run"}, compileShapeRequired)
+	definition, err := loadLocalProofFixture(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	definition.Source[0].Path = "outside/Outside.cls"
+	project := filepath.Join(root, "project")
+	if err := os.Mkdir(project, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := writeLocalProofProject(project, definition); err == nil {
+		t.Fatal("writeLocalProofProject accepted Apex outside packageDirectories")
+	}
+}
+
 func TestVerifyLocalProofReplayRejectsForgedRetainedOutput(t *testing.T) {
 	request, _ := localProofRequest(t)
-	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\nif [ \"$1\" = test ]; then printf '{\"status\":\"passed\",\"exitCode\":0,\"tests\":{\"total\":1,\"failed\":0,\"errors\":0}}'; else printf '{\"status\":\"passed\",\"exitCode\":0}'; fi\n"), 0o700); err != nil {
+	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\ncase \"$1\" in\ntest) printf '{\"status\":\"passed\",\"exitCode\":0,\"summary\":{\"total\":1,\"passed\":1,\"failed\":0,\"errors\":0,\"compileErrors\":0,\"runtimeErrors\":0},\"tests\":[{}]}' ;;\ncheck) printf '{\"status\":\"passed\",\"exitCode\":0,\"summary\":{\"types\":1,\"triggers\":0}}' ;;\n*) printf '{\"status\":\"passed\",\"exitCode\":0}' ;;\nesac\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	request.Candidate.SHA256 = localProofFileSHA256(t, request.CandidatePath)
@@ -347,7 +403,10 @@ func localProofRuntime(t *testing.T, path, commitByte string) RuntimeArtifact {
 
 func localProofSuccessOutputFor(operation string) string {
 	if operation == "test" {
-		return `{"status":"passed","exitCode":0,"tests":{"total":1,"failed":0,"errors":0}}`
+		return `{"status":"passed","exitCode":0,"summary":{"total":1,"passed":1,"failed":0,"errors":0,"compileErrors":0,"runtimeErrors":0},"tests":[{}]}`
+	}
+	if operation == "check" {
+		return `{"status":"passed","exitCode":0,"summary":{"types":1,"triggers":0}}`
 	}
 	return `{"status":"passed","exitCode":0}`
 }
@@ -356,7 +415,7 @@ func localProofReceipt(command localProofCommand) CommandResult {
 	return CommandResult{
 		Command: []string{command.Args[0]}, CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: command.Path, Args: command.Args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute}),
 		ExitCode: 0, DurationMS: 0, Passed: true,
-		StdoutSHA256: replayBytesSHA256([]byte(localProofSuccessOutputFor(command.Args[0]))), StderrSHA256: strings.Repeat("b", 64),
+		StdoutSHA256: replayBytesSHA256([]byte(localProofSuccessOutputFor(command.Args[0]))), StderrSHA256: replayBytesSHA256(nil),
 	}
 }
 

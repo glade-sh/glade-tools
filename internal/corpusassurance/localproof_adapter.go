@@ -1,8 +1,10 @@
 package corpusassurance
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,7 +25,8 @@ func materializeLocalProofFixture(entry LocalProofFixture, candidatePath string)
 		return localProofCommand{}, nil, err
 	}
 	cleanup := func() { _ = os.RemoveAll(root) }
-	if err := writeLocalProofProject(root, fixture); err != nil {
+	apexInputs, err := writeLocalProofProject(root, fixture)
+	if err != nil {
 		cleanup()
 		return localProofCommand{}, nil, err
 	}
@@ -32,6 +35,7 @@ func materializeLocalProofFixture(entry LocalProofFixture, candidatePath string)
 		cleanup()
 		return localProofCommand{}, nil, err
 	}
+	command.ApexInputs = apexInputs
 	return command, cleanup, nil
 }
 
@@ -43,9 +47,15 @@ func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
 	if replayBytesSHA256(data) != entry.SHA256 {
 		return compat.Fixture{}, fmt.Errorf("fixture binding mismatch for %q", entry.ID)
 	}
-	fixture, err := compat.LoadData(data)
-	if err != nil {
+	var fixture compat.Fixture
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&fixture); err != nil {
 		return compat.Fixture{}, fmt.Errorf("decode fixture %q: %w", entry.ID, err)
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		return compat.Fixture{}, fmt.Errorf("decode fixture %q: multiple JSON values", entry.ID)
 	}
 	if err := compat.Validate(fixture); err != nil {
 		return compat.Fixture{}, fmt.Errorf("validate fixture %q: %w", entry.ID, err)
@@ -96,7 +106,11 @@ func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.F
 	return nil
 }
 
-func writeLocalProofProject(root string, fixture compat.Fixture) error {
+func writeLocalProofProject(root string, fixture compat.Fixture) (int, error) {
+	apexInputs, err := localProofApexInputCount(fixture)
+	if err != nil {
+		return 0, err
+	}
 	packages := fixture.Project.PackageDirectories
 	if len(packages) == 0 {
 		packages = []compat.PackageDirectory{{Path: "force-app", Default: true}}
@@ -108,24 +122,78 @@ func writeLocalProofProject(root string, fixture compat.Fixture) error {
 	}{packages, fixture.Project.Namespace, fixture.Project.SourceAPIVersion}
 	data, err := json.Marshal(project)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if err := os.WriteFile(filepath.Join(root, "sfdx-project.json"), data, 0o600); err != nil {
-		return err
+		return 0, err
 	}
 	for _, file := range append(append([]compat.SourceFile(nil), fixture.Source...), sourceFilesFromSchema(fixture.Schema)...) {
 		path, err := localProofProjectPath(root, file.Path)
 		if err != nil {
-			return err
+			return 0, err
 		}
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
-			return err
+			return 0, err
 		}
 		if err := os.WriteFile(path, []byte(file.Content), 0o600); err != nil {
-			return err
+			return 0, err
 		}
 	}
-	return nil
+	return apexInputs, nil
+}
+
+func localProofApexInputCount(fixture compat.Fixture) (int, error) {
+	packages := fixture.Project.PackageDirectories
+	if len(packages) == 0 {
+		packages = []compat.PackageDirectory{{Path: "force-app", Default: true}}
+	}
+	roots, err := localProofPackageRoots(packages)
+	if err != nil {
+		return 0, err
+	}
+	seen := make(map[string]bool, len(fixture.Source)+len(fixture.Schema))
+	count := 0
+	for _, file := range append(append([]compat.SourceFile(nil), fixture.Source...), sourceFilesFromSchema(fixture.Schema)...) {
+		clean := filepath.Clean(file.Path)
+		if clean == "." || filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) || seen[clean] {
+			return 0, fmt.Errorf("duplicate or invalid fixture source path %q", file.Path)
+		}
+		seen[clean] = true
+		if localProofApexSource(clean) {
+			if !localProofPathInPackages(clean, roots) {
+				return 0, fmt.Errorf("Apex fixture source %q is outside packageDirectories", file.Path)
+			}
+			count++
+		}
+	}
+	return count, nil
+}
+
+func localProofPackageRoots(packages []compat.PackageDirectory) ([]string, error) {
+	roots := make([]string, 0, len(packages))
+	seen := make(map[string]bool, len(packages))
+	for _, directory := range packages {
+		clean := filepath.Clean(directory.Path)
+		if directory.Path == "" || clean == "." || filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) || seen[clean] {
+			return nil, fmt.Errorf("invalid or duplicate package directory %q", directory.Path)
+		}
+		seen[clean] = true
+		roots = append(roots, clean)
+	}
+	return roots, nil
+}
+
+func localProofApexSource(path string) bool {
+	return strings.HasSuffix(path, ".cls") || strings.HasSuffix(path, ".trigger")
+}
+
+func localProofPathInPackages(path string, packages []string) bool {
+	for _, root := range packages {
+		if path == root || strings.HasPrefix(path, root+string(filepath.Separator)) {
+			return true
+		}
+	}
+	return false
 }
 
 func sourceFilesFromSchema(schema []compat.SchemaFile) []compat.SourceFile {
@@ -172,10 +240,11 @@ func localProofCommandForFixture(entry LocalProofFixture, fixture compat.Fixture
 	return localProofCommand{Path: candidatePath, Args: args, Dir: root}, nil
 }
 
-func validatesCandidateJSON(data []byte, operation string) bool {
+func validatesCandidateJSON(data []byte, operation string, apexInputs int) bool {
 	var result struct {
 		Status   string          `json:"status"`
 		ExitCode int             `json:"exitCode"`
+		Summary  json.RawMessage `json:"summary"`
 		Tests    json.RawMessage `json:"tests"`
 	}
 	if err := json.Unmarshal(data, &result); err != nil {
@@ -184,13 +253,26 @@ func validatesCandidateJSON(data []byte, operation string) bool {
 	if result.Status != "passed" || result.ExitCode != 0 {
 		return false
 	}
-	if len(result.Tests) == 0 {
-		return operation != "test"
+	if operation == "exec" {
+		return true
 	}
-	var tests struct {
-		Total  int `json:"total"`
-		Failed int `json:"failed"`
-		Errors int `json:"errors"`
+	if len(result.Summary) == 0 {
+		return false
 	}
-	return json.Unmarshal(result.Tests, &tests) == nil && tests.Total > 0 && tests.Failed == 0 && tests.Errors == 0
+	if operation == "check" {
+		var summary struct {
+			Types    int `json:"types"`
+			Triggers int `json:"triggers"`
+		}
+		return apexInputs > 0 && json.Unmarshal(result.Summary, &summary) == nil && summary.Types+summary.Triggers >= apexInputs
+	}
+	var summary struct {
+		Total         int `json:"total"`
+		Passed        int `json:"passed"`
+		Failed        int `json:"failed"`
+		Errors        int `json:"errors"`
+		CompileErrors int `json:"compileErrors"`
+		RuntimeErrors int `json:"runtimeErrors"`
+	}
+	return json.Unmarshal(result.Summary, &summary) == nil && summary.Total > 0 && summary.Passed == summary.Total && summary.Failed == 0 && summary.Errors == 0 && summary.CompileErrors == 0 && summary.RuntimeErrors == 0 && len(result.Tests) > 0
 }

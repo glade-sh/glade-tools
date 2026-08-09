@@ -2,6 +2,7 @@ package corpusassurance
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -82,6 +83,8 @@ type LocalProofFixtureResult struct {
 	Operation       string        `json:"operation"`
 	StdoutSHA256    string        `json:"stdoutSha256"`
 	Stdout          string        `json:"stdout"`
+	StderrSHA256    string        `json:"stderrSha256"`
+	Stderr          string        `json:"stderr"`
 }
 
 // LocalSurfaceProof is the normalized local receipt for one required surface.
@@ -135,15 +138,17 @@ type LocalProof struct {
 }
 
 type localProofCommand struct {
-	Path string
-	Args []string
-	Dir  string
+	Path       string
+	Args       []string
+	Dir        string
+	ApexInputs int
 }
 
 type localProofExecution struct {
 	Receipt   CommandResult
 	Validated bool
 	Stdout    string
+	Stderr    string
 }
 
 // ValidateLocalProof rechecks the complete normalized fixture/receipt graph
@@ -154,6 +159,7 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 	}
 	fixtures := make(map[string]LocalProofFixture, len(manifest.Fixtures))
 	receiptSpecs := make(map[string]string, len(manifest.Fixtures))
+	apexInputs := make(map[string]int, len(manifest.Fixtures))
 	owned := make(map[string]LocalProofFixture)
 	for _, fixture := range manifest.Fixtures {
 		if fixture.ID == "" || fixture.Name == "" || !sha256Pattern.MatchString(fixture.SHA256) || !validLocalProofDisposition(fixture.Disposition) || fixtures[fixture.ID].ID != "" || len(fixture.OwnedSurfaceIDs) == 0 {
@@ -167,8 +173,13 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 		if err != nil {
 			return err
 		}
+		command.ApexInputs, err = localProofApexInputCount(definition)
+		if err != nil {
+			return err
+		}
 		fixtures[fixture.ID] = fixture
 		receiptSpecs[fixture.ID] = localProofReceiptSpecSHA256(command)
+		apexInputs[fixture.ID] = command.ApexInputs
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
 			if surfaceID == "" || owned[surfaceID].ID != "" {
 				return fmt.Errorf("invalid or duplicate fixture-owned surface %q", surfaceID)
@@ -191,7 +202,7 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 	raw := make(map[string]LocalProofFixtureResult, len(proof.RawFixtureResults))
 	for _, result := range proof.RawFixtureResults {
 		fixture, exists := fixtures[result.FixtureID]
-		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || result.Operation != localProofOperation(fixture.Disposition) || !validLocalProofReceipt(result.Receipt, result.Operation, receiptSpecs[result.FixtureID]) || replayBytesSHA256([]byte(result.Stdout)) != result.StdoutSHA256 || !validatesCandidateJSON([]byte(result.Stdout), result.Operation) {
+		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || result.Operation != localProofOperation(fixture.Disposition) || !validLocalProofReceipt(result.Receipt, result.Operation, receiptSpecs[result.FixtureID]) || result.StdoutSHA256 != result.Receipt.StdoutSHA256 || result.StderrSHA256 != result.Receipt.StderrSHA256 || replayBytesSHA256([]byte(result.Stdout)) != result.StdoutSHA256 || replayBytesSHA256([]byte(result.Stderr)) != result.StderrSHA256 || !validatesCandidateJSON([]byte(result.Stdout), result.Operation, apexInputs[result.FixtureID]) {
 			return fmt.Errorf("invalid local proof fixture receipt %q", result.FixtureID)
 		}
 		raw[result.FixtureID] = result
@@ -242,11 +253,15 @@ func verifyLocalProofReplay(proof LocalProof, manifest LocalProofFixtureManifest
 	}
 	for i, result := range proof.RawFixtureResults {
 		actual := replayed.RawFixtureResults[i]
-		if result.FixtureID != actual.FixtureID || result.FixtureSHA256 != actual.FixtureSHA256 || result.Disposition != actual.Disposition || result.Operation != actual.Operation || result.Stdout != actual.Stdout || result.StdoutSHA256 != actual.StdoutSHA256 {
+		if result.FixtureID != actual.FixtureID || result.FixtureSHA256 != actual.FixtureSHA256 || result.Disposition != actual.Disposition || result.Operation != actual.Operation || result.Stdout != actual.Stdout || result.StdoutSHA256 != actual.StdoutSHA256 || result.Stderr != actual.Stderr || result.StderrSHA256 != actual.StderrSHA256 || !sameLocalProofReceipt(result.Receipt, actual.Receipt) {
 			return fmt.Errorf("replayed local proof differs for fixture %q", result.FixtureID)
 		}
 	}
 	return nil
+}
+
+func sameLocalProofReceipt(left, right CommandResult) bool {
+	return equalStrings(left.Command, right.Command) && left.CommandSpecSHA256 == right.CommandSpecSHA256 && left.ExitCode == right.ExitCode && left.StdoutSHA256 == right.StdoutSHA256 && left.StderrSHA256 == right.StderrSHA256 && left.Passed == right.Passed && left.TimedOut == right.TimedOut
 }
 
 func validLocalProofReceipt(receipt CommandResult, operation, expectedSpecSHA256 string) bool {
@@ -288,6 +303,13 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 	if err != nil {
 		return LocalProof{}, err
 	}
+	stagedCandidate, cleanupCandidate, err := stageLocalProofCandidate(request.CandidatePath, request.Candidate)
+	if err != nil {
+		return LocalProof{}, err
+	}
+	defer cleanupCandidate()
+	executionRequest := request
+	executionRequest.CandidatePath = stagedCandidate
 	if _, err := os.Lstat(request.OutputPath); err == nil {
 		return LocalProof{}, fmt.Errorf("local proof output already exists: %s", request.OutputPath)
 	} else if !os.IsNotExist(err) {
@@ -301,11 +323,11 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 	raw := make([]LocalProofFixtureResult, 0, len(fixtures))
 	byFixtureID := make(map[string]LocalProofFixtureResult, len(fixtures))
 	for _, fixture := range fixtures {
-		command, cleanup, err := materializeLocalProofFixture(fixture, request.CandidatePath)
+		command, cleanup, err := materializeLocalProofFixture(fixture, executionRequest.CandidatePath)
 		if err != nil {
 			return LocalProof{}, err
 		}
-		if err := validateReplayRuntimeBindings(ReplayRequest{Candidate: request.Candidate, CandidatePath: request.CandidatePath, Tools: request.Tools, ToolsPath: request.ToolsPath, architecture: request.architecture}); err != nil {
+		if err := validateReplayRuntimeBindings(ReplayRequest{Candidate: executionRequest.Candidate, CandidatePath: executionRequest.CandidatePath, Tools: executionRequest.Tools, ToolsPath: executionRequest.ToolsPath, architecture: executionRequest.architecture}); err != nil {
 			cleanup()
 			return LocalProof{}, err
 		}
@@ -314,9 +336,9 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		result := LocalProofFixtureResult{
 			FixtureID: fixture.ID, FixtureSHA256: fixture.SHA256, Disposition: fixture.Disposition,
 			CandidateSHA256: request.Candidate.SHA256, ToolsSHA256: request.Tools.SHA256,
-			Receipt:   execution.Receipt,
-			Operation: command.Args[0], StdoutSHA256: execution.Receipt.StdoutSHA256,
-			Stdout: execution.Stdout,
+			Receipt: execution.Receipt, Operation: command.Args[0],
+			StdoutSHA256: execution.Receipt.StdoutSHA256, Stdout: execution.Stdout,
+			StderrSHA256: execution.Receipt.StderrSHA256, Stderr: execution.Stderr,
 		}
 		if err := validateLocalProofFixtureResult(fixture, result, command, execution.Validated); err != nil {
 			return LocalProof{}, err
@@ -326,6 +348,9 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		byFixtureID[fixture.ID] = result
 	}
 	if err := verifyLocalProofFiles(request, inputs, fixtures); err != nil {
+		return LocalProof{}, err
+	}
+	if err := validateReplayRuntimeBindings(ReplayRequest{Candidate: executionRequest.Candidate, CandidatePath: executionRequest.CandidatePath, Tools: executionRequest.Tools, ToolsPath: executionRequest.ToolsPath, architecture: executionRequest.architecture}); err != nil {
 		return LocalProof{}, err
 	}
 	if err := validateReplayRuntimeBindings(ReplayRequest{Candidate: request.Candidate, CandidatePath: request.CandidatePath, Tools: request.Tools, ToolsPath: request.ToolsPath, architecture: request.architecture}); err != nil {
@@ -364,6 +389,38 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		return LocalProof{}, fmt.Errorf("write local proof: %w", err)
 	}
 	return proof, nil
+}
+
+func stageLocalProofCandidate(path string, artifact RuntimeArtifact) (string, func(), error) {
+	source, err := os.Open(path)
+	if err != nil {
+		return "", nil, err
+	}
+	defer source.Close()
+	directory, err := os.MkdirTemp("", "glade-assurance-candidate-*")
+	if err != nil {
+		return "", nil, err
+	}
+	cleanup := func() { _ = os.RemoveAll(directory) }
+	staged := filepath.Join(directory, "glade")
+	target, err := os.OpenFile(staged, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o500)
+	if err != nil {
+		cleanup()
+		return "", nil, err
+	}
+	_, copyErr := io.Copy(target, source)
+	syncErr := target.Sync()
+	closeErr := target.Close()
+	if copyErr != nil || syncErr != nil || closeErr != nil {
+		cleanup()
+		return "", nil, fmt.Errorf("stage candidate: %v %v %v", copyErr, syncErr, closeErr)
+	}
+	sha256, err := replayFileSHA256(staged)
+	if err != nil || sha256 != artifact.SHA256 {
+		cleanup()
+		return "", nil, fmt.Errorf("staged candidate binding mismatch")
+	}
+	return staged, cleanup, nil
 }
 
 func validateLocalProofRequest(request LocalProofRequest) (localProofInputs, map[string]LocalProofFixture, []LocalProofFixture, []string, error) {
@@ -602,8 +659,8 @@ func localProofEvidenceKind(disposition string) string {
 }
 
 func runLocalProofCommand(command localProofCommand) localProofExecution {
-	receipt, stdout, _ := runReplayCommandOutput(command.Dir, ReplayCommand{Path: command.Path, Args: command.Args, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 2 * time.Minute})
-	return localProofExecution{Receipt: receipt, Validated: receipt.Passed && validatesCandidateJSON(stdout, command.Args[0]), Stdout: string(stdout)}
+	receipt, stdout, stderr := runReplayCommandOutput(command.Dir, ReplayCommand{Path: command.Path, Args: command.Args, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 2 * time.Minute})
+	return localProofExecution{Receipt: receipt, Validated: receipt.Passed && validatesCandidateJSON(stdout, command.Args[0], command.ApexInputs), Stdout: string(stdout), Stderr: string(stderr)}
 }
 
 func validateLocalProofFixtureResult(fixture LocalProofFixture, result LocalProofFixtureResult, command localProofCommand, validated bool) error {
