@@ -70,7 +70,7 @@ func TestValidSalesforceOrgPreflightRejectsUnsealedCLIExecution(t *testing.T) {
 		t.Fatal(err)
 	}
 	preflight := salesforcePreflightForTest(t, "assurance-sf0", localProofFileSHA256(t, bundlePath), bundlePath)
-	preflight.Commands[0].ExecutableSHA256 = ""
+	preflight.Commands[0].ExecutableAfterSHA256 = ""
 	if validSalesforceOrgPreflight(preflight, preflight.BundleSHA256, bundlePath) {
 		t.Fatal("accepted Salesforce preflight commands without a sealed executable, environment, and working directory")
 	}
@@ -556,7 +556,7 @@ func salesforceCommandForTest(t *testing.T, bundlePath string, args []string) Co
 		t.Fatal(err)
 	}
 	executableSHA256 := strings.Repeat("a", 64)
-	return CommandResult{Command: append([]string{"/usr/local/bin/sf"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: executableSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, executableSHA256), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("3", 64), StderrSHA256: strings.Repeat("4", 64)}
+	return CommandResult{Command: append([]string{"/usr/local/bin/sf"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, executableSHA256, executableSHA256), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("3", 64), StderrSHA256: strings.Repeat("4", 64)}
 }
 
 func mustFixedSalesforceEnvironment(t *testing.T) []string {
