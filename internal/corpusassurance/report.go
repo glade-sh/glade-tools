@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
 // AssuranceReport is the public, neutral release outcome projection.
@@ -69,6 +70,136 @@ func ValidateAssuranceOutcomes(rows []AssuranceSurfaceRow) error {
 		}
 	}
 	return nil
+}
+
+// deriveAssuranceRows joins only the sealed reconciliation inputs. It never
+// accepts a caller-selected surface list; every mapped usage surface gets one
+// explicit readiness or non-parity outcome.
+func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, proof LocalProof, plan OraclePlan, shards []SalesforceShard, repositoryTests map[string]bool) ([]AssuranceSurfaceRow, error) {
+	type usageAggregate struct {
+		namespace    string
+		usageKeys    []string
+		repositories map[string]bool
+		prod, test   int
+	}
+	aggregates := map[string]*usageAggregate{}
+	for _, entry := range usage.Usage {
+		switch entry.Class {
+		case usageClassExact, usageClassCaseAlias, usageClassAggregateParent, usageClassCanonicalAlias:
+			if entry.SurfaceID == "" || entry.Namespace == "" || len(entry.RepositoryIDs) == 0 {
+				return nil, fmt.Errorf("mapped usage %q is incomplete", entry.UsageKey)
+			}
+			row := aggregates[entry.SurfaceID]
+			if row == nil {
+				row = &usageAggregate{namespace: entry.Namespace, repositories: map[string]bool{}}
+				aggregates[entry.SurfaceID] = row
+			}
+			if row.namespace != entry.Namespace {
+				return nil, fmt.Errorf("surface %q has conflicting namespaces", entry.SurfaceID)
+			}
+			row.usageKeys = append(row.usageKeys, entry.UsageKey)
+			row.prod += entry.PrivateProdRefs
+			row.test += entry.PrivateTestRefs
+			for _, repositoryID := range entry.RepositoryIDs {
+				row.repositories[repositoryID] = true
+			}
+		case usageClassLocalSymbol, usageClassNonSalesforceGenerated:
+			if entry.SurfaceID != "" {
+				return nil, fmt.Errorf("non-Salesforce usage %q selects a surface", entry.UsageKey)
+			}
+		default:
+			return nil, fmt.Errorf("unknown usage class %q", entry.Class)
+		}
+	}
+	if len(aggregates) == 0 {
+		return nil, fmt.Errorf("no mapped assurance surfaces")
+	}
+	profiles := map[string]AssuranceProfileRow{}
+	for _, row := range profile.Rows {
+		if row.SurfaceID == "" || row.Disposition == "" || profiles[row.SurfaceID].SurfaceID != "" {
+			return nil, fmt.Errorf("invalid or duplicate assurance profile surface %q", row.SurfaceID)
+		}
+		profiles[row.SurfaceID] = row
+	}
+	plans := map[string]OraclePlanRow{}
+	for _, row := range plan.Rows {
+		if row.SurfaceID == "" || plans[row.SurfaceID].SurfaceID != "" {
+			return nil, fmt.Errorf("invalid or duplicate oracle plan surface %q", row.SurfaceID)
+		}
+		plans[row.SurfaceID] = row
+	}
+	proofs := map[string]LocalSurfaceProof{}
+	for _, row := range proof.Surfaces {
+		if row.SurfaceID == "" || proofs[row.SurfaceID].SurfaceID != "" {
+			return nil, fmt.Errorf("invalid or duplicate local proof surface %q", row.SurfaceID)
+		}
+		proofs[row.SurfaceID] = row
+	}
+	remote := map[string]SalesforceSurfaceResult{}
+	for _, shard := range shards {
+		for _, row := range shard.Results {
+			if row.SurfaceID == "" || remote[row.SurfaceID].SurfaceID != "" {
+				return nil, fmt.Errorf("invalid or duplicate Salesforce surface %q", row.SurfaceID)
+			}
+			remote[row.SurfaceID] = row
+		}
+	}
+	ids := make([]string, 0, len(aggregates))
+	for surfaceID := range aggregates {
+		ids = append(ids, surfaceID)
+	}
+	sort.Strings(ids)
+	rows := make([]AssuranceSurfaceRow, 0, len(ids))
+	for _, surfaceID := range ids {
+		aggregate, profileRow, planRow := aggregates[surfaceID], profiles[surfaceID], plans[surfaceID]
+		if profileRow.SurfaceID == "" || planRow.SurfaceID == "" {
+			return nil, fmt.Errorf("surface %q lacks profile or oracle plan", surfaceID)
+		}
+		repositories := make([]string, 0, len(aggregate.repositories))
+		testReady := true
+		for repositoryID := range aggregate.repositories {
+			ready, exists := repositoryTests[repositoryID]
+			if !exists {
+				return nil, fmt.Errorf("surface %q lacks replay test outcome for %q", surfaceID, repositoryID)
+			}
+			repositories, testReady = append(repositories, repositoryID), testReady && ready
+		}
+		sort.Strings(repositories)
+		sort.Strings(aggregate.usageKeys)
+		row := AssuranceSurfaceRow{Namespace: profileRow.Namespace, SurfaceID: surfaceID, UsageKeys: append([]string(nil), aggregate.usageKeys...), RepositoryIDs: repositories, PrivateProdRefs: aggregate.prod, PrivateTestRefs: aggregate.test, Disposition: profileRow.Disposition, SalesforceAction: planRow.Action}
+		if row.Namespace == "" {
+			row.Namespace = aggregate.namespace
+		}
+		local := proofs[surfaceID]
+		if local.SurfaceID != "" {
+			row.FixtureIDs = []string{local.FixtureID}
+		}
+		switch planRow.Action {
+		case oracleRuntime:
+			if local.SurfaceID == "" || local.Disposition != profileRow.Disposition || !local.RuntimeObserved || !(local.CompilePassed || local.CheckPassed) || remote[surfaceID].Kind != oracleRuntime || !remote[surfaceID].Passed {
+				return nil, fmt.Errorf("runtime surface %q lacks complete local or Salesforce evidence", surfaceID)
+			}
+			row.LocalEvidence, row.SalesforceEvidence = "runtime", "runtime"
+			row.CompileReady, row.TestReady = true, testReady
+			row.RuntimeParityReady = row.TestReady
+		case oracleCompile:
+			if local.SurfaceID == "" || local.Disposition != profileRow.Disposition || !(local.CompilePassed || local.CheckPassed) || remote[surfaceID].Kind != oracleCompile || !remote[surfaceID].Passed {
+				return nil, fmt.Errorf("compile surface %q lacks complete local or Salesforce evidence", surfaceID)
+			}
+			row.LocalEvidence, row.SalesforceEvidence = "compile", "compile"
+			row.CompileReady, row.TestReady = true, testReady
+		case oracleLocalContractOnly, oracleWaiver:
+			if planRow.ExclusionClass == "" || planRow.ExclusionReason == "" || remote[surfaceID].SurfaceID != "" {
+				return nil, fmt.Errorf("non-parity surface %q lacks an explicit exclusion", surfaceID)
+			}
+			row.LocalEvidence, row.SalesforceEvidence = "local-contract", "non-parity"
+			row.ExclusionClass, row.ExclusionReason, row.NonParity = planRow.ExclusionClass, planRow.ExclusionReason, true
+		default:
+			return nil, fmt.Errorf("surface %q has unsupported oracle action %q", surfaceID, planRow.Action)
+		}
+		rows = append(rows, row)
+	}
+	return rows, ValidateAssuranceOutcomes(rows)
 }
 
 // WriteAssuranceArtifacts writes the report, its offline explorer, and then
