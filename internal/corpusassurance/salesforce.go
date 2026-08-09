@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -117,6 +118,133 @@ type SalesforceShard struct {
 }
 
 const salesforceCommandTimeout = 30 * time.Second
+const salesforceFilterTimeout = 15 * time.Minute
+
+type SalesforceShardRequest struct {
+	BundlePath     string
+	PreflightPath  string
+	TargetOrg      string
+	SFBin          string
+	ExecutorRoot   string
+	RunID          string
+	ShardIndex     int
+	ShardCount     int
+	OutputPath     string
+	validateBundle func(string) error
+	filterRunner   salesforceCommandRunner
+	sfRunner       salesforceCommandRunner
+}
+
+// RunSalesforceShard executes one sealed filter partition, obtains a fresh
+// eight-type postflight receipt, and writes the normalized shard only after
+// the staged bundle still validates.
+func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error) {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.PreflightPath) || !filepath.IsAbs(request.ExecutorRoot) || !filepath.IsAbs(request.OutputPath) || !strings.Contains(filepath.ToSlash(request.ExecutorRoot), "/executor/") || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" || request.RunID == "" || request.ShardCount != 2 || request.ShardIndex < 0 || request.ShardIndex >= request.ShardCount {
+		return SalesforceShard{}, fmt.Errorf("invalid Salesforce shard request")
+	}
+	if _, err := os.Lstat(request.OutputPath); err == nil {
+		return SalesforceShard{}, fmt.Errorf("Salesforce shard output already exists: %s", request.OutputPath)
+	} else if !os.IsNotExist(err) {
+		return SalesforceShard{}, err
+	}
+	filterOutput := filepath.Join(request.ExecutorRoot, "filter")
+	if _, err := os.Lstat(filterOutput); err == nil {
+		return SalesforceShard{}, fmt.Errorf("Salesforce filter output already exists: %s", filterOutput)
+	} else if !os.IsNotExist(err) {
+		return SalesforceShard{}, err
+	}
+	validate := request.validateBundle
+	if validate == nil {
+		validate = ValidateOracleBundle
+	}
+	if err := validate(request.BundlePath); err != nil {
+		return SalesforceShard{}, fmt.Errorf("validate staged bundle: %w", err)
+	}
+	bundle, bundleBytes, err := readExactJSONBytes[OracleBundle](request.BundlePath)
+	if err != nil {
+		return SalesforceShard{}, fmt.Errorf("read staged bundle: %w", err)
+	}
+	planPath := filepath.Join(filepath.Dir(request.BundlePath), "ORACLE_PLAN.json")
+	plan, planBytes, err := readExactJSONBytes[OraclePlan](planPath)
+	if err != nil || plan.Candidate != bundle.Candidate || plan.Tools != bundle.Tools || replayBytesSHA256(planBytes) != bundle.OraclePlanSHA256 {
+		return SalesforceShard{}, fmt.Errorf("staged oracle plan does not bind bundle")
+	}
+	bundleSHA := replayBytesSHA256(bundleBytes)
+	preflight, preflightBytes, err := readExactJSONBytes[SalesforceOrgPreflight](request.PreflightPath)
+	if err != nil || !validSalesforceOrgPreflight(preflight, bundleSHA) || preflight.OrgAlias != request.TargetOrg {
+		return SalesforceShard{}, fmt.Errorf("invalid sealed Salesforce preflight")
+	}
+	filterPath := filepath.Join(filepath.Dir(filepath.Dir(request.BundlePath)), "transport", "salesforce-first-filter.py")
+	args, err := salesforceFilterArgs(filterPath, filepath.Dir(request.BundlePath), request.ExecutorRoot, request.RunID, request.TargetOrg, bundle, bundleSHA, request.ShardIndex, request.ShardCount)
+	if err != nil {
+		return SalesforceShard{}, err
+	}
+	filterRunner := request.filterRunner
+	if filterRunner == nil {
+		filterRunner = runSalesforceCLI
+	}
+	_, command, err := runSalesforceFilterCommand(filterRunner, "python3", args...)
+	if err != nil {
+		return SalesforceShard{}, err
+	}
+	filterPathResult := filepath.Join(filterOutput, "results.json")
+	filter, filterBytes, err := readSalesforceFilterResults(filterPathResult)
+	if err != nil {
+		return SalesforceShard{}, err
+	}
+	postflightPath := filepath.Join(request.ExecutorRoot, "postflight.json")
+	postflight, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: request.BundlePath, TargetOrg: request.TargetOrg, SFBin: request.SFBin, OutputPath: postflightPath, validateBundle: validate, runner: request.sfRunner})
+	if err != nil {
+		return SalesforceShard{}, fmt.Errorf("Salesforce postflight: %w", err)
+	}
+	if err := validate(request.BundlePath); err != nil {
+		return SalesforceShard{}, fmt.Errorf("staged bundle changed during Salesforce execution: %w", err)
+	}
+	postflightRead, postflightBytes, err := readExactJSONBytes[SalesforceOrgPreflight](postflightPath)
+	if err != nil || !reflect.DeepEqual(postflightRead, postflight) {
+		return SalesforceShard{}, fmt.Errorf("read sealed Salesforce postflight")
+	}
+	shard, err := NormalizeSalesforceFilterResults(plan, bundle, preflight, postflight, filter, command, request.ShardIndex, request.ShardCount)
+	if err != nil {
+		return SalesforceShard{}, err
+	}
+	for _, input := range []struct {
+		path string
+		hash string
+	}{{request.BundlePath, bundleSHA}, {planPath, replayBytesSHA256(planBytes)}, {request.PreflightPath, replayBytesSHA256(preflightBytes)}, {filterPathResult, replayBytesSHA256(filterBytes)}, {postflightPath, replayBytesSHA256(postflightBytes)}} {
+		if hash, err := sha256File(input.path); err != nil || hash != input.hash {
+			return SalesforceShard{}, fmt.Errorf("Salesforce shard input changed during execution")
+		}
+	}
+	if err := WriteNewJSON(request.OutputPath, shard); err != nil {
+		return SalesforceShard{}, err
+	}
+	return shard, nil
+}
+
+func runSalesforceFilterCommand(runner salesforceCommandRunner, binary string, args ...string) (salesforceCommandOutput, CommandResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), salesforceFilterTimeout)
+	defer cancel()
+	started := time.Now()
+	output, err := runner(ctx, binary, args...)
+	receipt := CommandResult{Command: append([]string{binary}, args...), CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: binary, Args: args, Timeout: salesforceFilterTimeout}), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
+	if err != nil || output.ExitCode != 0 || receipt.TimedOut {
+		return output, receipt, fmt.Errorf("Salesforce filter command failed")
+	}
+	return output, receipt, nil
+}
+
+func readSalesforceFilterResults(path string) (salesforceFilterResults, []byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil || !json.Valid(data) {
+		return salesforceFilterResults{}, nil, fmt.Errorf("read Salesforce filter results: %w", err)
+	}
+	var result salesforceFilterResults
+	if err := json.Unmarshal(data, &result); err != nil {
+		return salesforceFilterResults{}, nil, err
+	}
+	return result, data, nil
+}
 
 // RunSalesforceOrgPreflight records the eight-type zero-inventory gate for a
 // newly created scratch org. It only writes a receipt after every command and
