@@ -153,6 +153,20 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err != nil {
 		t.Fatalf("ValidateSalesforceShardFiles: %v", err)
 	}
+	selectionPath := filepath.Join(sealedSalesforceFilterOutputPath(executorRoot), "selection.json")
+	originalSelection, err := os.ReadFile(selectionPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(selectionPath, []byte(`[]`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err == nil {
+		t.Fatal("accepted a changed executor artifact outside the shard sidecar")
+	}
+	if err := os.WriteFile(selectionPath, originalSelection, 0o600); err != nil {
+		t.Fatal(err)
+	}
 	filterResultsPath := filepath.Join(sealedSalesforceFilterOutputPath(executorRoot), "results.json")
 	originalFilterResults, err := os.ReadFile(filterResultsPath)
 	if err != nil {
@@ -775,6 +789,9 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	if err := os.Remove(filepath.Join(executorRoot, "postflight.json")); err != nil {
 		t.Fatal(err)
 	}
+	if err := os.Remove(filepath.Join(executorRoot, salesforceExecutorManifestName)); err != nil {
+		t.Fatal(err)
+	}
 	sawFrozenSource := false
 	_, err = RunSalesforceShard(SalesforceShardRequest{BundlePath: bundlePath, DispatchPath: dispatchPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: filepath.Join(root, "SWAP_RESTORED_SHARD.json"), validateBundle: func(string) error { return nil }, filterRunner: func(ctx context.Context, path string, args ...string) (salesforceCommandOutput, error) {
 		if len(args) < 4 || args[0] != "-c" || args[1] != sealedSalesforceFilterWrapper || args[2] != filterPath {
@@ -801,6 +818,9 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		t.Fatalf("swap-and-restore did not use the frozen filter bytes: err=%v saw=%t", err, sawFrozenSource)
 	}
 	if err := os.Remove(filepath.Join(executorRoot, "postflight.json")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(executorRoot, salesforceExecutorManifestName)); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.RemoveAll(sealedSalesforceFilterOutputPath(executorRoot)); err != nil {
@@ -892,8 +912,15 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	if err := os.WriteFile(filterResultsPath, filterBytes, 0o600); err != nil {
 		t.Fatal(err)
 	}
+	if err := os.WriteFile(filepath.Join(sealedSalesforceFilterOutputPath(shard.ExecutorRoot), "selection.json"), []byte(`[{"fixture":"runtime"}]`), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	postflightPath := filepath.Join(shard.ExecutorRoot, "postflight.json")
 	if err := WriteNewJSON(postflightPath, shard.Postflight); err != nil {
+		t.Fatal(err)
+	}
+	executor, err := sealSalesforceExecutor(shard.ExecutorRoot)
+	if err != nil {
 		t.Fatal(err)
 	}
 	dispatch, err := CreateSalesforceDispatch(SalesforceDispatchRequest{BundlePath: bundlePath, OrgAlias: alias, ExecutorRoot: shard.ExecutorRoot, RunID: shard.RunID, ShardIndex: shard.ShardIndex, ShardCount: shard.ShardCount, OutputPath: dispatchPath, approvedFilterSHA256: bundle.FilterSHA256})
@@ -914,6 +941,7 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	shard.PostflightSHA256 = localProofFileSHA256(t, postflightPath)
 	shard.FilterResultsSHA256 = localProofFileSHA256(t, filterResultsPath)
 	shard.ExecutedFilterSHA256 = localProofFileSHA256(t, filterPath)
+	shard.ExecutorManifestSHA256 = executor.ManifestSHA256
 	if data, err := json.Marshal(shard); err != nil || os.WriteFile(shardPath, append(data, '\n'), 0o600) != nil {
 		t.Fatal(err)
 	}
