@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -158,5 +159,28 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	}
 	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != directives.ProfileSHA256 {
 		t.Fatalf("plan = %#v", plan)
+	}
+}
+
+func TestAuthorizeExclusionsFromFilesSealsExactNonParityRows(t *testing.T) {
+	root := t.TempDir()
+	planPath, usagePath, policyPath, outputPath := filepath.Join(root, "plan.json"), filepath.Join(root, "usage.json"), filepath.Join(root, "policy.json"), filepath.Join(root, "authority.json")
+	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1}); err != nil {
+		t.Fatal(err)
+	}
+	plan := OraclePlan{SealedUsageSHA256: localProofFileSHA256(t, usagePath), Rows: []OraclePlanRow{{SurfaceID: "apex:Auth.hosted", Action: oracleWaiver, ExclusionClass: "hosted-identity", ExclusionReason: "requires credentials"}}}
+	if err := WriteNewJSON(planPath, plan); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(policyPath, ExclusionPolicy{SchemaVersion: 1, Rows: []ExclusionPolicyRow{{SurfaceID: "apex:Auth.hosted", Class: "hosted-identity", Reason: "requires credentials"}}}); err != nil {
+		t.Fatal(err)
+	}
+	candidate := RuntimeArtifact{Commit: strings.Repeat("b", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("c", 64)}
+	authority, err := AuthorizeExclusionsFromFiles(planPath, usagePath, policyPath, candidate, outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if authority.PlanSHA256 != localProofFileSHA256(t, planPath) || authority.SalesforceParityCredit != 0 || len(authority.Rows) != 1 {
+		t.Fatalf("authority = %#v", authority)
 	}
 }
