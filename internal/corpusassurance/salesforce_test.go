@@ -167,8 +167,21 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err := os.WriteFile(selectionPath, originalSelection, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	filterResultsPath := filepath.Join(sealedSalesforceFilterOutputPath(executorRoot), "results.json")
-	originalFilterResults, err := os.ReadFile(filterResultsPath)
+	transport, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(filepath.Dir(bundlePath), "fixture-manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	stem, err := salesforceFixtureStem(transport.Fixtures[0].Fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rawDeployPath := filepath.Join(sealedSalesforceFilterOutputPath(executorRoot), "projects", stem, "salesforce-"+alias+".json")
+	originalRawDeploy, err := os.ReadFile(rawDeployPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifestPath := filepath.Join(executorRoot, salesforceExecutorManifestName)
+	originalManifest, err := os.ReadFile(manifestPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -176,14 +189,14 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filterResultsPath, []byte(`{}`), 0o600); err != nil {
+	if err := os.WriteFile(rawDeployPath, []byte(`{"status":1}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	forged, _, err := readExactJSONBytes[SalesforceShard](shardPath)
 	if err != nil {
 		t.Fatal(err)
 	}
-	forged.FilterResultsSHA256 = localProofFileSHA256(t, filterResultsPath)
+	forged.ExecutorManifestSHA256 = rewriteSalesforceExecutorManifestForTest(t, executorRoot)
 	forgedBytes, err := json.Marshal(forged)
 	if err != nil {
 		t.Fatal(err)
@@ -192,9 +205,12 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 		t.Fatal(err)
 	}
 	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err == nil {
-		t.Fatal("accepted a fabricated raw filter result with a matching self-declared hash")
+		t.Fatal("accepted a failed raw deploy behind a fabricated filter summary")
 	}
-	if err := os.WriteFile(filterResultsPath, originalFilterResults, 0o600); err != nil {
+	if err := os.WriteFile(rawDeployPath, originalRawDeploy, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(manifestPath, originalManifest, 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(shardPath, originalShard, 0o600); err != nil {
@@ -693,11 +709,31 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	if err := os.WriteFile(stagedFilterPath, []byte("test filter"), 0o700); err != nil {
 		t.Fatal(err)
 	}
+	fixturePath := filepath.Join(bundleRoot, "fixtures", "fixture-runtime.json")
+	if err := os.MkdirAll(filepath.Dir(fixturePath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(fixturePath, []byte(`{"command":{"kind":"exec"}}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fixtureSHA := localProofFileSHA256(t, fixturePath)
+	transportPath := filepath.Join(bundleRoot, "fixture-manifest.json")
+	transport := oracleTransportManifest{Fixtures: []oracleTransportFixture{{ID: "system", Fixture: "fixture-runtime.json", Path: "fixtures/fixture-runtime.json", SHA256: fixtureSHA, SurfaceIDs: []string{"apex:System.run()"}, SalesforceEligible: true}}}
+	if err := WriteNewJSON(transportPath, transport); err != nil {
+		t.Fatal(err)
+	}
+	transportSHA := localProofFileSHA256(t, transportPath)
 	filterSHA := localProofFileSHA256(t, stagedFilterPath)
 	previousFilterAuthority := testApprovedSalesforceFilterSHA256
 	testApprovedSalesforceFilterSHA256 = filterSHA
 	t.Cleanup(func() { testApprovedSalesforceFilterSHA256 = previousFilterAuthority })
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: candidate, Tools: tools, ToolsAMD64: RuntimeArtifact{Commit: tools.Commit, OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("3", 64)}, ToolsAMD64SHA256: strings.Repeat("3", 64), ProfileSHA256: strings.Repeat("e", 64), OraclePlanSHA256: localProofFileSHA256(t, planPath), AttemptSHA256: strings.Repeat("a", 64), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), FilterSHA256: filterSHA, Fixtures: []OracleBundleFixture{{ID: "system"}}}
+	bundle := OracleBundle{
+		SchemaVersion: 1, Candidate: candidate, Tools: tools,
+		ToolsAMD64:       RuntimeArtifact{Commit: tools.Commit, OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("3", 64)},
+		ToolsAMD64SHA256: strings.Repeat("3", 64), ProfileSHA256: strings.Repeat("e", 64), OraclePlanSHA256: localProofFileSHA256(t, planPath),
+		AttemptSHA256: strings.Repeat("a", 64), TransportManifestSHA256: transportSHA, LocalProofSummarySHA256: strings.Repeat("1", 64), FilterSHA256: filterSHA,
+		Fixtures: []OracleBundleFixture{{ID: "system", Name: "system", Path: fixturePath, SHA256: fixtureSHA, SurfaceIDs: []string{"apex:System.run()"}}},
+	}
 	if err := WriteNewJSON(bundlePath, bundle); err != nil {
 		t.Fatal(err)
 	}
@@ -738,6 +774,22 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		}
 		if err := os.WriteFile(filepath.Join(out, "results.json"), data, 0o600); err != nil {
 			return salesforceCommandOutput{}, err
+		}
+		selection, marshalErr := json.Marshal([]salesforceFilterSelection{{Fixture: "fixture-runtime.json", Coverage: 1, Kind: "exec", SurfaceIDs: []string{"apex:System.run()"}}})
+		if marshalErr != nil {
+			return salesforceCommandOutput{}, marshalErr
+		}
+		if err := os.WriteFile(filepath.Join(out, "selection.json"), selection, 0o600); err != nil {
+			return salesforceCommandOutput{}, err
+		}
+		project := filepath.Join(out, "projects", "fixture-runtime")
+		if err := os.MkdirAll(project, 0o700); err != nil {
+			return salesforceCommandOutput{}, err
+		}
+		for path, data := range map[string][]byte{filepath.Join(project, "salesforce-assurance-sf0.json"): []byte(`{"status":0,"result":{"success":true,"compiled":true}}`), filepath.Join(project, "salesforce-assurance-sf0.stderr"): nil, filepath.Join(project, "salesforce-assurance-sf0.setup"): nil} {
+			if err := os.WriteFile(path, data, 0o600); err != nil {
+				return salesforceCommandOutput{}, err
+			}
 		}
 		return salesforceCommandOutput{Stdout: []byte(`{"selectedRows":1}`)}, nil
 	}
@@ -912,9 +964,7 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	if err := os.WriteFile(filterResultsPath, filterBytes, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(sealedSalesforceFilterOutputPath(shard.ExecutorRoot), "selection.json"), []byte(`[{"fixture":"runtime"}]`), 0o600); err != nil {
-		t.Fatal(err)
-	}
+	writeSalesforceExecutorEvidenceForTest(t, bundlePath, shard)
 	postflightPath := filepath.Join(shard.ExecutorRoot, "postflight.json")
 	if err := WriteNewJSON(postflightPath, shard.Postflight); err != nil {
 		t.Fatal(err)
@@ -931,7 +981,12 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	if err != nil {
 		t.Fatal(err)
 	}
-	rebuilt, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, shard.ExecutorRoot, shard.RunID, shard.Preflight, shard.Postflight, filterResults, shard.Commands[0], shard.ShardIndex, shard.ShardCount)
+	derived, err := deriveSalesforceFilterEvidence(bundle, bundlePath, shard.Preflight.OrgAlias, executor)
+	if err != nil {
+		t.Fatal(err)
+	}
+	derived.Binding.SelectorReceiptSHA256 = shard.Preflight.BundleSHA256
+	rebuilt, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, shard.ExecutorRoot, shard.RunID, shard.Preflight, shard.Postflight, derived, shard.Commands[0], shard.ShardIndex, shard.ShardCount)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -975,6 +1030,92 @@ func salesforceFilterResultsForShard(shard SalesforceShard, bundle OracleBundle,
 		results = append(results, row)
 	}
 	return salesforceFilterResults{Sealed: true, Orgs: []string{shard.OrgAlias}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: bundle.Candidate.Commit, CandidateSHA256: bundle.Candidate.SHA256, ToolsCommit: bundle.Tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: results}
+}
+
+func writeSalesforceExecutorEvidenceForTest(t *testing.T, bundlePath string, shard SalesforceShard) {
+	t.Helper()
+	manifest, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(filepath.Dir(bundlePath), "fixture-manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	wanted := map[string]bool{}
+	for _, result := range shard.Results {
+		wanted[result.SurfaceID] = true
+	}
+	selection := []salesforceFilterSelection{}
+	for _, fixture := range manifest.Fixtures {
+		selected := false
+		for _, surfaceID := range fixture.SurfaceIDs {
+			selected = selected || wanted[surfaceID]
+		}
+		if !selected {
+			continue
+		}
+		for _, surfaceID := range fixture.SurfaceIDs {
+			if !wanted[surfaceID] {
+				t.Fatalf("fixture %q split across synthetic shards", fixture.ID)
+			}
+		}
+		kind, err := oracleTransportFixtureKind(filepath.Dir(bundlePath), fixture)
+		if err != nil {
+			t.Fatal(err)
+		}
+		selection = append(selection, salesforceFilterSelection{Fixture: fixture.Fixture, Coverage: len(fixture.SurfaceIDs), Kind: kind, SurfaceIDs: fixture.SurfaceIDs})
+		stem, err := salesforceFixtureStem(fixture.Fixture)
+		if err != nil {
+			t.Fatal(err)
+		}
+		project := filepath.Join(sealedSalesforceFilterOutputPath(shard.ExecutorRoot), "projects", stem)
+		if err := os.MkdirAll(project, 0o700); err != nil {
+			t.Fatal(err)
+		}
+		base := filepath.Join(project, "salesforce-"+shard.OrgAlias)
+		deploy := []byte(`{"status":0,"result":{"status":"Succeeded","details":{"componentSuccesses":[{}],"componentFailures":[]}}}`)
+		if kind == "exec" {
+			deploy = []byte(`{"status":0,"result":{"success":true,"compiled":true}}`)
+		}
+		if err := os.WriteFile(base+".json", deploy, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(base+".stderr", nil, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(base+".setup", nil, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if kind == "test" {
+			if err := os.WriteFile(base+"-tests.json", []byte(`{"status":0,"result":{"summary":{"outcome":"Passed","failing":0,"testsRan":1}}}`), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(base+"-tests.stderr", nil, 0o600); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	data, err := json.Marshal(selection)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(sealedSalesforceFilterOutputPath(shard.ExecutorRoot), "selection.json"), data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func rewriteSalesforceExecutorManifestForTest(t *testing.T, executorRoot string) string {
+	t.Helper()
+	_, entries, err := readSalesforceExecutorFiles(executorRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := json.Marshal(salesforceExecutorManifest{SchemaVersion: 1, Files: entries})
+	if err != nil {
+		t.Fatal(err)
+	}
+	data = append(data, '\n')
+	if err := os.WriteFile(filepath.Join(executorRoot, salesforceExecutorManifestName), data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return replayBytesSHA256(data)
 }
 
 func mustFixedSalesforceEnvironment(t *testing.T) []string {

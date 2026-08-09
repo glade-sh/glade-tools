@@ -144,6 +144,13 @@ type salesforceFilterResults struct {
 	OrgPostflight salesforceFilterPostflight      `json:"orgPostflight"`
 	Results       []salesforceFilterFixtureResult `json:"results"`
 }
+
+type salesforceFilterSelection struct {
+	Fixture    string   `json:"fixture"`
+	Coverage   int      `json:"coverage"`
+	Kind       string   `json:"kind"`
+	SurfaceIDs []string `json:"surfaceIds"`
+}
 type SalesforceSurfaceResult struct {
 	SurfaceID string `json:"surfaceId"`
 	Kind      string `json:"kind"`
@@ -510,10 +517,11 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if !exists {
 		return SalesforceShard{}, fmt.Errorf("Salesforce executor has no filter results")
 	}
-	filter, err := parseSalesforceFilterResults(filterBytes)
+	filter, err := deriveSalesforceFilterEvidence(bundle, request.BundlePath, preflight.OrgAlias, snapshot)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
+	filter.Binding.SelectorReceiptSHA256 = preflight.BundleSHA256
 	postflightBytes, exists := snapshot.Files["postflight.json"]
 	var postflightRead SalesforceOrgPreflight
 	if !exists || json.Unmarshal(postflightBytes, &postflightRead) != nil || !reflect.DeepEqual(postflightRead, postflight) {
@@ -749,6 +757,145 @@ func parseSalesforceFilterResults(data []byte) (salesforceFilterResults, error) 
 		return salesforceFilterResults{}, err
 	}
 	return result, nil
+}
+
+func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias string, snapshot salesforceExecutorSnapshot) (salesforceFilterResults, error) {
+	bundleRoot := filepath.Dir(bundlePath)
+	manifest, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(bundleRoot, "fixture-manifest.json"))
+	if err != nil || !validOracleTransportManifest(bundleRoot, manifest, bundle.Fixtures) {
+		return salesforceFilterResults{}, fmt.Errorf("invalid sealed Salesforce transport manifest")
+	}
+	selectionBytes, exists := snapshot.Files["filter/selection.json"]
+	if !exists {
+		return salesforceFilterResults{}, fmt.Errorf("Salesforce executor has no selection")
+	}
+	var selection []salesforceFilterSelection
+	if err := json.Unmarshal(selectionBytes, &selection); err != nil {
+		return salesforceFilterResults{}, fmt.Errorf("read Salesforce selection: %w", err)
+	}
+	byFixture := make(map[string]oracleTransportFixture, len(manifest.Fixtures))
+	for _, fixture := range manifest.Fixtures {
+		byFixture[fixture.Fixture] = fixture
+	}
+	seenFixtures, seenSurfaces := map[string]bool{}, map[string]bool{}
+	derived := make([]salesforceFilterFixtureResult, 0, len(selection))
+	for _, item := range selection {
+		fixture, known := byFixture[item.Fixture]
+		if !known || seenFixtures[item.Fixture] || item.Coverage != len(item.SurfaceIDs) || !equalStrings(sortedStrings(item.SurfaceIDs), fixture.SurfaceIDs) {
+			return salesforceFilterResults{}, fmt.Errorf("invalid sealed Salesforce selection")
+		}
+		seenFixtures[item.Fixture] = true
+		kind, err := oracleTransportFixtureKind(bundleRoot, fixture)
+		if err != nil || kind != item.Kind {
+			return salesforceFilterResults{}, fmt.Errorf("Salesforce selection does not match sealed fixture")
+		}
+		for _, surfaceID := range item.SurfaceIDs {
+			if seenSurfaces[surfaceID] {
+				return salesforceFilterResults{}, fmt.Errorf("duplicate Salesforce selection surface %q", surfaceID)
+			}
+			seenSurfaces[surfaceID] = true
+		}
+		stem, err := salesforceFixtureStem(item.Fixture)
+		if err != nil {
+			return salesforceFilterResults{}, err
+		}
+		base := filepath.ToSlash(filepath.Join("filter", "projects", stem, "salesforce-"+orgAlias))
+		deploy, deployOK := snapshot.Files[base+".json"]
+		_, stderrOK := snapshot.Files[base+".stderr"]
+		_, setupOK := snapshot.Files[base+".setup"]
+		if !deployOK || !stderrOK || !setupOK {
+			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q lacks retained command evidence", item.Fixture)
+		}
+		if kind == "exec" {
+			if !validSalesforceRuntimeObservation(deploy) {
+				return salesforceFilterResults{}, fmt.Errorf("Salesforce runtime fixture %q lacks raw success", item.Fixture)
+			}
+		} else if !validSalesforceDeployObservation(deploy) {
+			return salesforceFilterResults{}, fmt.Errorf("Salesforce deploy fixture %q lacks raw success", item.Fixture)
+		}
+		row := salesforceFilterFixtureResult{SurfaceIDs: append([]string(nil), item.SurfaceIDs...), Org: orgAlias, Kind: kind, ExitCode: new(int), Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}
+		if kind == "exec" {
+			passed := true
+			row.RuntimePassed, row.RuntimeResult = &passed, append(json.RawMessage(nil), deploy...)
+		}
+		if kind == "test" {
+			runtime, ok := snapshot.Files[base+"-tests.json"]
+			if !ok || !validSalesforceTestObservation(runtime) {
+				return salesforceFilterResults{}, fmt.Errorf("Salesforce test fixture %q lacks raw runtime success", item.Fixture)
+			}
+			if _, ok := snapshot.Files[base+"-tests.stderr"]; !ok {
+				return salesforceFilterResults{}, fmt.Errorf("Salesforce test fixture %q lacks retained runtime stderr", item.Fixture)
+			}
+		}
+		derived = append(derived, row)
+	}
+	return salesforceFilterResults{Sealed: true, Orgs: []string{orgAlias}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: "", CandidateCommit: bundle.Candidate.Commit, CandidateSHA256: bundle.Candidate.SHA256, ToolsCommit: bundle.Tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: derived}, nil
+}
+
+func oracleTransportFixtureKind(bundleRoot string, fixture oracleTransportFixture) (string, error) {
+	data, err := os.ReadFile(filepath.Join(bundleRoot, filepath.FromSlash(fixture.Path)))
+	if err != nil {
+		return "", err
+	}
+	var document struct {
+		Command struct {
+			Kind string `json:"kind"`
+		} `json:"command"`
+	}
+	if err := json.Unmarshal(data, &document); err != nil || (document.Command.Kind != "exec" && document.Command.Kind != "test" && document.Command.Kind != "check") {
+		return "", fmt.Errorf("invalid sealed Salesforce fixture kind")
+	}
+	return document.Command.Kind, nil
+}
+
+func salesforceFixtureStem(name string) (string, error) {
+	if name == "" || filepath.Base(name) != name || strings.Contains(name, "..") {
+		return "", fmt.Errorf("invalid Salesforce fixture name")
+	}
+	stem := strings.TrimSuffix(name, filepath.Ext(name))
+	if stem == "" || stem == "." {
+		return "", fmt.Errorf("invalid Salesforce fixture name")
+	}
+	return stem, nil
+}
+
+func sortedStrings(values []string) []string {
+	result := append([]string(nil), values...)
+	sort.Strings(result)
+	return result
+}
+
+func validSalesforceDeployObservation(data []byte) bool {
+	var payload struct {
+		Status *int            `json:"status"`
+		Result json.RawMessage `json:"result"`
+	}
+	if json.Unmarshal(data, &payload) != nil || payload.Status == nil || *payload.Status != 0 {
+		return false
+	}
+	var result struct {
+		Status  string `json:"status"`
+		Success *bool  `json:"success"`
+		Details struct {
+			ComponentSuccesses []json.RawMessage `json:"componentSuccesses"`
+			ComponentFailures  []json.RawMessage `json:"componentFailures"`
+		} `json:"details"`
+	}
+	return len(payload.Result) > 0 && json.Unmarshal(payload.Result, &result) == nil && (result.Status == "Succeeded" || result.Success != nil && *result.Success) && len(result.Details.ComponentSuccesses) > 0 && len(result.Details.ComponentFailures) == 0
+}
+
+func validSalesforceTestObservation(data []byte) bool {
+	var payload struct {
+		Status *int `json:"status"`
+		Result struct {
+			Summary struct {
+				Outcome  string `json:"outcome"`
+				Failing  int    `json:"failing"`
+				TestsRan int    `json:"testsRan"`
+			} `json:"summary"`
+		} `json:"result"`
+	}
+	return json.Unmarshal(data, &payload) == nil && payload.Status != nil && *payload.Status == 0 && payload.Result.Summary.Outcome == "Passed" && payload.Result.Summary.Failing == 0 && payload.Result.Summary.TestsRan > 0
 }
 
 // RunSalesforceOrgPreflight records the eight-type zero-inventory gate for a
@@ -1280,7 +1427,8 @@ func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 		filterBytes, filterExists := snapshot.Files["filter/results.json"]
 		filterSource, filterScriptExists := snapshot.Files[filepath.ToSlash(filepath.Join("filter-script", "salesforce-first-filter.py"))]
 		postflightBytes, postflightExists := snapshot.Files["postflight.json"]
-		filter, filterReadErr := parseSalesforceFilterResults(filterBytes)
+		filter, filterReadErr := deriveSalesforceFilterEvidence(bundle, bundlePath, preflight.OrgAlias, snapshot)
+		filter.Binding.SelectorReceiptSHA256 = preflight.BundleSHA256
 		var postflight SalesforceOrgPreflight
 		postflightErr := json.Unmarshal(postflightBytes, &postflight)
 		filterResultsSHA, executedFilterSHA := replayBytesSHA256(filterBytes), replayBytesSHA256(filterSource)
