@@ -143,6 +143,10 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
+	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows)
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
 	decision, decisionBytes, err := readExactJSONBytes[UsageDecisionFile](decisionPath)
 	if err != nil {
 		return SealedCorpusUsage{}, err
@@ -260,6 +264,32 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []byte, error) {
 		return nil, nil, err
 	}
 	return profile.Rows, data, nil
+}
+
+// usageProfileRowsFromLedger assigns the canonical usage key from the sealed
+// ledger. Source-profile usage keys are ignored so they cannot select or
+// redirect private-corpus reconciliation.
+func usageProfileRowsFromLedger(profile []UsageProfileRow, ledger []surfaceledger.SurfaceLedgerRow) ([]UsageProfileRow, error) {
+	ledgerByID := make(map[string]surfaceledger.SurfaceLedgerRow, len(ledger))
+	for _, row := range ledger {
+		if row.SurfaceID == "" || ledgerByID[row.SurfaceID].SurfaceID != "" {
+			return nil, fmt.Errorf("invalid or duplicate ledger surface %q", row.SurfaceID)
+		}
+		ledgerByID[row.SurfaceID] = row
+	}
+	derived := make([]UsageProfileRow, len(profile))
+	for i, row := range profile {
+		ledgerRow, exists := ledgerByID[row.SurfaceID]
+		if row.SurfaceID == "" || !exists {
+			return nil, fmt.Errorf("profile surface %q is absent from ledger", row.SurfaceID)
+		}
+		row.UsageKey = surfaceledger.UsageKeyForRow(ledgerRow)
+		if row.UsageKey == "" {
+			return nil, fmt.Errorf("ledger surface %q lacks a usage key", row.SurfaceID)
+		}
+		derived[i] = row
+	}
+	return derived, nil
 }
 
 // ReconcileUsage binds every fresh private usage key to exactly one profile

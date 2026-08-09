@@ -103,7 +103,7 @@ func TestUsageReconciliationLoadsAndBindsAuthoritativeFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 	ledgerPath := filepath.Join(t.TempDir(), "SURFACE_LEDGER.json")
-	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System"}}}); err != nil {
+	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}}); err != nil {
 		t.Fatal(err)
 	}
 	manifestPath := filepath.Join(attemptRoot, "MANIFEST.json")
@@ -267,14 +267,14 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 		t.Fatal(err)
 	}
 	ledgerPath := filepath.Join(root, "LEDGER.json")
-	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System"}}}); err != nil {
+	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}}); err != nil {
 		t.Fatal(err)
 	}
 	profilePath := filepath.Join(root, "profile.json")
-	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug","usageKey":"System.debug"}]}`), 0o600); err != nil {
+	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug"}]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	usage, err := ExtractRepositoryUsage([]surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System"}}, repository, snapshot)
+	usage, err := ExtractRepositoryUsage([]surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}, repository, snapshot)
 	if err != nil {
 		t.Fatal(err)
 	}
