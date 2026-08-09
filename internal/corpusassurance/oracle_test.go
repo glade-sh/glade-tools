@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -53,6 +54,29 @@ func TestPlanOracleRejectsMissingEvidenceAndUnjustifiedExclusions(t *testing.T) 
 		if _, err := planOracle([]OracleInputRow{row}); err == nil {
 			t.Fatalf("planOracle accepted %#v", row)
 		}
+	}
+}
+
+func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(t *testing.T) {
+	plan := OraclePlan{
+		Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)},
+		Tools:     RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)},
+		Rows: []OraclePlanRow{
+			{SurfaceID: "apex:System.compile()", Action: oracleCompile},
+			{SurfaceID: "apex:System.run()", Action: oracleRuntime},
+			{SurfaceID: "apex:Hosted.only", Action: oracleWaiver, ExclusionClass: "hosted", ExclusionReason: "identity"},
+		},
+	}
+	manifest := LocalProofFixtureManifest{Fixtures: []LocalProofFixture{
+		{ID: "system", Name: "system", Path: "system.json", SHA256: strings.Repeat("e", 64), OwnedSurfaceIDs: []string{"apex:System.run()", "apex:System.compile()"}, Disposition: localRuntimeRequired},
+		{ID: "hosted", Name: "hosted", Path: "hosted.json", SHA256: strings.Repeat("f", 64), OwnedSurfaceIDs: []string{"apex:Hosted.only"}, Disposition: compileShapeRequired},
+	}}
+	fixtures, err := oracleBundleFixtures(plan, manifest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(fixtures) != 1 || fixtures[0].ID != "system" || !reflect.DeepEqual(fixtures[0].SurfaceIDs, []string{"apex:System.compile()", "apex:System.run()"}) {
+		t.Fatalf("fixtures = %#v", fixtures)
 	}
 }
 

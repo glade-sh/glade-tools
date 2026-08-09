@@ -39,6 +39,17 @@ type OraclePlanRow struct {
 	ExclusionReason string `json:"exclusionReason,omitempty"`
 }
 
+// OracleBundleFixture is the derived fixture selection sent to the transport
+// bundle. Its surfaces are the Salesforce-required subset of explicit fixture
+// ownership, never a caller-selected list.
+type OracleBundleFixture struct {
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	Path       string   `json:"path"`
+	SHA256     string   `json:"sha256"`
+	SurfaceIDs []string `json:"surfaceIds"`
+}
+
 type OraclePlan struct {
 	Candidate         RuntimeArtifact `json:"candidate"`
 	Tools             RuntimeArtifact `json:"tools"`
@@ -394,6 +405,45 @@ func oracleRequiredSurfaceIDs(reconciled UsageReconciliation) ([]string, error) 
 	}
 	sort.Strings(ids)
 	return ids, nil
+}
+
+func oracleBundleFixtures(plan OraclePlan, manifest LocalProofFixtureManifest) ([]OracleBundleFixture, error) {
+	required, err := oracleSalesforceResultKinds(plan)
+	if err != nil {
+		return nil, err
+	}
+	owned := make(map[string]LocalProofFixture)
+	for _, fixture := range manifest.Fixtures {
+		if fixture.ID == "" || fixture.Name == "" || fixture.Path == "" || !sha256Pattern.MatchString(fixture.SHA256) || len(fixture.OwnedSurfaceIDs) == 0 {
+			return nil, fmt.Errorf("invalid oracle bundle fixture %q", fixture.ID)
+		}
+		for _, surfaceID := range fixture.OwnedSurfaceIDs {
+			if surfaceID == "" || owned[surfaceID].ID != "" {
+				return nil, fmt.Errorf("invalid or duplicate oracle bundle fixture surface %q", surfaceID)
+			}
+			owned[surfaceID] = fixture
+		}
+	}
+	selected := make(map[string]OracleBundleFixture)
+	for surfaceID := range required {
+		fixture, ok := owned[surfaceID]
+		if !ok {
+			return nil, fmt.Errorf("Salesforce-required surface %q has no fixture owner", surfaceID)
+		}
+		entry := selected[fixture.ID]
+		if entry.ID == "" {
+			entry = OracleBundleFixture{ID: fixture.ID, Name: fixture.Name, Path: fixture.Path, SHA256: fixture.SHA256}
+		}
+		entry.SurfaceIDs = append(entry.SurfaceIDs, surfaceID)
+		selected[fixture.ID] = entry
+	}
+	result := make([]OracleBundleFixture, 0, len(selected))
+	for _, fixture := range selected {
+		sort.Strings(fixture.SurfaceIDs)
+		result = append(result, fixture)
+	}
+	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
+	return result, nil
 }
 
 func ownedFixtureSurfaces(manifest LocalProofFixtureManifest) (map[string]bool, error) {
