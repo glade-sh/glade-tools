@@ -91,35 +91,80 @@ func TestValidateSalesforceShardsRejectsReusedOrgAlias(t *testing.T) {
 }
 
 func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t *testing.T) {
-	root := t.TempDir()
-	planPath, shardPath := filepath.Join(root, "ORACLE_PLAN.json"), filepath.Join(root, "shard.json")
-	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
-	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
-	plan := OraclePlan{Candidate: candidate, Tools: tools, Rows: []OraclePlanRow{{SurfaceID: "apex:System.compile()", Action: oracleCompile}, {SurfaceID: "apex:System.run()", Action: oracleRuntime}, {SurfaceID: "apex:Hosted.only", Action: oracleWaiver, ExclusionClass: "hosted", ExclusionReason: "identity"}}}
-	if err := WriteNewJSON(planPath, plan); err != nil {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs.releasePath, inputs.attemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	outputRoot := filepath.Join(t.TempDir(), "razor")
+	bundle, err := BuildOracleBundle(inputs.request(outputRoot))
+	if err != nil {
 		t.Fatal(err)
 	}
-	bundlePath := filepath.Join(root, "bundle.json")
-	if err := WriteNewJSON(bundlePath, OracleBundle{SchemaVersion: 1, Candidate: candidate, Tools: tools, OraclePlanSHA256: localProofFileSHA256(t, planPath)}); err != nil {
+	bundlePath, planPath, shardPath := filepath.Join(outputRoot, "bundle", "bundle.json"), filepath.Join(outputRoot, "bundle", "ORACLE_PLAN.json"), filepath.Join(t.TempDir(), "shard.json")
+	bundleSHA := localProofFileSHA256(t, bundlePath)
+	executorRoot, runID, alias := filepath.Join(t.TempDir(), "executor", "shard-0"), "attempt-shard-0", "assurance-sf0"
+	args, err := salesforceFilterArgs(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 0, 1)
+	if err == nil {
+		t.Fatal("salesforceFilterArgs accepted an invalid shard count")
+	}
+	args, err = salesforceFilterArgs(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 0, 2)
+	if err != nil {
 		t.Fatal(err)
 	}
-	bindings := SalesforceBindings{OraclePlanSHA256: localProofFileSHA256(t, planPath), BundleSHA256: localProofFileSHA256(t, bundlePath), FilterSHA256: strings.Repeat("f", 64), FilterCommandSpecSHA256: strings.Repeat("1", 64)}
-	command := CommandResult{Command: []string{"python3", "transport/salesforce-first-filter.py"}, CommandSpecSHA256: bindings.FilterCommandSpecSHA256, ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64)}
-	lifecycle := salesforcePreflightForTest(t, "assurance-sf0", bindings.BundleSHA256, bundlePath)
-	shard := SalesforceShard{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 0, ShardCount: 1, OrgAlias: "assurance-sf0", OrgID: "00D0", OrgStatus: "Active", Preflight: lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.run()", Kind: oracleRuntime, Passed: true}, {SurfaceID: "apex:System.compile()", Kind: oracleCompile, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
+	environment := mustFixedSalesforceEnvironment(t)
+	command := CommandResult{Command: append([]string{"python3"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), environment), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64)}
+	bindings := SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}
+	lifecycle := salesforcePreflightForTest(t, alias, bundleSHA, bundlePath)
+	shard := SalesforceShard{Bindings: bindings, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, OrgAlias: alias, OrgID: lifecycle.OrgID, OrgStatus: "Active", Preflight: lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
+	shard1Path := filepath.Join(t.TempDir(), "shard-1.json")
+	shard1Alias, shard1Executor, shard1RunID := "assurance-sf1", filepath.Join(t.TempDir(), "executor", "shard-1"), "attempt-shard-1"
+	shard1Args, err := salesforceFilterArgs(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), filepath.Dir(bundlePath), shard1Executor, shard1RunID, shard1Alias, bundle, bundleSHA, 1, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard1Command := CommandResult{Command: append([]string{"python3"}, shard1Args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", shard1Args, filepath.Dir(bundlePath), environment), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("4", 64), StderrSHA256: strings.Repeat("5", 64)}
+	shard1Lifecycle := salesforcePreflightForTest(t, shard1Alias, bundleSHA, bundlePath)
+	shard1 := SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: shard1Command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: shard1Executor, RunID: shard1RunID, ShardIndex: 1, ShardCount: 2, OrgAlias: shard1Alias, OrgID: "00D1", OrgStatus: "Active", Preflight: shard1Lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{shard1Command}, Postflight: shard1Lifecycle, PostInventory: SalesforceInventory{}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
+	shard1.Preflight.OrgID, shard1.Postflight.OrgID = shard1.OrgID, shard1.OrgID
 	if err := WriteNewJSON(shardPath, shard); err != nil {
 		t.Fatal(err)
 	}
-	if err := ValidateSalesforceShardFiles(planPath, []string{shardPath}); err != nil {
+	if err := WriteNewJSON(shard1Path, shard1); err != nil {
+		t.Fatal(err)
+	}
+	files0 := salesforceShardFilesForTest(t, shardPath, bundlePath, bundleSHA, alias, shard.OrgID)
+	files1 := salesforceShardFilesForTest(t, shard1Path, bundlePath, bundleSHA, shard1Alias, shard1.OrgID)
+	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err != nil {
 		t.Fatalf("ValidateSalesforceShardFiles: %v", err)
 	}
-	wrongKindPath := filepath.Join(root, "wrong-kind.json")
+	wrongKindPath := filepath.Join(t.TempDir(), "wrong-kind.json")
 	shard.Results[0].Kind = oracleCompile
 	if err := WriteNewJSON(wrongKindPath, shard); err != nil {
 		t.Fatal(err)
 	}
-	if err := ValidateSalesforceShardFiles(planPath, []string{wrongKindPath}); err == nil {
+	filesWrongKind := files0
+	filesWrongKind.ShardPath = wrongKindPath
+	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{filesWrongKind, files1}); err == nil {
 		t.Fatal("accepted a compile receipt for a runtime oracle row")
+	}
+	wrongCommandPath := filepath.Join(t.TempDir(), "wrong-command.json")
+	shard.Commands[0].Environment = nil
+	if err := WriteNewJSON(wrongCommandPath, shard); err != nil {
+		t.Fatal(err)
+	}
+	filesWrongCommand := files0
+	filesWrongCommand.ShardPath = wrongCommandPath
+	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{filesWrongCommand, files1}); err == nil {
+		t.Fatal("accepted a filter receipt without the sealed environment")
+	}
+	filesReusedCreation := files1
+	filesReusedCreation.CreationPath = files0.CreationPath
+	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, filesReusedCreation}); err == nil {
+		t.Fatal("accepted a creation receipt reused by two shards")
+	}
+	if err := os.WriteFile(bundlePath, []byte(`{"schemaVersion":1}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err == nil {
+		t.Fatal("accepted a replaced staged bundle")
 	}
 }
 
@@ -138,7 +183,7 @@ func TestValidateSalesforceShardFilesRejectsMissingStagedBundle(t *testing.T) {
 	if err := WriteNewJSON(shardPath, shard); err != nil {
 		t.Fatal(err)
 	}
-	if err := ValidateSalesforceShardFiles(planPath, []string{shardPath}); err == nil {
+	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{{ShardPath: shardPath, CreationPath: filepath.Join(root, "creation.json"), CleanupPath: filepath.Join(root, "cleanup.json")}}); err == nil {
 		t.Fatal("accepted Salesforce shard files without the staged bundle that binds lifecycle receipts")
 	}
 }
@@ -436,7 +481,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 	postflight := preflight
 	filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: preflight.BundleSHA256, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}, {SurfaceIDs: []string{"apex:System.compile()"}, Org: "assurance-sf0", Kind: "check", ExitCode: &zero, Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}}}
 	command := CommandResult{Command: []string{"python3", "transport/salesforce-first-filter.py"}, CommandSpecSHA256: strings.Repeat("5", 64), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("6", 64), StderrSHA256: strings.Repeat("7", 64)}
-	shard, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, preflight, postflight, filter, command, 0, 2)
+	shard, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2)
 	if err != nil {
 		t.Fatalf("NormalizeSalesforceFilterResults: %v", err)
 	}
@@ -444,7 +489,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 		t.Fatalf("shard = %#v", shard)
 	}
 	preflight.Commands[0].Command = []string{"/usr/local/bin/sf", "org", "list", "--json"}
-	if _, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, preflight, postflight, filter, command, 0, 2); err == nil {
+	if _, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2); err == nil {
 		t.Fatal("accepted a preflight receipt without the exact org-display command")
 	}
 }
@@ -561,6 +606,24 @@ func salesforceCommandForTest(t *testing.T, bundlePath string, args []string) Co
 	}
 	executableSHA256 := strings.Repeat("a", 64)
 	return CommandResult{Command: append([]string{"/usr/local/bin/sf"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, executableSHA256, executableSHA256), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("3", 64), StderrSHA256: strings.Repeat("4", 64)}
+}
+
+func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA, alias, orgID string) SalesforceShardFiles {
+	t.Helper()
+	root := t.TempDir()
+	creationPath, cleanupPath := filepath.Join(root, "ORG_CREATION.json"), filepath.Join(root, "ORG_CLEANUP.json")
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", Alias: alias, OrgID: orgID, Command: salesforceCommandForTest(t, bundlePath, salesforceOrgCreateArgs(filepath.Join(filepath.Dir(bundlePath), "corpus-assurance-scratch-def.json"), "glade-dev-hub4", alias))}
+	if err := WriteNewJSON(creationPath, creation); err != nil {
+		t.Fatal(err)
+	}
+	deleted := salesforceCommandForTest(t, bundlePath, []string{"org", "delete", "scratch", "--target-org", alias, "--no-prompt", "--json"})
+	absent := salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", alias, "--json"})
+	absent.ExitCode, absent.Passed = 1, false
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", OrgAlias: alias, OrgID: orgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
+	if err := WriteNewJSON(cleanupPath, cleanup); err != nil {
+		t.Fatal(err)
+	}
+	return SalesforceShardFiles{ShardPath: shardPath, CreationPath: creationPath, CleanupPath: cleanupPath}
 }
 
 func mustFixedSalesforceEnvironment(t *testing.T) []string {

@@ -287,6 +287,31 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "org-cleanup", len(cleanup.Commands), *output)
+	case "salesforce-reconcile":
+		flags := flag.NewFlagSet("corpus assurance salesforce-reconcile", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		plan := flags.String("oracle-plan", "", "")
+		var shards, creations, cleanups assurancePathList
+		flags.Var(&shards, "shard", "")
+		flags.Var(&creations, "creation", "")
+		flags.Var(&cleanups, "cleanup", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*plan); err != nil || len(shards) == 0 || len(shards) != len(creations) || len(shards) != len(cleanups) {
+			if err != nil {
+				return err
+			}
+			return errors.New("paired Salesforce shard, creation, and cleanup paths are required")
+		}
+		files := make([]corpusassurance.SalesforceShardFiles, len(shards))
+		for index := range shards {
+			files[index] = corpusassurance.SalesforceShardFiles{ShardPath: shards[index], CreationPath: creations[index], CleanupPath: cleanups[index]}
+		}
+		if err := corpusassurance.ValidateSalesforceShardFiles(*plan, files); err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "salesforce-reconcile", len(files), *plan)
 	case "cleanup":
 		flags := flag.NewFlagSet("corpus assurance cleanup", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -353,6 +378,7 @@ Usage:
   glade-tools corpus assurance org-preflight --bundle <bundle.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_PREFLIGHT.json>
   glade-tools corpus assurance salesforce-run --bundle <bundle.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --executor-root <attempt/executor/shard-N> --run-id <attempt-shard-N> --shard-index <0|1> --shard-count 2 --output <SALESFORCE_SHARD.json>
   glade-tools corpus assurance org-cleanup --bundle <bundle.json> --creation <ORG_CREATION.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --dev-hub glade-dev-hub4 --sf-bin /usr/local/bin/sf --output <ORG_CLEANUP.json>
+  glade-tools corpus assurance salesforce-reconcile --oracle-plan <ORACLE_PLAN.json> --shard <SALESFORCE_SHARD.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --shard <SALESFORCE_SHARD.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json>
 	  glade-tools corpus assurance cleanup --host <matt@casper.local|matt@razor.local> --parent /private/tmp/glade-assurance-1afce500 --attempt-root <remote-attempt-root> --binding <sealed-file> --output <REMOTE_CLEANUP.json>
 `)
 }
