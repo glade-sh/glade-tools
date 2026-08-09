@@ -388,6 +388,9 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	} else if !os.IsNotExist(err) {
 		return SalesforceShard{}, err
 	}
+	if err := os.Mkdir(filterOutput, 0o700); err != nil {
+		return SalesforceShard{}, err
+	}
 	preflight, preflightBytes, err := readExactJSONBytes[SalesforceOrgPreflight](request.PreflightPath)
 	if err != nil || !validSalesforceOrgPreflight(preflight, bundleSHA, request.BundlePath) || preflight.OrgAlias != request.TargetOrg {
 		return SalesforceShard{}, fmt.Errorf("invalid sealed Salesforce preflight")
@@ -420,6 +423,9 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	postflight, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: request.BundlePath, TargetOrg: request.TargetOrg, SFBin: request.SFBin, OutputPath: postflightPath, validateBundle: validate, runner: request.sfRunner})
 	if err != nil {
 		return SalesforceShard{}, fmt.Errorf("Salesforce postflight: %w", err)
+	}
+	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
+		return SalesforceShard{}, fmt.Errorf("sealed Salesforce executor changed during postflight execution")
 	}
 	if err := validate(request.BundlePath); err != nil {
 		return SalesforceShard{}, fmt.Errorf("staged bundle changed during Salesforce execution: %w", err)
@@ -838,14 +844,15 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 
 func validSalesforceRuntimeObservation(raw json.RawMessage) bool {
 	var payload struct {
-		Status *int            `json:"status"`
-		Result json.RawMessage `json:"result"`
+		Status *int `json:"status"`
+		Result struct {
+			Success          *bool  `json:"success"`
+			Compiled         *bool  `json:"compiled"`
+			CompileProblem   string `json:"compileProblem"`
+			ExceptionMessage string `json:"exceptionMessage"`
+		} `json:"result"`
 	}
-	if len(raw) == 0 || json.Unmarshal(raw, &payload) != nil || payload.Status == nil || *payload.Status != 0 || len(payload.Result) == 0 || !json.Valid(payload.Result) {
-		return false
-	}
-	var result map[string]json.RawMessage
-	return json.Unmarshal(payload.Result, &result) == nil && len(result) > 0
+	return len(raw) > 0 && json.Unmarshal(raw, &payload) == nil && payload.Status != nil && *payload.Status == 0 && payload.Result.Success != nil && *payload.Result.Success && payload.Result.Compiled != nil && *payload.Result.Compiled && payload.Result.CompileProblem == "" && payload.Result.ExceptionMessage == ""
 }
 
 func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bundlePath string) bool {

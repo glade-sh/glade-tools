@@ -142,7 +142,7 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 		t.Fatalf("validation = %#v, commands = %#v", validation, commands)
 	}
 	for _, command := range validation.Commands {
-		if !command.Passed || command.WorkingDirectory == "" || len(command.Environment) != 5 || command.TimeoutMS != releaseValidationTimeout.Milliseconds() {
+		if !command.Passed || command.WorkingDirectory == "" || len(command.Environment) != 6 || command.TimeoutMS != releaseValidationTimeout.Milliseconds() {
 			t.Fatalf("release command = %#v", command)
 		}
 	}

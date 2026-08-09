@@ -91,6 +91,9 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	if err := validateToolsLocalReplacements(request.ToolsRoot, request.GladeRoot); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools replacements: %w", err)
 	}
+	if err := validateToolsLocalReplacements(request.GladeRoot, request.GladeRoot); err != nil {
+		return ReleaseValidation{}, fmt.Errorf("candidate replacements: %w", err)
+	}
 	candidate, err := runtimeArtifactFor(request.CandidatePath, attempt.Candidate.Commit)
 	if err != nil {
 		return ReleaseValidation{}, fmt.Errorf("candidate: %w", err)
@@ -130,6 +133,9 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	if err := validateToolsLocalReplacements(request.ToolsRoot, request.GladeRoot); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools replacements changed during release validation: %w", err)
 	}
+	if err := validateToolsLocalReplacements(request.GladeRoot, request.GladeRoot); err != nil {
+		return ReleaseValidation{}, fmt.Errorf("candidate replacements changed during release validation: %w", err)
+	}
 	if current, err := runtimeArtifactFor(request.CandidatePath, attempt.Candidate.Commit); err != nil || current != candidate || current != attempt.Candidate {
 		return ReleaseValidation{}, fmt.Errorf("candidate changed during release validation")
 	}
@@ -168,7 +174,7 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 }
 
 func fixedReleaseEnvironment() []string {
-	return []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/private/tmp/glade-assurance-go-mod"}
+	return []string{"HOME=/var/empty", "PATH=/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/private/tmp/glade-assurance-go-mod", "GOWORK=off"}
 }
 
 func releaseExecutingTools(path, commit string) (RuntimeArtifact, error) {
@@ -213,6 +219,9 @@ func validateOracleReleaseSources(validation ReleaseValidation, plan OraclePlan)
 	}
 	if err := validateCleanGitRoot(validation.ToolsRoot, plan.Tools.Commit); err != nil {
 		return fmt.Errorf("tools source: %w", err)
+	}
+	if err := validateToolsLocalReplacements(validation.GladeRoot, validation.GladeRoot); err != nil {
+		return fmt.Errorf("candidate replacements: %w", err)
 	}
 	if err := validateToolsLocalReplacements(validation.ToolsRoot, validation.GladeRoot); err != nil {
 		return fmt.Errorf("tools replacements: %w", err)
