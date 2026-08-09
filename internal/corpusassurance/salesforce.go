@@ -1,8 +1,14 @@
 package corpusassurance
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"fmt"
+	"os"
+	"os/exec"
 	"path/filepath"
+	"time"
 )
 
 var salesforceInventoryTypes = []string{"ApexClass", "ApexPage", "ApexTrigger", "CustomObject", "CustomField", "FieldSet", "StaticResource", "PlatformCachePartition"}
@@ -10,6 +16,33 @@ var salesforceInventoryTypes = []string{"ApexClass", "ApexPage", "ApexTrigger", 
 type SalesforceInventory struct {
 	Counts map[string]int `json:"counts,omitempty"`
 }
+
+type SalesforceOrgPreflight struct {
+	SchemaVersion int                 `json:"schemaVersion"`
+	BundleSHA256  string              `json:"bundleSha256"`
+	OrgAlias      string              `json:"orgAlias"`
+	OrgID         string              `json:"orgId"`
+	OrgStatus     string              `json:"orgStatus"`
+	Inventory     SalesforceInventory `json:"inventory"`
+	Commands      []CommandResult     `json:"commands"`
+}
+
+type SalesforceOrgPreflightRequest struct {
+	BundlePath     string
+	TargetOrg      string
+	SFBin          string
+	OutputPath     string
+	validateBundle func(string) error
+	runner         salesforceCommandRunner
+}
+
+type salesforceCommandOutput struct {
+	Stdout   []byte
+	Stderr   []byte
+	ExitCode int
+}
+
+type salesforceCommandRunner func(context.Context, string, ...string) (salesforceCommandOutput, error)
 type SalesforceSurfaceResult struct {
 	SurfaceID string `json:"surfaceId"`
 	Kind      string `json:"kind"`
@@ -42,6 +75,115 @@ type SalesforceShard struct {
 	PostInventory SalesforceInventory       `json:"postInventory"`
 	Results       []SalesforceSurfaceResult `json:"results"`
 	Cleanup       CleanupReceipt            `json:"cleanup"`
+}
+
+const salesforceCommandTimeout = 30 * time.Second
+
+// RunSalesforceOrgPreflight records the eight-type zero-inventory gate for a
+// newly created scratch org. It only writes a receipt after every command and
+// the staged bundle pass validation.
+func RunSalesforceOrgPreflight(request SalesforceOrgPreflightRequest) (SalesforceOrgPreflight, error) {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
+		return SalesforceOrgPreflight{}, fmt.Errorf("invalid Salesforce preflight request")
+	}
+	if _, err := os.Lstat(request.OutputPath); err == nil {
+		return SalesforceOrgPreflight{}, fmt.Errorf("Salesforce preflight output already exists: %s", request.OutputPath)
+	} else if !os.IsNotExist(err) {
+		return SalesforceOrgPreflight{}, err
+	}
+	validate := request.validateBundle
+	if validate == nil {
+		validate = ValidateOracleBundle
+	}
+	if err := validate(request.BundlePath); err != nil {
+		return SalesforceOrgPreflight{}, fmt.Errorf("validate staged bundle: %w", err)
+	}
+	bundleSHA, err := sha256File(request.BundlePath)
+	if err != nil {
+		return SalesforceOrgPreflight{}, err
+	}
+	runner := request.runner
+	if runner == nil {
+		runner = runSalesforceCLI
+	}
+	display, displayReceipt, err := runSalesforcePreflightCommand(runner, request.SFBin, "org", "display", "--target-org", request.TargetOrg, "--json")
+	if err != nil {
+		return SalesforceOrgPreflight{}, err
+	}
+	orgID, status, err := parseSalesforceOrgDisplay(display.Stdout)
+	if err != nil || status != "Active" {
+		return SalesforceOrgPreflight{}, fmt.Errorf("scratch org is not Active")
+	}
+	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: request.TargetOrg, OrgID: orgID, OrgStatus: status, Inventory: SalesforceInventory{Counts: make(map[string]int)}, Commands: []CommandResult{displayReceipt}}
+	for _, kind := range salesforceInventoryTypes {
+		output, receipt, err := runSalesforcePreflightCommand(runner, request.SFBin, "data", "query", "--query", "SELECT count() FROM "+kind, "--target-org", request.TargetOrg, "--json")
+		if err != nil {
+			return SalesforceOrgPreflight{}, err
+		}
+		count, err := parseSalesforceCount(output.Stdout)
+		if err != nil || count != 0 {
+			return SalesforceOrgPreflight{}, fmt.Errorf("scratch org %s inventory is not empty", kind)
+		}
+		preflight.Inventory.Counts[kind] = count
+		preflight.Commands = append(preflight.Commands, receipt)
+	}
+	if err := WriteNewJSON(request.OutputPath, preflight); err != nil {
+		return SalesforceOrgPreflight{}, err
+	}
+	return preflight, nil
+}
+
+func runSalesforcePreflightCommand(runner salesforceCommandRunner, binary string, args ...string) (salesforceCommandOutput, CommandResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), salesforceCommandTimeout)
+	defer cancel()
+	started := time.Now()
+	output, err := runner(ctx, binary, args...)
+	receipt := CommandResult{Command: append([]string{binary}, args...), CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: binary, Args: args, Env: []string{"SF_USE_GENERIC_UNIX_KEYCHAIN=true"}, Timeout: salesforceCommandTimeout}), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
+	if err != nil || output.ExitCode != 0 || receipt.TimedOut {
+		return output, receipt, fmt.Errorf("Salesforce preflight command failed")
+	}
+	return output, receipt, nil
+}
+
+func runSalesforceCLI(ctx context.Context, binary string, args ...string) (salesforceCommandOutput, error) {
+	command := exec.CommandContext(ctx, binary, args...)
+	command.Env = append(os.Environ(), "SF_USE_GENERIC_UNIX_KEYCHAIN=true")
+	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
+	command.Stdout, command.Stderr = stdout, stderr
+	err := command.Run()
+	output := salesforceCommandOutput{Stdout: stdout.Bytes(), Stderr: stderr.Bytes()}
+	if exit, ok := err.(*exec.ExitError); ok {
+		output.ExitCode = exit.ExitCode()
+		return output, nil
+	}
+	return output, err
+}
+
+func parseSalesforceOrgDisplay(data []byte) (string, string, error) {
+	var payload struct {
+		Status int `json:"status"`
+		Result struct {
+			ID     string `json:"id"`
+			Status string `json:"status"`
+		} `json:"result"`
+	}
+	if err := json.Unmarshal(data, &payload); err != nil || payload.Status != 0 || payload.Result.ID == "" || payload.Result.Status == "" {
+		return "", "", fmt.Errorf("invalid Salesforce org display JSON")
+	}
+	return payload.Result.ID, payload.Result.Status, nil
+}
+
+func parseSalesforceCount(data []byte) (int, error) {
+	var payload struct {
+		Status int `json:"status"`
+		Result struct {
+			TotalSize int `json:"totalSize"`
+		} `json:"result"`
+	}
+	if err := json.Unmarshal(data, &payload); err != nil || payload.Status != 0 || payload.Result.TotalSize < 0 {
+		return 0, fmt.Errorf("invalid Salesforce count JSON")
+	}
+	return payload.Result.TotalSize, nil
 }
 
 // ValidateSalesforceShardFiles derives the runtime and compile denominator

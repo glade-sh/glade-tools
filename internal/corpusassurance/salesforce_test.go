@@ -1,6 +1,9 @@
 package corpusassurance
 
 import (
+	"context"
+	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -84,5 +87,34 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	}
 	if err := ValidateSalesforceShardFiles(planPath, []string{wrongKindPath}); err == nil {
 		t.Fatal("accepted a compile receipt for a runtime oracle row")
+	}
+}
+
+func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	commands := 0
+	runner := func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+		commands++
+		if path != "/usr/local/bin/sf" {
+			return salesforceCommandOutput{}, fmt.Errorf("unexpected sf path %q", path)
+		}
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active"}}`)}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
+	}
+	preflight, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: runner})
+	if err != nil {
+		t.Fatalf("RunSalesforceOrgPreflight: %v", err)
+	}
+	if preflight.OrgID != "00D000000000001" || preflight.OrgStatus != "Active" || !zeroInventory(preflight.Inventory) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 || commands != len(salesforceInventoryTypes)+1 {
+		t.Fatalf("preflight = %#v, commands=%d", preflight, commands)
+	}
+	if _, err := os.Stat(outputPath); err != nil {
+		t.Fatal(err)
 	}
 }
