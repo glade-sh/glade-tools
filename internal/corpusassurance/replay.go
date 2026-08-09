@@ -49,6 +49,9 @@ var fixedReplayEnvironment = []string{"HOME=/var/empty", "PATH=/usr/bin:/bin", "
 type CommandResult struct {
 	Command           []string `json:"command"`
 	CommandSpecSHA256 string   `json:"commandSpecSha256"`
+	WorkingDirectory  string   `json:"workingDirectory,omitempty"`
+	Environment       []string `json:"environment,omitempty"`
+	ExecutableSHA256  string   `json:"executableSha256,omitempty"`
 	ExitCode          int      `json:"exitCode"`
 	DurationMS        int64    `json:"durationMs"`
 	StdoutSHA256      string   `json:"stdoutSha256"`
