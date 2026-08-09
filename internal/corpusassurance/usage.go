@@ -249,6 +249,14 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 // ledger. Source-profile usage keys are ignored so they cannot select or
 // redirect private-corpus reconciliation.
 func usageProfileRowsFromLedger(profile []UsageProfileRow, ledger []surfaceledger.SurfaceLedgerRow, policy surfaceledger.SupportPolicy) ([]UsageProfileRow, error) {
+	expectedProfile := surfaceledger.ComputeSupportProfile(ledger, policy, nil)
+	if len(expectedProfile.ValidationErrors) != 0 {
+		return nil, fmt.Errorf("support policy does not produce a valid profile")
+	}
+	expected := make(map[string]surfaceledger.SupportProfileRow, len(expectedProfile.Rows))
+	for _, row := range expectedProfile.Rows {
+		expected[row.SurfaceID] = row
+	}
 	ledgerByID := make(map[string]surfaceledger.SurfaceLedgerRow, len(ledger))
 	for _, row := range ledger {
 		if row.SurfaceID == "" || ledgerByID[row.SurfaceID].SurfaceID != "" {
@@ -271,6 +279,9 @@ func usageProfileRowsFromLedger(profile []UsageProfileRow, ledger []surfaceledge
 		row, exists := source[ledgerRow.SurfaceID]
 		if !exists {
 			return nil, fmt.Errorf("scanner-representable ledger surface %q is absent from profile", ledgerRow.SurfaceID)
+		}
+		if expectedRow, exists := expected[ledgerRow.SurfaceID]; !exists || row.Disposition != string(expectedRow.Disposition) {
+			return nil, fmt.Errorf("profile disposition for %q does not match sealed policy", ledgerRow.SurfaceID)
 		}
 		row.UsageKey = surfaceledger.UsageKeyForRow(ledgerRow, policy)
 		if row.UsageKey == "" {

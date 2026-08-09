@@ -257,7 +257,7 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 		t.Fatal(err)
 	}
 	profilePath := filepath.Join(root, "profile.json")
-	if err := WriteNewJSON(profilePath, surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug"}, {SurfaceID: "apex-language:NamespaceClassVariablePrecedence"}}, Inputs: &surfaceledger.SupportProfileInputs{Files: []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: localProofFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: localProofFileSHA256(t, policyPath)}}}}); err != nil {
+	if err := WriteNewJSON(profilePath, surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug", Disposition: surfaceledger.DispositionLocalRuntimeRequired}, {SurfaceID: "apex-language:NamespaceClassVariablePrecedence"}}, Inputs: &surfaceledger.SupportProfileInputs{Files: []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: localProofFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: localProofFileSHA256(t, policyPath)}}}}); err != nil {
 		t.Fatal(err)
 	}
 	usage, err := ExtractRepositoryUsage([]surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}, repository, snapshot)
