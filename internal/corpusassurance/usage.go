@@ -87,6 +87,119 @@ type UsageReconciliation struct {
 	Usage          []ReconciledUsageEntry `json:"usage"`
 }
 
+type SealedCorpusUsage struct {
+	SchemaVersion      int                     `json:"schemaVersion"`
+	InventorySHA256    string                  `json:"inventorySha256"`
+	RootManifestSHA256 string                  `json:"rootManifestSha256"`
+	LedgerSHA256       string                  `json:"ledgerSha256"`
+	ProfileSHA256      string                  `json:"profileSha256"`
+	DecisionSHA256     string                  `json:"decisionSha256"`
+	RawUsageSHA256     string                  `json:"rawUsageSha256"`
+	Raw                CombinedRepositoryUsage `json:"raw"`
+	Reconciliation     UsageReconciliation     `json:"reconciliation"`
+}
+
+// BuildSealedCorpusUsage is the Task 3 trust boundary. It derives every
+// repository from the sealed inventory manifest twice, requires identical
+// canonical raw usage, reconciles every positive key, and writes once.
+func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath string) (SealedCorpusUsage, error) {
+	for _, path := range []string{inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return SealedCorpusUsage{}, fmt.Errorf("sealed usage paths must be absolute")
+		}
+	}
+	if _, err := os.Lstat(outputPath); err == nil {
+		return SealedCorpusUsage{}, fmt.Errorf("sealed corpus usage output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return SealedCorpusUsage{}, err
+	}
+	inventory, inventoryBytes, err := readInventorySpec(inventoryPath)
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	ledger, ledgerBytes, err := readExactJSONBytes[surfaceledger.SurfaceLedger](ledgerPath)
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	manifest, manifestBytes, err := readExactJSONBytes[InventoryManifest](manifestPath)
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	if manifest.SchemaVersion != 1 || manifest.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateInventoryCoverage(inventory, manifest.Repositories) != nil {
+		return SealedCorpusUsage{}, fmt.Errorf("invalid sealed inventory manifest")
+	}
+	first, firstBytes, err := deriveSealedCombinedUsage(ledger.Rows, manifest, filepath.Dir(manifestPath))
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	second, secondBytes, err := deriveSealedCombinedUsage(ledger.Rows, manifest, filepath.Dir(manifestPath))
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	if !bytes.Equal(firstBytes, secondBytes) {
+		return SealedCorpusUsage{}, fmt.Errorf("corpus usage extraction is not byte-identical")
+	}
+	profile, profileBytes, err := readUsageProfileRows(profilePath)
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	decision, decisionBytes, err := readExactJSONBytes[UsageDecisionFile](decisionPath)
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != replayBytesSHA256(profileBytes) || decision.UsageSHA256 != replayBytesSHA256(firstBytes) {
+		return SealedCorpusUsage{}, fmt.Errorf("usage decisions do not bind fresh extraction")
+	}
+	reconciliation, err := ReconcileUsage(profile, first.Usage, decision.Decisions)
+	if err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	reconciliation.ProfileSHA256, reconciliation.UsageSHA256, reconciliation.DecisionSHA256 = replayBytesSHA256(profileBytes), replayBytesSHA256(firstBytes), replayBytesSHA256(decisionBytes)
+	artifact := SealedCorpusUsage{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), DecisionSHA256: replayBytesSHA256(decisionBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Raw: second, Reconciliation: reconciliation}
+	if err := verifySealedUsageInputs([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {decisionPath, decisionBytes}}); err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	if err := WriteNewJSON(outputPath, artifact); err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	return artifact, nil
+}
+
+func deriveSealedCombinedUsage(ledger []surfaceledger.SurfaceLedgerRow, manifest InventoryManifest, root string) (CombinedRepositoryUsage, []byte, error) {
+	repositories := make([]RepositoryUsage, 0, len(manifest.Repositories))
+	for _, repository := range manifest.Repositories {
+		snapshot, err := rootedPath(root, repository.SnapshotPath)
+		if err != nil {
+			return CombinedRepositoryUsage{}, nil, err
+		}
+		usage, err := ExtractRepositoryUsage(ledger, repository, snapshot)
+		if err != nil {
+			return CombinedRepositoryUsage{}, nil, err
+		}
+		repositories = append(repositories, usage)
+	}
+	combined, err := CombineRepositoryUsage(manifest, repositories)
+	if err != nil {
+		return CombinedRepositoryUsage{}, nil, err
+	}
+	data, err := json.Marshal(combined)
+	return combined, data, err
+}
+
+type sealedUsageInput struct {
+	path string
+	data []byte
+}
+
+func verifySealedUsageInputs(inputs []sealedUsageInput) error {
+	for _, input := range inputs {
+		if got, err := os.ReadFile(input.path); err != nil || !bytes.Equal(got, input.data) {
+			return fmt.Errorf("sealed usage input changed during extraction")
+		}
+	}
+	return nil
+}
+
 // ReconcileUsageFromFiles reads and binds the authoritative profile, fresh
 // usage, and decision bytes before returning a reconciliation. Source-profile
 // fields outside the allowlisted row projection are deliberately ignored.

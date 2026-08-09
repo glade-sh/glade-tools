@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -244,6 +245,61 @@ func TestReconcileUsageFromFilesBindsSingleReadInputs(t *testing.T) {
 	}
 	if len(reconciled.Usage) != 1 || reconciled.Usage[0].Class != usageClassExact {
 		t.Fatalf("reconciliation usage = %#v", reconciled.Usage)
+	}
+}
+
+func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
+	root := t.TempDir()
+	snapshot := filepath.Join(root, "snapshots", "private-corpus-001")
+	if err := os.MkdirAll(filepath.Join(snapshot, "classes"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(snapshot, "classes", "Sample.cls"), []byte("public class Sample { void run() { System.debug('one'); } }"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	repository := usageRepositorySpec(t, "private-corpus-001", snapshot)
+	inventoryPath := filepath.Join(root, "IN_SCOPE.json")
+	if err := WriteNewJSON(inventoryPath, InventorySpec{SchemaVersion: 1, Scope: "private-corpus-assurance", Repositories: []InventoryEntry{{ID: repository.ID, CheckoutPath: filepath.Join(root, "checkout"), ExpectedCommit: repository.ExpectedCommit}}}); err != nil {
+		t.Fatal(err)
+	}
+	manifestPath := filepath.Join(root, "MANIFEST.json")
+	if err := WriteNewJSON(manifestPath, InventoryManifest{SchemaVersion: 1, InventorySHA256: localProofFileSHA256(t, inventoryPath), Repositories: []RepositorySpec{repository}}); err != nil {
+		t.Fatal(err)
+	}
+	ledgerPath := filepath.Join(root, "LEDGER.json")
+	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System"}}}); err != nil {
+		t.Fatal(err)
+	}
+	profilePath := filepath.Join(root, "profile.json")
+	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug","usageKey":"System.debug"}]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	usage, err := ExtractRepositoryUsage([]surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System"}}, repository, snapshot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := CombineRepositoryUsage(InventoryManifest{SchemaVersion: 1, InventorySHA256: localProofFileSHA256(t, inventoryPath), Repositories: []RepositorySpec{repository}}, []RepositoryUsage{usage})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rawBytes, err := json.Marshal(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	decisionPath := filepath.Join(root, "decisions.json")
+	if err := WriteNewJSON(decisionPath, UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), UsageSHA256: replayBytesSHA256(rawBytes)}); err != nil {
+		t.Fatal(err)
+	}
+	outputPath := filepath.Join(root, "CORPUS_USAGE.json")
+	artifact, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if artifact.RawUsageSHA256 != replayBytesSHA256(rawBytes) || len(artifact.Reconciliation.Usage) != 2 || artifact.Reconciliation.Usage[1].Class != usageClassExact {
+		t.Fatalf("artifact = %#v", artifact)
+	}
+	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath); err == nil {
+		t.Fatal("BuildSealedCorpusUsage overwrote its output")
 	}
 }
 
