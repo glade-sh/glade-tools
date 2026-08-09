@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // OracleBundleRequest names the sealed inputs staged for Razor. Every input is
@@ -111,6 +112,11 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err != nil {
 		return OracleBundle{}, fmt.Errorf("read fixture manifest: %w", err)
 	}
+	release, releaseBytes, err := readExactJSONBytes[ReleaseValidation](request.ReleaseValidationPath)
+	if err != nil {
+		return OracleBundle{}, fmt.Errorf("read release validation: %w", err)
+	}
+	releaseSHA := replayBytesSHA256(releaseBytes)
 	profileSHA, planSHA, authoritySHA, proofSHA, manifestSHA := replayBytesSHA256(profileBytes), replayBytesSHA256(planBytes), replayBytesSHA256(authorityBytes), replayBytesSHA256(proofBytes), replayBytesSHA256(manifestBytes)
 	if profile.SchemaVersion != 1 || profile.FixtureManifestSHA256 != manifestSHA || profile.LocalProofSHA256 != proofSHA || plan.ProfileSHA256 != profileSHA || plan.Candidate != proof.Candidate || plan.Tools != proof.Tools || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.PlanSHA256 != planSHA || authority.ProfileSHA256 != profileSHA || authority.LocalProofSHA256 != proofSHA {
 		return OracleBundle{}, fmt.Errorf("oracle bundle inputs do not bind")
@@ -118,12 +124,18 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := ValidateLocalProof(proof, manifest); err != nil {
 		return OracleBundle{}, fmt.Errorf("validate local proof: %w", err)
 	}
+	if err := validateOracleReleaseValidation(release, plan); err != nil {
+		return OracleBundle{}, fmt.Errorf("validate release validation: %w", err)
+	}
+	if current, err := sha256File(request.ReleaseValidationPath); err != nil || current != releaseSHA {
+		return OracleBundle{}, fmt.Errorf("release validation changed after validation")
+	}
 	fixtures, err := oracleBundleFixtures(plan, manifest)
 	if err != nil {
 		return OracleBundle{}, err
 	}
-	inputs := map[string]string{request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
-	for _, path := range []string{request.ReleaseValidationPath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path} {
+	inputs := map[string]string{request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
+	for _, path := range []string{request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path} {
 		hash, err := sha256File(path)
 		if err != nil {
 			return OracleBundle{}, err
@@ -211,6 +223,50 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		return OracleBundle{}, err
 	}
 	return bundle, nil
+}
+
+func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePlan) error {
+	if validation.SchemaVersion != 1 {
+		return fmt.Errorf("release validation schema is invalid")
+	}
+	if len(validation.Commands) != 4 {
+		return fmt.Errorf("release validation must seal four fixed release checks")
+	}
+	if validation.Candidate != plan.Candidate || validation.Tools != plan.Tools {
+		return fmt.Errorf("release validation artifacts do not match oracle plan")
+	}
+	if !sha256Pattern.MatchString(validation.ToolsFreezeSHA256) {
+		return fmt.Errorf("release validation freeze hash is invalid")
+	}
+	for index, result := range validation.Commands {
+		if !validOracleReleaseCommand(index, result) {
+			return fmt.Errorf("release validation check %d is not a passing fixed release check", index+1)
+		}
+	}
+	return nil
+}
+
+func validOracleReleaseCommand(index int, result ReleaseCommandResult) bool {
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != releaseValidationTimeout.Milliseconds() || !filepath.IsAbs(result.WorkingDirectory) || len(result.Command) == 0 || len(result.Environment) != 3 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
+		return false
+	}
+	switch index {
+	case 0, 2:
+		if len(result.Command) != 3 || result.Command[1] != "test" || result.Command[2] != "./..." {
+			return false
+		}
+	case 1, 3:
+		if len(result.Command) != 1 || result.WorkingDirectory != filepath.Dir(filepath.Dir(result.Command[0])) || filepath.Base(filepath.Dir(result.Command[0])) != "scripts" {
+			return false
+		}
+		if (index == 1 && filepath.Base(result.Command[0]) != "smoke.sh") || (index == 3 && filepath.Base(result.Command[0]) != "release-check.sh") {
+			return false
+		}
+	default:
+		return false
+	}
+	spec := releaseCommandSpecSHA256(releaseCommand{Path: result.Command[0], Args: result.Command[1:], WorkingDirectory: result.WorkingDirectory, Environment: result.Environment, Timeout: time.Duration(result.TimeoutMS) * time.Millisecond})
+	return result.CommandSpecSHA256 == spec
 }
 
 // ValidateOracleBundle rehashes the staged Razor tree before any Salesforce
