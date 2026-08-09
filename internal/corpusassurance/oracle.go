@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
@@ -223,8 +224,8 @@ func verifyExclusionRequestInputs(planPath, profilePath, usagePath, planSHA, pro
 // BuildAssuranceProfile rebuilds the Salesforce profile from the current
 // private-required set. It accepts no caller-selected rows and omits all
 // historical profile fields not needed by the oracle.
-func BuildAssuranceProfile(sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, outputPath string) (AssuranceProfile, error) {
-	for _, path := range []string{sourceProfilePath, sealedUsagePath, ledgerPath, fixtureManifestPath, localProofPath, outputPath} {
+func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, fixtureManifestPath, localProofPath, outputPath string) (AssuranceProfile, error) {
+	for _, path := range []string{inventoryPath, rootManifestPath, sourceProfilePath, sealedUsagePath, ledgerPath, policyPath, decisionPath, fixtureManifestPath, localProofPath, outputPath} {
 		if !filepath.IsAbs(path) {
 			return AssuranceProfile{}, fmt.Errorf("absolute assurance-profile paths are required")
 		}
@@ -241,6 +242,15 @@ func BuildAssuranceProfile(sourceProfilePath, sealedUsagePath, ledgerPath, fixtu
 	sealedUsage, sealedUsageBytes, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath)
 	if err != nil {
 		return AssuranceProfile{}, fmt.Errorf("read sealed usage: %w", err)
+	}
+	temp, err := os.MkdirTemp("", "glade-assurance-usage-*")
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
+	defer os.RemoveAll(temp)
+	rebuilt, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, rootManifestPath, sourceProfilePath, policyPath, decisionPath, filepath.Join(temp, "CORPUS_USAGE.json"))
+	if err != nil || !reflect.DeepEqual(rebuilt, sealedUsage) {
+		return AssuranceProfile{}, fmt.Errorf("sealed usage does not match authoritative recomputation")
 	}
 	ledger, ledgerBytes, err := readExactJSONBytes[surfaceledger.SurfaceLedger](ledgerPath)
 	if err != nil {

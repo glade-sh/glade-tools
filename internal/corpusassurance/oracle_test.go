@@ -243,7 +243,7 @@ func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
 	if err := WriteNewJSON(usagePath, usage); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := BuildAssuranceProfile(profilePath, usagePath, ledgerPath, manifestPath, proofPath, outputPath); err == nil {
+	if _, err := BuildAssuranceProfile(profilePath, usagePath, profilePath, usagePath, ledgerPath, usagePath, usagePath, manifestPath, proofPath, outputPath); err == nil {
 		t.Fatal("BuildAssuranceProfile accepted detached synthetic local proof")
 	}
 }
