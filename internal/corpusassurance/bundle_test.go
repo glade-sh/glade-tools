@@ -56,6 +56,25 @@ func TestBuildOracleBundleRejectsAReplacementAttempt(t *testing.T) {
 	}
 }
 
+func TestBuildOracleBundleRejectsReleaseValidationFromAnotherValidAttempt(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	attempt, _, err := readExactJSONBytes[AssuranceAttempt](inputs.attemptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attempt.InventorySHA256 = strings.Repeat("f", 64)
+	otherAttemptPath := filepath.Join(t.TempDir(), "ATTEMPT.json")
+	if err := WriteNewJSON(otherAttemptPath, attempt); err != nil {
+		t.Fatal(err)
+	}
+	writeSealedReleaseValidation(t, inputs.releasePath, otherAttemptPath, inputs.plan.Candidate, inputs.plan.Tools)
+	request := inputs.request(filepath.Join(t.TempDir(), "bundle"))
+	request.AttemptPath = otherAttemptPath
+	if _, err := BuildOracleBundle(request); err == nil {
+		t.Fatal("BuildOracleBundle mixed a local proof and release validation from different attempts")
+	}
+}
+
 type oracleBundleTestInputs struct {
 	proof               LocalProof
 	plan                OraclePlan

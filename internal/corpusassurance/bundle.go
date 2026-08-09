@@ -125,6 +125,10 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if release.AttemptSHA256 != replayBytesSHA256(attemptBytes) || release.Candidate != attempt.Candidate || release.Tools != attempt.Tools {
 		return OracleBundle{}, fmt.Errorf("release validation does not bind sealed assurance attempt")
 	}
+	proofAttempt, proofAttemptBytes, err := readExactJSONBytes[AssuranceAttempt](proof.AttemptPath)
+	if err != nil || ValidateAssuranceAttempt(proofAttempt) != nil || proof.AttemptSHA256 != attemptHash(proofAttempt) || replayBytesSHA256(proofAttemptBytes) != replayBytesSHA256(attemptBytes) {
+		return OracleBundle{}, fmt.Errorf("local proof does not bind sealed assurance attempt")
+	}
 	releaseSHA := replayBytesSHA256(releaseBytes)
 	profileSHA, planSHA, authoritySHA, proofSHA, manifestSHA := replayBytesSHA256(profileBytes), replayBytesSHA256(planBytes), replayBytesSHA256(authorityBytes), replayBytesSHA256(proofBytes), replayBytesSHA256(manifestBytes)
 	if profile.SchemaVersion != 1 || profile.FixtureManifestSHA256 != manifestSHA || profile.LocalProofSHA256 != proofSHA || plan.ProfileSHA256 != profileSHA || plan.Candidate != proof.Candidate || plan.Tools != proof.Tools || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.PlanSHA256 != planSHA || authority.ProfileSHA256 != profileSHA || authority.LocalProofSHA256 != proofSHA {
@@ -143,7 +147,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err != nil {
 		return OracleBundle{}, err
 	}
-	inputs := map[string]string{request.AttemptPath: replayBytesSHA256(attemptBytes), request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
+	inputs := map[string]string{request.AttemptPath: replayBytesSHA256(attemptBytes), proof.AttemptPath: replayBytesSHA256(attemptBytes), request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
 	for _, path := range []string{request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path} {
 		hash, err := sha256File(path)
 		if err != nil {
