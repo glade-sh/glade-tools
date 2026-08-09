@@ -94,7 +94,7 @@ func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
 
 func TestVerifyLocalProofReplayRejectsForgedRetainedOutput(t *testing.T) {
 	request, _ := localProofRequest(t)
-	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\nprintf '{\"status\":\"passed\",\"exitCode\":0}'\n"), 0o700); err != nil {
+	if err := os.WriteFile(request.CandidatePath, []byte("#!/bin/sh\nif [ \"$1\" = test ]; then printf '{\"status\":\"passed\",\"exitCode\":0,\"tests\":{\"total\":1,\"failed\":0,\"errors\":0}}'; else printf '{\"status\":\"passed\",\"exitCode\":0}'; fi\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	request.Candidate.SHA256 = localProofFileSHA256(t, request.CandidatePath)
@@ -172,7 +172,7 @@ func TestLocalProofRejectsTamperingWrongExecutablesInvalidReceiptsAndExistingOut
 			request.executor = func(command localProofCommand) localProofExecution {
 				result := localProofReceipt(command)
 				result.CommandSpecSHA256 = strings.Repeat("f", 64)
-				return localProofExecution{Receipt: result, Validated: true, Stdout: localProofSuccessOutput}
+				return localProofExecution{Receipt: result, Validated: true, Stdout: localProofSuccessOutputFor(command.Args[0])}
 			}
 		},
 		"create only": func(t *testing.T, request *LocalProofRequest) {
@@ -251,7 +251,7 @@ func localProofRequest(t *testing.T) (LocalProofRequest, *[]localProofCommand) {
 	}
 	request.executor = func(command localProofCommand) localProofExecution {
 		calls = append(calls, command)
-		return localProofExecution{Receipt: localProofReceipt(command), Validated: true, Stdout: localProofSuccessOutput}
+		return localProofExecution{Receipt: localProofReceipt(command), Validated: true, Stdout: localProofSuccessOutputFor(command.Args[0])}
 	}
 	return request, &calls
 }
@@ -296,13 +296,18 @@ func localProofRuntime(t *testing.T, path, commitByte string) RuntimeArtifact {
 	return RuntimeArtifact{Commit: strings.Repeat(commitByte, 40), OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: localProofFileSHA256(t, path)}
 }
 
-const localProofSuccessOutput = `{"status":"passed","exitCode":0}`
+func localProofSuccessOutputFor(operation string) string {
+	if operation == "test" {
+		return `{"status":"passed","exitCode":0,"tests":{"total":1,"failed":0,"errors":0}}`
+	}
+	return `{"status":"passed","exitCode":0}`
+}
 
 func localProofReceipt(command localProofCommand) CommandResult {
 	return CommandResult{
 		Command: []string{command.Args[0]}, CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: command.Path, Args: command.Args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute}),
 		ExitCode: 0, DurationMS: 0, Passed: true,
-		StdoutSHA256: replayBytesSHA256([]byte(localProofSuccessOutput)), StderrSHA256: strings.Repeat("b", 64),
+		StdoutSHA256: replayBytesSHA256([]byte(localProofSuccessOutputFor(command.Args[0]))), StderrSHA256: strings.Repeat("b", 64),
 	}
 }
 

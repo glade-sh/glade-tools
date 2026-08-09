@@ -151,7 +151,7 @@ func localProofCommandForFixture(entry LocalProofFixture, fixture compat.Fixture
 	return localProofCommand{Path: candidatePath, Args: args, Dir: root}, nil
 }
 
-func validatesCandidateJSON(data []byte) bool {
+func validatesCandidateJSON(data []byte, operation string) bool {
 	var result struct {
 		Status   string          `json:"status"`
 		ExitCode int             `json:"exitCode"`
@@ -164,7 +164,7 @@ func validatesCandidateJSON(data []byte) bool {
 		return false
 	}
 	if len(result.Tests) == 0 {
-		return true
+		return operation != "test"
 	}
 	var tests struct {
 		Total  int `json:"total"`

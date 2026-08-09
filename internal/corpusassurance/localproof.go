@@ -179,7 +179,7 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 	raw := make(map[string]LocalProofFixtureResult, len(proof.RawFixtureResults))
 	for _, result := range proof.RawFixtureResults {
 		fixture, exists := fixtures[result.FixtureID]
-		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || !validLocalProofReceipt(result.Receipt, fixture.Disposition) || replayBytesSHA256([]byte(result.Stdout)) != result.Receipt.StdoutSHA256 || !validatesCandidateJSON([]byte(result.Stdout)) {
+		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || !validLocalProofReceipt(result.Receipt, fixture.Disposition) || replayBytesSHA256([]byte(result.Stdout)) != result.Receipt.StdoutSHA256 || !validatesCandidateJSON([]byte(result.Stdout), localProofOperation(fixture.Disposition)) {
 			return fmt.Errorf("invalid local proof fixture receipt %q", result.FixtureID)
 		}
 		raw[result.FixtureID] = result
@@ -592,7 +592,7 @@ func localProofEvidenceKind(disposition string) string {
 
 func runLocalProofCommand(command localProofCommand) localProofExecution {
 	receipt, stdout, _ := runReplayCommandOutput(command.Dir, ReplayCommand{Path: command.Path, Args: command.Args, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 2 * time.Minute})
-	return localProofExecution{Receipt: receipt, Validated: receipt.Passed && validatesCandidateJSON(stdout), Stdout: string(stdout)}
+	return localProofExecution{Receipt: receipt, Validated: receipt.Passed && validatesCandidateJSON(stdout, command.Args[0]), Stdout: string(stdout)}
 }
 
 func validateLocalProofFixtureResult(fixture LocalProofFixture, result LocalProofFixtureResult, command localProofCommand, validated bool) error {
