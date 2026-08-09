@@ -69,6 +69,7 @@ type UsageDecision struct {
 type UsageDecisionFile struct {
 	SchemaVersion int             `json:"schemaVersion"`
 	ProfileSHA256 string          `json:"profileSha256"`
+	PolicySHA256  string          `json:"policySha256"`
 	UsageSHA256   string          `json:"usageSha256"`
 	Decisions     []UsageDecision `json:"decisions"`
 }
@@ -93,6 +94,7 @@ type SealedCorpusUsage struct {
 	RootManifestSHA256 string                  `json:"rootManifestSha256"`
 	LedgerSHA256       string                  `json:"ledgerSha256"`
 	ProfileSHA256      string                  `json:"profileSha256"`
+	PolicySHA256       string                  `json:"policySha256"`
 	DecisionSHA256     string                  `json:"decisionSha256"`
 	RawUsageSHA256     string                  `json:"rawUsageSha256"`
 	Raw                CombinedRepositoryUsage `json:"raw"`
@@ -102,8 +104,8 @@ type SealedCorpusUsage struct {
 // BuildSealedCorpusUsage is the Task 3 trust boundary. It derives every
 // repository from the sealed inventory manifest twice, requires identical
 // canonical raw usage, reconciles every positive key, and writes once.
-func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath string) (SealedCorpusUsage, error) {
-	for _, path := range []string{inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath} {
+func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, outputPath string) (SealedCorpusUsage, error) {
+	for _, path := range []string{inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, outputPath} {
 		if !filepath.IsAbs(path) {
 			return SealedCorpusUsage{}, fmt.Errorf("sealed usage paths must be absolute")
 		}
@@ -143,7 +145,14 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
-	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows)
+	policy, policyBytes, err := readExactJSONBytes[surfaceledger.SupportPolicy](policyPath)
+	if err != nil {
+		return SealedCorpusUsage{}, fmt.Errorf("read support policy: %w", err)
+	}
+	if len(policy.Rules) == 0 {
+		return SealedCorpusUsage{}, fmt.Errorf("support policy rules are required")
+	}
+	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows, policy)
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
@@ -151,7 +160,7 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
-	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != replayBytesSHA256(profileBytes) || decision.UsageSHA256 != replayBytesSHA256(firstBytes) {
+	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != replayBytesSHA256(profileBytes) || decision.PolicySHA256 != replayBytesSHA256(policyBytes) || decision.UsageSHA256 != replayBytesSHA256(firstBytes) {
 		return SealedCorpusUsage{}, fmt.Errorf("usage decisions do not bind fresh extraction")
 	}
 	reconciliation, err := reconcileUsage(profile, first.Usage, decision.Decisions)
@@ -159,8 +168,8 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 		return SealedCorpusUsage{}, err
 	}
 	reconciliation.ProfileSHA256, reconciliation.UsageSHA256, reconciliation.DecisionSHA256 = replayBytesSHA256(profileBytes), replayBytesSHA256(firstBytes), replayBytesSHA256(decisionBytes)
-	artifact := SealedCorpusUsage{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), DecisionSHA256: replayBytesSHA256(decisionBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Raw: second, Reconciliation: reconciliation}
-	if err := verifySealedUsageInputs([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {decisionPath, decisionBytes}}); err != nil {
+	artifact := SealedCorpusUsage{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), PolicySHA256: replayBytesSHA256(policyBytes), DecisionSHA256: replayBytesSHA256(decisionBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Raw: second, Reconciliation: reconciliation}
+	if err := verifySealedUsageInputs([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}, {decisionPath, decisionBytes}}); err != nil {
 		return SealedCorpusUsage{}, err
 	}
 	if err := WriteNewJSON(outputPath, artifact); err != nil {
@@ -269,7 +278,7 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []byte, error) {
 // usageProfileRowsFromLedger assigns the canonical usage key from the sealed
 // ledger. Source-profile usage keys are ignored so they cannot select or
 // redirect private-corpus reconciliation.
-func usageProfileRowsFromLedger(profile []UsageProfileRow, ledger []surfaceledger.SurfaceLedgerRow) ([]UsageProfileRow, error) {
+func usageProfileRowsFromLedger(profile []UsageProfileRow, ledger []surfaceledger.SurfaceLedgerRow, policy surfaceledger.SupportPolicy) ([]UsageProfileRow, error) {
 	ledgerByID := make(map[string]surfaceledger.SurfaceLedgerRow, len(ledger))
 	for _, row := range ledger {
 		if row.SurfaceID == "" || ledgerByID[row.SurfaceID].SurfaceID != "" {
@@ -277,18 +286,29 @@ func usageProfileRowsFromLedger(profile []UsageProfileRow, ledger []surfaceledge
 		}
 		ledgerByID[row.SurfaceID] = row
 	}
-	derived := make([]UsageProfileRow, len(profile))
-	for i, row := range profile {
-		ledgerRow, exists := ledgerByID[row.SurfaceID]
-		if row.SurfaceID == "" || !exists {
-			return nil, fmt.Errorf("profile surface %q is absent from ledger", row.SurfaceID)
+	source := make(map[string]UsageProfileRow, len(profile))
+	for _, row := range profile {
+		if row.SurfaceID == "" || source[row.SurfaceID].SurfaceID != "" {
+			return nil, fmt.Errorf("invalid or duplicate profile surface %q", row.SurfaceID)
 		}
-		row.UsageKey = surfaceledger.UsageKeyForRow(ledgerRow)
-		if row.UsageKey == "" {
-			return nil, fmt.Errorf("ledger surface %q lacks a usage key", row.SurfaceID)
-		}
-		derived[i] = row
+		source[row.SurfaceID] = row
 	}
+	derived := make([]UsageProfileRow, 0, len(profile))
+	for _, ledgerRow := range ledgerByID {
+		if ledgerRow.Product != surfaceledger.ProductApex || ledgerRow.Namespace == "" {
+			continue
+		}
+		row, exists := source[ledgerRow.SurfaceID]
+		if !exists {
+			return nil, fmt.Errorf("scanner-representable ledger surface %q is absent from profile", ledgerRow.SurfaceID)
+		}
+		row.UsageKey = surfaceledger.UsageKeyForRow(ledgerRow, policy)
+		if row.UsageKey == "" {
+			return nil, fmt.Errorf("scanner-representable ledger surface %q lacks a usage key", ledgerRow.SurfaceID)
+		}
+		derived = append(derived, row)
+	}
+	sort.Slice(derived, func(i, j int) bool { return derived[i].SurfaceID < derived[j].SurfaceID })
 	return derived, nil
 }
 

@@ -60,6 +60,34 @@ func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
 	}
 }
 
+func TestValidateLocalProofRejectsIncompleteNormalizedEvidence(t *testing.T) {
+	for name, mutate := range map[string]func(*LocalProof){
+		"incomplete fixture receipts": func(proof *LocalProof) { proof.RawFixtureResults = proof.RawFixtureResults[:1] },
+		"forged candidate binding":    func(proof *LocalProof) { proof.RawFixtureResults[0].CandidateSHA256 = strings.Repeat("f", 64) },
+		"forged surface fixture hash": func(proof *LocalProof) { proof.Surfaces[0].FixtureSHA256 = strings.Repeat("f", 64) },
+		"wrong fixture operation": func(proof *LocalProof) {
+			for i := range proof.RawFixtureResults {
+				if proof.RawFixtureResults[i].FixtureID == "runtime" {
+					proof.RawFixtureResults[i].Receipt.Command = []string{"test"}
+				}
+			}
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			request, _ := localProofRequest(t)
+			proof, err := RunLocalProof(request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			manifest := readLocalProofManifest(t, request.FixtureManifestPath)
+			mutate(&proof)
+			if err := ValidateLocalProof(proof, manifest); err == nil {
+				t.Fatal("ValidateLocalProof accepted forged normalized evidence")
+			}
+		})
+	}
+}
+
 func TestLocalProofRejectsNarrowedOrUnboundSealedSurfaceInputs(t *testing.T) {
 	for _, updateDecision := range []bool{false, true} {
 		t.Run(map[bool]string{false: "stale decision hash", true: "narrowed usage set"}[updateDecision], func(t *testing.T) {

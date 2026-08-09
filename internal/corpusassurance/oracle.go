@@ -61,6 +61,7 @@ type AssuranceProfile struct {
 	SourceProfileSHA256   string                `json:"sourceProfileSha256"`
 	SealedUsageSHA256     string                `json:"sealedUsageSha256"`
 	LedgerSHA256          string                `json:"ledgerSha256"`
+	PolicySHA256          string                `json:"policySha256"`
 	FixtureManifestSHA256 string                `json:"fixtureManifestSha256"`
 	LocalProofSHA256      string                `json:"localProofSha256"`
 	Total                 int                   `json:"total"`
@@ -255,8 +256,11 @@ func BuildAssuranceProfile(sourceProfilePath, sealedUsagePath, ledgerPath, fixtu
 	}
 	sourceSHA, usageSHA := replayBytesSHA256(sourceBytes), replayBytesSHA256(sealedUsageBytes)
 	ledgerSHA, manifestSHA, proofSHA := replayBytesSHA256(ledgerBytes), replayBytesSHA256(manifestBytes), replayBytesSHA256(proofBytes)
-	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != sourceSHA || sealedUsage.LedgerSHA256 != ledgerSHA || proof.Status != "pass" || ValidateRuntimeArtifact(proof.Candidate) != nil || ValidateRuntimeArtifact(proof.Tools) != nil || proof.FixtureManifestSHA256 != manifestSHA {
+	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != sourceSHA || sealedUsage.LedgerSHA256 != ledgerSHA || !sha256Pattern.MatchString(sealedUsage.PolicySHA256) || proof.FixtureManifestSHA256 != manifestSHA {
 		return AssuranceProfile{}, fmt.Errorf("assurance profile inputs do not bind")
+	}
+	if err := ValidateLocalProof(proof, manifest); err != nil {
+		return AssuranceProfile{}, fmt.Errorf("validate local proof: %w", err)
 	}
 	required, err := oracleRequiredSurfaceIDs(sealedUsage.Reconciliation)
 	if err != nil {
@@ -287,7 +291,7 @@ func BuildAssuranceProfile(sourceProfilePath, sealedUsagePath, ledgerPath, fixtu
 		}
 		local[row.SurfaceID] = row
 	}
-	result := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: sourceSHA, SealedUsageSHA256: usageSHA, LedgerSHA256: ledgerSHA, FixtureManifestSHA256: manifestSHA, LocalProofSHA256: proofSHA, ByDisposition: map[string]int{}}
+	result := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: sourceSHA, SealedUsageSHA256: usageSHA, LedgerSHA256: ledgerSHA, PolicySHA256: sealedUsage.PolicySHA256, FixtureManifestSHA256: manifestSHA, LocalProofSHA256: proofSHA, ByDisposition: map[string]int{}}
 	for _, surfaceID := range required {
 		row, exists := source[surfaceID]
 		if !exists || !ledgerIDs[surfaceID] || !owned[surfaceID] {
@@ -527,8 +531,8 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 // PlanOracleFromFiles loads only the sealed assurance profile, fresh usage,
 // local proof, and directives. It cannot plan from a caller-selected source
 // profile or write over a previous plan.
-func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath, outputPath string) (OraclePlan, error) {
-	for _, path := range []string{profilePath, sealedUsagePath, proofPath, directivePath, outputPath} {
+func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proofPath, directivePath, outputPath string) (OraclePlan, error) {
+	for _, path := range []string{profilePath, sealedUsagePath, fixtureManifestPath, proofPath, directivePath, outputPath} {
 		if !filepath.IsAbs(path) {
 			return OraclePlan{}, fmt.Errorf("absolute oracle input and output paths are required")
 		}
@@ -546,6 +550,10 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath,
 	if err != nil {
 		return OraclePlan{}, fmt.Errorf("read sealed corpus usage: %w", err)
 	}
+	manifest, manifestBytes, err := readExactJSONBytes[LocalProofFixtureManifest](fixtureManifestPath)
+	if err != nil {
+		return OraclePlan{}, fmt.Errorf("read fixture manifest: %w", err)
+	}
 	proof, proofBytes, err := readExactJSONBytes[LocalProof](proofPath)
 	if err != nil {
 		return OraclePlan{}, fmt.Errorf("read local proof: %w", err)
@@ -558,7 +566,13 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath,
 		return OraclePlan{}, fmt.Errorf("read oracle directives: %w", err)
 	}
 	profileSHA256, sealedUsageSHA256 := replayBytesSHA256(profileBytes), replayBytesSHA256(sealedUsageBytes)
-	proofSHA256, directiveSHA256 := replayBytesSHA256(proofBytes), replayBytesSHA256(directiveBytes)
+	manifestSHA256, proofSHA256, directiveSHA256 := replayBytesSHA256(manifestBytes), replayBytesSHA256(proofBytes), replayBytesSHA256(directiveBytes)
+	if profile.FixtureManifestSHA256 != manifestSHA256 || proof.FixtureManifestSHA256 != manifestSHA256 {
+		return OraclePlan{}, fmt.Errorf("oracle fixture manifest does not bind profile and proof")
+	}
+	if err := ValidateLocalProof(proof, manifest); err != nil {
+		return OraclePlan{}, fmt.Errorf("validate local proof: %w", err)
+	}
 	if err := validateAssuranceOracleProfile(profile, sealedUsage, proof, sealedUsageSHA256, proofSHA256); err != nil {
 		return OraclePlan{}, err
 	}
@@ -579,6 +593,9 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath,
 	if _, after, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath); err != nil || replayBytesSHA256(after) != sealedUsageSHA256 {
 		return OraclePlan{}, fmt.Errorf("sealed corpus usage changed during oracle planning")
 	}
+	if _, after, err := readExactJSONBytes[LocalProofFixtureManifest](fixtureManifestPath); err != nil || replayBytesSHA256(after) != manifestSHA256 {
+		return OraclePlan{}, fmt.Errorf("fixture manifest changed during oracle planning")
+	}
 	if _, after, err := readExactJSONBytes[LocalProof](proofPath); err != nil || replayBytesSHA256(after) != proofSHA256 {
 		return OraclePlan{}, fmt.Errorf("local proof changed during oracle planning")
 	}
@@ -594,7 +611,7 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath,
 }
 
 func validateAssuranceOracleProfile(profile AssuranceProfile, usage SealedCorpusUsage, proof LocalProof, usageSHA, proofSHA string) error {
-	if profile.SchemaVersion != 1 || !sha256Pattern.MatchString(profile.SourceProfileSHA256) || !sha256Pattern.MatchString(profile.LedgerSHA256) || !sha256Pattern.MatchString(profile.FixtureManifestSHA256) || profile.SealedUsageSHA256 != usageSHA || profile.LocalProofSHA256 != proofSHA || proof.FixtureManifestSHA256 != profile.FixtureManifestSHA256 {
+	if profile.SchemaVersion != 1 || !sha256Pattern.MatchString(profile.SourceProfileSHA256) || !sha256Pattern.MatchString(profile.LedgerSHA256) || !sha256Pattern.MatchString(profile.PolicySHA256) || !sha256Pattern.MatchString(profile.FixtureManifestSHA256) || profile.SealedUsageSHA256 != usageSHA || profile.SourceProfileSHA256 != usage.ProfileSHA256 || profile.LedgerSHA256 != usage.LedgerSHA256 || profile.PolicySHA256 != usage.PolicySHA256 || profile.LocalProofSHA256 != proofSHA || proof.FixtureManifestSHA256 != profile.FixtureManifestSHA256 {
 		return fmt.Errorf("assurance profile does not bind authoritative inputs")
 	}
 	required, err := oracleRequiredSurfaceIDs(usage.Reconciliation)
@@ -605,22 +622,23 @@ func validateAssuranceOracleProfile(profile AssuranceProfile, usage SealedCorpus
 		return fmt.Errorf("assurance profile row count does not match sealed usage")
 	}
 	seen := make(map[string]bool, len(profile.Rows))
+	rowsByID := make(map[string]AssuranceProfileRow, len(profile.Rows))
 	counts := make(map[string]int)
 	nonDeferred, hosted := make(map[string]bool), make(map[string]bool)
 	for _, row := range profile.Rows {
 		if row.SurfaceID == "" || row.Disposition == "" || seen[row.SurfaceID] {
 			return fmt.Errorf("invalid or duplicate assurance profile surface %q", row.SurfaceID)
 		}
-		seen[row.SurfaceID], counts[row.Disposition] = true, counts[row.Disposition]+1
+		seen[row.SurfaceID], rowsByID[row.SurfaceID], counts[row.Disposition] = true, row, counts[row.Disposition]+1
 	}
 	for _, row := range profile.NonDeferredGaps {
-		if row.SurfaceID == "" || row.Disposition == "hosted-deferred" || nonDeferred[row.SurfaceID] || !seen[row.SurfaceID] {
+		if row.SurfaceID == "" || row.Disposition == "hosted-deferred" || nonDeferred[row.SurfaceID] || !seen[row.SurfaceID] || row != rowsByID[row.SurfaceID] {
 			return fmt.Errorf("invalid assurance non-deferred surface %q", row.SurfaceID)
 		}
 		nonDeferred[row.SurfaceID] = true
 	}
 	for _, row := range profile.HostedDeferred {
-		if row.SurfaceID == "" || row.Disposition != "hosted-deferred" || hosted[row.SurfaceID] || !seen[row.SurfaceID] {
+		if row.SurfaceID == "" || row.Disposition != "hosted-deferred" || hosted[row.SurfaceID] || !seen[row.SurfaceID] || row != rowsByID[row.SurfaceID] {
 			return fmt.Errorf("invalid assurance hosted surface %q", row.SurfaceID)
 		}
 		hosted[row.SurfaceID] = true
@@ -628,6 +646,19 @@ func validateAssuranceOracleProfile(profile AssuranceProfile, usage SealedCorpus
 	for _, id := range required {
 		if !seen[id] || (nonDeferred[id] == hosted[id]) {
 			return fmt.Errorf("assurance profile does not partition required surface %q", id)
+		}
+	}
+	proofBySurface := make(map[string]LocalSurfaceProof, len(proof.Surfaces))
+	for _, surface := range proof.Surfaces {
+		profileRow, exists := rowsByID[surface.SurfaceID]
+		if !exists || profileRow.Disposition == "hosted-deferred" || proofBySurface[surface.SurfaceID].SurfaceID != "" || surface.Disposition != profileRow.Disposition {
+			return fmt.Errorf("local proof does not match assurance profile surface %q", surface.SurfaceID)
+		}
+		proofBySurface[surface.SurfaceID] = surface
+	}
+	for _, row := range profile.Rows {
+		if row.Disposition != "hosted-deferred" && proofBySurface[row.SurfaceID].SurfaceID == "" {
+			return fmt.Errorf("assurance profile non-hosted surface %q lacks local proof", row.SurfaceID)
 		}
 	}
 	if len(profile.ByDisposition) != len(counts) {

@@ -271,7 +271,11 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 		t.Fatal(err)
 	}
 	profilePath := filepath.Join(root, "profile.json")
-	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug"}]}`), 0o600); err != nil {
+	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug"},{"surfaceId":"apex-language:NamespaceClassVariablePrecedence"}]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	policyPath := filepath.Join(root, "policy.json")
+	if err := WriteNewJSON(policyPath, surfaceledger.SupportPolicy{Rules: []surfaceledger.SupportPolicyRule{{Namespace: "System", Disposition: surfaceledger.DispositionLocalRuntimeRequired, Reason: "test"}}}); err != nil {
 		t.Fatal(err)
 	}
 	usage, err := ExtractRepositoryUsage([]surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}, repository, snapshot)
@@ -287,18 +291,18 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 		t.Fatal(err)
 	}
 	decisionPath := filepath.Join(root, "decisions.json")
-	if err := WriteNewJSON(decisionPath, UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), UsageSHA256: replayBytesSHA256(rawBytes)}); err != nil {
+	if err := WriteNewJSON(decisionPath, UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), PolicySHA256: localProofFileSHA256(t, policyPath), UsageSHA256: replayBytesSHA256(rawBytes)}); err != nil {
 		t.Fatal(err)
 	}
 	outputPath := filepath.Join(root, "CORPUS_USAGE.json")
-	artifact, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath)
+	artifact, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, outputPath)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if artifact.RawUsageSHA256 != replayBytesSHA256(rawBytes) || len(artifact.Reconciliation.Usage) != 2 || artifact.Reconciliation.Usage[1].Class != usageClassExact {
 		t.Fatalf("artifact = %#v", artifact)
 	}
-	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, decisionPath, outputPath); err == nil {
+	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, outputPath); err == nil {
 		t.Fatal("BuildSealedCorpusUsage overwrote its output")
 	}
 }

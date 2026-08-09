@@ -138,20 +138,25 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	root := t.TempDir()
 	profilePath := filepath.Join(root, "ASSURANCE_PROFILE.json")
 	sealedUsagePath := filepath.Join(root, "CORPUS_USAGE.json")
+	fixtureManifestPath := filepath.Join(root, "fixtures.json")
 	proofPath := filepath.Join(root, "proof.json")
 	directivePath := filepath.Join(root, "directives.json")
 	outputPath := filepath.Join(root, "ORACLE_PLAN.json")
-	sealedUsage := SealedCorpusUsage{SchemaVersion: 1, Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}}
+	sealedUsage := SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: strings.Repeat("e", 64), LedgerSHA256: strings.Repeat("f", 64), PolicySHA256: strings.Repeat("1", 64), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}}
 	if err := WriteNewJSON(sealedUsagePath, sealedUsage); err != nil {
 		t.Fatal(err)
 	}
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)}
-	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: tools, FixtureManifestSHA256: strings.Repeat("a", 64), Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}
+	if err := WriteNewJSON(fixtureManifestPath, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{{ID: "system", Name: "system", SHA256: strings.Repeat("7", 64), OwnedSurfaceIDs: []string{"apex:System.run()"}, Disposition: localRuntimeRequired}}}); err != nil {
+		t.Fatal(err)
+	}
+	receipt := CommandResult{Command: []string{"exec"}, CommandSpecSHA256: strings.Repeat("8", 64), ExitCode: 0, DurationMS: 1, StdoutSHA256: strings.Repeat("9", 64), StderrSHA256: strings.Repeat("a", 64), Passed: true}
+	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: tools, ProfileSHA256: strings.Repeat("b", 64), UsageSHA256: strings.Repeat("c", 64), DecisionSHA256: strings.Repeat("d", 64), FixtureManifestSHA256: localProofFileSHA256(t, fixtureManifestPath), SelectedSurfaceIDs: []string{"apex:System.run()"}, RawFixtureResults: []LocalProofFixtureResult{{FixtureID: "system", FixtureSHA256: strings.Repeat("7", 64), Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, Receipt: receipt}}, Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", FixtureID: "system", FixtureSHA256: strings.Repeat("7", 64), Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, RuntimeObserved: true}}}
 	if err := WriteNewJSON(proofPath, proof); err != nil {
 		t.Fatal(err)
 	}
-	profile := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("e", 64), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LedgerSHA256: strings.Repeat("f", 64), FixtureManifestSHA256: strings.Repeat("a", 64), LocalProofSHA256: localProofFileSHA256(t, proofPath), Total: 1, ByDisposition: map[string]int{localRuntimeRequired: 1}, NonDeferredGaps: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}}
+	profile := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("e", 64), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LedgerSHA256: strings.Repeat("f", 64), PolicySHA256: strings.Repeat("1", 64), FixtureManifestSHA256: localProofFileSHA256(t, fixtureManifestPath), LocalProofSHA256: localProofFileSHA256(t, proofPath), Total: 1, ByDisposition: map[string]int{localRuntimeRequired: 1}, NonDeferredGaps: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}}
 	if err := WriteNewJSON(profilePath, profile); err != nil {
 		t.Fatal(err)
 	}
@@ -159,12 +164,45 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	if err := WriteNewJSON(directivePath, directives); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath, outputPath)
+	plan, err := PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proofPath, directivePath, outputPath)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != localProofFileSHA256(t, profilePath) || plan.Candidate != candidate || plan.Tools != tools || localProofFileSHA256(t, outputPath) == "" {
 		t.Fatalf("plan = %#v", plan)
+	}
+	if err := os.Remove(outputPath); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(profilePath); err != nil {
+		t.Fatal(err)
+	}
+	profile.PolicySHA256 = strings.Repeat("0", 64)
+	if err := WriteNewJSON(profilePath, profile); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proofPath, directivePath, outputPath); err == nil {
+		t.Fatal("PlanOracleFromFiles accepted a profile with forged sealed policy lineage")
+	}
+}
+
+func TestValidateAssuranceOracleProfileRejectsMismatchedPartitions(t *testing.T) {
+	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	usage := SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: strings.Repeat("c", 64), LedgerSHA256: strings.Repeat("d", 64), PolicySHA256: strings.Repeat("e", 64), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}}
+	profile := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: usage.ProfileSHA256, SealedUsageSHA256: strings.Repeat("f", 64), LedgerSHA256: usage.LedgerSHA256, PolicySHA256: usage.PolicySHA256, FixtureManifestSHA256: strings.Repeat("1", 64), LocalProofSHA256: strings.Repeat("2", 64), Total: 1, ByDisposition: map[string]int{"hosted-deferred": 1}, NonDeferredGaps: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: "hosted-deferred"}}}
+	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: candidate, FixtureManifestSHA256: profile.FixtureManifestSHA256}
+	if err := validateAssuranceOracleProfile(profile, usage, proof, profile.SealedUsageSHA256, profile.LocalProofSHA256); err == nil {
+		t.Fatal("validateAssuranceOracleProfile accepted mismatched profile partitions")
+	}
+}
+
+func TestValidateAssuranceOracleProfileRejectsMissingNonHostedProof(t *testing.T) {
+	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	usage := SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: strings.Repeat("c", 64), LedgerSHA256: strings.Repeat("d", 64), PolicySHA256: strings.Repeat("e", 64), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}}
+	profile := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: usage.ProfileSHA256, SealedUsageSHA256: strings.Repeat("f", 64), LedgerSHA256: usage.LedgerSHA256, PolicySHA256: usage.PolicySHA256, FixtureManifestSHA256: strings.Repeat("1", 64), LocalProofSHA256: strings.Repeat("2", 64), Total: 1, ByDisposition: map[string]int{localRuntimeRequired: 1}, NonDeferredGaps: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}}
+	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: candidate, FixtureManifestSHA256: profile.FixtureManifestSHA256}
+	if err := validateAssuranceOracleProfile(profile, usage, proof, profile.SealedUsageSHA256, profile.LocalProofSHA256); err == nil {
+		t.Fatal("validateAssuranceOracleProfile accepted missing non-hosted proof")
 	}
 }
 
@@ -179,7 +217,7 @@ func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
 	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.run()","namespace":"System","disposition":"local-runtime-required","reason":"current","corpusUsage":["stale"]},{"surfaceId":"apex:Auth.hosted()","namespace":"Auth","disposition":"hosted-deferred","reason":"hosted"}]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), LedgerSHA256: strings.Repeat("a", 64), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{
+	if err := WriteNewJSON(usagePath, SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), LedgerSHA256: strings.Repeat("a", 64), PolicySHA256: strings.Repeat("b", 64), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{
 		{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"},
 		{UsageEntry: UsageEntry{UsageKey: "Auth.hosted", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:Auth.hosted()"},
 	}}}); err != nil {
@@ -188,11 +226,12 @@ func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
 	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: 1, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.run()"}, {SurfaceID: "apex:Auth.hosted()"}}}); err != nil {
 		t.Fatal(err)
 	}
-	if err := WriteNewJSON(manifestPath, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{{ID: "system", Name: "system", SHA256: strings.Repeat("b", 64), OwnedSurfaceIDs: []string{"apex:System.run()"}}, {ID: "auth", Name: "auth", SHA256: strings.Repeat("c", 64), OwnedSurfaceIDs: []string{"apex:Auth.hosted()"}}}}); err != nil {
+	if err := WriteNewJSON(manifestPath, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{{ID: "system", Name: "system", SHA256: strings.Repeat("c", 64), OwnedSurfaceIDs: []string{"apex:System.run()"}, Disposition: localRuntimeRequired}, {ID: "auth", Name: "auth", SHA256: strings.Repeat("d", 64), OwnedSurfaceIDs: []string{"apex:Auth.hosted()"}, Disposition: compileShapeRequired}}}); err != nil {
 		t.Fatal(err)
 	}
-	candidate := RuntimeArtifact{Commit: strings.Repeat("d", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("e", 64)}
-	if err := WriteNewJSON(proofPath, LocalProof{Status: "pass", Candidate: candidate, Tools: candidate, FixtureManifestSHA256: localProofFileSHA256(t, manifestPath), Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}); err != nil {
+	candidate := RuntimeArtifact{Commit: strings.Repeat("e", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("f", 64)}
+	receipt := CommandResult{Command: []string{"exec"}, CommandSpecSHA256: strings.Repeat("1", 64), ExitCode: 0, DurationMS: 1, StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64), Passed: true}
+	if err := WriteNewJSON(proofPath, LocalProof{Status: "pass", Candidate: candidate, Tools: candidate, ProfileSHA256: strings.Repeat("4", 64), UsageSHA256: strings.Repeat("5", 64), DecisionSHA256: strings.Repeat("6", 64), FixtureManifestSHA256: localProofFileSHA256(t, manifestPath), SelectedSurfaceIDs: []string{"apex:System.run()"}, RawFixtureResults: []LocalProofFixtureResult{{FixtureID: "system", FixtureSHA256: strings.Repeat("c", 64), Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: candidate.SHA256, Receipt: receipt}}, Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", FixtureID: "system", FixtureSHA256: strings.Repeat("c", 64), Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: candidate.SHA256, RuntimeObserved: true}}}); err != nil {
 		t.Fatal(err)
 	}
 	usage, err := readExactJSON[SealedCorpusUsage](usagePath)

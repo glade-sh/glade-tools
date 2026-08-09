@@ -137,6 +137,96 @@ type localProofExecution struct {
 	Validated bool
 }
 
+// ValidateLocalProof rechecks the complete normalized fixture/receipt graph
+// before another workflow stage may rely on local evidence.
+func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) error {
+	if proof.Status != "pass" || ValidateRuntimeArtifact(proof.Candidate) != nil || ValidateRuntimeArtifact(proof.Tools) != nil || !sha256Pattern.MatchString(proof.ProfileSHA256) || !sha256Pattern.MatchString(proof.UsageSHA256) || !sha256Pattern.MatchString(proof.DecisionSHA256) || !sha256Pattern.MatchString(proof.FixtureManifestSHA256) {
+		return fmt.Errorf("invalid local proof bindings")
+	}
+	fixtures := make(map[string]LocalProofFixture, len(manifest.Fixtures))
+	owned := make(map[string]LocalProofFixture)
+	for _, fixture := range manifest.Fixtures {
+		if fixture.ID == "" || fixture.Name == "" || !sha256Pattern.MatchString(fixture.SHA256) || !validLocalProofDisposition(fixture.Disposition) || fixtures[fixture.ID].ID != "" || len(fixture.OwnedSurfaceIDs) == 0 {
+			return fmt.Errorf("invalid or duplicate fixture %q", fixture.ID)
+		}
+		fixtures[fixture.ID] = fixture
+		for _, surfaceID := range fixture.OwnedSurfaceIDs {
+			if surfaceID == "" || owned[surfaceID].ID != "" {
+				return fmt.Errorf("invalid or duplicate fixture-owned surface %q", surfaceID)
+			}
+			owned[surfaceID] = fixture
+		}
+	}
+	if len(proof.SelectedSurfaceIDs) == 0 || !sort.StringsAreSorted(proof.SelectedSurfaceIDs) {
+		return fmt.Errorf("local proof selected surfaces are missing or unsorted")
+	}
+	selected := make(map[string]bool, len(proof.SelectedSurfaceIDs))
+	selectedFixtures := make(map[string]bool)
+	for _, surfaceID := range proof.SelectedSurfaceIDs {
+		fixture, exists := owned[surfaceID]
+		if surfaceID == "" || selected[surfaceID] || !exists {
+			return fmt.Errorf("invalid or unowned selected surface %q", surfaceID)
+		}
+		selected[surfaceID], selectedFixtures[fixture.ID] = true, true
+	}
+	raw := make(map[string]LocalProofFixtureResult, len(proof.RawFixtureResults))
+	for _, result := range proof.RawFixtureResults {
+		fixture, exists := fixtures[result.FixtureID]
+		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || !validLocalProofReceipt(result.Receipt, fixture.Disposition) {
+			return fmt.Errorf("invalid local proof fixture receipt %q", result.FixtureID)
+		}
+		raw[result.FixtureID] = result
+	}
+	if len(raw) != len(selectedFixtures) {
+		return fmt.Errorf("local proof fixture receipt coverage is incomplete")
+	}
+	surfaces := make(map[string]bool, len(proof.Surfaces))
+	for _, surface := range proof.Surfaces {
+		fixture, exists := owned[surface.SurfaceID]
+		if !exists || !selected[surface.SurfaceID] || surfaces[surface.SurfaceID] || surface.FixtureID != fixture.ID || surface.FixtureSHA256 != fixture.SHA256 || surface.Disposition != fixture.Disposition || surface.CandidateSHA256 != proof.Candidate.SHA256 || surface.ToolsSHA256 != proof.Tools.SHA256 || !validSurfaceObservation(surface) {
+			return fmt.Errorf("invalid local proof surface %q", surface.SurfaceID)
+		}
+		surfaces[surface.SurfaceID] = true
+	}
+	if len(surfaces) != len(selected) {
+		return fmt.Errorf("local proof surface coverage is incomplete")
+	}
+	return nil
+}
+
+func validLocalProofReceipt(receipt CommandResult, disposition string) bool {
+	if !receipt.Passed || receipt.TimedOut || receipt.ExitCode != 0 || receipt.DurationMS < 0 || len(receipt.Command) != 1 || !sha256Pattern.MatchString(receipt.CommandSpecSHA256) || !sha256Pattern.MatchString(receipt.StdoutSHA256) || !sha256Pattern.MatchString(receipt.StderrSHA256) {
+		return false
+	}
+	return receipt.Command[0] == localProofOperation(disposition)
+}
+
+func localProofOperation(disposition string) string {
+	switch disposition {
+	case localRuntimeRequired:
+		return "exec"
+	case deterministicMockRequired:
+		return "test"
+	case compileShapeRequired:
+		return "check"
+	default:
+		return ""
+	}
+}
+
+func validSurfaceObservation(surface LocalSurfaceProof) bool {
+	switch surface.Disposition {
+	case localRuntimeRequired:
+		return surface.RuntimeObserved && !surface.BehaviorObserved && !surface.CompilePassed
+	case deterministicMockRequired:
+		return !surface.RuntimeObserved && surface.BehaviorObserved && !surface.CompilePassed
+	case compileShapeRequired:
+		return !surface.RuntimeObserved && !surface.BehaviorObserved && surface.CompilePassed
+	default:
+		return false
+	}
+}
+
 type localProofExecutor func(localProofCommand) localProofExecution
 
 // RunLocalProof runs each explicitly mapped fixture once and writes a
@@ -209,6 +299,9 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 			surface.CompilePassed = true
 		}
 		proof.Surfaces = append(proof.Surfaces, surface)
+	}
+	if err := ValidateLocalProof(proof, LocalProofFixtureManifest{Fixtures: fixtures}); err != nil {
+		return LocalProof{}, err
 	}
 	if err := WriteNewJSON(request.OutputPath, proof); err != nil {
 		return LocalProof{}, fmt.Errorf("write local proof: %w", err)
