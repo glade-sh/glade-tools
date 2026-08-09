@@ -220,31 +220,13 @@ func TestReconcileUsageRejectsUnclassifiedAndInvalidDecisions(t *testing.T) {
 	}
 }
 
-func TestReconcileUsageFromFilesBindsSingleReadInputs(t *testing.T) {
-	root := t.TempDir()
-	profilePath := filepath.Join(root, "profile.json")
-	usagePath := filepath.Join(root, "usage.json")
-	decisionPath := filepath.Join(root, "decisions.json")
-	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug(Object)","usageKey":"System.debug"}],"corpusUsage":["ignored-source-history"]}`), 0o600); err != nil {
+func TestReadUsageProfileRowsRejectsMissingSealedInputs(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "profile.json")
+	if err := os.WriteFile(path, []byte(`{"rows":[{"surfaceId":"apex:System.debug"}]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	usage := CombinedRepositoryUsage{Usage: []UsageEntry{{UsageKey: "System.debug", Namespace: "System", PrivateProdRefs: 1}}}
-	if err := WriteNewJSON(usagePath, usage); err != nil {
-		t.Fatal(err)
-	}
-	decision := UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), UsageSHA256: localProofFileSHA256(t, usagePath)}
-	if err := WriteNewJSON(decisionPath, decision); err != nil {
-		t.Fatal(err)
-	}
-	reconciled, err := reconcileUsageFromFiles(profilePath, usagePath, decisionPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if reconciled.ProfileSHA256 != decision.ProfileSHA256 || reconciled.UsageSHA256 != decision.UsageSHA256 || reconciled.DecisionSHA256 != localProofFileSHA256(t, decisionPath) {
-		t.Fatalf("reconciliation bindings = %#v", reconciled)
-	}
-	if len(reconciled.Usage) != 1 || reconciled.Usage[0].Class != usageClassExact {
-		t.Fatalf("reconciliation usage = %#v", reconciled.Usage)
+	if _, _, _, err := readUsageProfileRows(path); err == nil {
+		t.Fatal("readUsageProfileRows accepted a profile without sealed ledger and policy inputs")
 	}
 }
 
@@ -270,12 +252,12 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}}); err != nil {
 		t.Fatal(err)
 	}
-	profilePath := filepath.Join(root, "profile.json")
-	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.debug"},{"surfaceId":"apex-language:NamespaceClassVariablePrecedence"}]}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
 	policyPath := filepath.Join(root, "policy.json")
 	if err := WriteNewJSON(policyPath, surfaceledger.SupportPolicy{Rules: []surfaceledger.SupportPolicyRule{{Namespace: "System", Disposition: surfaceledger.DispositionLocalRuntimeRequired, Reason: "test"}}}); err != nil {
+		t.Fatal(err)
+	}
+	profilePath := filepath.Join(root, "profile.json")
+	if err := WriteNewJSON(profilePath, surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug"}, {SurfaceID: "apex-language:NamespaceClassVariablePrecedence"}}, Inputs: &surfaceledger.SupportProfileInputs{Files: []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: localProofFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: localProofFileSHA256(t, policyPath)}}}}); err != nil {
 		t.Fatal(err)
 	}
 	usage, err := ExtractRepositoryUsage([]surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}, repository, snapshot)
@@ -293,6 +275,17 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 	decisionPath := filepath.Join(root, "decisions.json")
 	if err := WriteNewJSON(decisionPath, UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), PolicySHA256: localProofFileSHA256(t, policyPath), UsageSHA256: replayBytesSHA256(rawBytes)}); err != nil {
 		t.Fatal(err)
+	}
+	replacementPolicyPath := filepath.Join(root, "replacement-policy.json")
+	if err := WriteNewJSON(replacementPolicyPath, surfaceledger.SupportPolicy{Rules: []surfaceledger.SupportPolicyRule{{Namespace: "System", Disposition: surfaceledger.DispositionHostedDeferred, Reason: "forged"}}}); err != nil {
+		t.Fatal(err)
+	}
+	replacementDecisionPath := filepath.Join(root, "replacement-decisions.json")
+	if err := WriteNewJSON(replacementDecisionPath, UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), PolicySHA256: localProofFileSHA256(t, replacementPolicyPath), UsageSHA256: replayBytesSHA256(rawBytes)}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, replacementPolicyPath, replacementDecisionPath, filepath.Join(root, "forged-CORPUS_USAGE.json")); err == nil {
+		t.Fatal("BuildSealedCorpusUsage accepted a policy and decision pair not sealed by the support profile")
 	}
 	outputPath := filepath.Join(root, "CORPUS_USAGE.json")
 	artifact, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, outputPath)

@@ -1,7 +1,6 @@
 package corpusassurance
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -342,9 +341,6 @@ func validateLocalProofRequest(request LocalProofRequest) (localProofInputs, map
 			return localProofInputs{}, nil, nil, nil, fmt.Errorf("invalid or duplicate fixture %q", fixture.ID)
 		}
 		fixtureIDs[fixture.ID] = true
-		if err := validateLocalProofFixtureFile(fixture); err != nil {
-			return localProofInputs{}, nil, nil, nil, err
-		}
 		owned := make(map[string]bool, len(fixture.OwnedSurfaceIDs))
 		selectedFixture := false
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
@@ -371,6 +367,17 @@ func validateLocalProofRequest(request LocalProofRequest) (localProofInputs, map
 	for _, surfaceID := range selected {
 		if _, exists := bySurface[surfaceID]; !exists {
 			return localProofInputs{}, nil, nil, nil, fmt.Errorf("missing fixture evidence for %q", surfaceID)
+		}
+	}
+	selectedFixtureIDs := make(map[string]bool, len(selectedFixtures))
+	for _, fixture := range selectedFixtures {
+		selectedFixtureIDs[fixture.ID] = true
+	}
+	for _, fixture := range manifest.Fixtures {
+		if !selectedFixtureIDs[fixture.ID] {
+			if _, err := loadLocalProofFixture(fixture); err != nil {
+				return localProofInputs{}, nil, nil, nil, err
+			}
 		}
 	}
 	sort.Slice(selectedFixtures, func(i, j int) bool { return selectedFixtures[i].ID < selectedFixtures[j].ID })
@@ -519,51 +526,6 @@ func verifyLocalProofFiles(request LocalProofRequest, inputs localProofInputs, f
 	}
 	if _, err := loadLocalProofFixtureManifest(request.FixtureManifestPath, inputs.FixtureManifestSHA256); err != nil {
 		return err
-	}
-	for _, fixture := range fixtures {
-		if err := validateLocalProofFixtureFile(fixture); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func validateLocalProofFixtureFile(fixture LocalProofFixture) error {
-	if fixture.Path == "" || !filepath.IsAbs(fixture.Path) {
-		return fmt.Errorf("fixture %q path must be absolute", fixture.ID)
-	}
-	data, err := os.ReadFile(fixture.Path)
-	if err != nil {
-		return fmt.Errorf("read fixture %q: %w", fixture.ID, err)
-	}
-	if replayBytesSHA256(data) != fixture.SHA256 {
-		return fmt.Errorf("fixture binding mismatch for %q", fixture.ID)
-	}
-	var identity struct {
-		Name     string `json:"name"`
-		Evidence []struct {
-			SurfaceID string `json:"surfaceId"`
-			Kind      string `json:"kind"`
-		} `json:"evidence"`
-	}
-	if err := json.Unmarshal(data, &identity); err != nil {
-		return fmt.Errorf("decode fixture %q: %w", fixture.ID, err)
-	}
-	if identity.Name == "" || identity.Name != fixture.Name {
-		return fmt.Errorf("fixture name mismatch for %q", fixture.ID)
-	}
-	evidence := make(map[string]string, len(identity.Evidence))
-	for _, item := range identity.Evidence {
-		if item.SurfaceID == "" || item.Kind == "" || evidence[item.SurfaceID] != "" {
-			return fmt.Errorf("fixture %q has invalid evidence", fixture.ID)
-		}
-		evidence[item.SurfaceID] = item.Kind
-	}
-	wantKind := localProofEvidenceKind(fixture.Disposition)
-	for _, surfaceID := range fixture.OwnedSurfaceIDs {
-		if evidence[surfaceID] != wantKind {
-			return fmt.Errorf("fixture %q lacks %s evidence for %q", fixture.ID, wantKind, surfaceID)
-		}
 	}
 	return nil
 }

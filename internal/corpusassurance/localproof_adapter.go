@@ -14,16 +14,9 @@ import (
 // frozen-candidate CLI. The candidate never receives a non-existent --fixture
 // flag; it receives an ordinary, temporary SFDX project instead.
 func materializeLocalProofFixture(entry LocalProofFixture, candidatePath string) (localProofCommand, func(), error) {
-	data, err := os.ReadFile(entry.Path)
+	fixture, err := loadLocalProofFixture(entry)
 	if err != nil {
-		return localProofCommand{}, nil, fmt.Errorf("read fixture %q: %w", entry.ID, err)
-	}
-	fixture, err := compat.LoadData(data)
-	if err != nil {
-		return localProofCommand{}, nil, fmt.Errorf("decode fixture %q: %w", entry.ID, err)
-	}
-	if err := compat.Validate(fixture); err != nil {
-		return localProofCommand{}, nil, fmt.Errorf("validate fixture %q: %w", entry.ID, err)
+		return localProofCommand{}, nil, err
 	}
 	root, err := os.MkdirTemp("", "glade-assurance-fixture-*")
 	if err != nil {
@@ -40,6 +33,46 @@ func materializeLocalProofFixture(entry LocalProofFixture, candidatePath string)
 		return localProofCommand{}, nil, err
 	}
 	return command, cleanup, nil
+}
+
+func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
+	data, err := os.ReadFile(entry.Path)
+	if err != nil {
+		return compat.Fixture{}, fmt.Errorf("read fixture %q: %w", entry.ID, err)
+	}
+	if replayBytesSHA256(data) != entry.SHA256 {
+		return compat.Fixture{}, fmt.Errorf("fixture binding mismatch for %q", entry.ID)
+	}
+	fixture, err := compat.LoadData(data)
+	if err != nil {
+		return compat.Fixture{}, fmt.Errorf("decode fixture %q: %w", entry.ID, err)
+	}
+	if err := compat.Validate(fixture); err != nil {
+		return compat.Fixture{}, fmt.Errorf("validate fixture %q: %w", entry.ID, err)
+	}
+	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+		return compat.Fixture{}, err
+	}
+	return fixture, nil
+}
+
+func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.Fixture) error {
+	if entry.Path == "" || !filepath.IsAbs(entry.Path) || fixture.Name == "" || fixture.Name != entry.Name {
+		return fmt.Errorf("fixture name or path mismatch for %q", entry.ID)
+	}
+	evidence := make(map[string]string, len(fixture.Evidence))
+	for _, item := range fixture.Evidence {
+		if item.SurfaceID == "" || item.Kind == "" || evidence[item.SurfaceID] != "" {
+			return fmt.Errorf("fixture %q has invalid evidence", entry.ID)
+		}
+		evidence[item.SurfaceID] = item.Kind
+	}
+	for _, surfaceID := range entry.OwnedSurfaceIDs {
+		if evidence[surfaceID] != localProofEvidenceKind(entry.Disposition) {
+			return fmt.Errorf("fixture %q lacks required evidence for %q", entry.ID, surfaceID)
+		}
+	}
+	return nil
 }
 
 func writeLocalProofProject(root string, fixture compat.Fixture) error {

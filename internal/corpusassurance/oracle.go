@@ -508,6 +508,9 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 		directive := directiveBySurface[surfaceID]
 		input := OracleInputRow{SurfaceID: surfaceID, Disposition: profileRow.Disposition, ExclusionClass: directive.ExclusionClass, ExclusionReason: directive.ExclusionReason}
 		if profileRow.Disposition == deterministicMockRequired {
+			if directive.SurfaceID == "" {
+				return OraclePlan{}, fmt.Errorf("deterministic mock %q requires an explicit deployability directive", surfaceID)
+			}
 			input.Deployable = directive.ExclusionClass == ""
 		} else if profileRow.Disposition != "hosted-deferred" && directive.SurfaceID != "" {
 			return OraclePlan{}, fmt.Errorf("oracle directive is not allowed for %q", surfaceID)

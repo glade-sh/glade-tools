@@ -121,16 +121,12 @@ func TestPlanOracleForUsageRejectsMissingOrMismatchedEvidence(t *testing.T) {
 	}
 }
 
-func TestPlanOracleForUsageTreatsUndirectedMockAsDeployable(t *testing.T) {
+func TestPlanOracleForUsageRejectsUndirectedMock(t *testing.T) {
 	reconciled := UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "Cache.read", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:Cache.read()"}}}
 	profile := []OracleProfileRow{{SurfaceID: "apex:Cache.read()", Disposition: deterministicMockRequired}}
 	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:Cache.read()", Disposition: deterministicMockRequired, BehaviorObserved: true}}}
-	plan, err := planOracleForUsage(reconciled, profile, proof, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleCompile {
-		t.Fatalf("plan = %#v", plan)
+	if _, err := planOracleForUsage(reconciled, profile, proof, nil); err == nil {
+		t.Fatal("planOracleForUsage accepted an undirected deterministic mock")
 	}
 }
 

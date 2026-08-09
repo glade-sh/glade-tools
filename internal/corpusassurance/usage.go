@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -141,7 +140,7 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if !bytes.Equal(firstBytes, secondBytes) {
 		return SealedCorpusUsage{}, fmt.Errorf("corpus usage extraction is not byte-identical")
 	}
-	profile, profileBytes, err := readUsageProfileRows(profilePath)
+	profile, profileInputs, profileBytes, err := readUsageProfileRows(profilePath)
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
@@ -151,6 +150,9 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	}
 	if len(policy.Rules) == 0 {
 		return SealedCorpusUsage{}, fmt.Errorf("support policy rules are required")
+	}
+	if err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes); err != nil {
+		return SealedCorpusUsage{}, err
 	}
 	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows, policy)
 	if err != nil {
@@ -213,66 +215,34 @@ func verifySealedUsageInputs(inputs []sealedUsageInput) error {
 	return nil
 }
 
-// ReconcileUsageFromFiles reads and binds the authoritative profile, fresh
-// usage, and decision bytes before returning a reconciliation. Source-profile
-// fields outside the allowlisted row projection are deliberately ignored.
-func reconcileUsageFromFiles(profilePath, usagePath, decisionPath string) (UsageReconciliation, error) {
-	if !filepath.IsAbs(profilePath) || !filepath.IsAbs(usagePath) || !filepath.IsAbs(decisionPath) {
-		return UsageReconciliation{}, fmt.Errorf("absolute profile, usage, and decision paths are required")
-	}
-	profile, profileBytes, err := readUsageProfileRows(profilePath)
+func readUsageProfileRows(path string) ([]UsageProfileRow, []surfaceledger.SupportProfileInput, []byte, error) {
+	profile, data, err := readExactJSONBytes[surfaceledger.SupportProfile](path)
 	if err != nil {
-		return UsageReconciliation{}, fmt.Errorf("read usage profile: %w", err)
+		return nil, nil, nil, err
 	}
-	usage, usageBytes, err := readExactJSONBytes[CombinedRepositoryUsage](usagePath)
-	if err != nil {
-		return UsageReconciliation{}, fmt.Errorf("read fresh usage: %w", err)
+	if len(profile.ValidationErrors) != 0 || profile.Inputs == nil {
+		return nil, nil, nil, fmt.Errorf("support profile has validation errors")
 	}
-	decision, decisionBytes, err := readExactJSONBytes[UsageDecisionFile](decisionPath)
-	if err != nil {
-		return UsageReconciliation{}, fmt.Errorf("read usage decisions: %w", err)
+	rows := make([]UsageProfileRow, len(profile.Rows))
+	for i, row := range profile.Rows {
+		rows[i] = UsageProfileRow{SurfaceID: row.SurfaceID, UsageKey: row.UsageKey, Disposition: string(row.Disposition)}
 	}
-	profileSHA256, usageSHA256, decisionSHA256 := replayBytesSHA256(profileBytes), replayBytesSHA256(usageBytes), replayBytesSHA256(decisionBytes)
-	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != profileSHA256 || decision.UsageSHA256 != usageSHA256 {
-		return UsageReconciliation{}, fmt.Errorf("usage decisions do not bind authoritative inputs")
-	}
-	reconciled, err := reconcileUsage(profile, usage.Usage, decision.Decisions)
-	if err != nil {
-		return UsageReconciliation{}, err
-	}
-	if _, after, err := readUsageProfileRows(profilePath); err != nil || replayBytesSHA256(after) != profileSHA256 {
-		return UsageReconciliation{}, fmt.Errorf("profile changed during usage reconciliation")
-	}
-	if _, after, err := readExactJSONBytes[CombinedRepositoryUsage](usagePath); err != nil || replayBytesSHA256(after) != usageSHA256 {
-		return UsageReconciliation{}, fmt.Errorf("fresh usage changed during reconciliation")
-	}
-	if _, after, err := readExactJSONBytes[UsageDecisionFile](decisionPath); err != nil || replayBytesSHA256(after) != decisionSHA256 {
-		return UsageReconciliation{}, fmt.Errorf("usage decisions changed during reconciliation")
-	}
-	reconciled.ProfileSHA256, reconciled.UsageSHA256, reconciled.DecisionSHA256 = profileSHA256, usageSHA256, decisionSHA256
-	return reconciled, nil
+	return rows, profile.Inputs.Files, data, nil
 }
 
-func readUsageProfileRows(path string) ([]UsageProfileRow, []byte, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, nil, err
-	}
-	var profile struct {
-		Rows []UsageProfileRow `json:"rows"`
-	}
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	if err := decoder.Decode(&profile); err != nil {
-		return nil, nil, err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		if err == nil {
-			return nil, nil, fmt.Errorf("multiple JSON values")
+func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) error {
+	want := map[string]string{"ledger": replayBytesSHA256(ledgerBytes), "policy": replayBytesSHA256(policyBytes)}
+	for _, input := range inputs {
+		expected, ok := want[input.Name]
+		if !ok || input.SHA256 != expected {
+			return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
-		return nil, nil, err
+		delete(want, input.Name)
 	}
-	return profile.Rows, data, nil
+	if len(want) != 0 {
+		return fmt.Errorf("support profile lacks sealed ledger and policy inputs")
+	}
+	return nil
 }
 
 // usageProfileRowsFromLedger assigns the canonical usage key from the sealed
