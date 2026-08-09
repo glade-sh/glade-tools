@@ -120,6 +120,68 @@ func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 	}
 }
 
+func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "org-create.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	creation, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{BundlePath: bundlePath, DevHub: "glade-dev-hub4", Alias: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+		if path != "/usr/local/bin/sf" || !containsString(args, "--definition-file") || !containsString(args, "glade-dev-hub4") {
+			return salesforceCommandOutput{}, fmt.Errorf("unexpected create invocation %s %v", path, args)
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
+	}})
+	if err != nil {
+		t.Fatalf("RunSalesforceOrgCreate: %v", err)
+	}
+	if creation.OrgID != "00D000000000001" || creation.Alias != "assurance-sf0" || creation.BundleSHA256 != localProofFileSHA256(t, bundlePath) {
+		t.Fatalf("creation = %#v", creation)
+	}
+	if _, err := os.Stat(outputPath); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "preflight.json"), filepath.Join(root, "cleanup.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	bundleSHA := localProofFileSHA256(t, bundlePath)
+	createArgs := salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), "glade-dev-hub4", "assurance-sf0")
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", Alias: "assurance-sf0", OrgID: "00D0", Command: CommandResult{Command: append([]string{"/usr/local/bin/sf"}, createArgs...), CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: "/usr/local/bin/sf", Args: createArgs, Env: []string{"SF_USE_GENERIC_UNIX_KEYCHAIN=true"}, Timeout: salesforceCommandTimeout}), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("b", 64), StderrSHA256: strings.Repeat("c", 64)}}
+	if err := WriteNewJSON(creationPath, creation); err != nil {
+		t.Fatal(err)
+	}
+	preflight := salesforcePreflightForTest("assurance-sf0", bundleSHA)
+	if err := WriteNewJSON(preflightPath, preflight); err != nil {
+		t.Fatal(err)
+	}
+	cleanup, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", DevHub: "glade-dev-hub4", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+		if path != "/usr/local/bin/sf" {
+			return salesforceCommandOutput{}, fmt.Errorf("unexpected sf path %q", path)
+		}
+		if len(args) >= 3 && args[0] == "org" && args[1] == "delete" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0}`)}, nil
+		}
+		return salesforceCommandOutput{ExitCode: 1, Stderr: []byte("not found")}, nil
+	}})
+	if err != nil {
+		t.Fatalf("RunSalesforceOrgCleanup: %v", err)
+	}
+	if !cleanup.ResidueAbsent || cleanup.OrgID != creation.OrgID || len(cleanup.Commands) != 2 {
+		t.Fatalf("cleanup = %#v", cleanup)
+	}
+	if _, err := os.Stat(outputPath); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(t *testing.T) {
 	zero := 0
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}

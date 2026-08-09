@@ -219,6 +219,22 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "org-preflight", len(preflight.Inventory.Counts), *output)
+	case "org-create":
+		flags := flag.NewFlagSet("corpus assurance org-create", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		bundle, devHub, alias := flags.String("bundle", "", ""), flags.String("dev-hub", "", ""), flags.String("alias", "", "")
+		sfbin, output := flags.String("sf-bin", "", ""), flags.String("output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*bundle, *devHub, *alias, *sfbin, *output); err != nil {
+			return err
+		}
+		_, err := corpusassurance.RunSalesforceOrgCreate(corpusassurance.SalesforceOrgCreateRequest{BundlePath: *bundle, DevHub: *devHub, Alias: *alias, SFBin: *sfbin, OutputPath: *output})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "org-create", 1, *output)
 	case "salesforce-run":
 		flags := flag.NewFlagSet("corpus assurance salesforce-run", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -237,6 +253,22 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "salesforce-run", len(shard.Results), *output)
+	case "org-cleanup":
+		flags := flag.NewFlagSet("corpus assurance org-cleanup", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		bundle, creation, preflight := flags.String("bundle", "", ""), flags.String("creation", "", ""), flags.String("org-preflight", "", "")
+		target, devHub, sfbin, output := flags.String("target-org", "", ""), flags.String("dev-hub", "", ""), flags.String("sf-bin", "", ""), flags.String("output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*bundle, *creation, *preflight, *target, *devHub, *sfbin, *output); err != nil {
+			return err
+		}
+		cleanup, err := corpusassurance.RunSalesforceOrgCleanup(corpusassurance.SalesforceOrgCleanupRequest{BundlePath: *bundle, CreationPath: *creation, PreflightPath: *preflight, TargetOrg: *target, DevHub: *devHub, SFBin: *sfbin, OutputPath: *output})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "org-cleanup", len(cleanup.Commands), *output)
 	default:
 		return errors.New("unknown corpus assurance command")
 	}
@@ -282,7 +314,9 @@ Usage:
   glade-tools corpus assurance exclusion-request --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --output <EXCLUSION_REQUEST.json>
   glade-tools corpus assurance authorize-exclusions --request <EXCLUSION_REQUEST.json> --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --policy <policy.json> --output <EXCLUSION_AUTHORITY.json>
   glade-tools corpus assurance oracle-bundle --profile <ASSURANCE_PROFILE.json> --oracle-plan <ORACLE_PLAN.json> --exclusion-authority <EXCLUSION_AUTHORITY.json> --release-validation <RELEASE_VALIDATION.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --filter-script <filter.py> --scratch-definition <scratch.json> --tools-amd64 <glade-tools> --output <new-dir>
+  glade-tools corpus assurance org-create --bundle <bundle.json> --dev-hub glade-dev-hub4 --alias <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_CREATION.json>
   glade-tools corpus assurance org-preflight --bundle <bundle.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_PREFLIGHT.json>
   glade-tools corpus assurance salesforce-run --bundle <bundle.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --executor-root <attempt/executor/shard-N> --run-id <attempt-shard-N> --shard-index <0|1> --shard-count 2 --output <SALESFORCE_SHARD.json>
+  glade-tools corpus assurance org-cleanup --bundle <bundle.json> --creation <ORG_CREATION.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --dev-hub glade-dev-hub4 --sf-bin /usr/local/bin/sf --output <ORG_CLEANUP.json>
 `)
 }
