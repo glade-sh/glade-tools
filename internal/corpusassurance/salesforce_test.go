@@ -100,7 +100,11 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	}
 	bundlePath, planPath, shardPath := filepath.Join(outputRoot, "bundle", "bundle.json"), filepath.Join(outputRoot, "bundle", "ORACLE_PLAN.json"), filepath.Join(t.TempDir(), "shard.json")
 	bundleSHA := localProofFileSHA256(t, bundlePath)
-	executorRoot, runID, alias := filepath.Join(filepath.Dir(outputRoot), "executor", "shard-0"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-0", "assurance-sf0"
+	attemptRoot, err := filepath.EvalSymlinks(filepath.Dir(outputRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	executorRoot, runID, alias := filepath.Join(attemptRoot, "executor", "shard-0"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-0", "assurance-sf0"
 	args, err := salesforceFilterArgs(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), filepath.Dir(bundlePath), executorRoot, runID, alias, bundle, bundleSHA, 0, 1)
 	if err == nil {
 		t.Fatal("salesforceFilterArgs accepted an invalid shard count")
@@ -115,7 +119,7 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	lifecycle := salesforcePreflightForTest(t, alias, bundleSHA, bundlePath)
 	shard := SalesforceShard{Bindings: bindings, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, OrgAlias: alias, OrgID: lifecycle.OrgID, OrgStatus: "Active", Preflight: lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
 	shard1Path := filepath.Join(t.TempDir(), "shard-1.json")
-	shard1Alias, shard1Executor, shard1RunID := "assurance-sf1", filepath.Join(filepath.Dir(outputRoot), "executor", "shard-1"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-1"
+	shard1Alias, shard1Executor, shard1RunID := "assurance-sf1", filepath.Join(attemptRoot, "executor", "shard-1"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-1"
 	shard1Args, err := salesforceFilterArgs(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"), filepath.Dir(bundlePath), shard1Executor, shard1RunID, shard1Alias, bundle, bundleSHA, 1, 2)
 	if err != nil {
 		t.Fatal(err)
@@ -502,7 +506,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 	}
 	postflight := preflight
 	runtimePassed := true
-	filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: preflight.BundleSHA256, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}, {SurfaceIDs: []string{"apex:System.compile()"}, Org: "assurance-sf0", Kind: "check", ExitCode: &zero, Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}}}
+	filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: preflight.BundleSHA256, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RuntimeResult: json.RawMessage(`{"status":0,"result":{"success":true}}`), RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}, {SurfaceIDs: []string{"apex:System.compile()"}, Org: "assurance-sf0", Kind: "check", ExitCode: &zero, Deployable: true, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}}}
 	command := CommandResult{Command: []string{"python3", "transport/salesforce-first-filter.py"}, CommandSpecSHA256: strings.Repeat("5", 64), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("6", 64), StderrSHA256: strings.Repeat("7", 64)}
 	shard, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2)
 	if err != nil {
@@ -516,6 +520,11 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 		t.Fatal("accepted a runtime result without a successful runtime observation")
 	}
 	filter.Results[0].RuntimePassed = &runtimePassed
+	filter.Results[0].RuntimeResult = nil
+	if _, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2); err == nil {
+		t.Fatal("accepted a runtime surface without a Salesforce runtime observation")
+	}
+	filter.Results[0].RuntimeResult = json.RawMessage(`{"status":0,"result":{"success":true}}`)
 	filter.Binding.ToolsAMD64SHA256 = ""
 	if _, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2); err == nil {
 		t.Fatal("accepted a filter result without the sealed amd64 tools hash")
@@ -559,9 +568,35 @@ func TestCreateSalesforceDispatchRejectsExecutorOutsideSealedAttempt(t *testing.
 	}
 }
 
+func TestCreateSalesforceDispatchRejectsSymlinkedExecutor(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	outputRoot := filepath.Join(t.TempDir(), "razor")
+	bundle, err := BuildOracleBundle(inputs.request(outputRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundlePath := filepath.Join(outputRoot, "bundle", "bundle.json")
+	executorBase := filepath.Join(filepath.Dir(outputRoot), "executor")
+	if err := os.Symlink(t.TempDir(), executorBase); err != nil {
+		t.Fatal(err)
+	}
+	_, err = CreateSalesforceDispatch(SalesforceDispatchRequest{
+		BundlePath: bundlePath, OrgAlias: "assurance-sf0", ExecutorRoot: filepath.Join(executorBase, "shard-0"),
+		RunID: "assurance-" + bundle.AttemptSHA256[:16] + "-shard-0", ShardIndex: 0, ShardCount: 2, OutputPath: filepath.Join(t.TempDir(), "DISPATCH.json"),
+	})
+	if err == nil {
+		t.Fatal("accepted a symlinked sealed executor root")
+	}
+}
+
 func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	root, attemptRoot := t.TempDir(), ""
-	attemptRoot = filepath.Join(root, "attempt")
+	canonicalRoot, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attemptRoot = filepath.Join(canonicalRoot, "attempt")
 	razorRoot := filepath.Join(attemptRoot, "razor")
 	bundleRoot, executorRoot := filepath.Join(razorRoot, "bundle"), filepath.Join(attemptRoot, "executor", "shard-0")
 	for _, path := range []string{bundleRoot, filepath.Join(attemptRoot, "transport"), executorRoot} {
@@ -607,7 +642,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 			return salesforceCommandOutput{}, err
 		}
 		zero, runtimePassed := 0, true
-		filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}}}
+		filter := salesforceFilterResults{Sealed: true, Orgs: []string{"assurance-sf0"}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: bundleSHA, CandidateCommit: candidate.Commit, CandidateSHA256: candidate.SHA256, ToolsCommit: tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgPostflight: salesforceFilterPostflight{MatchesPreflight: true}, Results: []salesforceFilterFixtureResult{{SurfaceIDs: []string{"apex:System.run()"}, Org: "assurance-sf0", Kind: "exec", ExitCode: &zero, Deployable: true, RuntimePassed: &runtimePassed, RuntimeResult: json.RawMessage(`{"status":0,"result":{"success":true}}`), RemoteCleanup: CleanupReceipt{ResidueAbsent: true}, OrgCleanup: CleanupReceipt{ResidueAbsent: true}}}}
 		data, err := json.Marshal(filter)
 		if err != nil {
 			return salesforceCommandOutput{}, err
@@ -634,6 +669,9 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		t.Fatal(err)
 	}
 	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: "assurance-sf0", ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t))}
+	if err := os.MkdirAll(executorRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
 	if err := WriteNewJSON(dispatchPath, dispatch); err != nil {
 		t.Fatal(err)
 	}

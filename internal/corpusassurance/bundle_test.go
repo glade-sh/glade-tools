@@ -180,13 +180,24 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	if err := WriteNewJSON(inputs.authorityPath, authority); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(inputs.filterPath, []byte("#!/usr/bin/env python3\n"), 0o700); err != nil {
+	if err := os.WriteFile(inputs.filterPath, []byte("#!/usr/bin/env python3\nimport argparse\np=argparse.ArgumentParser()\np.add_argument('--tools-amd64-sha256')\np.parse_args()\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(inputs.scratchPath, []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	return inputs
+}
+
+func TestBuildOracleBundleRequiresExecutableAMD64FilterContract(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	if err := os.WriteFile(inputs.filterPath, []byte("#!/usr/bin/env python3\nprint('no sealed tools binding')\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := BuildOracleBundle(inputs.request(filepath.Join(t.TempDir(), "razor"))); err == nil {
+		t.Fatal("accepted a filter without the amd64 tools contract")
+	}
 }
 
 func writeSealedReleaseValidation(t *testing.T, inputs oracleBundleTestInputs, attemptPath string) {

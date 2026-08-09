@@ -171,6 +171,9 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		}
 		inputs[path] = hash
 	}
+	if err := validateOracleFilterContract(request.FilterScriptPath); err != nil {
+		return OracleBundle{}, err
+	}
 	scratchDefinition, err := os.ReadFile(request.ScratchDefinitionPath)
 	if err != nil {
 		return OracleBundle{}, err
@@ -269,6 +272,18 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		return OracleBundle{}, err
 	}
 	return bundle, nil
+}
+
+func validateOracleFilterContract(path string) error {
+	info, err := os.Stat(path)
+	if err != nil || !info.Mode().IsRegular() {
+		return fmt.Errorf("Salesforce filter is unavailable")
+	}
+	help, err := exec.Command("python3", path, "--help").CombinedOutput()
+	if err != nil || !strings.Contains(string(help), "--tools-amd64-sha256") {
+		return fmt.Errorf("Salesforce filter lacks the sealed amd64 tools contract")
+	}
+	return nil
 }
 
 func executingToolsArtifact(commit string) (RuntimeArtifact, error) {

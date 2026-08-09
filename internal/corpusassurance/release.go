@@ -88,6 +88,9 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	if err := validateCleanGitRoot(request.ToolsRoot, attempt.Tools.Commit); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools source: %w", err)
 	}
+	if err := validateToolsLocalReplacements(request.ToolsRoot, request.GladeRoot); err != nil {
+		return ReleaseValidation{}, fmt.Errorf("tools replacements: %w", err)
+	}
 	candidate, err := runtimeArtifactFor(request.CandidatePath, attempt.Candidate.Commit)
 	if err != nil {
 		return ReleaseValidation{}, fmt.Errorf("candidate: %w", err)
@@ -123,6 +126,9 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 	}
 	if err := validateCleanGitRoot(request.ToolsRoot, attempt.Tools.Commit); err != nil {
 		return ReleaseValidation{}, fmt.Errorf("tools source changed during release validation: %w", err)
+	}
+	if err := validateToolsLocalReplacements(request.ToolsRoot, request.GladeRoot); err != nil {
+		return ReleaseValidation{}, fmt.Errorf("tools replacements changed during release validation: %w", err)
 	}
 	if current, err := runtimeArtifactFor(request.CandidatePath, attempt.Candidate.Commit); err != nil || current != candidate || current != attempt.Candidate {
 		return ReleaseValidation{}, fmt.Errorf("candidate changed during release validation")
@@ -208,6 +214,9 @@ func validateOracleReleaseSources(validation ReleaseValidation, plan OraclePlan)
 	if err := validateCleanGitRoot(validation.ToolsRoot, plan.Tools.Commit); err != nil {
 		return fmt.Errorf("tools source: %w", err)
 	}
+	if err := validateToolsLocalReplacements(validation.ToolsRoot, validation.GladeRoot); err != nil {
+		return fmt.Errorf("tools replacements: %w", err)
+	}
 	if current, err := runtimeArtifactFor(validation.CandidatePath, plan.Candidate.Commit); err != nil || current != plan.Candidate {
 		return fmt.Errorf("candidate executable does not match sealed release validation")
 	}
@@ -228,6 +237,46 @@ func validateOracleReleaseSources(validation ReleaseValidation, plan OraclePlan)
 		}
 	}
 	return nil
+}
+
+func validateToolsLocalReplacements(toolsRoot, gladeRoot string) error {
+	toolsRoot, err := filepath.EvalSymlinks(toolsRoot)
+	if err != nil {
+		return err
+	}
+	gladeRoot, err = filepath.EvalSymlinks(gladeRoot)
+	if err != nil {
+		return err
+	}
+	data, err := os.ReadFile(filepath.Join(toolsRoot, "go.mod"))
+	if err != nil {
+		return err
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		fields := strings.Fields(strings.SplitN(line, "//", 2)[0])
+		for index, field := range fields {
+			if field != "=>" || index+1 >= len(fields) {
+				continue
+			}
+			target := fields[index+1]
+			if !filepath.IsAbs(target) && !strings.HasPrefix(target, "./") && !strings.HasPrefix(target, "../") {
+				continue
+			}
+			if !filepath.IsAbs(target) {
+				target = filepath.Join(toolsRoot, target)
+			}
+			target, err = filepath.EvalSymlinks(target)
+			if err != nil || (!pathWithin(gladeRoot, target) && !pathWithin(toolsRoot, target)) {
+				return fmt.Errorf("local replacement is outside sealed roots")
+			}
+		}
+	}
+	return nil
+}
+
+func pathWithin(root, path string) bool {
+	relative, err := filepath.Rel(root, path)
+	return err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator))
 }
 
 func releaseCommandSpecSHA256(command releaseCommand) string {

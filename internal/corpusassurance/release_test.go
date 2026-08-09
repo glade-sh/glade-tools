@@ -67,8 +67,8 @@ func TestRunReleaseValidationRequiresReadOnlyFrozenToolsCommit(t *testing.T) {
 
 func TestRunReleaseValidationDerivesArtifactsAndFreezeFromSealedAttempt(t *testing.T) {
 	root := t.TempDir()
-	gladeRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
-	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
+	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/tools\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
 	candidatePath := filepath.Join(root, "glade")
 	if err := os.WriteFile(candidatePath, []byte("binary"), 0o700); err != nil {
 		t.Fatal(err)
@@ -109,8 +109,8 @@ func TestRunReleaseValidationDerivesArtifactsAndFreezeFromSealedAttempt(t *testi
 
 func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	root := t.TempDir()
-	gladeRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
-	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
+	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/tools\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
 	candidatePath := filepath.Join(root, "glade")
 	if err := os.WriteFile(candidatePath, []byte("binary"), 0o700); err != nil {
 		t.Fatal(err)
@@ -153,8 +153,8 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 
 func TestRunReleaseValidationRejectsToolsPathThatIsNotTheExecutingBinary(t *testing.T) {
 	root := t.TempDir()
-	gladeRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
-	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
+	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/tools\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
 	candidatePath, toolsPath := filepath.Join(root, "glade"), filepath.Join(root, "glade-tools")
 	for _, path := range []string{candidatePath, toolsPath} {
 		if err := os.WriteFile(path, []byte("binary"), 0o700); err != nil {
@@ -189,6 +189,22 @@ func TestRunReleaseCommandCapturesBothOutputStreams(t *testing.T) {
 	output, err := runReleaseCommand(context.Background(), releaseCommand{Path: script, WorkingDirectory: root, Environment: []string{"PATH=/usr/bin:/bin"}})
 	if err != nil || !bytes.Equal(output.Stdout, []byte("out")) || !bytes.Equal(output.Stderr, []byte("err")) {
 		t.Fatalf("runReleaseCommand = %#v, %v", output, err)
+	}
+}
+
+func TestValidateToolsLocalReplacementsRejectsUnboundCandidate(t *testing.T) {
+	root := t.TempDir()
+	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module github.com/glade-sh/glade\n\ngo 1.23.0\n"})
+	otherRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/other\n\ngo 1.23.0\n"})
+	toolsRoot := filepath.Join(root, "tools")
+	if err := os.MkdirAll(toolsRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(toolsRoot, "go.mod"), []byte("module example.com/tools\n\ngo 1.23.0\n\nrequire (\n github.com/glade-sh/glade v0.0.0\n example.com/other v0.0.0\n)\n\nreplace github.com/glade-sh/glade => "+gladeRoot+"\nreplace example.com/other => "+otherRoot+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateToolsLocalReplacements(toolsRoot, gladeRoot); err == nil {
+		t.Fatal("accepted a local replacement outside the sealed candidate root")
 	}
 }
 
