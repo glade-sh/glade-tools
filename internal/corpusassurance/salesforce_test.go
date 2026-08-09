@@ -77,6 +77,23 @@ func TestValidSalesforceOrgPreflightRejectsUnsealedCLIExecution(t *testing.T) {
 	}
 }
 
+func TestValidSalesforceOrgPreflightRequiresRetainedRawOutput(t *testing.T) {
+	root := t.TempDir()
+	bundlePath := filepath.Join(root, "bundle.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	preflight := salesforcePreflightForTest(t, "assurance-sf0", localProofFileSHA256(t, bundlePath), bundlePath)
+	output := reflect.ValueOf(&preflight.Commands[0]).Elem().FieldByName("Output")
+	if !output.IsValid() {
+		t.Fatal("CommandResult does not retain raw command output")
+	}
+	output.Set(reflect.Zero(output.Type()))
+	if validSalesforceOrgPreflight(preflight, preflight.BundleSHA256, bundlePath) {
+		t.Fatal("accepted Salesforce preflight without retained raw output")
+	}
+}
+
 func TestValidateSalesforceShardsRejectsReusedOrgAlias(t *testing.T) {
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
@@ -124,7 +141,7 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	}
 	environment := mustFixedSalesforceEnvironment(t)
 	pythonSHA := mustSealedPythonSHA(t)
-	command := CommandResult{Command: append([]string{"/usr/bin/python3"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: pythonSHA, ExecutableAfterSHA256: pythonSHA, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64)}
+	command := salesforceFilterCommandForTest(args, bundlePath, environment, pythonSHA)
 	bindings := SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}
 	lifecycle := salesforcePreflightForTest(t, alias, bundleSHA, bundlePath)
 	shard := SalesforceShard{Bindings: bindings, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, OrgAlias: alias, OrgID: lifecycle.OrgID, OrgStatus: "Active", Preflight: lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
@@ -138,10 +155,12 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err != nil {
 		t.Fatal(err)
 	}
-	shard1Command := CommandResult{Command: append([]string{"/usr/bin/python3"}, shard1Args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: pythonSHA, ExecutableAfterSHA256: pythonSHA, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", shard1Args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("4", 64), StderrSHA256: strings.Repeat("5", 64)}
+	shard1Command := salesforceFilterCommandForTest(shard1Args, bundlePath, environment, pythonSHA)
 	shard1Lifecycle := salesforcePreflightForTest(t, shard1Alias, bundleSHA, bundlePath)
+	shard1Lifecycle.OrgID = "00D1"
+	shard1Lifecycle.Commands[0].Output.Stdout = []byte(`{"status":0,"result":{"id":"00D1","status":"Active"}}`)
+	shard1Lifecycle.Commands[0].StdoutSHA256 = replayBytesSHA256(shard1Lifecycle.Commands[0].Output.Stdout)
 	shard1 := SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: shard1Command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: shard1Executor, RunID: shard1RunID, ShardIndex: 1, ShardCount: 2, OrgAlias: shard1Alias, OrgID: "00D1", OrgStatus: "Active", Preflight: shard1Lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{shard1Command}, Postflight: shard1Lifecycle, PostInventory: SalesforceInventory{}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
-	shard1.Preflight.OrgID, shard1.Postflight.OrgID = shard1.OrgID, shard1.OrgID
 	if err := WriteNewJSON(shardPath, shard); err != nil {
 		t.Fatal(err)
 	}
@@ -535,6 +554,7 @@ func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 	if err := WriteNewJSON(preflightPath, preflight); err != nil {
 		t.Fatal(err)
 	}
+	postDeleteChecked := false
 	cleanup, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", DevHub: "glade-dev-hub4", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
 		if path != "/usr/local/bin/sf" {
 			return salesforceCommandOutput{}, fmt.Errorf("unexpected sf path %q", path)
@@ -542,13 +562,17 @@ func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 		if len(args) >= 3 && args[0] == "org" && args[1] == "delete" {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0}`)}, nil
 		}
-		t.Fatal("cleanup used an org-display failure as absence evidence")
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			postDeleteChecked = true
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
+		}
+		t.Fatalf("unexpected cleanup command %q", args)
 		return salesforceCommandOutput{}, nil
 	}})
 	if err != nil {
 		t.Fatalf("RunSalesforceOrgCleanup: %v", err)
 	}
-	if !cleanup.ResidueAbsent || cleanup.OrgID != creation.OrgID || len(cleanup.Commands) != 1 {
+	if !cleanup.ResidueAbsent || cleanup.OrgID != creation.OrgID || len(cleanup.Commands) != 2 || !postDeleteChecked || cleanup.Commands[1].Passed || cleanup.Commands[1].ExitCode == 0 {
 		t.Fatalf("cleanup = %#v", cleanup)
 	}
 	if _, err := os.Stat(outputPath); err != nil {
@@ -926,7 +950,21 @@ func salesforceCommandForTest(t *testing.T, bundlePath string, args []string) Co
 		t.Fatal(err)
 	}
 	executableSHA256 := strings.Repeat("a", 64)
-	return CommandResult{Command: append([]string{"/usr/local/bin/sf"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, executableSHA256, executableSHA256), ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("3", 64), StderrSHA256: strings.Repeat("4", 64)}
+	stdout := []byte(`{"status":0}`)
+	if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+		stdout = []byte(`{"status":0,"result":{"id":"00D0","status":"Active"}}`)
+	} else if len(args) >= 2 && args[0] == "org" && args[1] == "create" {
+		stdout = []byte(`{"status":0,"result":{"orgId":"00D0"}}`)
+	} else if len(args) >= 2 && args[0] == "data" && args[1] == "query" {
+		stdout = []byte(`{"status":0,"result":{"totalSize":0}}`)
+	}
+	output := &RetainedCommandOutput{Stdout: stdout, Stderr: []byte{}}
+	return CommandResult{Command: append([]string{"/usr/local/bin/sf"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, executableSHA256, executableSHA256), ExitCode: 0, Passed: true, StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Output: output}
+}
+
+func salesforceFilterCommandForTest(args []string, bundlePath string, environment []string, pythonSHA string) CommandResult {
+	output := &RetainedCommandOutput{Stdout: []byte{}, Stderr: []byte{}}
+	return CommandResult{Command: append([]string{"/usr/bin/python3"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: pythonSHA, ExecutableAfterSHA256: pythonSHA, CommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA), ExitCode: 0, Passed: true, StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Output: output}
 }
 
 func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA, alias, orgID string) SalesforceShardFiles {
@@ -1001,11 +1039,17 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 		t.Fatal(err)
 	}
 	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", Alias: alias, OrgID: orgID, Command: salesforceCommandForTest(t, bundlePath, salesforceOrgCreateArgs(filepath.Join(filepath.Dir(bundlePath), "corpus-assurance-scratch-def.json"), "glade-dev-hub4", alias))}
+	creation.Command.Output.Stdout = []byte(`{"status":0,"result":{"orgId":"` + orgID + `"}}`)
+	creation.Command.StdoutSHA256 = replayBytesSHA256(creation.Command.Output.Stdout)
 	if err := WriteNewJSON(creationPath, creation); err != nil {
 		t.Fatal(err)
 	}
 	deleted := salesforceCommandForTest(t, bundlePath, []string{"org", "delete", "scratch", "--target-org", alias, "--no-prompt", "--json"})
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", OrgAlias: alias, OrgID: orgID, Commands: []CommandResult{deleted}, ResidueAbsent: true}
+	absent := salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", alias, "--json"})
+	absent.ExitCode, absent.Passed = 1, false
+	absent.Output.Stdout = []byte(`{"status":1,"message":"not found"}`)
+	absent.StdoutSHA256 = replayBytesSHA256(absent.Output.Stdout)
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "glade-dev-hub4", OrgAlias: alias, OrgID: orgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
 	if err := WriteNewJSON(cleanupPath, cleanup); err != nil {
 		t.Fatal(err)
 	}

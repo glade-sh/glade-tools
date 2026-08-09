@@ -107,16 +107,13 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 		return AssuranceReceipt{}, fmt.Errorf("oracle bundle does not bind current plan")
 	}
 	stagedPlanPath := filepath.Join(filepath.Dir(request.BundlePath), "ORACLE_PLAN.json")
-	if err := ValidateSalesforceShardFiles(stagedPlanPath, request.SalesforceFiles); err != nil {
+	var salesforceSnapshots []salesforceShardEvidenceSnapshot
+	if err := validateSalesforceShardFiles(stagedPlanPath, request.SalesforceFiles, &salesforceSnapshots); err != nil {
 		return AssuranceReceipt{}, err
 	}
-	shards := make([]SalesforceShard, 0, len(request.SalesforceFiles))
-	for _, files := range request.SalesforceFiles {
-		shard, _, err := readExactJSONBytes[SalesforceShard](files.ShardPath)
-		if err != nil {
-			return AssuranceReceipt{}, err
-		}
-		shards = append(shards, shard)
+	shards := make([]SalesforceShard, 0, len(salesforceSnapshots))
+	for _, snapshot := range salesforceSnapshots {
+		shards = append(shards, snapshot.Shard)
 	}
 	merge, mergeBytes, err := readExactJSONBytes[ReplayMerge](request.ReplayPath)
 	if err != nil || merge.RootManifestSHA256 != replayBytesSHA256(rootBytes) || merge.Candidate != plan.Candidate || merge.Tools != plan.Tools || len(merge.TestReadyByRepository) != len(root.Repositories) {
@@ -130,12 +127,8 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	for name, hash := range sidecarInputs {
 		inputs[name] = hash
 	}
-	for index, files := range request.SalesforceFiles {
-		for name, path := range map[string]string{"shard": files.ShardPath, "dispatch": files.DispatchPath, "preflight": files.PreflightPath, "creation": files.CreationPath, "cleanup": files.CleanupPath} {
-			hash, err := sha256File(path)
-			if err != nil {
-				return AssuranceReceipt{}, err
-			}
+	for index, snapshot := range salesforceSnapshots {
+		for name, hash := range snapshot.Inputs {
 			inputs[fmt.Sprintf("salesforce-%s-%d.json", name, index)] = hash
 		}
 	}

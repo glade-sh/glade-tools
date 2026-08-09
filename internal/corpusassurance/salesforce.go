@@ -220,6 +220,11 @@ type SalesforceShardFiles struct {
 	PreflightPath string
 }
 
+type salesforceShardEvidenceSnapshot struct {
+	Shard  SalesforceShard
+	Inputs map[string]string
+}
+
 type SalesforceDispatch struct {
 	SchemaVersion           int    `json:"schemaVersion"`
 	BundleSHA256            string `json:"bundleSha256"`
@@ -655,6 +660,10 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 	if err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
+	_, absent, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), false, "org", "display", "--target-org", creation.Alias, "--json")
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
 	if err := validate(request.BundlePath); err != nil {
 		return SalesforceOrgCleanup{}, fmt.Errorf("staged bundle changed during cleanup: %w", err)
 	}
@@ -663,7 +672,7 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 			return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce cleanup input changed during execution")
 		}
 	}
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted}, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
@@ -683,10 +692,14 @@ func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (Sa
 	if err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
+	_, absent, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), false, "org", "display", "--target-org", creation.Alias, "--json")
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
 	if after, err := sha256File(request.CreationPath); err != nil || after != replayBytesSHA256(creationBytes) {
 		return SalesforceOrgCleanup{}, fmt.Errorf("invalidated creation receipt changed during cleanup")
 	}
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted}, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
@@ -716,7 +729,7 @@ func runSalesforceFilterCommand(runner salesforceCommandRunner, binary, workingD
 	ctx = context.WithValue(ctx, salesforceExecutionKey{}, salesforceExecution{workingDirectory: workingDirectory, environment: environment})
 	output, err := runner(ctx, binary, args...)
 	after, afterErr := sha256File(binary)
-	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: salesforceFilterCommandSpecSHA256(binary, args, workingDirectory, environment, before, after), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && afterErr == nil && before == after && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
+	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: salesforceFilterCommandSpecSHA256(binary, args, workingDirectory, environment, before, after), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Output: retainedCommandOutput(output), Passed: err == nil && afterErr == nil && before == after && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
 	if err != nil || output.ExitCode != 0 || receipt.TimedOut || !receipt.Passed {
 		return output, receipt, fmt.Errorf("Salesforce filter command failed")
 	}
@@ -985,7 +998,7 @@ func runSealedSalesforceCommand(runner salesforceCommandRunner, binary, workingD
 	ctx = context.WithValue(ctx, salesforceExecutionKey{}, salesforceExecution{workingDirectory: workingDirectory, environment: environment})
 	output, runErr := runner(ctx, binary, args...)
 	afterSHA256, hashErr := sha256File(binary)
-	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, ExecutableSHA256: binarySHA256, ExecutableAfterSHA256: afterSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256(binary, args, workingDirectory, environment, binarySHA256, afterSHA256), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: runErr == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
+	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, ExecutableSHA256: binarySHA256, ExecutableAfterSHA256: afterSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256(binary, args, workingDirectory, environment, binarySHA256, afterSHA256), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Output: retainedCommandOutput(output), Passed: runErr == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
 	if hashErr != nil || binarySHA256 != afterSHA256 {
 		return output, receipt, fmt.Errorf("Salesforce CLI changed during execution")
 	}
@@ -1119,7 +1132,15 @@ func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bu
 		command := preflight.Commands[index]
 		expectedCommand := append([]string{"/usr/local/bin/sf"}, args...)
 		expectedSpec := salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
-		if !equalStrings(command.Command, expectedCommand) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != expectedSpec || !command.Passed || command.ExitCode != 0 || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
+		if !validRetainedCommandOutput(command) || !equalStrings(command.Command, expectedCommand) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != expectedSpec || !command.Passed || command.ExitCode != 0 || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
+			return false
+		}
+		if index == 0 {
+			orgID, status, err := parseSalesforceOrgDisplay(command.Output.Stdout)
+			if err != nil || orgID != preflight.OrgID || status != preflight.OrgStatus {
+				return false
+			}
+		} else if count, err := parseSalesforceCount(command.Output.Stdout); err != nil || count != preflight.Inventory.Counts[salesforceInventoryTypes[index-1]] {
 			return false
 		}
 	}
@@ -1142,11 +1163,12 @@ func validSalesforceOrgCreation(creation SalesforceOrgCreation, bundleSHA, bundl
 	args := salesforceOrgCreateArgs(filepath.Join(filepath.Dir(bundlePath), "corpus-assurance-scratch-def.json"), devHub, alias)
 	environment, err := fixedSalesforceEnvironment()
 	expectedSpec := salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, creation.Command.ExecutableSHA256, creation.Command.ExecutableAfterSHA256)
-	return err == nil && filepath.IsAbs(bundlePath) && creation.SchemaVersion == 1 && creation.BundleSHA256 == bundleSHA && creation.DevHub == devHub && creation.Alias == alias && creation.OrgID != "" && equalStrings(creation.Command.Command, append([]string{"/usr/local/bin/sf"}, args...)) && creation.Command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(creation.Command.Environment, environment) && sha256Pattern.MatchString(creation.Command.ExecutableSHA256) && creation.Command.ExecutableSHA256 == creation.Command.ExecutableAfterSHA256 && creation.Command.CommandSpecSHA256 == expectedSpec && creation.Command.Passed && creation.Command.ExitCode == 0 && !creation.Command.TimedOut && sha256Pattern.MatchString(creation.Command.StdoutSHA256) && sha256Pattern.MatchString(creation.Command.StderrSHA256)
+	orgID, outputErr := retainedSalesforceOrgCreate(creation.Command)
+	return err == nil && outputErr == nil && orgID == creation.OrgID && filepath.IsAbs(bundlePath) && creation.SchemaVersion == 1 && creation.BundleSHA256 == bundleSHA && creation.DevHub == devHub && creation.Alias == alias && creation.OrgID != "" && equalStrings(creation.Command.Command, append([]string{"/usr/local/bin/sf"}, args...)) && creation.Command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(creation.Command.Environment, environment) && sha256Pattern.MatchString(creation.Command.ExecutableSHA256) && creation.Command.ExecutableSHA256 == creation.Command.ExecutableAfterSHA256 && creation.Command.CommandSpecSHA256 == expectedSpec && creation.Command.Passed && creation.Command.ExitCode == 0 && !creation.Command.TimedOut && sha256Pattern.MatchString(creation.Command.StdoutSHA256) && sha256Pattern.MatchString(creation.Command.StderrSHA256)
 }
 
 func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePath string, creation SalesforceOrgCreation) bool {
-	if cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != "glade-dev-hub4" || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 1 {
+	if cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != "glade-dev-hub4" || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 2 {
 		return false
 	}
 	expected := []struct {
@@ -1155,6 +1177,7 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 		exitCode int
 	}{
 		{[]string{"org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json"}, true, 0},
+		{[]string{"org", "display", "--target-org", creation.Alias, "--json"}, false, 1},
 	}
 	environment, err := fixedSalesforceEnvironment()
 	if err != nil {
@@ -1163,11 +1186,36 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 	for index, want := range expected {
 		command := cleanup.Commands[index]
 		spec := salesforceCommandSpecSHA256("/usr/local/bin/sf", want.args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
-		if !equalStrings(command.Command, append([]string{"/usr/local/bin/sf"}, want.args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != spec || command.Passed != want.passed || command.ExitCode != want.exitCode || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
+		if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{"/usr/local/bin/sf"}, want.args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != spec || command.Passed != want.passed || command.ExitCode != want.exitCode || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
+			return false
+		}
+		if index == 1 && validSalesforceOrgDisplayFailure(command.Output.Stdout) == false {
 			return false
 		}
 	}
 	return true
+}
+
+func retainedCommandOutput(output salesforceCommandOutput) *RetainedCommandOutput {
+	return &RetainedCommandOutput{Stdout: append([]byte{}, output.Stdout...), Stderr: append([]byte{}, output.Stderr...)}
+}
+
+func validRetainedCommandOutput(command CommandResult) bool {
+	return command.Output != nil && command.Output.Stdout != nil && command.Output.Stderr != nil && command.StdoutSHA256 == replayBytesSHA256(command.Output.Stdout) && command.StderrSHA256 == replayBytesSHA256(command.Output.Stderr)
+}
+
+func retainedSalesforceOrgCreate(command CommandResult) (string, error) {
+	if !validRetainedCommandOutput(command) {
+		return "", fmt.Errorf("Salesforce org create output is not retained")
+	}
+	return parseSalesforceOrgCreate(command.Output.Stdout)
+}
+
+func validSalesforceOrgDisplayFailure(data []byte) bool {
+	var payload struct {
+		Status int `json:"status"`
+	}
+	return json.Unmarshal(data, &payload) == nil && payload.Status != 0
 }
 
 func fixedSalesforceEnvironment() ([]string, error) {
@@ -1364,6 +1412,10 @@ func validSalesforceDispatch(dispatch SalesforceDispatch, bundle OracleBundle, b
 // from the sealed oracle plan, then validates every raw shard against it.
 // Callers cannot choose a smaller expected set.
 func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardFiles) error {
+	return validateSalesforceShardFiles(planPath, shardFiles, nil)
+}
+
+func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardFiles, snapshots *[]salesforceShardEvidenceSnapshot) error {
 	if !filepath.IsAbs(planPath) || len(shardFiles) == 0 {
 		return fmt.Errorf("absolute oracle plan and Salesforce shard paths are required")
 	}
@@ -1392,6 +1444,7 @@ func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 	shards := make([]SalesforceShard, 0, len(shardFiles))
 	files := make([][]string, 0, len(shardFiles))
 	fileHashes := make([][]string, 0, len(shardFiles))
+	validatedSnapshots := make([]salesforceShardEvidenceSnapshot, 0, len(shardFiles))
 	executorRoots := make([]string, 0, len(shardFiles))
 	executorSnapshots := make([]salesforceExecutorSnapshot, 0, len(shardFiles))
 	seenPaths := map[string]bool{}
@@ -1445,6 +1498,7 @@ func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 			return fmt.Errorf("Salesforce shard does not bind sealed oracle plan")
 		}
 		shards = append(shards, shard)
+		validatedSnapshots = append(validatedSnapshots, salesforceShardEvidenceSnapshot{Shard: shard, Inputs: map[string]string{"shard": replayBytesSHA256(shardBytes), "dispatch": replayBytesSHA256(dispatchBytes), "preflight": replayBytesSHA256(preflightBytes), "creation": replayBytesSHA256(creationBytes), "cleanup": replayBytesSHA256(cleanupBytes)}})
 		files = append(files, []string{evidence.ShardPath, evidence.DispatchPath, evidence.PreflightPath, filterPath, filterResultsPath, postflightPath, evidence.CreationPath, evidence.CleanupPath})
 		fileHashes = append(fileHashes, []string{replayBytesSHA256(shardBytes), replayBytesSHA256(dispatchBytes), replayBytesSHA256(preflightBytes), executedFilterSHA, replayBytesSHA256(filterBytes), replayBytesSHA256(postflightBytes), replayBytesSHA256(creationBytes), replayBytesSHA256(cleanupBytes)})
 		executorRoots = append(executorRoots, shard.ExecutorRoot)
@@ -1481,6 +1535,9 @@ func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 	}
 	if after, err := sha256File(bundlePath); err != nil || after != bundleSHA {
 		return fmt.Errorf("staged Oracle bundle changed during Salesforce reconciliation")
+	}
+	if snapshots != nil {
+		*snapshots = validatedSnapshots
 	}
 	return nil
 }
@@ -1597,7 +1654,7 @@ func validSealedFilterCommand(shard SalesforceShard, bundle OracleBundle, bundle
 	environment, environmentErr := fixedSalesforceEnvironment()
 	command := shard.Commands[0]
 	pythonSHA, pythonErr := sealedPythonSHA256()
-	return err == nil && sourceErr == nil && replayBytesSHA256(filterSource) == bundle.FilterSHA256 && invocationErr == nil && environmentErr == nil && pythonErr == nil && equalStrings(command.Command, append([]string{"/usr/bin/python3"}, args...)) && command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(command.Environment, environment) && command.ExecutableSHA256 == pythonSHA && command.ExecutableAfterSHA256 == pythonSHA && command.CommandSpecSHA256 == salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA) && command.CommandSpecSHA256 == shard.Bindings.FilterCommandSpecSHA256 && command.ExitCode == 0 && command.Passed && !command.TimedOut && sha256Pattern.MatchString(command.StdoutSHA256) && sha256Pattern.MatchString(command.StderrSHA256)
+	return err == nil && sourceErr == nil && replayBytesSHA256(filterSource) == bundle.FilterSHA256 && invocationErr == nil && environmentErr == nil && pythonErr == nil && validRetainedCommandOutput(command) && equalStrings(command.Command, append([]string{"/usr/bin/python3"}, args...)) && command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(command.Environment, environment) && command.ExecutableSHA256 == pythonSHA && command.ExecutableAfterSHA256 == pythonSHA && command.CommandSpecSHA256 == salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, pythonSHA, pythonSHA) && command.CommandSpecSHA256 == shard.Bindings.FilterCommandSpecSHA256 && command.ExitCode == 0 && command.Passed && !command.TimedOut && sha256Pattern.MatchString(command.StdoutSHA256) && sha256Pattern.MatchString(command.StderrSHA256)
 }
 
 func sealedPythonSHA256() (string, error) {

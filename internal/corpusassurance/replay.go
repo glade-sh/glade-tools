@@ -47,18 +47,26 @@ const replayTimeout = 5 * time.Minute
 var fixedReplayEnvironment = []string{"HOME=/var/empty", "PATH=/usr/bin:/bin", "TMPDIR=/tmp"}
 
 type CommandResult struct {
-	Command               []string `json:"command"`
-	CommandSpecSHA256     string   `json:"commandSpecSha256"`
-	WorkingDirectory      string   `json:"workingDirectory,omitempty"`
-	Environment           []string `json:"environment,omitempty"`
-	ExecutableSHA256      string   `json:"executableSha256,omitempty"`
-	ExecutableAfterSHA256 string   `json:"executableAfterSha256,omitempty"`
-	ExitCode              int      `json:"exitCode"`
-	DurationMS            int64    `json:"durationMs"`
-	StdoutSHA256          string   `json:"stdoutSha256"`
-	StderrSHA256          string   `json:"stderrSha256"`
-	Passed                bool     `json:"passed"`
-	TimedOut              bool     `json:"timedOut,omitempty"`
+	Command               []string               `json:"command"`
+	CommandSpecSHA256     string                 `json:"commandSpecSha256"`
+	WorkingDirectory      string                 `json:"workingDirectory,omitempty"`
+	Environment           []string               `json:"environment,omitempty"`
+	ExecutableSHA256      string                 `json:"executableSha256,omitempty"`
+	ExecutableAfterSHA256 string                 `json:"executableAfterSha256,omitempty"`
+	ExitCode              int                    `json:"exitCode"`
+	DurationMS            int64                  `json:"durationMs"`
+	StdoutSHA256          string                 `json:"stdoutSha256"`
+	StderrSHA256          string                 `json:"stderrSha256"`
+	Output                *RetainedCommandOutput `json:"output,omitempty"`
+	Passed                bool                   `json:"passed"`
+	TimedOut              bool                   `json:"timedOut,omitempty"`
+}
+
+// RetainedCommandOutput is private execution evidence. It is omitted from
+// public reports, but lets Salesforce reconciliation verify observed facts.
+type RetainedCommandOutput struct {
+	Stdout []byte `json:"stdout"`
+	Stderr []byte `json:"stderr"`
 }
 
 type ReplayRepositoryResult struct {
