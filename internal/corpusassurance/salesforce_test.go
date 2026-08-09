@@ -538,7 +538,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 }
 
 func TestSalesforceFilterArgsDeriveEveryIdentityFromTheSealedBundle(t *testing.T) {
-	bundle := OracleBundle{Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}, Tools: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}, ToolsAMD64: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("3", 64)}, ToolsAMD64SHA256: strings.Repeat("3", 64), OraclePlanSHA256: strings.Repeat("e", 64), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), Fixtures: []OracleBundleFixture{{ID: "system"}}}
+	bundle := OracleBundle{Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}, Tools: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}, ToolsAMD64: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("3", 64)}, ToolsAMD64SHA256: strings.Repeat("3", 64), AttemptSHA256: strings.Repeat("4", 64), OraclePlanSHA256: strings.Repeat("e", 64), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), Fixtures: []OracleBundleFixture{{ID: "system"}}}
 	args, err := salesforceFilterArgs("/private/tmp/assurance/transport/salesforce-first-filter.py", "/private/tmp/assurance/bundle", "/private/tmp/assurance/executor/shard-0", "attempt-shard-0", "assurance-sf0", bundle, strings.Repeat("2", 64), 0, 2)
 	if err != nil {
 		t.Fatal(err)
@@ -547,6 +547,9 @@ func TestSalesforceFilterArgsDeriveEveryIdentityFromTheSealedBundle(t *testing.T
 		if !containsString(args, want) {
 			t.Fatalf("filter args omit %q: %v", want, args)
 		}
+	}
+	if !containsString(args, "/private/tmp/glade-assurance-"+bundle.AttemptSHA256[:16]+"/executor/shard-0") {
+		t.Fatalf("filter args do not use the sealed Razor executor root: %v", args)
 	}
 }
 

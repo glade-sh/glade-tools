@@ -972,6 +972,10 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 	if !filepath.IsAbs(filterPath) || !filepath.IsAbs(bundleRoot) || !filepath.IsAbs(executorRoot) || !strings.Contains(filepath.ToSlash(executorRoot), "/executor/") || runID == "" || orgAlias == "" || !sha256Pattern.MatchString(bundleSHA) || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || !sha256Pattern.MatchString(bundle.OraclePlanSHA256) || !sha256Pattern.MatchString(bundle.TransportManifestSHA256) || !sha256Pattern.MatchString(bundle.LocalProofSummarySHA256) || len(bundle.Fixtures) == 0 || shardCount != 2 || shardIndex < 0 || shardIndex >= shardCount {
 		return nil, fmt.Errorf("invalid sealed Salesforce filter inputs")
 	}
+	remoteExecutorRoot, err := sealedSalesforceRemoteExecutorRoot(bundle.AttemptSHA256, shardIndex)
+	if err != nil {
+		return nil, err
+	}
 	return []string{filterPath,
 		"--profile", filepath.Join(bundleRoot, "profile.json"),
 		"--fixtures", filepath.Join(bundleRoot, "fixtures"),
@@ -982,7 +986,7 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 		"--orgs", orgAlias,
 		"--ssh-host", "razor.local",
 		"--ssh-user", "matt",
-		"--remote-root", executorRoot,
+		"--remote-root", remoteExecutorRoot,
 		"--remote-run-id", runID,
 		"--remote-sf-bin", "/usr/local/bin/sf",
 		"--candidate-commit", bundle.Candidate.Commit,
@@ -997,6 +1001,13 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 		"--manifest-index-modulus", strconv.Itoa(shardCount),
 		"--manifest-index-remainder", strconv.Itoa(shardIndex),
 	}, nil
+}
+
+func sealedSalesforceRemoteExecutorRoot(attemptSHA256 string, shardIndex int) (string, error) {
+	if !sha256Pattern.MatchString(attemptSHA256) || shardIndex < 0 || shardIndex >= 2 {
+		return "", fmt.Errorf("invalid sealed Salesforce remote executor")
+	}
+	return filepath.Join("/private/tmp", "glade-assurance-"+attemptSHA256[:16], "executor", fmt.Sprintf("shard-%d", shardIndex)), nil
 }
 
 func validSalesforceDispatch(dispatch SalesforceDispatch, bundle OracleBundle, bundlePath string) bool {
