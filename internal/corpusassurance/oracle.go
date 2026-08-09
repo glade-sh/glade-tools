@@ -426,15 +426,23 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 	return planOracle(inputs)
 }
 
-// PlanOracleFromFiles loads the profile, fresh reconciliation, local proof,
-// and directives from one sealed byte sequence each, then revalidates them.
-func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath string) (OraclePlan, error) {
-	if !filepath.IsAbs(profilePath) || !filepath.IsAbs(sealedUsagePath) || !filepath.IsAbs(proofPath) || !filepath.IsAbs(directivePath) {
-		return OraclePlan{}, fmt.Errorf("absolute oracle input paths are required")
+// PlanOracleFromFiles loads only the sealed assurance profile, fresh usage,
+// local proof, and directives. It cannot plan from a caller-selected source
+// profile or write over a previous plan.
+func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath, outputPath string) (OraclePlan, error) {
+	for _, path := range []string{profilePath, sealedUsagePath, proofPath, directivePath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return OraclePlan{}, fmt.Errorf("absolute oracle input and output paths are required")
+		}
 	}
-	profile, profileBytes, err := readUsageProfileRows(profilePath)
+	if _, err := os.Lstat(outputPath); err == nil {
+		return OraclePlan{}, fmt.Errorf("oracle plan output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return OraclePlan{}, err
+	}
+	profile, profileBytes, err := readExactJSONBytes[AssuranceProfile](profilePath)
 	if err != nil {
-		return OraclePlan{}, fmt.Errorf("read oracle profile: %w", err)
+		return OraclePlan{}, fmt.Errorf("read assurance profile: %w", err)
 	}
 	sealedUsage, sealedUsageBytes, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath)
 	if err != nil {
@@ -453,18 +461,21 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath 
 	}
 	profileSHA256, sealedUsageSHA256 := replayBytesSHA256(profileBytes), replayBytesSHA256(sealedUsageBytes)
 	proofSHA256, directiveSHA256 := replayBytesSHA256(proofBytes), replayBytesSHA256(directiveBytes)
-	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != profileSHA256 || directive.SchemaVersion != 1 || directive.ProfileSHA256 != profileSHA256 || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
+	if err := validateAssuranceOracleProfile(profile, sealedUsage, proof, sealedUsageSHA256, proofSHA256); err != nil {
+		return OraclePlan{}, err
+	}
+	if directive.SchemaVersion != 1 || directive.ProfileSHA256 != profileSHA256 || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives do not bind authoritative inputs")
 	}
-	projected := make([]OracleProfileRow, len(profile))
-	for i, row := range profile {
+	projected := make([]OracleProfileRow, len(profile.Rows))
+	for i, row := range profile.Rows {
 		projected[i] = OracleProfileRow{SurfaceID: row.SurfaceID, Disposition: row.Disposition}
 	}
 	plan, err := planOracleForUsage(sealedUsage.Reconciliation, projected, proof, directive.Directives)
 	if err != nil {
 		return OraclePlan{}, err
 	}
-	if _, after, err := readUsageProfileRows(profilePath); err != nil || replayBytesSHA256(after) != profileSHA256 {
+	if _, after, err := readExactJSONBytes[AssuranceProfile](profilePath); err != nil || replayBytesSHA256(after) != profileSHA256 {
 		return OraclePlan{}, fmt.Errorf("profile changed during oracle planning")
 	}
 	if _, after, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath); err != nil || replayBytesSHA256(after) != sealedUsageSHA256 {
@@ -478,7 +489,58 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath 
 	}
 	plan.Candidate, plan.Tools = proof.Candidate, proof.Tools
 	plan.ProfileSHA256, plan.SealedUsageSHA256, plan.LocalProofSHA256, plan.DirectiveSHA256 = profileSHA256, sealedUsageSHA256, proofSHA256, directiveSHA256
+	if err := WriteNewJSON(outputPath, plan); err != nil {
+		return OraclePlan{}, err
+	}
 	return plan, nil
+}
+
+func validateAssuranceOracleProfile(profile AssuranceProfile, usage SealedCorpusUsage, proof LocalProof, usageSHA, proofSHA string) error {
+	if profile.SchemaVersion != 1 || !sha256Pattern.MatchString(profile.SourceProfileSHA256) || !sha256Pattern.MatchString(profile.LedgerSHA256) || !sha256Pattern.MatchString(profile.FixtureManifestSHA256) || profile.SealedUsageSHA256 != usageSHA || profile.LocalProofSHA256 != proofSHA || proof.FixtureManifestSHA256 != profile.FixtureManifestSHA256 {
+		return fmt.Errorf("assurance profile does not bind authoritative inputs")
+	}
+	required, err := oracleRequiredSurfaceIDs(usage.Reconciliation)
+	if err != nil {
+		return err
+	}
+	if profile.Total != len(required) || len(profile.Rows) != len(required) {
+		return fmt.Errorf("assurance profile row count does not match sealed usage")
+	}
+	seen := make(map[string]bool, len(profile.Rows))
+	counts := make(map[string]int)
+	nonDeferred, hosted := make(map[string]bool), make(map[string]bool)
+	for _, row := range profile.Rows {
+		if row.SurfaceID == "" || row.Disposition == "" || seen[row.SurfaceID] {
+			return fmt.Errorf("invalid or duplicate assurance profile surface %q", row.SurfaceID)
+		}
+		seen[row.SurfaceID], counts[row.Disposition] = true, counts[row.Disposition]+1
+	}
+	for _, row := range profile.NonDeferredGaps {
+		if row.SurfaceID == "" || row.Disposition == "hosted-deferred" || nonDeferred[row.SurfaceID] || !seen[row.SurfaceID] {
+			return fmt.Errorf("invalid assurance non-deferred surface %q", row.SurfaceID)
+		}
+		nonDeferred[row.SurfaceID] = true
+	}
+	for _, row := range profile.HostedDeferred {
+		if row.SurfaceID == "" || row.Disposition != "hosted-deferred" || hosted[row.SurfaceID] || !seen[row.SurfaceID] {
+			return fmt.Errorf("invalid assurance hosted surface %q", row.SurfaceID)
+		}
+		hosted[row.SurfaceID] = true
+	}
+	for _, id := range required {
+		if !seen[id] || (nonDeferred[id] == hosted[id]) {
+			return fmt.Errorf("assurance profile does not partition required surface %q", id)
+		}
+	}
+	if len(profile.ByDisposition) != len(counts) {
+		return fmt.Errorf("assurance profile disposition count mismatch")
+	}
+	for disposition, count := range counts {
+		if profile.ByDisposition[disposition] != count {
+			return fmt.Errorf("assurance profile disposition count mismatch")
+		}
+	}
+	return nil
 }
 
 func setOracleExclusion(out *OraclePlanRow, input OracleInputRow) error {

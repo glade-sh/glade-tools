@@ -136,32 +136,34 @@ func TestPlanOracleForUsageTreatsUndirectedMockAsDeployable(t *testing.T) {
 
 func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 	root := t.TempDir()
-	profilePath := filepath.Join(root, "profile.json")
+	profilePath := filepath.Join(root, "ASSURANCE_PROFILE.json")
 	sealedUsagePath := filepath.Join(root, "CORPUS_USAGE.json")
 	proofPath := filepath.Join(root, "proof.json")
 	directivePath := filepath.Join(root, "directives.json")
-	if err := os.WriteFile(profilePath, []byte(`{"rows":[{"surfaceId":"apex:System.run()","usageKey":"System.run","disposition":"local-runtime-required"}],"corpusUsage":["old"]}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	sealedUsage := SealedCorpusUsage{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}}
+	outputPath := filepath.Join(root, "ORACLE_PLAN.json")
+	sealedUsage := SealedCorpusUsage{SchemaVersion: 1, Reconciliation: UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run", PrivateProdRefs: 1}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}}}
 	if err := WriteNewJSON(sealedUsagePath, sealedUsage); err != nil {
 		t.Fatal(err)
 	}
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)}
-	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: tools, Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}
+	proof := LocalProof{Status: "pass", Candidate: candidate, Tools: tools, FixtureManifestSHA256: strings.Repeat("a", 64), Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}}
 	if err := WriteNewJSON(proofPath, proof); err != nil {
+		t.Fatal(err)
+	}
+	profile := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("e", 64), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LedgerSHA256: strings.Repeat("f", 64), FixtureManifestSHA256: strings.Repeat("a", 64), LocalProofSHA256: localProofFileSHA256(t, proofPath), Total: 1, ByDisposition: map[string]int{localRuntimeRequired: 1}, NonDeferredGaps: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}}}
+	if err := WriteNewJSON(profilePath, profile); err != nil {
 		t.Fatal(err)
 	}
 	directives := OracleDirectiveFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LocalProofSHA256: localProofFileSHA256(t, proofPath)}
 	if err := WriteNewJSON(directivePath, directives); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath)
+	plan, err := PlanOracleFromFiles(profilePath, sealedUsagePath, proofPath, directivePath, outputPath)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != directives.ProfileSHA256 || plan.Candidate != candidate || plan.Tools != tools {
+	if len(plan.Rows) != 1 || plan.Rows[0].Action != oracleRuntime || plan.ProfileSHA256 != directives.ProfileSHA256 || plan.Candidate != candidate || plan.Tools != tools || localProofFileSHA256(t, outputPath) == "" {
 		t.Fatalf("plan = %#v", plan)
 	}
 }
