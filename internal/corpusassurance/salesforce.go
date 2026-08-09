@@ -241,7 +241,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if filterRunner == nil {
 		filterRunner = runSalesforceCLI
 	}
-	_, command, err := runSalesforceFilterCommand(filterRunner, "python3", args...)
+	_, command, err := runSalesforceFilterCommand(filterRunner, "python3", filepath.Dir(request.BundlePath), args...)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
@@ -435,16 +435,32 @@ func runSalesforceExpectedCommand(runner salesforceCommandRunner, binary, workin
 	return output, receipt, nil
 }
 
-func runSalesforceFilterCommand(runner salesforceCommandRunner, binary string, args ...string) (salesforceCommandOutput, CommandResult, error) {
+func runSalesforceFilterCommand(runner salesforceCommandRunner, binary, workingDirectory string, args ...string) (salesforceCommandOutput, CommandResult, error) {
+	environment, err := fixedSalesforceEnvironment()
+	if err != nil || !filepath.IsAbs(workingDirectory) {
+		return salesforceCommandOutput{}, CommandResult{}, fmt.Errorf("invalid Salesforce filter execution")
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), salesforceFilterTimeout)
 	defer cancel()
 	started := time.Now()
+	ctx = context.WithValue(ctx, salesforceExecutionKey{}, salesforceExecution{workingDirectory: workingDirectory, environment: environment})
 	output, err := runner(ctx, binary, args...)
-	receipt := CommandResult{Command: append([]string{binary}, args...), CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: binary, Args: args, Timeout: salesforceFilterTimeout}), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
+	receipt := CommandResult{Command: append([]string{binary}, args...), WorkingDirectory: workingDirectory, Environment: environment, CommandSpecSHA256: salesforceFilterCommandSpecSHA256(binary, args, workingDirectory, environment), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}
 	if err != nil || output.ExitCode != 0 || receipt.TimedOut {
 		return output, receipt, fmt.Errorf("Salesforce filter command failed")
 	}
 	return output, receipt, nil
+}
+
+func salesforceFilterCommandSpecSHA256(binary string, args []string, workingDirectory string, environment []string) string {
+	data, _ := json.Marshal(struct {
+		Binary           string   `json:"binary"`
+		Arguments        []string `json:"arguments"`
+		WorkingDirectory string   `json:"workingDirectory"`
+		Environment      []string `json:"environment"`
+		TimeoutNS        int64    `json:"timeoutNs"`
+	}{binary, args, workingDirectory, environment, salesforceFilterTimeout.Nanoseconds()})
+	return replayBytesSHA256(data)
 }
 
 func readSalesforceFilterResults(path string) (salesforceFilterResults, []byte, error) {

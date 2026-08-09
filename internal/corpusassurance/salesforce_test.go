@@ -488,7 +488,11 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	if err := WriteNewJSON(preflightPath, preflight); err != nil {
 		t.Fatal(err)
 	}
-	filterRunner := func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+	filterRunner := func(ctx context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+		execution, ok := ctx.Value(salesforceExecutionKey{}).(salesforceExecution)
+		if !ok || execution.workingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(execution.environment, mustFixedSalesforceEnvironment(t)) {
+			return salesforceCommandOutput{}, fmt.Errorf("unsealed Salesforce filter execution")
+		}
 		if path != "python3" {
 			return salesforceCommandOutput{}, fmt.Errorf("unexpected filter runner %q", path)
 		}
