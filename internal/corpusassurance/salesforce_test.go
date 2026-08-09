@@ -548,7 +548,7 @@ func TestSalesforceFilterArgsDeriveEveryIdentityFromTheSealedBundle(t *testing.T
 			t.Fatalf("filter args omit %q: %v", want, args)
 		}
 	}
-	if !containsString(args, "/private/tmp/glade-assurance-"+bundle.AttemptSHA256[:16]+"/executor/shard-0") {
+	if !containsString(args, filepath.Join(remoteCleanupParent, remoteCleanupPrefix+bundle.AttemptSHA256[:16], "executor", "shard-0")) {
 		t.Fatalf("filter args do not use the sealed Razor executor root: %v", args)
 	}
 }

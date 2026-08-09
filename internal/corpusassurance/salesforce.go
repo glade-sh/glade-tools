@@ -1007,7 +1007,7 @@ func sealedSalesforceRemoteExecutorRoot(attemptSHA256 string, shardIndex int) (s
 	if !sha256Pattern.MatchString(attemptSHA256) || shardIndex < 0 || shardIndex >= 2 {
 		return "", fmt.Errorf("invalid sealed Salesforce remote executor")
 	}
-	return filepath.Join("/private/tmp", "glade-assurance-"+attemptSHA256[:16], "executor", fmt.Sprintf("shard-%d", shardIndex)), nil
+	return filepath.Join(remoteCleanupParent, remoteCleanupPrefix+attemptSHA256[:16], "executor", fmt.Sprintf("shard-%d", shardIndex)), nil
 }
 
 func validSalesforceDispatch(dispatch SalesforceDispatch, bundle OracleBundle, bundlePath string) bool {
