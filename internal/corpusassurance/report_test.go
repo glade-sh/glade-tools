@@ -23,13 +23,13 @@ func TestValidateAssuranceOutcomesRequiresOneDefensibleOutcomePerSurface(t *test
 	}
 }
 
-func TestBuildAssuranceReportRequiresDirectEvidencePaths(t *testing.T) {
+func TestBuildReportRequiresDirectEvidencePaths(t *testing.T) {
 	if _, err := BuildAssuranceReport(AssuranceReportRequest{}); err == nil {
 		t.Fatal("BuildAssuranceReport accepted missing direct evidence paths")
 	}
 }
 
-func TestWriteAssuranceHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
+func TestWriteHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 	root := t.TempDir()
 	reportPath := filepath.Join(root, "ASSURANCE.json")
 	outputPath := filepath.Join(root, "ASSURANCE.html")
@@ -54,13 +54,13 @@ func TestWriteAssuranceHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 	}
 }
 
-func TestWriteAssuranceArtifactsWritesAnAcyclicReceiptLast(t *testing.T) {
+func TestReceiptWritesAnAcyclicReceiptLast(t *testing.T) {
 	root := t.TempDir()
 	jsonPath, htmlPath, receiptPath := filepath.Join(root, "ASSURANCE.json"), filepath.Join(root, "ASSURANCE.html"), filepath.Join(root, "RECEIPT.json")
 	report := AssuranceReport{SchemaVersion: 1, Rows: []AssuranceSurfaceRow{{SurfaceID: "apex:Example.run", CompileReady: true}}}
-	receipt, err := WriteAssuranceArtifacts(report, jsonPath, htmlPath, receiptPath)
+	receipt, err := writeAssuranceArtifacts(report, jsonPath, htmlPath, receiptPath, map[string]string{"IN_SCOPE.json": strings.Repeat("a", 64)})
 	if err != nil {
-		t.Fatalf("WriteAssuranceArtifacts: %v", err)
+		t.Fatalf("writeAssuranceArtifacts: %v", err)
 	}
 	if receipt.AssuranceSHA256 != localProofFileSHA256(t, jsonPath) || receipt.HTMLSHA256 != localProofFileSHA256(t, htmlPath) || receipt.ReceiptSHA256 != "" {
 		t.Fatalf("receipt = %#v", receipt)
@@ -70,11 +70,14 @@ func TestWriteAssuranceArtifactsWritesAnAcyclicReceiptLast(t *testing.T) {
 	}
 }
 
-func TestWriteAssuranceArtifactsRejectsPrivateReceiptKeys(t *testing.T) {
+func TestReceiptRejectsPrivateOrMissingReceiptKeys(t *testing.T) {
 	root := t.TempDir()
 	report := AssuranceReport{SchemaVersion: 1, Rows: []AssuranceSurfaceRow{{SurfaceID: "apex:Example.run", CompileReady: true}}}
+	if _, err := writeAssuranceArtifacts(report, filepath.Join(root, "MISSING.json"), filepath.Join(root, "MISSING.html"), filepath.Join(root, "MISSING_RECEIPT.json"), nil); err == nil {
+		t.Fatal("writeAssuranceArtifacts accepted missing receipt inputs")
+	}
 	if _, err := writeAssuranceArtifacts(report, filepath.Join(root, "ASSURANCE.json"), filepath.Join(root, "ASSURANCE.html"), filepath.Join(root, "RECEIPT.json"), map[string]string{"/Users/matt/private": strings.Repeat("a", 64)}); err == nil {
-		t.Fatal("WriteAssuranceArtifacts accepted a private receipt key")
+		t.Fatal("writeAssuranceArtifacts accepted a private receipt key")
 	}
 }
 

@@ -339,19 +339,15 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 	return rows, ValidateAssuranceOutcomes(rows)
 }
 
-// WriteAssuranceArtifacts writes the report, its offline explorer, and then
-// the acyclic receipt. All targets are preflighted to avoid known no-clobber
-// failures before the first file is created.
-func WriteAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receiptPath string) (AssuranceReceipt, error) {
-	return writeAssuranceArtifacts(report, jsonPath, htmlPath, receiptPath, map[string]string{})
-}
-
 func writeAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receiptPath string, inputs map[string]string) (AssuranceReceipt, error) {
 	if report.SchemaVersion != 1 {
 		return AssuranceReceipt{}, fmt.Errorf("unsupported assurance report schema version %d", report.SchemaVersion)
 	}
 	if err := ValidateAssuranceOutcomes(report.Rows); err != nil {
 		return AssuranceReceipt{}, err
+	}
+	if len(inputs) == 0 {
+		return AssuranceReceipt{}, fmt.Errorf("sealed assurance receipt inputs are required")
 	}
 	for name, hash := range inputs {
 		if name == "" || filepath.IsAbs(name) || containsPrivateReportPath([]byte(name)) || !sha256Pattern.MatchString(hash) {
