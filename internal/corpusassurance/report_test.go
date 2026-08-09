@@ -91,6 +91,16 @@ func TestReceiptRejectsPrivateOrMissingReceiptKeys(t *testing.T) {
 	}
 }
 
+func TestBuildReportRequiresAuthorizedExclusionRows(t *testing.T) {
+	row := ExclusionPolicyRow{SurfaceID: "apex:Hosted.only()", Class: "hosted", Reason: "requires org identity"}
+	if !policyAuthorizesRows([]ExclusionPolicyRow{row}, []ExclusionPolicyRow{row}) {
+		t.Fatal("authorized exclusion row was rejected")
+	}
+	if policyAuthorizesRows([]ExclusionPolicyRow{row}, []ExclusionPolicyRow{{SurfaceID: row.SurfaceID, Class: row.Class, Reason: "altered"}}) {
+		t.Fatal("unauthorized exclusion row was accepted")
+	}
+}
+
 func TestDeriveAssuranceRowsSeparatesCompileTestRuntimeAndNonParity(t *testing.T) {
 	usage := UsageReconciliation{Usage: []ReconciledUsageEntry{
 		{UsageEntry: UsageEntry{UsageKey: "Runtime.run", Namespace: "Runtime", PrivateProdRefs: 1, RepositoryIDs: []string{"private-corpus-001"}}, Class: usageClassExact, SurfaceID: "apex:Runtime.run()"},

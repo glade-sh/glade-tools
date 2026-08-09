@@ -186,7 +186,7 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 		return nil, fmt.Errorf("read report exclusion request: %w", err)
 	}
 	expectedExclusions, err := exclusionRowsFromPlan(plan)
-	if err != nil || exclusion.Candidate != plan.Candidate || exclusion.Tools != plan.Tools || exclusion.PlanSHA256 != replayBytesSHA256Must(request.OraclePlanPath) || exclusion.ProfileSHA256 != profileSHA256(profile, request.ProfilePath) || exclusion.SealedUsageSHA256 != usageSHA256(usage, request.UsagePath) || exclusion.DecisionSHA256 != decisionSHA || exclusion.LocalProofSHA256 != plan.LocalProofSHA256 || !reflect.DeepEqual(exclusion.Rows, expectedExclusions) || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.DecisionSHA256 != decisionSHA || authority.PolicySHA256 != policySHA || !reflect.DeepEqual(authority.Rows, exclusion.Rows) {
+	if err != nil || exclusion.Candidate != plan.Candidate || exclusion.Tools != plan.Tools || exclusion.PlanSHA256 != replayBytesSHA256Must(request.OraclePlanPath) || exclusion.ProfileSHA256 != replayBytesSHA256Must(request.ProfilePath) || exclusion.SealedUsageSHA256 != replayBytesSHA256Must(request.UsagePath) || exclusion.DecisionSHA256 != decisionSHA || exclusion.LocalProofSHA256 != plan.LocalProofSHA256 || !reflect.DeepEqual(exclusion.Rows, expectedExclusions) || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.DecisionSHA256 != decisionSHA || authority.PolicySHA256 != policySHA || !reflect.DeepEqual(authority.Rows, exclusion.Rows) {
 		return nil, fmt.Errorf("report exclusions do not form the authorized plan partition")
 	}
 	exclusionPolicy, exclusionPolicyBytes, err := readExactJSONBytes[ExclusionPolicy](request.ExclusionPolicyPath)
@@ -241,10 +241,6 @@ func replayBytesSHA256Must(path string) string {
 	}
 	return replayBytesSHA256(data)
 }
-
-func profileSHA256(_ AssuranceProfile, path string) string { return replayBytesSHA256Must(path) }
-
-func usageSHA256(_ SealedCorpusUsage, path string) string { return replayBytesSHA256Must(path) }
 
 // AssuranceSurfaceRow is the public, neutral per-surface release outcome.
 // Readiness is cumulative: runtime parity implies test and compile readiness;
