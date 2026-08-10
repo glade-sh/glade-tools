@@ -179,7 +179,7 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 }
 
 func fixedReleaseEnvironment() []string {
-	return []string{"HOME=/var/empty", "PATH=" + filepath.Join(runtime.GOROOT(), "bin") + ":/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/private/tmp/glade-assurance-go-mod", "GOWORK=off"}
+	return []string{"HOME=/private/tmp/glade-assurance-home", "PATH=" + filepath.Join(runtime.GOROOT(), "bin") + ":/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin", "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/private/tmp/glade-assurance-go-mod", "GOWORK=off"}
 }
 
 func releaseExecutingTools(path, commit string) (RuntimeArtifact, error) {
