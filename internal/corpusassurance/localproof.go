@@ -1,11 +1,14 @@
 package corpusassurance
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -352,6 +355,12 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		}
 		execution := executor(command)
 		cleanup()
+		normalized, normalizeErr := normalizeLocalProofStdout([]byte(execution.Stdout))
+		if normalizeErr != nil {
+			return LocalProof{}, fmt.Errorf("normalize fixture %q output: %w", fixture.ID, normalizeErr)
+		}
+		execution.Stdout = string(normalized)
+		execution.Receipt.StdoutSHA256 = replayBytesSHA256(normalized)
 		result := LocalProofFixtureResult{
 			FixtureID: fixture.ID, FixtureSHA256: fixture.SHA256, Disposition: fixture.Disposition,
 			CandidateSHA256: request.Candidate.SHA256, ToolsSHA256: request.Tools.SHA256,
@@ -680,7 +689,53 @@ func localProofEvidenceKind(disposition string) string {
 func runLocalProofCommand(command localProofCommand) localProofExecution {
 	receipt, stdout, stderr := runReplayCommandOutput(command.Dir, ReplayCommand{Path: command.Path, Args: command.Args, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 2 * time.Minute})
 	receipt.CommandSpecSHA256 = localProofReceiptSpecSHA256(command, receipt.ExecutableSHA256)
-	return localProofExecution{Receipt: receipt, Validated: receipt.Passed && validatesCandidateJSON(stdout, command.Args[0], command.ApexInputs), Stdout: string(stdout), Stderr: string(stderr)}
+	validated := receipt.Passed && validatesCandidateJSON(stdout, command.Args[0], command.ApexInputs)
+	normalized, err := normalizeLocalProofStdout(stdout)
+	if err != nil {
+		return localProofExecution{Receipt: receipt, Validated: false, Stdout: string(stdout), Stderr: string(stderr)}
+	}
+	receipt.StdoutSHA256 = replayBytesSHA256(normalized)
+	return localProofExecution{Receipt: receipt, Validated: validated, Stdout: string(normalized), Stderr: string(stderr)}
+}
+
+func normalizeLocalProofStdout(stdout []byte) ([]byte, error) {
+	decoder := json.NewDecoder(bytes.NewReader(stdout))
+	var value any
+	if err := decoder.Decode(&value); err != nil {
+		return nil, err
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		return nil, fmt.Errorf("local proof stdout contains multiple JSON values")
+	}
+	normalizeLocalProofValue(value)
+	encoded, err := json.MarshalIndent(value, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	return append(encoded, '\n'), nil
+}
+
+func normalizeLocalProofValue(value any) any {
+	switch value := value.(type) {
+	case map[string]any:
+		for key, child := range value {
+			if key == "durationMs" || key == "dur" || key == "cpuTimeMs" || key == "operationId" {
+				delete(value, key)
+				continue
+			}
+			value[key] = normalizeLocalProofValue(child)
+		}
+	case []any:
+		for index, child := range value {
+			value[index] = normalizeLocalProofValue(child)
+		}
+	case string:
+		if strings.Contains(value, "glade-assurance-fixture-") {
+			return "<temporary-project-path>"
+		}
+	}
+	return value
 }
 
 func validateLocalProofFixtureResult(fixture LocalProofFixture, result LocalProofFixtureResult, command localProofCommand, validated bool) error {

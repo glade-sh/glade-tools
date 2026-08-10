@@ -25,7 +25,7 @@ func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSur
 	}
 	if got, want := localProofCommandShapes(*calls), [][]string{
 		{"test", "--project", ".", "--json", "--no-progress"},
-		{"exec", "--project", ".", "--json", "new Runtime().run(); new Runtime().extra();"},
+		{"exec", "--project", ".", "--json", "new Runtime().run(); new Runtime().extra(); System.assert(true);"},
 		{"check", "--project", ".", "--json", "--no-progress"},
 	}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("commands = %v, want %v", got, want)
@@ -42,6 +42,26 @@ func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSur
 	}
 	if _, err := os.Stat(request.OutputPath); err != nil {
 		t.Fatalf("proof output was not written: %v", err)
+	}
+}
+
+func TestNormalizeLocalProofStdoutRemovesVolatileExecutionFields(t *testing.T) {
+	left := []byte(`{"durationMs":12,"data":{"project":{"root":"/var/folders/a/T/glade-assurance-fixture-1"},"durationMs":4,"dur":5,"cpuTimeMs":10,"operationId":"one","file":"/var/folders/a/T/glade-assurance-fixture-1/force-app/main/default/classes/Example.cls"},"status":"passed"}`)
+	right := []byte(`{"durationMs":98,"data":{"project":{"root":"/var/folders/b/T/glade-assurance-fixture-2"},"durationMs":7,"dur":17,"cpuTimeMs":11,"operationId":"two","file":"/var/folders/b/T/glade-assurance-fixture-2/force-app/main/default/classes/Example.cls"},"status":"passed"}`)
+
+	normalizedLeft, err := normalizeLocalProofStdout(left)
+	if err != nil {
+		t.Fatal(err)
+	}
+	normalizedRight, err := normalizeLocalProofStdout(right)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(normalizedLeft) != string(normalizedRight) {
+		t.Fatalf("normalized output differs:\n%s\n%s", normalizedLeft, normalizedRight)
+	}
+	if strings.Contains(string(normalizedLeft), "durationMs") || strings.Contains(string(normalizedLeft), "dur") || strings.Contains(string(normalizedLeft), "cpuTimeMs") || strings.Contains(string(normalizedLeft), "operationId") || strings.Contains(string(normalizedLeft), "glade-assurance-fixture") {
+		t.Fatalf("volatile fields retained: %s", normalizedLeft)
 	}
 }
 
@@ -90,13 +110,28 @@ func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
 			entry := LocalProofFixture{ID: "fixture", Name: "fixture", Path: filepath.Join(t.TempDir(), "fixture.json"), SHA256: strings.Repeat("a", 64), OwnedSurfaceIDs: []string{"apex:Runtime.run"}, Disposition: test.disposition}
 			invocation := compat.Invocation{Kind: test.command}
 			if test.command == "exec" {
-				invocation.Args = []string{"new Runtime().run();"}
+				invocation.Args = []string{"new Runtime().run(); System.assert(true);"}
 			}
 			fixture := compat.Fixture{Name: entry.Name, Command: invocation, Evidence: []compat.FixtureEvidence{{SurfaceID: "apex:Runtime.run", Kind: test.kind, Symbol: test.symbol}}, Source: []compat.SourceFile{{Path: "force-app/main/classes/Fixture.cls", Content: "public class Runtime { public void run() {} }"}}}
 			if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
 				t.Fatalf("validateLocalProofFixtureIdentity() error = %v", err)
 			}
 		})
+	}
+}
+
+func TestLocalProofRejectsDeclarationOnlyRuntimeExecution(t *testing.T) {
+	entry := LocalProofFixture{
+		ID: "declaration-only", Name: "declaration-only", Path: filepath.Join(t.TempDir(), "fixture.json"),
+		OwnedSurfaceIDs: []string{"apex:Schema.ChildRelationship"}, Disposition: localRuntimeRequired,
+	}
+	fixture := compat.Fixture{
+		Name:     entry.Name,
+		Command:  compat.Invocation{Kind: "exec", Args: []string{"Schema.ChildRelationship childRelationship;"}},
+		Evidence: []compat.FixtureEvidence{{SurfaceID: "apex:Schema.ChildRelationship", Kind: "exec", Symbol: "Schema.ChildRelationship"}},
+	}
+	if err := validateLocalProofFixtureIdentity(entry, fixture); err == nil {
+		t.Fatal("validateLocalProofFixtureIdentity accepted declaration-only runtime evidence")
 	}
 }
 
@@ -477,7 +512,7 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 	command := `{"kind":"check"}`
 	source := "public class " + strings.Title(name) + " { public void run() {} public void extra() {} }"
 	if disposition == localRuntimeRequired {
-		program := "new Runtime().run(); new Runtime().extra();"
+		program := "new Runtime().run(); new Runtime().extra(); System.assert(true);"
 		if name != "runtime" {
 			calls := make([]string, 0, len(surfaceIDs))
 			for _, surfaceID := range surfaceIDs {

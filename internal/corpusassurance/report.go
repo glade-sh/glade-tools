@@ -640,7 +640,7 @@ func deriveRepositoryAssuranceRows(inventory InventorySpec, rows []AssuranceSurf
 		if !exists {
 			return nil, nil, fmt.Errorf("repository %q lacks replay readiness", repository.ID)
 		}
-		summaries[repository.ID] = &AssuranceRepositorySummary{RepositoryID: repository.ID, CompileReady: true, TestReady: ready}
+		summaries[repository.ID] = &AssuranceRepositorySummary{RepositoryID: repository.ID, CompileReady: true, TestReady: ready, RuntimeParityReady: true}
 	}
 	pairs := make([]AssuranceRepositorySurfaceRow, 0)
 	for _, row := range rows {
@@ -651,12 +651,13 @@ func deriveRepositoryAssuranceRows(inventory InventorySpec, rows []AssuranceSurf
 			}
 			pair := AssuranceRepositorySurfaceRow{RepositoryID: repositoryID, AssuranceSurfaceRow: row}
 			pair.RepositoryIDs = []string{repositoryID}
-			pair.TestReady = !row.NonParity && repositoryTests[repositoryID]
-			pair.RuntimeParityReady = !row.NonParity && row.SalesforceAction == oracleRuntime && repositoryTests[repositoryID]
+			pair.TestReady = !row.NonParity && row.TestReady && repositoryTests[repositoryID]
+			pair.RuntimeParityReady = !row.NonParity && row.RuntimeParityReady && repositoryTests[repositoryID]
 			pairs = append(pairs, pair)
 			summary.SurfaceCount++
 			summary.CompileReady = summary.CompileReady && pair.CompileReady
-			summary.RuntimeParityReady = summary.RuntimeParityReady || pair.RuntimeParityReady
+			summary.TestReady = summary.TestReady && pair.TestReady
+			summary.RuntimeParityReady = summary.RuntimeParityReady && pair.RuntimeParityReady
 			if pair.NonParity {
 				summary.NonParity = true
 				summary.NonParityReason = "contains-non-parity-surface"
@@ -678,7 +679,30 @@ func deriveRepositoryAssuranceRows(inventory InventorySpec, rows []AssuranceSurf
 		return pairs[i].SurfaceID < pairs[j].SurfaceID
 	})
 	sort.Slice(resultSummaries, func(i, j int) bool { return resultSummaries[i].RepositoryID < resultSummaries[j].RepositoryID })
+	if err := validateRepositoryAssuranceSummaries(resultSummaries); err != nil {
+		return nil, nil, err
+	}
 	return pairs, resultSummaries, nil
+}
+
+func validateRepositoryAssuranceSummaries(summaries []AssuranceRepositorySummary) error {
+	seen := make(map[string]bool, len(summaries))
+	for _, summary := range summaries {
+		if summary.RepositoryID == "" || seen[summary.RepositoryID] || summary.SurfaceCount < 0 {
+			return fmt.Errorf("invalid repository summary %q", summary.RepositoryID)
+		}
+		seen[summary.RepositoryID] = true
+		if summary.NonParity {
+			if summary.CompileReady || summary.TestReady || summary.RuntimeParityReady || summary.NonParityReason == "" {
+				return fmt.Errorf("repository summary %q mixes non-parity and readiness", summary.RepositoryID)
+			}
+			continue
+		}
+		if summary.SurfaceCount == 0 || (summary.TestReady && !summary.CompileReady) || (summary.RuntimeParityReady && !summary.TestReady) || summary.NonParityReason != "" {
+			return fmt.Errorf("invalid readiness summary %q", summary.RepositoryID)
+		}
+	}
+	return nil
 }
 
 func localProofSupportsOracleAction(proof LocalSurfaceProof, disposition, action string) bool {

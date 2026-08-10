@@ -221,7 +221,24 @@ func TestDeriveRepositoryAssuranceRowsKeepsEveryRepositoryAndSurfaceDistinct(t *
 			t.Fatalf("pair incorrectly inherited another repository's test readiness: %#v", pair)
 		}
 	}
-	if summaries[1].RepositoryID != "private-corpus-002" || summaries[1].SurfaceCount != 1 || summaries[1].CompileReady == false || summaries[1].TestReady {
+	if summaries[1].RepositoryID != "private-corpus-002" || summaries[1].SurfaceCount != 1 || !summaries[1].CompileReady || summaries[1].TestReady || summaries[1].RuntimeParityReady {
 		t.Fatalf("repository summary lost per-repository readiness: %#v", summaries)
+	}
+	if summaries[0].RuntimeParityReady {
+		t.Fatalf("repository summary widened runtime readiness across a compile-only surface: %#v", summaries[0])
+	}
+}
+
+func TestDeriveRepositoryAssuranceRowsMakesNonParityMutuallyExclusive(t *testing.T) {
+	rows := []AssuranceSurfaceRow{
+		{SurfaceID: "apex:Runtime.run()", RepositoryIDs: []string{"private-corpus-001"}, CompileReady: true, TestReady: true, RuntimeParityReady: true},
+		{SurfaceID: "apex:Hosted.run()", RepositoryIDs: []string{"private-corpus-001"}, NonParity: true, ExclusionClass: "hosted", ExclusionReason: "requires org identity"},
+	}
+	_, summaries, err := deriveRepositoryAssuranceRows(InventorySpec{Repositories: []InventoryEntry{{ID: "private-corpus-001"}}}, rows, map[string]bool{"private-corpus-001": true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(summaries) != 1 || !summaries[0].NonParity || summaries[0].CompileReady || summaries[0].TestReady || summaries[0].RuntimeParityReady {
+		t.Fatalf("summary retained readiness alongside non-parity: %#v", summaries)
 	}
 }

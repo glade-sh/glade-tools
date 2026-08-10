@@ -15,6 +15,7 @@ fi
 # external evidence roots are mounted rather than treating absent evidence as
 # a current-base parity failure.
 go test \
+	-count=1 \
 	./internal/apexdocs \
 	./internal/apexrules \
 	./internal/capability \

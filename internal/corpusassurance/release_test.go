@@ -147,6 +147,11 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 			t.Fatalf("release command = %#v", command)
 		}
 	}
+	for _, command := range commands {
+		if command.Path == filepath.Join(runtime.GOROOT(), "bin", "go") && strings.Join(command.Args, " ") != "test -timeout 19m -count=1 ./..." {
+			t.Fatalf("go release command = %#v", command)
+		}
+	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
 	}

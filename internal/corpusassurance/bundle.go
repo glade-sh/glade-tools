@@ -382,7 +382,7 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 	}
 	switch index {
 	case 0:
-		if len(result.Command) != 3 || result.Command[1] != "test" || result.Command[2] != "./..." || result.WorkingDirectory != validation.GladeRoot {
+		if len(result.Command) != 6 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "19m" || result.Command[4] != "-count=1" || result.Command[5] != "./..." || result.WorkingDirectory != validation.GladeRoot {
 			return false
 		}
 	case 1:
@@ -390,7 +390,7 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 			return false
 		}
 	case 2:
-		if len(result.Command) != 3 || result.Command[1] != "test" || result.Command[2] != "./..." || result.WorkingDirectory != validation.ToolsRoot {
+		if len(result.Command) != 6 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "19m" || result.Command[4] != "-count=1" || result.Command[5] != "./..." || result.WorkingDirectory != validation.ToolsRoot {
 			return false
 		}
 	case 3:

@@ -141,6 +141,9 @@ func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.F
 			return fmt.Errorf("fixture %q lacks required evidence for %q", entry.ID, surfaceID)
 		}
 	}
+	if entry.Disposition == localRuntimeRequired && fixture.Command.Kind == "exec" && !strings.Contains(strings.Join(fixture.Command.Args, "\n"), "(") {
+		return fmt.Errorf("fixture %q runtime execution lacks a behavioral call", entry.ID)
+	}
 	if err := validateLocalProofSurfaceWitnesses(entry, fixture); err != nil {
 		return err
 	}

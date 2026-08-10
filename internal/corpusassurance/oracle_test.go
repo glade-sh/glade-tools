@@ -284,6 +284,31 @@ func TestHostedDeferredDoesNotRequireLocalFixture(t *testing.T) {
 	}
 }
 
+func TestAssuranceAttemptFileSHA256BindsExactSealedBytes(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "ATTEMPT.json")
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: replayRuntime("c"), Tools: replayRuntime("d"), RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
+	if err := WriteNewJSON(path, attempt); err != nil {
+		t.Fatal(err)
+	}
+	want := localProofFileSHA256(t, path)
+	got, err := assuranceAttemptFileSHA256(path, attempt)
+	if err != nil || got != want {
+		t.Fatalf("assuranceAttemptFileSHA256 = %q, %v; want %q", got, err, want)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, append(data, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	changed, err := assuranceAttemptFileSHA256(path, attempt)
+	if err != nil || changed == want {
+		t.Fatalf("assuranceAttemptFileSHA256 did not detect byte change: %q, %v", changed, err)
+	}
+}
+
 func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
 	root := t.TempDir()
 	profilePath := filepath.Join(root, "profile.json")

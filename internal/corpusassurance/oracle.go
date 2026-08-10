@@ -309,6 +309,10 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	if proof.AttemptSHA256 != attemptHash(root.Attempt) || proof.Candidate != root.Attempt.Candidate || proof.Tools != root.Attempt.Tools || proof.CandidatePath != candidatePath || proof.ToolsPath != toolsPath {
 		return AssuranceProfile{}, fmt.Errorf("local proof does not bind the sealed attempt runtimes")
 	}
+	attemptFileSHA, err := assuranceAttemptFileSHA256(proof.AttemptPath, root.Attempt)
+	if err != nil {
+		return AssuranceProfile{}, err
+	}
 	sourceSHA, usageSHA := replayBytesSHA256(sourceBytes), replayBytesSHA256(sealedUsageBytes)
 	ledgerSHA, manifestSHA, proofSHA := replayBytesSHA256(ledgerBytes), replayBytesSHA256(manifestBytes), replayBytesSHA256(proofBytes)
 	if sealedUsage.SchemaVersion != 1 || sealedUsage.ProfileSHA256 != sourceSHA || sealedUsage.LedgerSHA256 != ledgerSHA || !sha256Pattern.MatchString(sealedUsage.PolicySHA256) || proof.FixtureManifestSHA256 != manifestSHA {
@@ -370,13 +374,21 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	sort.Slice(result.NonDeferredGaps, func(i, j int) bool { return result.NonDeferredGaps[i].SurfaceID < result.NonDeferredGaps[j].SurfaceID })
 	sort.Slice(result.HostedDeferred, func(i, j int) bool { return result.HostedDeferred[i].SurfaceID < result.HostedDeferred[j].SurfaceID })
 	result.Total = len(result.Rows)
-	if err := verifyAssuranceProfileInputs([]assuranceProfileInput{{inventoryPath, replayBytesSHA256(inventoryBytes)}, {rootManifestPath, replayBytesSHA256(rootBytes)}, {sourceProfilePath, sourceSHA}, {sealedUsagePath, usageSHA}, {ledgerPath, ledgerSHA}, {policyPath, policySHA}, {decisionPath, decisionSHA}, {fixtureManifestPath, manifestSHA}, {localProofPath, proofSHA}, {proof.AttemptPath, proof.AttemptSHA256}, {candidatePath, proof.Candidate.SHA256}, {toolsPath, proof.Tools.SHA256}, {localProfilePath, localProfileSHA}, {localUsagePath, localUsageSHA}, {localDecisionPath, localDecisionSHA}}); err != nil {
+	if err := verifyAssuranceProfileInputs([]assuranceProfileInput{{inventoryPath, replayBytesSHA256(inventoryBytes)}, {rootManifestPath, replayBytesSHA256(rootBytes)}, {sourceProfilePath, sourceSHA}, {sealedUsagePath, usageSHA}, {ledgerPath, ledgerSHA}, {policyPath, policySHA}, {decisionPath, decisionSHA}, {fixtureManifestPath, manifestSHA}, {localProofPath, proofSHA}, {proof.AttemptPath, attemptFileSHA}, {candidatePath, proof.Candidate.SHA256}, {toolsPath, proof.Tools.SHA256}, {localProfilePath, localProfileSHA}, {localUsagePath, localUsageSHA}, {localDecisionPath, localDecisionSHA}}); err != nil {
 		return AssuranceProfile{}, err
 	}
 	if err := WriteNewJSON(outputPath, result); err != nil {
 		return AssuranceProfile{}, err
 	}
 	return result, nil
+}
+
+func assuranceAttemptFileSHA256(path string, expected AssuranceAttempt) (string, error) {
+	attempt, data, err := readExactJSONBytes[AssuranceAttempt](path)
+	if err != nil || ValidateAssuranceAttempt(attempt) != nil || !reflect.DeepEqual(attempt, expected) {
+		return "", fmt.Errorf("sealed assurance attempt file does not bind expected attempt")
+	}
+	return replayBytesSHA256(data), nil
 }
 
 func assuranceProfileRequiresFixture(row AssuranceProfileRow) bool {
