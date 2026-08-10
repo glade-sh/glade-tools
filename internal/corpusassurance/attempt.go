@@ -179,7 +179,7 @@ func remoteCleanupAuthorityMatches(attempt AssuranceAttempt, authority RemoteAtt
 
 func readCandidateAuthority(path string) (attemptCandidate, []byte, error) {
 	var document candidateAuthorityDocument
-	data, err := readExactCandidateAuthorityJSON(path, &document)
+	data, err := readExactCandidateAuthorityDocument(path, &document)
 	if err != nil {
 		return attemptCandidate{}, nil, err
 	}

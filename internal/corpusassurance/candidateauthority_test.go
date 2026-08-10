@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -46,6 +47,25 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 		if err := os.WriteFile(path, original, 0o600); err != nil {
 			t.Fatal(err)
 		}
+	}
+	data, err := os.ReadFile(authorityPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy := strings.TrimSuffix(string(data), "}\n") + `,"candidateRebind":{"path":"/legacy","sha256":"` + strings.Repeat("0", 64) + `"}}` + "\n"
+	if err := os.WriteFile(authorityPath, []byte(legacy), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := readCandidateAuthority(authorityPath); err == nil {
+		t.Fatal("readCandidateAuthority accepted a legacy authority member")
+	}
+}
+
+func TestValidateCandidateAuthorityReviewBytes(t *testing.T) {
+	candidate := attemptCandidate{Commit: strings.Repeat("a", 40), SHA256: strings.Repeat("b", 64)}
+	data := []byte("Verdict: PASS\nCandidate commit: " + candidate.Commit + "\nCandidate SHA-256: " + candidate.SHA256 + "\n")
+	if err := validateCandidateAuthorityReviewBytes(data, candidate); err != nil {
+		t.Fatal(err)
 	}
 }
 
