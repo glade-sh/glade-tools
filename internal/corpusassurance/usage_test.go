@@ -420,6 +420,18 @@ func TestDraftUsageReconciliationReportsOnlyUnresolvedKeys(t *testing.T) {
 	}
 }
 
+func TestDraftUsageReconciliationUsesCanonicalMemberBeforeOverloads(t *testing.T) {
+	usage := UsageEntry{UsageKey: "ApexPages.currentPage", Namespace: "ApexPages", TypeName: "currentPage", PrivateProdRefs: 1, RepositoryIDs: []string{"private-corpus-001"}}
+	profile := []UsageProfileRow{
+		{SurfaceID: "apex:System.ApexPages.currentPage", UsageKey: usage.UsageKey},
+		{SurfaceID: "apex:System.ApexPages.currentPage()", UsageKey: usage.UsageKey},
+	}
+	automatic, unresolved, err := draftUsageReconciliation(profile, []UsageEntry{usage})
+	if err != nil || len(unresolved) != 0 || len(automatic) != 1 || automatic[0].SurfaceID != "apex:System.ApexPages.currentPage" {
+		t.Fatalf("automatic=%#v unresolved=%#v err=%v", automatic, unresolved, err)
+	}
+}
+
 func writeUsageRepo(t *testing.T, source string) string {
 	t.Helper()
 	root := t.TempDir()

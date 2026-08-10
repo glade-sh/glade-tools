@@ -210,10 +210,10 @@ func draftUsageReconciliation(profile []UsageProfileRow, usage []UsageEntry) ([]
 		}
 		seen[entry.UsageKey] = true
 		row := ReconciledUsageEntry{UsageEntry: entry}
-		if candidates := profilesByKey[entry.UsageKey]; len(candidates) == 1 {
-			row.Class, row.SurfaceID = usageClassExact, candidates[0].SurfaceID
-		} else if candidates := profilesByFoldedKey[strings.ToLower(entry.UsageKey)]; len(candidates) == 1 {
-			row.Class, row.SurfaceID = usageClassCaseAlias, candidates[0].SurfaceID
+		if candidate, ok := canonicalUsageProfileCandidate(profilesByKey[entry.UsageKey]); ok {
+			row.Class, row.SurfaceID = usageClassExact, candidate.SurfaceID
+		} else if candidate, ok := canonicalUsageProfileCandidate(profilesByFoldedKey[strings.ToLower(entry.UsageKey)]); ok {
+			row.Class, row.SurfaceID = usageClassCaseAlias, candidate.SurfaceID
 		} else if candidates := aggregateUsageCandidates(entry.UsageKey, profile); len(candidates) == 1 {
 			row.Class, row.SurfaceID = usageClassAggregateParent, candidates[0].SurfaceID
 		} else {
@@ -507,10 +507,10 @@ func reconcileUsage(profile []UsageProfileRow, usage []UsageEntry, decisions []U
 		}
 		seenUsage[entry.UsageKey] = true
 		row := ReconciledUsageEntry{UsageEntry: entry}
-		if candidates := profilesByKey[entry.UsageKey]; len(candidates) == 1 {
-			row.Class, row.SurfaceID = usageClassExact, candidates[0].SurfaceID
-		} else if candidates := profilesByFoldedKey[strings.ToLower(entry.UsageKey)]; len(candidates) == 1 {
-			row.Class, row.SurfaceID = usageClassCaseAlias, candidates[0].SurfaceID
+		if candidate, ok := canonicalUsageProfileCandidate(profilesByKey[entry.UsageKey]); ok {
+			row.Class, row.SurfaceID = usageClassExact, candidate.SurfaceID
+		} else if candidate, ok := canonicalUsageProfileCandidate(profilesByFoldedKey[strings.ToLower(entry.UsageKey)]); ok {
+			row.Class, row.SurfaceID = usageClassCaseAlias, candidate.SurfaceID
 		} else if candidates := aggregateUsageCandidates(entry.UsageKey, profile); len(candidates) == 1 {
 			row.Class, row.SurfaceID = usageClassAggregateParent, candidates[0].SurfaceID
 		} else {
@@ -543,6 +543,23 @@ func aggregateUsageCandidates(key string, profile []UsageProfileRow) []UsageProf
 		}
 	}
 	return candidates
+}
+
+func canonicalUsageProfileCandidate(candidates []UsageProfileRow) (UsageProfileRow, bool) {
+	if len(candidates) == 1 {
+		return candidates[0], true
+	}
+	var canonical UsageProfileRow
+	for _, candidate := range candidates {
+		if strings.Contains(candidate.SurfaceID, "(") {
+			continue
+		}
+		if canonical.SurfaceID != "" {
+			return UsageProfileRow{}, false
+		}
+		canonical = candidate
+	}
+	return canonical, canonical.SurfaceID != ""
 }
 
 // ExtractRepositoryUsageFromFiles is the workflow entrypoint. It obtains the
