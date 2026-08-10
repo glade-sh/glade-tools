@@ -355,6 +355,9 @@ func localProofCommandForFixture(entry LocalProofFixture, fixture compat.Fixture
 	switch entry.Disposition {
 	case localRuntimeRequired:
 		operation = "exec"
+		if fixture.Command.Kind == "test" {
+			operation = "test"
+		}
 	case deterministicMockRequired:
 		operation = "test"
 	case compileShapeRequired:

@@ -186,7 +186,7 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 		entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, SHA256: sha256}
 		owned := make(map[string]bool)
 		for surfaceID, disposition := range required {
-			if !localProofCommandMatchesDisposition(disposition, fixture.Command.Kind) || !fixtureOwnsSurface(fixture, surfaceID) {
+			if !localProofCommandMatchesDisposition(disposition, fixture.Command.Kind, surfaceID) || !fixtureOwnsSurface(fixture, surfaceID) {
 				continue
 			}
 			if !localProofEvidenceKindMatches(disposition, fixture.Command.Kind, fixtureEvidenceKind(fixture, surfaceID)) {
@@ -254,10 +254,10 @@ func fixtureEvidenceKind(fixture compat.Fixture, surfaceID string) string {
 	return ""
 }
 
-func localProofCommandMatchesDisposition(disposition, command string) bool {
+func localProofCommandMatchesDisposition(disposition, command, surfaceID string) bool {
 	switch disposition {
 	case localRuntimeRequired:
-		return command == "exec" || command == "test"
+		return command == "exec" || (command == "test" && strings.HasPrefix(surfaceID, "apex:System.Test."))
 	case deterministicMockRequired:
 		return command == "test"
 	case compileShapeRequired:

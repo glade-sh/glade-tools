@@ -104,6 +104,15 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 	if !localProofEvidenceKindMatches(localRuntimeRequired, "test", "test") {
 		t.Fatal("local runtime test fixture was rejected")
 	}
+	if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", "apex:System.Test.setMock") {
+		t.Fatal("test-context runtime fixture was rejected")
+	}
+}
+
+func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
+	if localProofCommandMatchesDisposition(localRuntimeRequired, "test", "apex:System.Location") {
+		t.Fatal("generic test fixture was accepted as runtime proof")
+	}
 }
 
 func TestLocalProofAcceptsSourceBackedTestContextRuntimeFixture(t *testing.T) {
