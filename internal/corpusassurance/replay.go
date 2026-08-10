@@ -442,7 +442,7 @@ func validReplayReceipt(result CommandResult, operation, expectedSpecSHA256 stri
 }
 
 func validIsolatedReplayReceipt(result CommandResult, operation, expectedSpecSHA256 string) bool {
-	return result.WorkingDirectory == replayWorkspaceIdentity && validReplayReceipt(result, operation, expectedSpecSHA256)
+	return result.WorkingDirectory == replayWorkspaceIdentity && validRetainedCommandOutput(result) && validReplayReceipt(result, operation, expectedSpecSHA256)
 }
 
 func validateReplayRequest(request ReplayRequest, inputs SealedHostInputs) ([]ReplayRepository, error) {
@@ -592,7 +592,8 @@ func validateReplayCommand(command ReplayCommand, operation string) error {
 }
 
 func runReplayCommand(workingDir string, command ReplayCommand) CommandResult {
-	result, _, _ := runReplayCommandOutput(workingDir, command)
+	result, stdout, stderr := runReplayCommandOutput(workingDir, command)
+	result.Output = &RetainedCommandOutput{Stdout: append([]byte(nil), stdout...), Stderr: append([]byte(nil), stderr...)}
 	return result
 }
 

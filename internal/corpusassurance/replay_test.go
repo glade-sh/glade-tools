@@ -51,6 +51,9 @@ func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
 	if result.Check.ExitCode != 0 || result.Check.DurationMS < 0 || result.Check.StdoutSHA256 != stringSHA256("check stdout") || result.Check.StderrSHA256 != stringSHA256("check stderr") {
 		t.Fatalf("check = %#v", result.Check)
 	}
+	if result.Check.Output == nil || string(result.Check.Output.Stdout) != "check stdout" || string(result.Check.Output.Stderr) != "check stderr" {
+		t.Fatalf("check output = %#v", result.Check.Output)
+	}
 	if result.LocalTest == nil || !result.LocalTest.Passed {
 		t.Fatalf("local test = %#v", result.LocalTest)
 	}
@@ -229,6 +232,12 @@ func TestValidateReplayMergeRejectsInvalidShards(t *testing.T) {
 		"workspace mismatch": func(_ *ReplayMerge, shards *[]ReplayShard) {
 			(*shards)[0].Repositories[0].Check.WorkingDirectory = "sealed-snapshot"
 		},
+		"missing retained output": func(_ *ReplayMerge, shards *[]ReplayShard) {
+			(*shards)[0].Repositories[0].Check.Output = nil
+		},
+		"forged retained output": func(_ *ReplayMerge, shards *[]ReplayShard) {
+			(*shards)[0].Repositories[0].Check.Output.Stdout = []byte("forged")
+		},
 		"failed required test": func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[0].Repositories[0].LocalTest.Passed = false },
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -390,7 +399,8 @@ func validReplayMerge() (ReplayMerge, []ReplayShard) {
 }
 
 func successfulReceipt(operation string) CommandResult {
-	return CommandResult{Command: []string{operation}, CommandSpecSHA256: commandSpecSHA256(replayCommandFor("", operation)), WorkingDirectory: replayWorkspaceIdentity, ExitCode: 0, DurationMS: 1, StdoutSHA256: strings.Repeat("a", 64), StderrSHA256: strings.Repeat("b", 64), Passed: true}
+	output := &RetainedCommandOutput{Stdout: []byte("stdout"), Stderr: []byte("stderr")}
+	return CommandResult{Command: []string{operation}, CommandSpecSHA256: commandSpecSHA256(replayCommandFor("", operation)), WorkingDirectory: replayWorkspaceIdentity, ExitCode: 0, DurationMS: 1, StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Output: output, Passed: true}
 }
 
 func successfulReceiptPointer(operation string) *CommandResult {
