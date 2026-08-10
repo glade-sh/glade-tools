@@ -194,6 +194,23 @@ func TestLocalProofFixtureRejectsUnknownJSONFields(t *testing.T) {
 	}
 }
 
+func TestLocalProofFixtureAcceptsSalesforceMetadataExtensions(t *testing.T) {
+	root := t.TempDir()
+	fixture := localProofFixture(t, root, "metadata", []string{"apex:Metadata.run"}, compileShapeRequired)
+	data, err := os.ReadFile(fixture.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data = append(data[:len(data)-1], []byte(`,"apiVersion":"67.0","salesforceEligible":false,"salesforceExclusionClass":"org-configuration-required"}`)...)
+	if err := os.WriteFile(fixture.Path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
+	if _, err := loadLocalProofFixture(fixture); err != nil {
+		t.Fatalf("loadLocalProofFixture rejected maintenance metadata: %v", err)
+	}
+}
+
 func TestWriteLocalProofProjectRejectsApexOutsidePackageDirectory(t *testing.T) {
 	root := t.TempDir()
 	fixture := localProofFixture(t, root, "outside", []string{"apex:Outside.run"}, compileShapeRequired)

@@ -48,15 +48,9 @@ func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
 	if replayBytesSHA256(data) != entry.SHA256 {
 		return compat.Fixture{}, fmt.Errorf("fixture binding mismatch for %q", entry.ID)
 	}
-	var fixture compat.Fixture
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&fixture); err != nil {
+	fixture, err := decodeLocalProofFixture(data)
+	if err != nil {
 		return compat.Fixture{}, fmt.Errorf("decode fixture %q: %w", entry.ID, err)
-	}
-	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		return compat.Fixture{}, fmt.Errorf("decode fixture %q: multiple JSON values", entry.ID)
 	}
 	if err := compat.Validate(fixture); err != nil {
 		return compat.Fixture{}, fmt.Errorf("validate fixture %q: %w", entry.ID, err)
@@ -68,6 +62,49 @@ func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
 		return compat.Fixture{}, fmt.Errorf("fixture %q has state the local-proof adapter does not materialize", entry.ID)
 	}
 	return fixture, nil
+}
+
+func decodeLocalProofFixture(data []byte) (compat.Fixture, error) {
+	var fields map[string]json.RawMessage
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	if err := decoder.Decode(&fields); err != nil {
+		return compat.Fixture{}, err
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		return compat.Fixture{}, fmt.Errorf("multiple JSON values")
+	}
+	for key := range fields {
+		if localProofFixtureExtensionFields[key] {
+			delete(fields, key)
+			continue
+		}
+		if !localProofFixtureFields[key] {
+			return compat.Fixture{}, fmt.Errorf("json: unknown field %q", key)
+		}
+	}
+	filtered, err := json.Marshal(fields)
+	if err != nil {
+		return compat.Fixture{}, err
+	}
+	decoder = json.NewDecoder(bytes.NewReader(filtered))
+	decoder.DisallowUnknownFields()
+	var fixture compat.Fixture
+	if err := decoder.Decode(&fixture); err != nil {
+		return compat.Fixture{}, err
+	}
+	return fixture, nil
+}
+
+var localProofFixtureFields = map[string]bool{
+	"name": true, "evidence": true, "project": true, "source": true, "schema": true,
+	"metadata": true, "seedData": true, "serverRequests": true, "command": true,
+	"expected": true, "limits": true,
+}
+
+var localProofFixtureExtensionFields = map[string]bool{
+	"apiVersion": true, "candidate": true, "mode": true, "notes": true, "profile": true,
+	"salesforceEligible": true, "salesforceExclusionClass": true, "salesforceExclusionReason": true,
 }
 
 func localProofFixtureIsMaterializable(fixture compat.Fixture) bool {
