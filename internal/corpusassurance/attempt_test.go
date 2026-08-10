@@ -3,7 +3,6 @@ package corpusassurance
 import (
 	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -97,41 +96,13 @@ func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCan
 	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
 		t.Fatal(err)
 	}
-	runRoot := t.TempDir()
-	productRoot := filepath.Join(runRoot, "integration", "glade")
-	if err := os.MkdirAll(filepath.Dir(productRoot), 0o700); err != nil {
-		t.Fatal(err)
-	}
-	if output, err := exec.Command("git", "clone", "--quiet", candidateRoot, productRoot).CombinedOutput(); err != nil {
-		t.Fatalf("git clone: %v\n%s", err, output)
-	}
-	candidatePath := filepath.Join(runRoot, "evidence", "current-base", "candidate", "glade")
-	if err := os.MkdirAll(filepath.Dir(candidatePath), 0o700); err != nil {
-		t.Fatal(err)
-	}
-	binary, err := os.ReadFile(candidate.Path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(candidatePath, binary, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	pathForRun := func(value string) string {
-		return filepath.ToSlash(strings.TrimPrefix(value, runRoot+string(filepath.Separator)))
-	}
-	receiptPath := filepath.Join(filepath.Dir(candidatePath), "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true})
-	manifestPath := filepath.Join(filepath.Dir(candidatePath), "candidate-manifest.json")
-	writeCandidateAuthorityJSON(t, manifestPath, map[string]any{"candidate": map[string]any{"commit": candidate.Commit, "path": pathForRun(candidatePath), "sha256": candidate.SHA256}})
-	reviewPath := filepath.Join(filepath.Dir(candidatePath), "REVIEW.md")
+	receiptPath := filepath.Join(filepath.Dir(path), "candidate-receipt.json")
+	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": candidate})
+	reviewPath := filepath.Join(filepath.Dir(path), "REVIEW.md")
 	if err := os.WriteFile(reviewPath, []byte("Verdict: PASS\nCandidate commit: "+candidate.Commit+"\nCandidate SHA-256: "+candidate.SHA256+"\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	writeCandidateAuthorityJSON(t, filepath.Join(runRoot, "run.json"), map[string]any{"currentBase": map[string]any{"candidate": map[string]any{"productCommit": candidate.Commit, "sha256": candidate.SHA256}}})
-	writeCandidateAuthorityJSON(t, filepath.Join(runRoot, "evidence", "current-base", "review-freeze.json"), map[string]any{"candidateCommit": candidate.Commit, "candidateSha256": candidate.SHA256})
-	rebindPath := filepath.Join(runRoot, "evidence", "current-base", "current-base-candidate-rebind.json")
-	writeCandidateAuthorityJSON(t, rebindPath, map[string]any{"status": "PASS", "manifest": pathForRun(manifestPath), "terraReview": pathForRun(reviewPath), "newCandidateCommit": candidate.Commit, "newCandidateSha256": candidate.SHA256, "candidatePath": pathForRun(candidatePath), "buildReceipt": pathForRun(receiptPath)})
-	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{RunRoot: runRoot, RebindPath: rebindPath, OutputPath: path}); err != nil {
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: path}); err != nil {
 		t.Fatal(err)
 	}
 }

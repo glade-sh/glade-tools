@@ -10,12 +10,13 @@ import (
 	"strings"
 )
 
-const candidateAuthorityStatus = "current-base-candidate-rebind-authorized"
+const candidateAuthorityStatus = "sealed-candidate-authority"
 
 type CandidateAuthorityRequest struct {
-	RunRoot    string
-	RebindPath string
-	OutputPath string
+	CandidateRoot string
+	ReceiptPath   string
+	ReviewPath    string
+	OutputPath    string
 }
 
 type candidateAuthorityDocument struct {
@@ -23,9 +24,7 @@ type candidateAuthorityDocument struct {
 	Status             string                   `json:"status"`
 	Binding            candidateAuthorityInput  `json:"binding"`
 	BoundInputs        candidateAuthorityInput  `json:"boundInputs"`
-	CandidateRebind    candidateAuthoritySource `json:"candidateRebind"`
 	SourceBuildReceipt candidateAuthoritySource `json:"sourceBuildReceipt"`
-	SuccessorManifest  candidateAuthoritySource `json:"successorManifest"`
 	Review             candidateAuthoritySource `json:"review"`
 }
 
@@ -38,28 +37,19 @@ type candidateAuthoritySource struct {
 	SHA256 string `json:"sha256"`
 }
 
-type candidateRebindRecord struct {
-	Status             string `json:"status"`
-	Manifest           string `json:"manifest"`
-	TerraReview        string `json:"terraReview"`
-	NewCandidateCommit string `json:"newCandidateCommit"`
-	NewCandidateSHA256 string `json:"newCandidateSha256"`
-	CandidatePath      string `json:"candidatePath"`
-	BuildReceipt       string `json:"buildReceipt"`
-}
-
 type candidateBuildReceipt struct {
-	SchemaVersion int    `json:"schemaVersion"`
-	Status        string `json:"status"`
-	SourceCommit  string `json:"sourceCommit"`
-	BinarySHA256  string `json:"binarySha256"`
-	CleanWorktree bool   `json:"cleanWorktree"`
+	SchemaVersion int              `json:"schemaVersion"`
+	Status        string           `json:"status"`
+	SourceCommit  string           `json:"sourceCommit"`
+	BinarySHA256  string           `json:"binarySha256"`
+	CleanWorktree bool             `json:"cleanWorktree"`
+	Candidate     attemptCandidate `json:"candidate"`
 }
 
-// CreateCandidateAuthority derives the one executable candidate permitted for
-// an assurance attempt from the guarded current-base rebind record.
+// CreateCandidateAuthority seals one candidate derived from its exact build
+// receipt and independently reviewed candidate identity.
 func CreateCandidateAuthority(request CandidateAuthorityRequest) (attemptCandidate, error) {
-	for _, path := range []string{request.RunRoot, request.RebindPath, request.OutputPath} {
+	for _, path := range []string{request.CandidateRoot, request.ReceiptPath, request.ReviewPath, request.OutputPath} {
 		if !filepath.IsAbs(path) {
 			return attemptCandidate{}, fmt.Errorf("absolute candidate authority paths are required")
 		}
@@ -69,31 +59,11 @@ func CreateCandidateAuthority(request CandidateAuthorityRequest) (attemptCandida
 	} else if !os.IsNotExist(err) {
 		return attemptCandidate{}, err
 	}
-	runRoot, err := filepath.EvalSymlinks(request.RunRoot)
+	candidate, receiptSource, reviewSource, err := validateCandidateAuthoritySources(request.CandidateRoot, request.ReceiptPath, request.ReviewPath)
 	if err != nil {
 		return attemptCandidate{}, err
 	}
-	rebindPath, err := filepath.EvalSymlinks(request.RebindPath)
-	if err != nil || rebindPath != filepath.Join(runRoot, "evidence", "current-base", "current-base-candidate-rebind.json") {
-		return attemptCandidate{}, fmt.Errorf("candidate authority rebind path is not canonical")
-	}
-	candidate, rebindSource, receiptSource, manifestSource, reviewSource, err := validateCandidateRebind(runRoot, rebindPath)
-	if err != nil {
-		return attemptCandidate{}, err
-	}
-	if err := validateCleanGitRoot(filepath.Join(runRoot, "integration", "glade"), candidate.Commit); err != nil {
-		return attemptCandidate{}, fmt.Errorf("candidate source: %w", err)
-	}
-	document := candidateAuthorityDocument{
-		SchemaVersion:      1,
-		Status:             candidateAuthorityStatus,
-		Binding:            candidateAuthorityInput{Candidate: candidate},
-		BoundInputs:        candidateAuthorityInput{Candidate: candidate},
-		CandidateRebind:    rebindSource,
-		SourceBuildReceipt: receiptSource,
-		SuccessorManifest:  manifestSource,
-		Review:             reviewSource,
-	}
+	document := candidateAuthorityDocument{SchemaVersion: 1, Status: candidateAuthorityStatus, Binding: candidateAuthorityInput{Candidate: candidate}, BoundInputs: candidateAuthorityInput{Candidate: candidate}, SourceBuildReceipt: receiptSource, Review: reviewSource}
 	if err := WriteNewJSON(request.OutputPath, document); err != nil {
 		return attemptCandidate{}, err
 	}
@@ -108,128 +78,61 @@ func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (at
 	if !commitPattern.MatchString(candidate.Commit) || !filepath.IsAbs(candidate.Path) || !sha256Pattern.MatchString(candidate.SHA256) {
 		return attemptCandidate{}, fmt.Errorf("candidate authority candidates do not agree")
 	}
-	for _, source := range []candidateAuthoritySource{document.CandidateRebind, document.SourceBuildReceipt, document.SuccessorManifest, document.Review} {
+	for _, source := range []candidateAuthoritySource{document.SourceBuildReceipt, document.Review} {
 		if !filepath.IsAbs(source.Path) || !sha256Pattern.MatchString(source.SHA256) {
 			return attemptCandidate{}, fmt.Errorf("candidate authority source is invalid")
 		}
 	}
-	rebindPath, err := filepath.EvalSymlinks(document.CandidateRebind.Path)
-	if err != nil {
-		return attemptCandidate{}, fmt.Errorf("candidate authority rebind path is not canonical")
+	receipt, receiptBytes, err := readExactCandidateBuildReceipt(document.SourceBuildReceipt.Path)
+	if err != nil || replayBytesSHA256(receiptBytes) != document.SourceBuildReceipt.SHA256 || !validCandidateBuildReceipt(receipt, candidate) {
+		return attemptCandidate{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
-	runRoot := filepath.Dir(filepath.Dir(filepath.Dir(rebindPath)))
-	if rebindPath != filepath.Join(runRoot, "evidence", "current-base", "current-base-candidate-rebind.json") {
-		return attemptCandidate{}, fmt.Errorf("candidate authority rebind path is not canonical")
+	if err := validateCandidateAuthorityReview(document.Review.Path, candidate); err != nil {
+		return attemptCandidate{}, err
 	}
-	derived, rebindSource, receiptSource, manifestSource, reviewSource, err := validateCandidateRebind(runRoot, rebindPath)
-	if err != nil || derived != candidate || rebindSource != document.CandidateRebind || receiptSource != document.SourceBuildReceipt || manifestSource != document.SuccessorManifest || reviewSource != document.Review {
-		return attemptCandidate{}, fmt.Errorf("candidate authority does not match guarded rebind")
+	reviewBytes, err := os.ReadFile(document.Review.Path)
+	if err != nil || replayBytesSHA256(reviewBytes) != document.Review.SHA256 {
+		return attemptCandidate{}, fmt.Errorf("candidate authority review is stale")
+	}
+	actual, err := runtimeArtifactFor(candidate.Path, candidate.Commit)
+	if err != nil || actual.SHA256 != candidate.SHA256 {
+		return attemptCandidate{}, fmt.Errorf("candidate authority binary is stale")
 	}
 	return candidate, nil
 }
 
-func validateCandidateRebind(runRoot, rebindPath string) (attemptCandidate, candidateAuthoritySource, candidateAuthoritySource, candidateAuthoritySource, candidateAuthoritySource, error) {
-	rebind, rebindBytes, err := readExactCandidateRebind(rebindPath)
-	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
-	}
-	if rebind.Status != "PASS" || !commitPattern.MatchString(rebind.NewCandidateCommit) || !sha256Pattern.MatchString(rebind.NewCandidateSHA256) {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate rebind is invalid")
-	}
-	candidatePath, err := candidateAuthorityRunPath(runRoot, rebind.CandidatePath)
-	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
-	}
-	receiptPath, err := candidateAuthorityRunPath(runRoot, rebind.BuildReceipt)
-	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
-	}
-	manifestPath, err := candidateAuthorityRunPath(runRoot, rebind.Manifest)
-	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
-	}
-	reviewPath, err := candidateAuthorityRunPath(runRoot, rebind.TerraReview)
-	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
-	}
-	candidateHash, err := sha256FileDirect(candidatePath)
-	if err != nil || candidateHash != rebind.NewCandidateSHA256 {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate rebind binary hash is stale")
-	}
+func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath string) (attemptCandidate, candidateAuthoritySource, candidateAuthoritySource, error) {
 	receipt, receiptBytes, err := readExactCandidateBuildReceipt(receiptPath)
-	if err != nil || receipt.SchemaVersion != 1 || receipt.Status != "clean-exact-candidate" || receipt.SourceCommit != rebind.NewCandidateCommit || receipt.BinarySHA256 != candidateHash || !receipt.CleanWorktree {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate rebind build receipt is invalid")
+	if err != nil || !validCandidateBuildReceipt(receipt, receipt.Candidate) {
+		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
-	if err := validateCandidateAuthorityManifest(manifestPath, rebind.NewCandidateCommit, rebind.CandidatePath, candidateHash); err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+	if err := validateCleanGitRoot(candidateRoot, receipt.Candidate.Commit); err != nil {
+		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
 	}
-	if err := validateCandidateAuthorityReview(reviewPath, rebind.NewCandidateCommit, candidateHash); err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+	actual, err := runtimeArtifactFor(receipt.Candidate.Path, receipt.Candidate.Commit)
+	if err != nil || actual.SHA256 != receipt.Candidate.SHA256 {
+		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
 	}
-	if err := validateCandidateAuthorityFrozenState(runRoot, rebind.NewCandidateCommit, candidateHash); err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+	if err := validateCandidateAuthorityReview(reviewPath, receipt.Candidate); err != nil {
+		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
-	manifestHash, err := sha256FileDirect(manifestPath)
+	reviewBytes, err := os.ReadFile(reviewPath)
 	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
-	reviewHash, err := sha256FileDirect(reviewPath)
-	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
-	}
-	return attemptCandidate{Commit: rebind.NewCandidateCommit, Path: candidatePath, SHA256: candidateHash}, candidateAuthoritySource{Path: rebindPath, SHA256: replayBytesSHA256(rebindBytes)}, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: manifestPath, SHA256: manifestHash}, candidateAuthoritySource{Path: reviewPath, SHA256: reviewHash}, nil
+	return receipt.Candidate, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
 }
 
-func candidateAuthorityRunPath(runRoot, relative string) (string, error) {
-	path := filepath.Clean(filepath.FromSlash(relative))
-	if relative == "" || filepath.IsAbs(path) || path == "." || path == ".." || strings.HasPrefix(path, ".."+string(filepath.Separator)) {
-		return "", fmt.Errorf("candidate rebind artifact path is unsafe")
-	}
-	resolved := filepath.Join(runRoot, path)
-	if actual, err := filepath.EvalSymlinks(resolved); err != nil || !strings.HasPrefix(actual, filepath.Clean(runRoot)+string(filepath.Separator)) {
-		return "", fmt.Errorf("candidate rebind artifact escapes run root")
-	}
-	return resolved, nil
+func validCandidateBuildReceipt(receipt candidateBuildReceipt, candidate attemptCandidate) bool {
+	return receipt.SchemaVersion == 1 && receipt.Status == "clean-exact-candidate" && receipt.CleanWorktree && receipt.SourceCommit == candidate.Commit && receipt.BinarySHA256 == candidate.SHA256 && receipt.Candidate == candidate && commitPattern.MatchString(candidate.Commit) && filepath.IsAbs(candidate.Path) && sha256Pattern.MatchString(candidate.SHA256)
 }
 
-func validateCandidateAuthorityManifest(path, commit, candidatePath, candidateSHA string) error {
-	var document struct {
-		Candidate struct{ Commit, Path, SHA256 string } `json:"candidate"`
-	}
-	if _, err := readExactCandidateAuthorityJSON(path, &document); err != nil || document.Candidate.Commit != commit || document.Candidate.Path != candidatePath || document.Candidate.SHA256 != candidateSHA {
-		return fmt.Errorf("candidate rebind manifest is invalid")
-	}
-	return nil
-}
-
-func validateCandidateAuthorityReview(path, commit, candidateSHA string) error {
+func validateCandidateAuthorityReview(path string, candidate attemptCandidate) error {
 	data, err := os.ReadFile(path)
-	if err != nil || !strings.HasPrefix(string(data), "Verdict: PASS\n") || !strings.Contains(string(data), "\nCandidate commit: "+commit+"\n") || !strings.Contains(string(data), "\nCandidate SHA-256: "+candidateSHA+"\n") {
-		return fmt.Errorf("candidate rebind review is invalid")
+	if err != nil || !strings.HasPrefix(string(data), "Verdict: PASS\n") || !strings.Contains(string(data), "\nCandidate commit: "+candidate.Commit+"\n") || !strings.Contains(string(data), "\nCandidate SHA-256: "+candidate.SHA256+"\n") {
+		return fmt.Errorf("candidate authority review is invalid")
 	}
 	return nil
-}
-
-func validateCandidateAuthorityFrozenState(runRoot, commit, candidateSHA string) error {
-	var run struct {
-		CurrentBase struct {
-			Candidate struct{ ProductCommit, SHA256 string } `json:"candidate"`
-		} `json:"currentBase"`
-	}
-	var freeze struct{ CandidateCommit, CandidateSHA256 string }
-	if _, err := readExactCandidateAuthorityJSON(filepath.Join(runRoot, "run.json"), &run); err != nil || run.CurrentBase.Candidate.ProductCommit != commit || run.CurrentBase.Candidate.SHA256 != candidateSHA {
-		return fmt.Errorf("candidate rebind run state is stale")
-	}
-	if _, err := readExactCandidateAuthorityJSON(filepath.Join(runRoot, "evidence", "current-base", "review-freeze.json"), &freeze); err != nil || freeze.CandidateCommit != commit || freeze.CandidateSHA256 != candidateSHA {
-		return fmt.Errorf("candidate rebind review freeze is stale")
-	}
-	return nil
-}
-
-func readExactCandidateRebind(path string) (candidateRebindRecord, []byte, error) {
-	var record candidateRebindRecord
-	data, err := readExactCandidateAuthorityJSON(path, &record)
-	return record, data, err
 }
 
 func readExactCandidateBuildReceipt(path string) (candidateBuildReceipt, []byte, error) {
