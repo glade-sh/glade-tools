@@ -15,7 +15,7 @@ func TestLoadSealedHostInputsBindsExactManifestFiles(t *testing.T) {
 	if err := WriteNewJSON(scopePath, scope); err != nil {
 		t.Fatal(err)
 	}
-	root := InventoryManifest{SchemaVersion: 1, InventorySHA256: sha256FileForTest(t, scopePath), Attempt: AssuranceAttempt{SchemaVersion: 1, InventorySHA256: sha256FileForTest(t, scopePath), CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: replayRuntime("b"), Tools: replayRuntime("c")}, Repositories: []RepositorySpec{repository}}
+	root := InventoryManifest{SchemaVersion: 1, InventorySHA256: sha256FileForTest(t, scopePath), Attempt: AssuranceAttempt{SchemaVersion: 1, InventorySHA256: sha256FileForTest(t, scopePath), CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: replayRuntime("b"), Tools: replayRuntime("c"), RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}, Repositories: []RepositorySpec{repository}}
 	rootPath := filepath.Join(directory, "MANIFEST.json")
 	if err := WriteNewJSON(rootPath, root); err != nil {
 		t.Fatal(err)

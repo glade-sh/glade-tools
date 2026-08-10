@@ -47,7 +47,7 @@ func TestRunRemoteAttemptCleanupAcceptsAuthorityBoundWorker(t *testing.T) {
 	}
 }
 
-func TestRunRemoteAttemptCleanupAcceptsAuthorityBoundAttemptWithoutAuthorityMap(t *testing.T) {
+func TestRunRemoteAttemptCleanupRejectsAuthorityBoundAttemptWithoutAuthorityMap(t *testing.T) {
 	root := t.TempDir()
 	bindingPath := filepath.Join(root, "binding.json")
 	requestedRoot := filepath.Join(remoteCleanupParent, "worker-without-attempt-map")
@@ -72,8 +72,8 @@ func TestRunRemoteAttemptCleanupAcceptsAuthorityBoundAttemptWithoutAuthorityMap(
 		runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
 			return salesforceCommandOutput{}, nil
 		},
-	}); err != nil {
-		t.Fatalf("RunRemoteAttemptCleanup: %v", err)
+	}); err == nil {
+		t.Fatal("RunRemoteAttemptCleanup accepted an attempt without pre-bound cleanup authorities")
 	}
 }
 

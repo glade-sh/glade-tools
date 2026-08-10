@@ -23,13 +23,14 @@ type AssuranceAttempt struct {
 }
 
 type AssuranceAttemptRequest struct {
-	InventoryPath          string
-	CandidateAuthorityPath string
-	CandidatePath          string
-	CandidateRoot          string
-	ToolsPath              string
-	ToolsRoot              string
-	OutputPath             string
+	InventoryPath               string
+	CandidateAuthorityPath      string
+	CandidatePath               string
+	CandidateRoot               string
+	ToolsPath                   string
+	ToolsRoot                   string
+	RemoteCleanupAuthorityPaths map[string]string
+	OutputPath                  string
 }
 
 type attemptCandidate struct {
@@ -46,6 +47,9 @@ func CreateAssuranceAttempt(request AssuranceAttemptRequest) (AssuranceAttempt, 
 		if !filepath.IsAbs(path) {
 			return AssuranceAttempt{}, fmt.Errorf("absolute attempt paths are required")
 		}
+	}
+	if err := validateAttemptCleanupAuthorityPaths(request.RemoteCleanupAuthorityPaths); err != nil {
+		return AssuranceAttempt{}, err
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
 		return AssuranceAttempt{}, fmt.Errorf("attempt output already exists: %s", request.OutputPath)
@@ -79,6 +83,11 @@ func CreateAssuranceAttempt(request AssuranceAttemptRequest) (AssuranceAttempt, 
 		return AssuranceAttempt{}, fmt.Errorf("tools: %w", err)
 	}
 	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), CandidateAuthoritySHA256: replayBytesSHA256(authorityBytes), Candidate: candidate, Tools: tools}
+	authorities, err := bindAttemptCleanupAuthorities(request.RemoteCleanupAuthorityPaths, attempt)
+	if err != nil {
+		return AssuranceAttempt{}, err
+	}
+	attempt.RemoteCleanupAuthoritySHA256 = authorities
 	if err := ValidateAssuranceAttempt(attempt); err != nil {
 		return AssuranceAttempt{}, err
 	}
@@ -112,17 +121,39 @@ func ValidateAssuranceAttempt(attempt AssuranceAttempt) error {
 	if err := ValidateRuntimeArtifact(attempt.Tools); err != nil {
 		return fmt.Errorf("tools: %w", err)
 	}
-	if len(attempt.RemoteCleanupAuthoritySHA256) != 0 {
-		if len(attempt.RemoteCleanupAuthoritySHA256) != 2 {
-			return fmt.Errorf("invalid remote cleanup authority bindings")
-		}
-		for _, role := range []string{"replay-worker", "salesforce-worker"} {
-			if !sha256Pattern.MatchString(attempt.RemoteCleanupAuthoritySHA256[role]) {
-				return fmt.Errorf("missing remote cleanup authority binding for %q", role)
-			}
+	if len(attempt.RemoteCleanupAuthoritySHA256) != 2 {
+		return fmt.Errorf("invalid remote cleanup authority bindings")
+	}
+	for _, role := range []string{"replay-worker", "salesforce-worker"} {
+		if !sha256Pattern.MatchString(attempt.RemoteCleanupAuthoritySHA256[role]) {
+			return fmt.Errorf("missing remote cleanup authority binding for %q", role)
 		}
 	}
 	return nil
+}
+
+func validateAttemptCleanupAuthorityPaths(paths map[string]string) error {
+	if len(paths) != 2 {
+		return fmt.Errorf("both remote cleanup authority paths are required")
+	}
+	for _, role := range []string{"replay-worker", "salesforce-worker"} {
+		if path := paths[role]; path == "" || !filepath.IsAbs(path) {
+			return fmt.Errorf("absolute remote cleanup authority path is required for %q", role)
+		}
+	}
+	return nil
+}
+
+func bindAttemptCleanupAuthorities(paths map[string]string, attempt AssuranceAttempt) (map[string]string, error) {
+	authorities := make(map[string]string, len(paths))
+	for _, role := range []string{"replay-worker", "salesforce-worker"} {
+		authority, data, err := readRemoteAttemptAuthority(paths[role])
+		if err != nil || authority.Role != role || authority.AttemptSHA256 != attemptBindingHash(attempt) {
+			return nil, fmt.Errorf("remote cleanup authority does not bind %q", role)
+		}
+		authorities[role] = replayBytesSHA256(data)
+	}
+	return authorities, nil
 }
 
 func attemptHash(attempt AssuranceAttempt) string {
@@ -142,8 +173,8 @@ func remoteCleanupAuthorityMatches(attempt AssuranceAttempt, authority RemoteAtt
 	if authority.AttemptSHA256 != attemptBindingHash(attempt) {
 		return false
 	}
-	if len(attempt.RemoteCleanupAuthoritySHA256) == 0 {
-		return true
+	if len(attempt.RemoteCleanupAuthoritySHA256) != 2 {
+		return false
 	}
 	return attempt.RemoteCleanupAuthoritySHA256[authority.Role] == authoritySHA
 }

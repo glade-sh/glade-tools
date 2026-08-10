@@ -29,8 +29,9 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
 	writeAttemptAuthority(t, authorityPath, candidate)
+	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	outputPath := filepath.Join(root, "ATTEMPT.json")
-	attempt, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, OutputPath: outputPath})
+	attempt, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: outputPath})
 	if err != nil {
 		t.Fatalf("CreateAssuranceAttempt: %v", err)
 	}
@@ -59,6 +60,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
 	writeAttemptAuthority(t, authorityPath, candidate)
+	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	for name, mutate := range map[string]func(){
 		"candidate hash": func() {
 			writeAttemptAuthority(t, authorityPath, sealedAttemptCandidate{Commit: candidate.Commit, Path: candidate.Path, SHA256: strings.Repeat("f", 64)})
@@ -74,7 +76,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 				writeAttemptAuthority(t, authorityPath, candidate)
 			}
 			mutate()
-			if _, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, OutputPath: filepath.Join(root, name+".json")}); err == nil {
+			if _, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: filepath.Join(root, name+".json")}); err == nil {
 				t.Fatal("CreateAssuranceAttempt accepted an unsealed runtime")
 			}
 		})
@@ -91,10 +93,31 @@ func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCan
 	}
 }
 
+func writeAttemptCleanupAuthorities(t *testing.T, root, inventoryPath, candidateAuthoritySHA string, candidate sealedAttemptCandidate, toolsRoot, toolsPath string) map[string]string {
+	t.Helper()
+	toolsCommit := testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	base := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: fileSHA256(t, inventoryPath), CandidateAuthoritySHA256: candidateAuthoritySHA, Candidate: RuntimeArtifact{Commit: candidate.Commit, OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: candidate.SHA256}, Tools: RuntimeArtifact{Commit: toolsCommit, OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: fileSHA256(t, toolsPath)}}
+	attemptSHA := attemptBindingHash(base)
+	parent := filepath.Join(root, "glade-assurance-worker")
+	if err := os.MkdirAll(parent, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	paths := map[string]string{}
+	for _, role := range []string{"replay-worker", "salesforce-worker"} {
+		path := filepath.Join(root, role+"-authority.json")
+		authority := RemoteAttemptAuthority{SchemaVersion: 1, AttemptSHA256: attemptSHA, Role: role, Host: "operator@" + role, Parent: parent, AttemptRoot: filepath.Join(parent, "assurance-"+attemptSHA[:16]+"-test-"+role)}
+		if err := WriteNewJSON(path, authority); err != nil {
+			t.Fatal(err)
+		}
+		paths[role] = path
+	}
+	return paths
+}
+
 func assuranceAttemptForTest(t *testing.T, inventoryPath string) string {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "ATTEMPT.json")
-	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: fileSHA256(t, inventoryPath), CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: replayRuntime("b"), Tools: replayRuntime("c")}
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: fileSHA256(t, inventoryPath), CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: replayRuntime("b"), Tools: replayRuntime("c"), RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
 	if err := WriteNewJSON(path, attempt); err != nil {
 		t.Fatal(err)
 	}
@@ -104,7 +127,7 @@ func assuranceAttemptForTest(t *testing.T, inventoryPath string) string {
 func assuranceAttemptForRuntimes(t *testing.T, root string, candidate, tools RuntimeArtifact) string {
 	t.Helper()
 	path := filepath.Join(root, "ATTEMPT.json")
-	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools}
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
 	if err := WriteNewJSON(path, attempt); err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +136,7 @@ func assuranceAttemptForRuntimes(t *testing.T, root string, candidate, tools Run
 
 func replaceAssuranceAttemptForRuntimes(t *testing.T, path string, candidate, tools RuntimeArtifact) {
 	t.Helper()
-	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools}
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
 	data, err := json.Marshal(attempt)
 	if err != nil {
 		t.Fatal(err)
@@ -121,4 +144,8 @@ func replaceAssuranceAttemptForRuntimes(t *testing.T, path string, candidate, to
 	if err := os.WriteFile(path, append(data, '\n'), 0o600); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func testCleanupAuthorityHashes() map[string]string {
+	return map[string]string{"replay-worker": strings.Repeat("0", 64), "salesforce-worker": strings.Repeat("0", 64)}
 }

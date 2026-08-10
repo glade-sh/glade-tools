@@ -88,7 +88,7 @@ func TestRunReleaseValidationDerivesArtifactsAndFreezeFromSealedAttempt(t *testi
 		t.Fatal(err)
 	}
 	attemptPath := filepath.Join(root, "ATTEMPT.json")
-	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools}
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
 	if err := WriteNewJSON(attemptPath, attempt); err != nil {
 		t.Fatal(err)
 	}
@@ -267,7 +267,7 @@ func writeReleaseAttempt(t *testing.T, root, candidatePath, candidateCommit, too
 		t.Fatal(err)
 	}
 	path := filepath.Join(root, "ATTEMPT.json")
-	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools}
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
 	if err := WriteNewJSON(path, attempt); err != nil {
 		t.Fatal(err)
 	}

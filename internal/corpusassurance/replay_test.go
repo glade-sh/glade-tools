@@ -419,7 +419,7 @@ func replayRequest(t *testing.T, host, exit string) (ReplayRequest, string) {
 	repo := RepositorySpec{
 		ID: "private-corpus-001", ExpectedCommit: strings.Repeat("a", 40), ArchiveSHA256: fileSHA256(t, source), TreeSHA256: treeSHA256, AssignedHost: host, SnapshotPath: "snapshots/private-corpus-001", LocalTests: "required",
 	}
-	inventoryPath, rootManifestPath, hostManifestPath := writeReplayManifests(t, root, repo, AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: candidate, Tools: tools})
+	inventoryPath, rootManifestPath, hostManifestPath := writeReplayManifests(t, root, repo, AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: candidate, Tools: tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()})
 	return ReplayRequest{
 		Host: host, Candidate: candidate, CandidatePath: candidatePath, Tools: tools, ToolsPath: toolsPath, OutputPath: filepath.Join(root, "shard.json"), InventoryPath: inventoryPath, RootManifestPath: rootManifestPath, HostManifestPath: hostManifestPath, architecture: func(string) (string, error) { return runtime.GOARCH, nil },
 	}, capture

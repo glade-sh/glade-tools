@@ -168,7 +168,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	candidate.Commit, tools.Commit = testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
 	replaceAssuranceAttemptForRuntimes(t, request.AttemptPath, candidate, tools)
 	proof.Candidate, proof.Tools = candidate, tools
-	proof.AttemptSHA256 = attemptHash(AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools})
+	proof.AttemptSHA256 = attemptHash(AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()})
 	if data, err := json.Marshal(proof); err != nil || os.WriteFile(request.OutputPath, append(data, '\n'), 0o600) != nil {
 		t.Fatal(err)
 	}
