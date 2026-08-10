@@ -593,7 +593,7 @@ func validateReplayCommand(command ReplayCommand, operation string) error {
 
 func runReplayCommand(workingDir string, command ReplayCommand) CommandResult {
 	result, stdout, stderr := runReplayCommandOutput(workingDir, command)
-	result.Output = &RetainedCommandOutput{Stdout: append([]byte(nil), stdout...), Stderr: append([]byte(nil), stderr...)}
+	result.Output = &RetainedCommandOutput{Stdout: append([]byte{}, stdout...), Stderr: append([]byte{}, stderr...)}
 	return result
 }
 

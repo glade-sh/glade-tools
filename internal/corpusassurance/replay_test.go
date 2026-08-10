@@ -250,6 +250,25 @@ func TestValidateReplayMergeRejectsInvalidShards(t *testing.T) {
 	}
 }
 
+func TestValidateReplayMergeAcceptsRetainedEmptyStreams(t *testing.T) {
+	merge, shards := validReplayMerge()
+	shards[0].Repositories[0].Check.Output.Stderr = []byte{}
+	shards[0].Repositories[0].Check.StderrSHA256 = replayBytesSHA256([]byte{})
+	if err := ValidateReplayMerge(merge, shards); err != nil {
+		t.Fatalf("ValidateReplayMerge rejected an empty retained stream: %v", err)
+	}
+}
+
+func TestRunReplayCommandRetainsEmptyStreams(t *testing.T) {
+	result := runReplayCommand(t.TempDir(), ReplayCommand{Path: "/bin/sh", Args: []string{"-c", "printf stdout"}, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: replayTimeout})
+	if result.Output == nil || result.Output.Stdout == nil || result.Output.Stderr == nil {
+		t.Fatalf("empty replay stream was not retained: %#v", result.Output)
+	}
+	if string(result.Output.Stdout) != "stdout" || len(result.Output.Stderr) != 0 || !validRetainedCommandOutput(result) {
+		t.Fatalf("retained output = %#v", result.Output)
+	}
+}
+
 func TestValidateReplayFilesLoadsAuthoritativeInputs(t *testing.T) {
 	merge, shards := validReplayMerge()
 	root := t.TempDir()
