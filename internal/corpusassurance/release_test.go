@@ -239,6 +239,18 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 	}
 }
 
+func TestFixedReleaseGoBinaryUsesSealedAbsolutePath(t *testing.T) {
+	root := t.TempDir()
+	goPath := filepath.Join(root, "go")
+	if err := os.WriteFile(goPath, []byte("binary"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	got, err := fixedReleaseGoBinary([]string{"PATH=bin:" + root})
+	if err != nil || got != goPath {
+		t.Fatalf("fixedReleaseGoBinary = %q, %v", got, err)
+	}
+}
+
 func TestFixedReleaseEnvironmentUsesWritableSealedHome(t *testing.T) {
 	if !strings.Contains(strings.Join(fixedReleaseEnvironment(), "\n"), "HOME=/private/tmp/glade-assurance-home") {
 		t.Fatalf("release environment has no writable sealed home: %#v", fixedReleaseEnvironment())

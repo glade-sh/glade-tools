@@ -161,8 +161,11 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 	if os.Getenv("GOROOT") != "" {
 		return nil, fmt.Errorf("ambient GOROOT is not permitted")
 	}
-	goBin := filepath.Join(runtime.GOROOT(), "bin", "go")
 	env := fixedReleaseEnvironment()
+	goBin, err := fixedReleaseGoBinary(env)
+	if err != nil {
+		return nil, err
+	}
 	commands := []releaseCommand{
 		{Path: goBin, Args: []string{"test", "-timeout", "19m", "-count=1", "./..."}, WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
 		{Path: filepath.Join(gladeRoot, "scripts", "smoke.sh"), WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
@@ -176,6 +179,24 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 		}
 	}
 	return commands, nil
+}
+
+func fixedReleaseGoBinary(environment []string) (string, error) {
+	for _, value := range environment {
+		if !strings.HasPrefix(value, "PATH=") {
+			continue
+		}
+		for _, directory := range strings.Split(strings.TrimPrefix(value, "PATH="), string(filepath.ListSeparator)) {
+			if !filepath.IsAbs(directory) {
+				continue
+			}
+			path := filepath.Join(directory, "go")
+			if info, err := os.Stat(path); err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0 {
+				return path, nil
+			}
+		}
+	}
+	return "", fmt.Errorf("release Go executable is unavailable")
 }
 
 func fixedReleaseEnvironment() []string {
