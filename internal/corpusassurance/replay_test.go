@@ -255,6 +255,22 @@ func TestValidateReplayMergeRejectsInvalidShards(t *testing.T) {
 	}
 }
 
+func TestValidateReplayRootBindingRejectsTamperedDenominators(t *testing.T) {
+	for name, mutate := range map[string]func(*ReplayMerge){
+		"duplicate repository":       func(merge *ReplayMerge) { merge.Repositories[1] = merge.Repositories[0] },
+		"altered embedded inventory": func(merge *ReplayMerge) { merge.Inventory.Repositories[1].ExpectedCommit = strings.Repeat("f", 40) },
+	} {
+		t.Run(name, func(t *testing.T) {
+			merge, _ := validReplayMerge()
+			root := merge.Inventory
+			mutate(&merge)
+			if err := validateReplayRootBinding(merge, root); err == nil {
+				t.Fatal("validateReplayRootBinding accepted a tampered replay denominator")
+			}
+		})
+	}
+}
+
 func TestValidateReplayMergeAcceptsRetainedEmptyStreams(t *testing.T) {
 	merge, shards := validReplayMerge()
 	shards[0].Repositories[0].Check.Output.Stderr = []byte{}

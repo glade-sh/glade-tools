@@ -412,17 +412,31 @@ func validateReplayTestReadiness(repositories []RepositorySpec, readiness map[st
 }
 
 func validateReplayRootBinding(merge ReplayMerge, root InventoryManifest) error {
-	if len(merge.Repositories) != len(root.Repositories) {
+	if !equalInventoryManifest(merge.Inventory, root) || len(merge.Repositories) != len(root.Repositories) {
 		return fmt.Errorf("replay merge repository denominator does not match root manifest")
 	}
 	expected := repositoryIndex(root.Repositories)
+	seen := make(map[string]bool, len(expected))
 	for _, repository := range merge.Repositories {
 		canonical, exists := expected[repository.ID]
-		if !exists || canonical != repository {
+		if !exists || seen[repository.ID] || canonical != repository {
 			return fmt.Errorf("replay merge repository does not match root manifest for %q", repository.ID)
 		}
+		seen[repository.ID] = true
 	}
 	return validateReplayTestReadiness(root.Repositories, merge.TestReadyByRepository)
+}
+
+func equalInventoryManifest(left, right InventoryManifest) bool {
+	if left.SchemaVersion != right.SchemaVersion || left.InventorySHA256 != right.InventorySHA256 || left.Attempt != right.Attempt || len(left.Repositories) != len(right.Repositories) {
+		return false
+	}
+	for index := range left.Repositories {
+		if left.Repositories[index] != right.Repositories[index] {
+			return false
+		}
+	}
+	return true
 }
 
 func validateReplayDenominator(merge ReplayMerge) error {
