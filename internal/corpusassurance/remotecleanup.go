@@ -65,7 +65,7 @@ func RunRemoteAttemptCleanup(request RemoteAttemptCleanupRequest) (RemoteAttempt
 	}
 	attempt, attemptBytes, err := readExactJSONBytes[AssuranceAttempt](request.AttemptPath)
 	bindingSHA := replayBytesSHA256(bindingBytes)
-	if err != nil || ValidateAssuranceAttempt(attempt) != nil || len(attempt.RemoteCleanupAuthoritySHA256) != 2 || authority.AttemptSHA256 != attemptBindingHash(attempt) || attempt.RemoteCleanupAuthoritySHA256[authority.Role] != bindingSHA {
+	if err != nil || ValidateAssuranceAttempt(attempt) != nil || !remoteCleanupAuthorityMatches(attempt, authority, bindingSHA) {
 		return RemoteAttemptCleanupReceipt{}, fmt.Errorf("remote cleanup authority is not bound to the sealed attempt")
 	}
 

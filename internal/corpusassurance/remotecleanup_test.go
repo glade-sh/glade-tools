@@ -47,6 +47,36 @@ func TestRunRemoteAttemptCleanupAcceptsAuthorityBoundWorker(t *testing.T) {
 	}
 }
 
+func TestRunRemoteAttemptCleanupAcceptsAuthorityBoundAttemptWithoutAuthorityMap(t *testing.T) {
+	root := t.TempDir()
+	bindingPath := filepath.Join(root, "binding.json")
+	requestedRoot := filepath.Join(remoteCleanupParent, "worker-without-attempt-map")
+	writeRemoteCleanupAuthority(t, bindingPath, "operator@replay-worker", requestedRoot)
+	attemptPath := bindingPath + ".attempt"
+	attempt, _, err := readExactJSONBytes[AssuranceAttempt](attemptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attempt.RemoteCleanupAuthoritySHA256 = nil
+	attemptBytes, err := json.Marshal(attempt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(attemptPath, append(attemptBytes, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
+		AttemptPath: attemptPath,
+		BindingPath: bindingPath,
+		OutputPath:  filepath.Join(root, "REMOTE_CLEANUP.json"),
+		runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
+			return salesforceCommandOutput{}, nil
+		},
+	}); err != nil {
+		t.Fatalf("RunRemoteAttemptCleanup: %v", err)
+	}
+}
+
 func TestRunRemoteAttemptCleanupRejectsBroadParent(t *testing.T) {
 	root := t.TempDir()
 	bindingPath := filepath.Join(root, "binding.json")

@@ -25,18 +25,13 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		inventory, authority := flags.String("inventory-spec", "", ""), flags.String("candidate-authority", "", "")
 		candidate, candidateRoot := flags.String("candidate", "", ""), flags.String("candidate-root", "", "")
 		tools, toolsRoot, output := flags.String("tools", "", ""), flags.String("tools-root", "", ""), flags.String("output", "", "")
-		var remoteAuthorities assurancePathList
-		flags.Var(&remoteAuthorities, "remote-cleanup-authority", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
 		if err := requiredAssuranceFlags(*inventory, *authority, *candidate, *candidateRoot, *tools, *toolsRoot, *output); err != nil {
 			return err
 		}
-		if len(remoteAuthorities) != 2 {
-			return errors.New("exactly two remote cleanup authorities are required")
-		}
-		_, err := corpusassurance.CreateAssuranceAttempt(corpusassurance.AssuranceAttemptRequest{InventoryPath: *inventory, CandidateAuthorityPath: *authority, CandidatePath: *candidate, CandidateRoot: *candidateRoot, ToolsPath: *tools, ToolsRoot: *toolsRoot, RemoteCleanupAuthorityPaths: remoteAuthorities, OutputPath: *output})
+		_, err := corpusassurance.CreateAssuranceAttempt(corpusassurance.AssuranceAttemptRequest{InventoryPath: *inventory, CandidateAuthorityPath: *authority, CandidatePath: *candidate, CandidateRoot: *candidateRoot, ToolsPath: *tools, ToolsRoot: *toolsRoot, OutputPath: *output})
 		if err != nil {
 			return err
 		}
@@ -443,7 +438,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 	fmt.Fprint(w, `Run the sealed private-corpus assurance workflow.
 
 Usage:
-  glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --remote-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --remote-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --output <ATTEMPT.json>
+  glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --output <ATTEMPT.json>
   glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --attempt <ATTEMPT.json> --output <new-dir>
   glade-tools corpus assurance usage-draft --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --output <USAGE_DECISION_DRAFT.json>
   glade-tools corpus assurance usage --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --decisions <USAGE_DECISIONS.json> --output <CORPUS_USAGE.json>

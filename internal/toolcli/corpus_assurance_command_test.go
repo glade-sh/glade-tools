@@ -22,7 +22,7 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
-	for _, command := range []string{"prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof", "release-validate", "oracle-plan", "exclusion-request", "authorize-exclusions", "oracle-bundle", "org-create", "org-preflight", "salesforce-run", "org-cleanup", "report", "cleanup"} {
+	for _, command := range []string{"attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof", "release-validate", "oracle-plan", "exclusion-request", "authorize-exclusions", "oracle-bundle", "org-create", "org-preflight", "salesforce-run", "org-cleanup", "report", "cleanup"} {
 		if !strings.Contains(stdout.String(), "glade-tools corpus assurance "+command+" ") {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}
@@ -31,6 +31,9 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 		if !strings.Contains(stdout.String(), flag) {
 			t.Fatalf("help omits %q:\n%s", flag, stdout.String())
 		}
+	}
+	if strings.Contains(stdout.String(), "attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --remote-cleanup-authority") {
+		t.Fatalf("attempt help still requires authorities before the attempt exists:\n%s", stdout.String())
 	}
 }
 
