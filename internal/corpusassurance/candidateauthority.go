@@ -111,7 +111,10 @@ func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath st
 		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
 	}
 	reviewBytes, err := os.ReadFile(reviewPath)
-	if err != nil || validateCandidateAuthorityReviewBytes(reviewBytes, receipt.Candidate) != nil {
+	if err != nil {
+		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+	}
+	if err := validateCandidateAuthorityReviewBytes(reviewBytes, receipt.Candidate); err != nil {
 		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
 	return receipt.Candidate, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil

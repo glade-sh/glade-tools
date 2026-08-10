@@ -69,6 +69,29 @@ func TestValidateCandidateAuthorityReviewBytes(t *testing.T) {
 	}
 }
 
+func TestCreateCandidateAuthorityRejectsInvalidReviewWithoutOutput(t *testing.T) {
+	root := t.TempDir()
+	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidatePath := filepath.Join(root, "glade")
+	if err := os.WriteFile(candidatePath, []byte("candidate"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+	receiptPath := filepath.Join(root, "candidate-receipt.json")
+	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": candidate})
+	reviewPath := filepath.Join(root, "REVIEW.md")
+	if err := os.WriteFile(reviewPath, []byte("invalid\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	outputPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: outputPath}); err == nil {
+		t.Fatal("CreateCandidateAuthority accepted an invalid review")
+	}
+	if _, err := os.Lstat(outputPath); !os.IsNotExist(err) {
+		t.Fatalf("invalid review created authority: %v", err)
+	}
+}
+
 func writeCandidateAuthorityJSON(t *testing.T, path string, value any) {
 	t.Helper()
 	data, err := json.Marshal(value)
