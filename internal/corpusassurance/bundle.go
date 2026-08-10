@@ -13,16 +13,17 @@ import (
 	"time"
 )
 
-const approvedSalesforceFilterSHA256 = "5d448e5f5132b9a7c29532255ba073655f4860033a30308b221870a68fb02030"
+const approvedSalesforceFilterSHA256 = "41cc9b98f4456785f22901b85b6fd0d35ca151e2dea0147afc7d1b22ca34cf40"
 
 // testApprovedSalesforceFilterSHA256 is package-private so synthetic unit
 // fixtures can exercise the sealing protocol without exposing a caller choice.
 var testApprovedSalesforceFilterSHA256 string
 
-// OracleBundleRequest names the sealed inputs staged for Razor. Every input is
+// OracleBundleRequest names the sealed inputs staged for the Salesforce worker. Every input is
 // rehashed before publication; OutputPath must be a new private directory.
 type OracleBundleRequest struct {
 	AttemptPath           string
+	DevHubAuthorityPath   string
 	ProfilePath           string
 	PlanPath              string
 	AuthorityPath         string
@@ -36,7 +37,7 @@ type OracleBundleRequest struct {
 	expectedFilterSHA256  string
 }
 
-// OracleBundle is the acyclic receipt for the self-contained Razor staging
+// OracleBundle is the acyclic receipt for the self-contained Salesforce staging
 // tree. Its SHA-256 is the bundle identity used by every Salesforce shard.
 type OracleBundle struct {
 	SchemaVersion            int                   `json:"schemaVersion"`
@@ -54,6 +55,10 @@ type OracleBundle struct {
 	TransportManifestSHA256  string                `json:"transportManifestSha256"`
 	FilterSHA256             string                `json:"filterSha256"`
 	ScratchDefinitionSHA256  string                `json:"scratchDefinitionSha256"`
+	DevHubAuthoritySHA256    string                `json:"devHubAuthoritySha256"`
+	DevHub                   string                `json:"devHub"`
+	DevHubOrgID              string                `json:"devHubOrgId"`
+	DevHubUsername           string                `json:"devHubUsername"`
 	ToolsAMD64SHA256         string                `json:"toolsAmd64Sha256"`
 	Fixtures                 []OracleBundleFixture `json:"fixtures"`
 }
@@ -94,7 +99,7 @@ type oracleSourceFile struct {
 // BuildOracleBundle stages only the derived Salesforce-required fixtures and
 // their sealed dependencies, then atomically publishes the new output tree.
 func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
-	paths := []string{request.AttemptPath, request.ProfilePath, request.PlanPath, request.AuthorityPath, request.ReleaseValidationPath, request.LocalProofPath, request.FixtureManifestPath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsRoot, request.OutputPath}
+	paths := []string{request.AttemptPath, request.DevHubAuthorityPath, request.ProfilePath, request.PlanPath, request.AuthorityPath, request.ReleaseValidationPath, request.LocalProofPath, request.FixtureManifestPath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsRoot, request.OutputPath}
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return OracleBundle{}, fmt.Errorf("absolute oracle bundle paths are required")
@@ -108,6 +113,10 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	profile, profileBytes, err := readExactJSONBytes[AssuranceProfile](request.ProfilePath)
 	if err != nil {
 		return OracleBundle{}, fmt.Errorf("read assurance profile: %w", err)
+	}
+	devHubAuthority, devHubAuthorityBytes, err := readExactJSONBytes[SalesforceDevHubAuthority](request.DevHubAuthorityPath)
+	if err != nil || !validSalesforceDevHubAuthority(devHubAuthority) {
+		return OracleBundle{}, fmt.Errorf("read sealed Salesforce Dev Hub authority")
 	}
 	plan, planBytes, err := readExactJSONBytes[OraclePlan](request.PlanPath)
 	if err != nil {
@@ -170,7 +179,8 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err != nil {
 		return OracleBundle{}, err
 	}
-	inputs := map[string]string{request.AttemptPath: replayBytesSHA256(attemptBytes), proof.AttemptPath: replayBytesSHA256(attemptBytes), request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
+	devHubAuthoritySHA := replayBytesSHA256(devHubAuthorityBytes)
+	inputs := map[string]string{request.AttemptPath: replayBytesSHA256(attemptBytes), proof.AttemptPath: replayBytesSHA256(attemptBytes), request.DevHubAuthorityPath: devHubAuthoritySHA, request.ProfilePath: profileSHA, request.PlanPath: planSHA, request.AuthorityPath: authoritySHA, request.ReleaseValidationPath: releaseSHA, request.LocalProofPath: proofSHA, request.FixtureManifestPath: manifestSHA}
 	for _, path := range []string{request.FilterScriptPath, request.ScratchDefinitionPath} {
 		hash, err := sha256File(path)
 		if err != nil {
@@ -182,7 +192,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if err := validateOracleFilterContract(request.FilterScriptPath, expectedFilterSHA256); err != nil {
 		return OracleBundle{}, err
 	}
-	scratchDefinition, err := os.ReadFile(request.ScratchDefinitionPath)
+	scratchDefinition, err := readAssuranceFile(request.ScratchDefinitionPath)
 	if err != nil {
 		return OracleBundle{}, err
 	}
@@ -210,7 +220,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 			return OracleBundle{}, err
 		}
 	}
-	for _, item := range []struct{ path, name string }{{request.AttemptPath, "ATTEMPT.json"}, {request.ProfilePath, "profile.json"}, {request.PlanPath, "ORACLE_PLAN.json"}, {request.AuthorityPath, "EXCLUSION_AUTHORITY.json"}, {request.ReleaseValidationPath, "RELEASE_VALIDATION.json"}, {request.ScratchDefinitionPath, "corpus-assurance-scratch-def.json"}} {
+	for _, item := range []struct{ path, name string }{{request.AttemptPath, "ATTEMPT.json"}, {request.DevHubAuthorityPath, "DEV_HUB_AUTHORITY.json"}, {request.ProfilePath, "profile.json"}, {request.PlanPath, "ORACLE_PLAN.json"}, {request.AuthorityPath, "EXCLUSION_AUTHORITY.json"}, {request.ReleaseValidationPath, "RELEASE_VALIDATION.json"}, {request.ScratchDefinitionPath, "corpus-assurance-scratch-def.json"}} {
 		if err := copyOracleBundleFile(item.path, filepath.Join(bundleRoot, item.name), 0o600); err != nil {
 			return OracleBundle{}, err
 		}
@@ -272,7 +282,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if current, err := amd64ToolsArtifactFor(toolsAMD64Path, attempt.Tools.Commit); err != nil || current != toolsAMD64 {
 		return OracleBundle{}, fmt.Errorf("amd64 tools changed during staging")
 	}
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
+	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], DevHubAuthoritySHA256: devHubAuthoritySHA, DevHub: devHubAuthority.Alias, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
 	if err := WriteNewJSON(filepath.Join(bundleRoot, "bundle.json"), bundle); err != nil {
 		return OracleBundle{}, err
 	}
@@ -391,7 +401,7 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 	return result.CommandSpecSHA256 == spec
 }
 
-// ValidateOracleBundle rehashes the staged Razor tree before any Salesforce
+// ValidateOracleBundle rehashes the staged Salesforce tree before any oracle
 // command may rely on it.
 func ValidateOracleBundle(bundlePath string) error {
 	if !filepath.IsAbs(bundlePath) {
@@ -401,7 +411,7 @@ func ValidateOracleBundle(bundlePath string) error {
 	if err != nil {
 		return fmt.Errorf("read oracle bundle: %w", err)
 	}
-	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.Tools.Arch != "arm64" || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 {
+	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.Tools.Arch != "arm64" || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) || bundle.DevHub == "" || bundle.DevHubOrgID == "" || bundle.DevHubUsername == "" {
 		return fmt.Errorf("invalid oracle bundle")
 	}
 	if err := validateApprovedOracleBundleFilter(bundle); err != nil {
@@ -420,6 +430,7 @@ func ValidateOracleBundle(bundlePath string) error {
 		{filepath.Join(bundleRoot, "EXCLUSION_AUTHORITY.json"), bundle.ExclusionAuthoritySHA256},
 		{filepath.Join(bundleRoot, "RELEASE_VALIDATION.json"), bundle.ReleaseValidationSHA256},
 		{filepath.Join(bundleRoot, "ATTEMPT.json"), bundle.AttemptSHA256},
+		{filepath.Join(bundleRoot, "DEV_HUB_AUTHORITY.json"), bundle.DevHubAuthoritySHA256},
 		{filepath.Join(bundleRoot, "LOCAL_PROOF_SUMMARY.json"), bundle.LocalProofSummarySHA256},
 		{filepath.Join(bundleRoot, "fixture-manifest.json"), bundle.TransportManifestSHA256},
 		{filepath.Join(bundleRoot, "corpus-assurance-scratch-def.json"), bundle.ScratchDefinitionSHA256},
@@ -449,6 +460,10 @@ func ValidateOracleBundle(bundlePath string) error {
 	attempt, attemptBytes, err := readExactJSONBytes[AssuranceAttempt](filepath.Join(bundleRoot, "ATTEMPT.json"))
 	if err != nil || ValidateAssuranceAttempt(attempt) != nil || attempt.Candidate != bundle.Candidate || attempt.Tools != bundle.Tools {
 		return fmt.Errorf("invalid staged assurance attempt")
+	}
+	devHubAuthority, _, err := readExactJSONBytes[SalesforceDevHubAuthority](filepath.Join(bundleRoot, "DEV_HUB_AUTHORITY.json"))
+	if err != nil || !validSalesforceDevHubAuthority(devHubAuthority) || devHubAuthority.Alias != bundle.DevHub || devHubAuthority.OrgID != bundle.DevHubOrgID || devHubAuthority.Username != bundle.DevHubUsername {
+		return fmt.Errorf("invalid staged Salesforce Dev Hub authority")
 	}
 	release, _, err := readExactJSONBytes[ReleaseValidation](filepath.Join(bundleRoot, "RELEASE_VALIDATION.json"))
 	if err != nil || replayBytesSHA256(attemptBytes) != release.AttemptSHA256 || validateOracleReleaseValidation(release, plan) != nil {

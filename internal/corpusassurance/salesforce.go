@@ -34,14 +34,31 @@ type SalesforceOrgPreflight struct {
 	Commands      []CommandResult     `json:"commands"`
 }
 
+// SalesforceDevHubAuthority is an independently sealed private operator input.
+// Salesforce receipts may use only this identity, never a caller-selected
+// Dev Hub alias that is absent from the sealed bundle.
+type SalesforceDevHubAuthority struct {
+	SchemaVersion int    `json:"schemaVersion"`
+	Alias         string `json:"alias"`
+	OrgID         string `json:"orgId"`
+	Username      string `json:"username"`
+}
+
+func validSalesforceDevHubAuthority(authority SalesforceDevHubAuthority) bool {
+	return authority.SchemaVersion == 1 && authority.Alias != "" && authority.OrgID != "" && authority.Username != ""
+}
+
 type SalesforceOrgCreation struct {
-	SchemaVersion int           `json:"schemaVersion"`
-	BundleSHA256  string        `json:"bundleSha256"`
-	DevHub        string        `json:"devHub"`
-	Alias         string        `json:"alias"`
-	OrgID         string        `json:"orgId"`
-	Command       CommandResult `json:"command"`
-	Invalidated   bool          `json:"invalidated,omitempty"`
+	SchemaVersion  int           `json:"schemaVersion"`
+	BundleSHA256   string        `json:"bundleSha256"`
+	DevHub         string        `json:"devHub"`
+	DevHubOrgID    string        `json:"devHubOrgId"`
+	DevHubUsername string        `json:"devHubUsername"`
+	Alias          string        `json:"alias"`
+	OrgID          string        `json:"orgId"`
+	Command        CommandResult `json:"command"`
+	DevHubCommand  CommandResult `json:"devHubCommand"`
+	Invalidated    bool          `json:"invalidated,omitempty"`
 }
 
 type SalesforceOrgCreateRequest struct {
@@ -62,13 +79,16 @@ type salesforceOrgReservation struct {
 }
 
 type SalesforceOrgCleanup struct {
-	SchemaVersion int             `json:"schemaVersion"`
-	BundleSHA256  string          `json:"bundleSha256"`
-	DevHub        string          `json:"devHub"`
-	OrgAlias      string          `json:"orgAlias"`
-	OrgID         string          `json:"orgId"`
-	Commands      []CommandResult `json:"commands"`
-	ResidueAbsent bool            `json:"residueAbsent"`
+	SchemaVersion  int             `json:"schemaVersion"`
+	BundleSHA256   string          `json:"bundleSha256"`
+	DevHub         string          `json:"devHub"`
+	DevHubOrgID    string          `json:"devHubOrgId"`
+	DevHubUsername string          `json:"devHubUsername"`
+	OrgAlias       string          `json:"orgAlias"`
+	OrgID          string          `json:"orgId"`
+	Commands       []CommandResult `json:"commands"`
+	DevHubCommand  CommandResult   `json:"devHubCommand"`
+	ResidueAbsent  bool            `json:"residueAbsent"`
 }
 
 type SalesforceOrgCleanupRequest struct {
@@ -122,49 +142,43 @@ type salesforceFilterBinding struct {
 }
 
 type salesforceFilterFixtureResult struct {
-	Fixture               string                            `json:"fixture"`
-	FixtureSHA256         string                            `json:"fixtureSha256"`
-	SourceFiles           []oracleSourceFile                `json:"sourceFiles"`
-	OrgIdentity           salesforceFilterOrgIdentity       `json:"orgIdentity"`
-	Project               string                            `json:"project"`
-	RemoteProject         string                            `json:"remoteProject"`
-	RemoteInvocation      *salesforceFilterRemoteInvocation `json:"remoteInvocation"`
-	ProjectManifest       []salesforceExecutorFile          `json:"projectManifest"`
-	RemoteProjectManifest []salesforceExecutorFile          `json:"remoteProjectManifest"`
-	ProjectTreeSHA256     string                            `json:"projectTreeSha256"`
-	StdoutSHA256          string                            `json:"stdoutSha256"`
-	StderrSHA256          string                            `json:"stderrSha256"`
-	SetupSHA256           string                            `json:"setupSha256"`
-	RuntimeSHA256         string                            `json:"runtimeSha256,omitempty"`
-	RuntimeStderrSHA256   string                            `json:"runtimeStderrSha256,omitempty"`
-	TestClasses           []string                          `json:"testClasses"`
-	RuntimeExitCode       *int                              `json:"runtimeExitCode"`
-	SurfaceIDs            []string                          `json:"surfaceIds"`
-	Org                   string                            `json:"org"`
-	Kind                  string                            `json:"kind"`
-	ExitCode              *int                              `json:"exitCode"`
-	Deployable            bool                              `json:"deployable"`
-	RuntimePassed         *bool                             `json:"runtimePassed"`
-	RuntimeResult         json.RawMessage                   `json:"runtimeResult"`
-	RemoteCleanup         CleanupReceipt                    `json:"remoteCleanup"`
-	OrgCleanup            CleanupReceipt                    `json:"orgCleanup"`
+	Fixture             string                      `json:"fixture"`
+	FixtureSHA256       string                      `json:"fixtureSha256"`
+	SourceFiles         []oracleSourceFile          `json:"sourceFiles"`
+	OrgIdentity         salesforceFilterOrgIdentity `json:"orgIdentity"`
+	Project             string                      `json:"project"`
+	Invocation          *salesforceFilterInvocation `json:"invocation"`
+	ProjectManifest     []salesforceExecutorFile    `json:"projectManifest"`
+	ProjectTreeSHA256   string                      `json:"projectTreeSha256"`
+	StdoutSHA256        string                      `json:"stdoutSha256"`
+	StderrSHA256        string                      `json:"stderrSha256"`
+	SetupSHA256         string                      `json:"setupSha256"`
+	RuntimeSHA256       string                      `json:"runtimeSha256,omitempty"`
+	RuntimeStderrSHA256 string                      `json:"runtimeStderrSha256,omitempty"`
+	TestClasses         []string                    `json:"testClasses"`
+	RuntimeExitCode     *int                        `json:"runtimeExitCode"`
+	SurfaceIDs          []string                    `json:"surfaceIds"`
+	Org                 string                      `json:"org"`
+	Kind                string                      `json:"kind"`
+	ExitCode            *int                        `json:"exitCode"`
+	Deployable          bool                        `json:"deployable"`
+	RuntimePassed       *bool                       `json:"runtimePassed"`
+	RuntimeResult       json.RawMessage             `json:"runtimeResult"`
+	OrgCleanup          CleanupReceipt              `json:"orgCleanup"`
 }
 
-type salesforceFilterRemoteInvocation struct {
-	SSHHost      string                          `json:"sshHost"`
-	SSHUser      string                          `json:"sshUser"`
-	SSHBatchMode bool                            `json:"sshBatchMode"`
-	RemoteRoot   string                          `json:"remoteRoot"`
-	SFBinary     string                          `json:"sfBinary"`
-	Environment  map[string]string               `json:"environment"`
-	TargetOrg    string                          `json:"targetOrg"`
-	Commands     []salesforceFilterRemoteCommand `json:"commands"`
+type salesforceFilterInvocation struct {
+	SFBinary    string                    `json:"sfBinary"`
+	Environment map[string]string         `json:"environment"`
+	TargetOrg   string                    `json:"targetOrg"`
+	Commands    []salesforceFilterCommand `json:"commands"`
 }
 
-type salesforceFilterRemoteCommand struct {
-	Purpose string   `json:"purpose"`
-	Command string   `json:"command"`
-	SSHArgs []string `json:"sshArgs"`
+type salesforceFilterCommand struct {
+	Purpose               string   `json:"purpose"`
+	Args                  []string `json:"args"`
+	ExecutableSHA256      string   `json:"executableSha256"`
+	ExecutableAfterSHA256 string   `json:"executableAfterSha256"`
 }
 
 type salesforceFilterOrgIdentity struct {
@@ -181,7 +195,6 @@ type salesforceFilterResults struct {
 	Sealed        bool                            `json:"sealed"`
 	Orgs          []string                        `json:"orgs"`
 	Binding       salesforceFilterBinding         `json:"binding"`
-	RemoteCleanup CleanupReceipt                  `json:"remoteCleanup"`
 	OrgPostflight salesforceFilterPostflight      `json:"orgPostflight"`
 	Results       []salesforceFilterFixtureResult `json:"results"`
 }
@@ -198,13 +211,15 @@ type SalesforceSurfaceResult struct {
 	Passed    bool   `json:"passed"`
 }
 type CleanupReceipt struct {
-	Path                 string                  `json:"path,omitempty"`
-	CleanupExitCode      *int                    `json:"cleanupExitCode,omitempty"`
-	AbsenceCheckExitCode *int                    `json:"absenceCheckExitCode,omitempty"`
-	ExitCode             *int                    `json:"exitCode,omitempty"`
-	Requested            []string                `json:"requested,omitempty"`
-	Verification         *salesforceCleanupCheck `json:"verification,omitempty"`
-	ResidueAbsent        bool                    `json:"residueAbsent"`
+	Path                    string                  `json:"path,omitempty"`
+	CleanupExitCode         *int                    `json:"cleanupExitCode,omitempty"`
+	AbsenceCheckExitCode    *int                    `json:"absenceCheckExitCode,omitempty"`
+	ExitCode                *int                    `json:"exitCode,omitempty"`
+	Requested               []string                `json:"requested,omitempty"`
+	Verification            *salesforceCleanupCheck `json:"verification,omitempty"`
+	SFExecutableSHA256      string                  `json:"sfExecutableSha256,omitempty"`
+	SFExecutableAfterSHA256 string                  `json:"sfExecutableAfterSha256,omitempty"`
+	ResidueAbsent           bool                    `json:"residueAbsent"`
 }
 
 type salesforceCleanupCheck struct {
@@ -398,7 +413,7 @@ func sealedSalesforceDispatchIdentity(bundlePath, attemptSHA256 string, shardInd
 
 func sealedSalesforceDispatchLayout(bundlePath, attemptSHA256 string, shardIndex int) (string, string, error) {
 	canonicalBundle, err := filepath.EvalSymlinks(bundlePath)
-	if err != nil || !filepath.IsAbs(canonicalBundle) || filepath.Base(filepath.Dir(canonicalBundle)) != "bundle" || filepath.Base(filepath.Dir(filepath.Dir(canonicalBundle))) != "razor" || !sha256Pattern.MatchString(attemptSHA256) || shardIndex < 0 || shardIndex >= 2 {
+	if err != nil || !filepath.IsAbs(canonicalBundle) || filepath.Base(filepath.Dir(canonicalBundle)) != "bundle" || filepath.Base(filepath.Dir(filepath.Dir(canonicalBundle))) != "salesforce-worker" || !sha256Pattern.MatchString(attemptSHA256) || shardIndex < 0 || shardIndex >= 2 {
 		return "", "", fmt.Errorf("invalid staged bundle layout")
 	}
 	attemptRoot := filepath.Dir(filepath.Dir(filepath.Dir(canonicalBundle)))
@@ -574,7 +589,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if !exists {
 		return SalesforceShard{}, fmt.Errorf("Salesforce executor has no filter results")
 	}
-	filter, err := deriveSalesforceFilterEvidence(bundle, request.BundlePath, preflight.OrgAlias, preflight.OrgID, preflight.OrgUsername, dispatch.ExecutorRoot, dispatch.RunID, dispatch.ShardIndex, snapshot)
+	filter, err := deriveSalesforceFilterEvidenceWithCLI(bundle, request.BundlePath, preflight.OrgAlias, preflight.OrgID, preflight.OrgUsername, preflight.Commands[0].ExecutableSHA256, postflight.Commands[0].ExecutableAfterSHA256, dispatch.ExecutorRoot, dispatch.RunID, dispatch.ShardIndex, snapshot)
 	if err != nil {
 		return SalesforceShard{}, err
 	}
@@ -614,7 +629,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 // RunSalesforceOrgCreate creates one short-lived org from the scratch
 // definition sealed in the staged bundle. Its receipt is cleanup authority.
 func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCreation, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.OutputPath) || request.DevHub != "glade-dev-hub4" || request.Alias == "" || request.SFBin != "/usr/local/bin/sf" {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.OutputPath) || request.Alias == "" || request.SFBin != "/usr/local/bin/sf" {
 		return SalesforceOrgCreation{}, fmt.Errorf("invalid Salesforce org creation request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
@@ -629,6 +644,14 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 	if err := validate(request.BundlePath); err != nil {
 		return SalesforceOrgCreation{}, fmt.Errorf("validate staged bundle: %w", err)
 	}
+	devHubAuthority, authorityErr := readSealedSalesforceDevHubAuthority(request.BundlePath)
+	if authorityErr != nil {
+		return SalesforceOrgCreation{}, authorityErr
+	}
+	if request.DevHub != "" && request.DevHub != devHubAuthority.Alias {
+		return SalesforceOrgCreation{}, fmt.Errorf("caller-selected Dev Hub does not match sealed authority")
+	}
+	request.DevHub = devHubAuthority.Alias
 	bundleSHA, err := sha256File(request.BundlePath)
 	if err != nil {
 		return SalesforceOrgCreation{}, err
@@ -652,15 +675,27 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 	if err != nil {
 		return SalesforceOrgCreation{}, err
 	}
-	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias, OrgID: orgID, Command: command}
+	devHubOutput, devHubCommand, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), true, "org", "display", "--target-org", request.DevHub, "--json")
+	if err != nil {
+		return SalesforceOrgCreation{}, err
+	}
+	observedOrgID, _, observedUsername, err := parseSalesforceOrgDisplay(devHubOutput.Stdout)
+	if err != nil || observedOrgID != devHubAuthority.OrgID || observedUsername != devHubAuthority.Username {
+		return SalesforceOrgCreation{}, fmt.Errorf("Salesforce Dev Hub identity does not match sealed authority")
+	}
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, Alias: request.Alias, OrgID: orgID, Command: command, DevHubCommand: devHubCommand}
 	if err := validate(request.BundlePath); err != nil {
-		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias, OrgID: orgID, Command: command, Invalidated: true}); sealErr != nil {
+		invalidated := creation
+		invalidated.Invalidated = true
+		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", invalidated); sealErr != nil {
 			return SalesforceOrgCreation{}, fmt.Errorf("seal invalidated Salesforce org creation: %w", sealErr)
 		}
 		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation: %w", err)
 	}
 	if hash, err := sha256File(request.BundlePath); err != nil || hash != bundleSHA {
-		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, Alias: request.Alias, OrgID: orgID, Command: command, Invalidated: true}); sealErr != nil {
+		invalidated := creation
+		invalidated.Invalidated = true
+		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", invalidated); sealErr != nil {
 			return SalesforceOrgCreation{}, fmt.Errorf("seal invalidated Salesforce org creation: %w", sealErr)
 		}
 		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation")
@@ -674,7 +709,7 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 // RunSalesforceOrgCleanup deletes only an org whose exact creation and
 // preflight receipts bind it to this bundle, then verifies the alias is gone.
 func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.CreationPath) || (request.PreflightPath != "" && !filepath.IsAbs(request.PreflightPath)) || !filepath.IsAbs(request.OutputPath) || request.DevHub != "glade-dev-hub4" || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.CreationPath) || (request.PreflightPath != "" && !filepath.IsAbs(request.PreflightPath)) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
 		return SalesforceOrgCleanup{}, fmt.Errorf("invalid Salesforce cleanup request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
@@ -682,16 +717,32 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 	} else if !os.IsNotExist(err) {
 		return SalesforceOrgCleanup{}, err
 	}
-	if request.PreflightPath == "" {
-		return runInvalidatedSalesforceOrgCleanup(request)
-	}
 	validate := request.validateBundle
 	if validate == nil {
 		validate = ValidateOracleBundle
 	}
+	if request.PreflightPath == "" {
+		devHubAuthority, authorityErr := readSealedSalesforceDevHubAuthority(request.BundlePath)
+		if authorityErr != nil {
+			return SalesforceOrgCleanup{}, authorityErr
+		}
+		if request.DevHub != "" && request.DevHub != devHubAuthority.Alias {
+			return SalesforceOrgCleanup{}, fmt.Errorf("caller-selected Dev Hub does not match sealed authority")
+		}
+		request.DevHub = devHubAuthority.Alias
+		return runInvalidatedSalesforceOrgCleanup(request)
+	}
 	if err := validate(request.BundlePath); err != nil {
 		return SalesforceOrgCleanup{}, fmt.Errorf("validate staged bundle: %w", err)
 	}
+	devHubAuthority, authorityErr := readSealedSalesforceDevHubAuthority(request.BundlePath)
+	if authorityErr != nil {
+		return SalesforceOrgCleanup{}, authorityErr
+	}
+	if request.DevHub != "" && request.DevHub != devHubAuthority.Alias {
+		return SalesforceOrgCleanup{}, fmt.Errorf("caller-selected Dev Hub does not match sealed authority")
+	}
+	request.DevHub = devHubAuthority.Alias
 	bundleSHA, err := sha256File(request.BundlePath)
 	if err != nil {
 		return SalesforceOrgCleanup{}, err
@@ -707,6 +758,14 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 	runner := request.runner
 	if runner == nil {
 		runner = runSalesforceCLI
+	}
+	devHubOutput, devHubCommand, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), true, "org", "display", "--target-org", request.DevHub, "--json")
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	observedOrgID, _, observedUsername, err := parseSalesforceOrgDisplay(devHubOutput.Stdout)
+	if err != nil || observedOrgID != devHubAuthority.OrgID || observedUsername != devHubAuthority.Username {
+		return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce Dev Hub identity does not match sealed authority")
 	}
 	_, deleted, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), true, "org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json")
 	if err != nil {
@@ -724,7 +783,7 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 			return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce cleanup input changed during execution")
 		}
 	}
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, DevHubOrgID: creation.DevHubOrgID, DevHubUsername: creation.DevHubUsername, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, DevHubCommand: devHubCommand, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
@@ -740,6 +799,14 @@ func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (Sa
 	if runner == nil {
 		runner = runSalesforceCLI
 	}
+	devHubOutput, devHubCommand, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), true, "org", "display", "--target-org", request.DevHub, "--json")
+	if err != nil {
+		return SalesforceOrgCleanup{}, err
+	}
+	observedOrgID, _, observedUsername, err := parseSalesforceOrgDisplay(devHubOutput.Stdout)
+	if err != nil || observedOrgID != creation.DevHubOrgID || observedUsername != creation.DevHubUsername {
+		return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce Dev Hub identity does not match sealed authority")
+	}
 	_, deleted, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), true, "org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json")
 	if err != nil {
 		return SalesforceOrgCleanup{}, err
@@ -751,7 +818,7 @@ func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (Sa
 	if after, err := sha256File(request.CreationPath); err != nil || after != replayBytesSHA256(creationBytes) {
 		return SalesforceOrgCleanup{}, fmt.Errorf("invalidated creation receipt changed during cleanup")
 	}
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, DevHub: request.DevHub, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: creation.BundleSHA256, DevHub: request.DevHub, DevHubOrgID: creation.DevHubOrgID, DevHubUsername: creation.DevHubUsername, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, DevHubCommand: devHubCommand, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
@@ -825,6 +892,10 @@ func parseSalesforceFilterResults(data []byte) (salesforceFilterResults, error) 
 }
 
 func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias, orgID, orgUsername, executorRoot, runID string, shardIndex int, snapshot salesforceExecutorSnapshot) (salesforceFilterResults, error) {
+	return deriveSalesforceFilterEvidenceWithCLI(bundle, bundlePath, orgAlias, orgID, orgUsername, "", "", executorRoot, runID, shardIndex, snapshot)
+}
+
+func deriveSalesforceFilterEvidenceWithCLI(bundle OracleBundle, bundlePath, orgAlias, orgID, orgUsername, sfExecutableSHA256, sfExecutableAfterSHA256, executorRoot, runID string, shardIndex int, snapshot salesforceExecutorSnapshot) (salesforceFilterResults, error) {
 	bundleRoot := filepath.Dir(bundlePath)
 	manifest, _, err := readExactJSONBytes[oracleTransportManifest](filepath.Join(bundleRoot, "fixture-manifest.json"))
 	if err != nil || !validOracleTransportManifest(bundleRoot, manifest, bundle.Fixtures) {
@@ -846,11 +917,7 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias, o
 	if err != nil {
 		return salesforceFilterResults{}, fmt.Errorf("read Salesforce adapter receipt: %w", err)
 	}
-	remoteRoot, err := sealedSalesforceRemoteExecutorRoot(bundle.AttemptSHA256, shardIndex)
-	if err != nil {
-		return salesforceFilterResults{}, err
-	}
-	if !adapter.Sealed || !equalStrings(adapter.Orgs, []string{orgAlias}) || !validSalesforceRunCleanup(adapter.RemoteCleanup, filepath.Join(remoteRoot, "projects", runID)) || !adapter.OrgPostflight.MatchesPreflight {
+	if !adapter.Sealed || !equalStrings(adapter.Orgs, []string{orgAlias}) || !adapter.OrgPostflight.MatchesPreflight {
 		return salesforceFilterResults{}, fmt.Errorf("Salesforce adapter lacks a passing lifecycle receipt")
 	}
 	adapterByFixture := make(map[string]salesforceFilterFixtureResult, len(adapter.Results))
@@ -891,8 +958,7 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias, o
 			return salesforceFilterResults{}, err
 		}
 		expectedProject := filepath.Join(executorRoot, "filter", "projects", stem)
-		expectedRemoteProject := filepath.Join(remoteRoot, "projects", runID, stem)
-		if adapterResult.Project != expectedProject || adapterResult.RemoteProject != expectedRemoteProject || adapterResult.OrgIdentity != (salesforceFilterOrgIdentity{Alias: orgAlias, OrgID: orgID, Username: orgUsername}) || !validSalesforceTestClasses(adapterResult.TestClasses, kind) || !validSalesforceRemoteInvocation(adapterResult.RemoteInvocation, remoteRoot, expectedRemoteProject, orgUsername, kind, adapterResult.TestClasses) || !validSalesforceFixtureRemoteCleanup(adapterResult.RemoteCleanup, expectedRemoteProject) || !validSalesforceOrgCleanupReceipt(adapterResult.OrgCleanup) {
+		if adapterResult.Project != expectedProject || adapterResult.OrgIdentity != (salesforceFilterOrgIdentity{Alias: orgAlias, OrgID: orgID, Username: orgUsername}) || !validSalesforceTestClasses(adapterResult.TestClasses, kind) || !validSalesforceInvocation(adapterResult.Invocation, expectedProject, orgUsername, kind, adapterResult.TestClasses, sfExecutableSHA256, sfExecutableAfterSHA256) || !validSalesforceOrgCleanupReceipt(adapterResult.OrgCleanup, sfExecutableSHA256, sfExecutableAfterSHA256) {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q has an unbound execution receipt", item.Fixture)
 		}
 		base := filepath.ToSlash(filepath.Join("filter", "projects", stem, "salesforce-"+orgAlias))
@@ -913,11 +979,11 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias, o
 		if err != nil {
 			return salesforceFilterResults{}, err
 		}
-		if !validSalesforceProjectManifest(adapterResult.ProjectManifest, projectTreeSHA) || !reflect.DeepEqual(adapterResult.RemoteProjectManifest, adapterResult.ProjectManifest) {
+		if !validSalesforceProjectManifest(adapterResult.ProjectManifest, projectTreeSHA) {
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q project tree does not match the sealed transport receipt", item.Fixture)
 		}
 		exitCode := *adapterResult.ExitCode
-		row := salesforceFilterFixtureResult{Fixture: item.Fixture, FixtureSHA256: fixture.SHA256, SourceFiles: append([]oracleSourceFile(nil), fixture.SourceFiles...), OrgIdentity: adapterResult.OrgIdentity, Project: expectedProject, RemoteProject: expectedRemoteProject, RemoteInvocation: adapterResult.RemoteInvocation, ProjectManifest: append([]salesforceExecutorFile(nil), adapterResult.ProjectManifest...), RemoteProjectManifest: append([]salesforceExecutorFile(nil), adapterResult.RemoteProjectManifest...), ProjectTreeSHA256: projectTreeSHA, StdoutSHA256: replayBytesSHA256(deploy), StderrSHA256: replayBytesSHA256(stderr), SetupSHA256: replayBytesSHA256(setup), TestClasses: append([]string(nil), adapterResult.TestClasses...), RuntimeExitCode: adapterResult.RuntimeExitCode, SurfaceIDs: append([]string(nil), item.SurfaceIDs...), Org: orgAlias, Kind: kind, ExitCode: &exitCode, Deployable: true, RemoteCleanup: adapterResult.RemoteCleanup, OrgCleanup: adapterResult.OrgCleanup}
+		row := salesforceFilterFixtureResult{Fixture: item.Fixture, FixtureSHA256: fixture.SHA256, SourceFiles: append([]oracleSourceFile(nil), fixture.SourceFiles...), OrgIdentity: adapterResult.OrgIdentity, Project: expectedProject, Invocation: adapterResult.Invocation, ProjectManifest: append([]salesforceExecutorFile(nil), adapterResult.ProjectManifest...), ProjectTreeSHA256: projectTreeSHA, StdoutSHA256: replayBytesSHA256(deploy), StderrSHA256: replayBytesSHA256(stderr), SetupSHA256: replayBytesSHA256(setup), TestClasses: append([]string(nil), adapterResult.TestClasses...), RuntimeExitCode: adapterResult.RuntimeExitCode, SurfaceIDs: append([]string(nil), item.SurfaceIDs...), Org: orgAlias, Kind: kind, ExitCode: &exitCode, Deployable: true, OrgCleanup: adapterResult.OrgCleanup}
 		if kind == "exec" {
 			passed := true
 			row.RuntimePassed, row.RuntimeResult = &passed, append(json.RawMessage(nil), deploy...)
@@ -935,7 +1001,7 @@ func deriveSalesforceFilterEvidence(bundle OracleBundle, bundlePath, orgAlias, o
 		}
 		derived = append(derived, row)
 	}
-	return salesforceFilterResults{Sealed: true, Orgs: []string{orgAlias}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: "", CandidateCommit: bundle.Candidate.Commit, CandidateSHA256: bundle.Candidate.SHA256, ToolsCommit: bundle.Tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, RemoteCleanup: adapter.RemoteCleanup, OrgPostflight: adapter.OrgPostflight, Results: derived}, nil
+	return salesforceFilterResults{Sealed: true, Orgs: []string{orgAlias}, Binding: salesforceFilterBinding{ManifestSHA256: bundle.TransportManifestSHA256, ProfileSHA256: bundle.ProfileSHA256, QueueSHA256: bundle.OraclePlanSHA256, SelectorSHA256: bundle.OraclePlanSHA256, SelectorReceiptSHA256: "", CandidateCommit: bundle.Candidate.Commit, CandidateSHA256: bundle.Candidate.SHA256, ToolsCommit: bundle.Tools.Commit, ToolsAMD64SHA256: bundle.ToolsAMD64SHA256, WorkflowScriptSHA256: bundle.FilterSHA256, LocalSummarySHA256: bundle.LocalProofSummarySHA256}, OrgPostflight: adapter.OrgPostflight, Results: derived}, nil
 }
 
 func salesforceFixtureProjectTreeSHA256(files map[string][]byte, project string) (string, error) {
@@ -979,12 +1045,12 @@ func validSalesforceProjectManifest(entries []salesforceExecutorFile, expectedSH
 	return err == nil && replayBytesSHA256(data) == expectedSHA256
 }
 
-func validSalesforceRemoteInvocation(invocation *salesforceFilterRemoteInvocation, remoteRoot, project, org, kind string, testClasses []string) bool {
-	if invocation == nil || invocation.SSHHost != "razor.local" || invocation.SSHUser != "matt" || !invocation.SSHBatchMode || invocation.RemoteRoot != remoteRoot || invocation.SFBinary != "/usr/local/bin/sf" || !reflect.DeepEqual(invocation.Environment, map[string]string{"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}) || invocation.TargetOrg != org || len(invocation.Commands) == 0 {
+func validSalesforceInvocation(invocation *salesforceFilterInvocation, project, org, kind string, testClasses []string, expectedBefore, expectedAfter string) bool {
+	if invocation == nil || invocation.SFBinary != "/usr/local/bin/sf" || !reflect.DeepEqual(invocation.Environment, map[string]string{"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}) || invocation.TargetOrg != org || len(invocation.Commands) == 0 {
 		return false
 	}
-	command := expectedSalesforceRemoteCommand(project, org, kind)
-	if invocation.Commands[0].Purpose != "deploy-or-exec" || invocation.Commands[0].Command != command || !equalStrings(invocation.Commands[0].SSHArgs, []string{"ssh", "-o", "BatchMode=yes", "matt@razor.local", command}) {
+	command := expectedSalesforceCommand(project, org, kind)
+	if invocation.Commands[0].Purpose != "deploy-or-exec" || !equalStrings(invocation.Commands[0].Args, command) || !validSalesforceCLIHashes(invocation.Commands[0], expectedBefore, expectedAfter) {
 		return false
 	}
 	if kind != "test" {
@@ -994,15 +1060,19 @@ func validSalesforceRemoteInvocation(invocation *salesforceFilterRemoteInvocatio
 		return false
 	}
 	runtime := expectedSalesforceRuntimeTestCommand(project, org, testClasses)
-	return invocation.Commands[1].Purpose == "runtime-test" && invocation.Commands[1].Command == runtime && equalStrings(invocation.Commands[1].SSHArgs, []string{"ssh", "-o", "BatchMode=yes", "matt@razor.local", runtime})
+	return invocation.Commands[1].Purpose == "runtime-test" && equalStrings(invocation.Commands[1].Args, runtime) && validSalesforceCLIHashes(invocation.Commands[1], expectedBefore, expectedAfter)
 }
 
-func expectedSalesforceRuntimeTestCommand(project, org string, testClasses []string) string {
-	parts := []string{"cd", pythonShellQuote(project), "&&", "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true", pythonShellQuote("/usr/local/bin/sf"), "apex", "run", "test", "--tests", pythonShellQuote(strings.Join(testClasses, ",")), "--target-org", pythonShellQuote(org)}
+func validSalesforceCLIHashes(command salesforceFilterCommand, expectedBefore, expectedAfter string) bool {
+	return sha256Pattern.MatchString(command.ExecutableSHA256) && command.ExecutableSHA256 == command.ExecutableAfterSHA256 && (expectedBefore == "" || command.ExecutableSHA256 == expectedBefore && command.ExecutableAfterSHA256 == expectedAfter)
+}
+
+func expectedSalesforceRuntimeTestCommand(project, org string, testClasses []string) []string {
+	parts := []string{"/usr/local/bin/sf", "apex", "run", "test", "--tests", strings.Join(testClasses, ","), "--target-org", org}
 	if len(testClasses) == 1 {
 		parts = append(parts, "--synchronous")
 	}
-	return strings.Join(append(parts, "--wait", "10", "--result-format", "json", "--json"), " ")
+	return append(parts, "--wait", "10", "--result-format", "json", "--json")
 }
 
 func validSalesforceTestClasses(classes []string, kind string) bool {
@@ -1020,26 +1090,17 @@ func validSalesforceTestClasses(classes []string, kind string) bool {
 	return true
 }
 
-func validSalesforceFixtureRemoteCleanup(cleanup CleanupReceipt, project string) bool {
-	return cleanup.Path == project && cleanup.CleanupExitCode != nil && *cleanup.CleanupExitCode == 0 && cleanup.AbsenceCheckExitCode != nil && *cleanup.AbsenceCheckExitCode == 0 && cleanup.ResidueAbsent
+func validSalesforceOrgCleanupReceipt(cleanup CleanupReceipt, expectedBefore, expectedAfter string) bool {
+	return cleanup.CleanupExitCode != nil && *cleanup.CleanupExitCode == 0 && cleanup.Verification != nil && len(cleanup.Verification.Remaining) == 0 && cleanup.ResidueAbsent && (expectedBefore == "" || cleanup.SFExecutableSHA256 == expectedBefore && cleanup.SFExecutableAfterSHA256 == expectedAfter)
 }
 
-func validSalesforceOrgCleanupReceipt(cleanup CleanupReceipt) bool {
-	return cleanup.CleanupExitCode != nil && *cleanup.CleanupExitCode == 0 && cleanup.Verification != nil && len(cleanup.Verification.Remaining) == 0 && cleanup.ResidueAbsent
-}
-
-func validSalesforceRunCleanup(cleanup CleanupReceipt, path string) bool {
-	return cleanup.Path == path && cleanup.ExitCode != nil && *cleanup.ExitCode == 0 && cleanup.ResidueAbsent
-}
-
-func expectedSalesforceRemoteCommand(project, org, kind string) string {
-	parts := []string{"cd", pythonShellQuote(project), "&&", "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true", pythonShellQuote("/usr/local/bin/sf")}
+func expectedSalesforceCommand(project, org, kind string) []string {
+	parts := []string{"/usr/local/bin/sf"}
 	if kind == "exec" {
-		parts = append(parts, "apex", "run", "--file", "anonymous.apex", "--target-org", pythonShellQuote(org), "--api-version", "67.0", "--json")
+		return append(parts, "apex", "run", "--file", filepath.Join(project, "anonymous.apex"), "--target-org", org, "--api-version", "67.0", "--json")
 	} else {
-		parts = append(parts, "project", "deploy", "start", "--source-dir", "force-app", "--target-org", pythonShellQuote(org), "--ignore-conflicts", "--wait", "30", "--json")
+		return append(parts, "project", "deploy", "start", "--source-dir", filepath.Join(project, "force-app"), "--target-org", org, "--ignore-conflicts", "--wait", "30", "--json")
 	}
-	return strings.Join(parts, " ")
 }
 
 func pythonShellQuote(value string) string {
@@ -1318,7 +1379,7 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 	if err != nil {
 		return SalesforceShard{}, err
 	}
-	if !validSalesforceOrgPreflight(preflight, preflight.BundleSHA256, bundlePath) || !validSalesforceOrgPreflight(postflight, preflight.BundleSHA256, bundlePath) || preflight.OrgAlias != postflight.OrgAlias || preflight.OrgID != postflight.OrgID || preflight.OrgUsername != postflight.OrgUsername || !filter.Sealed || len(filter.Orgs) != 1 || filter.Orgs[0] != preflight.OrgAlias || !filter.RemoteCleanup.ResidueAbsent || !filter.OrgPostflight.MatchesPreflight || !command.Passed || command.ExitCode != 0 || command.TimedOut {
+	if !validSalesforceOrgPreflight(preflight, preflight.BundleSHA256, bundlePath) || !validSalesforceOrgPreflight(postflight, preflight.BundleSHA256, bundlePath) || preflight.OrgAlias != postflight.OrgAlias || preflight.OrgID != postflight.OrgID || preflight.OrgUsername != postflight.OrgUsername || !filter.Sealed || len(filter.Orgs) != 1 || filter.Orgs[0] != preflight.OrgAlias || !filter.OrgPostflight.MatchesPreflight || !command.Passed || command.ExitCode != 0 || command.TimedOut {
 		return SalesforceShard{}, fmt.Errorf("invalid Salesforce filter or org evidence")
 	}
 	if filter.Binding.ManifestSHA256 != bundle.TransportManifestSHA256 || filter.Binding.ProfileSHA256 != bundle.ProfileSHA256 || filter.Binding.QueueSHA256 != bundle.OraclePlanSHA256 || filter.Binding.SelectorSHA256 != bundle.OraclePlanSHA256 || filter.Binding.SelectorReceiptSHA256 != preflight.BundleSHA256 || filter.Binding.CandidateCommit != bundle.Candidate.Commit || filter.Binding.CandidateSHA256 != bundle.Candidate.SHA256 || filter.Binding.ToolsCommit != bundle.Tools.Commit || filter.Binding.ToolsAMD64SHA256 != bundle.ToolsAMD64SHA256 || filter.Binding.WorkflowScriptSHA256 != bundle.FilterSHA256 || filter.Binding.LocalSummarySHA256 != bundle.LocalProofSummarySHA256 {
@@ -1326,7 +1387,7 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 	}
 	bySurface := make(map[string]salesforceFilterFixtureResult, len(expected))
 	for _, result := range filter.Results {
-		if result.Org != preflight.OrgAlias || result.ExitCode == nil || *result.ExitCode != 0 || !result.Deployable || !result.RemoteCleanup.ResidueAbsent || !result.OrgCleanup.ResidueAbsent || len(result.SurfaceIDs) == 0 {
+		if result.Org != preflight.OrgAlias || result.ExitCode == nil || *result.ExitCode != 0 || !result.Deployable || !result.OrgCleanup.ResidueAbsent || len(result.SurfaceIDs) == 0 {
 			return SalesforceShard{}, fmt.Errorf("invalid Salesforce filter fixture result")
 		}
 		for _, surfaceID := range result.SurfaceIDs {
@@ -1404,11 +1465,11 @@ func validSalesforceOrgCreation(creation SalesforceOrgCreation, bundleSHA, bundl
 	environment, err := fixedSalesforceEnvironment()
 	expectedSpec := salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, creation.Command.ExecutableSHA256, creation.Command.ExecutableAfterSHA256)
 	orgID, outputErr := retainedSalesforceOrgCreate(creation.Command)
-	return err == nil && outputErr == nil && orgID == creation.OrgID && filepath.IsAbs(bundlePath) && creation.SchemaVersion == 1 && creation.BundleSHA256 == bundleSHA && creation.DevHub == devHub && creation.Alias == alias && creation.OrgID != "" && equalStrings(creation.Command.Command, append([]string{"/usr/local/bin/sf"}, args...)) && creation.Command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(creation.Command.Environment, environment) && sha256Pattern.MatchString(creation.Command.ExecutableSHA256) && creation.Command.ExecutableSHA256 == creation.Command.ExecutableAfterSHA256 && creation.Command.CommandSpecSHA256 == expectedSpec && creation.Command.Passed && creation.Command.ExitCode == 0 && !creation.Command.TimedOut && sha256Pattern.MatchString(creation.Command.StdoutSHA256) && sha256Pattern.MatchString(creation.Command.StderrSHA256)
+	return err == nil && outputErr == nil && orgID == creation.OrgID && filepath.IsAbs(bundlePath) && creation.SchemaVersion == 1 && creation.BundleSHA256 == bundleSHA && creation.DevHub == devHub && creation.Alias == alias && creation.OrgID != "" && equalStrings(creation.Command.Command, append([]string{"/usr/local/bin/sf"}, args...)) && creation.Command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(creation.Command.Environment, environment) && sha256Pattern.MatchString(creation.Command.ExecutableSHA256) && creation.Command.ExecutableSHA256 == creation.Command.ExecutableAfterSHA256 && creation.Command.CommandSpecSHA256 == expectedSpec && creation.Command.Passed && creation.Command.ExitCode == 0 && !creation.Command.TimedOut && sha256Pattern.MatchString(creation.Command.StdoutSHA256) && sha256Pattern.MatchString(creation.Command.StderrSHA256) && validSalesforceDevHubCommand(creation.DevHubCommand, bundlePath, devHub, creation.DevHubOrgID, creation.DevHubUsername)
 }
 
 func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePath string, creation SalesforceOrgCreation) bool {
-	if cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != "glade-dev-hub4" || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 2 {
+	if cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != creation.DevHub || cleanup.DevHubOrgID != creation.DevHubOrgID || cleanup.DevHubUsername != creation.DevHubUsername || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 2 || !validSalesforceDevHubCommand(cleanup.DevHubCommand, bundlePath, creation.DevHub, creation.DevHubOrgID, creation.DevHubUsername) {
 		return false
 	}
 	expected := []struct {
@@ -1434,6 +1495,32 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 		}
 	}
 	return true
+}
+
+func validSalesforceDevHubCommand(command CommandResult, bundlePath, alias, orgID, username string) bool {
+	environment, err := fixedSalesforceEnvironment()
+	if err != nil {
+		return false
+	}
+	args := []string{"org", "display", "--target-org", alias, "--json"}
+	if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{"/usr/local/bin/sf"}, args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256) || !command.Passed || command.ExitCode != 0 || command.TimedOut {
+		return false
+	}
+	observedID, _, observedUsername, err := parseSalesforceOrgDisplay(command.Output.Stdout)
+	return err == nil && observedID == orgID && observedUsername == username
+}
+
+func readSealedSalesforceDevHubAuthority(bundlePath string) (SalesforceDevHubAuthority, error) {
+	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("sealed Salesforce Dev Hub authority is unavailable")
+	}
+	path := filepath.Join(filepath.Dir(bundlePath), "DEV_HUB_AUTHORITY.json")
+	authority, bytes, err := readExactJSONBytes[SalesforceDevHubAuthority](path)
+	if err != nil || !validSalesforceDevHubAuthority(authority) || replayBytesSHA256(bytes) != bundle.DevHubAuthoritySHA256 || authority.Alias != bundle.DevHub || authority.OrgID != bundle.DevHubOrgID || authority.Username != bundle.DevHubUsername {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("sealed Salesforce Dev Hub authority is invalid")
+	}
+	return authority, nil
 }
 
 func retainedCommandOutput(output salesforceCommandOutput) *RetainedCommandOutput {
@@ -1483,10 +1570,6 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 	if !filepath.IsAbs(filterPath) || !filepath.IsAbs(bundleRoot) || !filepath.IsAbs(executorRoot) || !strings.Contains(filepath.ToSlash(executorRoot), "/executor/") || runID == "" || orgAlias == "" || !sha256Pattern.MatchString(bundleSHA) || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || !sha256Pattern.MatchString(bundle.OraclePlanSHA256) || !sha256Pattern.MatchString(bundle.TransportManifestSHA256) || !sha256Pattern.MatchString(bundle.LocalProofSummarySHA256) || len(bundle.Fixtures) == 0 || shardCount != 2 || shardIndex < 0 || shardIndex >= shardCount {
 		return nil, fmt.Errorf("invalid sealed Salesforce filter inputs")
 	}
-	remoteExecutorRoot, err := sealedSalesforceRemoteExecutorRoot(bundle.AttemptSHA256, shardIndex)
-	if err != nil {
-		return nil, err
-	}
 	return []string{filterPath,
 		"--profile", filepath.Join(bundleRoot, "profile.json"),
 		"--fixtures", filepath.Join(bundleRoot, "fixtures"),
@@ -1495,11 +1578,7 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 		"--out", filepath.Join(executorRoot, "filter"),
 		"--limit", strconv.Itoa(len(bundle.Fixtures)),
 		"--orgs", orgAlias,
-		"--ssh-host", "razor.local",
-		"--ssh-user", "matt",
-		"--remote-root", remoteExecutorRoot,
-		"--remote-run-id", runID,
-		"--remote-sf-bin", "/usr/local/bin/sf",
+		"--sf-bin", "/usr/local/bin/sf",
 		"--candidate-commit", bundle.Candidate.Commit,
 		"--candidate-sha256", bundle.Candidate.SHA256,
 		"--tools-commit", bundle.Tools.Commit,
@@ -1512,13 +1591,6 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 		"--manifest-index-modulus", strconv.Itoa(shardCount),
 		"--manifest-index-remainder", strconv.Itoa(shardIndex),
 	}, nil
-}
-
-func sealedSalesforceRemoteExecutorRoot(attemptSHA256 string, shardIndex int) (string, error) {
-	if !sha256Pattern.MatchString(attemptSHA256) || shardIndex < 0 || shardIndex >= 2 {
-		return "", fmt.Errorf("invalid sealed Salesforce remote executor")
-	}
-	return filepath.Join(remoteCleanupParent, remoteCleanupPrefix+attemptSHA256[:16], "executor", fmt.Sprintf("shard-%d", shardIndex)), nil
 }
 
 func sealedSalesforceFilterOutputPath(executorRoot string) string {
@@ -1720,12 +1792,22 @@ func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 		filterBytes, filterExists := snapshot.Files["filter/results.json"]
 		filterSource, filterScriptExists := snapshot.Files[filepath.ToSlash(filepath.Join("filter-script", "salesforce-first-filter.py"))]
 		postflightBytes, postflightExists := snapshot.Files["postflight.json"]
-		filter, filterReadErr := deriveSalesforceFilterEvidence(bundle, bundlePath, preflight.OrgAlias, preflight.OrgID, preflight.OrgUsername, shard.ExecutorRoot, shard.RunID, shard.ShardIndex, snapshot)
-		filter.Binding.SelectorReceiptSHA256 = preflight.BundleSHA256
 		var postflight SalesforceOrgPreflight
 		postflightErr := json.Unmarshal(postflightBytes, &postflight)
+		var filter salesforceFilterResults
+		var filterReadErr, rebuildErr error
+		if snapshotErr != nil || postflightErr != nil || len(preflight.Commands) == 0 || len(postflight.Commands) == 0 || len(shard.Commands) == 0 {
+			filterReadErr = fmt.Errorf("incomplete Salesforce lifecycle evidence")
+			rebuildErr = filterReadErr
+		} else {
+			filter, filterReadErr = deriveSalesforceFilterEvidenceWithCLI(bundle, bundlePath, preflight.OrgAlias, preflight.OrgID, preflight.OrgUsername, preflight.Commands[0].ExecutableSHA256, postflight.Commands[0].ExecutableAfterSHA256, shard.ExecutorRoot, shard.RunID, shard.ShardIndex, snapshot)
+			filter.Binding.SelectorReceiptSHA256 = preflight.BundleSHA256
+		}
 		filterResultsSHA, executedFilterSHA := replayBytesSHA256(filterBytes), replayBytesSHA256(filterSource)
-		rebuilt, rebuildErr := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, shard.ExecutorRoot, shard.RunID, preflight, postflight, filter, shard.Commands[0], shard.ShardIndex, shard.ShardCount)
+		var rebuilt SalesforceShard
+		if rebuildErr == nil {
+			rebuilt, rebuildErr = NormalizeSalesforceFilterResults(plan, bundle, bundlePath, shard.ExecutorRoot, shard.RunID, preflight, postflight, filter, shard.Commands[0], shard.ShardIndex, shard.ShardCount)
+		}
 		if rebuildErr == nil {
 			rebuilt.DispatchSHA256 = replayBytesSHA256(dispatchBytes)
 			rebuilt.PreflightSHA256 = replayBytesSHA256(preflightBytes)
@@ -1734,7 +1816,7 @@ func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 			rebuilt.ExecutedFilterSHA256 = executedFilterSHA
 			rebuilt.ExecutorManifestSHA256 = snapshot.ManifestSHA256
 		}
-		if shard.Bindings.OraclePlanSHA256 != planSHA || shard.Bindings.BundleSHA256 != bundleSHA || shard.Candidate != plan.Candidate || shard.Tools != plan.Tools || shard.DispatchSHA256 != replayBytesSHA256(dispatchBytes) || shard.PreflightSHA256 != replayBytesSHA256(preflightBytes) || shard.PostflightSHA256 != replayBytesSHA256(postflightBytes) || shard.FilterResultsSHA256 != filterResultsSHA || shard.ExecutedFilterSHA256 != executedFilterSHA || shard.ExecutorManifestSHA256 != snapshot.ManifestSHA256 || shard.ExecutedFilterSHA256 != bundle.FilterSHA256 || !reflect.DeepEqual(preflight, shard.Preflight) || snapshotErr != nil || !filterExists || !filterScriptExists || !postflightExists || postflightErr != nil || !reflect.DeepEqual(postflight, shard.Postflight) || filterReadErr != nil || rebuildErr != nil || !reflect.DeepEqual(rebuilt, shard) || !validSalesforceDispatch(dispatch, bundle, bundlePath) || dispatch.BundleSHA256 != bundleSHA || dispatch.OrgAlias != shard.OrgAlias || dispatch.ShardIndex != shard.ShardIndex || dispatch.ShardCount != shard.ShardCount || dispatch.ExecutorRoot != shard.ExecutorRoot || dispatch.RunID != shard.RunID || !validSalesforceOrgPreflight(shard.Preflight, bundleSHA, bundlePath) || !validSalesforceOrgPreflight(shard.Postflight, bundleSHA, bundlePath) || !validSealedFilterCommand(shard, bundle, bundlePath) || creation.Invalidated || !validSalesforceOrgCreation(creation, bundleSHA, bundlePath, "glade-dev-hub4", shard.OrgAlias) || creation.OrgID != shard.OrgID || !validSalesforceOrgCleanup(cleanup, bundleSHA, bundlePath, creation) || cleanup.OrgAlias != shard.OrgAlias || cleanup.OrgID != shard.OrgID || !cleanup.ResidueAbsent {
+		if shard.Bindings.OraclePlanSHA256 != planSHA || shard.Bindings.BundleSHA256 != bundleSHA || shard.Candidate != plan.Candidate || shard.Tools != plan.Tools || shard.DispatchSHA256 != replayBytesSHA256(dispatchBytes) || shard.PreflightSHA256 != replayBytesSHA256(preflightBytes) || shard.PostflightSHA256 != replayBytesSHA256(postflightBytes) || shard.FilterResultsSHA256 != filterResultsSHA || shard.ExecutedFilterSHA256 != executedFilterSHA || shard.ExecutorManifestSHA256 != snapshot.ManifestSHA256 || shard.ExecutedFilterSHA256 != bundle.FilterSHA256 || !reflect.DeepEqual(preflight, shard.Preflight) || snapshotErr != nil || !filterExists || !filterScriptExists || !postflightExists || postflightErr != nil || !reflect.DeepEqual(postflight, shard.Postflight) || filterReadErr != nil || rebuildErr != nil || !reflect.DeepEqual(rebuilt, shard) || !validSalesforceDispatch(dispatch, bundle, bundlePath) || dispatch.BundleSHA256 != bundleSHA || dispatch.OrgAlias != shard.OrgAlias || dispatch.ShardIndex != shard.ShardIndex || dispatch.ShardCount != shard.ShardCount || dispatch.ExecutorRoot != shard.ExecutorRoot || dispatch.RunID != shard.RunID || !validSalesforceOrgPreflight(shard.Preflight, bundleSHA, bundlePath) || !validSalesforceOrgPreflight(shard.Postflight, bundleSHA, bundlePath) || !validSealedFilterCommand(shard, bundle, bundlePath) || creation.Invalidated || !validSalesforceOrgCreation(creation, bundleSHA, bundlePath, creation.DevHub, shard.OrgAlias) || creation.DevHub != bundle.DevHub || creation.DevHubOrgID != bundle.DevHubOrgID || creation.DevHubUsername != bundle.DevHubUsername || creation.OrgID != shard.OrgID || !validSalesforceOrgCleanup(cleanup, bundleSHA, bundlePath, creation) || cleanup.DevHub != bundle.DevHub || cleanup.DevHubOrgID != bundle.DevHubOrgID || cleanup.DevHubUsername != bundle.DevHubUsername || cleanup.OrgAlias != shard.OrgAlias || cleanup.OrgID != shard.OrgID || !cleanup.ResidueAbsent {
 			return fmt.Errorf("Salesforce shard does not bind sealed oracle plan")
 		}
 		shards = append(shards, shard)

@@ -31,33 +31,36 @@ type AssuranceReceipt struct {
 // AssuranceReportRequest names every direct, sealed input required to publish
 // the final public readiness projection.
 type AssuranceReportRequest struct {
-	InventoryPath           string
-	RootManifestPath        string
-	LedgerPath              string
-	SourceProfilePath       string
-	PolicyPath              string
-	DecisionPath            string
-	UsagePath               string
-	ProfilePath             string
-	FixtureManifestPath     string
-	ReplayPath              string
-	ReplayHostManifestPaths []string
-	ReplayShardPaths        []string
-	LocalProofPath          string
-	OraclePlanPath          string
-	ExclusionRequestPath    string
-	ExclusionPolicyPath     string
-	AuthorityPath           string
-	ReleaseValidationPath   string
-	BundlePath              string
-	FilterScriptPath        string
-	ScratchDefinitionPath   string
-	ToolsAMD64Path          string
-	SalesforceFiles         []SalesforceShardFiles
-	RemoteCleanupPaths      []string
-	JSONPath                string
-	HTMLPath                string
-	ReceiptPath             string
+	InventoryPath               string
+	RootManifestPath            string
+	LedgerPath                  string
+	SourceProfilePath           string
+	PolicyPath                  string
+	DecisionPath                string
+	UsagePath                   string
+	ProfilePath                 string
+	FixtureManifestPath         string
+	ReplayPath                  string
+	ReplayHostManifestPaths     []string
+	ReplayShardPaths            []string
+	AttemptPath                 string
+	LocalProofPath              string
+	OraclePlanPath              string
+	ExclusionRequestPath        string
+	ExclusionPolicyPath         string
+	AuthorityPath               string
+	ReleaseValidationPath       string
+	BundlePath                  string
+	FilterScriptPath            string
+	ScratchDefinitionPath       string
+	ToolsAMD64Path              string
+	SalesforceFiles             []SalesforceShardFiles
+	RemoteCleanupPaths          []string
+	RemoteCleanupAuthorityPaths []string
+	JSONPath                    string
+	HTMLPath                    string
+	ReceiptPath                 string
+	remoteRunner                salesforceCommandRunner
 }
 
 // BuildAssuranceReport derives public outcomes only from sealed files, then
@@ -66,6 +69,11 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err := requiredReportEvidencePaths(request); err != nil {
 		return AssuranceReceipt{}, err
 	}
+	initialInputHashes, err := snapshotReportInputHashes(request)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	defer clearReportSnapshot()
 	inventory, inventoryBytes, err := readInventorySpec(request.InventoryPath)
 	if err != nil {
 		return AssuranceReceipt{}, err
@@ -98,7 +106,7 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err != nil || authority.PlanSHA256 != replayBytesSHA256(planBytes) || authority.ProfileSHA256 != replayBytesSHA256(profileBytes) || authority.SealedUsageSHA256 != replayBytesSHA256(usageBytes) || authority.LocalProofSHA256 != replayBytesSHA256(proofBytes) || authority.SalesforceParityCredit != 0 {
 		return AssuranceReceipt{}, fmt.Errorf("exclusion authority does not bind current evidence")
 	}
-	sidecarInputs, err := validateReportSidecarEvidence(request, usage, profile, plan, authority)
+	sidecarInputs, err := validateReportSidecarEvidence(request, usage, profile, proof, manifest, plan, authority, replayBytesSHA256(usageBytes), replayBytesSHA256(profileBytes), replayBytesSHA256(planBytes))
 	if err != nil {
 		return AssuranceReceipt{}, err
 	}
@@ -145,17 +153,23 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 			inputs[fmt.Sprintf("salesforce-%s-%d.json", name, index)] = hash
 		}
 	}
+	for index, path := range reportInputPaths(request) {
+		inputs[fmt.Sprintf("DIRECT_INPUT_%03d", index)] = initialInputHashes[path]
+	}
+	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
+		return AssuranceReceipt{}, err
+	}
 	return writeAssuranceArtifacts(AssuranceReport{SchemaVersion: 1, Rows: rows}, request.JSONPath, request.HTMLPath, request.ReceiptPath, inputs)
 }
 
 func requiredReportEvidencePaths(request AssuranceReportRequest) error {
-	paths := []string{request.InventoryPath, request.RootManifestPath, request.LedgerPath, request.SourceProfilePath, request.PolicyPath, request.DecisionPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.LocalProofPath, request.OraclePlanPath, request.ExclusionRequestPath, request.ExclusionPolicyPath, request.AuthorityPath, request.ReleaseValidationPath, request.BundlePath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.JSONPath, request.HTMLPath, request.ReceiptPath}
+	paths := []string{request.InventoryPath, request.RootManifestPath, request.LedgerPath, request.SourceProfilePath, request.PolicyPath, request.DecisionPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.AttemptPath, request.LocalProofPath, request.OraclePlanPath, request.ExclusionRequestPath, request.ExclusionPolicyPath, request.AuthorityPath, request.ReleaseValidationPath, request.BundlePath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.JSONPath, request.HTMLPath, request.ReceiptPath}
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return fmt.Errorf("absolute direct assurance paths are required")
 		}
 	}
-	if len(request.SalesforceFiles) == 0 || len(request.RemoteCleanupPaths) != 2 {
+	if len(request.SalesforceFiles) == 0 || len(request.RemoteCleanupPaths) != 2 || len(request.RemoteCleanupAuthorityPaths) != 2 {
 		return fmt.Errorf("complete Salesforce and remote cleanup evidence is required")
 	}
 	if len(request.ReplayHostManifestPaths) != 2 || len(request.ReplayShardPaths) != 2 {
@@ -171,6 +185,11 @@ func requiredReportEvidencePaths(request AssuranceReportRequest) error {
 			return fmt.Errorf("absolute remote cleanup paths are required")
 		}
 	}
+	for _, path := range request.RemoteCleanupAuthorityPaths {
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("absolute remote cleanup authority paths are required")
+		}
+	}
 	return nil
 }
 
@@ -183,7 +202,7 @@ func validateReportReplayEvidence(request AssuranceReportRequest, merge ReplayMe
 	inputs := make(map[string]string, len(request.ReplayShardPaths))
 	for _, path := range request.ReplayShardPaths {
 		shard, data, err := readExactJSONBytes[ReplayShard](path)
-		if err != nil || (shard.Host != "local" && shard.Host != "casper") || inputs["REPLAY_SHARD_"+strings.ToUpper(shard.Host)+".json"] != "" {
+		if err != nil || (shard.Host != "local" && shard.Host != "replay-worker") || inputs["REPLAY_SHARD_"+strings.ToUpper(shard.Host)+".json"] != "" {
 			return nil, fmt.Errorf("invalid report replay shard evidence")
 		}
 		inputs["REPLAY_SHARD_"+strings.ToUpper(shard.Host)+".json"] = replayBytesSHA256(data)
@@ -204,7 +223,7 @@ func validateReportReplayEvidence(request AssuranceReportRequest, merge ReplayMe
 	return inputs, nil
 }
 
-func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedCorpusUsage, profile AssuranceProfile, plan OraclePlan, authority ExclusionAuthority) (map[string]string, error) {
+func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedCorpusUsage, profile AssuranceProfile, proof LocalProof, manifest LocalProofFixtureManifest, plan OraclePlan, authority ExclusionAuthority, usageSHA, profileSHA, planSHA string) (map[string]string, error) {
 	ledger, ledgerBytes, err := readExactJSONBytes[surfaceledger.SurfaceLedger](request.LedgerPath)
 	if err != nil || len(ledger.Rows) == 0 {
 		return nil, fmt.Errorf("read report ledger")
@@ -222,7 +241,7 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 		return nil, fmt.Errorf("read report usage decisions")
 	}
 	ledgerSHA, sourceSHA, policySHA, decisionSHA := replayBytesSHA256(ledgerBytes), replayBytesSHA256(sourceBytes), replayBytesSHA256(policyBytes), replayBytesSHA256(decisionBytes)
-	if usage.LedgerSHA256 != ledgerSHA || usage.ProfileSHA256 != sourceSHA || usage.PolicySHA256 != policySHA || usage.DecisionSHA256 != decisionSHA || profile.LedgerSHA256 != ledgerSHA || profile.SourceProfileSHA256 != sourceSHA || profile.PolicySHA256 != policySHA || decisions.ProfileSHA256 != sourceSHA || decisions.PolicySHA256 != policySHA {
+	if usage.LedgerSHA256 != ledgerSHA || usage.ProfileSHA256 != sourceSHA || usage.PolicySHA256 != policySHA || usage.DecisionSHA256 != decisionSHA || profile.SourceProfileSHA256 != sourceSHA || profile.LedgerSHA256 != ledgerSHA || profile.PolicySHA256 != policySHA || decisions.ProfileSHA256 != sourceSHA || decisions.PolicySHA256 != policySHA {
 		return nil, fmt.Errorf("report usage sidecars do not bind sealed evidence")
 	}
 	exclusion, exclusionBytes, err := readExactJSONBytes[ExclusionRequest](request.ExclusionRequestPath)
@@ -230,7 +249,7 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 		return nil, fmt.Errorf("read report exclusion request: %w", err)
 	}
 	expectedExclusions, err := exclusionRowsFromPlan(plan)
-	if err != nil || exclusion.Candidate != plan.Candidate || exclusion.Tools != plan.Tools || exclusion.PlanSHA256 != replayBytesSHA256Must(request.OraclePlanPath) || exclusion.ProfileSHA256 != replayBytesSHA256Must(request.ProfilePath) || exclusion.SealedUsageSHA256 != replayBytesSHA256Must(request.UsagePath) || exclusion.DecisionSHA256 != decisionSHA || exclusion.LocalProofSHA256 != plan.LocalProofSHA256 || !reflect.DeepEqual(exclusion.Rows, expectedExclusions) || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.DecisionSHA256 != decisionSHA || authority.PolicySHA256 != policySHA || !reflect.DeepEqual(authority.Rows, exclusion.Rows) {
+	if err != nil || exclusion.Candidate != plan.Candidate || exclusion.Tools != plan.Tools || exclusion.PlanSHA256 != planSHA || exclusion.ProfileSHA256 != profileSHA || exclusion.SealedUsageSHA256 != usageSHA || exclusion.DecisionSHA256 != decisionSHA || exclusion.LocalProofSHA256 != plan.LocalProofSHA256 || !reflect.DeepEqual(exclusion.Rows, expectedExclusions) || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.DecisionSHA256 != decisionSHA || authority.PolicySHA256 != policySHA || !reflect.DeepEqual(authority.Rows, exclusion.Rows) {
 		return nil, fmt.Errorf("report exclusions do not form the authorized plan partition")
 	}
 	exclusionPolicy, exclusionPolicyBytes, err := readExactJSONBytes[ExclusionPolicy](request.ExclusionPolicyPath)
@@ -240,6 +259,12 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 	release, releaseBytes, err := readExactJSONBytes[ReleaseValidation](request.ReleaseValidationPath)
 	if err != nil || validateOracleReleaseValidation(release, plan) != nil {
 		return nil, fmt.Errorf("report release validation does not bind oracle plan")
+	}
+	if err := validateOracleReleaseSources(release, plan); err != nil {
+		return nil, fmt.Errorf("report release provenance is unavailable: %w", err)
+	}
+	if err := verifyLocalProofReplay(proof, manifest, release.CandidatePath, release.ToolsPath, nil); err != nil {
+		return nil, fmt.Errorf("final local proof replay failed: %w", err)
 	}
 	bundle, _, err := readExactJSONBytes[OracleBundle](request.BundlePath)
 	if err != nil {
@@ -251,18 +276,31 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 	if filterErr != nil || scratchErr != nil || toolsErr != nil || filterSHA != bundle.FilterSHA256 || scratchSHA != bundle.ScratchDefinitionSHA256 || toolsSHA != bundle.ToolsAMD64SHA256 || replayBytesSHA256(releaseBytes) != bundle.ReleaseValidationSHA256 {
 		return nil, fmt.Errorf("report bundle execution sidecars are unavailable")
 	}
+	attempt, _, err := readExactJSONBytes[AssuranceAttempt](request.AttemptPath)
+	if err != nil || ValidateAssuranceAttempt(attempt) != nil {
+		return nil, fmt.Errorf("read report sealed attempt")
+	}
+	attemptSHA := attemptBindingHash(attempt)
+	remoteCleanupSHA, err := sha256File(remoteCleanupBinary)
+	if err != nil {
+		return nil, fmt.Errorf("hash remote cleanup executable: %w", err)
+	}
 	cleanupInputs := map[string]string{}
-	for _, path := range request.RemoteCleanupPaths {
+	for index, path := range request.RemoteCleanupPaths {
 		cleanup, bytes, err := readExactJSONBytes[RemoteAttemptCleanupReceipt](path)
-		if err != nil || cleanup.SchemaVersion != 1 || !cleanup.ResidueAbsent || cleanup.BindingSHA256 != cleanup.BindingPostSHA256 || cleanup.Host == "" || cleanupInputs[cleanup.Host] != "" {
+		authority, authorityBytes, authorityErr := readRemoteAttemptAuthority(request.RemoteCleanupAuthorityPaths[index])
+		if err != nil || authorityErr != nil || authority.AttemptSHA256 != attemptSHA || attempt.RemoteCleanupAuthoritySHA256[authority.Role] != replayBytesSHA256(authorityBytes) || cleanup.SchemaVersion != 1 || cleanup.AttemptSHA256 != attemptSHA || cleanup.Role != authority.Role || cleanup.Host != authority.Host || cleanup.Parent != authority.Parent || cleanup.AttemptRoot != authority.AttemptRoot || cleanup.BindingSHA256 != replayBytesSHA256(authorityBytes) || cleanup.BindingSHA256 != cleanup.BindingPostSHA256 || !cleanup.ResidueAbsent || !sha256Pattern.MatchString(cleanup.BindingSHA256) || cleanup.TimeoutMS != remoteCleanupTimeout.Milliseconds() || !validRetainedCommandOutput(cleanup.Command) || !cleanup.Command.Passed || cleanup.Command.ExitCode != 0 || cleanup.Command.TimedOut || !equalStrings(cleanup.Command.Command, []string{remoteCleanupBinary, "-o", "BatchMode=yes", cleanup.Host, remoteAttemptCleanupShellCommand(cleanup.Parent, filepath.Base(cleanup.AttemptRoot))}) || cleanup.Command.CommandSpecSHA256 != commandSpecSHA256(ReplayCommand{Path: remoteCleanupBinary, Args: cleanup.Command.Command, Timeout: remoteCleanupTimeout}) || cleanup.Command.ExecutableSHA256 != remoteCleanupSHA || cleanup.Command.ExecutableSHA256 != cleanup.Command.ExecutableAfterSHA256 || !sha256Pattern.MatchString(cleanup.Command.ExecutableSHA256) || cleanupInputs[cleanup.Role] != "" {
 			return nil, fmt.Errorf("invalid report remote cleanup receipt")
 		}
-		cleanupInputs[cleanup.Host] = replayBytesSHA256(bytes)
+		if err := verifyRemoteAttemptAbsent(authority, request.remoteRunner); err != nil {
+			return nil, fmt.Errorf("remote cleanup receipt is not independently verified: %w", err)
+		}
+		cleanupInputs[cleanup.Role] = replayBytesSHA256(bytes)
 	}
-	if len(cleanupInputs) != 2 || cleanupInputs["matt@casper.local"] == "" || cleanupInputs["matt@razor.local"] == "" {
-		return nil, fmt.Errorf("report requires one cleanup receipt for each authoritative host")
+	if len(cleanupInputs) != 2 || cleanupInputs["replay-worker"] == "" || cleanupInputs["salesforce-worker"] == "" {
+		return nil, fmt.Errorf("report requires one cleanup receipt per worker role")
 	}
-	return map[string]string{"SURFACE_LEDGER.json": ledgerSHA, "SOURCE_PROFILE.json": sourceSHA, "SUPPORT_POLICY.json": policySHA, "USAGE_DECISIONS.json": decisionSHA, "EXCLUSION_REQUEST.json": replayBytesSHA256(exclusionBytes), "EXCLUSION_POLICY.json": replayBytesSHA256(exclusionPolicyBytes), "RELEASE_VALIDATION.json": replayBytesSHA256(releaseBytes), "FILTER_SCRIPT.py": filterSHA, "SCRATCH_DEFINITION.json": scratchSHA, "TOOLS_AMD64": toolsSHA, "REMOTE_CLEANUP_CASPER.json": cleanupInputs["matt@casper.local"], "REMOTE_CLEANUP_RAZOR.json": cleanupInputs["matt@razor.local"]}, nil
+	return map[string]string{"SURFACE_LEDGER.json": ledgerSHA, "SOURCE_PROFILE.json": sourceSHA, "SUPPORT_POLICY.json": policySHA, "USAGE_DECISIONS.json": decisionSHA, "EXCLUSION_REQUEST.json": replayBytesSHA256(exclusionBytes), "EXCLUSION_POLICY.json": replayBytesSHA256(exclusionPolicyBytes), "RELEASE_VALIDATION.json": replayBytesSHA256(releaseBytes), "FILTER_SCRIPT.py": filterSHA, "SCRATCH_DEFINITION.json": scratchSHA, "TOOLS_AMD64": toolsSHA, "REMOTE_CLEANUP_REPLAY_WORKER.json": cleanupInputs["replay-worker"], "REMOTE_CLEANUP_SALESFORCE_WORKER.json": cleanupInputs["salesforce-worker"]}, nil
 }
 
 func policyAuthorizesRows(policy, rows []ExclusionPolicyRow) bool {
@@ -278,12 +316,49 @@ func policyAuthorizesRows(policy, rows []ExclusionPolicyRow) bool {
 	return true
 }
 
-func replayBytesSHA256Must(path string) string {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return ""
+func snapshotReportInputHashes(request AssuranceReportRequest) (map[string]string, error) {
+	hashes := map[string]string{}
+	files := map[string][]byte{}
+	for _, path := range reportInputPaths(request) {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil, fmt.Errorf("hash report input %s: %w", path, err)
+		}
+		files[path] = append([]byte(nil), data...)
+		hashes[path] = replayBytesSHA256(data)
 	}
-	return replayBytesSHA256(data)
+	setReportSnapshot(files)
+	return hashes, nil
+}
+
+func revalidateReportInputHashes(request AssuranceReportRequest, expected map[string]string) error {
+	for _, path := range reportInputPaths(request) {
+		hash, err := sha256FileDirect(path)
+		if err != nil || hash != expected[path] {
+			return fmt.Errorf("report input changed during generation: %s", path)
+		}
+	}
+	return nil
+}
+
+func reportInputPaths(request AssuranceReportRequest) []string {
+	paths := []string{request.InventoryPath, request.RootManifestPath, request.LedgerPath, request.SourceProfilePath, request.PolicyPath, request.DecisionPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.AttemptPath, request.LocalProofPath, request.OraclePlanPath, request.ExclusionRequestPath, request.ExclusionPolicyPath, request.AuthorityPath, request.ReleaseValidationPath, request.BundlePath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path}
+	paths = append(paths, request.ReplayHostManifestPaths...)
+	paths = append(paths, request.ReplayShardPaths...)
+	paths = append(paths, request.RemoteCleanupPaths...)
+	paths = append(paths, request.RemoteCleanupAuthorityPaths...)
+	for _, files := range request.SalesforceFiles {
+		paths = append(paths, files.ShardPath, files.DispatchPath, files.CreationPath, files.CleanupPath, files.PreflightPath)
+	}
+	seen := make(map[string]bool, len(paths))
+	unique := make([]string, 0, len(paths))
+	for _, path := range paths {
+		if !seen[path] {
+			seen[path] = true
+			unique = append(unique, path)
+		}
+	}
+	return unique
 }
 
 // AssuranceSurfaceRow is the public, neutral per-surface release outcome.
@@ -536,20 +611,19 @@ func writeAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receipt
 			return AssuranceReceipt{}, err
 		}
 	}
-	if err := WriteNewJSON(jsonPath, report); err != nil {
-		return AssuranceReceipt{}, err
-	}
-	if err := WriteAssuranceHTML(jsonPath, htmlPath); err != nil {
-		return AssuranceReceipt{}, err
-	}
-	assuranceHash, err := sha256File(jsonPath)
+	reportJSON = append(reportJSON, '\n')
+	page, err := renderAssuranceHTML(reportJSON)
 	if err != nil {
 		return AssuranceReceipt{}, err
 	}
-	htmlHash, err := sha256File(htmlPath)
-	if err != nil {
+	if err := WriteNewJSONText(jsonPath, string(reportJSON)); err != nil {
 		return AssuranceReceipt{}, err
 	}
+	if err := WriteNewJSONText(htmlPath, string(page)); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	assuranceHash := replayBytesSHA256(reportJSON)
+	htmlHash := replayBytesSHA256(page)
 	receipt := AssuranceReceipt{SchemaVersion: 1, AssuranceSHA256: assuranceHash, HTMLSHA256: htmlHash, InputsSHA256: inputs}
 	if err := WriteNewJSON(receiptPath, receipt); err != nil {
 		return AssuranceReceipt{}, err

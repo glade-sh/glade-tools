@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -36,7 +37,7 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	if attempt.InventorySHA256 != fileSHA256(t, inventoryPath) || attempt.Candidate.Commit != candidate.Commit || attempt.Candidate.SHA256 != candidate.SHA256 || attempt.Tools.Commit != testGitOutput(t, toolsRoot, "rev-parse", "HEAD") || attempt.Tools.SHA256 != fileSHA256(t, toolsPath) || attempt.Candidate.OS != runtime.GOOS || attempt.Candidate.Arch != runtime.GOARCH {
 		t.Fatalf("attempt = %#v", attempt)
 	}
-	if loaded, err := LoadAssuranceAttempt(outputPath); err != nil || loaded != attempt {
+	if loaded, err := LoadAssuranceAttempt(outputPath); err != nil || !reflect.DeepEqual(loaded, attempt) {
 		t.Fatalf("LoadAssuranceAttempt = %#v, %v", loaded, err)
 	}
 }

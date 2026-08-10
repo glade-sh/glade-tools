@@ -185,7 +185,7 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 			return err
 		}
 		fixtures[fixture.ID] = fixture
-		receiptSpecs[fixture.ID] = localProofReceiptSpecSHA256(command)
+		receiptSpecs[fixture.ID] = localProofReceiptSpecSHA256(command, proof.Candidate.SHA256)
 		apexInputs[fixture.ID] = command.ApexInputs
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
 			if surfaceID == "" || owned[surfaceID].ID != "" {
@@ -209,7 +209,7 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 	raw := make(map[string]LocalProofFixtureResult, len(proof.RawFixtureResults))
 	for _, result := range proof.RawFixtureResults {
 		fixture, exists := fixtures[result.FixtureID]
-		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || result.Operation != localProofOperation(fixture.Disposition) || !validLocalProofReceipt(result.Receipt, result.Operation, receiptSpecs[result.FixtureID]) || result.StdoutSHA256 != result.Receipt.StdoutSHA256 || result.StderrSHA256 != result.Receipt.StderrSHA256 || replayBytesSHA256([]byte(result.Stdout)) != result.StdoutSHA256 || replayBytesSHA256([]byte(result.Stderr)) != result.StderrSHA256 || !validatesCandidateJSON([]byte(result.Stdout), result.Operation, apexInputs[result.FixtureID]) {
+		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || result.Receipt.ExecutableSHA256 != proof.Candidate.SHA256 || result.Operation != localProofOperation(fixture.Disposition) || !validLocalProofReceipt(result.Receipt, result.Operation, receiptSpecs[result.FixtureID]) || result.StdoutSHA256 != result.Receipt.StdoutSHA256 || result.StderrSHA256 != result.Receipt.StderrSHA256 || replayBytesSHA256([]byte(result.Stdout)) != result.StdoutSHA256 || replayBytesSHA256([]byte(result.Stderr)) != result.StderrSHA256 || !validatesCandidateJSON([]byte(result.Stdout), result.Operation, apexInputs[result.FixtureID]) {
 			return fmt.Errorf("invalid local proof fixture receipt %q", result.FixtureID)
 		}
 		raw[result.FixtureID] = result
@@ -268,11 +268,11 @@ func verifyLocalProofReplay(proof LocalProof, manifest LocalProofFixtureManifest
 }
 
 func sameLocalProofReceipt(left, right CommandResult) bool {
-	return equalStrings(left.Command, right.Command) && left.CommandSpecSHA256 == right.CommandSpecSHA256 && left.ExitCode == right.ExitCode && left.StdoutSHA256 == right.StdoutSHA256 && left.StderrSHA256 == right.StderrSHA256 && left.Passed == right.Passed && left.TimedOut == right.TimedOut
+	return equalStrings(left.Command, right.Command) && left.CommandSpecSHA256 == right.CommandSpecSHA256 && left.WorkingDirectory == right.WorkingDirectory && equalStrings(left.Environment, right.Environment) && left.ExecutableSHA256 == right.ExecutableSHA256 && left.ExecutableAfterSHA256 == right.ExecutableAfterSHA256 && left.ExitCode == right.ExitCode && left.StdoutSHA256 == right.StdoutSHA256 && left.StderrSHA256 == right.StderrSHA256 && left.Passed == right.Passed && left.TimedOut == right.TimedOut
 }
 
 func validLocalProofReceipt(receipt CommandResult, operation, expectedSpecSHA256 string) bool {
-	return validReplayReceipt(receipt, operation, expectedSpecSHA256)
+	return receipt.Passed && !receipt.TimedOut && receipt.ExitCode == 0 && receipt.DurationMS >= 0 && len(receipt.Command) == 1 && receipt.Command[0] == operation && receipt.CommandSpecSHA256 == expectedSpecSHA256 && sha256Pattern.MatchString(expectedSpecSHA256) && sha256Pattern.MatchString(receipt.ExecutableSHA256) && receipt.ExecutableSHA256 == receipt.ExecutableAfterSHA256 && sha256Pattern.MatchString(receipt.StdoutSHA256) && sha256Pattern.MatchString(receipt.StderrSHA256)
 }
 
 func localProofOperation(disposition string) string {
@@ -355,7 +355,7 @@ func RunLocalProof(request LocalProofRequest) (LocalProof, error) {
 		if err := validateLocalProofFixtureResult(fixture, result, command, execution.Validated); err != nil {
 			return LocalProof{}, err
 		}
-		result.Receipt.CommandSpecSHA256 = localProofReceiptSpecSHA256(command)
+		result.Receipt.CommandSpecSHA256 = localProofReceiptSpecSHA256(command, result.CandidateSHA256)
 		raw = append(raw, result)
 		byFixtureID[fixture.ID] = result
 	}
@@ -672,6 +672,7 @@ func localProofEvidenceKind(disposition string) string {
 
 func runLocalProofCommand(command localProofCommand) localProofExecution {
 	receipt, stdout, stderr := runReplayCommandOutput(command.Dir, ReplayCommand{Path: command.Path, Args: command.Args, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 2 * time.Minute})
+	receipt.CommandSpecSHA256 = localProofReceiptSpecSHA256(command, receipt.ExecutableSHA256)
 	return localProofExecution{Receipt: receipt, Validated: receipt.Passed && validatesCandidateJSON(stdout, command.Args[0], command.ApexInputs), Stdout: string(stdout), Stderr: string(stderr)}
 }
 
@@ -680,19 +681,19 @@ func validateLocalProofFixtureResult(fixture LocalProofFixture, result LocalProo
 		return fmt.Errorf("stale fixture result for %q", fixture.ID)
 	}
 	operation := command.Args[0]
-	expectedSpecSHA256 := commandSpecSHA256(ReplayCommand{Path: command.Path, Args: command.Args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute})
-	if !validated || !validReplayReceipt(result.Receipt, operation, expectedSpecSHA256) {
+	expectedSpecSHA256 := localProofReceiptSpecSHA256(command, result.Receipt.ExecutableSHA256)
+	if !validated || result.Receipt.ExecutableSHA256 != result.CandidateSHA256 || !validLocalProofReceipt(result.Receipt, operation, expectedSpecSHA256) {
 		return fmt.Errorf("fixture %q lacks a valid %s receipt", fixture.ID, operation)
 	}
 	return nil
 }
 
-func localProofReceiptSpecSHA256(command localProofCommand) string {
+func localProofReceiptSpecSHA256(command localProofCommand, executableSHA256 string) string {
 	args := append([]string(nil), command.Args...)
 	if len(args) >= 3 && args[1] == "--project" {
 		args[2] = "."
 	}
-	return commandSpecSHA256(ReplayCommand{Path: command.Path, Args: args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute})
+	return commandSpecSHA256(ReplayCommand{Path: command.Path, Args: args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256})
 }
 
 func validLocalProofDisposition(disposition string) bool {

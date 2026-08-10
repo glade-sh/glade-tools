@@ -69,7 +69,7 @@ func PrepareInventory(inventoryPath, attemptPath, output string) (InventoryManif
 			if err != nil {
 				return InventoryManifest{}, fmt.Errorf("stat repository %q root: %w", existing.entry.ID, err)
 			}
-			if os.SameFile(info, existingInfo) {
+			if os.SameFile(info, existingInfo) || nestedCheckoutRoot(existing.root, root) || nestedCheckoutRoot(root, existing.root) {
 				return InventoryManifest{}, fmt.Errorf("repositories %q and %q resolve to the same checkout", existing.entry.ID, entry.ID)
 			}
 		}
@@ -132,6 +132,11 @@ func PrepareInventory(inventoryPath, attemptPath, output string) (InventoryManif
 	return manifest, nil
 }
 
+func nestedCheckoutRoot(parent, child string) bool {
+	relative, err := filepath.Rel(filepath.Clean(parent), filepath.Clean(child))
+	return err == nil && relative != "." && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) && !filepath.IsAbs(relative)
+}
+
 // ValidateInventoryCoverage proves that generated repositories exactly match the
 // frozen inventory denominator.
 func ValidateInventoryCoverage(spec InventorySpec, repositories []RepositorySpec) error {
@@ -185,7 +190,7 @@ func AssignRepositories(repositories []RepositorySpec) ([]RepositorySpec, error)
 		if index%2 == 0 {
 			assigned[index].AssignedHost = "local"
 		} else {
-			assigned[index].AssignedHost = "casper"
+			assigned[index].AssignedHost = "replay-worker"
 		}
 	}
 	return assigned, nil
@@ -250,7 +255,7 @@ func createSnapshot(output string, source checkout) (RepositorySpec, error) {
 }
 
 func writeHostManifests(output string, repositories []RepositorySpec, rootSHA256 string) error {
-	for _, host := range []string{"local", "casper"} {
+	for _, host := range []string{"local", "replay-worker"} {
 		hostRoot := filepath.Join(output, "hosts", host)
 		if err := os.MkdirAll(hostRoot, 0o700); err != nil {
 			return fmt.Errorf("create %s host output: %w", host, err)
@@ -682,16 +687,21 @@ func stripApexCommentsAndStrings(source string) string {
 }
 
 func sha256File(path string) (string, error) {
-	file, err := os.Open(path)
+	data, err := readAssuranceFile(path)
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
-	hash := sha256.New()
-	if _, err := io.Copy(hash, file); err != nil {
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:]), nil
+}
+
+func sha256FileDirect(path string) (string, error) {
+	data, err := readAssuranceFile(path)
+	if err != nil {
 		return "", err
 	}
-	return hex.EncodeToString(hash.Sum(nil)), nil
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:]), nil
 }
 
 func rootedPath(root, relative string) (string, error) {

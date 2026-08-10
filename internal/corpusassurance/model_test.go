@@ -95,7 +95,7 @@ func TestRepositorySpecRejectsUnsafeBindings(t *testing.T) {
 	valid := RepositorySpec{ID: "private-corpus-001", ExpectedCommit: strings.Repeat("a", 40), ArchiveSHA256: strings.Repeat("b", 64), TreeSHA256: strings.Repeat("c", 64), AssignedHost: "local", SnapshotPath: "snapshots/private-corpus-001", LocalTests: "required"}
 	for name, mutate := range map[string]func(*RepositorySpec){
 		"absolute snapshot": func(spec *RepositorySpec) { spec.SnapshotPath = "/private/tmp/snapshot" },
-		"unsupported host":  func(spec *RepositorySpec) { spec.AssignedHost = "razor" },
+		"unsupported host":  func(spec *RepositorySpec) { spec.AssignedHost = "salesforce-worker" },
 		"no test reason":    func(spec *RepositorySpec) { spec.LocalTests, spec.LocalTestsReason = "tests-not-present", "" },
 	} {
 		t.Run(name, func(t *testing.T) {

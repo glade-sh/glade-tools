@@ -14,21 +14,23 @@ import (
 // an assurance run. Later workflow stages derive their runtime identities from
 // this record rather than accepting a caller-declared identity.
 type AssuranceAttempt struct {
-	SchemaVersion            int             `json:"schemaVersion"`
-	InventorySHA256          string          `json:"inventorySha256"`
-	CandidateAuthoritySHA256 string          `json:"candidateAuthoritySha256"`
-	Candidate                RuntimeArtifact `json:"candidate"`
-	Tools                    RuntimeArtifact `json:"tools"`
+	SchemaVersion                int               `json:"schemaVersion"`
+	InventorySHA256              string            `json:"inventorySha256"`
+	CandidateAuthoritySHA256     string            `json:"candidateAuthoritySha256"`
+	Candidate                    RuntimeArtifact   `json:"candidate"`
+	Tools                        RuntimeArtifact   `json:"tools"`
+	RemoteCleanupAuthoritySHA256 map[string]string `json:"remoteCleanupAuthoritySha256,omitempty"`
 }
 
 type AssuranceAttemptRequest struct {
-	InventoryPath          string
-	CandidateAuthorityPath string
-	CandidatePath          string
-	CandidateRoot          string
-	ToolsPath              string
-	ToolsRoot              string
-	OutputPath             string
+	InventoryPath               string
+	CandidateAuthorityPath      string
+	CandidatePath               string
+	CandidateRoot               string
+	ToolsPath                   string
+	ToolsRoot                   string
+	RemoteCleanupAuthorityPaths []string
+	OutputPath                  string
 }
 
 type attemptCandidate struct {
@@ -78,6 +80,23 @@ func CreateAssuranceAttempt(request AssuranceAttemptRequest) (AssuranceAttempt, 
 		return AssuranceAttempt{}, fmt.Errorf("tools: %w", err)
 	}
 	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), CandidateAuthoritySHA256: replayBytesSHA256(authorityBytes), Candidate: candidate, Tools: tools}
+	if len(request.RemoteCleanupAuthorityPaths) != 0 {
+		if len(request.RemoteCleanupAuthorityPaths) != 2 {
+			return AssuranceAttempt{}, fmt.Errorf("exactly two remote cleanup authorities are required")
+		}
+		bindingSHA := attemptHash(attempt)
+		attempt.RemoteCleanupAuthoritySHA256 = make(map[string]string, len(request.RemoteCleanupAuthorityPaths))
+		for _, authorityPath := range request.RemoteCleanupAuthorityPaths {
+			authority, authorityBytes, err := readRemoteAttemptAuthority(authorityPath)
+			if err != nil || authority.AttemptSHA256 != bindingSHA || attempt.RemoteCleanupAuthoritySHA256[authority.Role] != "" {
+				return AssuranceAttempt{}, fmt.Errorf("remote cleanup authority is not bound to the candidate attempt")
+			}
+			attempt.RemoteCleanupAuthoritySHA256[authority.Role] = replayBytesSHA256(authorityBytes)
+		}
+		if attempt.RemoteCleanupAuthoritySHA256["replay-worker"] == "" || attempt.RemoteCleanupAuthoritySHA256["salesforce-worker"] == "" {
+			return AssuranceAttempt{}, fmt.Errorf("remote cleanup authorities must cover both workers")
+		}
+	}
 	if err := ValidateAssuranceAttempt(attempt); err != nil {
 		return AssuranceAttempt{}, err
 	}
@@ -111,11 +130,29 @@ func ValidateAssuranceAttempt(attempt AssuranceAttempt) error {
 	if err := ValidateRuntimeArtifact(attempt.Tools); err != nil {
 		return fmt.Errorf("tools: %w", err)
 	}
+	if len(attempt.RemoteCleanupAuthoritySHA256) != 0 {
+		if len(attempt.RemoteCleanupAuthoritySHA256) != 2 {
+			return fmt.Errorf("invalid remote cleanup authority bindings")
+		}
+		for _, role := range []string{"replay-worker", "salesforce-worker"} {
+			if !sha256Pattern.MatchString(attempt.RemoteCleanupAuthoritySHA256[role]) {
+				return fmt.Errorf("missing remote cleanup authority binding for %q", role)
+			}
+		}
+	}
 	return nil
 }
 
 func attemptHash(attempt AssuranceAttempt) string {
 	data, _ := json.Marshal(attempt)
+	return replayBytesSHA256(data)
+}
+
+func attemptBindingHash(attempt AssuranceAttempt) string {
+	authorities := attempt.RemoteCleanupAuthoritySHA256
+	attempt.RemoteCleanupAuthoritySHA256 = nil
+	data, _ := json.Marshal(attempt)
+	attempt.RemoteCleanupAuthoritySHA256 = authorities
 	return replayBytesSHA256(data)
 }
 

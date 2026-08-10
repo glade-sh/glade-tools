@@ -10,32 +10,7 @@ import (
 	"testing"
 )
 
-func TestRunRemoteAttemptCleanupRejectsNonAuthoritativeHost(t *testing.T) {
-	root := t.TempDir()
-	bindingPath := filepath.Join(root, "binding.json")
-	if err := os.WriteFile(bindingPath, []byte(`{"binding":true}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	for _, host := range []string{"", "matt@casper.example", "root@casper.local", "matt@razor.local:22"} {
-		t.Run(host, func(t *testing.T) {
-			outputPath := filepath.Join(root, "REMOTE_CLEANUP.json")
-			_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
-				Host:        host,
-				Parent:      remoteCleanupParent,
-				AttemptRoot: filepath.Join(remoteCleanupParent, "assurance-1afce500-test"),
-				BindingPath: bindingPath,
-				OutputPath:  outputPath,
-				runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
-					t.Fatal("runner called for non-authoritative host")
-					return salesforceCommandOutput{}, nil
-				},
-			})
-			if err == nil || !strings.Contains(err.Error(), "non-authoritative remote cleanup host") {
-				t.Fatalf("RunRemoteAttemptCleanup error = %v", err)
-			}
-		})
-	}
-}
+const remoteCleanupParent = "/private/tmp/glade-assurance-worker"
 
 func TestRunRemoteAttemptCleanupRejectsAnArbitraryBindingFile(t *testing.T) {
 	root := t.TempDir()
@@ -44,7 +19,7 @@ func TestRunRemoteAttemptCleanupRejectsAnArbitraryBindingFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
-		Host: "matt@casper.local", Parent: remoteCleanupParent, AttemptRoot: filepath.Join(remoteCleanupParent, "assurance-1afce500-test"), BindingPath: bindingPath, OutputPath: filepath.Join(root, "REMOTE_CLEANUP.json"),
+		AttemptPath: bindingPath + ".attempt", BindingPath: bindingPath, OutputPath: filepath.Join(root, "REMOTE_CLEANUP.json"),
 		runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
 			t.Fatal("runner called for arbitrary binding")
 			return salesforceCommandOutput{}, nil
@@ -55,44 +30,59 @@ func TestRunRemoteAttemptCleanupRejectsAnArbitraryBindingFile(t *testing.T) {
 	}
 }
 
+func TestRunRemoteAttemptCleanupAcceptsAuthorityBoundWorker(t *testing.T) {
+	root := t.TempDir()
+	parent := filepath.Join(root, "glade-assurance-worker")
+	attempt := filepath.Join(parent, "assurance-1234")
+	bindingPath := filepath.Join(root, "binding.json")
+	writeRemoteCleanupAuthorityAt(t, bindingPath, "salesforce-worker", "operator@salesforce-worker", parent, attempt)
+	_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{AttemptPath: bindingPath + ".attempt", BindingPath: bindingPath, OutputPath: filepath.Join(root, "REMOTE_CLEANUP.json"), runner: func(_ context.Context, binary string, args ...string) (salesforceCommandOutput, error) {
+		if binary != "/usr/bin/ssh" || len(args) != 4 || args[2] != "operator@salesforce-worker" {
+			t.Fatalf("cleanup invocation = %q %q", binary, args)
+		}
+		return salesforceCommandOutput{}, nil
+	}})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestRunRemoteAttemptCleanupRejectsBroadParent(t *testing.T) {
+	root := t.TempDir()
+	bindingPath := filepath.Join(root, "binding.json")
+	if err := os.WriteFile(bindingPath, []byte(`{"schemaVersion":1,"role":"replay-worker","host":"operator@replay-worker","parent":"/","attemptRoot":"/assurance-1234"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{AttemptPath: bindingPath + ".attempt", BindingPath: bindingPath, OutputPath: filepath.Join(root, "REMOTE_CLEANUP.json"), runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
+		t.Fatal("runner called for broad parent")
+		return salesforceCommandOutput{}, nil
+	}})
+	if err == nil {
+		t.Fatal("accepted broad remote cleanup parent")
+	}
+}
+
 func TestRunRemoteAttemptCleanupRejectsNonAuthoritativePath(t *testing.T) {
 	root := t.TempDir()
 	bindingPath := filepath.Join(root, "binding.json")
 	if err := os.WriteFile(bindingPath, []byte(`{"binding":true}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	valid := RemoteAttemptCleanupRequest{
-		Host:        "matt@casper.local",
-		Parent:      remoteCleanupParent,
-		AttemptRoot: filepath.Join(remoteCleanupParent, "assurance-1afce500-test"),
-		BindingPath: bindingPath,
-		OutputPath:  filepath.Join(root, "REMOTE_CLEANUP.json"),
-	}
+	valid := RemoteAttemptCleanupRequest{AttemptPath: bindingPath + ".attempt", BindingPath: bindingPath, OutputPath: filepath.Join(root, "REMOTE_CLEANUP.json")}
 	cases := []struct {
 		name   string
 		mutate func(*RemoteAttemptCleanupRequest)
 	}{
-		{"parent mismatch", func(request *RemoteAttemptCleanupRequest) { request.Parent = "/private/tmp/other" }},
 		{"relative binding", func(request *RemoteAttemptCleanupRequest) { request.BindingPath = "binding.json" }},
 		{"relative output", func(request *RemoteAttemptCleanupRequest) { request.OutputPath = "REMOTE_CLEANUP.json" }},
-		{"relative attempt", func(request *RemoteAttemptCleanupRequest) { request.AttemptRoot = "assurance-1afce500-test" }},
-		{"nested attempt", func(request *RemoteAttemptCleanupRequest) {
-			request.AttemptRoot = filepath.Join(remoteCleanupParent, "assurance-1afce500-test", "child")
-		}},
-		{"wrong basename prefix", func(request *RemoteAttemptCleanupRequest) {
-			request.AttemptRoot = filepath.Join(remoteCleanupParent, "assurance-other-test")
-		}},
+		{"relative attempt", func(request *RemoteAttemptCleanupRequest) { request.AttemptPath = "ATTEMPT.json" }},
 	}
 	for _, testCase := range cases {
 		t.Run(testCase.name, func(t *testing.T) {
 			request := valid
 			testCase.mutate(&request)
 			_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
-				Host:        request.Host,
-				Parent:      request.Parent,
-				AttemptRoot: request.AttemptRoot,
-				BindingPath: request.BindingPath,
-				OutputPath:  request.OutputPath,
+				AttemptPath: request.AttemptPath, BindingPath: request.BindingPath, OutputPath: request.OutputPath,
 				runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
 					t.Fatal("runner called for non-authoritative path")
 					return salesforceCommandOutput{}, nil
@@ -119,9 +109,7 @@ func TestRunRemoteAttemptCleanupDoesNotClobberExistingOutput(t *testing.T) {
 		t.Fatal(err)
 	}
 	_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
-		Host:        "matt@casper.local",
-		Parent:      remoteCleanupParent,
-		AttemptRoot: filepath.Join(remoteCleanupParent, "assurance-1afce500-test"),
+		AttemptPath: bindingPath + ".attempt",
 		BindingPath: bindingPath,
 		OutputPath:  outputPath,
 		runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
@@ -140,15 +128,15 @@ func TestRunRemoteAttemptCleanupDoesNotClobberExistingOutput(t *testing.T) {
 func TestRunRemoteAttemptCleanupSuccessCommandShape(t *testing.T) {
 	root := t.TempDir()
 	bindingPath := filepath.Join(root, "binding.json")
-	basename := "assurance-1afce500-20260809T000000Z"
-	writeRemoteCleanupAuthority(t, bindingPath, "matt@casper.local", filepath.Join(remoteCleanupParent, basename))
-	outputPath := filepath.Join(root, "REMOTE_CLEANUP_CASPER.json")
+	requestedRoot := filepath.Join(remoteCleanupParent, "worker-20260809T000000Z")
+	writeRemoteCleanupAuthority(t, bindingPath, "operator@replay-worker", requestedRoot)
+	attemptRoot := remoteCleanupAttemptRoot(t, bindingPath+".attempt", remoteCleanupParent, requestedRoot)
+	basename := filepath.Base(attemptRoot)
+	outputPath := filepath.Join(root, "REMOTE_CLEANUP_REPLAY_WORKER.json")
 	var calledBinary string
 	var calledArgs []string
 	cleanup, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
-		Host:        "matt@casper.local",
-		Parent:      remoteCleanupParent,
-		AttemptRoot: filepath.Join(remoteCleanupParent, basename),
+		AttemptPath: bindingPath + ".attempt",
 		BindingPath: bindingPath,
 		OutputPath:  outputPath,
 		runner: func(_ context.Context, binary string, args ...string) (salesforceCommandOutput, error) {
@@ -160,12 +148,12 @@ func TestRunRemoteAttemptCleanupSuccessCommandShape(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RunRemoteAttemptCleanup: %v", err)
 	}
-	wantCommand := remoteAttemptCleanupShellCommand(basename)
-	if calledBinary != "ssh" || !reflect.DeepEqual(calledArgs, []string{"-o", "BatchMode=yes", "matt@casper.local", wantCommand}) {
-		t.Fatalf("ssh invocation = %q %#v, want ssh -o BatchMode=yes with %q", calledBinary, calledArgs, wantCommand)
+	wantCommand := remoteAttemptCleanupShellCommand(remoteCleanupParent, basename)
+	if calledBinary != "/usr/bin/ssh" || !reflect.DeepEqual(calledArgs, []string{"-o", "BatchMode=yes", "operator@replay-worker", wantCommand}) {
+		t.Fatalf("ssh invocation = %q %#v, want /usr/bin/ssh -o BatchMode=yes with %q", calledBinary, calledArgs, wantCommand)
 	}
 	for _, fragment := range []string{
-		"test -d '/private/tmp/glade-assurance-1afce500' && test ! -L '/private/tmp/glade-assurance-1afce500' && cd '/private/tmp/glade-assurance-1afce500'",
+		"test -d '" + remoteCleanupParent + "' && test ! -L '" + remoteCleanupParent + "' && cd '" + remoteCleanupParent + "'",
 		"test -d './" + basename + "' && test ! -L './" + basename + "'",
 		"rm -r -- './" + basename + "'",
 		"test ! -e './" + basename + "' && test ! -L './" + basename + "'",
@@ -174,7 +162,7 @@ func TestRunRemoteAttemptCleanupSuccessCommandShape(t *testing.T) {
 			t.Fatalf("remote cleanup command missing %q: %q", fragment, wantCommand)
 		}
 	}
-	if cleanup.SchemaVersion != 1 || cleanup.Host != "matt@casper.local" || cleanup.Parent != remoteCleanupParent || cleanup.AttemptRoot != filepath.Join(remoteCleanupParent, basename) {
+	if cleanup.SchemaVersion != 1 || cleanup.Host != "operator@replay-worker" || cleanup.Parent != remoteCleanupParent || cleanup.AttemptRoot != filepath.Join(remoteCleanupParent, basename) {
 		t.Fatalf("cleanup identity = %#v", cleanup)
 	}
 	if cleanup.BindingSHA256 != cleanup.BindingPostSHA256 || cleanup.BindingSHA256 != sha256FileForTest(t, bindingPath) {
@@ -196,17 +184,22 @@ func TestRunRemoteAttemptCleanupSuccessCommandShape(t *testing.T) {
 func TestRunRemoteAttemptCleanupRejectsPostBindingMutation(t *testing.T) {
 	root := t.TempDir()
 	bindingPath := filepath.Join(root, "binding.json")
-	attemptRoot := filepath.Join(remoteCleanupParent, "assurance-1afce500-test")
-	writeRemoteCleanupAuthority(t, bindingPath, "matt@razor.local", attemptRoot)
+	requestedRoot := filepath.Join(remoteCleanupParent, "test")
+	writeRemoteCleanupAuthority(t, bindingPath, "operator@salesforce-worker", requestedRoot)
+	attemptRoot := remoteCleanupAttemptRoot(t, bindingPath+".attempt", remoteCleanupParent, requestedRoot)
 	outputPath := filepath.Join(root, "REMOTE_CLEANUP.json")
 	_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
-		Host:        "matt@razor.local",
-		Parent:      remoteCleanupParent,
-		AttemptRoot: attemptRoot,
+		AttemptPath: bindingPath + ".attempt",
 		BindingPath: bindingPath,
 		OutputPath:  outputPath,
 		runner: func(_ context.Context, _ string, _ ...string) (salesforceCommandOutput, error) {
-			writeRemoteCleanupAuthority(t, bindingPath, "matt@casper.local", attemptRoot)
+			if err := os.Remove(bindingPath); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Remove(bindingPath + ".attempt"); err != nil {
+				t.Fatal(err)
+			}
+			writeRemoteCleanupAuthority(t, bindingPath, "operator@replay-worker", attemptRoot)
 			return salesforceCommandOutput{ExitCode: 0}, nil
 		},
 	})
@@ -221,12 +214,10 @@ func TestRunRemoteAttemptCleanupRejectsPostBindingMutation(t *testing.T) {
 func TestRunRemoteAttemptCleanupRejectsFailedSSH(t *testing.T) {
 	root := t.TempDir()
 	bindingPath := filepath.Join(root, "binding.json")
-	writeRemoteCleanupAuthority(t, bindingPath, "matt@casper.local", filepath.Join(remoteCleanupParent, "assurance-1afce500-test"))
+	writeRemoteCleanupAuthority(t, bindingPath, "operator@replay-worker", filepath.Join(remoteCleanupParent, "test"))
 	outputPath := filepath.Join(root, "REMOTE_CLEANUP.json")
 	_, err := RunRemoteAttemptCleanup(RemoteAttemptCleanupRequest{
-		Host:        "matt@casper.local",
-		Parent:      remoteCleanupParent,
-		AttemptRoot: filepath.Join(remoteCleanupParent, "assurance-1afce500-test"),
+		AttemptPath: bindingPath + ".attempt",
 		BindingPath: bindingPath,
 		OutputPath:  outputPath,
 		runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
@@ -242,9 +233,9 @@ func TestRunRemoteAttemptCleanupRejectsFailedSSH(t *testing.T) {
 }
 
 func TestRemoteAttemptCleanupShellCommandQuotesBasename(t *testing.T) {
-	basename := "assurance-1afce500-casper's $(rm -rf /) attempt"
-	command := remoteAttemptCleanupShellCommand(basename)
-	wantAttempt := "'./assurance-1afce500-casper'\\''s $(rm -rf /) attempt'"
+	basename := "assurance-1afce500-worker's $(rm -rf /) attempt"
+	command := remoteAttemptCleanupShellCommand(remoteCleanupParent, basename)
+	wantAttempt := "'./assurance-1afce500-worker'\\''s $(rm -rf /) attempt'"
 	if !strings.Contains(command, "rm -r -- "+wantAttempt) {
 		t.Fatalf("command does not safely quote basename: %q", command)
 	}
@@ -252,11 +243,42 @@ func TestRemoteAttemptCleanupShellCommandQuotesBasename(t *testing.T) {
 
 func writeRemoteCleanupAuthority(t *testing.T, path, host, attemptRoot string) {
 	t.Helper()
-	data, err := json.Marshal(RemoteAttemptAuthority{SchemaVersion: 1, Host: host, Parent: remoteCleanupParent, AttemptRoot: attemptRoot})
+	writeRemoteCleanupAuthorityAt(t, path, "replay-worker", host, remoteCleanupParent, attemptRoot)
+}
+
+func writeRemoteCleanupAuthorityAt(t *testing.T, path, role, host, parent, attemptRoot string) {
+	t.Helper()
+	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)}, Tools: RuntimeArtifact{Commit: strings.Repeat("e", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("f", 64)}}
+	attemptBytes, err := json.Marshal(attempt)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(path, data, 0o600); err != nil {
+	bindingSHA := replayBytesSHA256(attemptBytes)
+	attemptRoot = filepath.Join(parent, "assurance-"+bindingSHA[:16]+"-"+filepath.Base(attemptRoot))
+	authority := RemoteAttemptAuthority{SchemaVersion: 1, AttemptSHA256: bindingSHA, Role: role, Host: host, Parent: filepath.Clean(parent), AttemptRoot: filepath.Clean(attemptRoot)}
+	if err := WriteNewJSON(path, authority); err != nil {
 		t.Fatal(err)
 	}
+	authorityBytes, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attempt.RemoteCleanupAuthoritySHA256 = map[string]string{"replay-worker": strings.Repeat("0", 64), "salesforce-worker": strings.Repeat("0", 64)}
+	attempt.RemoteCleanupAuthoritySHA256[role] = replayBytesSHA256(authorityBytes)
+	data, err := json.Marshal(attempt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path+".attempt", append(data, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func remoteCleanupAttemptRoot(t *testing.T, attemptPath, parent, requestedRoot string) string {
+	t.Helper()
+	attempt, _, err := readExactJSONBytes[AssuranceAttempt](attemptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return filepath.Join(parent, "assurance-"+attemptBindingHash(attempt)[:16]+"-"+filepath.Base(requestedRoot))
 }

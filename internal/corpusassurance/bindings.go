@@ -7,7 +7,38 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sync"
 )
+
+var reportSnapshotState struct {
+	sync.RWMutex
+	files map[string][]byte
+}
+
+func setReportSnapshot(files map[string][]byte) {
+	reportSnapshotState.Lock()
+	reportSnapshotState.files = files
+	reportSnapshotState.Unlock()
+}
+
+func clearReportSnapshot() {
+	reportSnapshotState.Lock()
+	reportSnapshotState.files = nil
+	reportSnapshotState.Unlock()
+}
+
+func readAssuranceFile(path string) ([]byte, error) {
+	reportSnapshotState.RLock()
+	data, ok := reportSnapshotState.files[path]
+	if ok {
+		data = append([]byte(nil), data...)
+	}
+	reportSnapshotState.RUnlock()
+	if ok {
+		return data, nil
+	}
+	return os.ReadFile(path)
+}
 
 type SealedHostInputs struct {
 	Inventory InventorySpec
@@ -17,7 +48,7 @@ type SealedHostInputs struct {
 }
 
 func LoadSealedHostInputs(inventoryPath, rootPath, hostPath, expectedHost string) (SealedHostInputs, error) {
-	if !filepath.IsAbs(inventoryPath) || !filepath.IsAbs(rootPath) || !filepath.IsAbs(hostPath) || (expectedHost != "local" && expectedHost != "casper") {
+	if !filepath.IsAbs(inventoryPath) || !filepath.IsAbs(rootPath) || !filepath.IsAbs(hostPath) || (expectedHost != "local" && expectedHost != "replay-worker") {
 		return SealedHostInputs{}, fmt.Errorf("sealed manifest paths and host are required")
 	}
 	inventory, inventoryBytes, err := readInventorySpec(inventoryPath)
@@ -69,7 +100,7 @@ func readExactJSON[T any](path string) (T, error) {
 
 func readExactJSONBytes[T any](path string) (T, []byte, error) {
 	var value T
-	data, err := os.ReadFile(path)
+	data, err := readAssuranceFile(path)
 	if err != nil {
 		return value, nil, err
 	}

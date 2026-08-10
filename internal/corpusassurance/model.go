@@ -76,7 +76,7 @@ func ReadInventorySpec(path string) (InventorySpec, error) {
 }
 
 func readInventorySpec(path string) (InventorySpec, []byte, error) {
-	data, err := os.ReadFile(path)
+	data, err := readAssuranceFile(path)
 	if err != nil {
 		return InventorySpec{}, nil, err
 	}
@@ -102,7 +102,7 @@ func ValidateRepositorySpec(repo RepositorySpec) error {
 	if !repositoryIDPat.MatchString(repo.ID) || !commitPattern.MatchString(repo.ExpectedCommit) || !sha256Pattern.MatchString(repo.ArchiveSHA256) || !sha256Pattern.MatchString(repo.TreeSHA256) {
 		return fmt.Errorf("invalid repository bindings for %q", repo.ID)
 	}
-	if repo.AssignedHost != "local" && repo.AssignedHost != "casper" {
+	if repo.AssignedHost != "local" && repo.AssignedHost != "replay-worker" {
 		return fmt.Errorf("unsupported repository host %q", repo.AssignedHost)
 	}
 	if repo.SnapshotPath == "" || filepath.IsAbs(repo.SnapshotPath) {

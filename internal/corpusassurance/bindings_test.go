@@ -50,7 +50,7 @@ func TestLoadSealedHostInputsRejectsTamperedRootAndPartition(t *testing.T) {
 		t.Fatal(err)
 	}
 	hostPath := filepath.Join(directory, "host.json")
-	if err := WriteNewJSON(hostPath, HostManifest{SchemaVersion: 1, Host: "casper", RootManifestSHA256: strings.Repeat("b", 64), Repositories: []RepositorySpec{repository}}); err != nil {
+	if err := WriteNewJSON(hostPath, HostManifest{SchemaVersion: 1, Host: "replay-worker", RootManifestSHA256: strings.Repeat("b", 64), Repositories: []RepositorySpec{repository}}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := LoadSealedHostInputs(scopePath, rootPath, hostPath, "local"); err == nil {

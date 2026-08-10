@@ -57,8 +57,8 @@ func TestInventoryCreatesSnapshotsAndHostManifests(t *testing.T) {
 	if got := byID["private-corpus-001"].AssignedHost; got != "local" {
 		t.Fatalf("private-corpus-001 host = %q, want local", got)
 	}
-	if got := byID["private-corpus-002"].AssignedHost; got != "casper" {
-		t.Fatalf("private-corpus-002 host = %q, want casper", got)
+	if got := byID["private-corpus-002"].AssignedHost; got != "replay-worker" {
+		t.Fatalf("private-corpus-002 host = %q, want replay-worker", got)
 	}
 	if got := byID["private-corpus-001"].LocalTests; got != "required" {
 		t.Fatalf("private-corpus-001 local tests = %q, want required", got)
@@ -69,7 +69,7 @@ func TestInventoryCreatesSnapshotsAndHostManifests(t *testing.T) {
 
 	rootPath := filepath.Join(output, "MANIFEST.json")
 	rootSHA := sha256FileForTest(t, rootPath)
-	for _, host := range []string{"local", "casper"} {
+	for _, host := range []string{"local", "replay-worker"} {
 		path := filepath.Join(output, "hosts", host, "manifest.json")
 		var hostManifest HostManifest
 		readJSONForTest(t, path, &hostManifest)
@@ -152,6 +152,17 @@ func TestPrepareInventoryRejectsDuplicateCheckoutRoot(t *testing.T) {
 		{
 			name:  "subdirectory alias",
 			alias: func(_ *testing.T, repository string) string { return filepath.Join(repository, "classes") },
+		},
+		{
+			name: "nested git root",
+			alias: func(t *testing.T, repository string) string {
+				nested := filepath.Join(repository, "nested")
+				if err := os.MkdirAll(nested, 0o755); err != nil {
+					t.Fatal(err)
+				}
+				gitRun(t, nested, "init", "--quiet")
+				return nested
+			},
 		},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
@@ -373,7 +384,7 @@ func TestAssignRepositoriesUsesNeutralIDRoundRobin(t *testing.T) {
 	if got, want := repositoryIDs(assigned), []string{"private-corpus-001", "private-corpus-002", "private-corpus-003"}; !sameStrings(got, want) {
 		t.Fatalf("assigned IDs = %v, want %v", got, want)
 	}
-	if got, want := []string{assigned[0].AssignedHost, assigned[1].AssignedHost, assigned[2].AssignedHost}, []string{"local", "casper", "local"}; !sameStrings(got, want) {
+	if got, want := []string{assigned[0].AssignedHost, assigned[1].AssignedHost, assigned[2].AssignedHost}, []string{"local", "replay-worker", "local"}; !sameStrings(got, want) {
 		t.Fatalf("assigned hosts = %v, want %v", got, want)
 	}
 }

@@ -10,7 +10,6 @@ import (
 	"runtime"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSurface(t *testing.T) {
@@ -415,8 +414,9 @@ func localProofSuccessOutputFor(operation string) string {
 }
 
 func localProofReceipt(command localProofCommand) CommandResult {
+	executableSHA256, _ := sha256File(command.Path)
 	return CommandResult{
-		Command: []string{command.Args[0]}, CommandSpecSHA256: commandSpecSHA256(ReplayCommand{Path: command.Path, Args: command.Args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute}),
+		Command: []string{command.Args[0]}, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256, CommandSpecSHA256: localProofReceiptSpecSHA256(command, executableSHA256),
 		ExitCode: 0, DurationMS: 0, Passed: true,
 		StdoutSHA256: replayBytesSHA256([]byte(localProofSuccessOutputFor(command.Args[0]))), StderrSHA256: replayBytesSHA256(nil),
 	}

@@ -84,7 +84,7 @@ func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	root := filepath.Dir(inputs.releasePath)
-	outputPath := filepath.Join(root, "razor")
+	outputPath := filepath.Join(root, "salesforce-worker")
 	bundle, err := BuildOracleBundle(inputs.request(outputPath))
 	if err != nil {
 		t.Fatalf("BuildOracleBundle: %v", err)
@@ -107,7 +107,7 @@ func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
 	if err := ValidateOracleBundle(bundlePath); err == nil {
 		t.Fatal("accepted a bundle whose staged profile changed")
 	}
-	wrongToolsRequest := inputs.request(filepath.Join(root, "wrong-razor"))
+	wrongToolsRequest := inputs.request(filepath.Join(root, "wrong-salesforce-worker"))
 	wrongToolsRequest.ToolsRoot = newInventoryRepository(t, map[string]string{"go.mod": "module example.com/wrong\n\ngo 1.23.0\n", "cmd/glade-tools/main.go": "package main\nfunc main() {}\n"})
 	if _, err := BuildOracleBundle(wrongToolsRequest); err == nil {
 		t.Fatal("accepted a tools source root that does not match the sealed tools artifact")
@@ -220,7 +220,7 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 		t.Fatal(err)
 	}
 	stdout := `{"status":"passed","exitCode":0}`
-	receipt := CommandResult{Command: []string{"exec"}, CommandSpecSHA256: localProofReceiptSpecSHA256(command), ExitCode: 0, DurationMS: 1, StdoutSHA256: replayBytesSHA256([]byte(stdout)), StderrSHA256: replayBytesSHA256(nil), Passed: true}
+	receipt := CommandResult{Command: []string{"exec"}, ExecutableSHA256: candidate.SHA256, ExecutableAfterSHA256: candidate.SHA256, CommandSpecSHA256: localProofReceiptSpecSHA256(command, candidate.SHA256), ExitCode: 0, DurationMS: 1, StdoutSHA256: replayBytesSHA256([]byte(stdout)), StderrSHA256: replayBytesSHA256(nil), Passed: true}
 	proof := LocalProof{Status: "pass", AttemptSHA256: attemptHash(attempt), AttemptPath: attemptPath, Candidate: candidate, Tools: tools, ProfileSHA256: strings.Repeat("b", 64), UsageSHA256: strings.Repeat("c", 64), DecisionSHA256: strings.Repeat("d", 64), FixtureManifestSHA256: localProofFileSHA256(t, fixtureManifestPath), SelectedSurfaceIDs: []string{"apex:System.run()"}, RawFixtureResults: []LocalProofFixtureResult{{FixtureID: "system", FixtureSHA256: fixture.SHA256, Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, Receipt: receipt, Operation: "exec", StdoutSHA256: receipt.StdoutSHA256, Stdout: stdout, StderrSHA256: receipt.StderrSHA256}}, Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", FixtureID: "system", FixtureSHA256: fixture.SHA256, Disposition: localRuntimeRequired, CandidateSHA256: candidate.SHA256, ToolsSHA256: tools.SHA256, RuntimeObserved: true}}}
 	if err := WriteNewJSON(proofPath, proof); err != nil {
 		t.Fatal(err)

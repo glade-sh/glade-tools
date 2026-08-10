@@ -6,12 +6,10 @@ import argparse
 import concurrent.futures
 import hashlib
 import json
+import os
 import re
-import shlex
-import shutil
 import subprocess
 import time
-import uuid
 from pathlib import Path
 
 
@@ -33,7 +31,7 @@ def file_sha256(path: Path) -> str:
 
 
 def project_file_manifest(root: Path) -> list[dict]:
-    """Return the exact regular-file tree that will be copied to Razor."""
+    """Return the exact regular-file tree executed by the Salesforce worker."""
     records = []
     for path in sorted(root.rglob("*")):
         if path.is_symlink():
@@ -49,53 +47,52 @@ def project_file_manifest(root: Path) -> list[dict]:
     return records
 
 
-def verify_remote_project_manifest(remote: dict, project: str, expected: list[dict]) -> tuple[list[dict], str]:
-    paths = " ".join(shlex.quote(f"./{row['path']}") for row in expected)
-    command = " ".join([
-        "cd", shlex.quote(project), "&&",
-        "test -z \"$(find . -type l -print -quit)\" &&",
-        f"test $(find . -type f | wc -l | tr -d '[:space:]') -eq {len(expected)} &&",
-        "/usr/bin/shasum", "-a", "256", paths,
-    ])
-    completed = subprocess.run(
-        remote_ssh_args(remote, command), capture_output=True, text=True, timeout=60, check=False,
-    )
-    if completed.returncode != 0:
-        detail = (completed.stderr or completed.stdout or "").strip().replace("\n", " ")
-        raise RuntimeError(f"remote project manifest failed: exit {completed.returncode}" + (f": {detail[-500:]}" if detail else ""))
-    records = []
-    for line in completed.stdout.splitlines():
-        digest, separator, path = line.partition("  ")
-        if not separator or not re.fullmatch(r"[0-9a-f]{64}", digest) or not path.startswith("./"):
-            raise RuntimeError("remote project manifest returned invalid checksum output")
-        records.append({"path": path[2:], "sha256": digest})
-    if records != expected:
-        raise RuntimeError("remote project tree differs from the local pre-transport manifest")
-    return records, command
-
-
 def validate_local_summary_binding(manifest_path: Path, summary_path: Path) -> None:
     summary = load(summary_path)
     if summary.get("manifestSha256") != file_sha256(manifest_path):
         raise ValueError("local summary manifest binding does not match fixture manifest")
 
 
-def validate_remote_execution(host: str, remote_root: str, orgs: list[str]) -> None:
-    if not host:
-        raise ValueError("SSH host is required for Salesforce packet execution")
-    root = Path(remote_root)
-    if not root.is_absolute() or ".." in root.parts or "/executor/" not in f"{root.as_posix().rstrip('/')}/":
-        raise ValueError("remote root must be an absolute path below an executor directory")
-    if root.as_posix() in {"/", "/Volumes", "/Volumes/Photos", "/Users", "/Users/matt"}:
-        raise ValueError("remote root is too broad")
+def validate_worker_execution(sf_bin: str, orgs: list[str]) -> None:
+    if sf_bin != "/usr/local/bin/sf":
+        raise ValueError("Salesforce CLI path must be /usr/local/bin/sf")
     if not orgs or len(orgs) != len(set(orgs)):
         raise ValueError("org aliases must be non-empty and unique")
     if len(orgs) > MAX_REMOTE_ORGS:
         raise ValueError(f"org alias maximum is {MAX_REMOTE_ORGS}")
 
+def sf_environment() -> dict[str, str]:
+    environment = os.environ.copy()
+    environment["SF_USE_GENERIC_UNIX_KEYCHAIN"] = "true"
+    return environment
 
-def scp_destination(target: str, remote_path: str) -> str:
-    return f"{target}:{shlex.quote(remote_path.rstrip('/') + '/') }"
+
+class BoundSalesforceProcess:
+    def __init__(self, completed: subprocess.CompletedProcess, executable_sha256: str, executable_after_sha256: str):
+        self.completed = completed
+        self.executable_sha256 = executable_sha256
+        self.executable_after_sha256 = executable_after_sha256
+
+    def __getattr__(self, name):
+        return getattr(self.completed, name)
+
+
+def run_sf(sf_bin: str, args: list[str], cwd: Path, timeout: int, text: bool = True) -> BoundSalesforceProcess:
+    executable_sha256 = file_sha256(Path(sf_bin))
+    completed = subprocess.run([sf_bin, *args], cwd=cwd, env=sf_environment(), capture_output=True, text=text, timeout=timeout, check=False)
+    executable_after_sha256 = file_sha256(Path(sf_bin))
+    if executable_sha256 != executable_after_sha256:
+        raise RuntimeError("Salesforce CLI changed during execution")
+    return BoundSalesforceProcess(completed, executable_sha256, executable_after_sha256)
+
+
+def run_sf_stream(sf_bin: str, args: list[str], cwd: Path, timeout: int, stdout, stderr) -> BoundSalesforceProcess:
+    executable_sha256 = file_sha256(Path(sf_bin))
+    completed = subprocess.run([sf_bin, *args], cwd=cwd, env=sf_environment(), stdout=stdout, stderr=stderr, timeout=timeout, check=False)
+    executable_after_sha256 = file_sha256(Path(sf_bin))
+    if executable_sha256 != executable_after_sha256:
+        raise RuntimeError("Salesforce CLI changed during execution")
+    return BoundSalesforceProcess(completed, executable_sha256, executable_after_sha256)
 
 
 def remap(path: str) -> str:
@@ -408,63 +405,23 @@ def safe_fixture_stem(fixture_name: str) -> str:
     return path.stem
 
 
-def safe_remote_run_id(run_id: str) -> str:
-    if not run_id or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", run_id):
-        raise ValueError(f"unsafe remote run id: {run_id}")
-    return run_id
-
-
 def runtime_requested_for(kind: str, runtime: bool) -> bool:
     return kind == "exec" or (runtime and kind == "test")
 
 
-def remote_project_path(remote_root: str, fixture_name: str, run_id: str | None = None) -> str:
-    base = Path(remote_root) / "projects"
-    if run_id:
-        base /= safe_remote_run_id(run_id)
-    return str(base / safe_fixture_stem(fixture_name))
-
-
-def remote_deploy_command(remote_project: str, org: str, sf_bin: str, runtime: bool = False) -> str:
-    command = [
-        "cd", shlex.quote(remote_project), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(sf_bin), "project", "deploy", "start",
-        "--source-dir", "force-app",
-        "--target-org", shlex.quote(org),
-    ]
+def deploy_command(project: Path, org: str, runtime: bool = False) -> list[str]:
+    command = ["project", "deploy", "start", "--source-dir", str(project / "force-app"), "--target-org", org]
     command.extend(["--ignore-conflicts"] if runtime else ["--dry-run"])
-    command.extend(["--wait", "30", "--json"])
-    return " ".join(command)
+    return [*command, "--wait", "30", "--json"]
 
 
-def remote_test_command(remote_project: str, org: str, sf_bin: str, test_classes: list[str]) -> str:
+def test_command(org: str, test_classes: list[str]) -> list[str]:
     if not test_classes:
         raise ValueError("runtime Salesforce test requires at least one test class")
-    tests = ",".join(test_classes)
-    command = [
-        "cd", shlex.quote(remote_project), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(sf_bin), "apex", "run", "test",
-        "--tests", shlex.quote(tests),
-        "--target-org", shlex.quote(org),
-    ]
+    command = ["apex", "run", "test", "--tests", ",".join(test_classes), "--target-org", org]
     if len(test_classes) == 1:
         command.append("--synchronous")
-    command.extend(["--wait", "10", "--result-format", "json", "--json"])
-    return " ".join(command)
-
-
-def remote_cleanup_command(remote_path: str) -> str:
-    path = shlex.quote(remote_path)
-    return " ".join([
-        f"if test -e {path}; then",
-        f"find {path} -depth -type f -delete &&",
-        f"find {path} -depth -type l -delete &&",
-        f"find {path} -depth -type d -empty -delete;",
-        "fi;",
-        f"test ! -e {path}",
-    ])
+    return [*command, "--wait", "10", "--result-format", "json", "--json"]
 
 
 def metadata_names_from_project(project: Path) -> list[str]:
@@ -585,15 +542,15 @@ def metadata_names_from_inventory(inventory: dict[str, dict]) -> set[str]:
     return names
 
 
-def remote_org_cleanup(
-    remote: dict,
-    remote_project: str,
+def org_cleanup(
+    sf_bin: str,
+    project: Path,
     target_org: str,
     metadata_names: list[str],
     protected_metadata_names: set[str] | None = None,
 ) -> dict:
     metadata_types = sorted({metadata.partition(":")[0] for metadata in metadata_names})
-    before = remote_metadata_inventory(remote, target_org, metadata_types)
+    before = metadata_inventory(sf_bin, project, target_org, metadata_types)
     protected = protected_metadata_names or set()
     requested = [
         metadata
@@ -601,33 +558,32 @@ def remote_org_cleanup(
         if metadata not in protected
     ]
     if not requested:
+        executable_sha256 = file_sha256(Path(sf_bin))
         return {
             "requested": [],
             "cleanupExitCode": 0,
+            "sfExecutableSha256": executable_sha256,
+            "sfExecutableAfterSha256": executable_sha256,
             "verification": {"metadataTypes": metadata_types, "remaining": []},
             "residueAbsent": True,
         }
-    command = " ".join([
-        "cd", shlex.quote(remote_project), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(remote["sf_bin"]), "project", "delete", "source",
-        *sum((["--metadata", shlex.quote(metadata)] for metadata in requested), []),
-        "--target-org", shlex.quote(target_org),
-        "--no-prompt", "--wait", "30", "--json",
-    ])
-    deleted = subprocess.run(remote_ssh_args(remote, command), capture_output=True, text=True, timeout=120, check=False)
+    deleted = run_sf(sf_bin, ["project", "delete", "source", *sum((["--metadata", metadata] for metadata in requested), []), "--target-org", target_org, "--no-prompt", "--wait", "30", "--json"], project, 120)
     if deleted.returncode != 0:
         return {
             "requested": requested,
             "cleanupExitCode": deleted.returncode,
+            "sfExecutableSha256": deleted.executable_sha256,
+            "sfExecutableAfterSha256": deleted.executable_after_sha256,
             "residueAbsent": False,
             "error": deleted.stderr[-2000:],
         }
-    after = remote_metadata_inventory(remote, target_org, metadata_types)
+    after = metadata_inventory(sf_bin, project, target_org, metadata_types)
     remaining = _metadata_records_present(after, requested)
     return {
         "requested": requested,
         "cleanupExitCode": deleted.returncode,
+        "sfExecutableSha256": deleted.executable_sha256,
+        "sfExecutableAfterSha256": deleted.executable_after_sha256,
         "verification": {"metadataTypes": metadata_types, "remaining": remaining},
         "residueAbsent": not remaining,
     }
@@ -650,45 +606,15 @@ def expected_result_indexes(manifest_count: int, selected: list[tuple], partitio
     return set(range(manifest_count))
 
 
-def remote_exec_command(remote_project: str, org: str, sf_bin: str) -> str:
-    return " ".join([
-        "cd", shlex.quote(remote_project), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(sf_bin), "apex", "run", "--file", "anonymous.apex",
-        "--target-org", shlex.quote(org), "--api-version", "67.0", "--json",
-    ])
+def exec_command(project: Path, org: str) -> list[str]:
+    return ["apex", "run", "--file", str(project / "anonymous.apex"), "--target-org", org, "--api-version", "67.0", "--json"]
 
 
-def remote_target(remote: dict) -> str:
-    return f"{remote['user']}@{remote['host']}"
-
-
-def remote_ssh_args(remote: dict, command: str) -> list[str]:
-    args = ["ssh", "-o", "BatchMode=yes"]
-    identity = remote.get("identity")
-    if identity:
-        args.extend(["-o", "IdentitiesOnly=yes", "-i", identity])
-    args.extend([remote_target(remote), command])
-    return args
-
-
-def remote_org_display_command(remote: dict, org: str) -> str:
-    return " ".join([
-        "cd", shlex.quote(remote["root"]), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(remote["sf_bin"]), "org", "display",
-        "--target-org", shlex.quote(org), "--json",
-    ])
-
-
-def remote_org_identity(remote: dict, org: str) -> dict:
-    command = remote_ssh_args(remote, remote_org_display_command(remote, org))
+def org_identity(sf_bin: str, root: Path, org: str) -> dict:
+    command = ["org", "display", "--target-org", org, "--json"]
     completed = None
     for attempt in range(3):
-        completed = subprocess.run(
-            command,
-            capture_output=True, text=True, timeout=30, check=False,
-        )
+        completed = run_sf(sf_bin, command, root, 30)
         if completed.returncode == 0:
             break
         if attempt < 2:
@@ -720,16 +646,8 @@ def remote_org_identity(remote: dict, org: str) -> dict:
     }
 
 
-def remote_tooling_query(remote: dict, org: str, query: str) -> dict:
-    command = remote_ssh_args(remote, " ".join([
-        "cd", shlex.quote(remote["root"]), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(remote["sf_bin"]), "data", "query",
-        "--query", shlex.quote(query),
-        "--target-org", shlex.quote(org),
-        "--use-tooling-api", "--json",
-    ]))
-    completed = subprocess.run(command, capture_output=True, text=True, timeout=60, check=False)
+def tooling_query(sf_bin: str, root: Path, org: str, query: str) -> dict:
+    completed = run_sf(sf_bin, ["data", "query", "--query", query, "--target-org", org, "--use-tooling-api", "--json"], root, 60)
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout or "").strip().replace("\n", " ")
         raise RuntimeError(f"Tooling query failed for {org}: {detail[-500:]}")
@@ -755,30 +673,16 @@ ORG_INVENTORY_QUERIES = {
 }
 
 
-def remote_static_resource_body_sha256(remote: dict, org: str, record_id: str) -> str:
-    command = remote_ssh_args(remote, " ".join([
-        "cd", shlex.quote(remote["root"]), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(remote["sf_bin"]), "api", "request", "rest",
-        shlex.quote(f"/services/data/v67.0/tooling/sobjects/StaticResource/{record_id}/Body"),
-        "--target-org", shlex.quote(org),
-    ]))
-    completed = subprocess.run(command, capture_output=True, timeout=60, check=False)
+def static_resource_body_sha256(sf_bin: str, root: Path, org: str, record_id: str) -> str:
+    completed = run_sf(sf_bin, ["api", "request", "rest", f"/services/data/v67.0/tooling/sobjects/StaticResource/{record_id}/Body", "--target-org", org], root, 60, text=False)
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout or b"").decode(errors="replace").strip().replace("\n", " ")
         raise RuntimeError(f"StaticResource body query failed for {org}: {detail[-500:]}")
     return hashlib.sha256(completed.stdout).hexdigest()
 
 
-def remote_sobject_exists(remote: dict, org: str, sobject: str) -> bool:
-    command = remote_ssh_args(remote, " ".join([
-        "cd", shlex.quote(remote["root"]), "&&",
-        "env", "SF_USE_GENERIC_UNIX_KEYCHAIN=true",
-        shlex.quote(remote["sf_bin"]), "sobject", "describe",
-        "--sobject", shlex.quote(sobject),
-        "--target-org", shlex.quote(org), "--json",
-    ]))
-    completed = subprocess.run(command, capture_output=True, text=True, timeout=60, check=False)
+def sobject_exists(sf_bin: str, root: Path, org: str, sobject: str) -> bool:
+    completed = run_sf(sf_bin, ["sobject", "describe", "--sobject", sobject, "--target-org", org, "--json"], root, 60)
     if completed.returncode != 0:
         return False
     try:
@@ -788,7 +692,7 @@ def remote_sobject_exists(remote: dict, org: str, sobject: str) -> bool:
     return payload.get("status") == 0
 
 
-def remote_live_field_keys(remote: dict, org: str, records: list[dict]) -> set[tuple[str, str]]:
+def live_field_keys(sf_bin: str, root: Path, org: str, records: list[dict]) -> set[tuple[str, str]]:
     """Return active FieldDefinition keys for deleted-field tombstone checks."""
     tombstone_owners = {
         (str(record.get("TableEnumOrId")), str(record.get("DeveloperName")))
@@ -804,22 +708,22 @@ def remote_live_field_keys(remote: dict, org: str, records: list[dict]) -> set[t
             "FROM FieldDefinition "
             f"WHERE EntityDefinition.QualifiedApiName = '{owner}'"
         )
-        for record in remote_tooling_query(remote, org, query).get("records", []):
+        for record in tooling_query(sf_bin, root, org, query).get("records", []):
             entity = record.get("EntityDefinition") or {}
             qualified_name = entity.get("QualifiedApiName") or owner
             live.add((str(qualified_name), str(record.get("DeveloperName"))))
     return live
 
 
-def remote_metadata_inventory(remote: dict, org: str, metadata_types) -> dict:
+def metadata_inventory(sf_bin: str, root: Path, org: str, metadata_types) -> dict:
     inventory = {
-        name: remote_tooling_query(remote, org, query)
+        name: tooling_query(sf_bin, root, org, query)
         for name, query in ORG_INVENTORY_QUERIES.items()
         if name in metadata_types
     }
     if "CustomField" in inventory:
         records = inventory["CustomField"].get("records", [])
-        live_field_keys = remote_live_field_keys(remote, org, records)
+        live_keys = live_field_keys(sf_bin, root, org, records)
         inventory["CustomField"]["records"] = [
             record
             for record in records
@@ -827,7 +731,7 @@ def remote_metadata_inventory(remote: dict, org: str, metadata_types) -> dict:
             or (
                 str(record.get("TableEnumOrId")),
                 str(record.get("DeveloperName")),
-            ) in live_field_keys
+            ) in live_keys
         ]
         inventory["CustomField"]["totalSize"] = len(inventory["CustomField"]["records"])
     if "CustomObject" not in inventory:
@@ -841,7 +745,7 @@ def remote_metadata_inventory(remote: dict, org: str, metadata_types) -> dict:
     for record in inventory["CustomObject"].get("records", []):
         developer_name = record.get("DeveloperName")
         if developer_name and any(
-            remote_sobject_exists(remote, org, f"{developer_name}{suffix}")
+            sobject_exists(sf_bin, root, org, f"{developer_name}{suffix}")
             for suffix in ("__c", "__mdt", "__x")
         ):
             active_custom_objects.append(record)
@@ -865,12 +769,12 @@ def remote_metadata_inventory(remote: dict, org: str, metadata_types) -> dict:
     return inventory
 
 
-def remote_org_inventory(remote: dict, org: str) -> dict:
-    inventory = remote_metadata_inventory(remote, org, ORG_INVENTORY_QUERIES)
+def org_inventory(sf_bin: str, root: Path, org: str) -> dict:
+    inventory = metadata_inventory(sf_bin, root, org, ORG_INVENTORY_QUERIES)
     for record in inventory["StaticResource"].get("records", []):
         record_id = record.get("Id")
         if record_id and record.get("Body"):
-            record["BodySha256"] = remote_static_resource_body_sha256(remote, org, record_id)
+            record["BodySha256"] = static_resource_body_sha256(sf_bin, root, org, record_id)
     return inventory
 
 
@@ -898,11 +802,11 @@ def canonical_inventory(inventory: dict) -> dict:
     }
 
 
-def acquire_org_postflight(remote: dict, preflight: dict, orgs: list[str]) -> dict:
+def acquire_org_postflight(sf_bin: str, root: Path, preflight: dict, orgs: list[str]) -> dict:
     baseline = {row.get("alias"): row for row in preflight.get("orgs", [])}
     rows = []
     for org in orgs:
-        current = remote_org_inventory(remote, org)
+        current = org_inventory(sf_bin, root, org)
         expected = (baseline.get(org) or {}).get("inventory", {})
         matches = canonical_inventory(current) == canonical_inventory(expected)
         rows.append({
@@ -920,11 +824,11 @@ def acquire_org_postflight(remote: dict, preflight: dict, orgs: list[str]) -> di
     }
 
 
-def acquire_org_preflight(remote: dict, orgs: list[str], identities: dict[str, dict]) -> dict:
+def acquire_org_preflight(sf_bin: str, root: Path, orgs: list[str], identities: dict[str, dict]) -> dict:
     queries = dict(ORG_INVENTORY_QUERIES)
     rows = []
     for org in orgs:
-        inventory = remote_org_inventory(remote, org)
+        inventory = org_inventory(sf_bin, root, org)
         identity = identities[org]
         if any(inventory[name].get("totalSize") != 0 for name in ("ApexClass", "ApexPage")):
             raise RuntimeError(f"org preflight is not clean for {org}")
@@ -937,7 +841,7 @@ def acquire_org_preflight(remote: dict, orgs: list[str], identities: dict[str, d
     return {
         "schemaVersion": 3,
         "source": "acquired-by-salesforce-first-filter",
-        "preflightId": f"preflight-{uuid.uuid4().hex[:12]}",
+		"preflightId": f"preflight-{hashlib.sha256(json.dumps(identities, sort_keys=True).encode()).hexdigest()[:12]}",
         "acquiredAtUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "queries": queries,
         "orgs": rows,
@@ -961,21 +865,11 @@ def validate_org_preflight(path: Path, identities: dict[str, dict], orgs: list[s
             raise ValueError(f"org preflight is not clean for {org}")
     return file_sha256(path)
 
-
-def remote_scp_args(remote: dict, source: str, destination: str) -> list[str]:
-    args = ["scp", "-q", "-o", "BatchMode=yes"]
-    identity = remote.get("identity")
-    if identity:
-        args.extend(["-o", "IdentitiesOnly=yes", "-i", identity])
-    args.extend(["-r", source, destination])
-    return args
-
-
 def run_one(
     item,
     out: Path,
     org: str,
-    remote: dict | None = None,
+    sf_bin: str,
     source_root: Path | None = None,
     provenance: dict | None = None,
     runtime: bool = False,
@@ -997,141 +891,35 @@ def run_one(
     setup = project / f"salesforce-{org}.setup"
     runtime_output = project / f"salesforce-{org}-tests.json"
     runtime_stderr = project / f"salesforce-{org}-tests.stderr"
-    remote_project = None
-    remote_project_manifest = None
-    remote_cleanup = None
-    org_cleanup = None
+    cleanup_receipt = None
     runtime_proc = None
     runtime_payload = {}
-    remote_invocation = None
+    invocation = {
+        "sfBinary": sf_bin,
+        "environment": {"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"},
+        "targetOrg": target_org,
+        "commands": [],
+    }
     try:
-        if remote:
-            remote_invocation = {
-                "sshHost": remote["host"],
-                "sshUser": remote["user"],
-                "sshIdentity": remote.get("identity"),
-                "sshBatchMode": True,
-                "remoteRoot": remote["root"],
-                "sfBinary": remote["sf_bin"],
-                "environment": {"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"},
-                "targetOrg": target_org,
-                "commands": [],
-            }
-            remote_project = remote_project_path(remote["root"], name, remote["run_id"])
-            target = remote_target(remote)
-            mkdir = subprocess.run(
-                remote_ssh_args(remote, f"test ! -e {shlex.quote(remote_project)} && mkdir -p -- {shlex.quote(remote_project)}"),
-                capture_output=True, text=True, timeout=30, check=False,
-            )
-            if mkdir.returncode:
-                setup.write_text((mkdir.stdout or "") + (mkdir.stderr or ""))
-                proc = None
-                payload = {"status": "remote-setup-failed", "setupExitCode": mkdir.returncode}
-            else:
-                copy = subprocess.run(
-                    remote_scp_args(remote, f"{project}/.", scp_destination(target, remote_project)),
-                    capture_output=True, text=True, timeout=120, check=False,
-                )
-                setup.write_text((mkdir.stdout or "") + (mkdir.stderr or "") + (copy.stdout or "") + (copy.stderr or ""))
-                if copy.returncode:
-                    proc = None
-                    payload = {"status": "remote-copy-failed", "setupExitCode": copy.returncode}
-                else:
-                    try:
-                        remote_project_manifest, _ = verify_remote_project_manifest(remote, remote_project, project_manifest)
-                    except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
-                        proc = None
-                        payload = {"status": "remote-copy-verification-failed", "error": f"{type(exc).__name__}: {exc}"}
-                    else:
-                        command = (
-                            remote_exec_command(remote_project, target_org, remote["sf_bin"])
-                            if kind == "exec"
-                            else remote_deploy_command(remote_project, target_org, remote["sf_bin"], runtime=runtime)
-                        )
-                        remote_invocation["commands"].append({
-                            "purpose": "deploy-or-exec",
-                            "sshArgs": remote_ssh_args(remote, command),
-                            "command": command,
-                        })
-                        proc = subprocess.run(
-                            remote_ssh_args(remote, command),
-                            stdout=deploy.open("w"), stderr=stderr.open("w"),
-                            timeout=180, check=False,
-                        )
-                        payload = load(deploy) if deploy.exists() and deploy.stat().st_size else {}
-                        if runtime and kind == "test" and proc.returncode == 0 and test_classes:
-                            runtime_command = remote_test_command(remote_project, target_org, remote["sf_bin"], test_classes)
-                            remote_invocation["commands"].append({
-                                "purpose": "runtime-test",
-                                "sshArgs": remote_ssh_args(remote, runtime_command),
-                                "command": runtime_command,
-                            })
-                            runtime_proc = subprocess.run(
-                                remote_ssh_args(remote, runtime_command),
-                                stdout=runtime_output.open("w"), stderr=runtime_stderr.open("w"),
-                                timeout=180, check=False,
-                            )
-                            runtime_payload = load(runtime_output) if runtime_output.exists() and runtime_output.stat().st_size else {}
-        else:
-            command = (
-                ["sf", "apex", "run", "--file", "anonymous.apex", "--target-org", org, "--api-version", "67.0", "--json"]
-                if kind == "exec"
-                else [
-                    "sf", "project", "deploy", "start", "--source-dir", "force-app", "--target-org", org,
-                    *( ["--ignore-conflicts"] if runtime else ["--dry-run"] ), "--wait", "30", "--json",
-                ]
-            )
-            proc = subprocess.run(command, cwd=project, stdout=deploy.open("w"), stderr=stderr.open("w"), timeout=120, check=False)
-            payload = load(deploy) if deploy.exists() and deploy.stat().st_size else {}
-            if runtime and kind == "test" and proc.returncode == 0 and test_classes:
-                runtime_proc = subprocess.run(
-                    [
-                        "sf", "apex", "run", "test", "--tests", ",".join(test_classes),
-                        "--target-org", org,
-                        *( ["--synchronous"] if len(test_classes) == 1 else [] ),
-                        "--wait", "10", "--result-format", "json", "--json",
-                    ],
-                    cwd=project, stdout=runtime_output.open("w"), stderr=runtime_stderr.open("w"),
-                    timeout=180, check=False,
-                )
-                runtime_payload = load(runtime_output) if runtime_output.exists() and runtime_output.stat().st_size else {}
+        setup.write_text("direct Salesforce worker execution\n")
+        command = exec_command(project, target_org) if kind == "exec" else deploy_command(project, target_org, runtime=runtime)
+        proc = run_sf_stream(sf_bin, command, project, 180, deploy.open("w"), stderr.open("w"))
+        invocation["commands"].append({"purpose": "deploy-or-exec", "args": [sf_bin, *command], "executableSha256": proc.executable_sha256, "executableAfterSha256": proc.executable_after_sha256})
+        payload = load(deploy) if deploy.exists() and deploy.stat().st_size else {}
+        if runtime and kind == "test" and proc.returncode == 0 and test_classes:
+            runtime_command = test_command(target_org, test_classes)
+            runtime_proc = run_sf_stream(sf_bin, runtime_command, project, 180, runtime_output.open("w"), runtime_stderr.open("w"))
+            invocation["commands"].append({"purpose": "runtime-test", "args": [sf_bin, *runtime_command], "executableSha256": runtime_proc.executable_sha256, "executableAfterSha256": runtime_proc.executable_after_sha256})
+            runtime_payload = load(runtime_output) if runtime_output.exists() and runtime_output.stat().st_size else {}
     except subprocess.TimeoutExpired:
         proc = None
         payload = {"status": "timeout"}
     finally:
-        if remote and remote_project:
-            metadata_names = metadata_names_from_project(project)
-            try:
-                org_cleanup = remote_org_cleanup(
-                    remote,
-                    remote_project,
-                    target_org,
-                    metadata_names,
-                    protected_metadata_names,
-                )
-            except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
-                org_cleanup = {
-                    "requested": metadata_names,
-                    "cleanupExitCode": 1,
-                    "residueAbsent": False,
-                    "error": f"{type(exc).__name__}: {exc}",
-                }
-            cleanup = subprocess.run(
-                remote_ssh_args(remote, remote_cleanup_command(remote_project)),
-                stdout=setup.open("a"), stderr=subprocess.STDOUT,
-                timeout=30, check=False,
-            )
-            absent = subprocess.run(
-                remote_ssh_args(remote, f"test ! -e {shlex.quote(remote_project)}"),
-                stdout=setup.open("a"), stderr=subprocess.STDOUT,
-                timeout=30, check=False,
-            )
-            remote_cleanup = {
-                "path": remote_project,
-                "cleanupExitCode": cleanup.returncode,
-                "absenceCheckExitCode": absent.returncode,
-                "residueAbsent": cleanup.returncode == 0 and absent.returncode == 0,
-            }
+        metadata_names = metadata_names_from_project(project)
+        try:
+            cleanup_receipt = org_cleanup(sf_bin, project, target_org, metadata_names, protected_metadata_names)
+        except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+            cleanup_receipt = {"requested": metadata_names, "cleanupExitCode": 1, "residueAbsent": False, "error": f"{type(exc).__name__}: {exc}"}
     result = payload.get("result", payload)
     details = result.get("details", {}) if isinstance(result, dict) else {}
     failures = details.get("componentFailures", []) if isinstance(details, dict) else []
@@ -1177,14 +965,10 @@ def run_one(
         "org": org,
         "orgIdentity": org_identity,
         "project": str(project),
-        "execution": "remote" if remote else "local",
-        "remoteHost": remote["host"] if remote else None,
-        "remoteProject": remote_project,
+        "execution": "salesforce-worker",
         "projectManifest": project_manifest,
-        "remoteProjectManifest": remote_project_manifest,
-        "remoteInvocation": remote_invocation,
-        "remoteCleanup": remote_cleanup,
-        "orgCleanup": org_cleanup,
+        "invocation": invocation,
+        "orgCleanup": cleanup_receipt,
         "exitCode": None if proc is None else proc.returncode,
         "status": result_status,
         "deployable": bool(successes) and not failures,
@@ -1202,12 +986,10 @@ def run_one(
     }
 
 
-def select_candidates(candidates, offset: int, limit: int):
-    if offset < 0:
-        raise ValueError("--offset must be non-negative")
+def select_candidates(candidates, limit: int):
     if limit < 0:
         raise ValueError("--limit must be non-negative")
-    return candidates[offset : offset + limit]
+    return candidates[:limit]
 
 
 def filter_manifest_index(candidates, modulus: int | None, remainder: int = 0):
@@ -1237,17 +1019,11 @@ def main() -> int:
     ap.add_argument("--orgs", required=True, help="comma-separated scratch-org aliases")
     ap.add_argument("--policy", type=Path, help="support policy; defaults to apex-local-support-policy.json beside fixtures")
     ap.add_argument("--limit", type=int, default=16)
-    ap.add_argument("--offset", type=int, default=0)
     ap.add_argument("--manifest-index-modulus", type=int, help="select one disjoint manifest-index partition")
     ap.add_argument("--manifest-index-remainder", type=int, default=0)
     ap.add_argument("--manifest", type=Path, help="explicit packet-bound fixture manifest; disables fixture discovery")
     ap.add_argument("--root", type=Path, default=Path.cwd(), help="root used to resolve relative manifest fixture paths")
-    ap.add_argument("--ssh-host", help="run Salesforce deploys on this SSH host")
-    ap.add_argument("--ssh-user", default="matt")
-    ap.add_argument("--ssh-identity", default=None, help="optional SSH private key path; otherwise use the SSH agent")
-    ap.add_argument("--remote-root", help="explicit remote scratch root; required with --ssh-host")
-    ap.add_argument("--remote-run-id", help="unique remote packet directory name")
-    ap.add_argument("--remote-sf-bin", default="/usr/local/bin/sf")
+    ap.add_argument("--sf-bin", required=True)
     ap.add_argument("--candidate-commit")
     ap.add_argument("--candidate-sha256")
     ap.add_argument("--tools-commit")
@@ -1255,30 +1031,12 @@ def main() -> int:
     ap.add_argument("--queue-sha256")
     ap.add_argument("--selector-sha256")
     ap.add_argument("--selector-receipt-sha256")
-    ap.add_argument("--source-build-provenance", type=Path, help="sealed source/build receipt bound to the candidate")
     ap.add_argument("--runtime", action="store_true", help="deploy fixture classes and run their Salesforce tests after deployment")
     ap.add_argument("--local-summary", type=Path, help="only execute fixtures that passed the sealed local replay")
-    ap.add_argument("--org-preflight", type=Path, help="optional preflight path retained for compatibility; runtime mode acquires a fresh receipt")
+    ap.add_argument("--org-preflight", type=Path, help="runtime mode acquires a fresh receipt")
     args = ap.parse_args()
     if args.out.exists() and any(args.out.iterdir()):
         ap.error(f"Salesforce output must be a new empty directory: {args.out}")
-    if bool(args.ssh_host) != bool(args.remote_root):
-        ap.error("--ssh-host and --remote-root must be supplied together")
-    source_build_provenance_sha = None
-    if args.source_build_provenance:
-        source_build_provenance = args.source_build_provenance.resolve()
-        if not source_build_provenance.is_file():
-            ap.error(f"source-build provenance is unavailable: {source_build_provenance}")
-        provenance_receipt = load(source_build_provenance)
-        receipt_binding = provenance_receipt.get("binding") or {}
-        if (
-            provenance_receipt.get("schemaVersion") != 1
-            or provenance_receipt.get("status") != "sealed"
-            or receipt_binding.get("candidateCommit") != args.candidate_commit
-            or receipt_binding.get("toolsCommit") != args.tools_commit
-        ):
-            ap.error("source-build provenance does not match candidate/tools binding")
-        source_build_provenance_sha = file_sha256(source_build_provenance)
     gaps = {row["surfaceId"] for row in load(args.profile)["nonDeferredGaps"]}
     policy_path = args.policy or (args.fixtures / "apex-local-support-policy.json")
     policy = load(policy_path) if policy_path.exists() else {}
@@ -1318,7 +1076,7 @@ def main() -> int:
         partitioned = filter_manifest_index(
             candidates, args.manifest_index_modulus, args.manifest_index_remainder
         )
-        selected = select_candidates(partitioned, args.offset, args.limit)
+        selected = select_candidates(partitioned, args.limit)
     except ValueError as exc:
         ap.error(str(exc))
     args.out.mkdir(parents=True, exist_ok=True)
@@ -1342,27 +1100,11 @@ def main() -> int:
     selection_sha = file_sha256(args.out / "selection.json")
     orgs = [x.strip() for x in args.orgs.split(",") if x.strip()]
     try:
-        validate_remote_execution(args.ssh_host or "", args.remote_root or "", orgs)
+        validate_worker_execution(args.sf_bin, orgs)
     except ValueError as exc:
         ap.error(str(exc))
     if args.limit < 0:
         ap.error("--limit must be non-negative")
-    remote = None
-    if args.ssh_host:
-        if args.ssh_identity and not Path(args.ssh_identity).is_file():
-            ap.error(f"--ssh-identity is not a file: {args.ssh_identity}")
-        try:
-            remote_run_id = safe_remote_run_id(args.remote_run_id or f"{args.out.resolve().name}-{uuid.uuid4().hex[:12]}")
-        except ValueError as exc:
-            ap.error(str(exc))
-        remote = {
-            "host": args.ssh_host,
-            "user": args.ssh_user,
-            "root": args.remote_root,
-            "sf_bin": args.remote_sf_bin,
-            "identity": args.ssh_identity,
-            "run_id": remote_run_id,
-        }
     results = []
     acquired_preflight = None
     provenance = {
@@ -1371,18 +1113,16 @@ def main() -> int:
         "toolsCommit": args.tools_commit,
         "toolsAmd64Sha256": args.tools_amd64_sha256,
         "workflowScriptSha256": file_sha256(Path(__file__).resolve()),
-        "sourceBuildProvenanceSha256": source_build_provenance_sha,
     }
     org_identities = {}
     org_preflight_sha = None
-    if remote:
-        for org in orgs:
-            org_identities[org] = remote_org_identity(remote, org)
-        if args.runtime:
-            acquired_preflight = acquire_org_preflight(remote, orgs, org_identities)
-            preflight_path = args.out / "org-preflight.json"
-            preflight_path.write_text(json.dumps(acquired_preflight, indent=2, sort_keys=True) + "\n")
-            org_preflight_sha = file_sha256(preflight_path)
+    for org in orgs:
+        org_identities[org] = org_identity(args.sf_bin, args.root.resolve(), org)
+    if args.runtime:
+        acquired_preflight = acquire_org_preflight(args.sf_bin, args.root.resolve(), orgs, org_identities)
+        preflight_path = args.out / "org-preflight.json"
+        preflight_path.write_text(json.dumps(acquired_preflight, indent=2, sort_keys=True) + "\n")
+        org_preflight_sha = file_sha256(preflight_path)
 
     org_baseline_inventories = {
         row.get("alias"): row.get("inventory", {})
@@ -1395,7 +1135,7 @@ def main() -> int:
                 item,
                 args.out,
                 org,
-                remote,
+                args.sf_bin,
                 args.root.resolve(),
                 provenance,
                 args.runtime,
@@ -1407,41 +1147,20 @@ def main() -> int:
 
     assigned = {org: selected[index::len(orgs)] for index, org in enumerate(orgs)}
     org_postflight = None
-    remote_cleanup = None
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=len(orgs)) as pool:
             futures = [pool.submit(run_org_queue, org, assigned[org]) for org in orgs]
             for future in futures:
                 results.extend(future.result())
     finally:
-        if remote and args.runtime and acquired_preflight is not None:
+        if args.runtime and acquired_preflight is not None:
             try:
-                org_postflight = acquire_org_postflight(remote, acquired_preflight, orgs)
+                org_postflight = acquire_org_postflight(args.sf_bin, args.root.resolve(), acquired_preflight, orgs)
             except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
                 org_postflight = {
                     "schemaVersion": 1,
                     "status": "error",
                     "matchesPreflight": False,
-                    "error": f"{type(exc).__name__}: {exc}",
-                }
-        if remote:
-            remote_run_path = str(Path(remote["root"]) / "projects" / remote["run_id"])
-            try:
-                cleanup = subprocess.run(
-                    remote_ssh_args(remote, remote_cleanup_command(remote_run_path)),
-                    timeout=30,
-                    check=False,
-                )
-                remote_cleanup = {
-                    "path": remote_run_path,
-                    "exitCode": cleanup.returncode,
-                    "residueAbsent": cleanup.returncode == 0,
-                }
-            except (OSError, subprocess.TimeoutExpired) as exc:
-                remote_cleanup = {
-                    "path": remote_run_path,
-                    "exitCode": 1,
-                    "residueAbsent": False,
                     "error": f"{type(exc).__name__}: {exc}",
                 }
     selected_indexes = {result.get("manifestIndex") for result in results}
@@ -1524,7 +1243,6 @@ def main() -> int:
         "toolsCommit": args.tools_commit,
         "toolsAmd64Sha256": args.tools_amd64_sha256,
         "workflowScriptSha256": provenance["workflowScriptSha256"],
-        "sourceBuildProvenanceSha256": provenance["sourceBuildProvenanceSha256"],
         "orgPreflightSha256": org_preflight_sha,
         "localSummarySha256": file_sha256(args.local_summary) if args.local_summary else None,
     }
@@ -1545,30 +1263,15 @@ def main() -> int:
         "binding": binding,
         "selectedFixtures": len(selected),
         "excludedFixtures": len(excluded_entries),
-        "offset": args.offset,
         "selectedRows": sum(r["coverage"] for r in results),
         "excludedRows": sum(entry.get("rowCount", 0) for _index, entry in excluded_entries),
-        "remoteRunId": remote["run_id"] if remote else None,
         "runtimeRequested": args.runtime,
         "orgIdentities": org_identities,
-        "remoteExecution": {
-            "host": remote.get("host") if remote else None,
-            "user": remote.get("user") if remote else None,
-            "identity": remote.get("identity") if remote else None,
-            "batchMode": True if remote else None,
-            "remoteRoot": remote.get("root") if remote else None,
-            "sfBinary": remote.get("sf_bin") if remote else None,
-            "environment": {"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"} if remote else {},
-            "orgDisplayCommands": {
-                org: remote_ssh_args(remote, remote_org_display_command(remote, org))
-                for org in orgs
-            } if remote else {},
-        },
+        "workerExecution": {"sfBinary": args.sf_bin, "environment": {"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}},
         "orgPreflightSha256": org_preflight_sha,
         "localSummarySha256": binding["localSummarySha256"],
         "selectionSha256": selection_sha,
         "selectedManifestIndexes": sorted(selected_indexes),
-        "remoteCleanup": remote_cleanup,
         "orgPostflight": org_postflight,
         "skippedDeferredFixtures": skipped_deferred,
         "results": results,
@@ -1582,10 +1285,8 @@ def main() -> int:
         or any(result_failed(r) for r in results)
         or any(r.get("status") == "skipped-local-failure" for r in results)
         or any(args.runtime and r.get("kind") == "test" and r.get("runtimePassed") is not True for r in results)
-        or any(r.get("remoteCleanup") and not r["remoteCleanup"].get("residueAbsent", False) for r in results)
         or any(r.get("orgCleanup") and not r["orgCleanup"].get("residueAbsent", False) for r in results)
-        or bool(remote_cleanup and remote_cleanup["exitCode"] != 0)
-        or bool(args.runtime and remote and (not org_postflight or org_postflight.get("matchesPreflight") is not True))
+        or bool(args.runtime and (not org_postflight or org_postflight.get("matchesPreflight") is not True))
     )
     deployable_fixtures, deployable_rows = deployable_counts(results)
     print(json.dumps({

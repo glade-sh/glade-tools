@@ -9,6 +9,17 @@ import (
 	"testing"
 )
 
+func TestApprovedSalesforceFilterHashMatchesCheckedInScript(t *testing.T) {
+	path := filepath.Join("..", "..", "scripts", "corpus-assurance", "salesforce-first-filter.py")
+	hash, err := sha256File(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hash != approvedSalesforceFilterSHA256 {
+		t.Fatalf("approved Salesforce filter hash = %q, checked-in script hash = %q", approvedSalesforceFilterSHA256, hash)
+	}
+}
+
 func TestBuildOracleBundleRejectsEmptyAndFabricatedReleaseValidation(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	root := filepath.Dir(inputs.releasePath)
@@ -23,7 +34,7 @@ func TestBuildOracleBundleRejectsEmptyAndFabricatedReleaseValidation(t *testing.
 			if err := os.WriteFile(inputs.releasePath, item.data, 0o600); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := BuildOracleBundle(inputs.request(filepath.Join(root, "razor-"+item.name))); err == nil {
+			if _, err := BuildOracleBundle(inputs.request(filepath.Join(root, "salesforce-worker-"+item.name))); err == nil {
 				t.Fatalf("BuildOracleBundle accepted %s release validation", item.name)
 			}
 		})
@@ -109,6 +120,7 @@ type oracleBundleTestInputs struct {
 	plan                OraclePlan
 	gladeRoot           string
 	attemptPath         string
+	devHubAuthorityPath string
 	profilePath         string
 	planPath            string
 	authorityPath       string
@@ -124,6 +136,7 @@ type oracleBundleTestInputs struct {
 func (inputs oracleBundleTestInputs) request(outputPath string) OracleBundleRequest {
 	return OracleBundleRequest{
 		AttemptPath:           inputs.attemptPath,
+		DevHubAuthorityPath:   inputs.devHubAuthorityPath,
 		ProfilePath:           inputs.profilePath,
 		PlanPath:              inputs.planPath,
 		AuthorityPath:         inputs.authorityPath,
@@ -145,6 +158,10 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 		t.Fatal(err)
 	}
 	root := filepath.Dir(request.OutputPath)
+	devHubAuthorityPath := filepath.Join(root, "DEV_HUB_AUTHORITY.json")
+	if err := WriteNewJSON(devHubAuthorityPath, SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D000000000001", Username: "sealed-dev-hub@example.invalid"}); err != nil {
+		t.Fatal(err)
+	}
 	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "scripts/smoke.sh": "#!/bin/sh\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade-tools\n\ngo 1.23.0\n", "cmd/glade-tools/main.go": "package main\nfunc main() {}\n", "scripts/release-check.sh": "#!/bin/sh\n"})
 	candidate, tools := proof.Candidate, proof.Tools
@@ -159,6 +176,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 		proof:               proof,
 		gladeRoot:           gladeRoot,
 		attemptPath:         request.AttemptPath,
+		devHubAuthorityPath: devHubAuthorityPath,
 		profilePath:         filepath.Join(root, "BUNDLE_PROFILE.json"),
 		planPath:            filepath.Join(root, "ORACLE_PLAN.json"),
 		authorityPath:       filepath.Join(root, "EXCLUSION_AUTHORITY.json"),
@@ -200,7 +218,7 @@ func TestBuildOracleBundleRequiresExecutableAMD64FilterContract(t *testing.T) {
 	if err := os.WriteFile(inputs.filterPath, []byte("#!/usr/bin/env python3\nprint('no sealed tools binding')\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := BuildOracleBundle(inputs.request(filepath.Join(t.TempDir(), "razor"))); err == nil {
+	if _, err := BuildOracleBundle(inputs.request(filepath.Join(t.TempDir(), "salesforce-worker"))); err == nil {
 		t.Fatal("accepted a filter without the amd64 tools contract")
 	}
 }
@@ -208,7 +226,7 @@ func TestBuildOracleBundleRequiresExecutableAMD64FilterContract(t *testing.T) {
 func TestValidateOracleBundleRejectsCallerForgedFilterAuthority(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
-	outputRoot := filepath.Join(t.TempDir(), "razor")
+	outputRoot := filepath.Join(t.TempDir(), "salesforce-worker")
 	if _, err := BuildOracleBundle(inputs.request(outputRoot)); err != nil {
 		t.Fatal(err)
 	}
