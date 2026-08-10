@@ -1,4 +1,7 @@
 {
+  "project": {
+    "sourceApiVersion": "67.0"
+  },
   "command": {
     "args": [
       "System.assertEquals(null, System.currentPageReference());\nSystem.assert(System.equals('trail', 'trail'));\nSystem.assert(!System.equals('trail', 'nook'));\nSystem.assert(System.hashCode('trail') != System.hashCode('nook'));\nSystem.assertEquals('READ_WRITE', String.valueOf(System.getApplicationReadWriteMode()));\nSystem.assertEquals('R', System.getQuiddityShortCode(Quiddity.SYNCHRONOUS));\nSystem.assertEquals(false, System.isFunctionCallback());\nSystem.assertEquals(false, System.isRunningElasticCompute());\nSystem.pauseJobById('707000000000001');\nSystem.pauseJobByName('Nightly');\nSystem.resumeJobById('707000000000001');\nSystem.resumeJobByName('Nightly');\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today()));\nSystem.assertEquals(0, System.purgeOldAsyncJobs(Date.today(), 25));\nSystem.assertEquals('67.0.0', System.requestVersion().toString());\nSystem.setPassword(UserInfo.getUserId(), 'secret');\n"
