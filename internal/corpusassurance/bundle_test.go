@@ -20,6 +20,16 @@ func TestApprovedSalesforceFilterHashMatchesCheckedInScript(t *testing.T) {
 	}
 }
 
+func TestToolsAMD64BuildEnvironmentIgnoresAmbientToolchain(t *testing.T) {
+	t.Setenv("GOROOT", "/attacker/go")
+	t.Setenv("GOTOOLCHAIN", "go1.99.0")
+	t.Setenv("PATH", "/attacker/bin")
+	want := append(fixedReleaseEnvironment(), "CGO_ENABLED=0", "GOOS=darwin", "GOARCH=amd64", "GOFLAGS=")
+	if got := toolsAMD64BuildEnvironment(); !equalStrings(got, want) {
+		t.Fatalf("toolsAMD64BuildEnvironment = %#v, want %#v", got, want)
+	}
+}
+
 func TestBuildOracleBundleRejectsEmptyAndFabricatedReleaseValidation(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	root := filepath.Dir(inputs.releasePath)

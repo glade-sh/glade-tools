@@ -349,13 +349,7 @@ func buildAMD64Tools(root, output, commit string) (RuntimeArtifact, error) {
 }
 
 func toolsAMD64BuildEnvironment() []string {
-	environment := make([]string, 0, len(os.Environ())+5)
-	for _, entry := range os.Environ() {
-		if !strings.HasPrefix(entry, "CGO_ENABLED=") && !strings.HasPrefix(entry, "GOOS=") && !strings.HasPrefix(entry, "GOARCH=") && !strings.HasPrefix(entry, "GOFLAGS=") && !strings.HasPrefix(entry, "GOWORK=") {
-			environment = append(environment, entry)
-		}
-	}
-	return append(environment, "CGO_ENABLED=0", "GOOS=darwin", "GOARCH=amd64", "GOFLAGS=", "GOWORK=off")
+	return append(fixedReleaseEnvironment(), "CGO_ENABLED=0", "GOOS=darwin", "GOARCH=amd64", "GOFLAGS=")
 }
 
 func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePlan) error {
