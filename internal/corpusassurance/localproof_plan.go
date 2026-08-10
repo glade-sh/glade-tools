@@ -104,7 +104,7 @@ func BuildLocalProofPlan(request LocalProofPlanRequest) (LocalProofFixtureManife
 	if err != nil {
 		return LocalProofFixtureManifest{}, err
 	}
-	manifest := selectLocalProofFixtures(entries, localRequired)
+	manifest := selectLocalProofFixtures(entries)
 	owned := make(map[string]bool)
 	for _, fixture := range manifest.Fixtures {
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
@@ -213,7 +213,7 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 	return candidates, nil
 }
 
-func selectLocalProofFixtures(candidates []localProofFixtureCandidate, required map[string]string) LocalProofFixtureManifest {
+func selectLocalProofFixtures(candidates []localProofFixtureCandidate) LocalProofFixtureManifest {
 	covered := make(map[string]bool)
 	manifest := LocalProofFixtureManifest{}
 	for _, candidate := range candidates {
