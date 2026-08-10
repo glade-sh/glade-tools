@@ -49,7 +49,7 @@
   "source": [
     {
       "path": "force-app/main/default/classes/AssuranceMissingCompileShapes.cls",
-      "content": "public class AssuranceMissingCompileShapes { public void referencesOnly() { Component.apex.page page; ConnectApi.Organization organization; Auth auth; DataSource dataSource; System.System system; VisualEditor.DataRow row; VisualEditor.DynamicPickList pickList; VisualEditor.DynamicPickListRows rows; } }"
+      "content": "public class AssuranceMissingCompileShapes { public void referencesOnly() { Component.apex.page page; ConnectApi.Organization organization; Auth auth; DataSource dataSource; System.System systemType; VisualEditor.DataRow row; VisualEditor.DynamicPickList pickList; VisualEditor.DynamicPickListRows rows; } }"
     }
   ]
 }
