@@ -211,6 +211,25 @@ func TestLocalProofFixtureAcceptsSalesforceMetadataExtensions(t *testing.T) {
 	}
 }
 
+func TestLocalProofFixtureAcceptsCandidateSummaryExpectation(t *testing.T) {
+	root := t.TempDir()
+	fixture := localProofFixture(t, root, "summary", []string{"apex:Summary.run"}, deterministicMockRequired)
+	var document map[string]any
+	data, err := os.ReadFile(fixture.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &document); err != nil {
+		t.Fatal(err)
+	}
+	document["expected"] = map[string]any{"result": map[string]any{"status": "passed", "exitCode": 0}}
+	writeLocalProofJSON(t, fixture.Path, document)
+	fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
+	if _, err := loadLocalProofFixture(fixture); err != nil {
+		t.Fatalf("loadLocalProofFixture rejected candidate summary expectation: %v", err)
+	}
+}
+
 func TestWriteLocalProofProjectRejectsApexOutsidePackageDirectory(t *testing.T) {
 	root := t.TempDir()
 	fixture := localProofFixture(t, root, "outside", []string{"apex:Outside.run"}, compileShapeRequired)

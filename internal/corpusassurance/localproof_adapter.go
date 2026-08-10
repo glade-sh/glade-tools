@@ -120,7 +120,7 @@ func localProofFixtureIsMaterializable(fixture compat.Fixture) bool {
 		len(fixture.Metadata.EmailTemplates) == 0 &&
 		len(fixture.SeedData) == 0 && len(fixture.ServerRequests) == 0 &&
 		fixture.Command.LimitMode == "" && fixture.Expected.Stdout == "" && fixture.Expected.Stderr == "" &&
-		len(fixture.Expected.Result) == 0 && fixture.Expected.Error == nil && len(fixture.Expected.SideEffects) == 0 &&
+		fixture.Expected.Error == nil && len(fixture.Expected.SideEffects) == 0 &&
 		fixture.Limits.SOQLQueries == nil && fixture.Limits.SOQLRows == nil && fixture.Limits.DMLStatements == nil &&
 		fixture.Limits.DMLRows == nil && fixture.Limits.CPUTimeMS == nil && fixture.Limits.HeapBytes == nil
 }
