@@ -204,7 +204,7 @@ func fixedReleaseEnvironment() []string {
 }
 
 func fixedReleasePath(goRoot string) string {
-	directories := []string{"/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin"}
+	directories := []string{"/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/usr/sbin", "/bin"}
 	if filepath.IsAbs(goRoot) {
 		directories = append([]string{filepath.Join(goRoot, "bin")}, directories...)
 	}

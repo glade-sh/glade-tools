@@ -259,6 +259,15 @@ func TestFixedReleasePathOmitsRelativeGoRoot(t *testing.T) {
 	}
 }
 
+func TestFixedReleasePathIncludesMacOSSystemAdministrationTools(t *testing.T) {
+	for _, directory := range strings.Split(fixedReleasePath(""), string(filepath.ListSeparator)) {
+		if directory == "/usr/sbin" {
+			return
+		}
+	}
+	t.Fatalf("fixed release PATH omits /usr/sbin: %q", fixedReleasePath(""))
+}
+
 func TestFixedReleaseEnvironmentUsesWritableSealedHome(t *testing.T) {
 	if !strings.Contains(strings.Join(fixedReleaseEnvironment(), "\n"), "HOME=/private/tmp/glade-assurance-home") {
 		t.Fatalf("release environment has no writable sealed home: %#v", fixedReleaseEnvironment())
