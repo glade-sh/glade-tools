@@ -51,11 +51,6 @@
       "kind": "test"
     },
     {
-      "surfaceId": "apex:Metadata.MetadataType.CustomMetadata",
-      "symbol": "Metadata.MetadataType.CustomMetadata",
-      "kind": "test"
-    },
-    {
       "surfaceId": "apex:Metadata.MetadataType.Layout",
       "symbol": "Metadata.MetadataType.Layout",
       "kind": "test",
