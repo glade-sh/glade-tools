@@ -14,7 +14,10 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"strings"
 	"time"
+
+	"github.com/glade-sh/glade/internal/semanticcache"
 )
 
 type ReplayCommand struct {
@@ -50,6 +53,10 @@ const replayTimeout = 15 * time.Minute
 
 const replayWorkspaceIdentity = "isolated-sealed-snapshot"
 
+const replaySemanticCachePath = ".glade/semantic"
+
+const replayTestPerfPath = ".glade/assurance-test-perf.json"
+
 var fixedReplayEnvironment = []string{"HOME=/var/empty", "PATH=/usr/bin:/bin", "TMPDIR=/tmp"}
 
 var removeReplayWorkspace = os.RemoveAll
@@ -78,15 +85,26 @@ type RetainedCommandOutput struct {
 }
 
 type ReplayRepositoryResult struct {
-	RepositoryID        string         `json:"repositoryId"`
-	SourceSHA256        string         `json:"sourceSha256"`
-	ExecutionTreeSHA256 string         `json:"executionTreeSha256"`
-	CandidateSHA256     string         `json:"candidateSha256"`
-	ToolsSHA256         string         `json:"toolsSha256"`
-	CheckSpecSHA256     string         `json:"checkSpecSha256"`
-	LocalTestSpecSHA256 string         `json:"localTestSpecSha256,omitempty"`
-	Check               CommandResult  `json:"check"`
-	LocalTest           *CommandResult `json:"localTest,omitempty"`
+	RepositoryID        string                      `json:"repositoryId"`
+	SourceSHA256        string                      `json:"sourceSha256"`
+	ExecutionTreeSHA256 string                      `json:"executionTreeSha256"`
+	CandidateSHA256     string                      `json:"candidateSha256"`
+	ToolsSHA256         string                      `json:"toolsSha256"`
+	CheckSpecSHA256     string                      `json:"checkSpecSha256"`
+	LocalTestSpecSHA256 string                      `json:"localTestSpecSha256,omitempty"`
+	SemanticCache       ReplaySemanticCacheEvidence `json:"semanticCache,omitempty"`
+	Check               CommandResult               `json:"check"`
+	LocalTest           *CommandResult              `json:"localTest,omitempty"`
+}
+
+// ReplaySemanticCacheEvidence binds a required local test to the exact cache
+// the preceding check created in its isolated workspace.
+type ReplaySemanticCacheEvidence struct {
+	Path           string `json:"path"`
+	SHA256         string `json:"sha256"`
+	IdentitySHA256 string `json:"identitySha256"`
+	PerfSHA256     string `json:"perfSha256"`
+	DiskHits       uint64 `json:"diskHits"`
 }
 
 type ReplayShard struct {
@@ -334,6 +352,9 @@ func runReplayRepository(repository ReplayRepository, request ReplayRequest) (re
 	if err != nil || executionTreeSHA256 != repository.Repository.TreeSHA256 {
 		return ReplayRepositoryResult{}, fmt.Errorf("isolated snapshot binding mismatch for %q", repository.Repository.ID)
 	}
+	if err := requireReplayCacheAbsent(workingRoot); err != nil {
+		return ReplayRepositoryResult{}, fmt.Errorf("isolated cache for %q: %w", repository.Repository.ID, err)
+	}
 	check := replayCommandFor(request.CandidatePath, "check")
 	if err := validateReplayRuntimeBindings(request); err != nil {
 		return ReplayRepositoryResult{}, err
@@ -346,6 +367,13 @@ func runReplayRepository(repository ReplayRepository, request ReplayRequest) (re
 	}
 	result.CheckSpecSHA256 = result.Check.CommandSpecSHA256
 	if repository.Repository.LocalTests == "required" {
+		var cache ReplaySemanticCacheEvidence
+		if result.Check.Passed {
+			cache, err = replaySemanticCacheEvidence(workingRoot)
+			if err != nil {
+				return ReplayRepositoryResult{}, fmt.Errorf("check cache proof for %q: %w", repository.Repository.ID, err)
+			}
+		}
 		localTestCommand := replayCommandFor(request.CandidatePath, "test")
 		if err := validateReplayRuntimeBindings(request); err != nil {
 			return ReplayRepositoryResult{}, err
@@ -353,6 +381,21 @@ func runReplayRepository(repository ReplayRepository, request ReplayRequest) (re
 		localTest := runReplayCommand(workingRoot, localTestCommand)
 		result.LocalTest = &localTest
 		result.LocalTestSpecSHA256 = localTest.CommandSpecSHA256
+		if result.Check.Passed && localTest.Passed {
+			perf, err := replayTestSemanticDiskHits(workingRoot)
+			if err != nil {
+				return ReplayRepositoryResult{}, fmt.Errorf("test cache proof for %q: %w", repository.Repository.ID, err)
+			}
+			if perf.DiskHits == 0 {
+				return ReplayRepositoryResult{}, fmt.Errorf("test did not use the sealed semantic cache for %q", repository.Repository.ID)
+			}
+			postTestCache, err := replaySemanticCacheEvidence(workingRoot)
+			if err != nil || postTestCache.Path != cache.Path || postTestCache.SHA256 != cache.SHA256 || postTestCache.IdentitySHA256 != cache.IdentitySHA256 {
+				return ReplayRepositoryResult{}, fmt.Errorf("semantic cache changed during test for %q", repository.Repository.ID)
+			}
+			cache.PerfSHA256, cache.DiskHits = perf.SHA256, perf.DiskHits
+			result.SemanticCache = cache
+		}
 	}
 	return result, nil
 }
@@ -399,7 +442,7 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 			if result.CheckSpecSHA256 != replayCommandSpecSHA256("check", merge.Candidate.SHA256) || !validIsolatedReplayReceipt(result.Check, "check", merge.Candidate.SHA256, replayCommandSpecSHA256("check", merge.Candidate.SHA256)) {
 				return fmt.Errorf("check failed for %q", result.RepositoryID)
 			}
-			if repository.LocalTests == "required" && (result.LocalTest == nil || result.LocalTestSpecSHA256 != replayCommandSpecSHA256("test", merge.Candidate.SHA256) || !validIsolatedReplayReceipt(*result.LocalTest, "test", merge.Candidate.SHA256, replayCommandSpecSHA256("test", merge.Candidate.SHA256))) {
+			if repository.LocalTests == "required" && (result.LocalTest == nil || result.LocalTestSpecSHA256 != replayCommandSpecSHA256("test", merge.Candidate.SHA256) || !validIsolatedReplayReceipt(*result.LocalTest, "test", merge.Candidate.SHA256, replayCommandSpecSHA256("test", merge.Candidate.SHA256)) || !validReplaySemanticCacheEvidence(result.SemanticCache)) {
 				return fmt.Errorf("required local test failed for %q", result.RepositoryID)
 			}
 		}
@@ -582,13 +625,92 @@ func validateReplayRuntimeBindings(request ReplayRequest) error {
 }
 
 func replayCommandFor(candidatePath, operation string) ReplayCommand {
+	args := []string{operation, "--project", ".", "--json", "--no-progress"}
+	if operation == "test" {
+		args = append(args, "--perf-json", replayTestPerfPath)
+	}
 	return ReplayCommand{
 		Path:             candidatePath,
-		Args:             []string{operation, "--project", ".", "--json", "--no-progress"},
+		Args:             args,
 		Env:              append([]string(nil), fixedReplayEnvironment...),
 		WorkingDirectory: replayWorkspaceIdentity,
 		Timeout:          replayTimeout,
 	}
+}
+
+func requireReplayCacheAbsent(workingRoot string) error {
+	for _, relativePath := range []string{replaySemanticCachePath, replayTestPerfPath} {
+		if _, err := os.Lstat(filepath.Join(workingRoot, relativePath)); err == nil {
+			return fmt.Errorf("preexisting %s", relativePath)
+		} else if !os.IsNotExist(err) {
+			return err
+		}
+	}
+	return nil
+}
+
+func replaySemanticCacheEvidence(workingRoot string) (ReplaySemanticCacheEvidence, error) {
+	cachePath := filepath.Join(workingRoot, replaySemanticCachePath)
+	entries, err := os.ReadDir(cachePath)
+	if err != nil {
+		return ReplaySemanticCacheEvidence{}, err
+	}
+	if len(entries) != 1 || entries[0].IsDir() || entries[0].Type()&os.ModeSymlink != 0 || !strings.HasPrefix(entries[0].Name(), "result-") || !strings.HasSuffix(entries[0].Name(), ".json") {
+		return ReplaySemanticCacheEvidence{}, fmt.Errorf("expected one semantic result envelope")
+	}
+	data, err := os.ReadFile(filepath.Join(cachePath, entries[0].Name()))
+	if err != nil {
+		return ReplaySemanticCacheEvidence{}, err
+	}
+	var envelope struct {
+		Identity semanticcache.Identity `json:"identity"`
+	}
+	if err := json.Unmarshal(data, &envelope); err != nil {
+		return ReplaySemanticCacheEvidence{}, fmt.Errorf("invalid semantic result envelope")
+	}
+	relativePath := filepath.Join(replaySemanticCachePath, entries[0].Name())
+	if _, err := semanticcache.Load(workingRoot, relativePath, envelope.Identity); err != nil {
+		return ReplaySemanticCacheEvidence{}, fmt.Errorf("validate semantic result envelope: %w", err)
+	}
+	identity, err := json.Marshal(envelope.Identity)
+	if err != nil {
+		return ReplaySemanticCacheEvidence{}, err
+	}
+	return ReplaySemanticCacheEvidence{Path: relativePath, SHA256: replayBytesSHA256(data), IdentitySHA256: replayBytesSHA256(identity)}, nil
+}
+
+func replayTestSemanticDiskHits(workingRoot string) (struct {
+	SHA256   string
+	DiskHits uint64
+}, error) {
+	data, err := os.ReadFile(filepath.Join(workingRoot, replayTestPerfPath))
+	if err != nil {
+		return struct {
+			SHA256   string
+			DiskHits uint64
+		}{}, err
+	}
+	var perf struct {
+		ApexPerf struct {
+			Phases struct {
+				SemanticDiskCacheHits uint64 `json:"semanticDiskCacheHits"`
+			} `json:"phases"`
+		} `json:"apexPerf"`
+	}
+	if err := json.Unmarshal(data, &perf); err != nil {
+		return struct {
+			SHA256   string
+			DiskHits uint64
+		}{}, err
+	}
+	return struct {
+		SHA256   string
+		DiskHits uint64
+	}{SHA256: replayBytesSHA256(data), DiskHits: perf.ApexPerf.Phases.SemanticDiskCacheHits}, nil
+}
+
+func validReplaySemanticCacheEvidence(cache ReplaySemanticCacheEvidence) bool {
+	return strings.HasPrefix(cache.Path, replaySemanticCachePath+"/result-") && strings.HasSuffix(cache.Path, ".json") && sha256Pattern.MatchString(cache.SHA256) && sha256Pattern.MatchString(cache.IdentitySHA256) && sha256Pattern.MatchString(cache.PerfSHA256) && cache.DiskHits > 0
 }
 
 func replayCommandSpecSHA256(operation, executableSHA256 string) string {

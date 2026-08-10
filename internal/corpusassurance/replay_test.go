@@ -12,6 +12,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/glade-sh/glade/internal/sema"
+	"github.com/glade-sh/glade/internal/semanticcache"
 )
 
 func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
@@ -30,6 +33,9 @@ func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
 	}
 	if got, want := readLines(t, capture), []string{"check", "--project", ".", "--json", "--no-progress"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("argv = %q, want %q", got, want)
+	}
+	if got, want := readLines(t, capture+".test"), []string{"test", "--project", ".", "--json", "--no-progress", "--perf-json", replayTestPerfPath}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("test argv = %q, want %q", got, want)
 	}
 	workspaces := readLines(t, capture+".working")
 	if len(workspaces) != 2 || workspaces[0] != workspaces[1] {
@@ -58,6 +64,9 @@ func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
 	}
 	if result.LocalTest == nil || !result.LocalTest.Passed {
 		t.Fatalf("local test = %#v", result.LocalTest)
+	}
+	if !strings.HasPrefix(result.SemanticCache.Path, replaySemanticCachePath+"/result-") || result.SemanticCache.DiskHits == 0 || result.SemanticCache.SHA256 == "" || result.SemanticCache.PerfSHA256 == "" {
+		t.Fatalf("semantic cache proof = %#v", result.SemanticCache)
 	}
 	if got, err := canonicalTreeSHA256(sealedRoot); err != nil || got != expectedTreeSHA256 {
 		t.Fatalf("sealed snapshot changed after replay: %q, %v", got, err)
@@ -181,6 +190,11 @@ func TestValidateReplayMergeRejectsEmptyOrNonPassingReceipts(t *testing.T) {
 	shards[0].Repositories[0].Check.CommandSpecSHA256 = ""
 	if err := ValidateReplayMerge(merge, shards); err == nil {
 		t.Fatal("tampered command specification was accepted")
+	}
+	merge, shards = validReplayMerge()
+	shards[0].Repositories[0].SemanticCache.DiskHits = 0
+	if err := ValidateReplayMerge(merge, shards); err == nil {
+		t.Fatal("required local test without a disk cache proof was accepted")
 	}
 	merge, shards = validReplayMerge()
 	shards[0].Repositories[0].Check.CommandSpecSHA256 = strings.Repeat("e", 64)
@@ -393,8 +407,20 @@ func replayRequest(t *testing.T, host, exit string) (ReplayRequest, string) {
 		t.Fatal(err)
 	}
 	capture := filepath.Join(root, "argv.txt")
+	cacheTemplateRoot := filepath.Join(root, "cache-template")
+	if err := os.MkdirAll(cacheTemplateRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	cacheIdentity := semanticcache.Identity{
+		ProjectContentSHA256: strings.Repeat("a", 64), SchemaContentSHA256: strings.Repeat("b", 64), DependencySHA256: strings.Repeat("c", 64),
+		SemanticABI: sema.SemanticABI, PlatformABI: sema.PlatformABI, OptionsFingerprint: strings.Repeat("d", 64),
+	}
+	if err := semanticcache.Store(cacheTemplateRoot, filepath.Join(replaySemanticCachePath, "result-proof.json"), cacheIdentity, sema.Result{}); err != nil {
+		t.Fatal(err)
+	}
+	cacheTemplate := filepath.Join(cacheTemplateRoot, replaySemanticCachePath, "result-proof.json")
 	candidate, candidatePath := stagedRuntime(t, root, "candidate", replayRuntime("c"))
-	script := "#!/bin/sh\nif [ \"$1\" = check ]; then printf '%s\\n' \"$@\" > '" + capture + "'; pwd > '" + capture + ".working'; mkdir -p .glade; printf check > .glade/test-durations.json; fi\nif [ \"$1\" = test ]; then pwd >> '" + capture + ".working'; mkdir -p .glade; printf test > .glade/test-durations.json; fi\nprintf '%s stdout' \"$1\"\nprintf '%s stderr' \"$1\" >&2\nif [ \"$1\" = check ]; then exit " + exit + "; fi\nexit 0\n"
+	script := "#!/bin/sh\nif [ \"$1\" = check ]; then printf '%s\\n' \"$@\" > '" + capture + "'; pwd > '" + capture + ".working'; mkdir -p .glade/semantic; cp '" + cacheTemplate + "' .glade/semantic/result-proof.json; fi\nif [ \"$1\" = test ]; then printf '%s\\n' \"$@\" > '" + capture + ".test'; pwd >> '" + capture + ".working'; printf '{\"apexPerf\":{\"phases\":{\"semanticDiskCacheHits\":1}}}' > .glade/assurance-test-perf.json; fi\nprintf '%s stdout' \"$1\"\nprintf '%s stderr' \"$1\" >&2\nif [ \"$1\" = check ]; then exit " + exit + "; fi\nexit 0\n"
 	if err := os.WriteFile(candidatePath, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -463,8 +489,8 @@ func validReplayMerge() (ReplayMerge, []ReplayShard) {
 	second.ID, second.AssignedHost, second.SnapshotPath = "private-corpus-002", "replay-worker", "snapshots/private-corpus-002"
 	merge := ReplayMerge{Candidate: replayRuntime("d"), Tools: replayRuntime("e"), Repositories: []RepositorySpec{first, second}, Inventory: InventoryManifest{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), Repositories: []RepositorySpec{first, second}}, RootManifestSHA256: strings.Repeat("b", 64), HostManifestSHA256: map[string]string{"local": strings.Repeat("c", 64), "replay-worker": strings.Repeat("d", 64)}, TestReadyByRepository: map[string]bool{first.ID: true, second.ID: true}}
 	shards := []ReplayShard{
-		{Status: "pass", Host: "local", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["local"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: first.ID, SourceSHA256: first.ArchiveSHA256, ExecutionTreeSHA256: first.TreeSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
-		{Status: "pass", Host: "replay-worker", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["replay-worker"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: second.ID, SourceSHA256: second.ArchiveSHA256, ExecutionTreeSHA256: second.TreeSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
+		{Status: "pass", Host: "local", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["local"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: first.ID, SourceSHA256: first.ArchiveSHA256, ExecutionTreeSHA256: first.TreeSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, SemanticCache: successfulSemanticCacheEvidence(), Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
+		{Status: "pass", Host: "replay-worker", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["replay-worker"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: second.ID, SourceSHA256: second.ArchiveSHA256, ExecutionTreeSHA256: second.TreeSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, SemanticCache: successfulSemanticCacheEvidence(), Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
 	}
 	return merge, shards
 }
@@ -478,6 +504,10 @@ func successfulReceipt(operation string) CommandResult {
 func successfulReceiptPointer(operation string) *CommandResult {
 	result := successfulReceipt(operation)
 	return &result
+}
+
+func successfulSemanticCacheEvidence() ReplaySemanticCacheEvidence {
+	return ReplaySemanticCacheEvidence{Path: replaySemanticCachePath + "/result-" + strings.Repeat("a", 64) + ".json", SHA256: strings.Repeat("b", 64), IdentitySHA256: strings.Repeat("c", 64), PerfSHA256: strings.Repeat("d", 64), DiskHits: 1}
 }
 
 func replayRuntime(hash string) RuntimeArtifact {
