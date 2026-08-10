@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -348,6 +349,29 @@ func TestValidateReplayFilesLoadsAuthoritativeInputs(t *testing.T) {
 	}
 	if len(merged.Repositories) != 2 || !merged.TestReadyByRepository["private-corpus-001"] || !merged.TestReadyByRepository["private-corpus-002"] || fileSHA256(t, outputPath) == "" {
 		t.Fatalf("merged replay = %#v", merged)
+	}
+	request := AssuranceReportRequest{InventoryPath: inventoryPath, RootManifestPath: rootPath, ReplayHostManifestPaths: hostPaths, ReplayShardPaths: shardPaths}
+	if _, err := validateReportReplayEvidence(request, merged); err != nil {
+		t.Fatalf("validateReportReplayEvidence(valid): %v", err)
+	}
+	data, err := os.ReadFile(shardPaths[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	var tampered ReplayShard
+	if err := json.Unmarshal(data, &tampered); err != nil {
+		t.Fatal(err)
+	}
+	tampered.Repositories[0].Check.Output = nil
+	data, err = json.Marshal(tampered)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(shardPaths[0], data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := validateReportReplayEvidence(request, merged); err == nil {
+		t.Fatal("validateReportReplayEvidence accepted a replay shard with removed retained output")
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
@@ -30,31 +31,33 @@ type AssuranceReceipt struct {
 // AssuranceReportRequest names every direct, sealed input required to publish
 // the final public readiness projection.
 type AssuranceReportRequest struct {
-	InventoryPath         string
-	RootManifestPath      string
-	LedgerPath            string
-	SourceProfilePath     string
-	PolicyPath            string
-	DecisionPath          string
-	UsagePath             string
-	ProfilePath           string
-	FixtureManifestPath   string
-	ReplayPath            string
-	LocalProofPath        string
-	OraclePlanPath        string
-	ExclusionRequestPath  string
-	ExclusionPolicyPath   string
-	AuthorityPath         string
-	ReleaseValidationPath string
-	BundlePath            string
-	FilterScriptPath      string
-	ScratchDefinitionPath string
-	ToolsAMD64Path        string
-	SalesforceFiles       []SalesforceShardFiles
-	RemoteCleanupPaths    []string
-	JSONPath              string
-	HTMLPath              string
-	ReceiptPath           string
+	InventoryPath           string
+	RootManifestPath        string
+	LedgerPath              string
+	SourceProfilePath       string
+	PolicyPath              string
+	DecisionPath            string
+	UsagePath               string
+	ProfilePath             string
+	FixtureManifestPath     string
+	ReplayPath              string
+	ReplayHostManifestPaths []string
+	ReplayShardPaths        []string
+	LocalProofPath          string
+	OraclePlanPath          string
+	ExclusionRequestPath    string
+	ExclusionPolicyPath     string
+	AuthorityPath           string
+	ReleaseValidationPath   string
+	BundlePath              string
+	FilterScriptPath        string
+	ScratchDefinitionPath   string
+	ToolsAMD64Path          string
+	SalesforceFiles         []SalesforceShardFiles
+	RemoteCleanupPaths      []string
+	JSONPath                string
+	HTMLPath                string
+	ReceiptPath             string
 }
 
 // BuildAssuranceReport derives public outcomes only from sealed files, then
@@ -122,12 +125,19 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err := validateReplayRootBinding(merge, root); err != nil {
 		return AssuranceReceipt{}, fmt.Errorf("replay merge does not bind current root manifest: %w", err)
 	}
+	replayInputs, err := validateReportReplayEvidence(request, merge)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
 	rows, err := deriveAssuranceRows(usage.Reconciliation, profile, proof, plan, shards, merge.TestReadyByRepository)
 	if err != nil {
 		return AssuranceReceipt{}, err
 	}
 	inputs := map[string]string{"IN_SCOPE.json": replayBytesSHA256(inventoryBytes), "MANIFEST.json": replayBytesSHA256(rootBytes), "CORPUS_USAGE.json": replayBytesSHA256(usageBytes), "ASSURANCE_PROFILE.json": replayBytesSHA256(profileBytes), "FIXTURE_MANIFEST.json": replayBytesSHA256(manifestBytes), "REPLAY.json": replayBytesSHA256(mergeBytes), "LOCAL_PROOF.json": replayBytesSHA256(proofBytes), "ORACLE_PLAN.json": replayBytesSHA256(planBytes), "EXCLUSION_AUTHORITY.json": replayBytesSHA256(authorityBytes), "ORACLE_BUNDLE.json": replayBytesSHA256(bundleBytes)}
 	for name, hash := range sidecarInputs {
+		inputs[name] = hash
+	}
+	for name, hash := range replayInputs {
 		inputs[name] = hash
 	}
 	for index, snapshot := range salesforceSnapshots {
@@ -148,12 +158,50 @@ func requiredReportEvidencePaths(request AssuranceReportRequest) error {
 	if len(request.SalesforceFiles) == 0 || len(request.RemoteCleanupPaths) != 2 {
 		return fmt.Errorf("complete Salesforce and remote cleanup evidence is required")
 	}
+	if len(request.ReplayHostManifestPaths) != 2 || len(request.ReplayShardPaths) != 2 {
+		return fmt.Errorf("complete replay manifest and shard evidence is required")
+	}
+	for _, path := range append(append([]string{}, request.ReplayHostManifestPaths...), request.ReplayShardPaths...) {
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("absolute replay evidence paths are required")
+		}
+	}
 	for _, path := range request.RemoteCleanupPaths {
 		if !filepath.IsAbs(path) {
 			return fmt.Errorf("absolute remote cleanup paths are required")
 		}
 	}
 	return nil
+}
+
+func validateReportReplayEvidence(request AssuranceReportRequest, merge ReplayMerge) (map[string]string, error) {
+	recomputed, err := loadReplayMergeFromFiles(request.InventoryPath, request.RootManifestPath, request.ReplayHostManifestPaths, request.ReplayShardPaths)
+	if err != nil || !reflect.DeepEqual(recomputed, merge) {
+		return nil, fmt.Errorf("replay shards do not rederive the sealed replay merge")
+	}
+	shards := make([]ReplayShard, 0, len(request.ReplayShardPaths))
+	inputs := make(map[string]string, len(request.ReplayShardPaths))
+	for _, path := range request.ReplayShardPaths {
+		shard, data, err := readExactJSONBytes[ReplayShard](path)
+		if err != nil || (shard.Host != "local" && shard.Host != "casper") || inputs["REPLAY_SHARD_"+strings.ToUpper(shard.Host)+".json"] != "" {
+			return nil, fmt.Errorf("invalid report replay shard evidence")
+		}
+		inputs["REPLAY_SHARD_"+strings.ToUpper(shard.Host)+".json"] = replayBytesSHA256(data)
+		shards = append(shards, shard)
+	}
+	if err := ValidateReplayMerge(merge, shards); err != nil || len(inputs) != 2 {
+		return nil, fmt.Errorf("replay shards do not validate retained evidence")
+	}
+	for _, path := range request.ReplayShardPaths {
+		shard, data, err := readExactJSONBytes[ReplayShard](path)
+		if err != nil {
+			return nil, fmt.Errorf("replay shard changed during report generation")
+		}
+		if inputs["REPLAY_SHARD_"+strings.ToUpper(shard.Host)+".json"] != replayBytesSHA256(data) {
+			return nil, fmt.Errorf("replay shard changed during report generation")
+		}
+	}
+	return inputs, nil
 }
 
 func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedCorpusUsage, profile AssuranceProfile, plan OraclePlan, authority ExclusionAuthority) (map[string]string, error) {
