@@ -1,0 +1,55 @@
+{
+  "name": "assurance-missing-compile-shapes",
+  "command": {
+    "kind": "check"
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Component.apex.page",
+      "symbol": "Component.apex.page",
+      "kind": "shape",
+      "notes": "The compile-only probe references the Visualforce page component handle used by the corpus."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Organization",
+      "symbol": "ConnectApi.Organization",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Auth",
+      "symbol": "Auth",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DataSource",
+      "symbol": "DataSource",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.System",
+      "symbol": "System.System",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:VisualEditor.DataRow",
+      "symbol": "VisualEditor.DataRow",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:VisualEditor.DynamicPickList",
+      "symbol": "VisualEditor.DynamicPickList",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:VisualEditor.DynamicPickListRows",
+      "symbol": "VisualEditor.DynamicPickListRows",
+      "kind": "shape"
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/AssuranceMissingCompileShapes.cls",
+      "content": "public class AssuranceMissingCompileShapes { public void referencesOnly() { Component.apex.page page; ConnectApi.Organization organization; Auth auth; DataSource dataSource; System.System system; VisualEditor.DataRow row; VisualEditor.DynamicPickList pickList; VisualEditor.DynamicPickListRows rows; } }"
+    }
+  ]
+}

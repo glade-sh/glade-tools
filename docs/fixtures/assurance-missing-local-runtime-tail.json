@@ -1,0 +1,173 @@
+{
+  "name": "assurance-missing-local-runtime-tail",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.DescribeSObjectResult objectDescribe = Account.SObjectType.getDescribe();\nSchema.DescribeFieldResult fieldDescribe = Account.Name.getDescribe();\nSchema.SObjectType objectType = Account.SObjectType;\nSchema.SObjectField objectField = Account.Name;\nSchema.ChildRelationship childRelationship;\nSchema.PicklistEntry picklistEntry;\nSchema.RecordTypeInfo recordTypeInfo;\nSchema.DisplayType displayType = Schema.DisplayType.PICKLIST;\nSchema.SOAPType soapType = Schema.SOAPType.ID;\nSystem.assertNotEquals(null, objectDescribe);\nSystem.assertNotEquals(null, fieldDescribe);\nSystem.assertNotEquals(null, objectType);\nSystem.assertNotEquals(null, objectField);\nSystem.assertNotEquals(null, displayType);\nSystem.assertNotEquals(null, soapType);\nAddress address = new Address();\nLocation location = new Location();\nDmlException dmlException = new DmlException('assurance dml');\nEmailException emailException = new EmailException('assurance email');\nNullPointerException nullPointerException = new NullPointerException('assurance null');\nStringException stringException = new StringException('assurance string');\nTypeException typeException = new TypeException('assurance type');\nSystem.Iterator iterator;\nPageReference page = new PageReference('/apex/assurance');\nSystem.assertNotEquals(null, address);\nSystem.assertNotEquals(null, location);\nSystem.assertNotEquals(null, dmlException);\nSystem.assertNotEquals(null, emailException);\nSystem.assertNotEquals(null, nullPointerException);\nSystem.assertNotEquals(null, stringException);\nSystem.assertNotEquals(null, typeException);\nSystem.assertNotEquals(null, page);\nString value = 'assurance';\nString formatted = String.format('value {0}', new List<String>{value});\nSystem.assertEquals('value assurance', formatted);\nRoundingMode.HALF_EVEN.equals(RoundingMode.HALF_EVEN);\nRoundingMode.HALF_UP.equals(RoundingMode.HALF_UP);\nURL orgUrl = URL.getOrgDomainUrl();\nSystem.assertNotEquals(null, orgUrl);\n"
+    ]
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Schema.ChildRelationship",
+      "symbol": "Schema.ChildRelationship",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult",
+      "symbol": "Schema.DescribeFieldResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult",
+      "symbol": "Schema.DescribeSObjectResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType",
+      "symbol": "Schema.DisplayType",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.PICKLIST",
+      "symbol": "Schema.DisplayType.PICKLIST",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.PicklistEntry",
+      "symbol": "Schema.PicklistEntry",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.RecordTypeInfo",
+      "symbol": "Schema.RecordTypeInfo",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectField",
+      "symbol": "Schema.SObjectField",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectType",
+      "symbol": "Schema.SObjectType",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.SoapType.ID",
+      "symbol": "Schema.SOAPType.ID",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Address",
+      "symbol": "Address",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.DmlException",
+      "symbol": "DmlException",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.EmailException",
+      "symbol": "EmailException",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Iterator",
+      "symbol": "Iterator",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Location",
+      "symbol": "Location",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.NullPointerException",
+      "symbol": "NullPointerException",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.PageReference",
+      "symbol": "PageReference",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.HALF_EVEN",
+      "symbol": "RoundingMode.HALF_EVEN",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.HALF_UP",
+      "symbol": "RoundingMode.HALF_UP",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.String",
+      "symbol": "String",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.String.format",
+      "symbol": "String.format",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.StringException",
+      "symbol": "StringException",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.System",
+      "symbol": "System",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.TypeException",
+      "symbol": "TypeException",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.URL",
+      "symbol": "URL",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.URL.getOrgDomainUrl",
+      "symbol": "URL.getOrgDomainUrl",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.DescribeSObjectResult objectDescribe = Account.SObjectType.getDescribe();\nSchema.DescribeFieldResult fieldDescribe = Account.Name.getDescribe();\nSchema.SObjectType objectType = Account.SObjectType;\nSchema.SObjectField objectField = Account.Name;\nSchema.ChildRelationship childRelationship;\nSchema.PicklistEntry picklistEntry;\nSchema.RecordTypeInfo recordTypeInfo;\nSchema.DisplayType displayType = Schema.DisplayType.PICKLIST;\nSchema.SOAPType soapType = Schema.SOAPType.ID;\nSystem.assertNotEquals(null, objectDescribe);\nSystem.assertNotEquals(null, fieldDescribe);\nSystem.assertNotEquals(null, objectType);\nSystem.assertNotEquals(null, objectField);\nSystem.assertNotEquals(null, displayType);\nSystem.assertNotEquals(null, soapType);\nAddress address = new Address();\nLocation location = new Location();\nDmlException dmlException = new DmlException('assurance dml');\nEmailException emailException = new EmailException('assurance email');\nNullPointerException nullPointerException = new NullPointerException('assurance null');\nStringException stringException = new StringException('assurance string');\nTypeException typeException = new TypeException('assurance type');\nSystem.Iterator iterator;\nPageReference page = new PageReference('/apex/assurance');\nSystem.assertNotEquals(null, address);\nSystem.assertNotEquals(null, location);\nSystem.assertNotEquals(null, dmlException);\nSystem.assertNotEquals(null, emailException);\nSystem.assertNotEquals(null, nullPointerException);\nSystem.assertNotEquals(null, stringException);\nSystem.assertNotEquals(null, typeException);\nSystem.assertNotEquals(null, page);\nString value = 'assurance';\nString formatted = String.format('value {0}', new List<String>{value});\nSystem.assertEquals('value assurance', formatted);\nRoundingMode.HALF_EVEN.equals(RoundingMode.HALF_EVEN);\nRoundingMode.HALF_UP.equals(RoundingMode.HALF_UP);\nURL orgUrl = URL.getOrgDomainUrl();\nSystem.assertNotEquals(null, orgUrl);\n"
+    }
+  ]
+}
