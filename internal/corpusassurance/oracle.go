@@ -349,7 +349,7 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 	result := AssuranceProfile{SchemaVersion: 1, SourceProfileSHA256: sourceSHA, SealedUsageSHA256: usageSHA, LedgerSHA256: ledgerSHA, PolicySHA256: sealedUsage.PolicySHA256, FixtureManifestSHA256: manifestSHA, LocalProofSHA256: proofSHA, ByDisposition: map[string]int{}}
 	for _, surfaceID := range required {
 		row, exists := source[surfaceID]
-		if !exists || !ledgerIDs[surfaceID] || !owned[surfaceID] {
+		if !exists || !ledgerIDs[surfaceID] || (assuranceProfileRequiresFixture(row) && !owned[surfaceID]) {
 			return AssuranceProfile{}, fmt.Errorf("required surface %q is not current-profile, ledger, and fixture owned", surfaceID)
 		}
 		if row.Disposition != "hosted-deferred" {
@@ -377,6 +377,10 @@ func BuildAssuranceProfile(inventoryPath, rootManifestPath, sourceProfilePath, s
 		return AssuranceProfile{}, err
 	}
 	return result, nil
+}
+
+func assuranceProfileRequiresFixture(row AssuranceProfileRow) bool {
+	return row.Disposition != "hosted-deferred"
 }
 
 func oracleRequiredSurfaceIDs(reconciled UsageReconciliation) ([]string, error) {

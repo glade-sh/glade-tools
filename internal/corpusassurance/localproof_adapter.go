@@ -100,7 +100,7 @@ func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.F
 		evidence[item.SurfaceID] = item.Kind
 	}
 	for _, surfaceID := range entry.OwnedSurfaceIDs {
-		if evidence[surfaceID] != localProofEvidenceKind(entry.Disposition) {
+		if !localProofEvidenceKindMatches(entry.Disposition, fixture.Command.Kind, evidence[surfaceID]) {
 			return fmt.Errorf("fixture %q lacks required evidence for %q", entry.ID, surfaceID)
 		}
 	}

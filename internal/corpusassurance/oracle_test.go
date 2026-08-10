@@ -275,6 +275,15 @@ func TestValidateAssuranceOracleProfileRejectsMissingNonHostedProof(t *testing.T
 	}
 }
 
+func TestHostedDeferredDoesNotRequireLocalFixture(t *testing.T) {
+	if assuranceProfileRequiresFixture(AssuranceProfileRow{SurfaceID: "apex:System.Auth", Disposition: "hosted-deferred"}) {
+		t.Fatal("hosted-deferred surface requires a local fixture")
+	}
+	if !assuranceProfileRequiresFixture(AssuranceProfileRow{SurfaceID: "apex:System.Test", Disposition: localRuntimeRequired}) {
+		t.Fatal("non-hosted surface does not require a local fixture")
+	}
+}
+
 func TestBuildAssuranceProfileProjectsOnlyFreshOwnedRows(t *testing.T) {
 	root := t.TempDir()
 	profilePath := filepath.Join(root, "profile.json")

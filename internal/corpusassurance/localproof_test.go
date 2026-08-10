@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
 func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSurface(t *testing.T) {
@@ -70,6 +72,31 @@ func TestLocalProofRejectsFixtureSurfaceWithoutSourceWitness(t *testing.T) {
 	entry := LocalProofFixture{ID: "witness", Name: "witness", Path: path, SHA256: localProofFileSHA256(t, path), OwnedSurfaceIDs: []string{"apex:NotInSource.run"}, Disposition: compileShapeRequired}
 	if _, err := loadLocalProofFixture(entry); err == nil {
 		t.Fatal("loadLocalProofFixture accepted a surface absent from materialized Apex")
+	}
+}
+
+func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
+	for _, test := range []struct {
+		disposition string
+		command     string
+		kind        string
+		symbol      string
+	}{
+		{localRuntimeRequired, "exec", "exec", "Runtime.run"},
+		{deterministicMockRequired, "test", "test", "Runtime.run"},
+		{compileShapeRequired, "check", "shape", "Runtime.run"},
+	} {
+		t.Run(test.disposition, func(t *testing.T) {
+			entry := LocalProofFixture{ID: "fixture", Name: "fixture", Path: filepath.Join(t.TempDir(), "fixture.json"), SHA256: strings.Repeat("a", 64), OwnedSurfaceIDs: []string{"apex:Runtime.run"}, Disposition: test.disposition}
+			invocation := compat.Invocation{Kind: test.command}
+			if test.command == "exec" {
+				invocation.Args = []string{"new Runtime().run();"}
+			}
+			fixture := compat.Fixture{Name: entry.Name, Command: invocation, Evidence: []compat.FixtureEvidence{{SurfaceID: "apex:Runtime.run", Kind: test.kind, Symbol: test.symbol}}, Source: []compat.SourceFile{{Path: "force-app/main/classes/Fixture.cls", Content: "public class Runtime { public void run() {} }"}}}
+			if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+				t.Fatalf("validateLocalProofFixtureIdentity() error = %v", err)
+			}
+		})
 	}
 }
 

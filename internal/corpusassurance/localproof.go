@@ -696,6 +696,19 @@ func localProofReceiptSpecSHA256(command localProofCommand, executableSHA256 str
 	return commandSpecSHA256(ReplayCommand{Path: command.Path, Args: args, Env: fixedReplayEnvironment, Timeout: 2 * time.Minute, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256})
 }
 
+func localProofEvidenceKindMatches(disposition, commandKind, evidenceKind string) bool {
+	switch disposition {
+	case localRuntimeRequired:
+		return commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime")
+	case deterministicMockRequired:
+		return commandKind == "test" && (evidenceKind == "test" || evidenceKind == "behavior")
+	case compileShapeRequired:
+		return commandKind == "check" && (evidenceKind == "shape" || evidenceKind == "compile")
+	default:
+		return false
+	}
+}
+
 func validLocalProofDisposition(disposition string) bool {
 	switch disposition {
 	case localRuntimeRequired, deterministicMockRequired, compileShapeRequired:

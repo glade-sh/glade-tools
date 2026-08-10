@@ -146,6 +146,25 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "local-proof", len(proof.Surfaces), *output)
+	case "local-proof-plan":
+		flags := flag.NewFlagSet("corpus assurance local-proof-plan", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		inventory, root := flags.String("inventory-spec", "", ""), flags.String("root-manifest", "", "")
+		sourceProfile, sealedUsage := flags.String("source-profile", "", ""), flags.String("sealed-usage", "", "")
+		ledger, policy, decisions := flags.String("ledger", "", ""), flags.String("policy", "", ""), flags.String("decisions", "", "")
+		fixtureRoot := flags.String("fixture-root", "", "")
+		profile, usage, localDecision, manifest := flags.String("profile-output", "", ""), flags.String("usage-output", "", ""), flags.String("decision-output", "", ""), flags.String("manifest-output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*inventory, *root, *sourceProfile, *sealedUsage, *ledger, *policy, *decisions, *fixtureRoot, *profile, *usage, *localDecision, *manifest); err != nil {
+			return err
+		}
+		planned, err := corpusassurance.BuildLocalProofPlan(corpusassurance.LocalProofPlanRequest{InventoryPath: *inventory, RootManifestPath: *root, SourceProfilePath: *sourceProfile, SealedUsagePath: *sealedUsage, LedgerPath: *ledger, PolicyPath: *policy, DecisionPath: *decisions, FixtureRoot: *fixtureRoot, ProfilePath: *profile, UsagePath: *usage, LocalDecisionPath: *localDecision, ManifestPath: *manifest})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "local-proof-plan", len(planned.Fixtures), *manifest)
 	case "release-validate":
 		flags := flag.NewFlagSet("corpus assurance release-validate", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -445,6 +464,7 @@ Usage:
   glade-tools corpus assurance usage --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --decisions <USAGE_DECISIONS.json> --output <CORPUS_USAGE.json>
   glade-tools corpus assurance replay --host <local|replay-worker> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>
+  glade-tools corpus assurance local-proof-plan --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <USAGE_DECISIONS.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
 	  glade-tools corpus assurance release-validate --attempt <ATTEMPT.json> --glade-root <glade-root> --candidate <glade> --tools-root <glade-tools-root> --tools <glade-tools> --tools-freeze <FINAL_TOOLS_COMMIT> --output <RELEASE_VALIDATION.json>
   glade-tools corpus assurance oracle-plan --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <decisions.json> --local-profile <profile.json> --local-usage <usage.json> --local-decision <decision.json> --fixture-manifest <fixtures.json> --local-proof <LOCAL_PROOF.json> --candidate <glade> --tools <glade-tools> --directives <directives.json> --profile-output <ASSURANCE_PROFILE.json> --output <ORACLE_PLAN.json>
