@@ -27,6 +27,11 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}
 	}
+	for _, flag := range []string{"--replay-host-manifest <manifest.json>", "--replay-shard <REPLAY_SHARD.json>"} {
+		if !strings.Contains(stdout.String(), flag) {
+			t.Fatalf("help omits %q:\n%s", flag, stdout.String())
+		}
+	}
 }
 
 func TestCorpusAssuranceUsageDraftExecutes(t *testing.T) {
