@@ -32,8 +32,8 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 			t.Fatalf("help omits %q:\n%s", flag, stdout.String())
 		}
 	}
-	if strings.Contains(stdout.String(), "attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --remote-cleanup-authority") {
-		t.Fatalf("attempt help still requires authorities before the attempt exists:\n%s", stdout.String())
+	if !strings.Contains(stdout.String(), "attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-cleanup-authority") {
+		t.Fatalf("attempt help omits pre-bound cleanup authorities:\n%s", stdout.String())
 	}
 	if !strings.Contains(stdout.String(), "[--org-preflight <ORG_PREFLIGHT.json>]") {
 		t.Fatalf("org-cleanup help does not document invalidated-receipt recovery:\n%s", stdout.String())
@@ -66,7 +66,7 @@ func TestCorpusAssuranceUsageDraftExecutes(t *testing.T) {
 	writeCorpusAssuranceJSON(t, inventoryPath, inventory)
 	inventoryHash := corpusAssuranceFileSHA256(t, inventoryPath)
 	attemptPath := filepath.Join(root, "ATTEMPT.json")
-	attempt := corpusassurance.AssuranceAttempt{SchemaVersion: 1, InventorySHA256: inventoryHash, CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: corpusassurance.RuntimeArtifact{Commit: strings.Repeat("b", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("c", 64)}, Tools: corpusassurance.RuntimeArtifact{Commit: strings.Repeat("d", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("e", 64)}}
+	attempt := corpusassurance.AssuranceAttempt{SchemaVersion: 1, InventorySHA256: inventoryHash, CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: corpusassurance.RuntimeArtifact{Commit: strings.Repeat("b", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("c", 64)}, Tools: corpusassurance.RuntimeArtifact{Commit: strings.Repeat("d", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("e", 64)}, RemoteCleanupAuthoritySHA256: map[string]string{"replay-worker": strings.Repeat("0", 64), "salesforce-worker": strings.Repeat("0", 64)}}
 	writeCorpusAssuranceJSON(t, attemptPath, attempt)
 	prepared := filepath.Join(root, "prepared")
 	if _, err := corpusassurance.PrepareInventory(inventoryPath, attemptPath, prepared); err != nil {
