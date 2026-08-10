@@ -245,11 +245,13 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 		t.Fatal(err)
 	}
 	manifestPath := filepath.Join(root, "MANIFEST.json")
-	if err := WriteNewJSON(manifestPath, InventoryManifest{SchemaVersion: 1, InventorySHA256: localProofFileSHA256(t, inventoryPath), Repositories: []RepositorySpec{repository}}); err != nil {
+	manifest := InventoryManifest{SchemaVersion: 1, InventorySHA256: localProofFileSHA256(t, inventoryPath), Repositories: []RepositorySpec{repository}}
+	if err := WriteNewJSON(manifestPath, manifest); err != nil {
 		t.Fatal(err)
 	}
 	ledgerPath := filepath.Join(root, "LEDGER.json")
-	if err := WriteNewJSON(ledgerPath, surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}}); err != nil {
+	ledger := surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}}
+	if err := WriteNewJSON(ledgerPath, ledger); err != nil {
 		t.Fatal(err)
 	}
 	policyPath := filepath.Join(root, "policy.json")
@@ -271,6 +273,20 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 	rawBytes, err := json.Marshal(raw)
 	if err != nil {
 		t.Fatal(err)
+	}
+	draftPath := filepath.Join(root, "USAGE_DECISION_DRAFT.json")
+	draft, err := DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, draftPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if draft.RawUsageSHA256 != replayBytesSHA256(rawBytes) || len(draft.Unresolved) != 0 || len(draft.Automatic) != len(raw.Usage) {
+		t.Fatalf("draft = %#v", draft)
+	}
+	if _, err := DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, draftPath); err == nil {
+		t.Fatal("DraftUsageDecisions overwrote its output")
+	}
+	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, draftPath, filepath.Join(root, "draft-as-usage.json")); err == nil {
+		t.Fatal("BuildSealedCorpusUsage accepted a draft as decision authority")
 	}
 	decisionPath := filepath.Join(root, "decisions.json")
 	if err := WriteNewJSON(decisionPath, UsageDecisionFile{SchemaVersion: 1, ProfileSHA256: localProofFileSHA256(t, profilePath), PolicySHA256: localProofFileSHA256(t, policyPath), UsageSHA256: replayBytesSHA256(rawBytes)}); err != nil {
@@ -297,6 +313,110 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 	}
 	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, outputPath); err == nil {
 		t.Fatal("BuildSealedCorpusUsage overwrote its output")
+	}
+	insideSnapshot := filepath.Join(snapshot, "USAGE_DECISION_DRAFT.json")
+	if _, err := DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, insideSnapshot); err == nil {
+		t.Fatal("DraftUsageDecisions wrote inside a sealed snapshot")
+	}
+	if _, err := os.Stat(insideSnapshot); !os.IsNotExist(err) {
+		t.Fatalf("draft output mutated sealed snapshot: %v", err)
+	}
+	insideFinalUsage := filepath.Join(snapshot, "CORPUS_USAGE.json")
+	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, insideFinalUsage); err == nil {
+		t.Fatal("BuildSealedCorpusUsage wrote inside a sealed snapshot")
+	}
+	if _, err := os.Stat(insideFinalUsage); !os.IsNotExist(err) {
+		t.Fatalf("final usage output mutated sealed snapshot: %v", err)
+	}
+	alias := filepath.Join(root, "snapshot-alias")
+	if err := os.Symlink(snapshot, alias); err != nil {
+		t.Fatal(err)
+	}
+	for _, output := range []string{filepath.Join(alias, "alias-draft.json"), filepath.Join(alias, "alias-usage.json")} {
+		if _, err := DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, output); err == nil {
+			t.Fatalf("DraftUsageDecisions accepted symlinked snapshot output %q", output)
+		}
+		if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, output); err == nil {
+			t.Fatalf("BuildSealedCorpusUsage accepted symlinked snapshot output %q", output)
+		}
+		if _, err := os.Stat(output); !os.IsNotExist(err) {
+			t.Fatalf("symlinked output mutated sealed snapshot: %v", err)
+		}
+	}
+	originalBuildCorpusUsage := buildCorpusUsage
+	buildCorpusUsage = func([]surfaceledger.SurfaceLedgerRow, string, string, string) (surfaceledger.CorpusUsage, error) {
+		return surfaceledger.CorpusUsage{Usage: []surfaceledger.CorpusUsageEntry{{UsageKey: "Unknown.work", Namespace: "Unknown", MemberName: "work", PrivProdRefs: 1}}}, nil
+	}
+	t.Cleanup(func() { buildCorpusUsage = originalBuildCorpusUsage })
+	_, unresolvedRaw, err := deriveSealedCombinedUsage(ledger.Rows, manifest, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	unresolvedDraftPath := filepath.Join(root, "unresolved-draft.json")
+	unresolvedDraft, err := DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, unresolvedDraftPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	unresolvedData, err := os.ReadFile(unresolvedDraftPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var decodedDraft UsageDecisionDraft
+	expectedUnresolved := UsageEntry{UsageKey: "Unknown.work", Namespace: "Unknown", MemberName: "work", PrivateProdRefs: 1, RepositoryIDs: []string{repository.ID}}
+	if err := json.Unmarshal(unresolvedData, &decodedDraft); err != nil || decodedDraft.RawUsageSHA256 != replayBytesSHA256(unresolvedRaw) || decodedDraft.RawUsageSHA256 != unresolvedDraft.RawUsageSHA256 || len(decodedDraft.Unresolved) != 1 || !reflect.DeepEqual(decodedDraft.Unresolved[0], expectedUnresolved) {
+		t.Fatalf("decoded draft = %#v err=%v", decodedDraft, err)
+	}
+	buildCorpusUsage = originalBuildCorpusUsage
+	originalSource, err := os.ReadFile(filepath.Join(snapshot, "classes", "Sample.cls"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	originalDerive := deriveUsageForDraft
+	calls := 0
+	deriveUsageForDraft = func(rows []surfaceledger.SurfaceLedgerRow, boundManifest InventoryManifest, root string) (CombinedRepositoryUsage, []byte, error) {
+		usage, data, err := originalDerive(rows, boundManifest, root)
+		calls++
+		if calls == 2 && err == nil {
+			err = os.WriteFile(filepath.Join(snapshot, "classes", "Sample.cls"), []byte("changed"), 0o600)
+		}
+		return usage, data, err
+	}
+	t.Cleanup(func() { deriveUsageForDraft = originalDerive })
+	lateDraft := filepath.Join(root, "late-draft.json")
+	if _, err := DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, lateDraft); err == nil {
+		t.Fatal("DraftUsageDecisions accepted a post-scan snapshot mutation")
+	}
+	if _, err := os.Stat(lateDraft); !os.IsNotExist(err) {
+		t.Fatalf("postflight mutation wrote draft: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(snapshot, "classes", "Sample.cls"), originalSource, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	originalSealDerive := deriveUsageForSeal
+	sealCalls := 0
+	deriveUsageForSeal = func(rows []surfaceledger.SurfaceLedgerRow, boundManifest InventoryManifest, root string) (CombinedRepositoryUsage, []byte, error) {
+		usage, data, err := originalSealDerive(rows, boundManifest, root)
+		sealCalls++
+		if sealCalls == 2 && err == nil {
+			err = os.WriteFile(filepath.Join(snapshot, "classes", "Sample.cls"), []byte("changed"), 0o600)
+		}
+		return usage, data, err
+	}
+	t.Cleanup(func() { deriveUsageForSeal = originalSealDerive })
+	lateUsage := filepath.Join(root, "late-usage.json")
+	if _, err := BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, decisionPath, lateUsage); err == nil {
+		t.Fatal("BuildSealedCorpusUsage accepted a post-scan snapshot mutation")
+	}
+	if _, err := os.Stat(lateUsage); !os.IsNotExist(err) {
+		t.Fatalf("postflight mutation wrote final usage: %v", err)
+	}
+}
+
+func TestDraftUsageReconciliationReportsOnlyUnresolvedKeys(t *testing.T) {
+	usage := UsageEntry{UsageKey: "Unknown.work", Namespace: "Unknown", PrivateProdRefs: 1, RepositoryIDs: []string{"private-corpus-001"}}
+	automatic, unresolved, err := draftUsageReconciliation([]UsageProfileRow{{SurfaceID: "apex:System.debug", UsageKey: "System.debug"}}, []UsageEntry{usage})
+	if err != nil || len(automatic) != 0 || len(unresolved) != 1 || unresolved[0].UsageKey != usage.UsageKey || unresolved[0].PrivateProdRefs != usage.PrivateProdRefs {
+		t.Fatalf("automatic=%#v unresolved=%#v err=%v", automatic, unresolved, err)
 	}
 }
 

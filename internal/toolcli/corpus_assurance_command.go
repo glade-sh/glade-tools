@@ -51,6 +51,23 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "prepare", len(manifest.Repositories), *output)
+	case "usage-draft":
+		flags := flag.NewFlagSet("corpus assurance usage-draft", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		inventory, ledger := flags.String("inventory-spec", "", ""), flags.String("ledger", "", "")
+		manifest, profile := flags.String("manifest", "", ""), flags.String("profile", "", "")
+		policy, output := flags.String("policy", "", ""), flags.String("output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*inventory, *ledger, *manifest, *profile, *policy, *output); err != nil {
+			return err
+		}
+		draft, err := corpusassurance.DraftUsageDecisions(*inventory, *ledger, *manifest, *profile, *policy, *output)
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "usage-draft", len(draft.Automatic)+len(draft.Unresolved), *output)
 	case "usage":
 		flags := flag.NewFlagSet("corpus assurance usage", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -420,6 +437,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 Usage:
   glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --output <ATTEMPT.json>
   glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --attempt <ATTEMPT.json> --output <new-dir>
+  glade-tools corpus assurance usage-draft --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --output <USAGE_DECISION_DRAFT.json>
   glade-tools corpus assurance usage --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --decisions <USAGE_DECISIONS.json> --output <CORPUS_USAGE.json>
   glade-tools corpus assurance replay --host <local|casper> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>

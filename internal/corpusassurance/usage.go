@@ -16,6 +16,10 @@ import (
 
 var buildCorpusUsage = surfaceledger.BuildCorpusUsage
 
+var deriveUsageForDraft = deriveSealedCombinedUsage
+
+var deriveUsageForSeal = deriveSealedCombinedUsage
+
 type RepositoryUsage struct {
 	RepositoryID       string                           `json:"repositoryId"`
 	RootTreeSHA256     string                           `json:"rootTreeSha256"`
@@ -100,6 +104,129 @@ type SealedCorpusUsage struct {
 	Reconciliation     UsageReconciliation     `json:"reconciliation"`
 }
 
+// UsageDecisionDraft exposes the exact fresh usage hash and only the keys
+// that cannot be reconciled from the sealed profile. It does not classify
+// unresolved keys or select profile surfaces on the caller's behalf.
+type UsageDecisionDraft struct {
+	SchemaVersion      int                    `json:"schemaVersion"`
+	InventorySHA256    string                 `json:"inventorySha256"`
+	RootManifestSHA256 string                 `json:"rootManifestSha256"`
+	LedgerSHA256       string                 `json:"ledgerSha256"`
+	ProfileSHA256      string                 `json:"profileSha256"`
+	PolicySHA256       string                 `json:"policySha256"`
+	RawUsageSHA256     string                 `json:"rawUsageSha256"`
+	Automatic          []ReconciledUsageEntry `json:"automatic"`
+	Unresolved         []UsageEntry           `json:"unresolved"`
+}
+
+// DraftUsageDecisions derives fresh raw usage twice from sealed inputs. Its
+// output may be used to author an explicit decision file that binds this raw
+// usage hash; it is not itself a decision authority.
+func DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, outputPath string) (UsageDecisionDraft, error) {
+	for _, path := range []string{inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return UsageDecisionDraft{}, fmt.Errorf("usage draft paths must be absolute")
+		}
+	}
+	if _, err := os.Lstat(outputPath); err == nil {
+		return UsageDecisionDraft{}, fmt.Errorf("usage decision draft output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return UsageDecisionDraft{}, err
+	}
+	inventory, inventoryBytes, err := readInventorySpec(inventoryPath)
+	if err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	ledger, ledgerBytes, err := readExactJSONBytes[surfaceledger.SurfaceLedger](ledgerPath)
+	if err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	manifest, manifestBytes, err := readExactJSONBytes[InventoryManifest](manifestPath)
+	if err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	if manifest.SchemaVersion != 1 || manifest.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateInventoryCoverage(inventory, manifest.Repositories) != nil {
+		return UsageDecisionDraft{}, fmt.Errorf("invalid sealed inventory manifest")
+	}
+	if err := validateSealedUsageOutput(outputPath, manifest, filepath.Dir(manifestPath)); err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	first, firstBytes, err := deriveUsageForDraft(ledger.Rows, manifest, filepath.Dir(manifestPath))
+	if err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	_, secondBytes, err := deriveUsageForDraft(ledger.Rows, manifest, filepath.Dir(manifestPath))
+	if err != nil || !bytes.Equal(firstBytes, secondBytes) {
+		return UsageDecisionDraft{}, fmt.Errorf("corpus usage extraction is not byte-identical")
+	}
+	profile, profileInputs, profileBytes, err := readUsageProfileRows(profilePath)
+	if err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	policy, policyBytes, err := readExactJSONBytes[surfaceledger.SupportPolicy](policyPath)
+	if err != nil {
+		return UsageDecisionDraft{}, fmt.Errorf("read support policy: %w", err)
+	}
+	if len(policy.Rules) == 0 {
+		return UsageDecisionDraft{}, fmt.Errorf("support policy rules are required")
+	}
+	if err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes); err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows, policy)
+	if err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	automatic, unresolved, err := draftUsageReconciliation(profile, first.Usage)
+	if err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	draft := UsageDecisionDraft{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), PolicySHA256: replayBytesSHA256(policyBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Automatic: automatic, Unresolved: unresolved}
+	if err := verifySealedUsagePostflight([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}}, manifest, filepath.Dir(manifestPath)); err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	if err := WriteNewJSON(outputPath, draft); err != nil {
+		return UsageDecisionDraft{}, err
+	}
+	return draft, nil
+}
+
+func draftUsageReconciliation(profile []UsageProfileRow, usage []UsageEntry) ([]ReconciledUsageEntry, []UsageEntry, error) {
+	profilesByKey := make(map[string][]UsageProfileRow, len(profile))
+	profilesByFoldedKey := make(map[string][]UsageProfileRow, len(profile))
+	for _, row := range profile {
+		if row.SurfaceID == "" || row.UsageKey == "" {
+			return nil, nil, fmt.Errorf("invalid profile row")
+		}
+		profilesByKey[row.UsageKey] = append(profilesByKey[row.UsageKey], row)
+		profilesByFoldedKey[strings.ToLower(row.UsageKey)] = append(profilesByFoldedKey[strings.ToLower(row.UsageKey)], row)
+	}
+	automatic := make([]ReconciledUsageEntry, 0, len(usage))
+	unresolved := make([]UsageEntry, 0)
+	seen := make(map[string]bool, len(usage))
+	for _, entry := range usage {
+		if entry.UsageKey == "" || seen[entry.UsageKey] || entry.PrivateProdRefs+entry.PrivateTestRefs <= 0 {
+			return nil, nil, fmt.Errorf("invalid or duplicate fresh usage key %q", entry.UsageKey)
+		}
+		seen[entry.UsageKey] = true
+		row := ReconciledUsageEntry{UsageEntry: entry}
+		if candidates := profilesByKey[entry.UsageKey]; len(candidates) == 1 {
+			row.Class, row.SurfaceID = usageClassExact, candidates[0].SurfaceID
+		} else if candidates := profilesByFoldedKey[strings.ToLower(entry.UsageKey)]; len(candidates) == 1 {
+			row.Class, row.SurfaceID = usageClassCaseAlias, candidates[0].SurfaceID
+		} else if candidates := aggregateUsageCandidates(entry.UsageKey, profile); len(candidates) == 1 {
+			row.Class, row.SurfaceID = usageClassAggregateParent, candidates[0].SurfaceID
+		} else {
+			unresolved = append(unresolved, entry)
+			continue
+		}
+		automatic = append(automatic, row)
+	}
+	sort.Slice(automatic, func(i, j int) bool { return automatic[i].UsageKey < automatic[j].UsageKey })
+	sort.Slice(unresolved, func(i, j int) bool { return unresolved[i].UsageKey < unresolved[j].UsageKey })
+	return automatic, unresolved, nil
+}
+
 // BuildSealedCorpusUsage is the Task 3 trust boundary. It derives every
 // repository from the sealed inventory manifest twice, requires identical
 // canonical raw usage, reconciles every positive key, and writes once.
@@ -129,11 +256,14 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if manifest.SchemaVersion != 1 || manifest.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateInventoryCoverage(inventory, manifest.Repositories) != nil {
 		return SealedCorpusUsage{}, fmt.Errorf("invalid sealed inventory manifest")
 	}
-	first, firstBytes, err := deriveSealedCombinedUsage(ledger.Rows, manifest, filepath.Dir(manifestPath))
+	if err := validateSealedUsageOutput(outputPath, manifest, filepath.Dir(manifestPath)); err != nil {
+		return SealedCorpusUsage{}, err
+	}
+	first, firstBytes, err := deriveUsageForSeal(ledger.Rows, manifest, filepath.Dir(manifestPath))
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
-	second, secondBytes, err := deriveSealedCombinedUsage(ledger.Rows, manifest, filepath.Dir(manifestPath))
+	second, secondBytes, err := deriveUsageForSeal(ledger.Rows, manifest, filepath.Dir(manifestPath))
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
@@ -171,7 +301,7 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	}
 	reconciliation.ProfileSHA256, reconciliation.UsageSHA256, reconciliation.DecisionSHA256 = replayBytesSHA256(profileBytes), replayBytesSHA256(firstBytes), replayBytesSHA256(decisionBytes)
 	artifact := SealedCorpusUsage{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), PolicySHA256: replayBytesSHA256(policyBytes), DecisionSHA256: replayBytesSHA256(decisionBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Raw: second, Reconciliation: reconciliation}
-	if err := verifySealedUsageInputs([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}, {decisionPath, decisionBytes}}); err != nil {
+	if err := verifySealedUsagePostflight([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}, {decisionPath, decisionBytes}}, manifest, filepath.Dir(manifestPath)); err != nil {
 		return SealedCorpusUsage{}, err
 	}
 	if err := WriteNewJSON(outputPath, artifact); err != nil {
@@ -210,6 +340,49 @@ func verifySealedUsageInputs(inputs []sealedUsageInput) error {
 	for _, input := range inputs {
 		if got, err := os.ReadFile(input.path); err != nil || !bytes.Equal(got, input.data) {
 			return fmt.Errorf("sealed usage input changed during extraction")
+		}
+	}
+	return nil
+}
+
+func verifySealedUsagePostflight(inputs []sealedUsageInput, manifest InventoryManifest, root string) error {
+	if err := verifySealedUsageInputs(inputs); err != nil {
+		return err
+	}
+	for _, repository := range manifest.Repositories {
+		snapshot, err := rootedPath(root, repository.SnapshotPath)
+		if err != nil {
+			return err
+		}
+		got, err := canonicalTreeSHA256(snapshot)
+		if err != nil || got != repository.TreeSHA256 {
+			return fmt.Errorf("snapshot tree changed during usage extraction for %q", repository.ID)
+		}
+	}
+	return nil
+}
+
+func validateSealedUsageOutput(outputPath string, manifest InventoryManifest, root string) error {
+	parent, err := filepath.EvalSymlinks(filepath.Dir(outputPath))
+	if err != nil {
+		return fmt.Errorf("resolve usage output parent: %w", err)
+	}
+	output := filepath.Join(parent, filepath.Base(outputPath))
+	for _, repository := range manifest.Repositories {
+		snapshot, err := rootedPath(root, repository.SnapshotPath)
+		if err != nil {
+			return err
+		}
+		snapshot, err = filepath.EvalSymlinks(snapshot)
+		if err != nil {
+			return fmt.Errorf("resolve snapshot for %q: %w", repository.ID, err)
+		}
+		relative, err := filepath.Rel(snapshot, output)
+		if err != nil {
+			return err
+		}
+		if relative == "." || (relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator))) {
+			return fmt.Errorf("usage output must not overlap sealed snapshot %q", repository.ID)
 		}
 	}
 	return nil
