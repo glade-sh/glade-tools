@@ -17,10 +17,11 @@ import (
 )
 
 type ReplayCommand struct {
-	Path    string
-	Args    []string
-	Env     []string
-	Timeout time.Duration
+	Path             string
+	Args             []string
+	Env              []string
+	WorkingDirectory string
+	Timeout          time.Duration
 }
 
 type ReplayRepository struct {
@@ -44,7 +45,11 @@ type ReplayRequest struct {
 
 const replayTimeout = 5 * time.Minute
 
+const replayWorkspaceIdentity = "isolated-sealed-snapshot"
+
 var fixedReplayEnvironment = []string{"HOME=/var/empty", "PATH=/usr/bin:/bin", "TMPDIR=/tmp"}
+
+var removeReplayWorkspace = os.RemoveAll
 
 type CommandResult struct {
 	Command               []string               `json:"command"`
@@ -72,6 +77,7 @@ type RetainedCommandOutput struct {
 type ReplayRepositoryResult struct {
 	RepositoryID        string         `json:"repositoryId"`
 	SourceSHA256        string         `json:"sourceSha256"`
+	ExecutionTreeSHA256 string         `json:"executionTreeSha256"`
 	CandidateSHA256     string         `json:"candidateSha256"`
 	ToolsSHA256         string         `json:"toolsSha256"`
 	CheckSpecSHA256     string         `json:"checkSpecSha256"`
@@ -248,26 +254,11 @@ func RunReplay(request ReplayRequest) (ReplayShard, error) {
 
 	shard := ReplayShard{Host: request.Host, OS: runtime.GOOS, Arch: runtime.GOARCH, Candidate: request.Candidate, Tools: request.Tools, Bindings: inputs.Bindings, Status: "pass"}
 	for _, repository := range repositories {
-		check := replayCommandFor(request.CandidatePath, "check")
-		if err := validateReplayRuntimeBindings(request); err != nil {
+		result, err := runReplayRepository(repository, request)
+		if err != nil {
 			return ReplayShard{}, err
 		}
-		result := ReplayRepositoryResult{
-			RepositoryID: repository.Repository.ID, SourceSHA256: repository.Repository.ArchiveSHA256,
-			CandidateSHA256: request.Candidate.SHA256, ToolsSHA256: request.Tools.SHA256,
-			CheckSpecSHA256: commandSpecSHA256(check),
-			Check:           runReplayCommand(repository.SnapshotRoot, check),
-		}
-		if repository.Repository.LocalTests == "required" {
-			localTestCommand := replayCommandFor(request.CandidatePath, "test")
-			if err := validateReplayRuntimeBindings(request); err != nil {
-				return ReplayShard{}, err
-			}
-			localTest := runReplayCommand(repository.SnapshotRoot, localTestCommand)
-			result.LocalTest = &localTest
-			result.LocalTestSpecSHA256 = commandSpecSHA256(localTestCommand)
-		}
-		if !validReplayReceipt(result.Check, "check", commandSpecSHA256(replayCommandFor(request.CandidatePath, "check"))) || (result.LocalTest != nil && !validReplayReceipt(*result.LocalTest, "test", commandSpecSHA256(replayCommandFor(request.CandidatePath, "test")))) {
+		if !validIsolatedReplayReceipt(result.Check, "check", commandSpecSHA256(replayCommandFor(request.CandidatePath, "check"))) || (result.LocalTest != nil && !validIsolatedReplayReceipt(*result.LocalTest, "test", commandSpecSHA256(replayCommandFor(request.CandidatePath, "test")))) {
 			shard.Status = "fail"
 		}
 		shard.Repositories = append(shard.Repositories, result)
@@ -295,6 +286,52 @@ func RunReplay(request ReplayRequest) (ReplayShard, error) {
 		return ReplayShard{}, err
 	}
 	return shard, nil
+}
+
+func runReplayRepository(repository ReplayRepository, request ReplayRequest) (result ReplayRepositoryResult, err error) {
+	workspace, err := os.MkdirTemp("", "glade-assurance-replay-*")
+	if err != nil {
+		return ReplayRepositoryResult{}, err
+	}
+	defer func() {
+		if cleanupErr := removeReplayWorkspace(workspace); cleanupErr != nil {
+			result = ReplayRepositoryResult{}
+			if err == nil {
+				err = fmt.Errorf("cleanup replay workspace for %q: %w", repository.Repository.ID, cleanupErr)
+			} else {
+				err = fmt.Errorf("%v; cleanup replay workspace for %q: %w", err, repository.Repository.ID, cleanupErr)
+			}
+		}
+	}()
+	workingRoot := filepath.Join(workspace, "snapshot")
+	if err := copyTree(repository.SnapshotRoot, workingRoot); err != nil {
+		return ReplayRepositoryResult{}, fmt.Errorf("copy sealed snapshot for %q: %w", repository.Repository.ID, err)
+	}
+	executionTreeSHA256, err := canonicalTreeSHA256(workingRoot)
+	if err != nil || executionTreeSHA256 != repository.Repository.TreeSHA256 {
+		return ReplayRepositoryResult{}, fmt.Errorf("isolated snapshot binding mismatch for %q", repository.Repository.ID)
+	}
+	check := replayCommandFor(request.CandidatePath, "check")
+	if err := validateReplayRuntimeBindings(request); err != nil {
+		return ReplayRepositoryResult{}, err
+	}
+	result = ReplayRepositoryResult{
+		RepositoryID: repository.Repository.ID, SourceSHA256: repository.Repository.ArchiveSHA256,
+		ExecutionTreeSHA256: executionTreeSHA256,
+		CandidateSHA256:     request.Candidate.SHA256, ToolsSHA256: request.Tools.SHA256,
+		CheckSpecSHA256: commandSpecSHA256(check),
+		Check:           runReplayCommand(workingRoot, check),
+	}
+	if repository.Repository.LocalTests == "required" {
+		localTestCommand := replayCommandFor(request.CandidatePath, "test")
+		if err := validateReplayRuntimeBindings(request); err != nil {
+			return ReplayRepositoryResult{}, err
+		}
+		localTest := runReplayCommand(workingRoot, localTestCommand)
+		result.LocalTest = &localTest
+		result.LocalTestSpecSHA256 = commandSpecSHA256(localTestCommand)
+	}
+	return result, nil
 }
 
 func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
@@ -333,13 +370,13 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 				return fmt.Errorf("duplicate repository result %q", result.RepositoryID)
 			}
 			seen[result.RepositoryID] = true
-			if repository.AssignedHost != shard.Host || result.SourceSHA256 != repository.ArchiveSHA256 || result.CandidateSHA256 != merge.Candidate.SHA256 || result.ToolsSHA256 != merge.Tools.SHA256 {
+			if repository.AssignedHost != shard.Host || result.SourceSHA256 != repository.ArchiveSHA256 || result.ExecutionTreeSHA256 != repository.TreeSHA256 || result.CandidateSHA256 != merge.Candidate.SHA256 || result.ToolsSHA256 != merge.Tools.SHA256 {
 				return fmt.Errorf("repository binding mismatch for %q", result.RepositoryID)
 			}
-			if result.CheckSpecSHA256 != commandSpecSHA256(replayCommandFor("", "check")) || !validReplayReceipt(result.Check, "check", commandSpecSHA256(replayCommandFor("", "check"))) {
+			if result.CheckSpecSHA256 != commandSpecSHA256(replayCommandFor("", "check")) || !validIsolatedReplayReceipt(result.Check, "check", commandSpecSHA256(replayCommandFor("", "check"))) {
 				return fmt.Errorf("check failed for %q", result.RepositoryID)
 			}
-			if repository.LocalTests == "required" && (result.LocalTest == nil || result.LocalTestSpecSHA256 != commandSpecSHA256(replayCommandFor("", "test")) || !validReplayReceipt(*result.LocalTest, "test", commandSpecSHA256(replayCommandFor("", "test")))) {
+			if repository.LocalTests == "required" && (result.LocalTest == nil || result.LocalTestSpecSHA256 != commandSpecSHA256(replayCommandFor("", "test")) || !validIsolatedReplayReceipt(*result.LocalTest, "test", commandSpecSHA256(replayCommandFor("", "test")))) {
 				return fmt.Errorf("required local test failed for %q", result.RepositoryID)
 			}
 		}
@@ -402,6 +439,10 @@ func repositoryIndex(repositories []RepositorySpec) map[string]RepositorySpec {
 
 func validReplayReceipt(result CommandResult, operation, expectedSpecSHA256 string) bool {
 	return result.Passed && !result.TimedOut && result.ExitCode == 0 && result.DurationMS >= 0 && len(result.Command) == 1 && result.Command[0] == operation && result.CommandSpecSHA256 == expectedSpecSHA256 && sha256Pattern.MatchString(expectedSpecSHA256) && sha256Pattern.MatchString(result.StdoutSHA256) && sha256Pattern.MatchString(result.StderrSHA256)
+}
+
+func validIsolatedReplayReceipt(result CommandResult, operation, expectedSpecSHA256 string) bool {
+	return result.WorkingDirectory == replayWorkspaceIdentity && validReplayReceipt(result, operation, expectedSpecSHA256)
 }
 
 func validateReplayRequest(request ReplayRequest, inputs SealedHostInputs) ([]ReplayRepository, error) {
@@ -477,10 +518,11 @@ func validateReplayRuntimeBindings(request ReplayRequest) error {
 
 func replayCommandFor(candidatePath, operation string) ReplayCommand {
 	return ReplayCommand{
-		Path:    candidatePath,
-		Args:    []string{operation, "--project", ".", "--json", "--no-progress"},
-		Env:     append([]string(nil), fixedReplayEnvironment...),
-		Timeout: replayTimeout,
+		Path:             candidatePath,
+		Args:             []string{operation, "--project", ".", "--json", "--no-progress"},
+		Env:              append([]string(nil), fixedReplayEnvironment...),
+		WorkingDirectory: replayWorkspaceIdentity,
+		Timeout:          replayTimeout,
 	}
 }
 
@@ -564,7 +606,7 @@ func runReplayCommandOutput(workingDir string, command ReplayCommand) (CommandRe
 	cmd.Env = append([]string(nil), command.Env...)
 	err := cmd.Run()
 	result := CommandResult{
-		Command: replayCommandLine(command), CommandSpecSHA256: commandSpecSHA256(command), ExitCode: -1, DurationMS: time.Since(started).Milliseconds(),
+		Command: replayCommandLine(command), CommandSpecSHA256: commandSpecSHA256(command), WorkingDirectory: command.WorkingDirectory, ExitCode: -1, DurationMS: time.Since(started).Milliseconds(),
 		StdoutSHA256: replayBytesSHA256(stdout.Bytes()), StderrSHA256: replayBytesSHA256(stderr.Bytes()), TimedOut: ctx.Err() == context.DeadlineExceeded,
 	}
 	if exitError, ok := err.(*exec.ExitError); ok {
@@ -587,11 +629,12 @@ func commandSpecSHA256(command ReplayCommand) string {
 	environment := append([]string(nil), command.Env...)
 	sort.Strings(environment)
 	data, _ := json.Marshal(struct {
-		Operation   string   `json:"operation"`
-		Arguments   []string `json:"arguments"`
-		Environment []string `json:"environment"`
-		TimeoutNS   int64    `json:"timeoutNs"`
-	}{command.Args[0], command.Args, environment, command.Timeout.Nanoseconds()})
+		Operation        string   `json:"operation"`
+		Arguments        []string `json:"arguments"`
+		Environment      []string `json:"environment"`
+		WorkingDirectory string   `json:"workingDirectory"`
+		TimeoutNS        int64    `json:"timeoutNs"`
+	}{command.Args[0], command.Args, environment, command.WorkingDirectory, command.Timeout.Nanoseconds()})
 	return replayBytesSHA256(data)
 }
 

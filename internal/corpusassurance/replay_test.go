@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -13,6 +14,11 @@ import (
 
 func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
 	request, capture := replayRequest(t, "local", "0")
+	sealedRoot := filepath.Join(filepath.Dir(request.HostManifestPath), "snapshots", "private-corpus-001")
+	expectedTreeSHA256, err := canonicalTreeSHA256(sealedRoot)
+	if err != nil {
+		t.Fatal(err)
+	}
 	shard, err := RunReplay(request)
 	if err != nil {
 		t.Fatalf("RunReplay: %v", err)
@@ -22,6 +28,18 @@ func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
 	}
 	if got, want := readLines(t, capture), []string{"check", "--project", ".", "--json", "--no-progress"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("argv = %q, want %q", got, want)
+	}
+	workspaces := readLines(t, capture+".working")
+	if len(workspaces) != 2 || workspaces[0] != workspaces[1] {
+		t.Fatalf("replay workspaces = %q", workspaces)
+	}
+	for _, workspace := range workspaces {
+		if workspace == sealedRoot {
+			t.Fatal("replay executed in the sealed snapshot")
+		}
+		if _, err := os.Stat(workspace); !os.IsNotExist(err) {
+			t.Fatalf("replay workspace remains after cleanup: %s (%v)", workspace, err)
+		}
 	}
 	result := shard.Repositories[0]
 	if result.SourceSHA256 == "" || result.CandidateSHA256 != request.Candidate.SHA256 || result.ToolsSHA256 != request.Tools.SHA256 {
@@ -36,8 +54,29 @@ func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
 	if result.LocalTest == nil || !result.LocalTest.Passed {
 		t.Fatalf("local test = %#v", result.LocalTest)
 	}
+	if got, err := canonicalTreeSHA256(sealedRoot); err != nil || got != expectedTreeSHA256 {
+		t.Fatalf("sealed snapshot changed after replay: %q, %v", got, err)
+	}
 	if _, err := os.Stat(request.OutputPath); err != nil {
 		t.Fatalf("receipt was not written: %v", err)
+	}
+}
+
+func TestReplayRejectsCleanupFailure(t *testing.T) {
+	request, _ := replayRequest(t, "local", "0")
+	original := removeReplayWorkspace
+	removeReplayWorkspace = func(path string) error {
+		if err := os.RemoveAll(path); err != nil {
+			return err
+		}
+		return errors.New("forced cleanup failure")
+	}
+	t.Cleanup(func() { removeReplayWorkspace = original })
+	if _, err := RunReplay(request); err == nil {
+		t.Fatal("RunReplay accepted a cleanup failure")
+	}
+	if _, err := os.Stat(request.OutputPath); !os.IsNotExist(err) {
+		t.Fatalf("cleanup failure wrote receipt: %v", err)
 	}
 }
 
@@ -183,7 +222,13 @@ func TestValidateReplayMergeRejectsInvalidShards(t *testing.T) {
 		"unexpected repository": func(_ *ReplayMerge, shards *[]ReplayShard) {
 			(*shards)[0].Repositories[0].RepositoryID = "private-corpus-999"
 		},
-		"binding mismatch":     func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[0].Candidate.SHA256 = strings.Repeat("f", 64) },
+		"binding mismatch": func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[0].Candidate.SHA256 = strings.Repeat("f", 64) },
+		"execution tree mismatch": func(_ *ReplayMerge, shards *[]ReplayShard) {
+			(*shards)[0].Repositories[0].ExecutionTreeSHA256 = strings.Repeat("f", 64)
+		},
+		"workspace mismatch": func(_ *ReplayMerge, shards *[]ReplayShard) {
+			(*shards)[0].Repositories[0].Check.WorkingDirectory = "sealed-snapshot"
+		},
 		"failed required test": func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[0].Repositories[0].LocalTest.Passed = false },
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -269,7 +314,7 @@ func replayRequest(t *testing.T, host, exit string) (ReplayRequest, string) {
 	}
 	capture := filepath.Join(root, "argv.txt")
 	candidate, candidatePath := stagedRuntime(t, root, "candidate", replayRuntime("c"))
-	script := "#!/bin/sh\nif [ \"$1\" = check ]; then printf '%s\\n' \"$@\" > '" + capture + "'; fi\nprintf '%s stdout' \"$1\"\nprintf '%s stderr' \"$1\" >&2\nif [ \"$1\" = check ]; then exit " + exit + "; fi\nexit 0\n"
+	script := "#!/bin/sh\nif [ \"$1\" = check ]; then printf '%s\\n' \"$@\" > '" + capture + "'; pwd > '" + capture + ".working'; mkdir -p .glade; printf check > .glade/test-durations.json; fi\nif [ \"$1\" = test ]; then pwd >> '" + capture + ".working'; mkdir -p .glade; printf test > .glade/test-durations.json; fi\nprintf '%s stdout' \"$1\"\nprintf '%s stderr' \"$1\" >&2\nif [ \"$1\" = check ]; then exit " + exit + "; fi\nexit 0\n"
 	if err := os.WriteFile(candidatePath, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -338,14 +383,14 @@ func validReplayMerge() (ReplayMerge, []ReplayShard) {
 	second.ID, second.AssignedHost, second.SnapshotPath = "private-corpus-002", "casper", "snapshots/private-corpus-002"
 	merge := ReplayMerge{Candidate: replayRuntime("d"), Tools: replayRuntime("e"), Repositories: []RepositorySpec{first, second}, Inventory: InventoryManifest{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), Repositories: []RepositorySpec{first, second}}, RootManifestSHA256: strings.Repeat("b", 64), HostManifestSHA256: map[string]string{"local": strings.Repeat("c", 64), "casper": strings.Repeat("d", 64)}, TestReadyByRepository: map[string]bool{first.ID: true, second.ID: true}}
 	shards := []ReplayShard{
-		{Status: "pass", Host: "local", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["local"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: first.ID, SourceSHA256: first.ArchiveSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
-		{Status: "pass", Host: "casper", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["casper"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: second.ID, SourceSHA256: second.ArchiveSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
+		{Status: "pass", Host: "local", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["local"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: first.ID, SourceSHA256: first.ArchiveSHA256, ExecutionTreeSHA256: first.TreeSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
+		{Status: "pass", Host: "casper", OS: merge.Candidate.OS, Arch: merge.Candidate.Arch, Candidate: merge.Candidate, Tools: merge.Tools, Bindings: ReplayBindings{InventorySHA256: merge.Inventory.InventorySHA256, RootManifestSHA256: merge.RootManifestSHA256, HostManifestSHA256: merge.HostManifestSHA256["casper"]}, Repositories: []ReplayRepositoryResult{{RepositoryID: second.ID, SourceSHA256: second.ArchiveSHA256, ExecutionTreeSHA256: second.TreeSHA256, CandidateSHA256: merge.Candidate.SHA256, ToolsSHA256: merge.Tools.SHA256, CheckSpecSHA256: successfulReceipt("check").CommandSpecSHA256, LocalTestSpecSHA256: successfulReceipt("test").CommandSpecSHA256, Check: successfulReceipt("check"), LocalTest: successfulReceiptPointer("test")}}},
 	}
 	return merge, shards
 }
 
 func successfulReceipt(operation string) CommandResult {
-	return CommandResult{Command: []string{operation}, CommandSpecSHA256: commandSpecSHA256(replayCommandFor("", operation)), ExitCode: 0, DurationMS: 1, StdoutSHA256: strings.Repeat("a", 64), StderrSHA256: strings.Repeat("b", 64), Passed: true}
+	return CommandResult{Command: []string{operation}, CommandSpecSHA256: commandSpecSHA256(replayCommandFor("", operation)), WorkingDirectory: replayWorkspaceIdentity, ExitCode: 0, DurationMS: 1, StdoutSHA256: strings.Repeat("a", 64), StderrSHA256: strings.Repeat("b", 64), Passed: true}
 }
 
 func successfulReceiptPointer(operation string) *CommandResult {
