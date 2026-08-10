@@ -1,10 +1,8 @@
 package corpusassurance
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -180,51 +178,16 @@ func remoteCleanupAuthorityMatches(attempt AssuranceAttempt, authority RemoteAtt
 }
 
 func readCandidateAuthority(path string) (attemptCandidate, []byte, error) {
-	data, err := os.ReadFile(path)
+	var document candidateAuthorityDocument
+	data, err := readExactCandidateAuthorityJSON(path, &document)
 	if err != nil {
 		return attemptCandidate{}, nil, err
 	}
-	var document map[string]json.RawMessage
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	if err := decoder.Decode(&document); err != nil {
-		return attemptCandidate{}, nil, err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		return attemptCandidate{}, nil, fmt.Errorf("candidate authority contains multiple JSON values")
-	}
-	var schemaVersion int
-	if err := json.Unmarshal(document["schemaVersion"], &schemaVersion); err != nil || schemaVersion != 1 {
-		return attemptCandidate{}, nil, fmt.Errorf("candidate authority schema is invalid")
-	}
-	binding, err := authorityCandidateAt(document["binding"])
+	candidate, err := validateCandidateAuthorityDocument(document)
 	if err != nil {
 		return attemptCandidate{}, nil, err
 	}
-	bound, err := authorityCandidateAt(document["boundInputs"])
-	if err != nil {
-		return attemptCandidate{}, nil, err
-	}
-	if binding != bound || !commitPattern.MatchString(binding.Commit) || !filepath.IsAbs(binding.Path) || !sha256Pattern.MatchString(binding.SHA256) {
-		return attemptCandidate{}, nil, fmt.Errorf("candidate authority candidates do not agree")
-	}
-	return binding, data, nil
-}
-
-func authorityCandidateAt(raw json.RawMessage) (attemptCandidate, error) {
-	var holder struct {
-		Candidate json.RawMessage `json:"candidate"`
-	}
-	if err := json.Unmarshal(raw, &holder); err != nil || len(holder.Candidate) == 0 {
-		return attemptCandidate{}, fmt.Errorf("candidate authority lacks candidate binding")
-	}
-	var candidate attemptCandidate
-	decoder := json.NewDecoder(bytes.NewReader(holder.Candidate))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&candidate); err != nil {
-		return attemptCandidate{}, err
-	}
-	return candidate, nil
+	return candidate, data, nil
 }
 
 func runtimeArtifactFor(path, commit string) (RuntimeArtifact, error) {

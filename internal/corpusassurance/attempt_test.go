@@ -3,6 +3,7 @@ package corpusassurance
 import (
 	"encoding/json"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -28,7 +29,7 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	}
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
-	writeAttemptAuthority(t, authorityPath, candidate)
+	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot)
 	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	outputPath := filepath.Join(root, "ATTEMPT.json")
 	attempt, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: outputPath})
@@ -59,11 +60,17 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	}
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
-	writeAttemptAuthority(t, authorityPath, candidate)
+	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot)
 	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	for name, mutate := range map[string]func(){
 		"candidate hash": func() {
-			writeAttemptAuthority(t, authorityPath, sealedAttemptCandidate{Commit: candidate.Commit, Path: candidate.Path, SHA256: strings.Repeat("f", 64)})
+			data, err := os.ReadFile(authorityPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(authorityPath, []byte(strings.ReplaceAll(string(data), candidate.SHA256, strings.Repeat("f", 64))), 0o600); err != nil {
+				t.Fatal(err)
+			}
 		},
 		"dirty tools": func() {
 			if err := os.WriteFile(filepath.Join(toolsRoot, "dirty"), []byte("x"), 0o600); err != nil {
@@ -73,7 +80,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	} {
 		t.Run(name, func(t *testing.T) {
 			if name == "candidate hash" {
-				writeAttemptAuthority(t, authorityPath, candidate)
+				writeAttemptAuthority(t, authorityPath, candidate, candidateRoot)
 			}
 			mutate()
 			if _, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: filepath.Join(root, name+".json")}); err == nil {
@@ -85,10 +92,46 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 
 type sealedAttemptCandidate struct{ Commit, Path, SHA256 string }
 
-func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCandidate) {
+func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCandidate, candidateRoot string) {
 	t.Helper()
-	data := `{"schemaVersion":1,"status":"closed-with-waivers","binding":{"candidate":{"commit":"` + candidate.Commit + `","path":"` + candidate.Path + `","sha256":"` + candidate.SHA256 + `"}},"boundInputs":{"candidate":{"commit":"` + candidate.Commit + `","path":"` + candidate.Path + `","sha256":"` + candidate.SHA256 + `"}},"candidateRebind":{"path":"/private/rebind.json","sha256":"` + strings.Repeat("a", 64) + `"}}`
-	if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+	runRoot := t.TempDir()
+	productRoot := filepath.Join(runRoot, "integration", "glade")
+	if err := os.MkdirAll(filepath.Dir(productRoot), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if output, err := exec.Command("git", "clone", "--quiet", candidateRoot, productRoot).CombinedOutput(); err != nil {
+		t.Fatalf("git clone: %v\n%s", err, output)
+	}
+	candidatePath := filepath.Join(runRoot, "evidence", "current-base", "candidate", "glade")
+	if err := os.MkdirAll(filepath.Dir(candidatePath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	binary, err := os.ReadFile(candidate.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(candidatePath, binary, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	pathForRun := func(value string) string {
+		return filepath.ToSlash(strings.TrimPrefix(value, runRoot+string(filepath.Separator)))
+	}
+	receiptPath := filepath.Join(filepath.Dir(candidatePath), "candidate-receipt.json")
+	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true})
+	manifestPath := filepath.Join(filepath.Dir(candidatePath), "candidate-manifest.json")
+	writeCandidateAuthorityJSON(t, manifestPath, map[string]any{"candidate": map[string]any{"commit": candidate.Commit, "path": pathForRun(candidatePath), "sha256": candidate.SHA256}})
+	reviewPath := filepath.Join(filepath.Dir(candidatePath), "REVIEW.md")
+	if err := os.WriteFile(reviewPath, []byte("Verdict: PASS\nCandidate commit: "+candidate.Commit+"\nCandidate SHA-256: "+candidate.SHA256+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	writeCandidateAuthorityJSON(t, filepath.Join(runRoot, "run.json"), map[string]any{"currentBase": map[string]any{"candidate": map[string]any{"productCommit": candidate.Commit, "sha256": candidate.SHA256}}})
+	writeCandidateAuthorityJSON(t, filepath.Join(runRoot, "evidence", "current-base", "review-freeze.json"), map[string]any{"candidateCommit": candidate.Commit, "candidateSha256": candidate.SHA256})
+	rebindPath := filepath.Join(runRoot, "evidence", "current-base", "current-base-candidate-rebind.json")
+	writeCandidateAuthorityJSON(t, rebindPath, map[string]any{"status": "PASS", "manifest": pathForRun(manifestPath), "terraReview": pathForRun(reviewPath), "newCandidateCommit": candidate.Commit, "newCandidateSha256": candidate.SHA256, "candidatePath": pathForRun(candidatePath), "buildReceipt": pathForRun(receiptPath)})
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{RunRoot: runRoot, RebindPath: rebindPath, OutputPath: path}); err != nil {
 		t.Fatal(err)
 	}
 }
