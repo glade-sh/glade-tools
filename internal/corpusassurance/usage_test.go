@@ -432,6 +432,18 @@ func TestDraftUsageReconciliationUsesCanonicalMemberBeforeOverloads(t *testing.T
 	}
 }
 
+func TestDraftUsageReconciliationRetainsMixedObligationsForDecision(t *testing.T) {
+	usage := UsageEntry{UsageKey: "EventBus.publish", Namespace: "EventBus", TypeName: "publish", PrivateProdRefs: 1, RepositoryIDs: []string{"private-corpus-001"}}
+	profile := []UsageProfileRow{
+		{SurfaceID: "apex:System.EventBus.publish", UsageKey: usage.UsageKey, Disposition: "local-runtime-required"},
+		{SurfaceID: "apex:System.EventBus.publish(Object)", UsageKey: usage.UsageKey, Disposition: "compile-shape-required"},
+	}
+	automatic, unresolved, err := draftUsageReconciliation(profile, []UsageEntry{usage})
+	if err != nil || len(automatic) != 0 || len(unresolved) != 1 || unresolved[0].UsageKey != usage.UsageKey {
+		t.Fatalf("automatic=%#v unresolved=%#v err=%v", automatic, unresolved, err)
+	}
+}
+
 func writeUsageRepo(t *testing.T, source string) string {
 	t.Helper()
 	root := t.TempDir()

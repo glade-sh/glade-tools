@@ -559,7 +559,15 @@ func canonicalUsageProfileCandidate(candidates []UsageProfileRow) (UsageProfileR
 		}
 		canonical = candidate
 	}
-	return canonical, canonical.SurfaceID != ""
+	if canonical.SurfaceID == "" {
+		return UsageProfileRow{}, false
+	}
+	for _, candidate := range candidates {
+		if candidate.Disposition != canonical.Disposition {
+			return UsageProfileRow{}, false
+		}
+	}
+	return canonical, true
 }
 
 // ExtractRepositoryUsageFromFiles is the workflow entrypoint. It obtains the
