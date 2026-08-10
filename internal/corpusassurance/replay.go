@@ -46,7 +46,7 @@ type ReplayRequest struct {
 	architecture     func(string) (string, error)
 }
 
-const replayTimeout = 5 * time.Minute
+const replayTimeout = 15 * time.Minute
 
 const replayWorkspaceIdentity = "isolated-sealed-snapshot"
 

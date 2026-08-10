@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestReplayRunsExactArgumentsAndWritesBoundReceipt(t *testing.T) {
@@ -288,6 +289,12 @@ func TestRunReplayCommandRetainsEmptyStreams(t *testing.T) {
 	}
 	if string(result.Output.Stdout) != "stdout" || len(result.Output.Stderr) != 0 || !validRetainedCommandOutput(result) {
 		t.Fatalf("retained output = %#v", result.Output)
+	}
+}
+
+func TestReplayTimeoutCoversLargePrivateCorpus(t *testing.T) {
+	if replayTimeout < 15*time.Minute {
+		t.Fatalf("replay timeout = %s, want at least 15m for large private corpus", replayTimeout)
 	}
 }
 
