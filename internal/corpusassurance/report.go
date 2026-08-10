@@ -287,7 +287,7 @@ func ValidateAssuranceOutcomes(rows []AssuranceSurfaceRow) error {
 func repositoryTestReadiness(merge ReplayMerge, shards []ReplayShard) (map[string]bool, error) {
 	repositories := make(map[string]RepositorySpec, len(merge.Repositories))
 	for _, repository := range merge.Repositories {
-		if repository.ID == "" || repositories[repository.ID].ID != "" || (repository.LocalTests != "required" && repository.LocalTests != "none") {
+		if repository.ID == "" || repositories[repository.ID].ID != "" || (repository.LocalTests != "required" && repository.LocalTests != "tests-not-present") {
 			return nil, fmt.Errorf("invalid replay repository %q", repository.ID)
 		}
 		repositories[repository.ID] = repository
