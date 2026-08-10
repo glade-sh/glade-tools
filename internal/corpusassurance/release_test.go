@@ -233,8 +233,8 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 		if strings.Contains(strings.Join(command.Environment, "\n"), "/attacker/bin") {
 			t.Fatalf("release environment inherits PATH: %#v", command.Environment)
 		}
-		if !strings.Contains(strings.Join(command.Environment, "\n"), "PATH="+filepath.Join(runtime.GOROOT(), "bin")+":") {
-			t.Fatalf("release environment cannot resolve Go: %#v", command.Environment)
+		if _, err := fixedReleaseGoBinary(command.Environment); err != nil {
+			t.Fatalf("release environment cannot resolve Go: %#v, %v", command.Environment, err)
 		}
 	}
 }
@@ -251,6 +251,14 @@ func TestFixedReleaseGoBinaryUsesSealedAbsolutePath(t *testing.T) {
 	}
 }
 
+func TestFixedReleasePathOmitsRelativeGoRoot(t *testing.T) {
+	for _, directory := range strings.Split(fixedReleasePath(""), string(filepath.ListSeparator)) {
+		if !filepath.IsAbs(directory) {
+			t.Fatalf("fixed release PATH has relative component %q", directory)
+		}
+	}
+}
+
 func TestFixedReleaseEnvironmentUsesWritableSealedHome(t *testing.T) {
 	if !strings.Contains(strings.Join(fixedReleaseEnvironment(), "\n"), "HOME=/private/tmp/glade-assurance-home") {
 		t.Fatalf("release environment has no writable sealed home: %#v", fixedReleaseEnvironment())
@@ -261,7 +269,7 @@ func TestFixedReleaseEnvironmentPrefersSupportedMacTools(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("Homebrew path is macOS-specific")
 	}
-	want := "PATH=" + filepath.Join(runtime.GOROOT(), "bin") + ":/opt/homebrew/bin:"
+	want := "PATH=" + fixedReleasePath(runtime.GOROOT())
 	if !strings.Contains(strings.Join(fixedReleaseEnvironment(), "\n"), want) {
 		t.Fatalf("release environment does not prefer supported macOS tools: %#v", fixedReleaseEnvironment())
 	}

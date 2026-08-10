@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 )
@@ -336,7 +335,11 @@ func buildAMD64Tools(root, output, commit string) (RuntimeArtifact, error) {
 	if err := validateCleanGitRoot(root, commit); err != nil {
 		return RuntimeArtifact{}, err
 	}
-	command := exec.Command(filepath.Join(runtime.GOROOT(), "bin", "go"), "build", "-o", output, "./cmd/glade-tools")
+	goBin, err := fixedReleaseGoBinary(fixedReleaseEnvironment())
+	if err != nil {
+		return RuntimeArtifact{}, err
+	}
+	command := exec.Command(goBin, "build", "-o", output, "./cmd/glade-tools")
 	command.Dir = root
 	command.Env = toolsAMD64BuildEnvironment()
 	if data, err := command.CombinedOutput(); err != nil {
