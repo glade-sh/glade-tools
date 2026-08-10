@@ -344,8 +344,8 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 	if err := validateReplayDenominator(merge); err != nil {
 		return err
 	}
-	if len(merge.TestReadyByRepository) != len(merge.Repositories) {
-		return fmt.Errorf("replay merge test readiness is incomplete")
+	if err := validateReplayTestReadiness(merge.Repositories, merge.TestReadyByRepository); err != nil {
+		return err
 	}
 	expected := repositoryIndex(merge.Inventory.Repositories)
 	seen := make(map[string]bool, len(expected))
@@ -395,6 +395,34 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 		}
 	}
 	return nil
+}
+
+func validateReplayTestReadiness(repositories []RepositorySpec, readiness map[string]bool) error {
+	if len(readiness) != len(repositories) {
+		return fmt.Errorf("replay merge test readiness is incomplete")
+	}
+	for _, repository := range repositories {
+		expected := repository.LocalTests == "required"
+		actual, exists := readiness[repository.ID]
+		if !exists || actual != expected {
+			return fmt.Errorf("invalid replay test readiness for %q", repository.ID)
+		}
+	}
+	return nil
+}
+
+func validateReplayRootBinding(merge ReplayMerge, root InventoryManifest) error {
+	if len(merge.Repositories) != len(root.Repositories) {
+		return fmt.Errorf("replay merge repository denominator does not match root manifest")
+	}
+	expected := repositoryIndex(root.Repositories)
+	for _, repository := range merge.Repositories {
+		canonical, exists := expected[repository.ID]
+		if !exists || canonical != repository {
+			return fmt.Errorf("replay merge repository does not match root manifest for %q", repository.ID)
+		}
+	}
+	return validateReplayTestReadiness(root.Repositories, merge.TestReadyByRepository)
 }
 
 func validateReplayDenominator(merge ReplayMerge) error {

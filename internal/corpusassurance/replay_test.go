@@ -238,6 +238,11 @@ func TestValidateReplayMergeRejectsInvalidShards(t *testing.T) {
 		"forged retained output": func(_ *ReplayMerge, shards *[]ReplayShard) {
 			(*shards)[0].Repositories[0].Check.Output.Stdout = []byte("forged")
 		},
+		"no-tests repository marked test ready": func(merge *ReplayMerge, _ *[]ReplayShard) {
+			merge.Repositories[1].LocalTests, merge.Repositories[1].LocalTestsReason = "tests-not-present", "no Apex test classes found in snapshot"
+			merge.Inventory.Repositories[1] = merge.Repositories[1]
+			merge.TestReadyByRepository["private-corpus-002"] = true
+		},
 		"failed required test": func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[0].Repositories[0].LocalTest.Passed = false },
 	} {
 		t.Run(name, func(t *testing.T) {

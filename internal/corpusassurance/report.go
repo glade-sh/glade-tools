@@ -116,8 +116,11 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 		shards = append(shards, snapshot.Shard)
 	}
 	merge, mergeBytes, err := readExactJSONBytes[ReplayMerge](request.ReplayPath)
-	if err != nil || merge.RootManifestSHA256 != replayBytesSHA256(rootBytes) || merge.Candidate != plan.Candidate || merge.Tools != plan.Tools || len(merge.TestReadyByRepository) != len(root.Repositories) {
+	if err != nil || merge.RootManifestSHA256 != replayBytesSHA256(rootBytes) || merge.Candidate != plan.Candidate || merge.Tools != plan.Tools {
 		return AssuranceReceipt{}, fmt.Errorf("replay merge does not bind current evidence")
+	}
+	if err := validateReplayRootBinding(merge, root); err != nil {
+		return AssuranceReceipt{}, fmt.Errorf("replay merge does not bind current root manifest: %w", err)
 	}
 	rows, err := deriveAssuranceRows(usage.Reconciliation, profile, proof, plan, shards, merge.TestReadyByRepository)
 	if err != nil {
