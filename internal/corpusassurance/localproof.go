@@ -209,7 +209,7 @@ func ValidateLocalProof(proof LocalProof, manifest LocalProofFixtureManifest) er
 	raw := make(map[string]LocalProofFixtureResult, len(proof.RawFixtureResults))
 	for _, result := range proof.RawFixtureResults {
 		fixture, exists := fixtures[result.FixtureID]
-		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || result.Receipt.ExecutableSHA256 != proof.Candidate.SHA256 || result.Operation != localProofOperation(fixture.Disposition) || !validLocalProofReceipt(result.Receipt, result.Operation, receiptSpecs[result.FixtureID]) || result.StdoutSHA256 != result.Receipt.StdoutSHA256 || result.StderrSHA256 != result.Receipt.StderrSHA256 || replayBytesSHA256([]byte(result.Stdout)) != result.StdoutSHA256 || replayBytesSHA256([]byte(result.Stderr)) != result.StderrSHA256 || !validatesCandidateJSON([]byte(result.Stdout), result.Operation, apexInputs[result.FixtureID]) {
+		if !exists || raw[result.FixtureID].FixtureID != "" || !selectedFixtures[result.FixtureID] || result.FixtureSHA256 != fixture.SHA256 || result.Disposition != fixture.Disposition || result.CandidateSHA256 != proof.Candidate.SHA256 || result.ToolsSHA256 != proof.Tools.SHA256 || result.Receipt.ExecutableSHA256 != proof.Candidate.SHA256 || !localProofOperationMatches(fixture.Disposition, result.Operation) || !validLocalProofReceipt(result.Receipt, result.Operation, receiptSpecs[result.FixtureID]) || result.StdoutSHA256 != result.Receipt.StdoutSHA256 || result.StderrSHA256 != result.Receipt.StderrSHA256 || replayBytesSHA256([]byte(result.Stdout)) != result.StdoutSHA256 || replayBytesSHA256([]byte(result.Stderr)) != result.StderrSHA256 || !validatesCandidateJSON([]byte(result.Stdout), result.Operation, apexInputs[result.FixtureID]) {
 			return fmt.Errorf("invalid local proof fixture receipt %q", result.FixtureID)
 		}
 		raw[result.FixtureID] = result
@@ -286,6 +286,13 @@ func localProofOperation(disposition string) string {
 	default:
 		return ""
 	}
+}
+
+func localProofOperationMatches(disposition, operation string) bool {
+	if disposition == localRuntimeRequired {
+		return operation == "exec" || operation == "test"
+	}
+	return operation == localProofOperation(disposition)
 }
 
 func validSurfaceObservation(surface LocalSurfaceProof) bool {
@@ -699,7 +706,7 @@ func localProofReceiptSpecSHA256(command localProofCommand, executableSHA256 str
 func localProofEvidenceKindMatches(disposition, commandKind, evidenceKind string) bool {
 	switch disposition {
 	case localRuntimeRequired:
-		return commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime")
+		return (commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime")) || (commandKind == "test" && evidenceKind == "test")
 	case deterministicMockRequired:
 		return commandKind == "test" && (evidenceKind == "test" || evidenceKind == "behavior")
 	case compileShapeRequired:

@@ -1,0 +1,33 @@
+{
+  "name": "assurance-missing-test-context-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Test.setMock",
+      "symbol": "Test.setMock",
+      "kind": "test",
+      "notes": "Source-backed test-context execution probe for the private-corpus runtime obligation."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/AssuranceTestContextRuntime.cls",
+      "content": "@isTest private class AssuranceTestContextRuntime { @isTest static void setMock() { Test.setMock('HttpCalloutMock', new AssuranceTestContextHttpMock()); } }"
+    },
+    {
+      "path": "force-app/main/default/classes/AssuranceTestContextHttpMock.cls",
+      "content": "global class AssuranceTestContextHttpMock implements HttpCalloutMock { global HttpResponse respond(HttpRequest request) { return new HttpResponse(); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

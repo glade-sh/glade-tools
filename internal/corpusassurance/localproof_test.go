@@ -100,6 +100,12 @@ func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
 	}
 }
 
+func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T) {
+	if !localProofEvidenceKindMatches(localRuntimeRequired, "test", "test") {
+		t.Fatal("local runtime test fixture was rejected")
+	}
+}
+
 func TestLocalProofExecutesAStagedCandidateCopy(t *testing.T) {
 	request, calls := localProofRequest(t)
 	if _, err := RunLocalProof(request); err != nil {
