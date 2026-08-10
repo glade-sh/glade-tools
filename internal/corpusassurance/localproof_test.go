@@ -106,6 +106,23 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 	}
 }
 
+func TestLocalProofAcceptsSourceBackedTestContextRuntimeFixture(t *testing.T) {
+	entry := LocalProofFixture{ID: "test-context", Name: "test-context", Path: filepath.Join(t.TempDir(), "fixture.json"), OwnedSurfaceIDs: []string{"apex:System.Test.setMock"}, Disposition: localRuntimeRequired}
+	fixture := compat.Fixture{
+		Name:    entry.Name,
+		Command: compat.Invocation{Kind: "test"},
+		Evidence: []compat.FixtureEvidence{{
+			SurfaceID: "apex:System.Test.setMock",
+			Kind:      "test",
+			Symbol:    "Test.setMock",
+		}},
+		Source: []compat.SourceFile{{Path: "force-app/main/default/classes/TestContext.cls", Content: "Test.setMock('HttpCalloutMock', mock);"}},
+	}
+	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+		t.Fatalf("validateLocalProofFixtureIdentity() error = %v", err)
+	}
+}
+
 func TestLocalProofExecutesAStagedCandidateCopy(t *testing.T) {
 	request, calls := localProofRequest(t)
 	if _, err := RunLocalProof(request); err != nil {
