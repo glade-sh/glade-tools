@@ -382,7 +382,19 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 	command := `{"kind":"check"}`
 	source := "public class " + strings.Title(name) + " { public void run() {} public void extra() {} }"
 	if disposition == localRuntimeRequired {
-		command = `{"kind":"exec","args":["new Runtime().run(); new Runtime().extra();"]}`
+		program := "new Runtime().run(); new Runtime().extra();"
+		if name != "runtime" {
+			calls := make([]string, 0, len(surfaceIDs))
+			for _, surfaceID := range surfaceIDs {
+				symbol := strings.TrimPrefix(surfaceID, "apex:")
+				if index := strings.IndexByte(symbol, '('); index >= 0 {
+					symbol = symbol[:index]
+				}
+				calls = append(calls, symbol+"();")
+			}
+			program = strings.Join(calls, " ")
+		}
+		command = `{"kind":"exec","args":[` + mustJSON(t, program) + `]}`
 	} else if disposition == deterministicMockRequired {
 		command = `{"kind":"test"}`
 		source = "@IsTest private class " + strings.Title(name) + " { public void run() {} @IsTest static void prove() { new Mock().run(); } }"
