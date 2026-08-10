@@ -110,6 +110,9 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	} else if !os.IsNotExist(err) {
 		return OracleBundle{}, err
 	}
+	if filepath.Base(filepath.Clean(request.OutputPath)) != "salesforce-worker" {
+		return OracleBundle{}, fmt.Errorf("oracle bundle output root must be named salesforce-worker")
+	}
 	profile, profileBytes, err := readExactJSONBytes[AssuranceProfile](request.ProfilePath)
 	if err != nil {
 		return OracleBundle{}, fmt.Errorf("read assurance profile: %w", err)

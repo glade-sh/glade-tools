@@ -1,17 +1,17 @@
 {
   "command": "glade compat lwc corpus",
-  "root": "/Users/matt/.sf-repo-analysis/repos",
+  "root": "private-corpus-root",
   "includeRepos": [
-    "src-nbm-solhub-develop",
-    "src-nmb-namz-prog-develop",
-    "src-nmb-nc-develop",
-    "src-nmb-nu-develop",
-    "src-nmb-nudev-develop",
-    "src-nmb-nuq-develop",
-    "src-nmb-nutpl-develop",
-    "src-nmb-nutplx-master",
-    "sf-cred-pkg-develop",
-    "base-components-recipes"
+    "private-corpus-001",
+    "private-corpus-002",
+    "private-corpus-003",
+    "private-corpus-004",
+    "private-corpus-005",
+    "private-corpus-006",
+    "private-corpus-007",
+    "private-corpus-008",
+    "private-corpus-009",
+    "private-corpus-010"
   ],
   "counts": {
     "meta": 482,
@@ -9515,8 +9515,8 @@
   ],
   "repositories": [
     {
-      "name": "base-components-recipes",
-      "path": "base-components-recipes",
+      "name": "private-corpus-010",
+      "path": "private-corpus-010",
       "counts": {
         "meta": 121,
         "js": 284,
@@ -9531,8 +9531,8 @@
       }
     },
     {
-      "name": "sf-cred-pkg-develop",
-      "path": "sf-cred-pkg-develop",
+      "name": "private-corpus-009",
+      "path": "private-corpus-009",
       "counts": {
         "meta": 253,
         "js": 484,
@@ -9547,8 +9547,8 @@
       }
     },
     {
-      "name": "src-nbm-solhub-develop",
-      "path": "src-nbm-solhub-develop",
+      "name": "private-corpus-001",
+      "path": "private-corpus-001",
       "counts": {
         "meta": 8,
         "js": 8,
@@ -9563,8 +9563,8 @@
       }
     },
     {
-      "name": "src-nmb-namz-prog-develop",
-      "path": "src-nmb-namz-prog-develop",
+      "name": "private-corpus-002",
+      "path": "private-corpus-002",
       "counts": {
         "meta": 0,
         "js": 0,
@@ -9579,8 +9579,8 @@
       }
     },
     {
-      "name": "src-nmb-nc-develop",
-      "path": "src-nmb-nc-develop",
+      "name": "private-corpus-003",
+      "path": "private-corpus-003",
       "counts": {
         "meta": 37,
         "js": 46,
@@ -9595,8 +9595,8 @@
       }
     },
     {
-      "name": "src-nmb-nu-develop",
-      "path": "src-nmb-nu-develop",
+      "name": "private-corpus-004",
+      "path": "private-corpus-004",
       "counts": {
         "meta": 58,
         "js": 113,
@@ -9611,8 +9611,8 @@
       }
     },
     {
-      "name": "src-nmb-nudev-develop",
-      "path": "src-nmb-nudev-develop",
+      "name": "private-corpus-005",
+      "path": "private-corpus-005",
       "counts": {
         "meta": 5,
         "js": 5,
@@ -9627,8 +9627,8 @@
       }
     },
     {
-      "name": "src-nmb-nuq-develop",
-      "path": "src-nmb-nuq-develop",
+      "name": "private-corpus-006",
+      "path": "private-corpus-006",
       "counts": {
         "meta": 0,
         "js": 0,
@@ -9643,8 +9643,8 @@
       }
     },
     {
-      "name": "src-nmb-nutpl-develop",
-      "path": "src-nmb-nutpl-develop",
+      "name": "private-corpus-007",
+      "path": "private-corpus-007",
       "counts": {
         "meta": 0,
         "js": 0,
@@ -9659,8 +9659,8 @@
       }
     },
     {
-      "name": "src-nmb-nutplx-master",
-      "path": "src-nmb-nutplx-master",
+      "name": "private-corpus-008",
+      "path": "private-corpus-008",
       "counts": {
         "meta": 0,
         "js": 0,
@@ -9677,7 +9677,7 @@
   ],
   "packages": [
     {
-      "repository": "base-components-recipes",
+      "repository": "private-corpus-010",
       "path": "examples",
       "counts": {
         "meta": 41,
@@ -9693,7 +9693,7 @@
       }
     },
     {
-      "repository": "base-components-recipes",
+      "repository": "private-corpus-010",
       "path": "force-app",
       "default": true,
       "counts": {
@@ -9710,7 +9710,7 @@
       }
     },
     {
-      "repository": "sf-cred-pkg-develop",
+      "repository": "private-corpus-009",
       "path": "force-app/fflib",
       "counts": {
         "meta": 0,
@@ -9726,7 +9726,7 @@
       }
     },
     {
-      "repository": "sf-cred-pkg-develop",
+      "repository": "private-corpus-009",
       "name": "Verifiable",
       "path": "force-app/verifiable-app",
       "default": true,
@@ -9744,7 +9744,7 @@
       }
     },
     {
-      "repository": "src-nbm-solhub-develop",
+      "repository": "private-corpus-001",
       "name": "Solution Hub",
       "path": "force-app",
       "default": true,
@@ -9762,7 +9762,7 @@
       }
     },
     {
-      "repository": "src-nmb-namz-prog-develop",
+      "repository": "private-corpus-002",
       "name": "namz-prog",
       "path": "sfdx-source/namz-prog",
       "default": true,
@@ -9780,7 +9780,7 @@
       }
     },
     {
-      "repository": "src-nmb-nc-develop",
+      "repository": "private-corpus-003",
       "path": ".",
       "counts": {
         "meta": 37,
@@ -9796,7 +9796,7 @@
       }
     },
     {
-      "repository": "src-nmb-nu-develop",
+      "repository": "private-corpus-004",
       "path": "docs/samples",
       "counts": {
         "meta": 0,
@@ -9812,7 +9812,7 @@
       }
     },
     {
-      "repository": "src-nmb-nu-develop",
+      "repository": "private-corpus-004",
       "path": "sfdx-source/nu",
       "default": true,
       "counts": {
@@ -9829,7 +9829,7 @@
       }
     },
     {
-      "repository": "src-nmb-nu-develop",
+      "repository": "private-corpus-004",
       "path": "sfdx-source/unpackaged",
       "counts": {
         "meta": 3,
@@ -9845,7 +9845,7 @@
       }
     },
     {
-      "repository": "src-nmb-nu-develop",
+      "repository": "private-corpus-004",
       "path": "sfdx-source/untracked",
       "counts": {
         "meta": 0,
@@ -9861,7 +9861,7 @@
       }
     },
     {
-      "repository": "src-nmb-nudev-develop",
+      "repository": "private-corpus-005",
       "path": "force-app",
       "default": true,
       "counts": {
@@ -9878,7 +9878,7 @@
       }
     },
     {
-      "repository": "src-nmb-nuq-develop",
+      "repository": "private-corpus-006",
       "path": ".",
       "counts": {
         "meta": 0,
@@ -9894,7 +9894,7 @@
       }
     },
     {
-      "repository": "src-nmb-nutpl-develop",
+      "repository": "private-corpus-007",
       "path": "force-app",
       "default": true,
       "counts": {
@@ -9911,7 +9911,7 @@
       }
     },
     {
-      "repository": "src-nmb-nutplx-master",
+      "repository": "private-corpus-008",
       "path": ".",
       "counts": {
         "meta": 0,

@@ -663,6 +663,32 @@ func TestRunSalesforceOrgCreateSealsInvalidatedCleanupAuthorityAfterCreate(t *te
 	}
 }
 
+func TestRunSalesforceOrgCreateSealsInvalidatedAuthorityWhenDevHubCheckFails(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "org-create.json")
+	writeSyntheticDevHubBundle(t, bundlePath)
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{
+		BundlePath: bundlePath, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath,
+		validateBundle: func(string) error { return nil },
+		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+				return salesforceCommandOutput{}, errors.New("Dev Hub check unavailable")
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
+		},
+	})
+	if err == nil {
+		t.Fatal("RunSalesforceOrgCreate accepted a failed Dev Hub check")
+	}
+	invalidated, readErr := readExactJSON[SalesforceOrgCreation](outputPath + ".invalidated")
+	if readErr != nil || !validInvalidatedSalesforceOrgCreation(invalidated, "sealed-dev-hub", "assurance-sf0") || invalidated.OrgID != "00D000000000001" {
+		t.Fatalf("invalidated creation = %#v, %v", invalidated, readErr)
+	}
+}
+
 func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 	root := t.TempDir()
 	bundlePath, creationPath, preflightPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "preflight.json"), filepath.Join(root, "cleanup.json")

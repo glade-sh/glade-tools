@@ -675,33 +675,32 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 	if err != nil {
 		return SalesforceOrgCreation{}, err
 	}
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, Alias: request.Alias, OrgID: orgID, Command: command}
+	sealInvalidated := func(cause error) (SalesforceOrgCreation, error) {
+		invalidated := creation
+		invalidated.Invalidated = true
+		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", invalidated); sealErr != nil {
+			return SalesforceOrgCreation{}, fmt.Errorf("seal invalidated Salesforce org creation: %w", sealErr)
+		}
+		return SalesforceOrgCreation{}, cause
+	}
 	devHubOutput, devHubCommand, err := runSalesforceExpectedCommand(runner, request.SFBin, filepath.Dir(request.BundlePath), true, "org", "display", "--target-org", request.DevHub, "--json")
 	if err != nil {
-		return SalesforceOrgCreation{}, err
+		return sealInvalidated(err)
 	}
 	observedOrgID, _, observedUsername, err := parseSalesforceOrgDisplay(devHubOutput.Stdout)
 	if err != nil || observedOrgID != devHubAuthority.OrgID || observedUsername != devHubAuthority.Username {
-		return SalesforceOrgCreation{}, fmt.Errorf("Salesforce Dev Hub identity does not match sealed authority")
+		return sealInvalidated(fmt.Errorf("Salesforce Dev Hub identity does not match sealed authority"))
 	}
-	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, Alias: request.Alias, OrgID: orgID, Command: command, DevHubCommand: devHubCommand}
+	creation.DevHubCommand = devHubCommand
 	if err := validate(request.BundlePath); err != nil {
-		invalidated := creation
-		invalidated.Invalidated = true
-		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", invalidated); sealErr != nil {
-			return SalesforceOrgCreation{}, fmt.Errorf("seal invalidated Salesforce org creation: %w", sealErr)
-		}
-		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation: %w", err)
+		return sealInvalidated(fmt.Errorf("staged bundle changed during org creation: %w", err))
 	}
 	if hash, err := sha256File(request.BundlePath); err != nil || hash != bundleSHA {
-		invalidated := creation
-		invalidated.Invalidated = true
-		if sealErr := WriteNewJSON(request.OutputPath+".invalidated", invalidated); sealErr != nil {
-			return SalesforceOrgCreation{}, fmt.Errorf("seal invalidated Salesforce org creation: %w", sealErr)
-		}
-		return SalesforceOrgCreation{}, fmt.Errorf("staged bundle changed during org creation")
+		return sealInvalidated(fmt.Errorf("staged bundle changed during org creation"))
 	}
 	if err := WriteNewJSON(request.OutputPath, creation); err != nil {
-		return SalesforceOrgCreation{}, err
+		return sealInvalidated(err)
 	}
 	return creation, nil
 }
@@ -722,6 +721,9 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 		validate = ValidateOracleBundle
 	}
 	if request.PreflightPath == "" {
+		if _, err := os.Stat(request.CreationPath); os.IsNotExist(err) {
+			request.CreationPath += ".invalidated"
+		}
 		devHubAuthority, authorityErr := readSealedSalesforceDevHubAuthority(request.BundlePath)
 		if authorityErr != nil {
 			return SalesforceOrgCleanup{}, authorityErr
@@ -792,7 +794,7 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 
 func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
 	creation, creationBytes, err := readExactJSONBytes[SalesforceOrgCreation](request.CreationPath)
-	if err != nil || !creation.Invalidated || !validSalesforceOrgCreation(creation, creation.BundleSHA256, request.BundlePath, request.DevHub, request.TargetOrg) {
+	if err != nil || !validInvalidatedSalesforceOrgCreation(creation, request.DevHub, request.TargetOrg) {
 		return SalesforceOrgCleanup{}, fmt.Errorf("invalidated Salesforce org creation receipt is invalid")
 	}
 	runner := request.runner
@@ -823,6 +825,25 @@ func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (Sa
 		return SalesforceOrgCleanup{}, err
 	}
 	return cleanup, nil
+}
+
+func validInvalidatedSalesforceOrgCreation(creation SalesforceOrgCreation, devHub, alias string) bool {
+	command := creation.Command
+	if !creation.Invalidated || creation.SchemaVersion != 1 || !sha256Pattern.MatchString(creation.BundleSHA256) || creation.DevHub != devHub || creation.Alias != alias || creation.OrgID == "" || len(command.Command) != 13 || command.Command[0] != "/usr/local/bin/sf" || !validRetainedCommandOutput(command) || !command.Passed || command.ExitCode != 0 || command.TimedOut {
+		return false
+	}
+	args := command.Command[1:]
+	definition := args[6]
+	if !equalStrings(args[:6], []string{"org", "create", "scratch", "--target-dev-hub", devHub, "--definition-file"}) || args[7] != "--alias" || args[8] != alias || !equalStrings(args[9:], []string{"--duration-days", "1", "--json"}) || !filepath.IsAbs(definition) || filepath.Dir(definition) != command.WorkingDirectory || filepath.Base(definition) != "corpus-assurance-scratch-def.json" {
+		return false
+	}
+	environment, err := fixedSalesforceEnvironment()
+	if err != nil {
+		return false
+	}
+	expectedSpec := salesforceCommandSpecSHA256(command.Command[0], args, command.WorkingDirectory, environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
+	orgID, outputErr := retainedSalesforceOrgCreate(command)
+	return outputErr == nil && orgID == creation.OrgID && reflect.DeepEqual(command.Environment, environment) && sha256Pattern.MatchString(command.ExecutableSHA256) && command.ExecutableSHA256 == command.ExecutableAfterSHA256 && command.CommandSpecSHA256 == expectedSpec && sha256Pattern.MatchString(command.StdoutSHA256) && sha256Pattern.MatchString(command.StderrSHA256)
 }
 
 func runSalesforceExpectedCommand(runner salesforceCommandRunner, binary, workingDirectory string, expectedSuccess bool, args ...string) (salesforceCommandOutput, CommandResult, error) {

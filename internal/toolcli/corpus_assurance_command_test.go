@@ -35,6 +35,9 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if strings.Contains(stdout.String(), "attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --remote-cleanup-authority") {
 		t.Fatalf("attempt help still requires authorities before the attempt exists:\n%s", stdout.String())
 	}
+	if !strings.Contains(stdout.String(), "[--org-preflight <ORG_PREFLIGHT.json>]") {
+		t.Fatalf("org-cleanup help does not document invalidated-receipt recovery:\n%s", stdout.String())
+	}
 }
 
 func TestCorpusAssuranceUsageDraftExecutes(t *testing.T) {

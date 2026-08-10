@@ -223,6 +223,14 @@ func TestBuildOracleBundleRequiresExecutableAMD64FilterContract(t *testing.T) {
 	}
 }
 
+func TestBuildOracleBundleRequiresSalesforceWorkerOutputRoot(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	if _, err := BuildOracleBundle(inputs.request(filepath.Join(t.TempDir(), "wrong-root"))); err == nil {
+		t.Fatal("BuildOracleBundle accepted an output root that dispatch cannot consume")
+	}
+}
+
 func TestValidateOracleBundleRejectsCallerForgedFilterAuthority(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)

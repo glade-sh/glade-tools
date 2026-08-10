@@ -92,6 +92,7 @@ type ReplayRepositoryResult struct {
 type ReplayShard struct {
 	Status       string                   `json:"status"`
 	Host         string                   `json:"host"`
+	AttemptRoot  string                   `json:"attemptRoot"`
 	OS           string                   `json:"os"`
 	Arch         string                   `json:"arch"`
 	Candidate    RuntimeArtifact          `json:"candidate"`
@@ -255,7 +256,11 @@ func RunReplay(request ReplayRequest) (ReplayShard, error) {
 		return ReplayShard{}, err
 	}
 
-	shard := ReplayShard{Host: request.Host, OS: runtime.GOOS, Arch: runtime.GOARCH, Candidate: request.Candidate, Tools: request.Tools, Bindings: inputs.Bindings, Status: "pass"}
+	attemptRoot, err := canonicalReplayAttemptRoot(request.HostManifestPath)
+	if err != nil {
+		return ReplayShard{}, err
+	}
+	shard := ReplayShard{Host: request.Host, AttemptRoot: attemptRoot, OS: runtime.GOOS, Arch: runtime.GOARCH, Candidate: request.Candidate, Tools: request.Tools, Bindings: inputs.Bindings, Status: "pass"}
 	for _, repository := range repositories {
 		result, err := runReplayRepository(repository, request)
 		if err != nil {
@@ -289,6 +294,21 @@ func RunReplay(request ReplayRequest) (ReplayShard, error) {
 		return ReplayShard{}, err
 	}
 	return shard, nil
+}
+
+func canonicalReplayAttemptRoot(hostManifestPath string) (string, error) {
+	if !filepath.IsAbs(hostManifestPath) {
+		return "", fmt.Errorf("replay host manifest path must be absolute")
+	}
+	resolved, err := filepath.EvalSymlinks(hostManifestPath)
+	if err != nil {
+		return "", fmt.Errorf("resolve replay host manifest: %w", err)
+	}
+	root := filepath.Dir(resolved)
+	if !filepath.IsAbs(root) {
+		return "", fmt.Errorf("replay attempt root is not absolute")
+	}
+	return root, nil
 }
 
 func runReplayRepository(repository ReplayRepository, request ReplayRequest) (result ReplayRepositoryResult, err error) {

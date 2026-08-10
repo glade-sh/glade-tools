@@ -696,7 +696,7 @@ func sha256File(path string) (string, error) {
 }
 
 func sha256FileDirect(path string) (string, error) {
-	data, err := readAssuranceFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}

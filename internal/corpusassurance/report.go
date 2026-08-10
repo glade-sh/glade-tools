@@ -224,6 +224,10 @@ func validateReportReplayEvidence(request AssuranceReportRequest, merge ReplayMe
 }
 
 func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedCorpusUsage, profile AssuranceProfile, proof LocalProof, manifest LocalProofFixtureManifest, plan OraclePlan, authority ExclusionAuthority, usageSHA, profileSHA, planSHA string) (map[string]string, error) {
+	cleanupRoots, err := expectedReportCleanupRoots(request)
+	if err != nil {
+		return nil, err
+	}
 	ledger, ledgerBytes, err := readExactJSONBytes[surfaceledger.SurfaceLedger](request.LedgerPath)
 	if err != nil || len(ledger.Rows) == 0 {
 		return nil, fmt.Errorf("read report ledger")
@@ -289,7 +293,7 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 	for index, path := range request.RemoteCleanupPaths {
 		cleanup, bytes, err := readExactJSONBytes[RemoteAttemptCleanupReceipt](path)
 		authority, authorityBytes, authorityErr := readRemoteAttemptAuthority(request.RemoteCleanupAuthorityPaths[index])
-		if err != nil || authorityErr != nil || !remoteCleanupAuthorityMatches(attempt, authority, replayBytesSHA256(authorityBytes)) || cleanup.SchemaVersion != 1 || cleanup.AttemptSHA256 != attemptSHA || cleanup.Role != authority.Role || cleanup.Host != authority.Host || cleanup.Parent != authority.Parent || cleanup.AttemptRoot != authority.AttemptRoot || cleanup.BindingSHA256 != replayBytesSHA256(authorityBytes) || cleanup.BindingSHA256 != cleanup.BindingPostSHA256 || !cleanup.ResidueAbsent || !sha256Pattern.MatchString(cleanup.BindingSHA256) || cleanup.TimeoutMS != remoteCleanupTimeout.Milliseconds() || !validRetainedCommandOutput(cleanup.Command) || !cleanup.Command.Passed || cleanup.Command.ExitCode != 0 || cleanup.Command.TimedOut || !equalStrings(cleanup.Command.Command, []string{remoteCleanupBinary, "-o", "BatchMode=yes", cleanup.Host, remoteAttemptCleanupShellCommand(cleanup.Parent, filepath.Base(cleanup.AttemptRoot))}) || cleanup.Command.CommandSpecSHA256 != commandSpecSHA256(ReplayCommand{Path: remoteCleanupBinary, Args: cleanup.Command.Command, Timeout: remoteCleanupTimeout}) || cleanup.Command.ExecutableSHA256 != remoteCleanupSHA || cleanup.Command.ExecutableSHA256 != cleanup.Command.ExecutableAfterSHA256 || !sha256Pattern.MatchString(cleanup.Command.ExecutableSHA256) || cleanupInputs[cleanup.Role] != "" {
+		if err != nil || authorityErr != nil || cleanupRoots[authority.Role] != authority.AttemptRoot || !remoteCleanupAuthorityMatches(attempt, authority, replayBytesSHA256(authorityBytes)) || cleanup.SchemaVersion != 1 || cleanup.AttemptSHA256 != attemptSHA || cleanup.Role != authority.Role || cleanup.Host != authority.Host || cleanup.Parent != authority.Parent || cleanup.AttemptRoot != authority.AttemptRoot || cleanup.BindingSHA256 != replayBytesSHA256(authorityBytes) || cleanup.BindingSHA256 != cleanup.BindingPostSHA256 || !cleanup.ResidueAbsent || !sha256Pattern.MatchString(cleanup.BindingSHA256) || cleanup.TimeoutMS != remoteCleanupTimeout.Milliseconds() || !validRetainedCommandOutput(cleanup.Command) || !cleanup.Command.Passed || cleanup.Command.ExitCode != 0 || cleanup.Command.TimedOut || !equalStrings(cleanup.Command.Command, []string{remoteCleanupBinary, "-o", "BatchMode=yes", cleanup.Host, remoteAttemptCleanupShellCommand(cleanup.Parent, filepath.Base(cleanup.AttemptRoot))}) || cleanup.Command.CommandSpecSHA256 != commandSpecSHA256(ReplayCommand{Path: remoteCleanupBinary, Args: cleanup.Command.Command, Timeout: remoteCleanupTimeout}) || cleanup.Command.ExecutableSHA256 != remoteCleanupSHA || cleanup.Command.ExecutableSHA256 != cleanup.Command.ExecutableAfterSHA256 || !sha256Pattern.MatchString(cleanup.Command.ExecutableSHA256) || cleanupInputs[cleanup.Role] != "" {
 			return nil, fmt.Errorf("invalid report remote cleanup receipt")
 		}
 		if err := verifyRemoteAttemptAbsent(authority, request.remoteRunner); err != nil {
@@ -301,6 +305,38 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 		return nil, fmt.Errorf("report requires one cleanup receipt per worker role")
 	}
 	return map[string]string{"SURFACE_LEDGER.json": ledgerSHA, "SOURCE_PROFILE.json": sourceSHA, "SUPPORT_POLICY.json": policySHA, "USAGE_DECISIONS.json": decisionSHA, "EXCLUSION_REQUEST.json": replayBytesSHA256(exclusionBytes), "EXCLUSION_POLICY.json": replayBytesSHA256(exclusionPolicyBytes), "RELEASE_VALIDATION.json": replayBytesSHA256(releaseBytes), "FILTER_SCRIPT.py": filterSHA, "SCRATCH_DEFINITION.json": scratchSHA, "TOOLS_AMD64": toolsSHA, "REMOTE_CLEANUP_REPLAY_WORKER.json": cleanupInputs["replay-worker"], "REMOTE_CLEANUP_SALESFORCE_WORKER.json": cleanupInputs["salesforce-worker"]}, nil
+}
+
+func expectedReportCleanupRoots(request AssuranceReportRequest) (map[string]string, error) {
+	roots := map[string]string{}
+	for _, path := range request.ReplayShardPaths {
+		shard, _, err := readExactJSONBytes[ReplayShard](path)
+		if err != nil || (shard.Host != "local" && shard.Host != "replay-worker") {
+			return nil, fmt.Errorf("replay cleanup root is not sealed by the replay shard")
+		}
+		if shard.Host == "local" {
+			continue
+		}
+		if !filepath.IsAbs(shard.AttemptRoot) || roots[shard.Host] != "" {
+			return nil, fmt.Errorf("replay cleanup root is not sealed by the replay shard")
+		}
+		roots[shard.Host] = filepath.Clean(shard.AttemptRoot)
+	}
+	for _, files := range request.SalesforceFiles {
+		shard, _, err := readExactJSONBytes[SalesforceShard](files.ShardPath)
+		if err != nil || !filepath.IsAbs(shard.ExecutorRoot) {
+			return nil, fmt.Errorf("Salesforce cleanup root is not sealed by the shard")
+		}
+		root := filepath.Clean(filepath.Dir(filepath.Dir(shard.ExecutorRoot)))
+		if roots["salesforce-worker"] != "" && roots["salesforce-worker"] != root {
+			return nil, fmt.Errorf("Salesforce shards do not share one cleanup root")
+		}
+		roots["salesforce-worker"] = root
+	}
+	if roots["replay-worker"] == "" || roots["salesforce-worker"] == "" {
+		return nil, fmt.Errorf("report requires sealed cleanup roots for both workers")
+	}
+	return roots, nil
 }
 
 func policyAuthorizesRows(policy, rows []ExclusionPolicyRow) bool {
@@ -547,14 +583,14 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 		}
 		switch planRow.Action {
 		case oracleRuntime:
-			if local.SurfaceID == "" || local.Disposition != profileRow.Disposition || !local.RuntimeObserved || !(local.CompilePassed || local.CheckPassed) || remote[surfaceID].Kind != oracleRuntime || !remote[surfaceID].Passed {
+			if local.SurfaceID == "" || !localProofSupportsOracleAction(local, profileRow.Disposition, planRow.Action) || remote[surfaceID].Kind != oracleRuntime || !remote[surfaceID].Passed {
 				return nil, fmt.Errorf("runtime surface %q lacks complete local or Salesforce evidence", surfaceID)
 			}
 			row.LocalEvidence, row.SalesforceEvidence = "runtime", "runtime"
 			row.CompileReady, row.TestReady = true, testReady
 			row.RuntimeParityReady = row.TestReady
 		case oracleCompile:
-			if local.SurfaceID == "" || local.Disposition != profileRow.Disposition || !(local.CompilePassed || local.CheckPassed) || remote[surfaceID].Kind != oracleCompile || !remote[surfaceID].Passed {
+			if local.SurfaceID == "" || !localProofSupportsOracleAction(local, profileRow.Disposition, planRow.Action) || remote[surfaceID].Kind != oracleCompile || !remote[surfaceID].Passed {
 				return nil, fmt.Errorf("compile surface %q lacks complete local or Salesforce evidence", surfaceID)
 			}
 			row.LocalEvidence, row.SalesforceEvidence = "compile", "compile"
@@ -571,6 +607,20 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 		rows = append(rows, row)
 	}
 	return rows, ValidateAssuranceOutcomes(rows)
+}
+
+func localProofSupportsOracleAction(proof LocalSurfaceProof, disposition, action string) bool {
+	if proof.Disposition != disposition || !validSurfaceObservation(proof) {
+		return false
+	}
+	switch action {
+	case oracleRuntime:
+		return proof.RuntimeObserved
+	case oracleCompile:
+		return proof.CompilePassed || disposition == deterministicMockRequired && proof.BehaviorObserved
+	default:
+		return false
+	}
 }
 
 func writeAssuranceArtifacts(report AssuranceReport, jsonPath, htmlPath, receiptPath string, inputs map[string]string) (AssuranceReceipt, error) {

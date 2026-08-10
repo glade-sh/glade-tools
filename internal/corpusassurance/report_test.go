@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,6 +37,66 @@ func TestBuildReportRequiresDirectEvidencePaths(t *testing.T) {
 	request.ReleaseValidationPath = ""
 	if err := requiredReportEvidencePaths(request); err == nil {
 		t.Fatal("report accepted omitted release validation path")
+	}
+}
+
+func TestReportPostflightHashReadsDiskAfterSnapshot(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "input.json")
+	old := []byte(`{"version":1}`)
+	if err := os.WriteFile(path, old, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	setReportSnapshot(map[string][]byte{path: append([]byte(nil), old...)})
+	t.Cleanup(clearReportSnapshot)
+	expected := map[string]string{path: replayBytesSHA256(old)}
+	if err := os.WriteFile(path, []byte(`{"version":2}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := revalidateReportInputHashes(AssuranceReportRequest{InventoryPath: path}, expected); err == nil {
+		t.Fatal("postflight revalidation accepted a changed on-disk input")
+	}
+}
+
+func TestTrackedGeneratedDocsContainNoPrivateCorpusIdentifiers(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "generated")
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return err
+		}
+		data, readErr := os.ReadFile(path)
+		if readErr != nil {
+			return readErr
+		}
+		if containsPrivateReportPath(data) {
+			return fmt.Errorf("private identifier in generated public artifact %s", path)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestExpectedReportCleanupRootsAreDerivedFromExecutionEvidence(t *testing.T) {
+	root := t.TempDir()
+	replayPath := filepath.Join(root, "replay.json")
+	salesforcePath := filepath.Join(root, "salesforce.json")
+	if err := WriteNewJSON(replayPath, ReplayShard{Host: "replay-worker", AttemptRoot: filepath.Join(root, "replay-root")}); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(salesforcePath, SalesforceShard{ExecutorRoot: filepath.Join(root, "salesforce-root", "executor", "shard-0")}); err != nil {
+		t.Fatal(err)
+	}
+	roots, err := expectedReportCleanupRoots(AssuranceReportRequest{ReplayShardPaths: []string{replayPath}, SalesforceFiles: []SalesforceShardFiles{{ShardPath: salesforcePath}}})
+	if err != nil || roots["replay-worker"] != filepath.Join(root, "replay-root") || roots["salesforce-worker"] != filepath.Join(root, "salesforce-root") {
+		t.Fatalf("roots = %#v, err = %v", roots, err)
+	}
+	if err := WriteNewJSON(filepath.Join(root, "salesforce-1.json"), SalesforceShard{ExecutorRoot: filepath.Join(root, "other-root", "executor", "shard-1")}); err != nil {
+		t.Fatal(err)
+	}
+	request := AssuranceReportRequest{ReplayShardPaths: []string{replayPath}, SalesforceFiles: []SalesforceShardFiles{{ShardPath: salesforcePath}, {ShardPath: filepath.Join(root, "salesforce-1.json")}}}
+	if _, err := expectedReportCleanupRoots(request); err == nil {
+		t.Fatal("accepted Salesforce shard roots from different cleanup attempts")
 	}
 }
 
@@ -108,7 +169,7 @@ func TestDeriveAssuranceRowsSeparatesCompileTestRuntimeAndNonParity(t *testing.T
 		{UsageEntry: UsageEntry{UsageKey: "Hosted.only", Namespace: "Hosted", PrivateProdRefs: 1, RepositoryIDs: []string{"private-corpus-002"}}, Class: usageClassExact, SurfaceID: "apex:Hosted.only()"},
 	}}
 	profile := AssuranceProfile{Rows: []AssuranceProfileRow{{SurfaceID: "apex:Runtime.run()", Namespace: "Runtime", Disposition: localRuntimeRequired}, {SurfaceID: "apex:Compile.only()", Namespace: "Compile", Disposition: compileShapeRequired}, {SurfaceID: "apex:Hosted.only()", Namespace: "Hosted", Disposition: "hosted-deferred"}}}
-	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:Runtime.run()", FixtureID: "runtime", Disposition: localRuntimeRequired, RuntimeObserved: true, CompilePassed: true, CheckPassed: true}, {SurfaceID: "apex:Compile.only()", FixtureID: "compile", Disposition: compileShapeRequired, CompilePassed: true, CheckPassed: true}}}
+	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:Runtime.run()", FixtureID: "runtime", Disposition: localRuntimeRequired, RuntimeObserved: true}, {SurfaceID: "apex:Compile.only()", FixtureID: "compile", Disposition: compileShapeRequired, CompilePassed: true}}}
 	plan := OraclePlan{Rows: []OraclePlanRow{{SurfaceID: "apex:Runtime.run()", Action: oracleRuntime}, {SurfaceID: "apex:Compile.only()", Action: oracleCompile}, {SurfaceID: "apex:Hosted.only()", Action: oracleWaiver, ExclusionClass: "hosted", ExclusionReason: "requires org identity"}}}
 	shards := []SalesforceShard{{Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run()", Kind: oracleRuntime, Passed: true}, {SurfaceID: "apex:Compile.only()", Kind: oracleCompile, Passed: true}}}}
 	rows, err := deriveAssuranceRows(usage, profile, proof, plan, shards, map[string]bool{"private-corpus-001": true, "private-corpus-002": false})

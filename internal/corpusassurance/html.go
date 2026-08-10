@@ -60,7 +60,7 @@ func renderAssuranceHTML(report []byte) ([]byte, error) {
 
 func containsPrivateReportPath(data []byte) bool {
 	lower := strings.ToLower(string(data))
-	return strings.Contains(lower, "/users/") || strings.Contains(lower, "/private/") || strings.Contains(lower, "src-nmb") || strings.Contains(lower, "nams") || strings.Contains(lower, "sf-cred")
+	return strings.Contains(lower, "/users/") || strings.Contains(lower, "/private/") || strings.Contains(lower, "src-nbm") || strings.Contains(lower, "src-nmb") || strings.Contains(lower, "nams") || strings.Contains(lower, "sf-cred") || strings.Contains(lower, ".sf-repo-analysis")
 }
 
 func WriteNewJSONText(path, value string) error {
