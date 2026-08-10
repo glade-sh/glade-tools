@@ -63,6 +63,9 @@ func TestInventoryCreatesSnapshotsAndHostManifests(t *testing.T) {
 	if got := byID["private-corpus-001"].LocalTests; got != "required" {
 		t.Fatalf("private-corpus-001 local tests = %q, want required", got)
 	}
+	if got := byID["private-corpus-001"].TestShardCount; got != requiredLocalTestShardCount {
+		t.Fatalf("private-corpus-001 test shard count = %d, want %d", got, requiredLocalTestShardCount)
+	}
 	if repo := byID["private-corpus-002"]; repo.LocalTests != "tests-not-present" || repo.LocalTestsReason == "" {
 		t.Fatalf("private-corpus-002 local test state = %#v, want reason-coded tests-not-present", repo)
 	}
@@ -80,8 +83,8 @@ func TestInventoryCreatesSnapshotsAndHostManifests(t *testing.T) {
 			t.Fatalf("host manifest root sha = %q, want %q", hostManifest.RootManifestSHA256, rootSHA)
 		}
 		for _, repo := range hostManifest.Repositories {
-			if repo.AssignedHost != host {
-				t.Fatalf("host %s includes repository assigned to %s", host, repo.AssignedHost)
+			if !repositoryReplaysOnHost(repo, host) {
+				t.Fatalf("host %s includes repository outside its sealed replay partition", host)
 			}
 			if err := verifyRepositorySnapshot(filepath.Join(output, "hosts", host), repo); err != nil {
 				t.Fatalf("verify host %s repository %s: %v", host, repo.ID, err)

@@ -28,6 +28,8 @@ type HostManifest struct {
 	Repositories       []RepositorySpec `json:"repositories"`
 }
 
+const requiredLocalTestShardCount = 4
+
 type checkout struct {
 	entry InventoryEntry
 	root  string
@@ -251,7 +253,15 @@ func createSnapshot(output string, source checkout) (RepositorySpec, error) {
 		SnapshotPath:     snapshotPath,
 		LocalTests:       localTests,
 		LocalTestsReason: reason,
+		TestShardCount:   requiredTestShardCount(localTests),
 	}, nil
+}
+
+func requiredTestShardCount(localTests string) int {
+	if localTests == "required" {
+		return requiredLocalTestShardCount
+	}
+	return 0
 }
 
 func writeHostManifests(output string, repositories []RepositorySpec, rootSHA256 string) error {
@@ -262,7 +272,7 @@ func writeHostManifests(output string, repositories []RepositorySpec, rootSHA256
 		}
 		hostRepositories := make([]RepositorySpec, 0, len(repositories))
 		for _, repository := range repositories {
-			if repository.AssignedHost != host {
+			if !repositoryReplaysOnHost(repository, host) {
 				continue
 			}
 			if err := verifyRepositorySnapshot(output, repository); err != nil {

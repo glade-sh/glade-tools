@@ -476,26 +476,37 @@ func repositoryTestReadiness(merge ReplayMerge, shards []ReplayShard) (map[strin
 		repositories[repository.ID] = repository
 	}
 	ready := make(map[string]bool, len(repositories))
+	seen := make(map[string]map[int]bool, len(repositories))
 	for _, shard := range shards {
 		for _, result := range shard.Repositories {
 			repository, exists := repositories[result.RepositoryID]
-			if !exists || ready[result.RepositoryID] || !result.Check.Passed || result.Check.ExitCode != 0 {
+			if !exists || !result.Check.Passed || result.Check.ExitCode != 0 {
 				return nil, fmt.Errorf("invalid replay result for %q", result.RepositoryID)
 			}
+			if err := validateReplayResultShard(repository, shard.Host, result); err != nil {
+				return nil, err
+			}
+			if seen[result.RepositoryID] == nil {
+				seen[result.RepositoryID] = map[int]bool{}
+			}
+			if seen[result.RepositoryID][result.TestShardIndex] {
+				return nil, fmt.Errorf("duplicate replay test shard %d for %q", result.TestShardIndex, result.RepositoryID)
+			}
+			seen[result.RepositoryID][result.TestShardIndex] = true
 			if repository.LocalTests == "required" {
 				if result.LocalTest == nil || !result.LocalTest.Passed || result.LocalTest.ExitCode != 0 {
 					return nil, fmt.Errorf("required local test failed for %q", result.RepositoryID)
 				}
-				ready[result.RepositoryID] = true
 			} else if result.LocalTest != nil {
 				return nil, fmt.Errorf("repository %q unexpectedly ran local tests", result.RepositoryID)
-			} else {
-				ready[result.RepositoryID] = false
 			}
 		}
 	}
-	if len(ready) != len(repositories) {
-		return nil, fmt.Errorf("replay result coverage is incomplete")
+	for id, repository := range repositories {
+		if len(seen[id]) != replayResultCount(repository) {
+			return nil, fmt.Errorf("replay result coverage is incomplete for %q", id)
+		}
+		ready[id] = repository.LocalTests == "required"
 	}
 	return ready, nil
 }

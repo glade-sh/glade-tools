@@ -44,6 +44,7 @@ type RepositorySpec struct {
 	SnapshotPath     string `json:"snapshotPath"`
 	LocalTests       string `json:"localTests"`
 	LocalTestsReason string `json:"localTestsReason,omitempty"`
+	TestShardCount   int    `json:"testShardCount,omitempty"`
 }
 
 func ValidateRuntimeArtifact(artifact RuntimeArtifact) error {
@@ -117,6 +118,12 @@ func ValidateRepositorySpec(repo RepositorySpec) error {
 	if repo.LocalTests == "tests-not-present" && repo.LocalTestsReason == "" {
 		return fmt.Errorf("tests-not-present requires a reason")
 	}
+	if repo.LocalTests == "tests-not-present" && repo.TestShardCount != 0 {
+		return fmt.Errorf("tests-not-present cannot carry test shards")
+	}
+	if repo.TestShardCount < 0 || repo.TestShardCount > 1024 {
+		return fmt.Errorf("invalid test shard count for %q", repo.ID)
+	}
 	return nil
 }
 
@@ -132,7 +139,8 @@ func PublicRepositorySpec(repo RepositorySpec) (string, error) {
 		AssignedHost   string `json:"assignedHost"`
 		SnapshotPath   string `json:"snapshotPath"`
 		LocalTests     string `json:"localTests"`
-	}{repo.ID, repo.ExpectedCommit, repo.ArchiveSHA256, repo.TreeSHA256, repo.AssignedHost, repo.SnapshotPath, repo.LocalTests})
+		TestShardCount int    `json:"testShardCount,omitempty"`
+	}{repo.ID, repo.ExpectedCommit, repo.ArchiveSHA256, repo.TreeSHA256, repo.AssignedHost, repo.SnapshotPath, repo.LocalTests, repo.TestShardCount})
 	if err != nil {
 		return "", err
 	}

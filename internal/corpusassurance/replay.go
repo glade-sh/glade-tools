@@ -14,6 +14,7 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -92,6 +93,8 @@ type ReplayRepositoryResult struct {
 	ToolsSHA256         string                      `json:"toolsSha256"`
 	CheckSpecSHA256     string                      `json:"checkSpecSha256"`
 	LocalTestSpecSHA256 string                      `json:"localTestSpecSha256,omitempty"`
+	TestShardCount      int                         `json:"testShardCount,omitempty"`
+	TestShardIndex      int                         `json:"testShardIndex,omitempty"`
 	SemanticCache       ReplaySemanticCacheEvidence `json:"semanticCache,omitempty"`
 	Check               CommandResult               `json:"check"`
 	LocalTest           *CommandResult              `json:"localTest,omitempty"`
@@ -173,7 +176,7 @@ func loadReplayMergeFromFiles(inventoryPath, rootManifestPath string, hostManife
 	if err != nil {
 		return ReplayMerge{}, fmt.Errorf("read root manifest: %w", err)
 	}
-	if root.SchemaVersion != 1 || root.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateInventoryCoverage(inventory, root.Repositories) != nil {
+	if root.SchemaVersion != 1 || root.InventorySHA256 != replayBytesSHA256(inventoryBytes) || ValidateAssuranceAttempt(root.Attempt) != nil || root.Attempt.InventorySHA256 != root.InventorySHA256 || ValidateInventoryCoverage(inventory, root.Repositories) != nil {
 		return ReplayMerge{}, fmt.Errorf("invalid root manifest")
 	}
 	if len(hostManifestPaths) == 0 || len(shardPaths) == 0 {
@@ -191,7 +194,7 @@ func loadReplayMergeFromFiles(inventoryPath, rootManifestPath string, hostManife
 		}
 		expected := make(map[string]RepositorySpec)
 		for _, repository := range root.Repositories {
-			if repository.AssignedHost == host.Host {
+			if repositoryReplaysOnHost(repository, host.Host) {
 				expected[repository.ID] = repository
 			}
 		}
@@ -226,7 +229,7 @@ func loadReplayMergeFromFiles(inventoryPath, rootManifestPath string, hostManife
 	if len(shards) == 0 {
 		return ReplayMerge{}, fmt.Errorf("replay shards are required")
 	}
-	merge := ReplayMerge{Candidate: shards[0].Candidate, Tools: shards[0].Tools, Inventory: root, RootManifestSHA256: replayBytesSHA256(rootBytes), HostManifestSHA256: hostHashes, Repositories: root.Repositories}
+	merge := ReplayMerge{Candidate: root.Attempt.Candidate, Tools: root.Attempt.Tools, Inventory: root, RootManifestSHA256: replayBytesSHA256(rootBytes), HostManifestSHA256: hostHashes, Repositories: root.Repositories}
 	testReady, err := repositoryTestReadiness(merge, shards)
 	if err != nil {
 		return ReplayMerge{}, err
@@ -280,14 +283,16 @@ func RunReplay(request ReplayRequest) (ReplayShard, error) {
 	}
 	shard := ReplayShard{Host: request.Host, AttemptRoot: attemptRoot, OS: runtime.GOOS, Arch: runtime.GOARCH, Candidate: request.Candidate, Tools: request.Tools, Bindings: inputs.Bindings, Status: "pass"}
 	for _, repository := range repositories {
-		result, err := runReplayRepository(repository, request)
-		if err != nil {
-			return ReplayShard{}, err
+		for _, testShardIndex := range replayTestShardIndices(repository.Repository, request.Host) {
+			result, err := runReplayRepository(repository, request, testShardIndex)
+			if err != nil {
+				return ReplayShard{}, err
+			}
+			if !validIsolatedReplayReceipt(result.Check, "check", request.Candidate.SHA256, replayCommandSpecSHA256("check", request.Candidate.SHA256)) || (result.LocalTest != nil && !validIsolatedReplayReceipt(*result.LocalTest, "test", request.Candidate.SHA256, replayCommandSpecSHA256("test", request.Candidate.SHA256, result.TestShardCount, result.TestShardIndex), result.TestShardCount, result.TestShardIndex)) {
+				shard.Status = "fail"
+			}
+			shard.Repositories = append(shard.Repositories, result)
 		}
-		if !validIsolatedReplayReceipt(result.Check, "check", request.Candidate.SHA256, replayCommandSpecSHA256("check", request.Candidate.SHA256)) || (result.LocalTest != nil && !validIsolatedReplayReceipt(*result.LocalTest, "test", request.Candidate.SHA256, replayCommandSpecSHA256("test", request.Candidate.SHA256))) {
-			shard.Status = "fail"
-		}
-		shard.Repositories = append(shard.Repositories, result)
 	}
 	for _, repository := range repositories {
 		got, err := replayFileSHA256(repository.SourcePath)
@@ -329,7 +334,7 @@ func canonicalReplayAttemptRoot(hostManifestPath string) (string, error) {
 	return root, nil
 }
 
-func runReplayRepository(repository ReplayRepository, request ReplayRequest) (result ReplayRepositoryResult, err error) {
+func runReplayRepository(repository ReplayRepository, request ReplayRequest, testShardIndex int) (result ReplayRepositoryResult, err error) {
 	workspace, err := os.MkdirTemp("", "glade-assurance-replay-*")
 	if err != nil {
 		return ReplayRepositoryResult{}, err
@@ -374,7 +379,8 @@ func runReplayRepository(repository ReplayRepository, request ReplayRequest) (re
 				return ReplayRepositoryResult{}, fmt.Errorf("check cache proof for %q: %w", repository.Repository.ID, err)
 			}
 		}
-		localTestCommand := replayCommandFor(request.CandidatePath, "test")
+		result.TestShardCount, result.TestShardIndex = repository.Repository.TestShardCount, testShardIndex
+		localTestCommand := replayCommandFor(request.CandidatePath, "test", result.TestShardCount, result.TestShardIndex)
 		if err := validateReplayRuntimeBindings(request); err != nil {
 			return ReplayRepositoryResult{}, err
 		}
@@ -414,7 +420,7 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 		return err
 	}
 	expected := repositoryIndex(merge.Inventory.Repositories)
-	seen := make(map[string]bool, len(expected))
+	seen := make(map[string]map[int]bool, len(expected))
 	seenHosts := make(map[string]bool, len(merge.HostManifestSHA256))
 	for _, shard := range shards {
 		if shard.Candidate != merge.Candidate || shard.Tools != merge.Tools {
@@ -423,7 +429,8 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 		if shard.Status != "pass" || shard.OS != merge.Candidate.OS || shard.Arch != merge.Candidate.Arch {
 			return fmt.Errorf("invalid replay shard state for host %q", shard.Host)
 		}
-		if shard.Bindings.InventorySHA256 != merge.Inventory.InventorySHA256 || shard.Bindings.RootManifestSHA256 != merge.RootManifestSHA256 || shard.Bindings.HostManifestSHA256 != merge.HostManifestSHA256[shard.Host] {
+		hostManifestSHA256, exists := merge.HostManifestSHA256[shard.Host]
+		if !exists || shard.Bindings.InventorySHA256 != merge.Inventory.InventorySHA256 || shard.Bindings.RootManifestSHA256 != merge.RootManifestSHA256 || shard.Bindings.HostManifestSHA256 != hostManifestSHA256 {
 			return fmt.Errorf("manifest binding mismatch for host %q", shard.Host)
 		}
 		seenHosts[shard.Host] = true
@@ -432,23 +439,29 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 			if !exists {
 				return fmt.Errorf("unexpected repository %q", result.RepositoryID)
 			}
-			if seen[result.RepositoryID] {
-				return fmt.Errorf("duplicate repository result %q", result.RepositoryID)
-			}
-			seen[result.RepositoryID] = true
-			if repository.AssignedHost != shard.Host || result.SourceSHA256 != repository.ArchiveSHA256 || result.ExecutionTreeSHA256 != repository.TreeSHA256 || result.CandidateSHA256 != merge.Candidate.SHA256 || result.ToolsSHA256 != merge.Tools.SHA256 {
+			if result.SourceSHA256 != repository.ArchiveSHA256 || result.ExecutionTreeSHA256 != repository.TreeSHA256 || result.CandidateSHA256 != merge.Candidate.SHA256 || result.ToolsSHA256 != merge.Tools.SHA256 {
 				return fmt.Errorf("repository binding mismatch for %q", result.RepositoryID)
 			}
+			if err := validateReplayResultShard(repository, shard.Host, result); err != nil {
+				return err
+			}
+			if seen[result.RepositoryID] == nil {
+				seen[result.RepositoryID] = map[int]bool{}
+			}
+			if seen[result.RepositoryID][result.TestShardIndex] {
+				return fmt.Errorf("duplicate test shard %d for %q", result.TestShardIndex, result.RepositoryID)
+			}
+			seen[result.RepositoryID][result.TestShardIndex] = true
 			if result.CheckSpecSHA256 != replayCommandSpecSHA256("check", merge.Candidate.SHA256) || !validIsolatedReplayReceipt(result.Check, "check", merge.Candidate.SHA256, replayCommandSpecSHA256("check", merge.Candidate.SHA256)) {
 				return fmt.Errorf("check failed for %q", result.RepositoryID)
 			}
-			if repository.LocalTests == "required" && (result.LocalTest == nil || result.LocalTestSpecSHA256 != replayCommandSpecSHA256("test", merge.Candidate.SHA256) || !validIsolatedReplayReceipt(*result.LocalTest, "test", merge.Candidate.SHA256, replayCommandSpecSHA256("test", merge.Candidate.SHA256)) || !validReplaySemanticCacheEvidence(result.SemanticCache)) {
+			if repository.LocalTests == "required" && (result.LocalTest == nil || result.LocalTestSpecSHA256 != replayCommandSpecSHA256("test", merge.Candidate.SHA256, result.TestShardCount, result.TestShardIndex) || !validIsolatedReplayReceipt(*result.LocalTest, "test", merge.Candidate.SHA256, replayCommandSpecSHA256("test", merge.Candidate.SHA256, result.TestShardCount, result.TestShardIndex), result.TestShardCount, result.TestShardIndex) || !validReplaySemanticCacheEvidence(result.SemanticCache)) {
 				return fmt.Errorf("required local test failed for %q", result.RepositoryID)
 			}
 		}
 	}
-	for id := range expected {
-		if !seen[id] {
+	for id, repository := range expected {
+		if len(seen[id]) != replayResultCount(repository) {
 			return fmt.Errorf("missing repository result %q", id)
 		}
 		if _, exists := merge.TestReadyByRepository[id]; !exists {
@@ -461,6 +474,37 @@ func ValidateReplayMerge(merge ReplayMerge, shards []ReplayShard) error {
 		}
 	}
 	return nil
+}
+
+func replayResultCount(repository RepositorySpec) int {
+	if repository.LocalTests == "required" && repository.TestShardCount > 0 {
+		return repository.TestShardCount
+	}
+	return 1
+}
+
+func validateReplayResultShard(repository RepositorySpec, host string, result ReplayRepositoryResult) error {
+	if repository.LocalTests != "required" {
+		if host != repository.AssignedHost || result.TestShardCount != 0 || result.TestShardIndex != 0 || result.LocalTest != nil {
+			return fmt.Errorf("invalid no-test replay result for %q", repository.ID)
+		}
+		return nil
+	}
+	if repository.TestShardCount == 0 {
+		if host != repository.AssignedHost || result.TestShardCount != 0 || result.TestShardIndex != 0 {
+			return fmt.Errorf("invalid unsharded replay result for %q", repository.ID)
+		}
+		return nil
+	}
+	if result.TestShardCount != repository.TestShardCount || result.TestShardIndex < 0 || result.TestShardIndex >= repository.TestShardCount {
+		return fmt.Errorf("invalid test shard for %q", repository.ID)
+	}
+	for _, index := range replayTestShardIndices(repository, host) {
+		if index == result.TestShardIndex {
+			return nil
+		}
+	}
+	return fmt.Errorf("test shard %d runs on the wrong host for %q", result.TestShardIndex, repository.ID)
 }
 
 func validateReplayTestReadiness(repositories []RepositorySpec, readiness map[string]bool) error {
@@ -480,6 +524,9 @@ func validateReplayTestReadiness(repositories []RepositorySpec, readiness map[st
 func validateReplayRootBinding(merge ReplayMerge, root InventoryManifest) error {
 	if !equalInventoryManifest(merge.Inventory, root) || len(merge.Repositories) != len(root.Repositories) {
 		return fmt.Errorf("replay merge repository denominator does not match root manifest")
+	}
+	if err := ValidateAssuranceAttempt(root.Attempt); err != nil || root.Attempt.InventorySHA256 != root.InventorySHA256 || merge.Candidate != root.Attempt.Candidate || merge.Tools != root.Attempt.Tools {
+		return fmt.Errorf("replay merge artifacts do not match the sealed attempt")
 	}
 	expected := repositoryIndex(root.Repositories)
 	seen := make(map[string]bool, len(expected))
@@ -526,8 +573,12 @@ func validateReplayDenominator(merge ReplayMerge) error {
 		if err := ValidateRepositorySpec(repository); err != nil {
 			return err
 		}
-		if _, ok := merge.HostManifestSHA256[repository.AssignedHost]; !ok {
-			return fmt.Errorf("missing host manifest binding for %q", repository.AssignedHost)
+		for _, host := range []string{"local", "replay-worker"} {
+			if repositoryReplaysOnHost(repository, host) {
+				if _, ok := merge.HostManifestSHA256[host]; !ok {
+					return fmt.Errorf("missing host manifest binding for %q", host)
+				}
+			}
 		}
 		candidate, ok := repositories[repository.ID]
 		if !ok || candidate != repository {
@@ -545,12 +596,36 @@ func repositoryIndex(repositories []RepositorySpec) map[string]RepositorySpec {
 	return indexed
 }
 
-func validReplayReceipt(result CommandResult, operation, candidateSHA256, expectedSpecSHA256 string) bool {
-	return result.Passed && !result.TimedOut && result.ExitCode == 0 && result.DurationMS >= 0 && len(result.Command) == 1 && result.Command[0] == operation && result.CommandSpecSHA256 == expectedSpecSHA256 && result.CommandSpecSHA256 == replayCommandSpecSHA256(operation, result.ExecutableSHA256) && sha256Pattern.MatchString(candidateSHA256) && result.ExecutableSHA256 == candidateSHA256 && sha256Pattern.MatchString(expectedSpecSHA256) && sha256Pattern.MatchString(result.ExecutableSHA256) && result.ExecutableSHA256 == result.ExecutableAfterSHA256 && sha256Pattern.MatchString(result.StdoutSHA256) && sha256Pattern.MatchString(result.StderrSHA256)
+func validReplayReceipt(result CommandResult, operation, candidateSHA256, expectedSpecSHA256 string, testShard ...int) bool {
+	return result.Passed && !result.TimedOut && result.ExitCode == 0 && result.DurationMS >= 0 && len(result.Command) == 1 && result.Command[0] == operation && result.CommandSpecSHA256 == expectedSpecSHA256 && result.CommandSpecSHA256 == replayCommandSpecSHA256(operation, result.ExecutableSHA256, testShard...) && sha256Pattern.MatchString(candidateSHA256) && result.ExecutableSHA256 == candidateSHA256 && sha256Pattern.MatchString(expectedSpecSHA256) && sha256Pattern.MatchString(result.ExecutableSHA256) && result.ExecutableSHA256 == result.ExecutableAfterSHA256 && sha256Pattern.MatchString(result.StdoutSHA256) && sha256Pattern.MatchString(result.StderrSHA256)
 }
 
-func validIsolatedReplayReceipt(result CommandResult, operation, candidateSHA256, expectedSpecSHA256 string) bool {
-	return result.WorkingDirectory == replayWorkspaceIdentity && validRetainedCommandOutput(result) && validReplayReceipt(result, operation, candidateSHA256, expectedSpecSHA256)
+func validIsolatedReplayReceipt(result CommandResult, operation, candidateSHA256, expectedSpecSHA256 string, testShard ...int) bool {
+	return result.WorkingDirectory == replayWorkspaceIdentity && validRetainedCommandOutput(result) && validReplayReceipt(result, operation, candidateSHA256, expectedSpecSHA256, testShard...)
+}
+
+func repositoryReplaysOnHost(repository RepositorySpec, host string) bool {
+	return len(replayTestShardIndices(repository, host)) != 0
+}
+
+func replayTestShardIndices(repository RepositorySpec, host string) []int {
+	if repository.LocalTests != "required" || repository.TestShardCount == 0 {
+		if repository.AssignedHost == host {
+			return []int{0}
+		}
+		return nil
+	}
+	indices := make([]int, 0, (repository.TestShardCount+1)/2)
+	for index := 0; index < repository.TestShardCount; index++ {
+		assigned := "local"
+		if index%2 == 1 {
+			assigned = "replay-worker"
+		}
+		if assigned == host {
+			indices = append(indices, index)
+		}
+	}
+	return indices
 }
 
 func validateReplayRequest(request ReplayRequest, inputs SealedHostInputs) ([]ReplayRepository, error) {
@@ -624,10 +699,13 @@ func validateReplayRuntimeBindings(request ReplayRequest) error {
 	return validateStagedRuntime("tools", executable, request.Tools, request.architecture)
 }
 
-func replayCommandFor(candidatePath, operation string) ReplayCommand {
+func replayCommandFor(candidatePath, operation string, testShard ...int) ReplayCommand {
 	args := []string{operation, "--project", ".", "--json", "--no-progress"}
 	if operation == "test" {
 		args = append(args, "--perf-json", replayTestPerfPath)
+		if len(testShard) == 2 && testShard[0] > 0 {
+			args = append(args, "--shard-count", strconv.Itoa(testShard[0]), "--shard-index", strconv.Itoa(testShard[1]))
+		}
 	}
 	return ReplayCommand{
 		Path:             candidatePath,
@@ -713,8 +791,8 @@ func validReplaySemanticCacheEvidence(cache ReplaySemanticCacheEvidence) bool {
 	return strings.HasPrefix(cache.Path, replaySemanticCachePath+"/result-") && strings.HasSuffix(cache.Path, ".json") && sha256Pattern.MatchString(cache.SHA256) && sha256Pattern.MatchString(cache.IdentitySHA256) && sha256Pattern.MatchString(cache.PerfSHA256) && cache.DiskHits > 0
 }
 
-func replayCommandSpecSHA256(operation, executableSHA256 string) string {
-	command := replayCommandFor("", operation)
+func replayCommandSpecSHA256(operation, executableSHA256 string, testShard ...int) string {
+	command := replayCommandFor("", operation, testShard...)
 	command.ExecutableSHA256 = executableSHA256
 	command.ExecutableAfterSHA256 = executableSHA256
 	return commandSpecSHA256(command)

@@ -74,7 +74,7 @@ func LoadSealedHostInputs(inventoryPath, rootPath, hostPath, expectedHost string
 	}
 	expected := make(map[string]RepositorySpec)
 	for _, repository := range root.Repositories {
-		if repository.AssignedHost == expectedHost {
+		if repositoryReplaysOnHost(repository, expectedHost) {
 			expected[repository.ID] = repository
 		}
 	}

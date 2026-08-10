@@ -271,6 +271,64 @@ func TestValidateReplayMergeRejectsInvalidShards(t *testing.T) {
 	}
 }
 
+func TestValidateReplayMergeAcceptsCompleteClassShardPartition(t *testing.T) {
+	merge, shards := completeClassShardMerge()
+	if err := ValidateReplayMerge(merge, shards); err != nil {
+		t.Fatalf("ValidateReplayMerge(complete class shard partition): %v", err)
+	}
+}
+
+func TestValidateReplayMergeRejectsInvalidClassShardPartitions(t *testing.T) {
+	for name, mutate := range map[string]func(*ReplayMerge, *[]ReplayShard){
+		"missing": func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[1].Repositories = (*shards)[1].Repositories[:1] },
+		"duplicate": func(_ *ReplayMerge, shards *[]ReplayShard) {
+			(*shards)[0].Repositories = append((*shards)[0].Repositories, (*shards)[0].Repositories[0])
+		},
+		"wrong host":         func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[0].Repositories[0].TestShardIndex = 1 },
+		"inconsistent count": func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[1].Repositories[1].TestShardCount = 3 },
+		"timed out":          func(_ *ReplayMerge, shards *[]ReplayShard) { (*shards)[1].Repositories[1].LocalTest.TimedOut = true },
+	} {
+		t.Run(name, func(t *testing.T) {
+			merge, shards := completeClassShardMerge()
+			mutate(&merge, &shards)
+			if err := ValidateReplayMerge(merge, shards); err == nil {
+				t.Fatal("ValidateReplayMerge accepted an invalid class shard partition")
+			}
+		})
+	}
+}
+
+func TestValidateReplayMergeRejectsUnmanifestedPartitionHost(t *testing.T) {
+	merge, shards := completeClassShardMerge()
+	merge.Repositories = merge.Repositories[:1]
+	merge.Inventory.Repositories = merge.Inventory.Repositories[:1]
+	delete(merge.TestReadyByRepository, "private-corpus-002")
+	shards[1].Repositories = shards[1].Repositories[1:]
+	delete(merge.HostManifestSHA256, "replay-worker")
+	shards[1].Bindings.HostManifestSHA256 = ""
+
+	if err := ValidateReplayMerge(merge, shards); err == nil {
+		t.Fatal("ValidateReplayMerge accepted an unmanifested partition host")
+	}
+}
+
+func completeClassShardMerge() (ReplayMerge, []ReplayShard) {
+	merge, shards := validReplayMerge()
+	merge.Repositories[0].TestShardCount = 2
+	merge.Inventory.Repositories[0].TestShardCount = 2
+	shards[0].Repositories[0].TestShardCount = 2
+	shards[0].Repositories[0].TestShardIndex = 0
+	shards[0].Repositories[0].LocalTestSpecSHA256 = replayCommandSpecSHA256("test", merge.Candidate.SHA256, 2, 0)
+	shards[0].Repositories[0].LocalTest.CommandSpecSHA256 = shards[0].Repositories[0].LocalTestSpecSHA256
+	second := shards[0].Repositories[0]
+	second.TestShardIndex = 1
+	second.LocalTest = successfulReceiptPointer("test")
+	second.LocalTestSpecSHA256 = replayCommandSpecSHA256("test", merge.Candidate.SHA256, 2, 1)
+	second.LocalTest.CommandSpecSHA256 = second.LocalTestSpecSHA256
+	shards[1].Repositories = append(shards[1].Repositories, second)
+	return merge, shards
+}
+
 func TestValidateReplayRootBindingRejectsTamperedDenominators(t *testing.T) {
 	for name, mutate := range map[string]func(*ReplayMerge){
 		"duplicate repository":       func(merge *ReplayMerge) { merge.Repositories[1] = merge.Repositories[0] },
@@ -284,6 +342,14 @@ func TestValidateReplayRootBindingRejectsTamperedDenominators(t *testing.T) {
 				t.Fatal("validateReplayRootBinding accepted a tampered replay denominator")
 			}
 		})
+	}
+}
+
+func TestValidateReplayRootBindingRejectsAttemptArtifactSwap(t *testing.T) {
+	merge, _ := validReplayMerge()
+	merge.Inventory.Attempt = AssuranceAttempt{SchemaVersion: 1, InventorySHA256: merge.Inventory.InventorySHA256, CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: replayRuntime("f"), Tools: merge.Tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
+	if err := validateReplayRootBinding(merge, merge.Inventory); err == nil {
+		t.Fatal("validateReplayRootBinding accepted a receipt candidate that differs from the sealed attempt")
 	}
 }
 
@@ -324,6 +390,7 @@ func TestValidateReplayFilesLoadsAuthoritativeInputs(t *testing.T) {
 		t.Fatal(err)
 	}
 	merge.Inventory.InventorySHA256 = fileSHA256(t, inventoryPath)
+	merge.Inventory.Attempt = AssuranceAttempt{SchemaVersion: 1, InventorySHA256: merge.Inventory.InventorySHA256, CandidateAuthoritySHA256: strings.Repeat("a", 64), Candidate: merge.Candidate, Tools: merge.Tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()}
 	for index := range shards {
 		shards[index].Bindings.InventorySHA256 = merge.Inventory.InventorySHA256
 	}
