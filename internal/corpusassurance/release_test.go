@@ -143,7 +143,7 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 		t.Fatalf("validation = %#v, commands = %#v", validation, commands)
 	}
 	for _, command := range validation.Commands {
-		if !command.Passed || command.WorkingDirectory == "" || len(command.Environment) != 6 || command.TimeoutMS != releaseValidationTimeout.Milliseconds() {
+		if !command.Passed || command.WorkingDirectory == "" || !equalStrings(command.Environment, fixedReleaseEnvironment()) || command.TimeoutMS != releaseValidationTimeout.Milliseconds() {
 			t.Fatalf("release command = %#v", command)
 		}
 	}
@@ -262,6 +262,15 @@ func TestFixedReleasePathOmitsRelativeGoRoot(t *testing.T) {
 func TestFixedReleaseEnvironmentUsesWritableSealedHome(t *testing.T) {
 	if !strings.Contains(strings.Join(fixedReleaseEnvironment(), "\n"), "HOME=/private/tmp/glade-assurance-home") {
 		t.Fatalf("release environment has no writable sealed home: %#v", fixedReleaseEnvironment())
+	}
+}
+
+func TestFixedReleaseEnvironmentDisablesMutableGoToolchainConfig(t *testing.T) {
+	environment := strings.Join(fixedReleaseEnvironment(), "\n")
+	for _, entry := range []string{"GOENV=off", "GOTOOLCHAIN=local"} {
+		if !strings.Contains(environment, entry) {
+			t.Fatalf("release environment lacks %q: %s", entry, environment)
+		}
 	}
 }
 
