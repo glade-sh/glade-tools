@@ -1472,7 +1472,7 @@ func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bu
 func salesforcePreflightArgs(alias string) [][]string {
 	args := [][]string{{"org", "display", "--target-org", alias, "--json"}}
 	for _, kind := range salesforceInventoryTypes {
-		args = append(args, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", alias, "--json"})
+		args = append(args, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", alias, "--use-tooling-api", "--json"})
 	}
 	return args
 }

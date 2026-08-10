@@ -23,7 +23,7 @@ func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSur
 	}
 	if got, want := localProofCommandShapes(*calls), [][]string{
 		{"test", "--project", ".", "--json", "--no-progress"},
-		{"exec", "--project", ".", "--json", "System.debug('ok');"},
+		{"exec", "--project", ".", "--json", "new Runtime().run(); new Runtime().extra();"},
 		{"check", "--project", ".", "--json", "--no-progress"},
 	}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("commands = %v, want %v", got, want)
@@ -57,6 +57,19 @@ func TestLocalProofUsesCandidateCLIAndValidatesJSONResult(t *testing.T) {
 	}
 	if proof.Status != "pass" || len(proof.RawFixtureResults) != 3 {
 		t.Fatalf("proof = %#v", proof)
+	}
+}
+
+func TestLocalProofRejectsFixtureSurfaceWithoutSourceWitness(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "witness.json")
+	data := `{"name":"witness","evidence":[{"symbol":"NotInSource.run","surfaceId":"apex:NotInSource.run","kind":"compile"}],"source":[{"path":"force-app/main/default/classes/Witness.cls","content":"// NotInSource.run\nString value = 'NotInSource.run';"}],"command":{"kind":"check"}}`
+	if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	entry := LocalProofFixture{ID: "witness", Name: "witness", Path: path, SHA256: localProofFileSHA256(t, path), OwnedSurfaceIDs: []string{"apex:NotInSource.run"}, Disposition: compileShapeRequired}
+	if _, err := loadLocalProofFixture(entry); err == nil {
+		t.Fatal("loadLocalProofFixture accepted a surface absent from materialized Apex")
 	}
 }
 
@@ -367,12 +380,12 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 	t.Helper()
 	path := filepath.Join(root, name+".json")
 	command := `{"kind":"check"}`
-	source := "public class " + strings.Title(name) + " {}"
+	source := "public class " + strings.Title(name) + " { public void run() {} public void extra() {} }"
 	if disposition == localRuntimeRequired {
-		command = `{"kind":"exec","args":["System.debug('ok');"]}`
+		command = `{"kind":"exec","args":["new Runtime().run(); new Runtime().extra();"]}`
 	} else if disposition == deterministicMockRequired {
 		command = `{"kind":"test"}`
-		source = "@IsTest private class " + strings.Title(name) + " { @IsTest static void prove() {} }"
+		source = "@IsTest private class " + strings.Title(name) + " { public void run() {} @IsTest static void prove() { new Mock().run(); } }"
 	}
 	evidence := make([]map[string]string, 0, len(surfaceIDs))
 	for _, id := range surfaceIDs {

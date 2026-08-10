@@ -766,7 +766,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: strings.Repeat("4", 64), OrgAlias: "assurance-sf0", OrgID: "00D0", OrgUsername: "assurance-sf0@example.invalid", OrgStatus: "Active", Inventory: SalesforceInventory{Counts: map[string]int{}}}
 	preflightArgs := [][]string{{"org", "display", "--target-org", preflight.OrgAlias, "--json"}}
 	for _, kind := range salesforceInventoryTypes {
-		preflightArgs = append(preflightArgs, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", preflight.OrgAlias, "--json"})
+		preflightArgs = append(preflightArgs, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", preflight.OrgAlias, "--use-tooling-api", "--json"})
 		preflight.Inventory.Counts[kind] = 0
 	}
 	for _, args := range preflightArgs {

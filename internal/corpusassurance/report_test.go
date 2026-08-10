@@ -115,7 +115,7 @@ func TestWriteHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, text := range []string{"private-corpus-001", "apex:Example.run", "id=\"assurance-data\"", "id=\"namespace\"", "id=\"disposition\"", "id=\"repository\"", "id=\"evidence\"", "id=\"exclusion\"", "id=\"text\""} {
+	for _, text := range []string{"private-corpus-001", "apex:Example.run", "id=\"assurance-data\"", "id=\"namespace\"", "id=\"disposition\"", "id=\"repository\"", "id=\"evidence\"", "id=\"exclusion\"", "id=\"text\"", "id=\"repository-rows\"", "id=\"repository-summaries\""} {
 		if !strings.Contains(string(html), text) {
 			t.Fatalf("HTML misses %q", text)
 		}
@@ -198,5 +198,30 @@ func TestRepositoryTestReadinessKeepsRepositoriesWithoutTestsCompileOnly(t *test
 	}
 	if !ready["private-corpus-001"] || ready["private-corpus-002"] {
 		t.Fatalf("readiness = %#v", ready)
+	}
+}
+
+func TestDeriveRepositoryAssuranceRowsKeepsEveryRepositoryAndSurfaceDistinct(t *testing.T) {
+	rows := []AssuranceSurfaceRow{
+		{SurfaceID: "apex:Shared.run()", RepositoryIDs: []string{"private-corpus-001", "private-corpus-002"}, CompileReady: true, TestReady: true, RuntimeParityReady: true},
+		{SurfaceID: "apex:OnlyOne.run()", RepositoryIDs: []string{"private-corpus-001"}, CompileReady: true},
+	}
+	pairs, summaries, err := deriveRepositoryAssuranceRows(InventorySpec{Repositories: []InventoryEntry{{ID: "private-corpus-001"}, {ID: "private-corpus-002"}}}, rows, map[string]bool{"private-corpus-001": true, "private-corpus-002": false})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(pairs) != 3 || len(summaries) != 2 {
+		t.Fatalf("pairs=%#v summaries=%#v", pairs, summaries)
+	}
+	if pairs[0].RepositoryID == pairs[1].RepositoryID && pairs[0].SurfaceID == pairs[1].SurfaceID {
+		t.Fatalf("repository/surface pair was collapsed: %#v", pairs)
+	}
+	for _, pair := range pairs {
+		if pair.RepositoryID == "private-corpus-002" && pair.TestReady {
+			t.Fatalf("pair incorrectly inherited another repository's test readiness: %#v", pair)
+		}
+	}
+	if summaries[1].RepositoryID != "private-corpus-002" || summaries[1].SurfaceCount != 1 || summaries[1].CompileReady == false || summaries[1].TestReady {
+		t.Fatalf("repository summary lost per-repository readiness: %#v", summaries)
 	}
 }

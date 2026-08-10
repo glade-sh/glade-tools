@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
@@ -103,7 +104,107 @@ func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.F
 			return fmt.Errorf("fixture %q lacks required evidence for %q", entry.ID, surfaceID)
 		}
 	}
+	if err := validateLocalProofSurfaceWitnesses(entry, fixture); err != nil {
+		return err
+	}
 	return nil
+}
+
+func validateLocalProofSurfaceWitnesses(entry LocalProofFixture, fixture compat.Fixture) error {
+	var source strings.Builder
+	if entry.Disposition == localRuntimeRequired {
+		source.WriteString(strings.Join(fixture.Command.Args, "\n"))
+	} else {
+		for _, file := range append(append([]compat.SourceFile(nil), fixture.Source...), sourceFilesFromSchema(fixture.Schema)...) {
+			source.WriteString(file.Content)
+			source.WriteByte('\n')
+		}
+	}
+	tokens := localProofCodeIdentifiers(source.String())
+	for _, evidence := range fixture.Evidence {
+		if !stringSet(entry.OwnedSurfaceIDs)[evidence.SurfaceID] {
+			continue
+		}
+		parts := localProofWitnessIdentifiers(evidence.Symbol)
+		for _, part := range parts {
+			if !tokens[part] {
+				return fmt.Errorf("fixture %q surface %q lacks a source witness for %q", entry.ID, evidence.SurfaceID, evidence.Symbol)
+			}
+		}
+	}
+	return nil
+}
+
+func localProofWitnessIdentifiers(symbol string) []string {
+	symbol = strings.TrimPrefix(symbol, "apex:")
+	if index := strings.IndexByte(symbol, '('); index >= 0 {
+		symbol = symbol[:index]
+	}
+	parts := strings.FieldsFunc(symbol, func(r rune) bool {
+		return r == '.' || r == ':' || r == '<' || r == '>' || r == ',' || unicode.IsSpace(r)
+	})
+	if len(parts) > 2 {
+		parts = parts[len(parts)-2:]
+	}
+	return parts
+}
+
+func localProofCodeIdentifiers(source string) map[string]bool {
+	identifiers := make(map[string]bool)
+	var token []rune
+	flush := func() {
+		if len(token) > 0 {
+			identifiers[string(token)] = true
+			token = token[:0]
+		}
+	}
+	state := byte(0)
+	escaped := false
+	runes := []rune(source)
+	for i := 0; i < len(runes); i++ {
+		r := runes[i]
+		switch state {
+		case 1:
+			if r == '\n' {
+				state = 0
+			}
+		case 2:
+			if r == '*' && i+1 < len(runes) && runes[i+1] == '/' {
+				i++
+				state = 0
+			}
+		case 3, 4:
+			if escaped {
+				escaped = false
+			} else if r == '\\' {
+				escaped = true
+			} else if (state == 3 && r == '\'') || (state == 4 && r == '"') {
+				state = 0
+			}
+		default:
+			if r == '/' && i+1 < len(runes) && runes[i+1] == '/' {
+				flush()
+				i++
+				state = 1
+			} else if r == '/' && i+1 < len(runes) && runes[i+1] == '*' {
+				flush()
+				i++
+				state = 2
+			} else if r == '\'' {
+				flush()
+				state = 3
+			} else if r == '"' {
+				flush()
+				state = 4
+			} else if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+				token = append(token, r)
+			} else {
+				flush()
+			}
+		}
+	}
+	flush()
+	return identifiers
 }
 
 func writeLocalProofProject(root string, fixture compat.Fixture) (int, error) {

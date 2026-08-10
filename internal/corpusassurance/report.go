@@ -14,8 +14,10 @@ import (
 
 // AssuranceReport is the public, neutral release outcome projection.
 type AssuranceReport struct {
-	SchemaVersion int                   `json:"schemaVersion"`
-	Rows          []AssuranceSurfaceRow `json:"rows"`
+	SchemaVersion         int                             `json:"schemaVersion"`
+	Rows                  []AssuranceSurfaceRow           `json:"rows"`
+	RepositorySurfaceRows []AssuranceRepositorySurfaceRow `json:"repositorySurfaceRows"`
+	RepositorySummaries   []AssuranceRepositorySummary    `json:"repositorySummaries"`
 }
 
 // AssuranceReceipt deliberately does not hash itself, keeping the sealed
@@ -141,6 +143,10 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err != nil {
 		return AssuranceReceipt{}, err
 	}
+	repositoryRows, repositorySummaries, err := deriveRepositoryAssuranceRows(inventory, rows, merge.TestReadyByRepository)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
 	inputs := map[string]string{"IN_SCOPE.json": replayBytesSHA256(inventoryBytes), "MANIFEST.json": replayBytesSHA256(rootBytes), "CORPUS_USAGE.json": replayBytesSHA256(usageBytes), "ASSURANCE_PROFILE.json": replayBytesSHA256(profileBytes), "FIXTURE_MANIFEST.json": replayBytesSHA256(manifestBytes), "REPLAY.json": replayBytesSHA256(mergeBytes), "LOCAL_PROOF.json": replayBytesSHA256(proofBytes), "ORACLE_PLAN.json": replayBytesSHA256(planBytes), "EXCLUSION_AUTHORITY.json": replayBytesSHA256(authorityBytes), "ORACLE_BUNDLE.json": replayBytesSHA256(bundleBytes)}
 	for name, hash := range sidecarInputs {
 		inputs[name] = hash
@@ -159,7 +165,7 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
 		return AssuranceReceipt{}, err
 	}
-	return writeAssuranceArtifacts(AssuranceReport{SchemaVersion: 1, Rows: rows}, request.JSONPath, request.HTMLPath, request.ReceiptPath, inputs)
+	return writeAssuranceArtifacts(AssuranceReport{SchemaVersion: 1, Rows: rows, RepositorySurfaceRows: repositoryRows, RepositorySummaries: repositorySummaries}, request.JSONPath, request.HTMLPath, request.ReceiptPath, inputs)
 }
 
 func requiredReportEvidencePaths(request AssuranceReportRequest) error {
@@ -420,6 +426,21 @@ type AssuranceSurfaceRow struct {
 	NonParity          bool     `json:"nonParity"`
 }
 
+type AssuranceRepositorySurfaceRow struct {
+	RepositoryID string `json:"repositoryId"`
+	AssuranceSurfaceRow
+}
+
+type AssuranceRepositorySummary struct {
+	RepositoryID       string `json:"repositoryId"`
+	SurfaceCount       int    `json:"surfaceCount"`
+	CompileReady       bool   `json:"compileReady"`
+	TestReady          bool   `json:"testReady"`
+	RuntimeParityReady bool   `json:"runtimeParityReady"`
+	NonParity          bool   `json:"nonParity"`
+	NonParityReason    string `json:"nonParityReason,omitempty"`
+}
+
 func ValidateAssuranceOutcomes(rows []AssuranceSurfaceRow) error {
 	if len(rows) == 0 {
 		return fmt.Errorf("assurance outcome rows are required")
@@ -607,6 +628,57 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 		rows = append(rows, row)
 	}
 	return rows, ValidateAssuranceOutcomes(rows)
+}
+
+func deriveRepositoryAssuranceRows(inventory InventorySpec, rows []AssuranceSurfaceRow, repositoryTests map[string]bool) ([]AssuranceRepositorySurfaceRow, []AssuranceRepositorySummary, error) {
+	summaries := make(map[string]*AssuranceRepositorySummary, len(inventory.Repositories))
+	for _, repository := range inventory.Repositories {
+		if repository.ID == "" || summaries[repository.ID] != nil {
+			return nil, nil, fmt.Errorf("invalid or duplicate repository %q", repository.ID)
+		}
+		ready, exists := repositoryTests[repository.ID]
+		if !exists {
+			return nil, nil, fmt.Errorf("repository %q lacks replay readiness", repository.ID)
+		}
+		summaries[repository.ID] = &AssuranceRepositorySummary{RepositoryID: repository.ID, CompileReady: true, TestReady: ready}
+	}
+	pairs := make([]AssuranceRepositorySurfaceRow, 0)
+	for _, row := range rows {
+		for _, repositoryID := range row.RepositoryIDs {
+			summary := summaries[repositoryID]
+			if summary == nil {
+				return nil, nil, fmt.Errorf("surface %q names unknown repository %q", row.SurfaceID, repositoryID)
+			}
+			pair := AssuranceRepositorySurfaceRow{RepositoryID: repositoryID, AssuranceSurfaceRow: row}
+			pair.RepositoryIDs = []string{repositoryID}
+			pair.TestReady = !row.NonParity && repositoryTests[repositoryID]
+			pair.RuntimeParityReady = !row.NonParity && row.SalesforceAction == oracleRuntime && repositoryTests[repositoryID]
+			pairs = append(pairs, pair)
+			summary.SurfaceCount++
+			summary.CompileReady = summary.CompileReady && pair.CompileReady
+			summary.RuntimeParityReady = summary.RuntimeParityReady || pair.RuntimeParityReady
+			if pair.NonParity {
+				summary.NonParity = true
+				summary.NonParityReason = "contains-non-parity-surface"
+			}
+		}
+	}
+	resultSummaries := make([]AssuranceRepositorySummary, 0, len(summaries))
+	for _, summary := range summaries {
+		if summary.SurfaceCount == 0 {
+			summary.CompileReady, summary.TestReady, summary.RuntimeParityReady, summary.NonParity = false, false, false, true
+			summary.NonParityReason = "no-mapped-salesforce-surfaces"
+		}
+		resultSummaries = append(resultSummaries, *summary)
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		if pairs[i].RepositoryID != pairs[j].RepositoryID {
+			return pairs[i].RepositoryID < pairs[j].RepositoryID
+		}
+		return pairs[i].SurfaceID < pairs[j].SurfaceID
+	})
+	sort.Slice(resultSummaries, func(i, j int) bool { return resultSummaries[i].RepositoryID < resultSummaries[j].RepositoryID })
+	return pairs, resultSummaries, nil
 }
 
 func localProofSupportsOracleAction(proof LocalSurfaceProof, disposition, action string) bool {
