@@ -227,6 +227,20 @@ func TestDeriveAssuranceRowsPreservesLocalReadinessForNonParity(t *testing.T) {
 	}
 }
 
+func TestDeriveAssuranceRowsUsesCanonicalProfileNamespaceForAliases(t *testing.T) {
+	usage := UsageReconciliation{Usage: []ReconciledUsageEntry{
+		{UsageEntry: UsageEntry{UsageKey: "Apex", Namespace: "Apex", RepositoryIDs: []string{"private-corpus-001"}}, Class: usageClassCanonicalAlias, SurfaceID: "apex:Component.apex.page"},
+		{UsageEntry: UsageEntry{UsageKey: "Component.apex", Namespace: "Component.apex", RepositoryIDs: []string{"private-corpus-001"}}, Class: usageClassAggregateParent, SurfaceID: "apex:Component.apex.page"},
+	}}
+	profile := AssuranceProfile{Rows: []AssuranceProfileRow{{SurfaceID: "apex:Component.apex.page", Namespace: "Component.apex", Disposition: compileShapeRequired}}}
+	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:Component.apex.page", FixtureID: "component", Disposition: compileShapeRequired, CompilePassed: true}}}
+	plan := OraclePlan{Rows: []OraclePlanRow{{SurfaceID: "apex:Component.apex.page", Action: oracleLocalContractOnly, ExclusionClass: "policy-local-only", ExclusionReason: "hosted execution is intentionally excluded"}}}
+	rows, err := deriveAssuranceRows(usage, profile, proof, plan, nil, map[string]bool{"private-corpus-001": true})
+	if err != nil || len(rows) != 1 || rows[0].Namespace != "Component.apex" {
+		t.Fatalf("deriveAssuranceRows = %#v, %v", rows, err)
+	}
+}
+
 func TestRepositoryTestReadinessKeepsRepositoriesWithoutTestsCompileOnly(t *testing.T) {
 	artifact := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	merge := ReplayMerge{Candidate: artifact, Tools: artifact, Inventory: InventoryManifest{SchemaVersion: 1, InventorySHA256: strings.Repeat("c", 64)}, Repositories: []RepositorySpec{{ID: "private-corpus-001", AssignedHost: "local", LocalTests: "required"}, {ID: "private-corpus-002", AssignedHost: "local", LocalTests: "tests-not-present", LocalTestsReason: "no Apex test classes found in snapshot"}}}

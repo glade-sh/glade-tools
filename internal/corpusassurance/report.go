@@ -524,7 +524,6 @@ func repositoryTestReadiness(merge ReplayMerge, shards []ReplayShard) (map[strin
 // explicit readiness or non-parity outcome.
 func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, proof LocalProof, plan OraclePlan, shards []SalesforceShard, repositoryTests map[string]bool) ([]AssuranceSurfaceRow, error) {
 	type usageAggregate struct {
-		namespace    string
 		usageKeys    []string
 		repositories map[string]bool
 		prod, test   int
@@ -538,11 +537,8 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 			}
 			row := aggregates[entry.SurfaceID]
 			if row == nil {
-				row = &usageAggregate{namespace: entry.Namespace, repositories: map[string]bool{}}
+				row = &usageAggregate{repositories: map[string]bool{}}
 				aggregates[entry.SurfaceID] = row
-			}
-			if row.namespace != entry.Namespace {
-				return nil, fmt.Errorf("surface %q has conflicting namespaces", entry.SurfaceID)
 			}
 			row.usageKeys = append(row.usageKeys, entry.UsageKey)
 			row.prod += entry.PrivateProdRefs
@@ -563,7 +559,7 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 	}
 	profiles := map[string]AssuranceProfileRow{}
 	for _, row := range profile.Rows {
-		if row.SurfaceID == "" || row.Disposition == "" || profiles[row.SurfaceID].SurfaceID != "" {
+		if row.SurfaceID == "" || row.Namespace == "" || row.Disposition == "" || profiles[row.SurfaceID].SurfaceID != "" {
 			return nil, fmt.Errorf("invalid or duplicate assurance profile surface %q", row.SurfaceID)
 		}
 		profiles[row.SurfaceID] = row
@@ -614,9 +610,6 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 		sort.Strings(repositories)
 		sort.Strings(aggregate.usageKeys)
 		row := AssuranceSurfaceRow{Namespace: profileRow.Namespace, SurfaceID: surfaceID, UsageKeys: append([]string(nil), aggregate.usageKeys...), RepositoryIDs: repositories, PrivateProdRefs: aggregate.prod, PrivateTestRefs: aggregate.test, Disposition: profileRow.Disposition, SalesforceAction: planRow.Action}
-		if row.Namespace == "" {
-			row.Namespace = aggregate.namespace
-		}
 		local := proofs[surfaceID]
 		if local.SurfaceID != "" {
 			row.FixtureIDs = []string{local.FixtureID}
