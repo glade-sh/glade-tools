@@ -1522,12 +1522,11 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 		return false
 	}
 	expected := []struct {
-		args     []string
-		passed   bool
-		exitCode int
+		args   []string
+		passed bool
 	}{
-		{[]string{"org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json"}, true, 0},
-		{[]string{"org", "display", "--target-org", creation.Alias, "--json"}, false, 1},
+		{[]string{"org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json"}, true},
+		{[]string{"org", "display", "--target-org", creation.Alias, "--json"}, false},
 	}
 	environment, err := fixedSalesforceEnvironment()
 	if err != nil {
@@ -1536,7 +1535,7 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 	for index, want := range expected {
 		command := cleanup.Commands[index]
 		spec := salesforceCommandSpecSHA256("/usr/local/bin/sf", want.args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
-		if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{"/usr/local/bin/sf"}, want.args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != spec || command.Passed != want.passed || command.ExitCode != want.exitCode || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
+		if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{"/usr/local/bin/sf"}, want.args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != spec || command.Passed != want.passed || (command.ExitCode == 0) != want.passed || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
 			return false
 		}
 		if index == 1 && validSalesforceOrgDisplayFailure(command.Output.Stdout) == false {

@@ -1325,7 +1325,8 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	}
 	deleted := salesforceCommandForTest(t, bundlePath, []string{"org", "delete", "scratch", "--target-org", alias, "--no-prompt", "--json"})
 	absent := salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", alias, "--json"})
-	absent.ExitCode, absent.Passed = 1, false
+	// Salesforce CLI returns exit code 2 when a deleted target alias is absent.
+	absent.ExitCode, absent.Passed = 2, false
 	absent.Output.Stdout = []byte(`{"status":1,"message":"not found"}`)
 	absent.StdoutSHA256 = replayBytesSHA256(absent.Output.Stdout)
 	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: bundle.DevHub, DevHubOrgID: bundle.DevHubOrgID, DevHubUsername: bundle.DevHubUsername, OrgAlias: alias, OrgID: orgID, Commands: []CommandResult{deleted, absent}, DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", bundle.DevHub, "--json"}), ResidueAbsent: true}
