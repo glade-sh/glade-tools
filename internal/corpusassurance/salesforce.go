@@ -1349,15 +1349,23 @@ func parseSalesforceOrgDisplay(data []byte) (string, string, string, error) {
 	var payload struct {
 		Status int `json:"status"`
 		Result struct {
-			ID       string `json:"id"`
-			Status   string `json:"status"`
-			Username string `json:"username"`
+			ID              string `json:"id"`
+			Status          string `json:"status"`
+			ConnectedStatus string `json:"connectedStatus"`
+			Username        string `json:"username"`
 		} `json:"result"`
 	}
-	if err := json.Unmarshal(data, &payload); err != nil || payload.Status != 0 || payload.Result.ID == "" || payload.Result.Status == "" || payload.Result.Username == "" {
+	if err := json.Unmarshal(data, &payload); err != nil || payload.Status != 0 {
 		return "", "", "", fmt.Errorf("invalid Salesforce org display JSON")
 	}
-	return payload.Result.ID, payload.Result.Status, payload.Result.Username, nil
+	status := payload.Result.Status
+	if status == "" {
+		status = payload.Result.ConnectedStatus
+	}
+	if payload.Result.ID == "" || status == "" || payload.Result.Username == "" {
+		return "", "", "", fmt.Errorf("invalid Salesforce org display JSON")
+	}
+	return payload.Result.ID, status, payload.Result.Username, nil
 }
 
 func parseSalesforceOrgCreate(data []byte) (string, error) {

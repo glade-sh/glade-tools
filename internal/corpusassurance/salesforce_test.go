@@ -13,6 +13,13 @@ import (
 	"testing"
 )
 
+func TestParseSalesforceDevHubDisplayUsesConnectedStatus(t *testing.T) {
+	id, status, username, err := parseSalesforceOrgDisplay([]byte(`{"status":0,"result":{"id":"00D0","connectedStatus":"Connected","username":"sealed-dev-hub@example.invalid"}}`))
+	if err != nil || id != "00D0" || status != "Connected" || username != "sealed-dev-hub@example.invalid" {
+		t.Fatalf("parseSalesforceOrgDisplay = %q, %q, %q, %v", id, status, username, err)
+	}
+}
+
 func TestValidateSalesforceShardsRequiresCleanDisjointCompleteEvidence(t *testing.T) {
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
