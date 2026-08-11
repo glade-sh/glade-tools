@@ -1275,8 +1275,8 @@ func RunSalesforceOrgPreflight(request SalesforceOrgPreflightRequest) (Salesforc
 			return SalesforceOrgPreflight{}, err
 		}
 		count, err := parseSalesforceCount(output.Stdout)
-		if err != nil || count != 0 {
-			return SalesforceOrgPreflight{}, fmt.Errorf("scratch org %s inventory is not empty", kind)
+		if err != nil || count != salesforceInventoryBaselineCount(kind) {
+			return SalesforceOrgPreflight{}, fmt.Errorf("scratch org %s inventory does not match the fresh baseline", kind)
 		}
 		preflight.Inventory.Counts[kind] = count
 		preflight.Commands = append(preflight.Commands, receipt)
@@ -1455,7 +1455,7 @@ func validSalesforceRuntimeObservation(raw json.RawMessage) bool {
 
 func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bundlePath string) bool {
 	environment, err := fixedSalesforceEnvironment()
-	if err != nil || !filepath.IsAbs(bundlePath) || preflight.SchemaVersion != 1 || preflight.BundleSHA256 != bundleSHA || preflight.OrgAlias == "" || preflight.OrgID == "" || preflight.OrgUsername == "" || preflight.OrgStatus != "Active" || !zeroInventory(preflight.Inventory) || len(preflight.Inventory.Counts) != len(salesforceInventoryTypes) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 {
+	if err != nil || !filepath.IsAbs(bundlePath) || preflight.SchemaVersion != 1 || preflight.BundleSHA256 != bundleSHA || preflight.OrgAlias == "" || preflight.OrgID == "" || preflight.OrgUsername == "" || preflight.OrgStatus != "Active" || !baselineSalesforceInventory(preflight.Inventory) || len(preflight.Inventory.Counts) != len(salesforceInventoryTypes) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 {
 		return false
 	}
 	for index, args := range salesforcePreflightArgs(preflight.OrgAlias) {
@@ -1949,7 +1949,7 @@ func ValidateSalesforceShards(shards []SalesforceShard, expected []string) error
 	}
 	first := shards[0]
 	for _, shard := range shards {
-		if ValidateRuntimeArtifact(shard.Candidate) != nil || ValidateRuntimeArtifact(shard.Tools) != nil || !validSalesforceBindings(shard.Bindings) || shard.Candidate != first.Candidate || shard.Tools != first.Tools || !sameSalesforceBundleBindings(shard.Bindings, first.Bindings) || shard.ShardCount != len(shards) || shard.ShardIndex < 0 || shard.ShardIndex >= shard.ShardCount || indexes[shard.ShardIndex] || shard.OrgAlias == "" || aliases[shard.OrgAlias] || shard.OrgID == "" || orgs[shard.OrgID] || shard.OrgStatus != "Active" || !validShardLifecycle(shard) || !validSalesforceCommands(shard.Commands, shard.Bindings.FilterCommandSpecSHA256) || !zeroInventory(shard.PreInventory) || !sameInventory(shard.PreInventory, shard.PostInventory) || !shard.Cleanup.ResidueAbsent {
+		if ValidateRuntimeArtifact(shard.Candidate) != nil || ValidateRuntimeArtifact(shard.Tools) != nil || !validSalesforceBindings(shard.Bindings) || shard.Candidate != first.Candidate || shard.Tools != first.Tools || !sameSalesforceBundleBindings(shard.Bindings, first.Bindings) || shard.ShardCount != len(shards) || shard.ShardIndex < 0 || shard.ShardIndex >= shard.ShardCount || indexes[shard.ShardIndex] || shard.OrgAlias == "" || aliases[shard.OrgAlias] || shard.OrgID == "" || orgs[shard.OrgID] || shard.OrgStatus != "Active" || !validShardLifecycle(shard) || !validSalesforceCommands(shard.Commands, shard.Bindings.FilterCommandSpecSHA256) || !baselineSalesforceInventory(shard.PreInventory) || !sameInventory(shard.PreInventory, shard.PostInventory) || !shard.Cleanup.ResidueAbsent {
 			return fmt.Errorf("invalid Salesforce shard %d", shard.ShardIndex)
 		}
 		indexes[shard.ShardIndex], aliases[shard.OrgAlias], orgs[shard.OrgID] = true, true, true
@@ -1968,7 +1968,7 @@ func ValidateSalesforceShards(shards []SalesforceShard, expected []string) error
 
 func validShardLifecycle(shard SalesforceShard) bool {
 	for _, receipt := range []SalesforceOrgPreflight{shard.Preflight, shard.Postflight} {
-		if receipt.SchemaVersion != 1 || receipt.BundleSHA256 != shard.Bindings.BundleSHA256 || receipt.OrgAlias != shard.OrgAlias || receipt.OrgID != shard.OrgID || receipt.OrgStatus != shard.OrgStatus || len(receipt.Commands) != len(salesforceInventoryTypes)+1 || !zeroInventory(receipt.Inventory) {
+		if receipt.SchemaVersion != 1 || receipt.BundleSHA256 != shard.Bindings.BundleSHA256 || receipt.OrgAlias != shard.OrgAlias || receipt.OrgID != shard.OrgID || receipt.OrgStatus != shard.OrgStatus || len(receipt.Commands) != len(salesforceInventoryTypes)+1 || !baselineSalesforceInventory(receipt.Inventory) {
 			return false
 		}
 	}
@@ -2016,9 +2016,19 @@ func sealedPythonSHA256() (string, error) {
 	return sha256File("/usr/bin/python3")
 }
 
-func zeroInventory(inventory SalesforceInventory) bool {
+func salesforceInventoryBaselineCount(kind string) int {
+	if kind == "FieldSet" {
+		return 1
+	}
+	return 0
+}
+
+func baselineSalesforceInventory(inventory SalesforceInventory) bool {
+	if len(inventory.Counts) != len(salesforceInventoryTypes) {
+		return false
+	}
 	for _, kind := range salesforceInventoryTypes {
-		if inventory.Counts[kind] != 0 {
+		if inventory.Counts[kind] != salesforceInventoryBaselineCount(kind) {
 			return false
 		}
 	}

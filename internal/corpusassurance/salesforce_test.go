@@ -20,6 +20,21 @@ func TestParseSalesforceDevHubDisplayUsesConnectedStatus(t *testing.T) {
 	}
 }
 
+func TestSalesforceBaselineInventoryRequiresOneFieldSet(t *testing.T) {
+	inventory := SalesforceInventory{Counts: map[string]int{}}
+	for _, kind := range salesforceInventoryTypes {
+		inventory.Counts[kind] = 0
+	}
+	inventory.Counts["FieldSet"] = 1
+	if !baselineSalesforceInventory(inventory) {
+		t.Fatal("fresh scratch inventory rejected")
+	}
+	inventory.Counts["FieldSet"] = 2
+	if baselineSalesforceInventory(inventory) {
+		t.Fatal("non-baseline FieldSet inventory accepted")
+	}
+}
+
 func TestValidateSalesforceShardsRequiresCleanDisjointCompleteEvidence(t *testing.T) {
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
@@ -28,8 +43,8 @@ func TestValidateSalesforceShardsRequiresCleanDisjointCompleteEvidence(t *testin
 	preflight0 := shardLifecycleForTest("assurance-sf0", "00D0", bindings.BundleSHA256)
 	preflight1 := shardLifecycleForTest("assurance-sf1", "00D1", bindings.BundleSHA256)
 	shards := []SalesforceShard{
-		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 0, ShardCount: 2, OrgAlias: "assurance-sf0", OrgID: "00D0", OrgStatus: "Active", Preflight: preflight0, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: preflight0, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.run()", Kind: "runtime", Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
-		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 1, ShardCount: 2, OrgAlias: "assurance-sf1", OrgID: "00D1", OrgStatus: "Active", Preflight: preflight1, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: preflight1, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.compile()", Kind: "compile", Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
+		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 0, ShardCount: 2, OrgAlias: "assurance-sf0", OrgID: "00D0", OrgStatus: "Active", Preflight: preflight0, PreInventory: salesforceBaselineInventoryForTest(), Commands: []CommandResult{command}, Postflight: preflight0, PostInventory: salesforceBaselineInventoryForTest(), Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.run()", Kind: "runtime", Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
+		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 1, ShardCount: 2, OrgAlias: "assurance-sf1", OrgID: "00D1", OrgStatus: "Active", Preflight: preflight1, PreInventory: salesforceBaselineInventoryForTest(), Commands: []CommandResult{command}, Postflight: preflight1, PostInventory: salesforceBaselineInventoryForTest(), Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.compile()", Kind: "compile", Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
 	}
 	if err := ValidateSalesforceShards(shards, []string{"apex:System.compile()", "apex:System.run()"}); err != nil {
 		t.Fatal(err)
@@ -128,8 +143,8 @@ func TestValidateSalesforceShardsRejectsReusedOrgAlias(t *testing.T) {
 	bindings := SalesforceBindings{OraclePlanSHA256: strings.Repeat("e", 64), BundleSHA256: strings.Repeat("f", 64), FilterSHA256: strings.Repeat("1", 64), FilterCommandSpecSHA256: strings.Repeat("2", 64)}
 	command := CommandResult{Command: []string{"python3", "transport/salesforce-first-filter.py"}, CommandSpecSHA256: bindings.FilterCommandSpecSHA256, ExitCode: 0, Passed: true, StdoutSHA256: strings.Repeat("3", 64), StderrSHA256: strings.Repeat("4", 64)}
 	shards := []SalesforceShard{
-		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 0, ShardCount: 2, OrgAlias: "assurance-sf", OrgID: "00D0", OrgStatus: "Active", PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.run()", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
-		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 1, ShardCount: 2, OrgAlias: "assurance-sf", OrgID: "00D1", OrgStatus: "Active", PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.compile()", Kind: oracleCompile, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
+		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 0, ShardCount: 2, OrgAlias: "assurance-sf", OrgID: "00D0", OrgStatus: "Active", PreInventory: salesforceBaselineInventoryForTest(), Commands: []CommandResult{command}, PostInventory: salesforceBaselineInventoryForTest(), Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.run()", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
+		{Bindings: bindings, Candidate: candidate, Tools: tools, ShardIndex: 1, ShardCount: 2, OrgAlias: "assurance-sf", OrgID: "00D1", OrgStatus: "Active", PreInventory: salesforceBaselineInventoryForTest(), Commands: []CommandResult{command}, PostInventory: salesforceBaselineInventoryForTest(), Results: []SalesforceSurfaceResult{{SurfaceID: "apex:System.compile()", Kind: oracleCompile, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}},
 	}
 	if err := ValidateSalesforceShards(shards, []string{"apex:System.run()", "apex:System.compile()"}); err == nil {
 		t.Fatal("accepted shards that reuse a scratch-org alias")
@@ -474,13 +489,17 @@ func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
 		}
-		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
+		count := 0
+		if strings.Contains(strings.Join(args, " "), "FROM FieldSet") {
+			count = 1
+		}
+		return salesforceCommandOutput{Stdout: []byte(fmt.Sprintf(`{"status":0,"result":{"totalSize":%d}}`, count))}, nil
 	}
 	preflight, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: runner})
 	if err != nil {
 		t.Fatalf("RunSalesforceOrgPreflight: %v", err)
 	}
-	if preflight.OrgID != "00D000000000001" || preflight.OrgStatus != "Active" || !zeroInventory(preflight.Inventory) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 || commands != len(salesforceInventoryTypes)+1 {
+	if preflight.OrgID != "00D000000000001" || preflight.OrgStatus != "Active" || !baselineSalesforceInventory(preflight.Inventory) || len(preflight.Commands) != len(salesforceInventoryTypes)+1 || commands != len(salesforceInventoryTypes)+1 {
 		t.Fatalf("preflight = %#v, commands=%d", preflight, commands)
 	}
 	cliSHA256, err := sha256File("/usr/local/bin/sf")
@@ -774,7 +793,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 	preflightArgs := [][]string{{"org", "display", "--target-org", preflight.OrgAlias, "--json"}}
 	for _, kind := range salesforceInventoryTypes {
 		preflightArgs = append(preflightArgs, []string{"data", "query", "--query", "SELECT count() FROM " + kind, "--target-org", preflight.OrgAlias, "--use-tooling-api", "--json"})
-		preflight.Inventory.Counts[kind] = 0
+		preflight.Inventory.Counts[kind] = salesforceInventoryBaselineCount(kind)
 	}
 	for _, args := range preflightArgs {
 		preflight.Commands = append(preflight.Commands, salesforceCommandForTest(t, bundlePath, args))
@@ -1017,7 +1036,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RunSalesforceShard: %v", err)
 	}
-	if len(shard.Results) != 1 || shard.Results[0].Kind != oracleRuntime || !zeroInventory(shard.PostInventory) {
+	if len(shard.Results) != 1 || shard.Results[0].Kind != oracleRuntime || !baselineSalesforceInventory(shard.PostInventory) {
 		t.Fatalf("shard = %#v", shard)
 	}
 	if _, err := os.Stat(shardPath); err != nil {
@@ -1103,7 +1122,7 @@ func salesforcePreflightForTest(t *testing.T, alias, bundleSHA, bundlePath strin
 	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: alias, OrgID: "00D0", OrgUsername: alias + "@example.invalid", OrgStatus: "Active", Inventory: SalesforceInventory{Counts: map[string]int{}}}
 	for index, args := range salesforcePreflightArgs(alias) {
 		if index > 0 {
-			preflight.Inventory.Counts[salesforceInventoryTypes[index-1]] = 0
+			preflight.Inventory.Counts[salesforceInventoryTypes[index-1]] = salesforceInventoryBaselineCount(salesforceInventoryTypes[index-1])
 		}
 		preflight.Commands = append(preflight.Commands, salesforceCommandForTest(t, bundlePath, args))
 	}
@@ -1447,7 +1466,15 @@ func mustSealedPythonSHA(t *testing.T) string {
 }
 
 func shardLifecycleForTest(alias, id, bundleSHA string) SalesforceOrgPreflight {
-	return SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: alias, OrgID: id, OrgUsername: alias + "@example.invalid", OrgStatus: "Active", Inventory: SalesforceInventory{Counts: map[string]int{}}, Commands: make([]CommandResult, len(salesforceInventoryTypes)+1)}
+	return SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: alias, OrgID: id, OrgUsername: alias + "@example.invalid", OrgStatus: "Active", Inventory: salesforceBaselineInventoryForTest(), Commands: make([]CommandResult, len(salesforceInventoryTypes)+1)}
+}
+
+func salesforceBaselineInventoryForTest() SalesforceInventory {
+	inventory := SalesforceInventory{Counts: map[string]int{}}
+	for _, kind := range salesforceInventoryTypes {
+		inventory.Counts[kind] = salesforceInventoryBaselineCount(kind)
+	}
+	return inventory
 }
 
 func containsString(values []string, want string) bool {
