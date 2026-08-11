@@ -58,10 +58,11 @@ func CreateAssuranceAttempt(request AssuranceAttemptRequest) (AssuranceAttempt, 
 	if err != nil {
 		return AssuranceAttempt{}, fmt.Errorf("read IN_SCOPE inventory: %w", err)
 	}
-	authorityCandidate, authorityBytes, err := readCandidateAuthority(request.CandidateAuthorityPath)
+	authority, authorityBytes, err := readCandidateAuthority(request.CandidateAuthorityPath)
 	if err != nil {
 		return AssuranceAttempt{}, err
 	}
+	authorityCandidate := authority.Candidate
 	if err := validateCleanGitRoot(request.CandidateRoot, authorityCandidate.Commit); err != nil {
 		return AssuranceAttempt{}, fmt.Errorf("candidate source: %w", err)
 	}
@@ -76,9 +77,13 @@ func CreateAssuranceAttempt(request AssuranceAttemptRequest) (AssuranceAttempt, 
 	if err != nil {
 		return AssuranceAttempt{}, fmt.Errorf("tools source: %w", err)
 	}
-	tools, err := runtimeArtifactFor(request.ToolsPath, toolsCommit)
+	tools, err := releaseExecutingTools(request.ToolsPath, toolsCommit)
 	if err != nil {
 		return AssuranceAttempt{}, fmt.Errorf("tools: %w", err)
+	}
+	requestedTools, err := canonicalCandidateToolPath(request.ToolsPath)
+	if err != nil || tools != authority.Tools.RuntimeArtifact || requestedTools != authority.Tools.Path {
+		return AssuranceAttempt{}, fmt.Errorf("tools do not match sealed authority")
 	}
 	attempt := AssuranceAttempt{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), CandidateAuthoritySHA256: replayBytesSHA256(authorityBytes), Candidate: candidate, Tools: tools}
 	authorities, err := bindAttemptCleanupAuthorities(request.RemoteCleanupAuthorityPaths, attempt)
@@ -177,17 +182,17 @@ func remoteCleanupAuthorityMatches(attempt AssuranceAttempt, authority RemoteAtt
 	return attempt.RemoteCleanupAuthoritySHA256[authority.Role] == authoritySHA
 }
 
-func readCandidateAuthority(path string) (attemptCandidate, []byte, error) {
+func readCandidateAuthority(path string) (candidateAuthorityInput, []byte, error) {
 	var document candidateAuthorityDocument
 	data, err := readExactCandidateAuthorityDocument(path, &document)
 	if err != nil {
-		return attemptCandidate{}, nil, err
+		return candidateAuthorityInput{}, nil, err
 	}
-	candidate, err := validateCandidateAuthorityDocument(document)
+	input, err := validateCandidateAuthorityDocument(document)
 	if err != nil {
-		return attemptCandidate{}, nil, err
+		return candidateAuthorityInput{}, nil, err
 	}
-	return candidate, data, nil
+	return input, data, nil
 }
 
 func runtimeArtifactFor(path, commit string) (RuntimeArtifact, error) {

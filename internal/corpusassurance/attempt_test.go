@@ -15,11 +15,11 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	candidatePath := filepath.Join(root, "glade")
-	toolsPath := filepath.Join(root, "glade-tools")
-	if err := os.WriteFile(candidatePath, []byte("candidate"), 0o700); err != nil {
+	toolsPath, err := os.Executable()
+	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(toolsPath, []byte("tools"), 0o700); err != nil {
+	if err := os.WriteFile(candidatePath, []byte("candidate"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	inventoryPath := filepath.Join(root, "IN_SCOPE.json")
@@ -28,7 +28,7 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	}
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
-	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot)
+	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	outputPath := filepath.Join(root, "ATTEMPT.json")
 	attempt, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: outputPath})
@@ -47,11 +47,13 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	root := t.TempDir()
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
-	candidatePath, toolsPath := filepath.Join(root, "glade"), filepath.Join(root, "glade-tools")
-	for _, path := range []string{candidatePath, toolsPath} {
-		if err := os.WriteFile(path, []byte(filepath.Base(path)), 0o700); err != nil {
-			t.Fatal(err)
-		}
+	candidatePath := filepath.Join(root, "glade")
+	if err := os.WriteFile(candidatePath, []byte(filepath.Base(candidatePath)), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	toolsPath, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
 	}
 	inventoryPath := filepath.Join(root, "IN_SCOPE.json")
 	if err := WriteNewJSON(inventoryPath, InventorySpec{SchemaVersion: 1, Scope: "private-corpus-assurance", Repositories: []InventoryEntry{{ID: "private-corpus-001", CheckoutPath: candidateRoot, ExpectedCommit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD")}}}); err != nil {
@@ -59,7 +61,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	}
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
-	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot)
+	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	for name, mutate := range map[string]func(){
 		"candidate hash": func() {
@@ -79,7 +81,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	} {
 		t.Run(name, func(t *testing.T) {
 			if name == "candidate hash" {
-				writeAttemptAuthority(t, authorityPath, candidate, candidateRoot)
+				writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 			}
 			mutate()
 			if _, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: filepath.Join(root, name+".json")}); err == nil {
@@ -91,15 +93,15 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 
 type sealedAttemptCandidate struct{ Commit, Path, SHA256 string }
 
-func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCandidate, candidateRoot string) {
+func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCandidate, candidateRoot string, tools candidateTool) {
 	t.Helper()
 	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
 		t.Fatal(err)
 	}
 	receiptPath := filepath.Join(filepath.Dir(path), "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": candidate})
+	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": tools})
 	reviewPath := filepath.Join(filepath.Dir(path), "REVIEW.md")
-	if err := os.WriteFile(reviewPath, []byte("Verdict: PASS\nCandidate commit: "+candidate.Commit+"\nCandidate SHA-256: "+candidate.SHA256+"\n"), 0o600); err != nil {
+	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: path}); err != nil {

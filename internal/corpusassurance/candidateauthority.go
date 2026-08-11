@@ -1,10 +1,7 @@
 package corpusassurance
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -30,6 +27,7 @@ type candidateAuthorityDocument struct {
 
 type candidateAuthorityInput struct {
 	Candidate attemptCandidate `json:"candidate"`
+	Tools     candidateTool    `json:"tools"`
 }
 
 type candidateAuthoritySource struct {
@@ -44,89 +42,154 @@ type candidateBuildReceipt struct {
 	BinarySHA256  string           `json:"binarySha256"`
 	CleanWorktree bool             `json:"cleanWorktree"`
 	Candidate     attemptCandidate `json:"candidate"`
+	Tools         candidateTool    `json:"tools"`
+}
+
+type candidateTool struct {
+	RuntimeArtifact
+	Path string `json:"path"`
 }
 
 // CreateCandidateAuthority seals one candidate derived from its exact build
 // receipt and independently reviewed candidate identity.
-func CreateCandidateAuthority(request CandidateAuthorityRequest) (attemptCandidate, error) {
+func CreateCandidateAuthority(request CandidateAuthorityRequest) (candidateAuthorityInput, error) {
 	for _, path := range []string{request.CandidateRoot, request.ReceiptPath, request.ReviewPath, request.OutputPath} {
 		if !filepath.IsAbs(path) {
-			return attemptCandidate{}, fmt.Errorf("absolute candidate authority paths are required")
+			return candidateAuthorityInput{}, fmt.Errorf("absolute candidate authority paths are required")
 		}
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
-		return attemptCandidate{}, fmt.Errorf("candidate authority output already exists: %s", request.OutputPath)
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority output already exists: %s", request.OutputPath)
 	} else if !os.IsNotExist(err) {
-		return attemptCandidate{}, err
+		return candidateAuthorityInput{}, err
 	}
-	candidate, receiptSource, reviewSource, err := validateCandidateAuthoritySources(request.CandidateRoot, request.ReceiptPath, request.ReviewPath)
+	input, receiptSource, reviewSource, err := validateCandidateAuthoritySources(request.CandidateRoot, request.ReceiptPath, request.ReviewPath)
 	if err != nil {
-		return attemptCandidate{}, err
+		return candidateAuthorityInput{}, err
 	}
-	document := candidateAuthorityDocument{SchemaVersion: 1, Status: candidateAuthorityStatus, Binding: candidateAuthorityInput{Candidate: candidate}, BoundInputs: candidateAuthorityInput{Candidate: candidate}, SourceBuildReceipt: receiptSource, Review: reviewSource}
+	document := candidateAuthorityDocument{SchemaVersion: 1, Status: candidateAuthorityStatus, Binding: input, BoundInputs: input, SourceBuildReceipt: receiptSource, Review: reviewSource}
 	if err := WriteNewJSON(request.OutputPath, document); err != nil {
-		return attemptCandidate{}, err
+		return candidateAuthorityInput{}, err
 	}
-	return candidate, nil
+	return input, nil
 }
 
-func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (attemptCandidate, error) {
+func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (candidateAuthorityInput, error) {
 	if document.SchemaVersion != 1 || document.Status != candidateAuthorityStatus || document.Binding.Candidate != document.BoundInputs.Candidate {
-		return attemptCandidate{}, fmt.Errorf("candidate authority schema is invalid")
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority schema is invalid")
 	}
-	candidate := document.Binding.Candidate
+	input := document.Binding
+	if input != document.BoundInputs {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority schema is invalid")
+	}
+	candidate := input.Candidate
 	if !commitPattern.MatchString(candidate.Commit) || !filepath.IsAbs(candidate.Path) || !sha256Pattern.MatchString(candidate.SHA256) {
-		return attemptCandidate{}, fmt.Errorf("candidate authority candidates do not agree")
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority candidates do not agree")
+	}
+	if err := validateCandidateTool(input.Tools); err != nil {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority tools are invalid")
 	}
 	for _, source := range []candidateAuthoritySource{document.SourceBuildReceipt, document.Review} {
 		if !filepath.IsAbs(source.Path) || !sha256Pattern.MatchString(source.SHA256) {
-			return attemptCandidate{}, fmt.Errorf("candidate authority source is invalid")
+			return candidateAuthorityInput{}, fmt.Errorf("candidate authority source is invalid")
 		}
 	}
 	receipt, receiptBytes, err := readExactCandidateBuildReceipt(document.SourceBuildReceipt.Path)
-	if err != nil || replayBytesSHA256(receiptBytes) != document.SourceBuildReceipt.SHA256 || !validCandidateBuildReceipt(receipt, candidate) {
-		return attemptCandidate{}, fmt.Errorf("candidate authority build receipt is invalid")
+	if err != nil || replayBytesSHA256(receiptBytes) != document.SourceBuildReceipt.SHA256 || !validCandidateBuildReceipt(receipt, input) {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
 	reviewBytes, err := os.ReadFile(document.Review.Path)
-	if err != nil || validateCandidateAuthorityReviewBytes(reviewBytes, candidate) != nil || replayBytesSHA256(reviewBytes) != document.Review.SHA256 {
-		return attemptCandidate{}, fmt.Errorf("candidate authority review is stale")
+	if err != nil || validateCandidateAuthorityReviewBytes(reviewBytes, candidate, receipt.Tools) != nil || replayBytesSHA256(reviewBytes) != document.Review.SHA256 {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority review is stale")
 	}
 	actual, err := runtimeArtifactFor(candidate.Path, candidate.Commit)
 	if err != nil || actual.SHA256 != candidate.SHA256 {
-		return attemptCandidate{}, fmt.Errorf("candidate authority binary is stale")
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority binary is stale")
 	}
-	return candidate, nil
+	if err := validateCandidateTool(receipt.Tools); err != nil {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority tools are stale")
+	}
+	return input, nil
 }
 
-func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath string) (attemptCandidate, candidateAuthoritySource, candidateAuthoritySource, error) {
+func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath string) (candidateAuthorityInput, candidateAuthoritySource, candidateAuthoritySource, error) {
 	receipt, receiptBytes, err := readExactCandidateBuildReceipt(receiptPath)
-	if err != nil || !validCandidateBuildReceipt(receipt, receipt.Candidate) {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
+	input := candidateAuthorityInput{Candidate: receipt.Candidate, Tools: receipt.Tools}
+	if err != nil || !validCandidateBuildReceipt(receipt, input) {
+		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
 	if err := validateCleanGitRoot(candidateRoot, receipt.Candidate.Commit); err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
+		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
 	}
 	actual, err := runtimeArtifactFor(receipt.Candidate.Path, receipt.Candidate.Commit)
 	if err != nil || actual.SHA256 != receipt.Candidate.SHA256 {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
+		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
+	}
+	if err := validateCandidateTool(receipt.Tools); err != nil {
+		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools are stale")
 	}
 	reviewBytes, err := os.ReadFile(reviewPath)
 	if err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
-	if err := validateCandidateAuthorityReviewBytes(reviewBytes, receipt.Candidate); err != nil {
-		return attemptCandidate{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+	if err := validateCandidateAuthorityReviewBytes(reviewBytes, receipt.Candidate, receipt.Tools); err != nil {
+		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
-	return receipt.Candidate, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
+	return input, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
 }
 
-func validCandidateBuildReceipt(receipt candidateBuildReceipt, candidate attemptCandidate) bool {
-	return receipt.SchemaVersion == 1 && receipt.Status == "clean-exact-candidate" && receipt.CleanWorktree && receipt.SourceCommit == candidate.Commit && receipt.BinarySHA256 == candidate.SHA256 && receipt.Candidate == candidate && commitPattern.MatchString(candidate.Commit) && filepath.IsAbs(candidate.Path) && sha256Pattern.MatchString(candidate.SHA256)
+func validCandidateBuildReceipt(receipt candidateBuildReceipt, input candidateAuthorityInput) bool {
+	candidate := input.Candidate
+	return receipt.SchemaVersion == 1 && receipt.Status == "clean-exact-candidate" && receipt.CleanWorktree && receipt.SourceCommit == candidate.Commit && receipt.BinarySHA256 == candidate.SHA256 && receipt.Candidate == candidate && receipt.Tools == input.Tools && commitPattern.MatchString(candidate.Commit) && filepath.IsAbs(candidate.Path) && sha256Pattern.MatchString(candidate.SHA256) && validateCandidateTool(receipt.Tools) == nil
 }
 
-func validateCandidateAuthorityReviewBytes(data []byte, candidate attemptCandidate) error {
-	if !strings.HasPrefix(string(data), "Verdict: PASS\n") || !strings.Contains(string(data), "\nCandidate commit: "+candidate.Commit+"\n") || !strings.Contains(string(data), "\nCandidate SHA-256: "+candidate.SHA256+"\n") {
+func validateCandidateTool(tool candidateTool) error {
+	if !filepath.IsAbs(tool.Path) || ValidateRuntimeArtifact(tool.RuntimeArtifact) != nil {
+		return fmt.Errorf("candidate tools are invalid")
+	}
+	canonical, err := canonicalCandidateToolPath(tool.Path)
+	if err != nil || canonical != filepath.Clean(tool.Path) {
+		return fmt.Errorf("candidate tools path is not canonical")
+	}
+	actual, err := releaseExecutingTools(tool.Path, tool.Commit)
+	if err != nil || actual != tool.RuntimeArtifact {
+		return fmt.Errorf("candidate tools are stale")
+	}
+	return nil
+}
+
+func canonicalCandidateToolPath(path string) (string, error) {
+	canonical, err := filepath.EvalSymlinks(path)
+	if err != nil || !filepath.IsAbs(canonical) {
+		return "", fmt.Errorf("resolve candidate tools path")
+	}
+	return filepath.Clean(canonical), nil
+}
+
+func validateCandidateAuthorityReviewBytes(data []byte, candidate attemptCandidate, tools candidateTool) error {
+	if !strings.HasPrefix(string(data), "Verdict: PASS\n") {
 		return fmt.Errorf("candidate authority review is invalid")
+	}
+	expected := map[string]string{"Verdict": "PASS", "Candidate commit": candidate.Commit, "Candidate SHA-256": candidate.SHA256, "Tools commit": tools.Commit, "Tools OS": tools.OS, "Tools arch": tools.Arch, "Tools SHA-256": tools.SHA256, "Tools path": tools.Path}
+	seen := make(map[string]bool, len(expected))
+	for _, line := range strings.Split(string(data), "\n") {
+		label, value, ok := strings.Cut(line, ": ")
+		if !ok {
+			continue
+		}
+		want, required := expected[label]
+		if !required {
+			continue
+		}
+		if seen[label] || value != want {
+			return fmt.Errorf("candidate authority review is invalid")
+		}
+		seen[label] = true
+	}
+	for label := range expected {
+		if !seen[label] {
+			return fmt.Errorf("candidate authority review is invalid")
+		}
 	}
 	return nil
 }
@@ -142,30 +205,12 @@ func readExactCandidateAuthorityDocument(path string, value any) ([]byte, error)
 	if err != nil {
 		return nil, err
 	}
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(value); err != nil {
+	if err := decodeExactJSON(data, value); err != nil {
 		return nil, err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		return nil, fmt.Errorf("candidate authority contains multiple JSON values")
 	}
 	return data, nil
 }
 
 func readExactCandidateAuthorityJSON(path string, value any) ([]byte, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	if err := decoder.Decode(value); err != nil {
-		return nil, err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		return nil, fmt.Errorf("candidate authority contains multiple JSON values")
-	}
-	return data, nil
+	return readExactCandidateAuthorityDocument(path, value)
 }
