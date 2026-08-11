@@ -330,10 +330,11 @@ func expectedReportCleanupRoots(request AssuranceReportRequest) (map[string]stri
 		if shard.Host == "local" {
 			continue
 		}
-		if !filepath.IsAbs(shard.AttemptRoot) || roots[shard.Host] != "" {
+		hostRoot := filepath.Clean(shard.AttemptRoot)
+		if !filepath.IsAbs(hostRoot) || filepath.Base(hostRoot) != "replay-worker" || filepath.Base(filepath.Dir(hostRoot)) != "hosts" || filepath.Base(filepath.Dir(filepath.Dir(hostRoot))) != "prepared" || roots[shard.Host] != "" {
 			return nil, fmt.Errorf("replay cleanup root is not sealed by the replay shard")
 		}
-		roots[shard.Host] = filepath.Clean(shard.AttemptRoot)
+		roots[shard.Host] = filepath.Dir(filepath.Dir(filepath.Dir(hostRoot)))
 	}
 	for _, files := range request.SalesforceFiles {
 		shard, _, err := readExactJSONBytes[SalesforceShard](files.ShardPath)

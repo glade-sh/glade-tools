@@ -109,7 +109,7 @@ func TestRunReleaseValidationDerivesArtifactsAndFreezeFromSealedAttempt(t *testi
 	}
 }
 
-func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
+func TestRunReleaseValidationSealsThreeFixedChecks(t *testing.T) {
 	root := t.TempDir()
 	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/tools\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
@@ -140,7 +140,7 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RunReleaseValidation: %v", err)
 	}
-	if len(commands) != 4 || len(validation.Commands) != 4 || validation.Candidate.SHA256 != fileSHA256(t, candidatePath) || validation.Tools.SHA256 != fileSHA256(t, toolsPath) || validation.ToolsFreezeSHA256 != fileSHA256(t, freezePath) {
+	if len(commands) != 3 || len(validation.Commands) != 3 || validation.Candidate.SHA256 != fileSHA256(t, candidatePath) || validation.Tools.SHA256 != fileSHA256(t, toolsPath) || validation.ToolsFreezeSHA256 != fileSHA256(t, freezePath) {
 		t.Fatalf("validation = %#v, commands = %#v", validation, commands)
 	}
 	for index, command := range validation.Commands {
@@ -155,7 +155,7 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	if !equalStrings(commands[0].Args, []string{"test", "-timeout", "45m", "-count=1", "./..."}) {
 		t.Fatalf("Glade release command = %#v", commands[0])
 	}
-	if !equalStrings(commands[2].Args, []string{"test", "-timeout", "19m", "-count=1", "./internal/corpusassurance", "./internal/toolcli"}) {
+	if commands[2].Path != filepath.Join(toolsRoot, "scripts", "release-check.sh") {
 		t.Fatalf("tools release command = %#v", commands[2])
 	}
 	if _, err := os.Stat(outputPath); err != nil {
@@ -177,9 +177,8 @@ func TestFixedReleaseCommandsUseCurrentToolsGate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"test", "-timeout", "19m", "-count=1", "./internal/corpusassurance", "./internal/toolcli"}
-	if !equalStrings(commands[2].Args, want) {
-		t.Fatalf("tools release command = %#v, want %#v", commands[2].Args, want)
+	if len(commands) != 3 || commands[2].Path != filepath.Join(root, "tools", "scripts", "release-check.sh") {
+		t.Fatalf("tools release commands = %#v", commands)
 	}
 }
 

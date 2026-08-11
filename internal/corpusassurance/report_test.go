@@ -85,14 +85,15 @@ func TestExpectedReportCleanupRootsAreDerivedFromExecutionEvidence(t *testing.T)
 	root := t.TempDir()
 	replayPath := filepath.Join(root, "replay.json")
 	salesforcePath := filepath.Join(root, "salesforce.json")
-	if err := WriteNewJSON(replayPath, ReplayShard{Host: "replay-worker", AttemptRoot: filepath.Join(root, "replay-root")}); err != nil {
+	replayRoot := filepath.Join(root, "replay-root")
+	if err := WriteNewJSON(replayPath, ReplayShard{Host: "replay-worker", AttemptRoot: filepath.Join(replayRoot, "prepared", "hosts", "replay-worker")}); err != nil {
 		t.Fatal(err)
 	}
 	if err := WriteNewJSON(salesforcePath, SalesforceShard{ExecutorRoot: filepath.Join(root, "salesforce-root", "executor", "shard-0")}); err != nil {
 		t.Fatal(err)
 	}
 	roots, err := expectedReportCleanupRoots(AssuranceReportRequest{ReplayShardPaths: []string{replayPath}, SalesforceFiles: []SalesforceShardFiles{{ShardPath: salesforcePath}}})
-	if err != nil || roots["replay-worker"] != filepath.Join(root, "replay-root") || roots["salesforce-worker"] != filepath.Join(root, "salesforce-root") {
+	if err != nil || roots["replay-worker"] != replayRoot || roots["salesforce-worker"] != filepath.Join(root, "salesforce-root") {
 		t.Fatalf("roots = %#v, err = %v", roots, err)
 	}
 	if err := WriteNewJSON(filepath.Join(root, "salesforce-1.json"), SalesforceShard{ExecutorRoot: filepath.Join(root, "other-root", "executor", "shard-1")}); err != nil {

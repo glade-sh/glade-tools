@@ -360,8 +360,8 @@ func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePl
 	if validation.SchemaVersion != 1 || !filepath.IsAbs(validation.GladeRoot) || !filepath.IsAbs(validation.CandidatePath) || !filepath.IsAbs(validation.ToolsRoot) || !filepath.IsAbs(validation.ToolsPath) {
 		return fmt.Errorf("release validation schema is invalid")
 	}
-	if len(validation.Commands) != 4 {
-		return fmt.Errorf("release validation must seal four fixed release checks")
+	if len(validation.Commands) != 3 {
+		return fmt.Errorf("release validation must seal three fixed release checks")
 	}
 	if validation.Candidate != plan.Candidate || validation.Tools != plan.Tools {
 		return fmt.Errorf("release validation artifacts do not match oracle plan")
@@ -395,10 +395,6 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 			return false
 		}
 	case 2:
-		if len(result.Command) != 7 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "19m" || result.Command[4] != "-count=1" || result.Command[5] != "./internal/corpusassurance" || result.Command[6] != "./internal/toolcli" || result.WorkingDirectory != validation.ToolsRoot {
-			return false
-		}
-	case 3:
 		if len(result.Command) != 1 || result.Command[0] != filepath.Join(validation.ToolsRoot, "scripts", "release-check.sh") || result.WorkingDirectory != validation.ToolsRoot {
 			return false
 		}

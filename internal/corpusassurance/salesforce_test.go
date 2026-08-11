@@ -191,6 +191,62 @@ func TestValidateSalesforceShardsRejectsReusedOrgAlias(t *testing.T) {
 	}
 }
 
+func TestValidSalesforceDispatchAcceptsItsSealedRemotePythonHash(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	outputRoot := filepath.Join(t.TempDir(), "salesforce-worker")
+	bundle, err := BuildOracleBundle(inputs.request(outputRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundlePath := filepath.Join(outputRoot, "bundle", "bundle.json")
+	bundleSHA := localProofFileSHA256(t, bundlePath)
+	attemptRoot, err := filepath.EvalSymlinks(filepath.Dir(outputRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	executorRoot, runID := filepath.Join(attemptRoot, "executor", "shard-0"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-0"
+	filterPath := sealedSalesforceFilterScriptPath(executorRoot)
+	filterSource, err := os.ReadFile(filepath.Join(outputRoot, "transport", "salesforce-first-filter.py"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	args, err := salesforceFilterArgs(filterPath, filepath.Dir(bundlePath), executorRoot, runID, "assurance-sf0", bundle, bundleSHA, 0, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	args, err = sealedSalesforceFilterInvocationArgs(filterPath, filterSource, args)
+	if err != nil {
+		t.Fatal(err)
+	}
+	remotePythonSHA := strings.Repeat("a", 64)
+	if remotePythonSHA == mustSealedPythonSHA(t) {
+		t.Fatal("test requires a remote Python hash")
+	}
+	environment := mustFixedSalesforceEnvironment(t)
+	document, err := json.Marshal(map[string]any{
+		"schemaVersion":           1,
+		"bundleSha256":            bundleSHA,
+		"orgAlias":                "assurance-sf0",
+		"executorRoot":            executorRoot,
+		"runId":                   runID,
+		"shardIndex":              0,
+		"shardCount":              2,
+		"pythonSha256":            remotePythonSHA,
+		"filterCommandSpecSha256": salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), environment, remotePythonSHA, remotePythonSHA),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var dispatch SalesforceDispatch
+	if err := json.Unmarshal(document, &dispatch); err != nil {
+		t.Fatal(err)
+	}
+	if !validSalesforceDispatch(dispatch, bundle, bundlePath) {
+		t.Fatal("rejected a dispatch sealed by its remote Python interpreter")
+	}
+}
+
 func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
@@ -1087,11 +1143,45 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		t.Fatal(err)
 	}
 	pythonSHA := mustSealedPythonSHA(t)
-	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: "assurance-sf0", ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t), pythonSHA, pythonSHA)}
+	dispatch := SalesforceDispatch{SchemaVersion: 1, BundleSHA256: bundleSHA, OrgAlias: "assurance-sf0", ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, PythonSHA256: pythonSHA, FilterCommandSpecSHA256: salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t), pythonSHA, pythonSHA)}
 	if err := os.MkdirAll(executorRoot, 0o700); err != nil {
 		t.Fatal(err)
 	}
 	if err := WriteNewJSON(dispatchPath, dispatch); err != nil {
+		t.Fatal(err)
+	}
+	foreignDispatch := dispatch
+	foreignDispatch.PythonSHA256 = strings.Repeat("a", 64)
+	if foreignDispatch.PythonSHA256 == pythonSHA {
+		t.Fatal("test requires a different Python hash")
+	}
+	foreignDispatch.FilterCommandSpecSHA256 = salesforceFilterCommandSpecSHA256("/usr/bin/python3", args, filepath.Dir(bundlePath), mustFixedSalesforceEnvironment(t), foreignDispatch.PythonSHA256, foreignDispatch.PythonSHA256)
+	foreignBytes, err := json.Marshal(foreignDispatch)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(dispatchPath, append(foreignBytes, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	foreignRunnerCalled := false
+	_, err = RunSalesforceShard(SalesforceShardRequest{BundlePath: bundlePath, DispatchPath: dispatchPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: filepath.Join(root, "REJECTED_FOREIGN_PYTHON_SHARD.json"), validateBundle: func(string) error { return nil }, filterRunner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
+		foreignRunnerCalled = true
+		return salesforceCommandOutput{}, nil
+	}, sfRunner: sfRunner, approvedFilterSHA256: filterSHA})
+	if err == nil || foreignRunnerCalled {
+		t.Fatalf("accepted a dispatch whose Python changed before execution: err=%v runnerCalled=%t", err, foreignRunnerCalled)
+	}
+	if err := os.RemoveAll(sealedSalesforceFilterOutputPath(executorRoot)); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.RemoveAll(filepath.Dir(sealedSalesforceFilterScriptPath(executorRoot))); err != nil {
+		t.Fatal(err)
+	}
+	dispatchBytes, err := json.Marshal(dispatch)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(dispatchPath, append(dispatchBytes, '\n'), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	shardPath := filepath.Join(root, "SALESFORCE_SHARD.json")
