@@ -19,6 +19,7 @@ class SalesforceFirstFilterTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp) / "out"
             cleaned = []
+            cleanup_source_present = []
 
             def run_sf_stream(_bin, _args, _cwd, _timeout, stdout, stderr):
                 stdout.write(json.dumps({"status": 0, "result": {"status": "Succeeded", "details": {"componentSuccesses": [{"fileName": "classes/Probe.cls"}], "componentFailures": []}}}))
@@ -28,6 +29,7 @@ class SalesforceFirstFilterTest(unittest.TestCase):
 
             def destructive_cleanup(_bin, project, _org, _metadata, _protected):
                 cleaned.append(project)
+                cleanup_source_present.append((project / "force-app").is_dir())
                 shutil.rmtree(project / "force-app", ignore_errors=True)
                 return {"cleanupExitCode": 0, "residueAbsent": True}
 
@@ -38,6 +40,7 @@ class SalesforceFirstFilterTest(unittest.TestCase):
             project = out / "projects" / "fixture"
             self.assertTrue((project / "force-app").is_dir())
             self.assertNotEqual(cleaned, [project])
+            self.assertEqual(cleanup_source_present, [True])
 
 
 if __name__ == "__main__":

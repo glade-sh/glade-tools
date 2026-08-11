@@ -920,6 +920,7 @@ def run_one(
             cleanup_project = out / "cleanup" / stem
             cleanup_project.mkdir(parents=True, exist_ok=True)
             (cleanup_project / "sfdx-project.json").write_bytes((project / "sfdx-project.json").read_bytes())
+            (cleanup_project / "force-app").mkdir()
             cleanup_receipt = org_cleanup(sf_bin, cleanup_project, target_org, metadata_names, protected_metadata_names)
         except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
             cleanup_receipt = {"requested": metadata_names, "cleanupExitCode": 1, "residueAbsent": False, "error": f"{type(exc).__name__}: {exc}"}
