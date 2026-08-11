@@ -51,5 +51,8 @@
       "path": "force-app/main/default/classes/AssuranceMissingCompileShapes.cls",
       "content": "public class AssuranceMissingCompileShapes { public void referencesOnly() { Component.apex.page page; ConnectApi.Organization organization; Auth auth; DataSource dataSource; System.System systemType; VisualEditor.DataRow row; VisualEditor.DynamicPickList pickList; VisualEditor.DynamicPickListRows rows; } }"
     }
-  ]
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The local shape fixture uses bare Auth and DataSource namespace handles, which API 67 rejects as Apex types; retain the compiler contract without claiming a hosted compile result for this composite fixture."
 }

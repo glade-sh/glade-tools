@@ -278,6 +278,19 @@ func TestLocalProofFixtureAcceptsSalesforceMetadataExtensions(t *testing.T) {
 	}
 }
 
+func TestSelectSalesforceFixturesRequiresExplicitEligibility(t *testing.T) {
+	fixture := LocalProofFixture{ID: "fixture", Name: "fixture"}
+	if _, err := selectSalesforceFixtures([]LocalProofFixture{fixture}); err == nil {
+		t.Fatal("selectSalesforceFixtures accepted a fixture without explicit eligibility")
+	}
+	eligible := true
+	fixture.SalesforceEligible = &eligible
+	fixtures, err := selectSalesforceFixtures([]LocalProofFixture{fixture})
+	if err != nil || len(fixtures) != 1 {
+		t.Fatalf("selectSalesforceFixtures = %#v, %v", fixtures, err)
+	}
+}
+
 func TestLocalProofFixtureAcceptsCandidateSummaryExpectation(t *testing.T) {
 	root := t.TempDir()
 	fixture := localProofFixture(t, root, "summary", []string{"apex:Summary.run"}, deterministicMockRequired)
@@ -510,6 +523,7 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 	t.Helper()
 	path := filepath.Join(root, name+".json")
 	command := `{"kind":"check"}`
+	operation := "check"
 	source := "public class " + strings.Title(name) + " { public void run() {} public void extra() {} }"
 	if disposition == localRuntimeRequired {
 		program := "new Runtime().run(); new Runtime().extra(); System.assert(true);"
@@ -525,8 +539,10 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 			program = strings.Join(calls, " ")
 		}
 		command = `{"kind":"exec","args":[` + mustJSON(t, program) + `]}`
+		operation = "exec"
 	} else if disposition == deterministicMockRequired {
 		command = `{"kind":"test"}`
+		operation = "test"
 		source = "@IsTest private class " + strings.Title(name) + " { public void run() {} @IsTest static void prove() { new Mock().run(); } }"
 	}
 	evidence := make([]map[string]string, 0, len(surfaceIDs))
@@ -537,11 +553,12 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 	if err != nil {
 		t.Fatal(err)
 	}
-	data := `{"name":"` + name + `","evidence":` + string(evidenceJSON) + `,"source":[{"path":"force-app/main/default/classes/` + strings.Title(name) + `.cls","content":` + mustJSON(t, source) + `}],"command":` + command + `}`
+	data := `{"name":"` + name + `","evidence":` + string(evidenceJSON) + `,"source":[{"path":"force-app/main/default/classes/` + strings.Title(name) + `.cls","content":` + mustJSON(t, source) + `}],"command":` + command + `,"salesforceEligible":true}`
 	if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	return LocalProofFixture{ID: name, Name: name, Path: path, SHA256: localProofFileSHA256(t, path), OwnedSurfaceIDs: surfaceIDs, Disposition: disposition}
+	eligible := true
+	return LocalProofFixture{ID: name, Name: name, Path: path, SHA256: localProofFileSHA256(t, path), OwnedSurfaceIDs: surfaceIDs, Disposition: disposition, Operation: operation, SalesforceEligible: &eligible}
 }
 
 func mustJSON(t *testing.T, value string) string {

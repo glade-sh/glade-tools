@@ -21,16 +21,21 @@ const (
 // LocalProofFixtureManifest records the explicit surfaces a fixture owns.
 // Ownership is the only source of fixture-to-surface credit.
 type LocalProofFixtureManifest struct {
-	Fixtures []LocalProofFixture `json:"fixtures"`
+	Fixtures           []LocalProofFixture `json:"fixtures"`
+	SalesforceFixtures []LocalProofFixture `json:"salesforceFixtures"`
 }
 
 type LocalProofFixture struct {
-	ID              string   `json:"id"`
-	Name            string   `json:"name"`
-	Path            string   `json:"path"`
-	SHA256          string   `json:"sha256"`
-	OwnedSurfaceIDs []string `json:"ownedSurfaceIds"`
-	Disposition     string   `json:"disposition"`
+	ID                        string   `json:"id"`
+	Name                      string   `json:"name"`
+	Path                      string   `json:"path"`
+	SHA256                    string   `json:"sha256"`
+	OwnedSurfaceIDs           []string `json:"ownedSurfaceIds"`
+	Disposition               string   `json:"disposition"`
+	Operation                 string   `json:"operation"`
+	SalesforceEligible        *bool    `json:"salesforceEligible,omitempty"`
+	SalesforceExclusionClass  string   `json:"salesforceExclusionClass,omitempty"`
+	SalesforceExclusionReason string   `json:"salesforceExclusionReason,omitempty"`
 }
 
 // LocalProofProfile and LocalProofUsage independently name every surface that

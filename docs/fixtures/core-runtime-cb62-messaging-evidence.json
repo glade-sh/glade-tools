@@ -9,5 +9,6 @@
     {"path": "force-app/main/classes/CoreRuntimeCB62MessagingEvidenceTest.cls", "content": "@isTest private class CoreRuntimeCB62MessagingEvidenceTest { @isTest static void rows() { Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage(); message.setSubject('Subject'); message.setToAddresses(new List<String>{'to@example.test'}); System.assertEquals('Subject', message.getSubject()); Messaging.EmailFileAttachment attachment = new Messaging.EmailFileAttachment(); attachment.setFileName('note.txt'); attachment.setContentType('text/plain'); attachment.setBody(Blob.valueOf('note body')); System.assertEquals('note.txt', attachment.getFileName()); Messaging.InboundEmail email = new Messaging.InboundEmail(); System.assertEquals(null, email.subject); Messaging.InboundEmail.BinaryAttachment binary = new Messaging.InboundEmail.BinaryAttachment(); binary.fileName = 'trail.bin'; System.assertEquals('trail.bin', binary.fileName); } }"}
   ],
   "command": {"kind": "test"},
-  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}}
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}},
+  "salesforceEligible": true
 }

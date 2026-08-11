@@ -48,7 +48,7 @@ func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
 	if replayBytesSHA256(data) != entry.SHA256 {
 		return compat.Fixture{}, fmt.Errorf("fixture binding mismatch for %q", entry.ID)
 	}
-	fixture, err := decodeLocalProofFixture(data)
+	fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
 	if err != nil {
 		return compat.Fixture{}, fmt.Errorf("decode fixture %q: %w", entry.ID, err)
 	}
@@ -58,6 +58,9 @@ func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
 	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
 		return compat.Fixture{}, err
 	}
+	if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
+		return compat.Fixture{}, err
+	}
 	if !localProofFixtureIsMaterializable(fixture) {
 		return compat.Fixture{}, fmt.Errorf("fixture %q has state the local-proof adapter does not materialize", entry.ID)
 	}
@@ -65,14 +68,38 @@ func loadLocalProofFixture(entry LocalProofFixture) (compat.Fixture, error) {
 }
 
 func decodeLocalProofFixture(data []byte) (compat.Fixture, error) {
+	fixture, _, err := decodeLocalProofFixtureWithMetadata(data)
+	return fixture, err
+}
+
+type localProofFixtureSalesforceMetadata struct {
+	Eligible        *bool
+	ExclusionClass  string
+	ExclusionReason string
+}
+
+func decodeLocalProofFixtureWithMetadata(data []byte) (compat.Fixture, localProofFixtureSalesforceMetadata, error) {
 	var fields map[string]json.RawMessage
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	if err := decoder.Decode(&fields); err != nil {
-		return compat.Fixture{}, err
+		return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, err
 	}
 	var extra any
 	if err := decoder.Decode(&extra); err != io.EOF {
-		return compat.Fixture{}, fmt.Errorf("multiple JSON values")
+		return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, fmt.Errorf("multiple JSON values")
+	}
+	metadata := localProofFixtureSalesforceMetadata{}
+	if raw, ok := fields["salesforceEligible"]; ok {
+		var eligible bool
+		if err := json.Unmarshal(raw, &eligible); err != nil {
+			return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, fmt.Errorf("invalid salesforceEligible")
+		}
+		metadata.Eligible = &eligible
+	}
+	for key, destination := range map[string]*string{"salesforceExclusionClass": &metadata.ExclusionClass, "salesforceExclusionReason": &metadata.ExclusionReason} {
+		if raw, ok := fields[key]; ok && json.Unmarshal(raw, destination) != nil {
+			return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, fmt.Errorf("invalid %s", key)
+		}
 	}
 	for key := range fields {
 		if localProofFixtureExtensionFields[key] {
@@ -80,20 +107,23 @@ func decodeLocalProofFixture(data []byte) (compat.Fixture, error) {
 			continue
 		}
 		if !localProofFixtureFields[key] {
-			return compat.Fixture{}, fmt.Errorf("json: unknown field %q", key)
+			return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, fmt.Errorf("json: unknown field %q", key)
 		}
 	}
 	filtered, err := json.Marshal(fields)
 	if err != nil {
-		return compat.Fixture{}, err
+		return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, err
 	}
 	decoder = json.NewDecoder(bytes.NewReader(filtered))
 	decoder.DisallowUnknownFields()
 	var fixture compat.Fixture
 	if err := decoder.Decode(&fixture); err != nil {
-		return compat.Fixture{}, err
+		return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, err
 	}
-	return fixture, nil
+	if err := validateLocalProofFixtureSalesforceMetadata(LocalProofFixture{SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}, metadata); err != nil {
+		return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, err
+	}
+	return fixture, metadata, nil
 }
 
 var localProofFixtureFields = map[string]bool{
@@ -126,7 +156,7 @@ func localProofFixtureIsMaterializable(fixture compat.Fixture) bool {
 }
 
 func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.Fixture) error {
-	if entry.Path == "" || !filepath.IsAbs(entry.Path) || fixture.Name == "" || fixture.Name != entry.Name {
+	if entry.Path == "" || !filepath.IsAbs(entry.Path) || fixture.Name == "" || fixture.Name != entry.Name || entry.Operation != fixture.Command.Kind {
 		return fmt.Errorf("fixture name or path mismatch for %q", entry.ID)
 	}
 	evidence := make(map[string]string, len(fixture.Evidence))
@@ -146,6 +176,25 @@ func validateLocalProofFixtureIdentity(entry LocalProofFixture, fixture compat.F
 	}
 	if err := validateLocalProofSurfaceWitnesses(entry, fixture); err != nil {
 		return err
+	}
+	return nil
+}
+
+func validateLocalProofFixtureSalesforceMetadata(entry LocalProofFixture, metadata localProofFixtureSalesforceMetadata) error {
+	if entry.SalesforceEligible == nil && metadata.Eligible == nil && entry.SalesforceExclusionClass == "" && entry.SalesforceExclusionReason == "" && metadata.ExclusionClass == "" && metadata.ExclusionReason == "" {
+		return nil
+	}
+	if entry.SalesforceEligible == nil || metadata.Eligible == nil || *entry.SalesforceEligible != *metadata.Eligible || entry.SalesforceExclusionClass != metadata.ExclusionClass || entry.SalesforceExclusionReason != metadata.ExclusionReason {
+		return fmt.Errorf("fixture Salesforce metadata mismatch for %q", entry.ID)
+	}
+	if *entry.SalesforceEligible {
+		if entry.SalesforceExclusionClass != "" || entry.SalesforceExclusionReason != "" {
+			return fmt.Errorf("Salesforce-eligible fixture %q carries an exclusion", entry.ID)
+		}
+		return nil
+	}
+	if entry.SalesforceExclusionClass == "" || entry.SalesforceExclusionReason == "" {
+		return fmt.Errorf("Salesforce-ineligible fixture %q lacks an exclusion", entry.ID)
 	}
 	return nil
 }

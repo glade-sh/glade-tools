@@ -404,8 +404,8 @@ func reportInputPaths(request AssuranceReportRequest) []string {
 }
 
 // AssuranceSurfaceRow is the public, neutral per-surface release outcome.
-// Readiness is cumulative: runtime parity implies test and compile readiness;
-// explicit non-parity is mutually exclusive with all readiness claims.
+// Readiness is cumulative: runtime parity implies test and compile readiness.
+// Explicit non-parity can retain independently proven local readiness.
 type AssuranceSurfaceRow struct {
 	Namespace          string   `json:"namespace"`
 	SurfaceID          string   `json:"surfaceId"`
@@ -452,7 +452,7 @@ func ValidateAssuranceOutcomes(rows []AssuranceSurfaceRow) error {
 		}
 		seen[row.SurfaceID] = true
 		if row.NonParity {
-			if row.CompileReady || row.TestReady || row.RuntimeParityReady || row.ExclusionClass == "" || row.ExclusionReason == "" {
+			if row.RuntimeParityReady || (row.TestReady && !row.CompileReady) || row.ExclusionClass == "" || row.ExclusionReason == "" {
 				return fmt.Errorf("invalid non-parity outcome for %q", row.SurfaceID)
 			}
 			continue
@@ -632,6 +632,16 @@ func deriveAssuranceRows(usage UsageReconciliation, profile AssuranceProfile, pr
 				return nil, fmt.Errorf("non-parity surface %q lacks an explicit exclusion", surfaceID)
 			}
 			row.LocalEvidence, row.SalesforceEvidence = "local-contract", "non-parity"
+			if local.SurfaceID != "" {
+				localAction := oracleCompile
+				if profileRow.Disposition == localRuntimeRequired {
+					localAction = oracleRuntime
+				}
+				if !localProofSupportsOracleAction(local, profileRow.Disposition, localAction) {
+					return nil, fmt.Errorf("non-parity surface %q lacks complete local evidence", surfaceID)
+				}
+				row.LocalEvidence, row.CompileReady, row.TestReady = localAction, true, testReady
+			}
 			row.ExclusionClass, row.ExclusionReason, row.NonParity = planRow.ExclusionClass, planRow.ExclusionReason, true
 		default:
 			return nil, fmt.Errorf("surface %q has unsupported oracle action %q", surfaceID, planRow.Action)
@@ -662,8 +672,8 @@ func deriveRepositoryAssuranceRows(inventory InventorySpec, rows []AssuranceSurf
 			}
 			pair := AssuranceRepositorySurfaceRow{RepositoryID: repositoryID, AssuranceSurfaceRow: row}
 			pair.RepositoryIDs = []string{repositoryID}
-			pair.TestReady = !row.NonParity && row.TestReady && repositoryTests[repositoryID]
-			pair.RuntimeParityReady = !row.NonParity && row.RuntimeParityReady && repositoryTests[repositoryID]
+			pair.TestReady = row.TestReady && repositoryTests[repositoryID]
+			pair.RuntimeParityReady = row.RuntimeParityReady && repositoryTests[repositoryID]
 			pairs = append(pairs, pair)
 			summary.SurfaceCount++
 			summary.CompileReady = summary.CompileReady && pair.CompileReady
@@ -704,7 +714,7 @@ func validateRepositoryAssuranceSummaries(summaries []AssuranceRepositorySummary
 		}
 		seen[summary.RepositoryID] = true
 		if summary.NonParity {
-			if summary.CompileReady || summary.TestReady || summary.RuntimeParityReady || summary.NonParityReason == "" {
+			if (summary.TestReady && !summary.CompileReady) || summary.RuntimeParityReady || summary.NonParityReason == "" {
 				return fmt.Errorf("repository summary %q mixes non-parity and readiness", summary.RepositoryID)
 			}
 			continue

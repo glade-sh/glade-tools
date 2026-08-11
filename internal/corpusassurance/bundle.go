@@ -586,9 +586,16 @@ func stageOracleBundleFixture(bundleRoot string, fixture OracleBundleFixture) (o
 	if err != nil {
 		return oracleTransportFixture{}, err
 	}
+	if replayBytesSHA256(data) != fixture.SHA256 {
+		return oracleTransportFixture{}, fmt.Errorf("fixture binding mismatch for %q", fixture.ID)
+	}
 	var document map[string]any
 	if err := json.Unmarshal(data, &document); err != nil {
 		return oracleTransportFixture{}, err
+	}
+	eligible, ok := document["salesforceEligible"].(bool)
+	if !ok || !eligible {
+		return oracleTransportFixture{}, fmt.Errorf("fixture %q is not explicitly Salesforce eligible", fixture.ID)
 	}
 	sources := make([]oracleSourceFile, 0)
 	for _, section := range []string{"source", "schema"} {
@@ -634,7 +641,7 @@ func stageOracleBundleFixture(bundleRoot string, fixture OracleBundleFixture) (o
 	if err := os.WriteFile(stagedPath, stagedData, 0o600); err != nil {
 		return oracleTransportFixture{}, err
 	}
-	return oracleTransportFixture{ID: fixture.ID, Fixture: stagedName, Path: stagedRelative, SHA256: replayBytesSHA256(stagedData), SourceFiles: sources, SurfaceIDs: fixture.SurfaceIDs, SalesforceEligible: true}, nil
+	return oracleTransportFixture{ID: fixture.ID, Fixture: stagedName, Path: stagedRelative, SHA256: replayBytesSHA256(stagedData), SourceFiles: sources, SurfaceIDs: fixture.SurfaceIDs, SalesforceEligible: eligible}, nil
 }
 
 func oracleLocalProofSummaryForTransport(proof LocalProof, transport oracleTransportManifest, manifestSHA string) (oracleLocalProofSummary, error) {

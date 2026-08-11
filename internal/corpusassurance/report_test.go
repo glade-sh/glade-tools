@@ -22,6 +22,10 @@ func TestValidateAssuranceOutcomesRequiresOneDefensibleOutcomePerSurface(t *test
 	if err := ValidateAssuranceOutcomes(rows); err == nil {
 		t.Fatal("accepted a surface with parity and non-parity outcomes")
 	}
+	rows[1] = AssuranceSurfaceRow{SurfaceID: "apex:Local.only", CompileReady: true, TestReady: true, NonParity: true, ExclusionClass: "policy-local-only", ExclusionReason: "hosted execution is intentionally excluded"}
+	if err := ValidateAssuranceOutcomes(rows); err != nil {
+		t.Fatalf("ValidateAssuranceOutcomes rejected local readiness alongside explicit non-parity: %v", err)
+	}
 }
 
 func TestBuildReportRequiresDirectEvidencePaths(t *testing.T) {
@@ -183,6 +187,17 @@ func TestDeriveAssuranceRowsSeparatesCompileTestRuntimeAndNonParity(t *testing.T
 	runtime, compile, hosted := bySurface["apex:Runtime.run()"], bySurface["apex:Compile.only()"], bySurface["apex:Hosted.only()"]
 	if len(rows) != 3 || !runtime.CompileReady || !runtime.TestReady || !runtime.RuntimeParityReady || !compile.CompileReady || compile.TestReady || compile.RuntimeParityReady || !hosted.NonParity {
 		t.Fatalf("rows = %#v", rows)
+	}
+}
+
+func TestDeriveAssuranceRowsPreservesLocalReadinessForNonParity(t *testing.T) {
+	usage := UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "Local.run", Namespace: "Local", RepositoryIDs: []string{"private-corpus-001"}}, Class: usageClassExact, SurfaceID: "apex:Local.run()"}}}
+	profile := AssuranceProfile{Rows: []AssuranceProfileRow{{SurfaceID: "apex:Local.run()", Namespace: "Local", Disposition: localRuntimeRequired}}}
+	proof := LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:Local.run()", FixtureID: "local", Disposition: localRuntimeRequired, RuntimeObserved: true}}}
+	plan := OraclePlan{Rows: []OraclePlanRow{{SurfaceID: "apex:Local.run()", Action: oracleLocalContractOnly, ExclusionClass: "policy-local-only", ExclusionReason: "portable hosted execution is not applicable"}}}
+	rows, err := deriveAssuranceRows(usage, profile, proof, plan, nil, map[string]bool{"private-corpus-001": true})
+	if err != nil || len(rows) != 1 || !rows[0].CompileReady || !rows[0].TestReady || rows[0].RuntimeParityReady || !rows[0].NonParity {
+		t.Fatalf("deriveAssuranceRows = %#v, %v", rows, err)
 	}
 }
 

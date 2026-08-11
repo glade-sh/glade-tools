@@ -35,5 +35,6 @@
       "debug": null,
       "ok": true
     }
-  }
+  },
+  "salesforceEligible": true
 }

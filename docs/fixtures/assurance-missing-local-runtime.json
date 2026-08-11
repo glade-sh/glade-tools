@@ -439,5 +439,8 @@
       "path": "force-app/main/default/classes/AssuranceRuntimeHttpMock.cls",
       "content": "global class AssuranceRuntimeHttpMock implements HttpCalloutMock { global HttpResponse respond(HttpRequest request) { HttpResponse response = new HttpResponse(); response.setStatusCode(200); return response; } }"
     }
-  ]
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The composite local runtime fixture constructs Object values as assertion sentinels, which API 67 rejects; retain the local runtime contract without assigning a whole-fixture hosted result to its individual surfaces."
 }

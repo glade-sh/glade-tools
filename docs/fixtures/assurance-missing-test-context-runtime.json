@@ -11,7 +11,7 @@
   "source": [
     {
       "path": "force-app/main/default/classes/AssuranceTestContextRuntime.cls",
-      "content": "@isTest private class AssuranceTestContextRuntime { @isTest static void setMock() { Test.setMock('HttpCalloutMock', new AssuranceTestContextHttpMock()); } }"
+      "content": "@isTest private class AssuranceTestContextRuntime { @isTest static void setMock() { Test.setMock(HttpCalloutMock.class, new AssuranceTestContextHttpMock()); } }"
     },
     {
       "path": "force-app/main/default/classes/AssuranceTestContextHttpMock.cls",
@@ -29,5 +29,6 @@
       "failed": 0,
       "errors": 0
     }
-  }
+  },
+  "salesforceEligible": true
 }

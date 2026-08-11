@@ -13,5 +13,6 @@
     {"path": "force-app/main/classes/CoreRuntimeCB62MetadataEvidenceTest.cls", "content": "@isTest private class CoreRuntimeCB62MetadataEvidenceTest { @isTest static void rows() { Metadata.CustomMetadata custom = new Metadata.CustomMetadata(); custom.fullName = 'Feature.Default'; Metadata.CustomMetadataValue value = new Metadata.CustomMetadataValue(); value.field = 'Enabled__c'; value.value = true; Metadata.Metadata base = custom; Metadata.DeployContainer container = new Metadata.DeployContainer(); Metadata.DeployResult result = new Metadata.DeployResult(); result.status = Metadata.DeployStatus.Succeeded; Metadata.MetadataType metadataType = Metadata.MetadataType.CustomMetadata; System.assertEquals('Feature.Default', base.fullName); System.assertEquals('Enabled__c', value.field); System.assertEquals(true, value.value); System.assertEquals(Metadata.DeployStatus.Succeeded, result.status); System.assert(container != null); System.assertEquals('CustomMetadata', String.valueOf(metadataType)); } }"}
   ],
   "command": {"kind": "test"},
-  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}}
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}},
+  "salesforceEligible": true
 }

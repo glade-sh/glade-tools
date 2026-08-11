@@ -105,6 +105,11 @@ func BuildLocalProofPlan(request LocalProofPlanRequest) (LocalProofFixtureManife
 		return LocalProofFixtureManifest{}, err
 	}
 	manifest := selectLocalProofFixtures(entries)
+	var errSalesforce error
+	manifest.SalesforceFixtures, errSalesforce = selectSalesforceFixtures(manifest.Fixtures)
+	if errSalesforce != nil {
+		return LocalProofFixtureManifest{}, errSalesforce
+	}
 	owned := make(map[string]bool)
 	for _, fixture := range manifest.Fixtures {
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
@@ -169,7 +174,11 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 			continue
 		}
 		path := filepath.Join(root, item.Name())
-		fixture, err := compat.LoadFile(path)
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+		fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
 		if err != nil {
 			continue
 		}
@@ -179,11 +188,7 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 		if err := compat.Validate(fixture); err != nil {
 			continue
 		}
-		sha256, err := localProofPlanFileSHA256(path)
-		if err != nil {
-			return nil, err
-		}
-		entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, SHA256: sha256}
+		entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, SHA256: replayBytesSHA256(data), Operation: fixture.Command.Kind, SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
 		owned := make(map[string]bool)
 		for surfaceID, disposition := range required {
 			if !localProofCommandMatchesDisposition(disposition, fixture.Command.Kind, surfaceID) || !fixtureOwnsSurface(fixture, surfaceID) {
@@ -202,6 +207,9 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 		if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
 			continue
 		}
+		if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
+			continue
+		}
 		candidates = append(candidates, localProofFixtureCandidate{entry: entry, owned: owned})
 	}
 	sort.Slice(candidates, func(i, j int) bool {
@@ -211,6 +219,19 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 		return candidates[i].entry.ID < candidates[j].entry.ID
 	})
 	return candidates, nil
+}
+
+func selectSalesforceFixtures(fixtures []LocalProofFixture) ([]LocalProofFixture, error) {
+	selected := make([]LocalProofFixture, 0)
+	for _, fixture := range fixtures {
+		if fixture.SalesforceEligible == nil {
+			return nil, fmt.Errorf("fixture %q lacks explicit Salesforce eligibility", fixture.ID)
+		}
+		if *fixture.SalesforceEligible {
+			selected = append(selected, fixture)
+		}
+	}
+	return selected, nil
 }
 
 func selectLocalProofFixtures(candidates []localProofFixtureCandidate) LocalProofFixtureManifest {

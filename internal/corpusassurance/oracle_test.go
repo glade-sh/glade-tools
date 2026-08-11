@@ -58,6 +58,7 @@ func TestPlanOracleRejectsMissingEvidenceAndUnjustifiedExclusions(t *testing.T) 
 }
 
 func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(t *testing.T) {
+	eligible := true
 	plan := OraclePlan{
 		Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)},
 		Tools:     RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)},
@@ -68,15 +69,45 @@ func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(
 		},
 	}
 	manifest := LocalProofFixtureManifest{Fixtures: []LocalProofFixture{
-		{ID: "system", Name: "system", Path: "system.json", SHA256: strings.Repeat("e", 64), OwnedSurfaceIDs: []string{"apex:System.run()", "apex:System.compile()"}, Disposition: localRuntimeRequired},
+		{ID: "system", Name: "system", Path: "system.json", SHA256: strings.Repeat("e", 64), OwnedSurfaceIDs: []string{"apex:System.run()"}, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: &eligible},
+		{ID: "compiler", Name: "compiler", Path: "compiler.json", SHA256: strings.Repeat("a", 64), OwnedSurfaceIDs: []string{"apex:System.compile()"}, Disposition: compileShapeRequired, Operation: "check", SalesforceEligible: &eligible},
 		{ID: "hosted", Name: "hosted", Path: "hosted.json", SHA256: strings.Repeat("f", 64), OwnedSurfaceIDs: []string{"apex:Hosted.only"}, Disposition: compileShapeRequired},
+	}, SalesforceFixtures: []LocalProofFixture{
+		{ID: "system", Name: "system", Path: "system.json", SHA256: strings.Repeat("e", 64), OwnedSurfaceIDs: []string{"apex:System.run()"}, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: &eligible},
+		{ID: "compiler", Name: "compiler", Path: "compiler.json", SHA256: strings.Repeat("a", 64), OwnedSurfaceIDs: []string{"apex:System.compile()"}, Disposition: compileShapeRequired, Operation: "check", SalesforceEligible: &eligible},
 	}}
 	fixtures, err := oracleBundleFixtures(plan, manifest)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(fixtures) != 1 || fixtures[0].ID != "system" || !reflect.DeepEqual(fixtures[0].SurfaceIDs, []string{"apex:System.compile()", "apex:System.run()"}) {
+	if len(fixtures) != 2 || fixtures[0].ID != "compiler" || fixtures[1].ID != "system" || !reflect.DeepEqual(fixtures[1].SurfaceIDs, []string{"apex:System.run()"}) {
 		t.Fatalf("fixtures = %#v", fixtures)
+	}
+}
+
+func TestOracleBundleFixtureSelectionRejectsLocalFixturePromotion(t *testing.T) {
+	eligible := true
+	plan := OraclePlan{Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}, Tools: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)}, Rows: []OraclePlanRow{{SurfaceID: "apex:System.run()", Action: oracleRuntime}}}
+	local := LocalProofFixture{ID: "system", Name: "system", Path: "system.json", SHA256: strings.Repeat("a", 64), OwnedSurfaceIDs: []string{"apex:System.run()"}, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: &eligible}
+	if _, err := oracleBundleFixtures(plan, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{local}}); err == nil {
+		t.Fatal("oracleBundleFixtures promoted a local fixture without a separate Salesforce declaration")
+	}
+	manifest := LocalProofFixtureManifest{Fixtures: []LocalProofFixture{local}, SalesforceFixtures: []LocalProofFixture{{ID: local.ID, Name: local.Name, Path: local.Path, SHA256: local.SHA256, OwnedSurfaceIDs: local.OwnedSurfaceIDs, Disposition: local.Disposition, Operation: local.Operation, SalesforceEligible: &eligible}}}
+	fixtures, err := oracleBundleFixtures(plan, manifest)
+	if err != nil || len(fixtures) != 1 || fixtures[0].ID != local.ID {
+		t.Fatalf("oracleBundleFixtures = %#v, %v", fixtures, err)
+	}
+}
+
+func TestPlanOracleForUsageAllowsExplicitLocalOnlyDirective(t *testing.T) {
+	plan, err := planOracleForUsage(
+		UsageReconciliation{Usage: []ReconciledUsageEntry{{UsageEntry: UsageEntry{UsageKey: "System.run"}, Class: usageClassExact, SurfaceID: "apex:System.run()"}}},
+		[]OracleProfileRow{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired}},
+		LocalProof{Surfaces: []LocalSurfaceProof{{SurfaceID: "apex:System.run()", Disposition: localRuntimeRequired, RuntimeObserved: true}}},
+		[]OracleDirective{{SurfaceID: "apex:System.run()", ExclusionClass: "policy-local-only", ExclusionReason: "portable hosted execution is not applicable"}},
+	)
+	if err != nil || len(plan.Rows) != 1 || plan.Rows[0].Action != oracleLocalContractOnly {
+		t.Fatalf("planOracleForUsage = %#v, %v", plan, err)
 	}
 }
 
@@ -208,7 +239,7 @@ func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
 		t.Fatal(err)
 	}
 	fixture := localProofFixture(t, root, "system", []string{"apex:System.run()"}, localRuntimeRequired)
-	if err := WriteNewJSON(fixtureManifestPath, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{fixture}}); err != nil {
+	if err := WriteNewJSON(fixtureManifestPath, LocalProofFixtureManifest{Fixtures: []LocalProofFixture{fixture}, SalesforceFixtures: []LocalProofFixture{fixture}}); err != nil {
 		t.Fatal(err)
 	}
 	definition, err := loadLocalProofFixture(fixture)

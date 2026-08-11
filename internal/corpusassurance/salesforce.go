@@ -990,7 +990,7 @@ func deriveSalesforceFilterEvidenceWithCLI(bundle OracleBundle, bundlePath, orgA
 			return salesforceFilterResults{}, fmt.Errorf("Salesforce fixture %q lacks retained command evidence", item.Fixture)
 		}
 		if kind == "exec" {
-			if !validSalesforceRuntimeObservation(deploy) {
+			if !validSalesforceRuntimeObservation(kind, deploy) {
 				return salesforceFilterResults{}, fmt.Errorf("Salesforce runtime fixture %q lacks raw success", item.Fixture)
 			}
 		} else if !validSalesforceDeployObservationForProject(deploy, snapshot.Files, filepath.ToSlash(filepath.Join("filter", "projects", stem))) {
@@ -1019,6 +1019,8 @@ func deriveSalesforceFilterEvidenceWithCLI(bundle OracleBundle, bundlePath, orgA
 				return salesforceFilterResults{}, fmt.Errorf("Salesforce test fixture %q lacks retained runtime stderr", item.Fixture)
 			}
 			row.RuntimeSHA256, row.RuntimeStderrSHA256 = replayBytesSHA256(runtime), replayBytesSHA256(runtimeStderr)
+			passed := true
+			row.RuntimePassed, row.RuntimeResult = &passed, append(json.RawMessage(nil), runtime...)
 		}
 		derived = append(derived, row)
 	}
@@ -1424,7 +1426,7 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 			if !exists || bySurface[surfaceID].SurfaceIDs != nil {
 				return SalesforceShard{}, fmt.Errorf("unexpected or duplicate Salesforce surface %q", surfaceID)
 			}
-			if action == oracleRuntime && (result.Kind != "exec" || result.RuntimePassed == nil || !*result.RuntimePassed || !validSalesforceRuntimeObservation(result.RuntimeResult)) {
+			if action == oracleRuntime && (result.RuntimePassed == nil || !*result.RuntimePassed || !validSalesforceRuntimeObservation(result.Kind, result.RuntimeResult)) {
 				return SalesforceShard{}, fmt.Errorf("runtime surface %q lacks Salesforce runtime proof", surfaceID)
 			}
 			bySurface[surfaceID] = result
@@ -1440,7 +1442,24 @@ func NormalizeSalesforceFilterResults(plan OraclePlan, bundle OracleBundle, bund
 	return SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: shardIndex, ShardCount: shardCount, OrgAlias: preflight.OrgAlias, OrgID: preflight.OrgID, OrgStatus: preflight.OrgStatus, Preflight: preflight, PreInventory: preflight.Inventory, Commands: []CommandResult{command}, Postflight: postflight, PostInventory: postflight.Inventory, Results: results, Cleanup: CleanupReceipt{ResidueAbsent: true}}, nil
 }
 
-func validSalesforceRuntimeObservation(raw json.RawMessage) bool {
+func validSalesforceRuntimeObservation(kind string, raw json.RawMessage) bool {
+	if kind == "test" {
+		var payload struct {
+			Status *int `json:"status"`
+			Result struct {
+				Summary struct {
+					Outcome  string `json:"outcome"`
+					TestsRan int    `json:"testsRan"`
+					Failing  int    `json:"failing"`
+					Passing  int    `json:"passing"`
+				} `json:"summary"`
+			} `json:"result"`
+		}
+		return len(raw) > 0 && json.Unmarshal(raw, &payload) == nil && payload.Status != nil && *payload.Status == 0 && payload.Result.Summary.Outcome == "Passed" && payload.Result.Summary.TestsRan > 0 && payload.Result.Summary.Failing == 0 && payload.Result.Summary.Passing > 0
+	}
+	if kind != "exec" {
+		return false
+	}
 	var payload struct {
 		Status *int `json:"status"`
 		Result struct {

@@ -428,14 +428,24 @@ func oracleBundleFixtures(plan OraclePlan, manifest LocalProofFixtureManifest) (
 	if err != nil {
 		return nil, err
 	}
-	owned := make(map[string]LocalProofFixture)
+	local := make(map[string]LocalProofFixture, len(manifest.Fixtures))
 	for _, fixture := range manifest.Fixtures {
 		if fixture.ID == "" || fixture.Name == "" || fixture.Path == "" || !sha256Pattern.MatchString(fixture.SHA256) || len(fixture.OwnedSurfaceIDs) == 0 {
 			return nil, fmt.Errorf("invalid oracle bundle fixture %q", fixture.ID)
 		}
+		if local[fixture.ID].ID != "" {
+			return nil, fmt.Errorf("invalid or duplicate local oracle fixture %q", fixture.ID)
+		}
+		local[fixture.ID] = fixture
+	}
+	owned := make(map[string]LocalProofFixture)
+	for _, fixture := range manifest.SalesforceFixtures {
+		if fixture.ID == "" || fixture.SalesforceEligible == nil || !*fixture.SalesforceEligible || !reflect.DeepEqual(local[fixture.ID], fixture) {
+			return nil, fmt.Errorf("invalid Salesforce oracle fixture %q", fixture.ID)
+		}
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
 			if surfaceID == "" || owned[surfaceID].ID != "" {
-				return nil, fmt.Errorf("invalid or duplicate oracle bundle fixture surface %q", surfaceID)
+				return nil, fmt.Errorf("invalid or duplicate Salesforce oracle fixture surface %q", surfaceID)
 			}
 			owned[surfaceID] = fixture
 		}
@@ -444,7 +454,10 @@ func oracleBundleFixtures(plan OraclePlan, manifest LocalProofFixtureManifest) (
 	for surfaceID := range required {
 		fixture, ok := owned[surfaceID]
 		if !ok {
-			return nil, fmt.Errorf("Salesforce-required surface %q has no fixture owner", surfaceID)
+			return nil, fmt.Errorf("Salesforce-required surface %q has no explicit Salesforce fixture", surfaceID)
+		}
+		if !oracleFixtureMatchesAction(fixture, required[surfaceID]) {
+			return nil, fmt.Errorf("Salesforce fixture %q cannot prove %s", fixture.ID, required[surfaceID])
 		}
 		entry := selected[fixture.ID]
 		if entry.ID == "" {
@@ -453,6 +466,11 @@ func oracleBundleFixtures(plan OraclePlan, manifest LocalProofFixtureManifest) (
 		entry.SurfaceIDs = append(entry.SurfaceIDs, surfaceID)
 		selected[fixture.ID] = entry
 	}
+	for surfaceID := range owned {
+		if _, ok := required[surfaceID]; !ok {
+			return nil, fmt.Errorf("Salesforce fixture selects non-required surface %q", surfaceID)
+		}
+	}
 	result := make([]OracleBundleFixture, 0, len(selected))
 	for _, fixture := range selected {
 		sort.Strings(fixture.SurfaceIDs)
@@ -460,6 +478,17 @@ func oracleBundleFixtures(plan OraclePlan, manifest LocalProofFixtureManifest) (
 	}
 	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
 	return result, nil
+}
+
+func oracleFixtureMatchesAction(fixture LocalProofFixture, action string) bool {
+	switch action {
+	case oracleRuntime:
+		return fixture.Operation == "exec" || fixture.Operation == "test"
+	case oracleCompile:
+		return fixture.Operation == "check" || fixture.Operation == "test"
+	default:
+		return false
+	}
 }
 
 func ownedFixtureSurfaces(manifest LocalProofFixtureManifest) (map[string]bool, error) {
@@ -536,6 +565,14 @@ func planOracle(rows []OracleInputRow) (OraclePlan, error) {
 		}
 		seen[row.SurfaceID] = true
 		out := OraclePlanRow{SurfaceID: row.SurfaceID}
+		if row.Disposition != "hosted-deferred" && row.ExclusionClass != "" {
+			if err := setOracleExclusion(&out, row); err != nil {
+				return OraclePlan{}, err
+			}
+			out.Action = oracleLocalContractOnly
+			plan.Rows = append(plan.Rows, out)
+			continue
+		}
 		switch row.Disposition {
 		case localRuntimeRequired:
 			if !row.RuntimeObserved {
@@ -632,8 +669,8 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 				return OraclePlan{}, fmt.Errorf("deterministic mock %q requires an explicit deployability directive", surfaceID)
 			}
 			input.Deployable = directive.ExclusionClass == ""
-		} else if profileRow.Disposition != "hosted-deferred" && directive.SurfaceID != "" {
-			return OraclePlan{}, fmt.Errorf("oracle directive is not allowed for %q", surfaceID)
+		} else if profileRow.Disposition != "hosted-deferred" && directive.SurfaceID != "" && directive.ExclusionClass == "" {
+			return OraclePlan{}, fmt.Errorf("oracle directive lacks an exclusion for %q", surfaceID)
 		}
 		if profileRow.Disposition != "hosted-deferred" {
 			local, ok := proofs[surfaceID]
@@ -710,6 +747,10 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 	if err != nil {
 		return OraclePlan{}, err
 	}
+	plan.Candidate, plan.Tools = proof.Candidate, proof.Tools
+	if _, err := oracleBundleFixtures(plan, manifest); err != nil {
+		return OraclePlan{}, err
+	}
 	if _, after, err := readExactJSONBytes[AssuranceProfile](profilePath); err != nil || replayBytesSHA256(after) != profileSHA256 {
 		return OraclePlan{}, fmt.Errorf("profile changed during oracle planning")
 	}
@@ -725,7 +766,6 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 	if _, after, err := readExactJSONBytes[OracleDirectiveFile](directivePath); err != nil || replayBytesSHA256(after) != directiveSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives changed during planning")
 	}
-	plan.Candidate, plan.Tools = proof.Candidate, proof.Tools
 	plan.ProfileSHA256, plan.SealedUsageSHA256, plan.LocalProofSHA256, plan.DirectiveSHA256 = profileSHA256, sealedUsageSHA256, proofSHA256, directiveSHA256
 	if err := WriteNewJSON(outputPath, plan); err != nil {
 		return OraclePlan{}, err

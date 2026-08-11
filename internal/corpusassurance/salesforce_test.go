@@ -875,6 +875,13 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 		t.Fatal("accepted a runtime surface without a Salesforce runtime observation")
 	}
 	filter.Results[0].RuntimeResult = json.RawMessage(`{"status":0,"result":{"success":true,"compiled":true}}`)
+	filter.Results[0].Kind = "test"
+	filter.Results[0].RuntimeResult = json.RawMessage(`{"status":0,"result":{"summary":{"outcome":"Passed","testsRan":1,"failing":0,"passing":1}}}`)
+	if _, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2); err != nil {
+		t.Fatalf("NormalizeSalesforceFilterResults rejected a passing Salesforce test-context runtime result: %v", err)
+	}
+	filter.Results[0].Kind = "exec"
+	filter.Results[0].RuntimeResult = json.RawMessage(`{"status":0,"result":{"success":true,"compiled":true}}`)
 	filter.Binding.ToolsAMD64SHA256 = ""
 	if _, err := NormalizeSalesforceFilterResults(plan, bundle, bundlePath, "/private/tmp/executor/shard-0", "attempt-shard-0", preflight, postflight, filter, command, 0, 2); err == nil {
 		t.Fatal("accepted a filter result without the sealed amd64 tools hash")

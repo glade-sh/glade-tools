@@ -36,5 +36,6 @@
   },
   "expected": {
     "result": {"debug": ["true"], "ok": true}
-  }
+  },
+  "salesforceEligible": true
 }
