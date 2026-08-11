@@ -31,6 +31,13 @@ func TestToolsAMD64BuildEnvironmentIgnoresAmbientToolchain(t *testing.T) {
 	}
 }
 
+func TestToolsAMD64BuildArgsForceFreshBuild(t *testing.T) {
+	want := []string{"build", "-a", "-o", "/sealed/bin/glade-tools-darwin-amd64", "./cmd/glade-tools"}
+	if got := toolsAMD64BuildArgs("/sealed/bin/glade-tools-darwin-amd64"); !equalStrings(got, want) {
+		t.Fatalf("toolsAMD64BuildArgs = %#v, want %#v", got, want)
+	}
+}
+
 func TestOracleReleaseValidationAcceptsSealedForeignRuntimeEnvironment(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)

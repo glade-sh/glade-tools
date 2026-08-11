@@ -339,13 +339,17 @@ func buildAMD64Tools(root, output, commit string) (RuntimeArtifact, error) {
 	if err != nil {
 		return RuntimeArtifact{}, err
 	}
-	command := exec.Command(goBin, "build", "-o", output, "./cmd/glade-tools")
+	command := exec.Command(goBin, toolsAMD64BuildArgs(output)...)
 	command.Dir = root
 	command.Env = toolsAMD64BuildEnvironment()
 	if data, err := command.CombinedOutput(); err != nil {
 		return RuntimeArtifact{}, fmt.Errorf("build darwin/amd64 glade-tools: %w: %s", err, data)
 	}
 	return amd64ToolsArtifactFor(output, commit)
+}
+
+func toolsAMD64BuildArgs(output string) []string {
+	return []string{"build", "-a", "-o", output, "./cmd/glade-tools"}
 }
 
 func toolsAMD64BuildEnvironment() []string {
