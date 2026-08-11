@@ -1338,6 +1338,20 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	return SalesforceShardFiles{ShardPath: shardPath, DispatchPath: dispatchPath, CreationPath: creationPath, CleanupPath: cleanupPath, PreflightPath: preflightPath}
 }
 
+func TestSalesforceFixtureProjectManifestExcludesSourceTracking(t *testing.T) {
+	files := map[string][]byte{
+		"filter/projects/fixture/force-app/main/default/classes/Probe.cls": []byte("public class Probe {}\n"),
+		"filter/projects/fixture/.sf/orgs/00D/source-tracking":             []byte("runtime state"),
+	}
+	manifest, err := salesforceFixtureProjectManifest(files, "filter/projects/fixture")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(manifest) != 1 || manifest[0].Path != "force-app/main/default/classes/Probe.cls" {
+		t.Fatalf("manifest = %#v", manifest)
+	}
+}
+
 func populateSalesforceProjectManifestsForTest(t *testing.T, resultsPath, executorRoot string) {
 	t.Helper()
 	result, _, err := readSalesforceFilterResults(resultsPath)

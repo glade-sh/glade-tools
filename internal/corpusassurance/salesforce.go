@@ -1043,10 +1043,11 @@ func salesforceFixtureProjectManifest(files map[string][]byte, project string) (
 	prefix := project + "/"
 	entries := make([]salesforceExecutorFile, 0)
 	for path, data := range files {
-		if !strings.HasPrefix(path, prefix) || strings.HasPrefix(filepath.Base(path), "salesforce-") {
+		relative := strings.TrimPrefix(path, prefix)
+		if !strings.HasPrefix(path, prefix) || strings.HasPrefix(filepath.Base(path), "salesforce-") || strings.HasPrefix(relative, ".sf/") {
 			continue
 		}
-		entries = append(entries, salesforceExecutorFile{Path: strings.TrimPrefix(path, prefix), SHA256: replayBytesSHA256(data)})
+		entries = append(entries, salesforceExecutorFile{Path: relative, SHA256: replayBytesSHA256(data)})
 	}
 	if len(entries) == 0 {
 		return nil, fmt.Errorf("Salesforce fixture project has no generated files")
