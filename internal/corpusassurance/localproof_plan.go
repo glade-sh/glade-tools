@@ -296,11 +296,3 @@ func sortedSet(values map[string]bool) []string {
 	sort.Strings(result)
 	return result
 }
-
-func localProofPlanFileSHA256(path string) (string, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	return replayBytesSHA256(data), nil
-}
