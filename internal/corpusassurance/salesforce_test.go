@@ -35,6 +35,46 @@ func TestSalesforceBaselineInventoryRequiresOneFieldSet(t *testing.T) {
 	}
 }
 
+func TestSalesforceBaselineInventoryRequiresExactKeys(t *testing.T) {
+	inventory := salesforceBaselineInventoryForTest()
+	delete(inventory.Counts, "ApexClass")
+	inventory.Counts["Injected"] = 0
+	if baselineSalesforceInventory(inventory) {
+		t.Fatal("baseline inventory accepted substituted key")
+	}
+}
+
+func TestSameInventoryRequiresExactKeys(t *testing.T) {
+	one, two := salesforceBaselineInventoryForTest(), salesforceBaselineInventoryForTest()
+	delete(two.Counts, "ApexClass")
+	two.Counts["Injected"] = 0
+	if sameInventory(one, two) {
+		t.Fatal("inventory comparison accepted substituted key")
+	}
+}
+
+func TestParseSalesforceCountRequiresResultAndTotalSize(t *testing.T) {
+	for _, raw := range [][]byte{[]byte(`{}`), []byte(`{"status":0}`), []byte(`{"status":0,"result":{}}`)} {
+		if _, err := parseSalesforceCount(raw); err == nil {
+			t.Fatalf("parseSalesforceCount accepted %s", raw)
+		}
+	}
+}
+
+func TestValidSalesforceOrgPreflightRejectsMissingCount(t *testing.T) {
+	root := t.TempDir()
+	bundlePath := filepath.Join(root, "bundle.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	preflight := salesforcePreflightForTest(t, "assurance-sf0", localProofFileSHA256(t, bundlePath), bundlePath)
+	preflight.Commands[1].Output.Stdout = []byte(`{}`)
+	preflight.Commands[1].StdoutSHA256 = replayBytesSHA256(preflight.Commands[1].Output.Stdout)
+	if validSalesforceOrgPreflight(preflight, preflight.BundleSHA256, bundlePath) {
+		t.Fatal("accepted preflight with a missing retained count")
+	}
+}
+
 func TestValidateSalesforceShardsRequiresCleanDisjointCompleteEvidence(t *testing.T) {
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
@@ -187,7 +227,7 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	command := salesforceFilterCommandForTest(args, bundlePath, environment, pythonSHA)
 	bindings := SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: command.CommandSpecSHA256}
 	lifecycle := salesforcePreflightForTest(t, alias, bundleSHA, bundlePath)
-	shard := SalesforceShard{Bindings: bindings, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, OrgAlias: alias, OrgID: lifecycle.OrgID, OrgStatus: "Active", Preflight: lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: SalesforceInventory{}, Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
+	shard := SalesforceShard{Bindings: bindings, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: executorRoot, RunID: runID, ShardIndex: 0, ShardCount: 2, OrgAlias: alias, OrgID: lifecycle.OrgID, OrgStatus: "Active", Preflight: lifecycle, PreInventory: salesforceBaselineInventoryForTest(), Commands: []CommandResult{command}, Postflight: lifecycle, PostInventory: salesforceBaselineInventoryForTest(), Results: []SalesforceSurfaceResult{{SurfaceID: "apex:Runtime.run", Kind: oracleRuntime, Passed: true}}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
 	shard1Path := filepath.Join(t.TempDir(), "shard-1.json")
 	shard1Alias, shard1Executor, shard1RunID := "assurance-sf1", filepath.Join(attemptRoot, "executor", "shard-1"), "assurance-"+bundle.AttemptSHA256[:16]+"-shard-1"
 	shard1Args, err := salesforceFilterArgs(sealedSalesforceFilterScriptPath(shard1Executor), filepath.Dir(bundlePath), shard1Executor, shard1RunID, shard1Alias, bundle, bundleSHA, 1, 2)
@@ -203,7 +243,7 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	shard1Lifecycle.OrgID = "00D1"
 	shard1Lifecycle.Commands[0].Output.Stdout = []byte(`{"status":0,"result":{"id":"00D1","status":"Active","username":"assurance-sf1@example.invalid"}}`)
 	shard1Lifecycle.Commands[0].StdoutSHA256 = replayBytesSHA256(shard1Lifecycle.Commands[0].Output.Stdout)
-	shard1 := SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: shard1Command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: shard1Executor, RunID: shard1RunID, ShardIndex: 1, ShardCount: 2, OrgAlias: shard1Alias, OrgID: "00D1", OrgStatus: "Active", Preflight: shard1Lifecycle, PreInventory: SalesforceInventory{}, Commands: []CommandResult{shard1Command}, Postflight: shard1Lifecycle, PostInventory: SalesforceInventory{}, Cleanup: CleanupReceipt{ResidueAbsent: true}}
+	shard1 := SalesforceShard{Bindings: SalesforceBindings{OraclePlanSHA256: bundle.OraclePlanSHA256, BundleSHA256: bundleSHA, FilterSHA256: bundle.FilterSHA256, FilterCommandSpecSHA256: shard1Command.CommandSpecSHA256}, Candidate: bundle.Candidate, Tools: bundle.Tools, ExecutorRoot: shard1Executor, RunID: shard1RunID, ShardIndex: 1, ShardCount: 2, OrgAlias: shard1Alias, OrgID: "00D1", OrgStatus: "Active", Preflight: shard1Lifecycle, PreInventory: salesforceBaselineInventoryForTest(), Commands: []CommandResult{shard1Command}, Postflight: shard1Lifecycle, PostInventory: salesforceBaselineInventoryForTest(), Cleanup: CleanupReceipt{ResidueAbsent: true}}
 	if err := WriteNewJSON(shardPath, shard); err != nil {
 		t.Fatal(err)
 	}
@@ -489,11 +529,7 @@ func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
 		}
-		count := 0
-		if strings.Contains(strings.Join(args, " "), "FROM FieldSet") {
-			count = 1
-		}
-		return salesforceCommandOutput{Stdout: []byte(fmt.Sprintf(`{"status":0,"result":{"totalSize":%d}}`, count))}, nil
+		return salesforceCommandOutput{Stdout: salesforceCountOutputForTest(args)}, nil
 	}
 	preflight, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: runner})
 	if err != nil {
@@ -508,6 +544,26 @@ func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRunSalesforceOrgPreflightRejectsMissingCount(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
+	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: "/usr/local/bin/sf", OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{}`)}, nil
+	}})
+	if err == nil {
+		t.Fatal("accepted missing Salesforce count")
+	}
+	if _, statErr := os.Stat(outputPath); !os.IsNotExist(statErr) {
+		t.Fatalf("preflight receipt exists after missing count: %v", statErr)
 	}
 }
 
@@ -531,7 +587,7 @@ func TestRunSalesforceOrgPreflightRejectsBundleChangedDuringCommands(t *testing.
 			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
 				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
 			}
-			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
+			return salesforceCommandOutput{Stdout: salesforceCountOutputForTest(args)}, nil
 		},
 	})
 	if err == nil || !strings.Contains(err.Error(), "bundle changed during org preflight") {
@@ -558,7 +614,7 @@ func TestRunSalesforceOrgPreflightRejectsBundleHashChangedDuringCommands(t *test
 			if err := os.WriteFile(bundlePath, []byte(`{"bundle":false}`), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
+			return salesforceCommandOutput{Stdout: salesforceCountOutputForTest(args)}, nil
 		},
 	})
 	if err == nil || !strings.Contains(err.Error(), "staged bundle changed during org preflight") {
@@ -1011,7 +1067,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		if len(args) > 1 && args[0] == "org" {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
 		}
-		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0}}`)}, nil
+		return salesforceCommandOutput{Stdout: salesforceCountOutputForTest(args)}, nil
 	}
 	dispatchPath := filepath.Join(root, "SALESFORCE_DISPATCH.json")
 	filterPath := sealedSalesforceFilterScriptPath(executorRoot)
@@ -1145,6 +1201,14 @@ func writeSyntheticDevHubBundle(t *testing.T, bundlePath string) {
 	}
 }
 
+func salesforceCountOutputForTest(args []string) []byte {
+	count := 0
+	if strings.Contains(strings.Join(args, " "), "FROM FieldSet") {
+		count = 1
+	}
+	return []byte(fmt.Sprintf(`{"status":0,"result":{"totalSize":%d}}`, count))
+}
+
 func salesforceCommandForTest(t *testing.T, bundlePath string, args []string) CommandResult {
 	t.Helper()
 	environment, err := fixedSalesforceEnvironment()
@@ -1161,7 +1225,7 @@ func salesforceCommandForTest(t *testing.T, bundlePath string, args []string) Co
 	} else if len(args) >= 2 && args[0] == "org" && args[1] == "create" {
 		stdout = []byte(`{"status":0,"result":{"orgId":"00D0"}}`)
 	} else if len(args) >= 2 && args[0] == "data" && args[1] == "query" {
-		stdout = []byte(`{"status":0,"result":{"totalSize":0}}`)
+		stdout = salesforceCountOutputForTest(args)
 	}
 	output := &RetainedCommandOutput{Stdout: stdout, Stderr: []byte{}}
 	return CommandResult{Command: append([]string{"/usr/local/bin/sf"}, args...), WorkingDirectory: filepath.Dir(bundlePath), Environment: environment, ExecutableSHA256: executableSHA256, ExecutableAfterSHA256: executableSHA256, CommandSpecSHA256: salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, executableSHA256, executableSHA256), ExitCode: 0, Passed: true, StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Output: output}

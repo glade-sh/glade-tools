@@ -1390,15 +1390,15 @@ func parseSalesforceOrgCreate(data []byte) (string, error) {
 
 func parseSalesforceCount(data []byte) (int, error) {
 	var payload struct {
-		Status int `json:"status"`
-		Result struct {
-			TotalSize int `json:"totalSize"`
+		Status *int `json:"status"`
+		Result *struct {
+			TotalSize *int `json:"totalSize"`
 		} `json:"result"`
 	}
-	if err := json.Unmarshal(data, &payload); err != nil || payload.Status != 0 || payload.Result.TotalSize < 0 {
+	if err := json.Unmarshal(data, &payload); err != nil || payload.Status == nil || *payload.Status != 0 || payload.Result == nil || payload.Result.TotalSize == nil || *payload.Result.TotalSize < 0 {
 		return 0, fmt.Errorf("invalid Salesforce count JSON")
 	}
-	return payload.Result.TotalSize, nil
+	return *payload.Result.TotalSize, nil
 }
 
 // NormalizeSalesforceFilterResults turns the filter's raw fixture results into
@@ -2028,15 +2028,21 @@ func baselineSalesforceInventory(inventory SalesforceInventory) bool {
 		return false
 	}
 	for _, kind := range salesforceInventoryTypes {
-		if inventory.Counts[kind] != salesforceInventoryBaselineCount(kind) {
+		count, ok := inventory.Counts[kind]
+		if !ok || count != salesforceInventoryBaselineCount(kind) {
 			return false
 		}
 	}
 	return true
 }
+
 func sameInventory(one, two SalesforceInventory) bool {
-	for _, kind := range salesforceInventoryTypes {
-		if one.Counts[kind] != two.Counts[kind] {
+	if len(one.Counts) != len(two.Counts) {
+		return false
+	}
+	for kind, count := range one.Counts {
+		other, ok := two.Counts[kind]
+		if !ok || count != other {
 			return false
 		}
 	}
