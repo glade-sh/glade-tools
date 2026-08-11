@@ -166,6 +166,31 @@ func TestBuildReportRequiresAuthorizedExclusionRows(t *testing.T) {
 	}
 }
 
+func TestReportExclusionPartitionBindsExclusionPolicyHash(t *testing.T) {
+	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)}
+	plan := OraclePlan{Candidate: candidate, Tools: tools, LocalProofSHA256: strings.Repeat("e", 64), Rows: []OraclePlanRow{{SurfaceID: "apex:Hosted.only()", Action: oracleWaiver, ExclusionClass: "hosted", ExclusionReason: "requires org identity"}}}
+	rows, err := exclusionRowsFromPlan(plan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const (
+		planSHA            = "plan"
+		profileSHA         = "profile"
+		usageSHA           = "usage"
+		decisionSHA        = "decision"
+		exclusionPolicySHA = "exclusion-policy"
+	)
+	exclusion := ExclusionRequest{Candidate: candidate, Tools: tools, PlanSHA256: planSHA, ProfileSHA256: profileSHA, SealedUsageSHA256: usageSHA, DecisionSHA256: decisionSHA, LocalProofSHA256: plan.LocalProofSHA256, Rows: rows}
+	authority := ExclusionAuthority{Candidate: candidate, Tools: tools, DecisionSHA256: decisionSHA, PolicySHA256: exclusionPolicySHA, Rows: rows}
+	if !validReportExclusionPartition(exclusion, authority, plan, planSHA, profileSHA, usageSHA, decisionSHA, exclusionPolicySHA) {
+		t.Fatal("rejected exclusion authority bound to its separate policy")
+	}
+	if validReportExclusionPartition(exclusion, authority, plan, planSHA, profileSHA, usageSHA, decisionSHA, "other-policy") {
+		t.Fatal("accepted authority bound to a different exclusion policy")
+	}
+}
+
 func TestDeriveAssuranceRowsSeparatesCompileTestRuntimeAndNonParity(t *testing.T) {
 	usage := UsageReconciliation{Usage: []ReconciledUsageEntry{
 		{UsageEntry: UsageEntry{UsageKey: "Runtime.run", Namespace: "Runtime", PrivateProdRefs: 1, RepositoryIDs: []string{"private-corpus-001"}}, Class: usageClassExact, SurfaceID: "apex:Runtime.run()"},

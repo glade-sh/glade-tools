@@ -258,12 +258,14 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 	if err != nil {
 		return nil, fmt.Errorf("read report exclusion request: %w", err)
 	}
-	expectedExclusions, err := exclusionRowsFromPlan(plan)
-	if err != nil || exclusion.Candidate != plan.Candidate || exclusion.Tools != plan.Tools || exclusion.PlanSHA256 != planSHA || exclusion.ProfileSHA256 != profileSHA || exclusion.SealedUsageSHA256 != usageSHA || exclusion.DecisionSHA256 != decisionSHA || exclusion.LocalProofSHA256 != plan.LocalProofSHA256 || !reflect.DeepEqual(exclusion.Rows, expectedExclusions) || authority.Candidate != plan.Candidate || authority.Tools != plan.Tools || authority.DecisionSHA256 != decisionSHA || authority.PolicySHA256 != policySHA || !reflect.DeepEqual(authority.Rows, exclusion.Rows) {
+	exclusionPolicy, exclusionPolicyBytes, err := readExactJSONBytes[ExclusionPolicy](request.ExclusionPolicyPath)
+	if err != nil || exclusionPolicy.SchemaVersion != 1 {
+		return nil, fmt.Errorf("report exclusion policy does not authorize every exclusion")
+	}
+	if !validReportExclusionPartition(exclusion, authority, plan, planSHA, profileSHA, usageSHA, decisionSHA, replayBytesSHA256(exclusionPolicyBytes)) {
 		return nil, fmt.Errorf("report exclusions do not form the authorized plan partition")
 	}
-	exclusionPolicy, exclusionPolicyBytes, err := readExactJSONBytes[ExclusionPolicy](request.ExclusionPolicyPath)
-	if err != nil || exclusionPolicy.SchemaVersion != 1 || !policyAuthorizesRows(exclusionPolicy.Rows, authority.Rows) {
+	if !policyAuthorizesRows(exclusionPolicy.Rows, authority.Rows) {
 		return nil, fmt.Errorf("report exclusion policy does not authorize every exclusion")
 	}
 	release, releaseBytes, err := readExactJSONBytes[ReleaseValidation](request.ReleaseValidationPath)
@@ -311,6 +313,11 @@ func validateReportSidecarEvidence(request AssuranceReportRequest, usage SealedC
 		return nil, fmt.Errorf("report requires one cleanup receipt per worker role")
 	}
 	return map[string]string{"SURFACE_LEDGER.json": ledgerSHA, "SOURCE_PROFILE.json": sourceSHA, "SUPPORT_POLICY.json": policySHA, "USAGE_DECISIONS.json": decisionSHA, "EXCLUSION_REQUEST.json": replayBytesSHA256(exclusionBytes), "EXCLUSION_POLICY.json": replayBytesSHA256(exclusionPolicyBytes), "RELEASE_VALIDATION.json": replayBytesSHA256(releaseBytes), "FILTER_SCRIPT.py": filterSHA, "SCRATCH_DEFINITION.json": scratchSHA, "TOOLS_AMD64": toolsSHA, "REMOTE_CLEANUP_REPLAY_WORKER.json": cleanupInputs["replay-worker"], "REMOTE_CLEANUP_SALESFORCE_WORKER.json": cleanupInputs["salesforce-worker"]}, nil
+}
+
+func validReportExclusionPartition(exclusion ExclusionRequest, authority ExclusionAuthority, plan OraclePlan, planSHA, profileSHA, usageSHA, decisionSHA, exclusionPolicySHA string) bool {
+	expected, err := exclusionRowsFromPlan(plan)
+	return err == nil && exclusion.Candidate == plan.Candidate && exclusion.Tools == plan.Tools && exclusion.PlanSHA256 == planSHA && exclusion.ProfileSHA256 == profileSHA && exclusion.SealedUsageSHA256 == usageSHA && exclusion.DecisionSHA256 == decisionSHA && exclusion.LocalProofSHA256 == plan.LocalProofSHA256 && reflect.DeepEqual(exclusion.Rows, expected) && authority.Candidate == plan.Candidate && authority.Tools == plan.Tools && authority.DecisionSHA256 == decisionSHA && authority.PolicySHA256 == exclusionPolicySHA && reflect.DeepEqual(authority.Rows, exclusion.Rows)
 }
 
 func expectedReportCleanupRoots(request AssuranceReportRequest) (map[string]string, error) {
