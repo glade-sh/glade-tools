@@ -374,12 +374,16 @@ func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePl
 }
 
 func validOracleReleaseCommand(validation ReleaseValidation, index int, result ReleaseCommandResult) bool {
-	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != releaseValidationTimeout.Milliseconds() || len(result.Command) == 0 || !equalStrings(result.Environment, fixedReleaseEnvironment()) || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
+	timeout := releaseValidationTimeout
+	if index == 0 {
+		timeout = productReleaseValidationTimeout
+	}
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != timeout.Milliseconds() || len(result.Command) == 0 || !equalStrings(result.Environment, fixedReleaseEnvironment()) || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
 		return false
 	}
 	switch index {
 	case 0:
-		if len(result.Command) != 6 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "19m" || result.Command[4] != "-count=1" || result.Command[5] != "./..." || result.WorkingDirectory != validation.GladeRoot {
+		if len(result.Command) != 6 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "45m" || result.Command[4] != "-count=1" || result.Command[5] != "./..." || result.WorkingDirectory != validation.GladeRoot {
 			return false
 		}
 	case 1:

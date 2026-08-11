@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestRunReleaseValidationRejectsToolsHeadThatDoesNotMatchFrozenCommit(t *testing.T) {
@@ -142,12 +143,16 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	if len(commands) != 4 || len(validation.Commands) != 4 || validation.Candidate.SHA256 != fileSHA256(t, candidatePath) || validation.Tools.SHA256 != fileSHA256(t, toolsPath) || validation.ToolsFreezeSHA256 != fileSHA256(t, freezePath) {
 		t.Fatalf("validation = %#v, commands = %#v", validation, commands)
 	}
-	for _, command := range validation.Commands {
-		if !command.Passed || command.WorkingDirectory == "" || !equalStrings(command.Environment, fixedReleaseEnvironment()) || command.TimeoutMS != releaseValidationTimeout.Milliseconds() {
+	for index, command := range validation.Commands {
+		timeout := releaseValidationTimeout
+		if index == 0 {
+			timeout = productReleaseValidationTimeout
+		}
+		if !command.Passed || command.WorkingDirectory == "" || !equalStrings(command.Environment, fixedReleaseEnvironment()) || command.TimeoutMS != timeout.Milliseconds() {
 			t.Fatalf("release command = %#v", command)
 		}
 	}
-	if !equalStrings(commands[0].Args, []string{"test", "-timeout", "19m", "-count=1", "./..."}) {
+	if !equalStrings(commands[0].Args, []string{"test", "-timeout", "45m", "-count=1", "./..."}) {
 		t.Fatalf("Glade release command = %#v", commands[0])
 	}
 	if !equalStrings(commands[2].Args, []string{"test", "-timeout", "19m", "-count=1", "./internal/corpusassurance", "./internal/toolcli"}) {
@@ -175,6 +180,25 @@ func TestFixedReleaseCommandsUseCurrentToolsGate(t *testing.T) {
 	want := []string{"test", "-timeout", "19m", "-count=1", "./internal/corpusassurance", "./internal/toolcli"}
 	if !equalStrings(commands[2].Args, want) {
 		t.Fatalf("tools release command = %#v, want %#v", commands[2].Args, want)
+	}
+}
+
+func TestFixedReleaseCommandsGiveApexTestAuthoritativeBudget(t *testing.T) {
+	root := t.TempDir()
+	for _, path := range []string{filepath.Join(root, "glade", "scripts", "smoke.sh"), filepath.Join(root, "tools", "scripts", "release-check.sh")} {
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte("#!/bin/sh\n"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "tools"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := commands[0].Args, []string{"test", "-timeout", "45m", "-count=1", "./..."}; !equalStrings(got, want) || commands[0].Timeout != 46*time.Minute {
+		t.Fatalf("Glade release command = %#v", commands[0])
 	}
 }
 
