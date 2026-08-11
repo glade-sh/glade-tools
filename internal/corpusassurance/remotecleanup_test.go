@@ -198,6 +198,10 @@ func TestRunRemoteAttemptCleanupSuccessCommandShape(t *testing.T) {
 	if cleanup.BindingSHA256 != cleanup.BindingPostSHA256 || cleanup.BindingSHA256 != sha256FileForTest(t, bindingPath) {
 		t.Fatalf("binding hashes = before %q post %q", cleanup.BindingSHA256, cleanup.BindingPostSHA256)
 	}
+	attempt, _, err := readExactJSONBytes[AssuranceAttempt](bindingPath + ".attempt")
+	if err != nil || cleanup.AttemptSHA256 != attemptBindingHash(attempt) {
+		t.Fatalf("cleanup attempt hash = %q, want binding hash", cleanup.AttemptSHA256)
+	}
 	if cleanup.TimeoutMS != remoteCleanupTimeout.Milliseconds() || !cleanup.Command.Passed || cleanup.Command.TimedOut || cleanup.Command.CommandSpecSHA256 == "" || !cleanup.ResidueAbsent {
 		t.Fatalf("cleanup receipt = %#v", cleanup)
 	}

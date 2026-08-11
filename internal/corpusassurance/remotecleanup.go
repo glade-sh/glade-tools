@@ -113,7 +113,7 @@ func RunRemoteAttemptCleanup(request RemoteAttemptCleanupRequest) (RemoteAttempt
 
 	cleanup := RemoteAttemptCleanupReceipt{
 		SchemaVersion:     1,
-		AttemptSHA256:     replayBytesSHA256(attemptBytes),
+		AttemptSHA256:     attemptBindingHash(attempt),
 		Role:              authority.Role,
 		Host:              authority.Host,
 		Parent:            authority.Parent,
