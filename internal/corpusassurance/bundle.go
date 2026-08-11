@@ -378,7 +378,7 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 	if index == 0 {
 		timeout = productReleaseValidationTimeout
 	}
-	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != timeout.Milliseconds() || len(result.Command) == 0 || !equalStrings(result.Environment, fixedReleaseEnvironment()) || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != timeout.Milliseconds() || len(result.Command) == 0 || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
 		return false
 	}
 	switch index {

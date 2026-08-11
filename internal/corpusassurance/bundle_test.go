@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestApprovedSalesforceFilterHashMatchesCheckedInScript(t *testing.T) {
@@ -27,6 +28,27 @@ func TestToolsAMD64BuildEnvironmentIgnoresAmbientToolchain(t *testing.T) {
 	want := append(fixedReleaseEnvironment(), "CGO_ENABLED=0", "GOOS=darwin", "GOARCH=amd64", "GOFLAGS=")
 	if got := toolsAMD64BuildEnvironment(); !equalStrings(got, want) {
 		t.Fatalf("toolsAMD64BuildEnvironment = %#v, want %#v", got, want)
+	}
+}
+
+func TestOracleReleaseValidationAcceptsSealedForeignRuntimeEnvironment(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	validation, _, err := readExactJSONBytes[ReleaseValidation](inputs.releasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index := range validation.Commands {
+		validation.Commands[index].Environment[1] = "PATH=/foreign-go/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin:/bin"
+		command := validation.Commands[index]
+		command.CommandSpecSHA256 = releaseCommandSpecSHA256(releaseCommand{Path: command.Command[0], Args: command.Command[1:], WorkingDirectory: command.WorkingDirectory, Environment: command.Environment, Timeout: time.Duration(command.TimeoutMS) * time.Millisecond})
+		validation.Commands[index] = command
+	}
+	if err := validateOracleReleaseValidation(validation, inputs.plan); err != nil {
+		t.Fatalf("validateOracleReleaseValidation rejected a sealed foreign runtime: %v", err)
+	}
+	if err := validateOracleReleaseSources(validation, inputs.plan); err == nil {
+		t.Fatal("local release provenance accepted a foreign runtime environment")
 	}
 }
 
