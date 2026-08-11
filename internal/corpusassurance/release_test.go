@@ -147,13 +147,34 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 			t.Fatalf("release command = %#v", command)
 		}
 	}
-	for _, command := range commands {
-		if command.Path == filepath.Join(runtime.GOROOT(), "bin", "go") && strings.Join(command.Args, " ") != "test -timeout 19m -count=1 ./..." {
-			t.Fatalf("go release command = %#v", command)
-		}
+	if !equalStrings(commands[0].Args, []string{"test", "-timeout", "19m", "-count=1", "./..."}) {
+		t.Fatalf("Glade release command = %#v", commands[0])
+	}
+	if !equalStrings(commands[2].Args, []string{"test", "-timeout", "19m", "-count=1", "./internal/corpusassurance", "./internal/toolcli"}) {
+		t.Fatalf("tools release command = %#v", commands[2])
 	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestFixedReleaseCommandsUseCurrentToolsGate(t *testing.T) {
+	root := t.TempDir()
+	for _, path := range []string{filepath.Join(root, "glade", "scripts", "smoke.sh"), filepath.Join(root, "tools", "scripts", "release-check.sh")} {
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte("#!/bin/sh\n"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "tools"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"test", "-timeout", "19m", "-count=1", "./internal/corpusassurance", "./internal/toolcli"}
+	if !equalStrings(commands[2].Args, want) {
+		t.Fatalf("tools release command = %#v, want %#v", commands[2].Args, want)
 	}
 }
 

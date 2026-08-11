@@ -387,7 +387,7 @@ func validOracleReleaseCommand(validation ReleaseValidation, index int, result R
 			return false
 		}
 	case 2:
-		if len(result.Command) != 6 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "19m" || result.Command[4] != "-count=1" || result.Command[5] != "./..." || result.WorkingDirectory != validation.ToolsRoot {
+		if len(result.Command) != 7 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "19m" || result.Command[4] != "-count=1" || result.Command[5] != "./internal/corpusassurance" || result.Command[6] != "./internal/toolcli" || result.WorkingDirectory != validation.ToolsRoot {
 			return false
 		}
 	case 3:

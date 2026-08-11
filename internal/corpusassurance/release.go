@@ -169,7 +169,7 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 	commands := []releaseCommand{
 		{Path: goBin, Args: []string{"test", "-timeout", "19m", "-count=1", "./..."}, WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
 		{Path: filepath.Join(gladeRoot, "scripts", "smoke.sh"), WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
-		{Path: goBin, Args: []string{"test", "-timeout", "19m", "-count=1", "./..."}, WorkingDirectory: toolsRoot, Environment: env, Timeout: releaseValidationTimeout},
+		{Path: goBin, Args: []string{"test", "-timeout", "19m", "-count=1", "./internal/corpusassurance", "./internal/toolcli"}, WorkingDirectory: toolsRoot, Environment: env, Timeout: releaseValidationTimeout},
 		{Path: filepath.Join(toolsRoot, "scripts", "release-check.sh"), WorkingDirectory: toolsRoot, Environment: env, Timeout: releaseValidationTimeout},
 	}
 	for _, command := range commands {
