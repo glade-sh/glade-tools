@@ -1,10 +1,12 @@
 package corpusassurance
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const candidateAuthorityStatus = "sealed-candidate-authority"
@@ -128,6 +130,9 @@ func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath st
 	if err := validateCandidateTool(receipt.Tools); err != nil {
 		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools are stale")
 	}
+	if err := validateCandidateParser(receipt.Candidate, candidateRoot); err != nil {
+		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+	}
 	reviewBytes, err := os.ReadFile(reviewPath)
 	if err != nil {
 		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
@@ -136,6 +141,22 @@ func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath st
 		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
 	return input, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
+}
+
+func validateCandidateParser(candidate attemptCandidate, workingDirectory string) error {
+	result, stdout, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 30 * time.Second})
+	if result.TimedOut || result.ExecutableSHA256 != candidate.SHA256 || result.ExecutableAfterSHA256 != candidate.SHA256 || !validCandidateDoctorJSON(stdout) {
+		return fmt.Errorf("candidate Apex parser is unavailable")
+	}
+	return nil
+}
+
+func validCandidateDoctorJSON(data []byte) bool {
+	var doctor struct {
+		Command  string `json:"command"`
+		ParserOK bool   `json:"parserOK"`
+	}
+	return validateJSONWithoutDuplicateKeys(data) == nil && json.Unmarshal(data, &doctor) == nil && doctor.Command == "doctor" && doctor.ParserOK
 }
 
 func validCandidateBuildReceipt(receipt candidateBuildReceipt, input candidateAuthorityInput) bool {

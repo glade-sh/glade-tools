@@ -18,9 +18,7 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(candidatePath, []byte("candidate"), 0o700); err != nil {
-		t.Fatal(err)
-	}
+	writeCandidateAuthorityExecutable(t, candidatePath, true)
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
@@ -97,10 +95,9 @@ func TestCreateCandidateAuthorityRejectsToolsThatAreNotExecuting(t *testing.T) {
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	candidatePath, toolsPath := filepath.Join(root, "glade"), filepath.Join(root, "other-glade-tools")
-	for _, path := range []string{candidatePath, toolsPath} {
-		if err := os.WriteFile(path, []byte(filepath.Base(path)), 0o700); err != nil {
-			t.Fatal(err)
-		}
+	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	if err := os.WriteFile(toolsPath, []byte(filepath.Base(toolsPath)), 0o700); err != nil {
+		t.Fatal(err)
 	}
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
@@ -120,9 +117,7 @@ func TestCreateAssuranceAttemptRejectsToolsOutsideCandidateAuthority(t *testing.
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	sealedToolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
 	candidatePath := filepath.Join(root, "glade")
-	if err := os.WriteFile(candidatePath, []byte(filepath.Base(candidatePath)), 0o700); err != nil {
-		t.Fatal(err)
-	}
+	writeCandidateAuthorityExecutable(t, candidatePath, true)
 	sealedToolsPath, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -209,9 +204,7 @@ func TestCreateCandidateAuthorityRejectsInvalidReviewWithoutOutput(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(candidatePath, []byte("candidate"), 0o700); err != nil {
-		t.Fatal(err)
-	}
+	writeCandidateAuthorityExecutable(t, candidatePath, true)
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
@@ -229,6 +222,33 @@ func TestCreateCandidateAuthorityRejectsInvalidReviewWithoutOutput(t *testing.T)
 	}
 }
 
+func TestCreateCandidateAuthorityRejectsCandidateWithoutParser(t *testing.T) {
+	root := t.TempDir()
+	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidatePath := filepath.Join(root, "glade")
+	writeCandidateAuthorityExecutable(t, candidatePath, false)
+	toolsPath, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+	tools := candidateToolForTest(t, toolsRoot, toolsPath)
+	receiptPath := filepath.Join(root, "candidate-receipt.json")
+	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": tools})
+	reviewPath := filepath.Join(root, "REVIEW.md")
+	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	outputPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: outputPath}); err == nil {
+		t.Fatal("CreateCandidateAuthority accepted a candidate without its Apex parser")
+	}
+	if _, err := os.Lstat(outputPath); !os.IsNotExist(err) {
+		t.Fatalf("parser-less candidate created authority: %v", err)
+	}
+}
+
 func writeCandidateAuthorityJSON(t *testing.T, path string, value any) {
 	t.Helper()
 	data, err := json.Marshal(value)
@@ -236,6 +256,17 @@ func writeCandidateAuthorityJSON(t *testing.T, path string, value any) {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeCandidateAuthorityExecutable(t *testing.T, path string, parserOK bool) {
+	t.Helper()
+	value := "false"
+	if parserOK {
+		value = "true"
+	}
+	if err := os.WriteFile(path, []byte("#!/bin/sh\nprintf '%s\\n' '{\"command\":\"doctor\",\"parserOK\":"+value+"}'\nexit 1\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 }
