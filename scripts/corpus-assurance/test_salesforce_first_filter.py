@@ -15,6 +15,24 @@ SPEC.loader.exec_module(FILTER)
 
 
 class SalesforceFirstFilterTest(unittest.TestCase):
+    def test_project_manifest_uses_posix_string_order(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            folder = root / "force-app/main/default/email/Glade_Messaging"
+            folder.mkdir(parents=True)
+            (folder / "Trail_Template.email").write_text("body")
+            (root / "force-app/main/default/email/Glade_Messaging.emailFolder-meta.xml").write_text("folder")
+
+            manifest = FILTER.project_file_manifest(root)
+
+            self.assertEqual(
+                [entry["path"] for entry in manifest],
+                [
+                    "force-app/main/default/email/Glade_Messaging.emailFolder-meta.xml",
+                    "force-app/main/default/email/Glade_Messaging/Trail_Template.email",
+                ],
+            )
+
     def test_fixture_source_survives_cleanup(self):
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp) / "out"

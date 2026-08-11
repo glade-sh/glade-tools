@@ -33,7 +33,7 @@ def file_sha256(path: Path) -> str:
 def project_file_manifest(root: Path) -> list[dict]:
     """Return the exact regular-file tree executed by the Salesforce worker."""
     records = []
-    for path in sorted(root.rglob("*")):
+    for path in sorted(root.rglob("*"), key=lambda path: path.relative_to(root).as_posix()):
         if path.is_symlink():
             raise ValueError(f"project tree contains symlink: {path}")
         if not path.is_file():
