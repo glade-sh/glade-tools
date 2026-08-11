@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const approvedSalesforceFilterSHA256 = "20d3632efa0eef36e830154572969c59dfeb5fc411a7e25a3bf217006ab842d1"
+const approvedSalesforceFilterSHA256 = "0f813680013bb9160d3f129b9016357da05f04ee938692646444e7f311582855"
 
 // testApprovedSalesforceFilterSHA256 is package-private so synthetic unit
 // fixtures can exercise the sealing protocol without exposing a caller choice.
