@@ -25,19 +25,19 @@ func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSur
 	}
 	if got, want := localProofCommandShapes(*calls), [][]string{
 		{"test", "--project", ".", "--json", "--no-progress"},
-		{"exec", "--project", ".", "--json", "new Runtime().run(); new Runtime().extra(); System.assert(true);"},
+		{"exec", "--project", ".", "--json", "new Runtime().run(); System.assert(true);"},
 		{"check", "--project", ".", "--json", "--no-progress"},
 	}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("commands = %v, want %v", got, want)
 	}
-	if got, want := surfaceIDs(proof.Surfaces), []string{"apex:Mock.run", "apex:Runtime.extra", "apex:Runtime.run", "apex:Shape.run"}; !reflect.DeepEqual(got, want) {
+	if got, want := surfaceIDs(proof.Surfaces), []string{"apex:Mock.run", "apex:Runtime.run", "apex:Shape.run"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("proof surface IDs = %v, want %v", got, want)
 	}
 	decision := readLocalProofDecision(t, request.DecisionPath)
 	if proof.Candidate != request.Candidate || proof.Tools != request.Tools || proof.FixtureManifestSHA256 != decision.FixtureManifestSHA256 {
 		t.Fatalf("proof bindings = %#v", proof)
 	}
-	if !proof.Surfaces[0].BehaviorObserved || !proof.Surfaces[1].RuntimeObserved || !proof.Surfaces[3].CompilePassed {
+	if !proof.Surfaces[0].BehaviorObserved || !proof.Surfaces[1].RuntimeObserved || !proof.Surfaces[2].CompilePassed {
 		t.Fatalf("receipt-derived observations = %#v", proof.Surfaces)
 	}
 	if _, err := os.Stat(request.OutputPath); err != nil {
@@ -107,7 +107,7 @@ func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
 		{compileShapeRequired, "check", "shape", "Runtime.run"},
 	} {
 		t.Run(test.disposition, func(t *testing.T) {
-			entry := LocalProofFixture{ID: "fixture", Name: "fixture", Path: filepath.Join(t.TempDir(), "fixture.json"), SHA256: strings.Repeat("a", 64), OwnedSurfaceIDs: []string{"apex:Runtime.run"}, Disposition: test.disposition}
+			entry := LocalProofFixture{ID: "fixture", Name: "fixture", Path: filepath.Join(t.TempDir(), "fixture.json"), SHA256: strings.Repeat("a", 64), OwnedSurfaceIDs: []string{"apex:Runtime.run"}, Disposition: test.disposition, Operation: test.command}
 			invocation := compat.Invocation{Kind: test.command}
 			if test.command == "exec" {
 				invocation.Args = []string{"new Runtime().run(); System.assert(true);"}
@@ -151,7 +151,7 @@ func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
 }
 
 func TestLocalProofAcceptsSourceBackedTestContextRuntimeFixture(t *testing.T) {
-	entry := LocalProofFixture{ID: "test-context", Name: "test-context", Path: filepath.Join(t.TempDir(), "fixture.json"), OwnedSurfaceIDs: []string{"apex:System.Test.setMock"}, Disposition: localRuntimeRequired}
+	entry := LocalProofFixture{ID: "test-context", Name: "test-context", Path: filepath.Join(t.TempDir(), "fixture.json"), OwnedSurfaceIDs: []string{"apex:System.Test.setMock"}, Disposition: localRuntimeRequired, Operation: "test"}
 	fixture := compat.Fixture{
 		Name:    entry.Name,
 		Command: compat.Invocation{Kind: "test"},
@@ -268,11 +268,15 @@ func TestLocalProofFixtureAcceptsSalesforceMetadataExtensions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	data = append(data[:len(data)-1], []byte(`,"apiVersion":"67.0","salesforceEligible":false,"salesforceExclusionClass":"org-configuration-required"}`)...)
+	data = append(data[:len(data)-1], []byte(`,"apiVersion":"67.0","salesforceEligible":false,"salesforceExclusionClass":"org-configuration-required","salesforceExclusionReason":"requires explicit scratch-org configuration"}`)...)
 	if err := os.WriteFile(fixture.Path, data, 0o600); err != nil {
 		t.Fatal(err)
 	}
 	fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
+	ineligible := false
+	fixture.SalesforceEligible = &ineligible
+	fixture.SalesforceExclusionClass = "org-configuration-required"
+	fixture.SalesforceExclusionReason = "requires explicit scratch-org configuration"
 	if _, err := loadLocalProofFixture(fixture); err != nil {
 		t.Fatalf("loadLocalProofFixture rejected maintenance metadata: %v", err)
 	}
@@ -477,13 +481,13 @@ func localProofRequest(t *testing.T) (LocalProofRequest, *[]localProofCommand) {
 	}
 	fixtures := []LocalProofFixture{
 		localProofFixture(t, root, "unused", []string{"apex:Unused.run"}, compileShapeRequired),
-		localProofFixture(t, root, "runtime", []string{"apex:Runtime.run", "apex:Runtime.extra"}, localRuntimeRequired),
+		localProofFixture(t, root, "runtime", []string{"apex:Runtime.run"}, localRuntimeRequired),
 		localProofFixture(t, root, "mock", []string{"apex:Mock.run"}, deterministicMockRequired),
 		localProofFixture(t, root, "shape", []string{"apex:Shape.run"}, compileShapeRequired),
 	}
 	manifestPath := filepath.Join(root, "fixtures.json")
-	writeLocalProofManifest(t, manifestPath, LocalProofFixtureManifest{Fixtures: fixtures})
-	selected := []string{"apex:Runtime.extra", "apex:Shape.run", "apex:Mock.run", "apex:Runtime.run"}
+	writeLocalProofManifest(t, manifestPath, LocalProofFixtureManifest{Fixtures: fixtures, SalesforceFixtures: []LocalProofFixture{fixtures[1]}})
+	selected := []string{"apex:Shape.run", "apex:Mock.run", "apex:Runtime.run"}
 	profilePath := filepath.Join(root, "ASSURANCE_PROFILE.json")
 	usagePath := filepath.Join(root, "USAGE_RECONCILIATION.json")
 	decisionPath := filepath.Join(root, "DECISIONS.json")
@@ -526,7 +530,7 @@ func localProofFixture(t *testing.T, root, name string, surfaceIDs []string, dis
 	operation := "check"
 	source := "public class " + strings.Title(name) + " { public void run() {} public void extra() {} }"
 	if disposition == localRuntimeRequired {
-		program := "new Runtime().run(); new Runtime().extra(); System.assert(true);"
+		program := "new Runtime().run(); System.assert(true);"
 		if name != "runtime" {
 			calls := make([]string, 0, len(surfaceIDs))
 			for _, surfaceID := range surfaceIDs {
