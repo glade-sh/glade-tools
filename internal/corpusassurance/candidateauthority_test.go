@@ -28,7 +28,7 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 		t.Fatal(err)
 	}
 	authorityPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
-	authority, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: authorityPath})
+	authority, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: authorityPath})
 	if err != nil {
 		t.Fatalf("CreateCandidateAuthority: %v", err)
 	}
@@ -63,7 +63,7 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	if err := os.WriteFile(unknownReceiptPath, []byte(unknownReceipt), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: unknownReceiptPath, ReviewPath: reviewPath, OutputPath: filepath.Join(root, "UNKNOWN_RECEIPT_AUTHORITY.json")}); err == nil {
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: unknownReceiptPath, ReviewPath: reviewPath, OutputPath: filepath.Join(root, "UNKNOWN_RECEIPT_AUTHORITY.json")}); err == nil {
 		t.Fatal("CreateCandidateAuthority accepted an unknown receipt member")
 	}
 	data, err := os.ReadFile(authorityPath)
@@ -84,6 +84,16 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	writeCandidateAuthorityJSON(t, platformAuthorityPath, platformTampered)
 	if _, _, err := readCandidateAuthority(platformAuthorityPath); err == nil {
 		t.Fatal("readCandidateAuthority accepted a tools platform change")
+	}
+	var toolsBuildTampered candidateAuthorityDocument
+	if err := json.Unmarshal(data, &toolsBuildTampered); err != nil {
+		t.Fatal(err)
+	}
+	toolsBuildTampered.ToolsBuild.SourceTree = strings.Repeat("f", 40)
+	toolsBuildAuthorityPath := filepath.Join(root, "TOOLS_BUILD_TAMPERED_AUTHORITY.json")
+	writeCandidateAuthorityJSON(t, toolsBuildAuthorityPath, toolsBuildTampered)
+	if _, _, err := readCandidateAuthority(toolsBuildAuthorityPath); err == nil {
+		t.Fatal("readCandidateAuthority accepted a changed tools source build")
 	}
 	legacy := strings.TrimSuffix(string(data), "}\n") + `,"candidateRebind":{"path":"/legacy","sha256":"` + strings.Repeat("0", 64) + `"}}` + "\n"
 	if err := os.WriteFile(authorityPath, []byte(legacy), 0o600); err != nil {
@@ -119,6 +129,31 @@ func TestCandidateBuildValidatorBindsExactSource(t *testing.T) {
 	}
 }
 
+func TestToolsBuildValidatorBindsExactSource(t *testing.T) {
+	root := newInventoryRepository(t, map[string]string{
+		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",
+		"cmd/glade-tools/main.go": "package main\nfunc main() {}\n",
+	})
+	binding, err := deriveToolsBuildBinding(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	toolsPath := filepath.Join(t.TempDir(), "glade-tools")
+	if err := runBoundCandidateBuild(binding, toolsPath); err != nil {
+		t.Fatal(err)
+	}
+	tools := candidateTool{RuntimeArtifact: RuntimeArtifact{Commit: testGitOutput(t, root, "rev-parse", "HEAD"), OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: fileSHA256(t, toolsPath)}, Path: toolsPath}
+	if err := validateToolsBuildFromSource(root, tools, binding); err != nil {
+		t.Fatalf("exact tools source build rejected: %v", err)
+	}
+	if err := os.WriteFile(toolsPath, []byte("not the build\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateToolsBuildFromSource(root, tools, binding); err == nil {
+		t.Fatal("source build validation accepted unrelated tools")
+	}
+}
+
 func TestCreateCandidateAuthorityRejectsToolsThatAreNotExecuting(t *testing.T) {
 	root := t.TempDir()
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
@@ -136,7 +171,7 @@ func TestCreateCandidateAuthorityRejectsToolsThatAreNotExecuting(t *testing.T) {
 	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: filepath.Join(root, "CANDIDATE_AUTHORITY.json")}); err == nil {
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: filepath.Join(root, "CANDIDATE_AUTHORITY.json")}); err == nil {
 		t.Fatal("CreateCandidateAuthority accepted tools that are not executing")
 	}
 }
@@ -174,7 +209,7 @@ func TestCreateAssuranceAttemptRejectsToolsOutsideCandidateAuthority(t *testing.
 		t.Fatal(err)
 	}
 	authorityPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
-	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: authorityPath}); err != nil {
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: sealedToolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: authorityPath}); err != nil {
 		t.Fatal(err)
 	}
 	inventoryPath := filepath.Join(root, "IN_SCOPE.json")
@@ -243,7 +278,7 @@ func TestCreateCandidateAuthorityRejectsInvalidReviewWithoutOutput(t *testing.T)
 		t.Fatal(err)
 	}
 	outputPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
-	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: outputPath}); err == nil {
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: outputPath}); err == nil {
 		t.Fatal("CreateCandidateAuthority accepted an invalid review")
 	}
 	if _, err := os.Lstat(outputPath); !os.IsNotExist(err) {
@@ -270,7 +305,7 @@ func TestCreateCandidateAuthorityRejectsCandidateWithoutParser(t *testing.T) {
 		t.Fatal(err)
 	}
 	outputPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
-	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: outputPath}); err == nil {
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: outputPath}); err == nil {
 		t.Fatal("CreateCandidateAuthority accepted a candidate without its Apex parser")
 	}
 	if _, err := os.Lstat(outputPath); !os.IsNotExist(err) {

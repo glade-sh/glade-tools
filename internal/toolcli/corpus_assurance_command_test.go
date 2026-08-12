@@ -35,6 +35,9 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if !strings.Contains(stdout.String(), "attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-cleanup-authority") {
 		t.Fatalf("attempt help omits pre-bound cleanup authorities:\n%s", stdout.String())
 	}
+	if !strings.Contains(stdout.String(), "candidate-authority --candidate-root <glade-root> --tools-root <glade-tools-root>") {
+		t.Fatalf("candidate-authority help omits the tools source binding:\n%s", stdout.String())
+	}
 	if !strings.Contains(stdout.String(), "[--org-preflight <ORG_PREFLIGHT.json>]") {
 		t.Fatalf("org-cleanup help does not document invalidated-receipt recovery:\n%s", stdout.String())
 	}

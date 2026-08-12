@@ -26,7 +26,7 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	}
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
-	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, candidateToolForTest(t, toolsRoot, toolsPath))
+	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, toolsRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	outputPath := filepath.Join(root, "ATTEMPT.json")
 	attempt, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: outputPath})
@@ -57,7 +57,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	}
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
-	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, candidateToolForTest(t, toolsRoot, toolsPath))
+	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, toolsRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
 	for name, mutate := range map[string]func(){
 		"candidate hash": func() {
@@ -77,7 +77,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	} {
 		t.Run(name, func(t *testing.T) {
 			if name == "candidate hash" {
-				writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, candidateToolForTest(t, toolsRoot, toolsPath))
+				writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, toolsRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 			}
 			mutate()
 			if _, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: filepath.Join(root, name+".json")}); err == nil {
@@ -89,7 +89,7 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 
 type sealedAttemptCandidate struct{ Commit, Path, SHA256 string }
 
-func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCandidate, candidateRoot string, tools candidateTool) {
+func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCandidate, candidateRoot, toolsRoot string, tools candidateTool) {
 	t.Helper()
 	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
 		t.Fatal(err)
@@ -100,7 +100,7 @@ func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCan
 	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: path}); err != nil {
+	if _, err := CreateCandidateAuthority(CandidateAuthorityRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, ReceiptPath: receiptPath, ReviewPath: reviewPath, OutputPath: path}); err != nil {
 		t.Fatal(err)
 	}
 }

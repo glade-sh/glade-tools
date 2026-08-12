@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 const testSalesforceScratchMarker = "glade-assurance-0123456789abcdef0123456789abcdef"
@@ -19,6 +20,7 @@ var salesforceCLIPath string
 
 func TestMain(m *testing.M) {
 	validateSealedCandidateBuild = validateCandidateBuildBinding
+	validateSealedToolsBuild = validateToolsBuildBinding
 	root, err := os.MkdirTemp("", "glade-tools-sf-test-")
 	if err != nil {
 		panic(err)
@@ -704,7 +706,7 @@ func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	creation, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{BundlePath: bundlePath, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+	creation, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{BundlePath: bundlePath, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(ctx context.Context, path string, args ...string) (salesforceCommandOutput, error) {
 		if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
 		}
@@ -713,6 +715,10 @@ func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
 		}
 		if path != salesforceCLIPath || !containsString(args, "--definition-file") || !containsString(args, "sealed-dev-hub") {
 			return salesforceCommandOutput{}, fmt.Errorf("unexpected create invocation %s %v", path, args)
+		}
+		deadline, ok := ctx.Deadline()
+		if !ok || time.Until(deadline) <= salesforceCommandTimeout {
+			return salesforceCommandOutput{}, fmt.Errorf("scratch creation reused the short Salesforce command timeout")
 		}
 		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
 	}})
