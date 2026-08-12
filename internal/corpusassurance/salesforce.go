@@ -368,7 +368,15 @@ type SalesforceDispatchRequest struct {
 }
 
 const salesforceCommandTimeout = 30 * time.Second
+const salesforceOrgCreateTimeout = 10 * time.Minute
 const salesforceFilterTimeout = 15 * time.Minute
+
+func salesforceCommandTimeoutForArgs(args []string) time.Duration {
+	if len(args) >= 3 && args[0] == "org" && args[1] == "create" && args[2] == "scratch" {
+		return salesforceOrgCreateTimeout
+	}
+	return salesforceCommandTimeout
+}
 
 const salesforceExecutorManifestName = "EXECUTOR_MANIFEST.json"
 
@@ -1610,7 +1618,7 @@ func runSealedSalesforceCommand(runner salesforceCommandRunner, execution Salesf
 	if binarySHA256 != execution.SFSHA256 {
 		return salesforceCommandOutput{}, CommandResult{}, fmt.Errorf("Salesforce CLI does not match sealed execution authority")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), salesforceCommandTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), salesforceCommandTimeoutForArgs(args))
 	defer cancel()
 	started := time.Now()
 	ctx = context.WithValue(ctx, salesforceExecutionKey{}, salesforceExecution{workingDirectory: workingDirectory, environment: environment})
@@ -1901,7 +1909,7 @@ func salesforceCommandSpecSHA256(binary string, args []string, workingDirectory 
 		ExecutableSHA256      string   `json:"executableSha256"`
 		ExecutableAfterSHA256 string   `json:"executableAfterSha256"`
 		TimeoutNS             int64    `json:"timeoutNs"`
-	}{binary, args, environment, workingDirectory, executableSHA256, executableAfterSHA256, salesforceCommandTimeout.Nanoseconds()})
+	}{binary, args, environment, workingDirectory, executableSHA256, executableAfterSHA256, salesforceCommandTimeoutForArgs(args).Nanoseconds()})
 	return replayBytesSHA256(data)
 }
 
