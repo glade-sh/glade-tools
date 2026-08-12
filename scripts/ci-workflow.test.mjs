@@ -29,3 +29,10 @@ test("CI runs the assurance release proof on a bounded macOS job", () => {
   assert.match(workflow, /assurance:\n\s+runs-on: macos-14\n\s+timeout-minutes: 15/);
   assert.match(workflow, /assurance:[\s\S]*?- run: scripts\/release-check\.sh/);
 });
+
+test("CI supplies a Salesforce CLI test stub only when the macOS runner lacks one", () => {
+  assert.match(
+    workflow,
+    /assurance:[\s\S]*?test -x \/usr\/local\/bin\/sf \|\| sudo install -m 755 \/usr\/bin\/true \/usr\/local\/bin\/sf/,
+  );
+});
