@@ -17,6 +17,7 @@ const candidateAuthorityStatus = "sealed-candidate-authority"
 
 type CandidateAuthorityRequest struct {
 	CandidateRoot string
+	ToolsRoot     string
 	ReceiptPath   string
 	ReviewPath    string
 	OutputPath    string
@@ -28,6 +29,7 @@ type candidateAuthorityDocument struct {
 	Binding            candidateAuthorityInput  `json:"binding"`
 	BoundInputs        candidateAuthorityInput  `json:"boundInputs"`
 	Build              candidateBuildBinding    `json:"build"`
+	ToolsBuild         candidateBuildBinding    `json:"toolsBuild"`
 	SourceBuildReceipt candidateAuthoritySource `json:"sourceBuildReceipt"`
 	Review             candidateAuthoritySource `json:"review"`
 }
@@ -61,6 +63,7 @@ type candidateBuildBinding struct {
 }
 
 var validateSealedCandidateBuild = validateCandidateBuildFromSource
+var validateSealedToolsBuild = validateToolsBuildFromSource
 
 type candidateTool struct {
 	RuntimeArtifact
@@ -70,7 +73,7 @@ type candidateTool struct {
 // CreateCandidateAuthority seals one candidate derived from its exact build
 // receipt and independently reviewed candidate identity.
 func CreateCandidateAuthority(request CandidateAuthorityRequest) (candidateAuthorityInput, error) {
-	for _, path := range []string{request.CandidateRoot, request.ReceiptPath, request.ReviewPath, request.OutputPath} {
+	for _, path := range []string{request.CandidateRoot, request.ToolsRoot, request.ReceiptPath, request.ReviewPath, request.OutputPath} {
 		if !filepath.IsAbs(path) {
 			return candidateAuthorityInput{}, fmt.Errorf("absolute candidate authority paths are required")
 		}
@@ -80,11 +83,11 @@ func CreateCandidateAuthority(request CandidateAuthorityRequest) (candidateAutho
 	} else if !os.IsNotExist(err) {
 		return candidateAuthorityInput{}, err
 	}
-	input, build, receiptSource, reviewSource, err := validateCandidateAuthoritySources(request.CandidateRoot, request.ReceiptPath, request.ReviewPath)
+	input, build, toolsBuild, receiptSource, reviewSource, err := validateCandidateAuthoritySources(request.CandidateRoot, request.ToolsRoot, request.ReceiptPath, request.ReviewPath)
 	if err != nil {
 		return candidateAuthorityInput{}, err
 	}
-	document := candidateAuthorityDocument{SchemaVersion: 1, Status: candidateAuthorityStatus, Binding: input, BoundInputs: input, Build: build, SourceBuildReceipt: receiptSource, Review: reviewSource}
+	document := candidateAuthorityDocument{SchemaVersion: 2, Status: candidateAuthorityStatus, Binding: input, BoundInputs: input, Build: build, ToolsBuild: toolsBuild, SourceBuildReceipt: receiptSource, Review: reviewSource}
 	if err := WriteNewJSON(request.OutputPath, document); err != nil {
 		return candidateAuthorityInput{}, err
 	}
@@ -92,7 +95,7 @@ func CreateCandidateAuthority(request CandidateAuthorityRequest) (candidateAutho
 }
 
 func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (candidateAuthorityInput, error) {
-	if document.SchemaVersion != 1 || document.Status != candidateAuthorityStatus || document.Binding.Candidate != document.BoundInputs.Candidate {
+	if document.SchemaVersion != 2 || document.Status != candidateAuthorityStatus || document.Binding.Candidate != document.BoundInputs.Candidate {
 		return candidateAuthorityInput{}, fmt.Errorf("candidate authority schema is invalid")
 	}
 	input := document.Binding
@@ -129,43 +132,58 @@ func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (ca
 	if err := validateSealedCandidateBuild(document.Build.SourceRoot, candidate, document.Build); err != nil {
 		return candidateAuthorityInput{}, fmt.Errorf("candidate authority source build is stale")
 	}
+	if err := validateSealedToolsBuild(document.ToolsBuild.SourceRoot, input.Tools, document.ToolsBuild); err != nil {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority tools source build is stale")
+	}
 	return input, nil
 }
 
-func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath string) (candidateAuthorityInput, candidateBuildBinding, candidateAuthoritySource, candidateAuthoritySource, error) {
+func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, reviewPath string) (candidateAuthorityInput, candidateBuildBinding, candidateBuildBinding, candidateAuthoritySource, candidateAuthoritySource, error) {
 	receipt, receiptBytes, err := readExactCandidateBuildReceipt(receiptPath)
 	input := candidateAuthorityInput{Candidate: receipt.Candidate, Tools: receipt.Tools}
 	if err != nil || !validCandidateBuildReceipt(receipt, input) {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
 	if err := validateCleanGitRoot(candidateRoot, receipt.Candidate.Commit); err != nil {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
 	}
 	actual, err := runtimeArtifactFor(receipt.Candidate.Path, receipt.Candidate.Commit)
 	if err != nil || actual.SHA256 != receipt.Candidate.SHA256 {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
 	}
 	if err := validateCandidateTool(receipt.Tools); err != nil {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools are stale")
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools are stale")
 	}
 	build, err := deriveCandidateBuildBinding(candidateRoot)
 	if err != nil || validateSealedCandidateBuild(candidateRoot, receipt.Candidate, build) != nil {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority source build is invalid")
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority source build is invalid")
+	}
+	toolsBuild, err := deriveToolsBuildBinding(toolsRoot)
+	if err != nil || validateSealedToolsBuild(toolsRoot, receipt.Tools, toolsBuild) != nil {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools source build is invalid")
 	}
 	if err := validateCandidateParser(receipt.Candidate, candidateRoot); err != nil {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
 	reviewBytes, err := os.ReadFile(reviewPath)
 	if err != nil {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
 	if err := validateCandidateAuthorityReviewBytes(reviewBytes, receipt.Candidate, receipt.Tools); err != nil {
-		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
-	return input, build, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
+	return input, build, toolsBuild, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
 }
 
 func deriveCandidateBuildBinding(sourceRoot string) (candidateBuildBinding, error) {
+	return deriveBuildBinding(sourceRoot, "./cmd/glade")
+}
+
+func deriveToolsBuildBinding(sourceRoot string) (candidateBuildBinding, error) {
+	return deriveBuildBinding(sourceRoot, "./cmd/glade-tools")
+}
+
+func deriveBuildBinding(sourceRoot, target string) (candidateBuildBinding, error) {
 	canonical, err := filepath.EvalSymlinks(sourceRoot)
 	if err != nil || !filepath.IsAbs(canonical) {
 		return candidateBuildBinding{}, fmt.Errorf("candidate source root is unavailable")
@@ -195,9 +213,49 @@ func deriveCandidateBuildBinding(sourceRoot string) (candidateBuildBinding, erro
 		SourceRoot:  canonical,
 		SourceTree:  tree,
 		Go:          candidateAuthoritySource{Path: goPath, SHA256: goSHA256},
-		Arguments:   []string{"build", "-trimpath", "-o", "<candidate>", "./cmd/glade"},
+		Arguments:   []string{"build", "-trimpath", "-o", "<candidate>", target},
 		Environment: environment,
 	}, nil
+}
+
+func validateToolsBuildBinding(sourceRoot string, _ candidateTool, binding candidateBuildBinding) error {
+	derived, err := deriveToolsBuildBinding(sourceRoot)
+	if err != nil || !reflect.DeepEqual(binding, derived) {
+		return fmt.Errorf("tools build binding does not match sealed source")
+	}
+	return nil
+}
+
+func validateToolsBuildFromSource(sourceRoot string, tools candidateTool, binding candidateBuildBinding) error {
+	if err := validateToolsBuildBinding(sourceRoot, tools, binding); err != nil {
+		return err
+	}
+	before, err := runtimeArtifactFor(tools.Path, tools.Commit)
+	if err != nil || before != tools.RuntimeArtifact {
+		return fmt.Errorf("tools binary is stale")
+	}
+	root, err := os.MkdirTemp("", "glade-tools-rebuild-")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(root)
+	rebuilt := filepath.Join(root, "glade-tools")
+	if err := runBoundCandidateBuild(binding, rebuilt); err != nil {
+		return err
+	}
+	rebuiltSHA256, err := sha256File(rebuilt)
+	if err != nil || rebuiltSHA256 != tools.SHA256 {
+		return fmt.Errorf("tools binary is not reproducible from sealed source")
+	}
+	after, err := runtimeArtifactFor(tools.Path, tools.Commit)
+	if err != nil || after != before || validateCleanGitRoot(binding.SourceRoot, tools.Commit) != nil {
+		return fmt.Errorf("tools source or binary changed during build validation")
+	}
+	tree, err := gitOutput(binding.SourceRoot, "rev-parse", "HEAD^{tree}")
+	if err != nil || tree != binding.SourceTree {
+		return fmt.Errorf("tools source tree changed during build validation")
+	}
+	return nil
 }
 
 func validateCandidateBuildBinding(sourceRoot string, _ attemptCandidate, binding candidateBuildBinding) error {

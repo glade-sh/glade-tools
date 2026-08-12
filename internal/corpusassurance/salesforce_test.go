@@ -19,6 +19,7 @@ var salesforceCLIPath string
 
 func TestMain(m *testing.M) {
 	validateSealedCandidateBuild = validateCandidateBuildBinding
+	validateSealedToolsBuild = validateToolsBuildBinding
 	root, err := os.MkdirTemp("", "glade-tools-sf-test-")
 	if err != nil {
 		panic(err)

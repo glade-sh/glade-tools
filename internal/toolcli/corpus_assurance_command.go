@@ -26,15 +26,16 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 	case "candidate-authority":
 		flags := flag.NewFlagSet("corpus assurance candidate-authority", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
-		candidateRoot, receipt, review := flags.String("candidate-root", "", ""), flags.String("receipt", "", ""), flags.String("review", "", "")
+		candidateRoot, toolsRoot := flags.String("candidate-root", "", ""), flags.String("tools-root", "", "")
+		receipt, review := flags.String("receipt", "", ""), flags.String("review", "", "")
 		output := flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*candidateRoot, *receipt, *review, *output); err != nil {
+		if err := requiredAssuranceFlags(*candidateRoot, *toolsRoot, *receipt, *review, *output); err != nil {
 			return err
 		}
-		if _, err := corpusassurance.CreateCandidateAuthority(corpusassurance.CandidateAuthorityRequest{CandidateRoot: *candidateRoot, ReceiptPath: *receipt, ReviewPath: *review, OutputPath: *output}); err != nil {
+		if _, err := corpusassurance.CreateCandidateAuthority(corpusassurance.CandidateAuthorityRequest{CandidateRoot: *candidateRoot, ToolsRoot: *toolsRoot, ReceiptPath: *receipt, ReviewPath: *review, OutputPath: *output}); err != nil {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "candidate-authority", 1, *output)
@@ -477,7 +478,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 	fmt.Fprint(w, `Run the sealed private-corpus assurance workflow.
 
 Usage:
-  glade-tools corpus assurance candidate-authority --candidate-root <glade-root> --receipt <candidate-receipt.json> --review <REVIEW.md> --output <CANDIDATE_AUTHORITY.json>
+  glade-tools corpus assurance candidate-authority --candidate-root <glade-root> --tools-root <glade-tools-root> --receipt <candidate-receipt.json> --review <REVIEW.md> --output <CANDIDATE_AUTHORITY.json>
   glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --salesforce-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --output <ATTEMPT.json>
   glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --attempt <ATTEMPT.json> --output <new-dir>
   glade-tools corpus assurance usage-draft --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --output <USAGE_DECISION_DRAFT.json>
