@@ -1,0 +1,22 @@
+{
+  "name": "core-package-version-compile-shape",
+  "evidence": [
+    {"surfaceId": "apex:Package.Version.equals(Object)", "symbol": "Package.Version.equals(Object)", "kind": "check"},
+    {"surfaceId": "apex:Package.Version.hashCode()", "symbol": "Package.Version.hashCode()", "kind": "check"},
+    {"surfaceId": "apex:Package.Version.isGreaterThan(Package.Version)", "symbol": "Package.Version.isGreaterThan(Package.Version)", "kind": "check"},
+    {"surfaceId": "apex:Package.Version.isGreaterThanOrEqual(Package.Version)", "symbol": "Package.Version.isGreaterThanOrEqual(Package.Version)", "kind": "check"},
+    {"surfaceId": "apex:Package.Version.isLessThan(Package.Version)", "symbol": "Package.Version.isLessThan(Package.Version)", "kind": "check"},
+    {"surfaceId": "apex:Package.Version.isLessThanOrEqual(Package.Version)", "symbol": "Package.Version.isLessThanOrEqual(Package.Version)", "kind": "check"},
+    {"surfaceId": "apex:Package.Version.toString()", "symbol": "Package.Version.toString()", "kind": "check"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/PackageVersionShape.cls",
+      "content": "public class PackageVersionShape { public static void compileShape() { Package.Version value = (Package.Version)null; if (false) { Object equalsSink = value.equals((Object)null); Object hashCodeSink = value.hashCode(); Object greaterThanSink = value.isGreaterThan((Package.Version)null); Object greaterThanOrEqualSink = value.isGreaterThanOrEqual((Package.Version)null); Object lessThanSink = value.isLessThan((Package.Version)null); Object lessThanOrEqualSink = value.isLessThanOrEqual((Package.Version)null); Object toStringSink = value.toString(); } } }"
+    }
+  ],
+  "command": {"kind": "check"},
+  "expected": {
+    "result": {"diagnostics": 0, "files": 1, "ok": true, "types": 1}
+  }
+}

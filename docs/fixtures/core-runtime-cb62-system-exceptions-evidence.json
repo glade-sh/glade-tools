@@ -1,0 +1,22 @@
+{
+  "name": "core-runtime-cb62-system-exceptions-evidence",
+  "evidence": [
+    {"surfaceId": "apex:System.AsyncException", "symbol": "System.AsyncException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.DmlException", "symbol": "System.DmlException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.EmailException", "symbol": "System.EmailException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.ListException", "symbol": "System.ListException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.NoAccessException", "symbol": "System.NoAccessException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.NoDataFoundException", "symbol": "System.NoDataFoundException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.NoSuchElementException", "symbol": "System.NoSuchElementException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.NullPointerException", "symbol": "System.NullPointerException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.SecurityException", "symbol": "System.SecurityException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.SObjectException", "symbol": "System.SObjectException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.StringException", "symbol": "System.StringException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
+    {"surfaceId": "apex:System.TypeException", "symbol": "System.TypeException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."}
+  ],
+  "source": [
+    {"path": "force-app/main/classes/CoreRuntimeCB62SystemExceptionsEvidenceTest.cls", "content": "@isTest private class CoreRuntimeCB62SystemExceptionsEvidenceTest { @isTest static void rows() { AsyncException asyncEx = null; DmlException dmlEx = null; EmailException emailEx = null; ListException listEx = null; NoAccessException noAccessEx = null; NoDataFoundException noDataEx = null; NoSuchElementException noSuchElementEx = null; NullPointerException nullPointerEx = null; SecurityException securityEx = null; SObjectException sobjectEx = null; StringException stringEx = null; TypeException typeEx = null; System.assert(asyncEx == null && dmlEx == null && emailEx == null && listEx == null && noAccessEx == null && noDataEx == null && noSuchElementEx == null && nullPointerEx == null && securityEx == null && sobjectEx == null && stringEx == null && typeEx == null); } }"}
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}}
+}

@@ -1,0 +1,15 @@
+{
+  "name": "core-runtime-cb62-system-enums-evidence",
+  "evidence": [
+    {"surfaceId": "apex:System.AccessType", "symbol": "System.AccessType", "kind": "test", "notes": "CB57 passing local AccessType enum case."},
+    {"surfaceId": "apex:System.LoggingLevel", "symbol": "System.LoggingLevel", "kind": "test", "notes": "CB57 passing local LoggingLevel enum case."},
+    {"surfaceId": "apex:System.Quiddity", "symbol": "System.Quiddity", "kind": "test", "notes": "CB57 passing local Quiddity enum case."},
+    {"surfaceId": "apex:System.RoundingMode", "symbol": "System.RoundingMode", "kind": "test", "notes": "CB57 passing local RoundingMode enum case."},
+    {"surfaceId": "apex:dom.XmlNodeType.ELEMENT", "symbol": "dom.XmlNodeType.ELEMENT", "kind": "test", "notes": "CB57 passing local Dom.XmlNodeType enum constant case."}
+  ],
+  "source": [
+    {"path": "force-app/main/classes/CoreRuntimeCB62SystemEnumsEvidenceTest.cls", "content": "@isTest private class CoreRuntimeCB62SystemEnumsEvidenceTest { @isTest static void rows() { System.assertEquals(System.AccessType.CREATABLE, System.AccessType.CREATABLE); System.assertEquals(System.AccessType.UPDATABLE, System.AccessType.UPDATABLE); System.assertEquals(System.LoggingLevel.DEBUG, System.LoggingLevel.DEBUG); System.assertEquals(System.LoggingLevel.ERROR, System.LoggingLevel.ERROR); System.assertEquals(System.LoggingLevel.INFO, System.LoggingLevel.INFO); System.assertEquals(System.LoggingLevel.NONE, System.LoggingLevel.NONE); System.assertEquals(System.LoggingLevel.WARN, System.LoggingLevel.WARN); System.assertEquals(System.Quiddity.AURA, System.Quiddity.AURA); System.assertEquals(System.Quiddity.QUICK_ACTION, System.Quiddity.QUICK_ACTION); System.assertEquals(System.Quiddity.VF, System.Quiddity.VF); System.assertEquals(System.RoundingMode.CEILING, System.RoundingMode.CEILING); System.assertEquals(System.RoundingMode.DOWN, System.RoundingMode.DOWN); System.assertEquals(System.RoundingMode.FLOOR, System.RoundingMode.FLOOR); System.assertEquals(System.RoundingMode.HALF_DOWN, System.RoundingMode.HALF_DOWN); System.assertEquals(System.RoundingMode.UP, System.RoundingMode.UP); System.assertEquals(System.RoundingMode.valueOf('DOWN'), System.RoundingMode.DOWN); System.assertEquals(Dom.XmlNodeType.ELEMENT, Dom.XmlNodeType.ELEMENT); } }"}
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}}
+}

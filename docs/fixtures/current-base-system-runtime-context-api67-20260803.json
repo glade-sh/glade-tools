@@ -1,0 +1,38 @@
+{
+  "name": "current-base-system-runtime-context-api67-20260803",
+  "apiVersion": "67.0",
+  "mode": "dual-oracle",
+  "evidence": [
+    {"surfaceId":"apex:System.System.assertEquals","symbol":"System.assertEquals","kind":"exec","notes":"Anonymous Apex exercises the no-signature assertion family."},
+    {"surfaceId":"apex:System.System.assertEquals(Object,Object)","symbol":"System.assertEquals(Object,Object)","kind":"exec","notes":"Two-argument object assertion succeeds."},
+    {"surfaceId":"apex:System.System.assertEquals(Object,Object,Object)","symbol":"System.assertEquals(Object,Object,Object)","kind":"exec","notes":"Three-argument object assertion succeeds."},
+    {"surfaceId":"apex:System.System.assert","symbol":"System.assert","kind":"exec","notes":"Anonymous Apex exercises the no-signature assertion family."},
+    {"surfaceId":"apex:System.System.assert(Boolean)","symbol":"System.assert(Boolean)","kind":"exec","notes":"Boolean assertion succeeds."},
+    {"surfaceId":"apex:System.System.assert(Boolean,Object)","symbol":"System.assert(Boolean,Object)","kind":"exec","notes":"Boolean assertion with message succeeds."},
+    {"surfaceId":"apex:System.System.assertNotEquals(Object,Object)","symbol":"System.assertNotEquals(Object,Object)","kind":"exec","notes":"Two-argument inequality assertion succeeds."},
+    {"surfaceId":"apex:System.System.assertNotEquals(Object,Object,Object)","symbol":"System.assertNotEquals(Object,Object,Object)","kind":"exec","notes":"Three-argument inequality assertion succeeds."},
+    {"surfaceId":"apex:System.System.debug","symbol":"System.debug","kind":"exec","notes":"Anonymous Apex emits debug output through each supported overload."},
+    {"surfaceId":"apex:System.System.debug(LoggingLevel,Object)","symbol":"System.debug(LoggingLevel,Object)","kind":"exec","notes":"Logging-level debug overload executes."},
+    {"surfaceId":"apex:System.System.debug(Object)","symbol":"System.debug(Object)","kind":"exec","notes":"Object debug overload executes."},
+    {"surfaceId":"apex:System.System.now()","symbol":"System.now()","kind":"exec","notes":"System.now returns a non-null Datetime."},
+    {"surfaceId":"apex:System.System.today()","symbol":"System.today()","kind":"exec","notes":"System.today returns a non-null Date."},
+    {"surfaceId":"apex:System.System.isBatch()","symbol":"System.isBatch()","kind":"exec","notes":"Anonymous execution reports synchronous context."},
+    {"surfaceId":"apex:System.System.isFuture()","symbol":"System.isFuture()","kind":"exec","notes":"Anonymous execution reports synchronous context."},
+    {"surfaceId":"apex:System.System.isQueueable()","symbol":"System.isQueueable()","kind":"exec","notes":"Anonymous execution reports synchronous context."},
+    {"surfaceId":"apex:System.System.isScheduled()","symbol":"System.isScheduled()","kind":"exec","notes":"Anonymous execution reports synchronous context."},
+    {"surfaceId":"apex:System.System.currentTimeMillis()","symbol":"System.currentTimeMillis()","kind":"exec","notes":"Current epoch milliseconds are positive."},
+    {"surfaceId":"apex:System.LoggingLevel","symbol":"System.LoggingLevel","kind":"exec","notes":"LoggingLevel values are referenced by the executable source."},
+    {"surfaceId":"apex:System.LoggingLevel.ERROR","symbol":"System.LoggingLevel.ERROR","kind":"exec","notes":"ERROR constant is referenced by debug execution."},
+    {"surfaceId":"apex:System.LoggingLevel.WARN","symbol":"System.LoggingLevel.WARN","kind":"exec","notes":"WARN constant is referenced by debug execution."},
+    {"surfaceId":"apex:System.LoggingLevel.INFO","symbol":"System.LoggingLevel.INFO","kind":"exec","notes":"INFO constant is referenced by debug execution."},
+    {"surfaceId":"apex:System.LoggingLevel.DEBUG","symbol":"System.LoggingLevel.DEBUG","kind":"exec","notes":"DEBUG constant is referenced by debug execution."},
+    {"surfaceId":"apex:System.LoggingLevel.NONE","symbol":"System.LoggingLevel.NONE","kind":"exec","notes":"NONE constant is referenced by debug execution."}
+  ],
+  "source": [{
+    "path":"anonymous.apex",
+    "content":"System.assert(true);\nSystem.assert(true, 'assert message');\nSystem.assertEquals(1, 1);\nSystem.assertEquals(1, 1, 'equals message');\nSystem.assertNotEquals(1, 2);\nSystem.assertNotEquals(1, 2, 'not equals message');\nSystem.debug(LoggingLevel.ERROR, 'error');\nSystem.debug(LoggingLevel.WARN, 'warn');\nSystem.debug(LoggingLevel.INFO, 'info');\nSystem.debug(LoggingLevel.DEBUG, 'debug');\nSystem.debug(LoggingLevel.NONE, 'none');\nSystem.debug('single object');\nSystem.assertEquals(LoggingLevel.INFO, LoggingLevel.INFO);\nSystem.assertEquals(Date.today(), System.today());\nSystem.assertNotEquals(null, System.now());\nSystem.assert(System.currentTimeMillis() > 0);\nSystem.assertEquals(false, System.isBatch());\nSystem.assertEquals(false, System.isFuture());\nSystem.assertEquals(false, System.isQueueable());\nSystem.assertEquals(false, System.isScheduled());"
+  }],
+  "command":{"kind":"exec","args":["System.assert(true);\nSystem.assert(true, 'assert message');\nSystem.assertEquals(1, 1);\nSystem.assertEquals(1, 1, 'equals message');\nSystem.assertNotEquals(1, 2);\nSystem.assertNotEquals(1, 2, 'not equals message');\nSystem.debug(LoggingLevel.ERROR, 'error');\nSystem.debug(LoggingLevel.WARN, 'warn');\nSystem.debug(LoggingLevel.INFO, 'info');\nSystem.debug(LoggingLevel.DEBUG, 'debug');\nSystem.debug(LoggingLevel.NONE, 'none');\nSystem.debug('single object');\nSystem.assertEquals(LoggingLevel.INFO, LoggingLevel.INFO);\nSystem.assertEquals(Date.today(), System.today());\nSystem.assertNotEquals(null, System.now());\nSystem.assert(System.currentTimeMillis() > 0);\nSystem.assertEquals(false, System.isBatch());\nSystem.assertEquals(false, System.isFuture());\nSystem.assertEquals(false, System.isQueueable());\nSystem.assertEquals(false, System.isScheduled());"]},
+  "expected":{"result":{"ok":true}},
+  "salesforceEligible": true
+}

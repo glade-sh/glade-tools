@@ -1,0 +1,33 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "Knowledge__kav article = new Knowledge__kav(Title = 'Shape'); ApexPages.KnowledgeArticleVersionStandardController controller = new ApexPages.KnowledgeArticleVersionStandardController(article); controller.setDataCategory();"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "negative",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.setDataCategory"
+    }
+  ],
+  "expected": {
+    "error": {
+      "message": "GLADESEMA023",
+      "type": "Error"
+    }
+  },
+  "mode": "compile-shape-negative",
+  "name": "current-base-apexpages-set-data-category-zero-negative-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The current Salesforce signature requires category-group and category arguments; the zero-argument surface row is an inventory shape mismatch and is retained as an explicit local compiler negative.",
+  "source": [
+    {
+      "content": "Knowledge__kav article = new Knowledge__kav(Title = 'Shape'); ApexPages.KnowledgeArticleVersionStandardController controller = new ApexPages.KnowledgeArticleVersionStandardController(article); controller.setDataCategory();",
+      "path": "anonymous.apex"
+    }
+  ]
+}

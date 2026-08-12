@@ -1,0 +1,23 @@
+{
+  "apiVersion": "67.0",
+  "removals": [
+    {
+      "surfaceId": "apex:System.Site.getCurrentSiteUrl()",
+      "removedAfterApiVersion": "29.0",
+      "salesforceMessage": "Method was removed after version 29.0: getCurrentSiteUrl",
+      "contract": "negative-compiler"
+    },
+    {
+      "surfaceId": "apex:System.Site.getCustomWebAddress()",
+      "removedAfterApiVersion": "29.0",
+      "salesforceMessage": "Method was removed after version 29.0: getCustomWebAddress",
+      "contract": "negative-compiler"
+    },
+    {
+      "surfaceId": "apex:System.Site.getPrefix()",
+      "removedAfterApiVersion": "29.0",
+      "salesforceMessage": "Method was removed after version 29.0: getPrefix",
+      "contract": "negative-compiler"
+    }
+  ]
+}

@@ -4,6 +4,8 @@ go 1.26
 
 require github.com/glade-sh/glade v0.0.0
 
+require golang.org/x/mod v0.33.0
+
 require (
 	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect

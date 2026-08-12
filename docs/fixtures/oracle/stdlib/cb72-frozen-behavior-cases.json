@@ -1,0 +1,92 @@
+[
+  {
+    "id": "cb72-sparkplug-describe-missing",
+    "area": "Process",
+    "api": "Process.SparkPlugApi.describePlugin",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:Process.SparkPlugApi.describePlugin(String)"],
+    "expression": "Process.SparkPlugApi.describePlugin('CB72Missing')",
+    "valueType": "Object",
+    "expectThrow": true
+  },
+  {
+    "id": "cb72-sparkplug-describe-all",
+    "area": "Process",
+    "api": "Process.SparkPlugApi.describePlugins",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:Process.SparkPlugApi.describePlugins()"],
+    "expression": "Process.SparkPlugApi.describePlugins() != null",
+    "valueType": "Boolean"
+  },
+  {
+    "id": "cb72-sparkplug-invoke-missing",
+    "area": "Process",
+    "api": "Process.SparkPlugApi.invokePluginWithJson",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:Process.SparkPlugApi.invokePluginWithJson(String,String)"],
+    "expression": "Process.SparkPlugApi.invokePluginWithJson('CB72Missing', '{}')",
+    "valueType": "String",
+    "expectThrow": true
+  },
+  {
+    "id": "cb72-crypto-encrypt-managed-iv-aad",
+    "area": "Crypto",
+    "api": "Crypto.encryptWithManagedIV",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob,Blob)"],
+    "statements": [
+      "Blob key = Blob.valueOf('0123456789abcdef0123456789abcdef')",
+      "Blob data = Blob.valueOf('hello')",
+      "Blob aad = Blob.valueOf('aad')"
+    ],
+    "expression": "Crypto.encryptWithManagedIV('AES256-GCM', key, data, aad)",
+    "valueType": "Blob",
+    "unstableValue": "managed IV and ciphertext"
+  },
+  {
+    "id": "cb72-crypto-decrypt-managed-iv-aad",
+    "area": "Crypto",
+    "api": "Crypto.decryptWithManagedIV",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob,Blob)"],
+    "statements": [
+      "Blob key = Blob.valueOf('0123456789abcdef0123456789abcdef')",
+      "Blob data = Blob.valueOf('hello')",
+      "Blob aad = Blob.valueOf('aad')",
+      "Blob ciphertext = Crypto.encryptWithManagedIV('AES256-GCM', key, data, aad)"
+    ],
+    "expression": "Crypto.decryptWithManagedIV('AES256-GCM', key, ciphertext, aad).toString()",
+    "valueType": "String"
+  },
+  {
+    "id": "cb72-security-strip-inaccessible-id",
+    "area": "System.Security",
+    "api": "System.Security.stripInaccessible",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean,Id)"],
+    "statements": [
+      "Id permissionSetId = null",
+      "SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, new List<Account>{new Account(Name = 'CB72')}, false, permissionSetId)"
+    ],
+    "expression": "decision != null",
+    "valueType": "Boolean"
+  },
+  {
+    "id": "cb72-timezone-display-name",
+    "area": "System.TimeZone",
+    "api": "TimeZone.getDisplayName",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:System.TimeZone.getDisplayName()"],
+    "expression": "TimeZone.getTimeZone('UTC').getDisplayName() != null",
+    "valueType": "Boolean"
+  },
+  {
+    "id": "cb72-timezone-get-timezone",
+    "area": "System.TimeZone",
+    "api": "TimeZone.getTimeZone",
+    "mode": "anonymous",
+    "surfaceIds": ["apex:System.TimeZone.getTimeZone(String)"],
+    "expression": "TimeZone.getTimeZone('UTC') != null",
+    "valueType": "Boolean"
+  }
+]

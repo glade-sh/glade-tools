@@ -1,0 +1,206 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType",
+      "symbol": "Process.ParameterType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.BOOLEAN",
+      "symbol": "Process.ParameterType.BOOLEAN"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.DATE",
+      "symbol": "Process.ParameterType.DATE"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.DATETIME",
+      "symbol": "Process.ParameterType.DATETIME"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.DECIMAL",
+      "symbol": "Process.ParameterType.DECIMAL"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.DOUBLE",
+      "symbol": "Process.ParameterType.DOUBLE"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.FLOAT",
+      "symbol": "Process.ParameterType.FLOAT"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.ID",
+      "symbol": "Process.ParameterType.ID"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.INTEGER",
+      "symbol": "Process.ParameterType.INTEGER"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.LONG",
+      "symbol": "Process.ParameterType.LONG"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.STRING",
+      "symbol": "Process.ParameterType.STRING"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.TIME",
+      "symbol": "Process.ParameterType.TIME"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.equals(Object)",
+      "symbol": "Process.ParameterType.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.hashCode()",
+      "symbol": "Process.ParameterType.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.ordinal()",
+      "symbol": "Process.ParameterType.ordinal"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.valueOf(String)",
+      "symbol": "Process.ParameterType.valueOf"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.ParameterType.values()",
+      "symbol": "Process.ParameterType.values"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.Plugin",
+      "symbol": "Process.Plugin"
+    },
+    {
+      "kind": "test",
+      "notes": "The local witness instantiates a concrete implementation of the interface; the interface itself is not directly constructible.",
+      "surfaceId": "apex:Process.Plugin.Plugin()",
+      "symbol": "Process.Plugin"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.Description",
+      "symbol": "Process.PluginDescribeResult.InputParameter.Description"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.Name",
+      "symbol": "Process.PluginDescribeResult.InputParameter.Name"
+    },
+    {
+      "kind": "test",
+      "notes": "The local DTO carries the documented parameter type through its constructor even though the generated compatibility stub exposes the legacy capitalized fields.",
+      "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.ParameterType",
+      "symbol": "Process.PluginDescribeResult.InputParameter.ParameterType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.Required",
+      "symbol": "Process.PluginDescribeResult.InputParameter.Required"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.OutputParameter.Description",
+      "symbol": "Process.PluginDescribeResult.OutputParameter.Description"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.OutputParameter.Name",
+      "symbol": "Process.PluginDescribeResult.OutputParameter.Name"
+    },
+    {
+      "kind": "test",
+      "notes": "The local DTO carries the documented parameter type through its constructor even though the generated compatibility stub exposes the legacy capitalized fields.",
+      "surfaceId": "apex:Process.PluginDescribeResult.OutputParameter.ParameterType",
+      "symbol": "Process.PluginDescribeResult.OutputParameter.ParameterType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.PluginDescribeResult.PluginDescribeResult()",
+      "symbol": "Process.PluginDescribeResult.PluginDescribeResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.SparkPlugDescribeResult",
+      "symbol": "Process.SparkPlugDescribeResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.SparkPlugDescribeResult.SparkPlugDescribeResult()",
+      "symbol": "Process.SparkPlugDescribeResult.SparkPlugDescribeResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.SparkPlugDescribeResult.clone()",
+      "symbol": "Process.SparkPlugDescribeResult.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.SparkPlugDescribeResult.inputParameters",
+      "symbol": "Process.SparkPlugDescribeResult.inputParameters"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.SparkPlugDescribeResult.name",
+      "symbol": "Process.SparkPlugDescribeResult.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Process.SparkPlugDescribeResult.outputParameters",
+      "symbol": "Process.SparkPlugDescribeResult.outputParameters"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-process-001-api67",
+  "notes": "Covers the 33 missing rows from current-base-deterministic-mock-required-Process-001: ParameterType enum behavior, the local Plugin interface shape, PluginDescribeResult fields, and SparkPlugDescribeResult construction, fields, and clone.",
+  "profile": {
+    "laneId": "current-base-deterministic-mock-required-Process-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 33,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Process DTO and plugin surfaces in this lane are deterministic local contracts; this fixture records Glade behavior only and makes no hosted Salesforce runtime claim.",
+  "source": [
+    {
+      "content": "public class CurrentBaseProcess001Plugin implements Process.Plugin { public Process.PluginDescribeResult describe() { return new Process.PluginDescribeResult(); } public Process.PluginResult invoke(Process.PluginRequest request) { return null; } } @isTest private class CurrentBaseProcess001Test { @isTest static void processShapes() { Process.ParameterType parameterType = Process.ParameterType.STRING; System.assertEquals(parameterType, Process.ParameterType.valueOf('STRING')); System.assert(parameterType.equals(Process.ParameterType.STRING)); System.assertNotEquals(null, parameterType.hashCode()); System.assert(parameterType.ordinal() >= 0); System.assert(Process.ParameterType.values().size() > 0); Process.Plugin plugin = new CurrentBaseProcess001Plugin(); System.assertNotEquals(null, plugin); Process.PluginDescribeResult describe = new Process.PluginDescribeResult(); describe.name = 'Current base'; describe.description = 'Local'; describe.tag = 'api67'; Process.PluginDescribeResult.InputParameter input = new Process.PluginDescribeResult.InputParameter('recordId', 'Record Id', Process.PluginDescribeResult.ParameterType.ID, true); input.Name = 'recordId'; input.Description = 'Record Id'; input.Required = true; Process.PluginDescribeResult.OutputParameter output = new Process.PluginDescribeResult.OutputParameter('message', 'Message', Process.PluginDescribeResult.ParameterType.STRING); output.Name = 'message'; output.Description = 'Message'; describe.inputParameters = new List<Process.PluginDescribeResult.InputParameter>{input}; describe.outputParameters = new List<Process.PluginDescribeResult.OutputParameter>{output}; System.assertEquals('Current base', describe.name); System.assertEquals('Local', describe.description); System.assertEquals('api67', describe.tag); System.assertEquals('recordId', input.Name); System.assertEquals('Record Id', input.Description); System.assertEquals(true, input.Required); System.assertEquals('message', output.Name); System.assertEquals('Message', output.Description); Process.SparkPlugDescribeResult spark = new Process.SparkPlugDescribeResult(); spark.name = 'Spark'; spark.inputParameters = new List<Process.SparkPlugParameter>(); spark.outputParameters = new List<Process.SparkPlugParameter>(); Process.SparkPlugDescribeResult sparkClone = (Process.SparkPlugDescribeResult)spark.clone(); System.assertEquals('Spark', spark.name); System.assertEquals(0, spark.inputParameters.size()); System.assertEquals(0, spark.outputParameters.size()); System.assertEquals('Spark', sparkClone.name); } }",
+      "path": "force-app/main/default/classes/CurrentBaseProcess001Test.cls"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "Time value = Time.valueOf('12:34:56.789');\nSystem.assertEquals(Time.newInstance(12, 34, 56, 789), value);"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Time.valueOf(String)",
+      "symbol": "Time.valueOf"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "name": "core-datetime-time-valueof-hosted-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 rejects Time.valueOf(String); retain the positive local contract as local-only evidence."
+}

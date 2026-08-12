@@ -31,6 +31,9 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 			if memberName == "" {
 				memberName = typeName
 			}
+			if namespace == "System" && typeName == "EventBus" && memberName == "publishWithAccessLevel" {
+				params = eventBusAccessLevelParameters(member.Type, params)
+			}
 			kind := gladeMemberKind(string(member.Kind))
 			if string(member.Kind) == "constructor" {
 				memberName = gladeConstructorMemberName(namespace, typeName, memberName)
@@ -59,11 +62,21 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	}
 	for _, entry := range capability.StdlibMatrix() {
 		id := idFromStdlibAPI(entry.API)
+		if id == "" {
+			continue
+		}
+		kind := KindMethod
+		if stdlibTypeAPI(entry.API) {
+			kind = KindType
+		}
 		key := surfaceIDKey(id)
 		row := byID[key]
 		if row.SurfaceID == "" {
-			row = SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: KindMethod, Sources: []string{"stdlib-matrix"}}
+			row = SurfaceLedgerRow{SurfaceID: id, Product: ProductApex, Area: AreaRuntime, Kind: kind, Sources: []string{"stdlib-matrix"}}
 			fillFromApexID(&row)
+			if kind == KindType {
+				row = RowFromGladeShape(row)
+			}
 		}
 		row.GladeBehavior = behaviorFromCapabilityStatus(entry.Status)
 		row.Notes = entry.Notes
@@ -103,12 +116,28 @@ func BuildGladeSnapshot() []SurfaceLedgerRow {
 	addFixtureBackedInvocableActionDTORows(byID)
 	addApexLanguageRuleRows(byID)
 	addSurfaceClosureTailGladeRows(byID)
+	addMethodFamilyShapeReconciliation(byID)
+	removeNonCanonicalGeneratedRows(byID)
 	rows := make([]SurfaceLedgerRow, 0, len(byID))
 	for _, row := range byID {
 		rows = append(rows, withDefaults(row))
 	}
 	sortRows(rows)
 	return rows
+}
+
+func eventBusAccessLevelParameters(returnType string, params []string) []string {
+	first := "SObject"
+	if strings.HasPrefix(returnType, "List<") {
+		first = "List<SObject>"
+	}
+	if len(params) == 2 {
+		return []string{first, "AccessLevel"}
+	}
+	if len(params) == 3 {
+		return []string{first, "Object", "AccessLevel"}
+	}
+	return params
 }
 
 type apexLanguageRuleRow struct {
@@ -270,7 +299,7 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.Auth.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local Auth token, JWT, OAuth, and cloud surfaces"},
 	{SurfaceID: "apex:System.Canvas.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local Canvas app integration surfaces"},
 	{SurfaceID: "apex:System.Continuation.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local Continuation callback and callout surfaces"},
-	{SurfaceID: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Crypto constant-time Blob comparison"},
+	{SurfaceID: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "API-67 Salesforce rejects this signature; local runtime preserves the explicit unsupported diagnostic"},
 	{SurfaceID: "apex:System.CustomMetadataType.getAll", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local custom metadata static getAll access"},
 	{SurfaceID: "apex:System.CustomSetting.getInstance", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local custom setting static getInstance access"},
 	{SurfaceID: "apex:System.Database.DeletedRecord.getDeletedDate()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Database.DeletedRecord.getDeletedDate local sync DTO accessor"},
@@ -310,7 +339,6 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.IllegalStateException", Kind: KindType, Behavior: BehaviorPassive, Notes: "fixture-backed System-qualified alias for the local built-in IllegalStateException type"},
 	{SurfaceID: "apex:System.Integer.MAX_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Integer.MAX_VALUE"},
 	{SurfaceID: "apex:System.Integer.MIN_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Integer.MIN_VALUE"},
-	{SurfaceID: "apex:System.Iterator.remove", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for mutating collection iterators"},
 	{SurfaceID: "apex:System.JSONGenerator.writeRaw(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for JSONGenerator.writeRaw"},
 	{SurfaceID: "apex:System.JSONGenerator.writeRawField(String,String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for JSONGenerator.writeRawField"},
 	{SurfaceID: "apex:System.JSONGenerator.writeRawValue(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for JSONGenerator.writeRawValue"},
@@ -323,8 +351,6 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.Limits.getScheduledJobs", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Limits.getScheduledJobs"},
 	{SurfaceID: "apex:System.Long.MAX_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Long.MAX_VALUE"},
 	{SurfaceID: "apex:System.Long.MIN_VALUE", Kind: KindProperty, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Long.MIN_VALUE"},
-	{SurfaceID: "apex:System.Matcher.appendReplacement", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for Java StringBuffer append replacement semantics"},
-	{SurfaceID: "apex:System.Matcher.appendTail", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for Java StringBuffer append tail semantics"},
 	{SurfaceID: "apex:System.Matcher.groupCount", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local Matcher.groupCount"},
 	{SurfaceID: "apex:System.Matcher.hasAnchoringBounds", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for Matcher.hasAnchoringBounds()"},
 	{SurfaceID: "apex:System.Matcher.hasTransparentBounds", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed docs shorthand for Matcher.hasTransparentBounds()"},
@@ -347,8 +373,8 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.QuickAction.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local quick action UI surfaces"},
 	{SurfaceID: "apex:System.RestRequest.getHeader(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for RestRequest.getHeader(String)"},
 	{SurfaceID: "apex:System.RestRequest.getParameter(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for RestRequest.getParameter(String)"},
-	{SurfaceID: "apex:System.Schema.describeSObjects(List<String>)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Schema.describeSObjects(List<String>)"},
-	{SurfaceID: "apex:System.Schema.getGlobalDescribe()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Schema.getGlobalDescribe()"},
+	{SurfaceID: "apex:Schema.Schema.describeSObjects(List<String>)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed qualified alias for Schema.describeSObjects(List<String>)"},
+	{SurfaceID: "apex:Schema.Schema.getGlobalDescribe()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed qualified alias for Schema.getGlobalDescribe()"},
 	{SurfaceID: "apex:System.Search.find", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed stdlib shorthand for deterministic local Search.find(String) behavior"},
 	{SurfaceID: "apex:System.Search.find(String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.find AccessLevel handling"},
 	{SurfaceID: "apex:System.Search.query(String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.query AccessLevel handling"},
@@ -496,6 +522,10 @@ var fixtureBackedApexMirrorAliasRows = []fixtureBackedApexMirrorAliasRow{
 	{SurfaceID: "apex:sfdc.LearningItemSerializeDeserializer.serialize(String)", SourceID: "apex:sfdc_enablement.LearningItemSerializeDeserializer.serialize(String)"},
 	{SurfaceID: "apex:sfdc.SurveyInvitationLinkShortener", SourceID: "apex:sfdc_surveys.SurveyInvitationLinkShortener"},
 	{SurfaceID: "apex:sfdc.SurveyInvitationLinkShortener.getShortenedURL(String)", SourceID: "apex:sfdc_surveys.SurveyInvitationLinkShortener.getShortenedURL(String)"},
+	{SurfaceID: "apex:System.Database.convertLead(leadsToConvert,accessLevel)", SourceID: "apex:System.Database.convertLead(List<Database.LeadConvert>,AccessLevel)"},
+	{SurfaceID: "apex:System.Database.convertLead(leadToConvert,accessLevel)", SourceID: "apex:System.Database.convertLead(Database.LeadConvert,AccessLevel)"},
+	{SurfaceID: "apex:System.String.template(valueMap)", SourceID: "apex:System.String.template(Map<String,Object>)"},
+	{SurfaceID: "apex:System.System.attachFinalizer(finalizer)", SourceID: "apex:System.System.attachFinalizer(Object)"},
 }
 
 func addFixtureBackedApexMirrorAliasRows(byID map[string]SurfaceLedgerRow) {
@@ -759,15 +789,9 @@ type surfaceClosureTailRow struct {
 var surfaceClosureTailRows = []surfaceClosureTailRow{
 	{ID: ApexMemberID("ConnectApi", "CommerceSearchConnectFamily", "searchProducts", []string{"String", "String", "List<String>", "String", "String", "String", "List<String>", "String", "Integer", "Integer", "String", "List<String>", "Boolean", "Boolean"}), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "ConnectApi commerce search executes hosted Commerce search services outside the local runtime."},
 	{ID: ApexMemberID("ConnectApi", "OptimizationFiles", "FetchOptimizationFiles", []string{"ConnectApi.fetchFilesInput"}), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "ConnectApi optimization files fetches hosted optimization resources outside the local runtime."},
-	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withActionIdentifier", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
-	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withTargetId", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
-	{ID: ApexMemberID("Messaging", "ActionableNotification.Builder", "withTargetPageRef", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Actionable notification builder targets hosted notification delivery configuration outside local execution."},
 	{ID: ApexMemberID("Schema", "DescribeSObjectResult", "getAssociateEntityType", nil), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Schema associate entity type is represented as a passive describe shape in local metadata."},
 	{ID: ApexMemberID("System", "List", "List", []string{"Set<T>"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic List Set-copy constructor is a passive collection shape."},
 	{ID: ApexMemberID("System", "Set", "Set", []string{"Object"}), Kind: KindMethod, Behavior: BehaviorPassive, Notes: "Generic Set Object constructor is a passive collection shape."},
-	{ID: ApexMemberID("System", "Site", "getCurrentSiteUrl", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
-	{ID: ApexMemberID("System", "Site", "getCustomWebAddress", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
-	{ID: ApexMemberID("System", "Site", "getPrefix", nil), Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "Site URL helpers depend on hosted Site context outside local execution."},
 }
 
 func addSurfaceClosureTailGladeRows(byID map[string]SurfaceLedgerRow) {
@@ -828,6 +852,60 @@ unknown:ref_aura_event
 unknown:ref_aura_interface
 `)
 
+// addMethodFamilyShapeReconciliation promotes absent, signatureless Apex
+// method-family rows to type-known when a different exact sibling overload
+// with the same namespace, type, member, and kind is already shaped by Glade.
+func addMethodFamilyShapeReconciliation(byID map[string]SurfaceLedgerRow) {
+	familyKeys := make(map[string]bool)
+	for _, row := range byID {
+		if row.Product != ProductApex {
+			continue
+		}
+		if row.GladeShape == ShapeAbsent || row.GladeShape == "" {
+			continue
+		}
+		// Shaped siblings must have an explicit parameter list in their
+		// surfaceId — detectable by '(' in the surface ID.
+		if !strings.Contains(row.SurfaceID, "(") {
+			continue
+		}
+		if row.MemberName == "" {
+			continue
+		}
+		key := methodFamilyReconciliationKey(row.Namespace, row.TypeName, row.MemberName, row.Kind)
+		familyKeys[key] = true
+	}
+	for key, row := range byID {
+		if row.Product != ProductApex {
+			continue
+		}
+		if row.GladeShape != ShapeAbsent {
+			continue
+		}
+		// Only promote signatureless rows — surfaceId contains no '('.
+		if strings.Contains(row.SurfaceID, "(") {
+			continue
+		}
+		if row.MemberName == "" {
+			continue
+		}
+		familyKey := methodFamilyReconciliationKey(row.Namespace, row.TypeName, row.MemberName, row.Kind)
+		if !familyKeys[familyKey] {
+			continue
+		}
+		row.GladeShape = ShapeTypeKnown
+		row.Sources = mergeStrings(row.Sources, []string{"standard-symbol-family"})
+		byID[key] = row
+	}
+}
+
+// methodFamilyReconciliationKey builds an exact-match key from namespace, type,
+// member, and kind. The key is used to link signatureless family rows to their
+// shaped sibling overloads.
+func methodFamilyReconciliationKey(namespace, typeName, memberName, kind string) string {
+	return namespace + "\x00" + typeName + "\x00" + memberName + "\x00" + kind
+}
+
 func splitTypeName(namespace, name string) (string, string) {
 	if namespace != "" {
 		return namespace, strings.TrimPrefix(name, namespace+".")
@@ -843,7 +921,7 @@ func gladeConstructorMemberName(namespace, typeName, memberName string) string {
 		return memberName
 	}
 	if strings.EqualFold(namespace, "Messaging.InboundEmail") {
-		return "InboundEmail." + typeName
+		return typeName
 	}
 	return typeName
 }
@@ -890,9 +968,17 @@ func gladeMemberKind(kind string) string {
 
 func idFromStdlibAPI(api string) string {
 	api = strings.TrimSpace(api)
+	if isSyntheticStdlibAPI(api) {
+		return ""
+	}
 	parts := strings.SplitN(api, ".", 2)
 	if len(parts) != 2 {
-		return ApexTypeID("System", api)
+		namespace, typeName := splitTypeName("", api)
+		return ApexTypeID(namespace, typeName)
+	}
+	if stdlibTypeAPI(api) {
+		namespace, typeName := splitTypeName("", api)
+		return ApexTypeID(namespace, typeName)
 	}
 	params := []string(nil)
 	member := parts[1]
@@ -903,7 +989,161 @@ func idFromStdlibAPI(api string) string {
 	} else if member == "contains" {
 		params = []string{"String"}
 	}
-	return ApexMemberID("System", parts[0], member, params)
+	namespace, typeName := splitTypeName("", parts[0])
+	return ApexMemberID(namespace, typeName, member, params)
+}
+
+func stdlibTypeAPI(api string) bool {
+	switch api {
+	case "ApexPages.Message", "Database.UnitOfWork", "Messaging.SingleEmailMessage":
+		return true
+	default:
+		return false
+	}
+}
+
+func isSyntheticStdlibAPI(api string) bool {
+	if api == "PageReference(partialURL)" || api == "Search.query / SOSL FIND" || api == "unimplemented platform/stdlib calls" {
+		return true
+	}
+	return strings.Contains(api, "*") || strings.Contains(api, " constructors") || strings.Contains(api, " malformed ")
+}
+
+var nonCanonicalGeneratedSurfaceIDs = map[string]struct{}{
+	"apex:System.EventBus.publishWithAccessLevel()":                                                          {},
+	"apex:Schema.ChildRelationship.ChildRelationship()":                                                      {},
+	"apex:Schema.DescribeColorResult.DescribeColorResult()":                                                  {},
+	"apex:Schema.DescribeDataCategoryGroupResult.DescribeDataCategoryGroupResult()":                          {},
+	"apex:Schema.DescribeDataCategoryGroupStructureResult.DescribeDataCategoryGroupStructureResult()":        {},
+	"apex:Schema.DescribeFieldResult.DescribeFieldResult()":                                                  {},
+	"apex:Schema.DescribeIconResult.DescribeIconResult()":                                                    {},
+	"apex:Schema.DescribeSObjectResult.DescribeSObjectResult()":                                              {},
+	"apex:Schema.DescribeTabResult.DescribeTabResult()":                                                      {},
+	"apex:Schema.DescribeTabSetResult.DescribeTabSetResult()":                                                {},
+	"apex:Schema.FieldSet.FieldSet()":                                                                        {},
+	"apex:Schema.FieldSetMember.FieldSetMember()":                                                            {},
+	"apex:Schema.FilteredLookupInfo.FilteredLookupInfo()":                                                    {},
+	"apex:Schema.PicklistEntry.PicklistEntry()":                                                              {},
+	"apex:Schema.RecordTypeInfo.RecordTypeInfo()":                                                            {},
+	"apex:Schema.SObjectField.SObjectField()":                                                                {},
+	"apex:Schema.SObjectType.SObjectType()":                                                                  {},
+	"apex:System.EmailException.getDmlFieldNames(Integer)":                                                   {},
+	"apex:System.EmailException.getDmlFields(Integer)":                                                       {},
+	"apex:System.EmailException.getDmlId(Integer)":                                                           {},
+	"apex:System.EmailException.getDmlIndex(Integer)":                                                        {},
+	"apex:System.EmailException.getDmlMessage(Integer)":                                                      {},
+	"apex:System.EmailException.getDmlStatusCode(Integer)":                                                   {},
+	"apex:System.EmailException.getDmlType(Integer)":                                                         {},
+	"apex:System.EmailException.getNumDml()":                                                                 {},
+	"apex:System.FeatureManagement.FeatureManagement()":                                                      {},
+	"apex:System.JSONException.getInaccessibleFields()":                                                      {},
+	"apex:System.JSONException.initCause(Exception)":                                                         {},
+	"apex:Approval.Approval()":                                                                               {},
+	"apex:QueueableDuplicateSignature.QueueableDuplicateSignature()":                                         {},
+	"apex:ConnectApi.getError()":                                                                             {},
+	"apex:ConnectApi.getErrorMessage()":                                                                      {},
+	"apex:ConnectApi.getErrorTypeName()":                                                                     {},
+	"apex:ConnectApi.getResult()":                                                                            {},
+	"apex:ConnectApi.isSuccess()":                                                                            {},
+	"apex:System.Assert.areEqual(Object,Object,Object)":                                                      {},
+	"apex:System.Assert.areNotEqual(Object,Object,Object)":                                                   {},
+	"apex:System.Assert.isTrue(Boolean,Object)":                                                              {},
+	"apex:System.Assert.isFalse(Boolean,Object)":                                                             {},
+	"apex:System.Assert.isNull(Object,Object)":                                                               {},
+	"apex:System.Assert.isNotNull(Object,Object)":                                                            {},
+	"apex:System.Assert.fail(Object)":                                                                        {},
+	"apex:System.Http.send(Object)":                                                                          {},
+	"apex:Messaging.ActionableNotification.Builder.withActionIdentifier":                                     {},
+	"apex:Messaging.ActionableNotification.Builder.withTargetId":                                             {},
+	"apex:Messaging.ActionableNotification.Builder.withTargetPageRef":                                        {},
+	"apex:Messaging.CustomNotification.CustomNotification(String,String,String,String,String,String,String)": {},
+	"apex:Messaging.CustomNotification.setActionGroup(String)":                                               {},
+	"apex:System.IntegrationTest.clone()":                                                                    {},
+	"apex:Approval.*":                                                                                        {},
+	"apex:Search.SuggestionOption.setFilter(Search.KnowledegeSuggestionFilter)":                              {},
+	"apex:System.BusinessHours malformed local holiday metadata":                                             {},
+	"apex:System.InvalidParameterValueException constructors":                                                {},
+	"apex:System.Limits.get*":                                                                                {},
+	"apex:System.NoAccessException constructors":                                                             {},
+	"apex:System.NoDataFoundException constructors":                                                          {},
+	"apex:System.NullPointerException constructors":                                                          {},
+	"apex:System.PageReference(partialURL)":                                                                  {},
+	"apex:System.Search.query / SOSL FIND":                                                                   {},
+	"apex:System.TimeZone.getDisplayName":                                                                    {},
+	"apex:System.TimeZone.getTimeZone":                                                                       {},
+	"apex:System.unimplemented platform/stdlib calls":                                                        {},
+	// CB75: exact frozen non-deferred missing-shape rows proven to be stale,
+	// malformed, aliased, or policy-only ledger projections.
+	"apex:Canvas.Test_constants": {},
+	"apex:Messaging.InboundEmail.AuthenticationResult.InboundEmail.AuthenticationResult()":                   {},
+	"apex:Messaging.InboundEmail.AuthenticationResultField.InboundEmail.AuthenticationResultField()":         {},
+	"apex:PushUpgradeCustomizationRepository.create(String,String,Boolean,Integer)":                          {},
+	"apex:PushUpgradeCustomizationRepository.getCustomizationSummaryById(String)":                            {},
+	"apex:PushUpgradeCustomizationRepository.getCustomizationSummaryByIndex(String,String)":                  {},
+	"apex:PushUpgradeCustomizationRepository.getExpirationDaysForId(String)":                                 {},
+	"apex:PushUpgradeCustomizationRepository.getExpirationDaysForIndex(String,String)":                       {},
+	"apex:PushUpgradeCustomizationRepository.getPushUpgradeBlockInitiatedDateForId(String)":                  {},
+	"apex:PushUpgradeCustomizationRepository.getPushUpgradeBlockInitiatedDateForIndex(String,String)":        {},
+	"apex:PushUpgradeCustomizationRepository.isBlockingCapabilityExpiredForId(String)":                       {},
+	"apex:PushUpgradeCustomizationRepository.isBlockingCapabilityExpiredForIndex(String,String)":             {},
+	"apex:PushUpgradeCustomizationRepository.listAllCustomizationSummaries()":                                {},
+	"apex:PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForId(String,Boolean,Integer)":           {},
+	"apex:PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForIndex(String,String,Boolean,Integer)": {},
+	"apex:PushUpgradeCustomizationRepository.setExpirationDaysForId(String,Integer)":                         {},
+	"apex:PushUpgradeCustomizationRepository.setExpirationDaysForIndex(String,String,Integer)":               {},
+	"apex:RestResource":                                                                                     {},
+	"apex:System.Database.lock":                                                                             {},
+	"apex:System.Database.unlock":                                                                           {},
+	"apex:System.Exception.Exception()":                                                                     {},
+	"apex:System.Exception.Exception(Exception)":                                                            {},
+	"apex:System.Exception.Exception(String)":                                                               {},
+	"apex:System.Exception.Exception(String,Exception)":                                                     {},
+	"apex:System.InvalidParameterValueException.InvalidParameterValueException()":                           {},
+	"apex:System.InvalidParameterValueException.InvalidParameterValueException(Exception)":                  {},
+	"apex:System.InvalidParameterValueException.InvalidParameterValueException(String)":                     {},
+	"apex:System.InvalidParameterValueException.InvalidParameterValueException(String,String)":              {},
+	"apex:System.Iterator.remove":                                                                           {},
+	"apex:System.Matcher.appendReplacement":                                                                 {},
+	"apex:System.Matcher.appendTail":                                                                        {},
+	"apex:System.Messaging.SingleEmailMessage":                                                              {},
+	"apex:System.NoAccessException.NoAccessException(Exception)":                                            {},
+	"apex:System.NoAccessException.NoAccessException(String)":                                               {},
+	"apex:System.NoAccessException.NoAccessException(String,Exception)":                                     {},
+	"apex:System.NoDataFoundException.NoDataFoundException(Exception)":                                      {},
+	"apex:System.NoDataFoundException.NoDataFoundException(String)":                                         {},
+	"apex:System.NoDataFoundException.NoDataFoundException(String,Exception)":                               {},
+	"apex:System.NullPointerException.NullPointerException(Exception)":                                      {},
+	"apex:System.NullPointerException.NullPointerException(String)":                                         {},
+	"apex:System.NullPointerException.NullPointerException(String,Exception)":                               {},
+	"apex:System.PushUpgradeCustomizationRepository.create(String,String,Boolean)":                          {},
+	"apex:System.PushUpgradeCustomizationRepository.deleteById(String)":                                     {},
+	"apex:System.PushUpgradeCustomizationRepository.deleteByIndex(String,String)":                           {},
+	"apex:System.PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForId(String)":                   {},
+	"apex:System.PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForIndex(String,String)":         {},
+	"apex:System.PushUpgradeCustomizationRepository.getCustomUpgradeTypeForId(String)":                      {},
+	"apex:System.PushUpgradeCustomizationRepository.getCustomUpgradeTypeForIndex(String,String)":            {},
+	"apex:System.PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForId(String,Boolean)":           {},
+	"apex:System.PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForIndex(String,String,Boolean)": {},
+	"apex:System.Type.newInstance":                                                                          {},
+}
+
+func isNonCanonicalGeneratedSurfaceID(id string) bool {
+	if _, ok := nonCanonicalGeneratedSurfaceIDs[id]; ok {
+		return true
+	}
+	key := surfaceIDKey(id)
+	for candidate := range nonCanonicalGeneratedSurfaceIDs {
+		if surfaceIDKey(candidate) == key {
+			return true
+		}
+	}
+	return false
+}
+
+func removeNonCanonicalGeneratedRows(byID map[string]SurfaceLedgerRow) {
+	for id := range nonCanonicalGeneratedSurfaceIDs {
+		delete(byID, surfaceIDKey(id))
+	}
 }
 
 func splitSurfaceParameterList(raw string) []string {
@@ -993,7 +1233,12 @@ func fillFromApexID(row *SurfaceLedgerRow) {
 		if hasParameters || row.Kind == KindMethod || row.Kind == KindProperty || row.Kind == KindField {
 			row.MemberName = member
 			if hasParameters {
-				row.Parameters = cleanList(splitSurfaceParameterList(parameters))
+				parsedParameters := splitSurfaceParameterList(parameters)
+				if strings.EqualFold(identity, "System.EventBus.publishWithAccessLevel") {
+					row.Parameters = canonicalEventBusAccessLevelParameters(parsedParameters)
+				} else {
+					row.Parameters = cleanList(parsedParameters)
+				}
 			}
 			fillApexTypeParts(row, prefix)
 			return

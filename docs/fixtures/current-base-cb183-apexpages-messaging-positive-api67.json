@@ -1,0 +1,41 @@
+{
+  "name": "current-base-cb183-apexpages-messaging-positive-api67",
+  "evidence": [
+    {"surfaceId": "apex:ApexPages.Severity", "symbol": "ApexPages.Severity", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Severity.ERROR", "symbol": "ApexPages.Severity.ERROR", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Severity.INFO", "symbol": "ApexPages.Severity.INFO", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Severity.WARNING", "symbol": "ApexPages.Severity.WARNING", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Severity.CONFIRM", "symbol": "ApexPages.Severity.CONFIRM", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Severity.FATAL", "symbol": "ApexPages.Severity.FATAL", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message", "symbol": "ApexPages.Message", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.Message(ApexPages.Severity,String)", "symbol": "ApexPages.Message", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.getSeverity()", "symbol": "ApexPages.Message.getSeverity", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.getSummary()", "symbol": "ApexPages.Message.getSummary", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.Message(ApexPages.Severity,String,String)", "symbol": "ApexPages.Message", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.getDetail()", "symbol": "ApexPages.Message.getDetail", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.Message(ApexPages.Severity,String,String,String)", "symbol": "ApexPages.Message", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.getComponentLabel()", "symbol": "ApexPages.Message.getComponentLabel", "kind": "exec"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage", "symbol": "Messaging.SingleEmailMessage", "kind": "exec"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.SingleEmailMessage()", "symbol": "Messaging.SingleEmailMessage", "kind": "exec"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.setSubject(String)", "symbol": "Messaging.SingleEmailMessage.setSubject", "kind": "exec"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.getSubject()", "symbol": "Messaging.SingleEmailMessage.getSubject", "kind": "exec"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.setToAddresses(List<String>)", "symbol": "Messaging.SingleEmailMessage.setToAddresses", "kind": "exec"},
+    {"surfaceId": "apex:Messaging.SingleEmailMessage.getToAddresses()", "symbol": "Messaging.SingleEmailMessage.getToAddresses", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "ApexPages.Message shortMessage = new ApexPages.Message(ApexPages.Severity.ERROR, 'summary');\nApexPages.Message detailedMessage = new ApexPages.Message(ApexPages.Severity.INFO, 'summary', 'detail');\nApexPages.Message labeledMessage = new ApexPages.Message(ApexPages.Severity.WARNING, 'summary', 'detail', 'label');\nMessaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();\nemail.setSubject('cb183 subject');\nemail.setToAddresses(new List<String>{'cb183@example.test'});\nBoolean result = shortMessage.getSeverity() == ApexPages.Severity.ERROR && shortMessage.getSummary() == 'summary' && detailedMessage.getDetail() == 'detail' && labeledMessage.getComponentLabel() == 'label' && ApexPages.Severity.CONFIRM != ApexPages.Severity.FATAL && email.getSubject() == 'cb183 subject' && email.getToAddresses().size() == 1;\nSystem.debug(result);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "ApexPages.Message shortMessage = new ApexPages.Message(ApexPages.Severity.ERROR, 'summary');\nApexPages.Message detailedMessage = new ApexPages.Message(ApexPages.Severity.INFO, 'summary', 'detail');\nApexPages.Message labeledMessage = new ApexPages.Message(ApexPages.Severity.WARNING, 'summary', 'detail', 'label');\nMessaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();\nemail.setSubject('cb183 subject');\nemail.setToAddresses(new List<String>{'cb183@example.test'});\nBoolean result = shortMessage.getSeverity() == ApexPages.Severity.ERROR && shortMessage.getSummary() == 'summary' && detailedMessage.getDetail() == 'detail' && labeledMessage.getComponentLabel() == 'label' && ApexPages.Severity.CONFIRM != ApexPages.Severity.FATAL && email.getSubject() == 'cb183 subject' && email.getToAddresses().size() == 1;\nSystem.debug(result);\n"
+    ]
+  },
+  "expected": {
+    "result": {"debug": ["true"], "ok": true}
+  },
+  "salesforceEligible": true
+}

@@ -1,0 +1,865 @@
+{
+  "name": "current-base-system-visible-members-compile-api67",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "if (false) {\n((System.AppExchangeTrialTemplate)null).clone();\n((System.AppExchangeTrialTemplate)null).getCreatedDate();\n((System.AppExchangeTrialTemplate)null).getId();\n((System.AppExchangeTrialTemplate)null).getLastModifiedDate();\n((System.AppExchangeTrialTemplate)null).getName();\n((System.AppExchangeTrialTemplate)null).getStatus();\n((System.CallbackStatus)null).equals((Object)null);\n((System.CallbackStatus)null).hashCode();\n((System.CallbackStatus)null).ordinal();\nSystem.CallbackStatus.valueOf((String)null);\nSystem.CallbackStatus.values();\nnew System.Cases();\n((System.Cases)null).clone();\nSystem.Cases.generateThreadingMessageId((Id)null);\nSystem.Cases.getCaseIdFromEmailHeaders((List<Messaging.InboundEmail.Header>)null);\nSystem.Cases.getCaseIdFromEmailThreadId((String)null);\nSystem.Cases.reparentFeedToCaseId((Id)null, (Id)null, (Id)null);\n((System.Collator)null).clone();\n((System.Collator)null).compare((String)null, (String)null);\nSystem.Collator.getInstance();\nnew System.Continuation((Integer)0);\n((System.Continuation)null).addHttpRequest((HttpRequest)null);\n((System.Continuation)null).clone();\n((System.Continuation)null).getRequests();\nSystem.Continuation.getResponse((String)null);\n((System.Continuation)null).toString();\n((System.Domain)null).clone();\n((System.Domain)null).getDomainType();\n((System.Domain)null).getMyDomainName();\n((System.Domain)null).getPackageName();\n((System.Domain)null).getSandboxName();\n((System.Domain)null).getSitesSubdomainName();\nnew System.DomainCreator();\n((System.DomainCreator)null).clone();\nSystem.DomainCreator.getContentHostname();\nSystem.DomainCreator.getExperienceCloudSitesBuilderHostname();\nSystem.DomainCreator.getExperienceCloudSitesHostname();\nSystem.DomainCreator.getExperienceCloudSitesLivePreviewHostname();\nSystem.DomainCreator.getExperienceCloudSitesPreviewHostname();\nSystem.DomainCreator.getLightningContainerComponentHostname((String)null);\nSystem.DomainCreator.getLightningHostname();\nSystem.DomainCreator.getOrgMyDomainHostname();\nSystem.DomainCreator.getSalesforceSitesHostname();\nSystem.DomainCreator.getSetupHostname();\nSystem.DomainCreator.getVisualforceHostname((String)null);\nnew System.DomainParser();\n((System.DomainParser)null).clone();\nSystem.DomainParser.parse((String)null);\nSystem.DomainParser.parse((Url)null);\n((System.DomainType)null).equals((Object)null);\n((System.DomainType)null).hashCode();\n((System.DomainType)null).ordinal();\nSystem.DomainType.valueOf((String)null);\nSystem.DomainType.values();\nnew System.EmailMessages();\n((System.EmailMessages)null).clone();\nSystem.EmailMessages.getFormattedThreadingToken((Id)null);\nSystem.EmailMessages.getRecordIdFromEmail((String)null, (String)null, (String)null);\n((System.FinalizerContextImpl)null).clone();\n((System.FinalizerContextImpl)null).getAsyncApexJobId();\n((System.FinalizerContextImpl)null).getException();\n((System.FinalizerContextImpl)null).getRequestId();\n((System.FinalizerContextImpl)null).getResult();\nSystem.FlexQueue.moveAfterJob((Id)null, (Id)null);\nSystem.FlexQueue.moveBeforeJob((Id)null, (Id)null);\nSystem.FlexQueue.moveJobToEnd((Id)null);\nSystem.FlexQueue.moveJobToFront((Id)null);\nnew System.Formula();\nSystem.Formula.builder();\n((System.Formula)null).clone();\nSystem.Formula.recalculateFormulas((List<SObject>)null);\n((System.FormulaRecalcFieldError)null).clone();\n((System.FormulaRecalcFieldError)null).getFieldError();\n((System.FormulaRecalcFieldError)null).getFieldName();\n((System.FormulaRecalcResult)null).clone();\n((System.FormulaRecalcResult)null).getErrors();\n((System.FormulaRecalcResult)null).getSObject();\n((System.FormulaRecalcResult)null).isSuccess();\nnew System.Http();\n((System.Http)null).equals((Object)null);\n((System.Http)null).hashCode();\n((System.Http)null).toString();\nnew System.Network();\n((System.Network)null).clone();\nSystem.Network.communitiesLanding();\nSystem.Network.createExternalUserAsync((SObject)null, (SObject)null, (SObject)null);\nSystem.Network.createRecordAsync((String)null, (SObject)null);\nSystem.Network.forwardToAuthPage((String)null);\nSystem.Network.forwardToAuthPage((String)null, (String)null);\nSystem.Network.getLoginUrl((String)null);\nSystem.Network.getLogoutUrl((String)null);\nSystem.Network.getNetworkId();\nSystem.Network.getSelfRegUrl((String)null);\nSystem.Network.loadAllPackageDefaultNetworkDashboardSettings();\nSystem.Network.loadAllPackageDefaultNetworkPulseSettings();\nSystem.Network.loadAllPackageDefaultNetworkWorkspaceMetricSettings();\n((System.OrgLimit)null).clone();\n((System.OrgLimit)null).getLimit();\n((System.OrgLimit)null).getName();\n((System.OrgLimit)null).getValue();\n((System.OrgLimit)null).toString();\nnew System.OrgLimits();\n((System.OrgLimits)null).clone();\nSystem.OrgLimits.getAll();\nSystem.OrgLimits.getMap();\nnew System.Packaging();\n((System.Packaging)null).clone();\n((System.ParentJobResult)null).equals((Object)null);\n((System.ParentJobResult)null).hashCode();\n((System.ParentJobResult)null).ordinal();\nSystem.ParentJobResult.valueOf((String)null);\nSystem.ParentJobResult.values();\n((System.QueueableContextImpl)null).clone();\n((System.QueueableContextImpl)null).getJobId();\nnew System.RemoteObjectController();\n((System.RemoteObjectController)null).clone();\nSystem.RemoteObjectController.create((String)null, (Map<String,Object>)null);\nSystem.RemoteObjectController.del((String)null, (List<String>)null);\nSystem.RemoteObjectController.retrieve((String)null, (List<String>)null, (Map<String,Object>)null);\nSystem.RemoteObjectController.updat((String)null, (List<String>)null, (Map<String,Object>)null);\n((System.ResetPasswordResult)null).equals((Object)null);\n((System.ResetPasswordResult)null).getPassword();\n((System.ResetPasswordResult)null).hashCode();\n((System.ResetPasswordResult)null).toString();\n((System.SchedulableContextImpl)null).clone();\n((System.SetupScope)null).equals((Object)null);\n((System.SetupScope)null).hashCode();\n((System.SetupScope)null).ordinal();\nSystem.SetupScope.valueOf((String)null);\nSystem.SetupScope.values();\nnew System.SupportPredictiveService();\n((System.SupportPredictiveService)null).clone();\n((System.UIRequest)null).clone();\nSystem.UIRequest.getCurrent();\n((System.UIRequest)null).getRequestHeader((String)null);\n((System.UUID)null).clone();\n((System.UUID)null).equals((Object)null);\nSystem.UUID.fromString((String)null);\n((System.UUID)null).hashCode();\nSystem.UUID.randomUUID();\n((System.UUID)null).toString();\nnew System.UserManagement();\n((System.UserManagement)null).clone();\nSystem.UserManagement.deregisterVerificationMethod((Id)null, (Auth.VerificationMethod)null);\nSystem.UserManagement.formatPhoneNumber((String)null, (String)null);\nSystem.UserManagement.initPasswordlessLogin((Id)null, (Auth.VerificationMethod)null);\nSystem.UserManagement.initRegisterVerificationMethod((Auth.VerificationMethod)null);\nSystem.UserManagement.initSelfRegistration((Auth.VerificationMethod)null, (User)null);\nSystem.UserManagement.initVerificationMethod((Auth.VerificationMethod)null);\nSystem.UserManagement.initVerificationMethod((Auth.VerificationMethod)null, (String)null, (Map<String,String>)null);\nSystem.UserManagement.obfuscateUser((Id)null);\nSystem.UserManagement.obfuscateUser((Id)null, (String)null);\nSystem.UserManagement.registerVerificationMethod((Auth.VerificationMethod)null, (String)null);\nSystem.UserManagement.sendAsyncEmailConfirmation((String)null, (String)null, (String)null, (String)null);\nSystem.UserManagement.verifyPasswordlessLogin((Id)null, (Auth.VerificationMethod)null, (String)null, (String)null, (String)null);\nSystem.UserManagement.verifyRegisterVerificationMethod((String)null, (Auth.VerificationMethod)null);\nSystem.UserManagement.verifySelfRegistration((Auth.VerificationMethod)null, (String)null, (String)null, (String)null);\nSystem.UserManagement.verifyVerificationMethod((String)null, (String)null, (Auth.VerificationMethod)null);\nnew System.Version((Integer)0, (Integer)0);\nnew System.Version((Integer)0, (Integer)0, (Integer)0);\n((System.Version)null).compareTo((Version)null);\n((System.Version)null).equals((Object)null);\n((System.Version)null).hashCode();\n((System.Version)null).major();\n((System.Version)null).minor();\n((System.Version)null).patch();\n((System.Version)null).toString();\n((System.WebServiceCalloutFuture)null).clone();\nnew System.WebStoreContext();\n((System.WebStoreContext)null).clone();\n}\n"
+    ]
+  },
+  "expected": {},
+  "evidence": [
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate.clone()",
+      "symbol": "System.AppExchangeTrialTemplate.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate.getCreatedDate()",
+      "symbol": "System.AppExchangeTrialTemplate.getCreatedDate()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate.getId()",
+      "symbol": "System.AppExchangeTrialTemplate.getId()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate.getLastModifiedDate()",
+      "symbol": "System.AppExchangeTrialTemplate.getLastModifiedDate()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate.getName()",
+      "symbol": "System.AppExchangeTrialTemplate.getName()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate.getStatus()",
+      "symbol": "System.AppExchangeTrialTemplate.getStatus()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.equals(Object)",
+      "symbol": "System.CallbackStatus.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.hashCode()",
+      "symbol": "System.CallbackStatus.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.ordinal()",
+      "symbol": "System.CallbackStatus.ordinal()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.valueOf(String)",
+      "symbol": "System.CallbackStatus.valueOf(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.values()",
+      "symbol": "System.CallbackStatus.values()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Cases.Cases()",
+      "symbol": "System.Cases.Cases()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Cases.clone()",
+      "symbol": "System.Cases.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Cases.generateThreadingMessageId(Id)",
+      "symbol": "System.Cases.generateThreadingMessageId(Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Cases.getCaseIdFromEmailHeaders(List<Messaging.InboundEmail.Header>)",
+      "symbol": "System.Cases.getCaseIdFromEmailHeaders(List<Messaging.InboundEmail.Header>)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Cases.getCaseIdFromEmailThreadId(String)",
+      "symbol": "System.Cases.getCaseIdFromEmailThreadId(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Cases.reparentFeedToCaseId(Id,Id,Id)",
+      "symbol": "System.Cases.reparentFeedToCaseId(Id,Id,Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Collator.clone()",
+      "symbol": "System.Collator.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Collator.compare(String,String)",
+      "symbol": "System.Collator.compare(String,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Collator.getInstance()",
+      "symbol": "System.Collator.getInstance()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.Continuation(Integer)",
+      "symbol": "System.Continuation.Continuation(Integer)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.addHttpRequest(HttpRequest)",
+      "symbol": "System.Continuation.addHttpRequest(HttpRequest)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.clone()",
+      "symbol": "System.Continuation.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.getRequests()",
+      "symbol": "System.Continuation.getRequests()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.getResponse(String)",
+      "symbol": "System.Continuation.getResponse(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.toString()",
+      "symbol": "System.Continuation.toString()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Domain.clone()",
+      "symbol": "System.Domain.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Domain.getDomainType()",
+      "symbol": "System.Domain.getDomainType()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Domain.getMyDomainName()",
+      "symbol": "System.Domain.getMyDomainName()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Domain.getPackageName()",
+      "symbol": "System.Domain.getPackageName()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Domain.getSandboxName()",
+      "symbol": "System.Domain.getSandboxName()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Domain.getSitesSubdomainName()",
+      "symbol": "System.Domain.getSitesSubdomainName()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.DomainCreator()",
+      "symbol": "System.DomainCreator.DomainCreator()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.clone()",
+      "symbol": "System.DomainCreator.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getContentHostname()",
+      "symbol": "System.DomainCreator.getContentHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getExperienceCloudSitesBuilderHostname()",
+      "symbol": "System.DomainCreator.getExperienceCloudSitesBuilderHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getExperienceCloudSitesHostname()",
+      "symbol": "System.DomainCreator.getExperienceCloudSitesHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getExperienceCloudSitesLivePreviewHostname()",
+      "symbol": "System.DomainCreator.getExperienceCloudSitesLivePreviewHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getExperienceCloudSitesPreviewHostname()",
+      "symbol": "System.DomainCreator.getExperienceCloudSitesPreviewHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getLightningContainerComponentHostname(String)",
+      "symbol": "System.DomainCreator.getLightningContainerComponentHostname(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getLightningHostname()",
+      "symbol": "System.DomainCreator.getLightningHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getOrgMyDomainHostname()",
+      "symbol": "System.DomainCreator.getOrgMyDomainHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getSalesforceSitesHostname()",
+      "symbol": "System.DomainCreator.getSalesforceSitesHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getSetupHostname()",
+      "symbol": "System.DomainCreator.getSetupHostname()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator.getVisualforceHostname(String)",
+      "symbol": "System.DomainCreator.getVisualforceHostname(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainParser.DomainParser()",
+      "symbol": "System.DomainParser.DomainParser()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainParser.clone()",
+      "symbol": "System.DomainParser.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainParser.parse(String)",
+      "symbol": "System.DomainParser.parse(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainParser.parse(Url)",
+      "symbol": "System.DomainParser.parse(Url)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.equals(Object)",
+      "symbol": "System.DomainType.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.hashCode()",
+      "symbol": "System.DomainType.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.ordinal()",
+      "symbol": "System.DomainType.ordinal()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.valueOf(String)",
+      "symbol": "System.DomainType.valueOf(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.values()",
+      "symbol": "System.DomainType.values()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.EmailMessages.EmailMessages()",
+      "symbol": "System.EmailMessages.EmailMessages()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.EmailMessages.clone()",
+      "symbol": "System.EmailMessages.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.EmailMessages.getFormattedThreadingToken(Id)",
+      "symbol": "System.EmailMessages.getFormattedThreadingToken(Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.EmailMessages.getRecordIdFromEmail(String,String,String)",
+      "symbol": "System.EmailMessages.getRecordIdFromEmail(String,String,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContextImpl.clone()",
+      "symbol": "System.FinalizerContextImpl.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContextImpl.getAsyncApexJobId()",
+      "symbol": "System.FinalizerContextImpl.getAsyncApexJobId()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContextImpl.getException()",
+      "symbol": "System.FinalizerContextImpl.getException()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContextImpl.getRequestId()",
+      "symbol": "System.FinalizerContextImpl.getRequestId()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContextImpl.getResult()",
+      "symbol": "System.FinalizerContextImpl.getResult()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FlexQueue.moveAfterJob(Id,Id)",
+      "symbol": "System.FlexQueue.moveAfterJob(Id,Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FlexQueue.moveBeforeJob(Id,Id)",
+      "symbol": "System.FlexQueue.moveBeforeJob(Id,Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FlexQueue.moveJobToEnd(Id)",
+      "symbol": "System.FlexQueue.moveJobToEnd(Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FlexQueue.moveJobToFront(Id)",
+      "symbol": "System.FlexQueue.moveJobToFront(Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Formula.Formula()",
+      "symbol": "System.Formula.Formula()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Formula.builder()",
+      "symbol": "System.Formula.builder()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Formula.clone()",
+      "symbol": "System.Formula.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Formula.recalculateFormulas(List<Object>)",
+      "symbol": "System.Formula.recalculateFormulas(List<Object>)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcFieldError.clone()",
+      "symbol": "System.FormulaRecalcFieldError.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcFieldError.getFieldError()",
+      "symbol": "System.FormulaRecalcFieldError.getFieldError()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcFieldError.getFieldName()",
+      "symbol": "System.FormulaRecalcFieldError.getFieldName()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcResult.clone()",
+      "symbol": "System.FormulaRecalcResult.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcResult.getErrors()",
+      "symbol": "System.FormulaRecalcResult.getErrors()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcResult.getSObject()",
+      "symbol": "System.FormulaRecalcResult.getSObject()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcResult.isSuccess()",
+      "symbol": "System.FormulaRecalcResult.isSuccess()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Http.Http()",
+      "symbol": "System.Http.Http()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Http.equals(Object)",
+      "symbol": "System.Http.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Http.hashCode()",
+      "symbol": "System.Http.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Http.toString()",
+      "symbol": "System.Http.toString()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.Network()",
+      "symbol": "System.Network.Network()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.clone()",
+      "symbol": "System.Network.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.communitiesLanding()",
+      "symbol": "System.Network.communitiesLanding()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.createExternalUserAsync(Object,Object,Object)",
+      "symbol": "System.Network.createExternalUserAsync(Object,Object,Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.createRecordAsync(String,Object)",
+      "symbol": "System.Network.createRecordAsync(String,Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.forwardToAuthPage(String)",
+      "symbol": "System.Network.forwardToAuthPage(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.forwardToAuthPage(String,String)",
+      "symbol": "System.Network.forwardToAuthPage(String,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.getLoginUrl(String)",
+      "symbol": "System.Network.getLoginUrl(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.getLogoutUrl(String)",
+      "symbol": "System.Network.getLogoutUrl(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.getNetworkId()",
+      "symbol": "System.Network.getNetworkId()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.getSelfRegUrl(String)",
+      "symbol": "System.Network.getSelfRegUrl(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.loadAllPackageDefaultNetworkDashboardSettings()",
+      "symbol": "System.Network.loadAllPackageDefaultNetworkDashboardSettings()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.loadAllPackageDefaultNetworkPulseSettings()",
+      "symbol": "System.Network.loadAllPackageDefaultNetworkPulseSettings()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network.loadAllPackageDefaultNetworkWorkspaceMetricSettings()",
+      "symbol": "System.Network.loadAllPackageDefaultNetworkWorkspaceMetricSettings()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimit.clone()",
+      "symbol": "System.OrgLimit.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimit.getLimit()",
+      "symbol": "System.OrgLimit.getLimit()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimit.getName()",
+      "symbol": "System.OrgLimit.getName()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimit.getValue()",
+      "symbol": "System.OrgLimit.getValue()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimit.toString()",
+      "symbol": "System.OrgLimit.toString()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimits.OrgLimits()",
+      "symbol": "System.OrgLimits.OrgLimits()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimits.clone()",
+      "symbol": "System.OrgLimits.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimits.getAll()",
+      "symbol": "System.OrgLimits.getAll()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimits.getMap()",
+      "symbol": "System.OrgLimits.getMap()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Packaging.Packaging()",
+      "symbol": "System.Packaging.Packaging()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Packaging.clone()",
+      "symbol": "System.Packaging.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult.equals(Object)",
+      "symbol": "System.ParentJobResult.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult.hashCode()",
+      "symbol": "System.ParentJobResult.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult.ordinal()",
+      "symbol": "System.ParentJobResult.ordinal()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult.valueOf(String)",
+      "symbol": "System.ParentJobResult.valueOf(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult.values()",
+      "symbol": "System.ParentJobResult.values()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.QueueableContextImpl.clone()",
+      "symbol": "System.QueueableContextImpl.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.QueueableContextImpl.getJobId()",
+      "symbol": "System.QueueableContextImpl.getJobId()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.RemoteObjectController()",
+      "symbol": "System.RemoteObjectController.RemoteObjectController()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.clone()",
+      "symbol": "System.RemoteObjectController.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.create(String,Map<String,Object>)",
+      "symbol": "System.RemoteObjectController.create(String,Map<String,Object>)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.del(String,List<String>)",
+      "symbol": "System.RemoteObjectController.del(String,List<String>)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.retrieve(String,List<String>,Map<String,Object>)",
+      "symbol": "System.RemoteObjectController.retrieve(String,List<String>,Map<String,Object>)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.updat(String,List<String>,Map<String,Object>)",
+      "symbol": "System.RemoteObjectController.updat(String,List<String>,Map<String,Object>)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ResetPasswordResult.equals(Object)",
+      "symbol": "System.ResetPasswordResult.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ResetPasswordResult.getPassword()",
+      "symbol": "System.ResetPasswordResult.getPassword()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ResetPasswordResult.hashCode()",
+      "symbol": "System.ResetPasswordResult.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ResetPasswordResult.toString()",
+      "symbol": "System.ResetPasswordResult.toString()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SchedulableContextImpl.clone()",
+      "symbol": "System.SchedulableContextImpl.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.equals(Object)",
+      "symbol": "System.SetupScope.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.hashCode()",
+      "symbol": "System.SetupScope.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.ordinal()",
+      "symbol": "System.SetupScope.ordinal()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.valueOf(String)",
+      "symbol": "System.SetupScope.valueOf(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.values()",
+      "symbol": "System.SetupScope.values()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SupportPredictiveService.SupportPredictiveService()",
+      "symbol": "System.SupportPredictiveService.SupportPredictiveService()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SupportPredictiveService.clone()",
+      "symbol": "System.SupportPredictiveService.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UIRequest.clone()",
+      "symbol": "System.UIRequest.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UIRequest.getCurrent()",
+      "symbol": "System.UIRequest.getCurrent()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UIRequest.getRequestHeader(String)",
+      "symbol": "System.UIRequest.getRequestHeader(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UUID.clone()",
+      "symbol": "System.UUID.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UUID.equals(Object)",
+      "symbol": "System.UUID.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UUID.fromString(String)",
+      "symbol": "System.UUID.fromString(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UUID.hashCode()",
+      "symbol": "System.UUID.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UUID.randomUUID()",
+      "symbol": "System.UUID.randomUUID()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UUID.toString()",
+      "symbol": "System.UUID.toString()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.UserManagement()",
+      "symbol": "System.UserManagement.UserManagement()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.clone()",
+      "symbol": "System.UserManagement.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.deregisterVerificationMethod(Id,Auth.VerificationMethod)",
+      "symbol": "System.UserManagement.deregisterVerificationMethod(Id,Auth.VerificationMethod)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.formatPhoneNumber(String,String)",
+      "symbol": "System.UserManagement.formatPhoneNumber(String,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.initPasswordlessLogin(Id,Auth.VerificationMethod)",
+      "symbol": "System.UserManagement.initPasswordlessLogin(Id,Auth.VerificationMethod)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.initRegisterVerificationMethod(Auth.VerificationMethod)",
+      "symbol": "System.UserManagement.initRegisterVerificationMethod(Auth.VerificationMethod)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.initSelfRegistration(Auth.VerificationMethod,User)",
+      "symbol": "System.UserManagement.initSelfRegistration(Auth.VerificationMethod,User)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.initVerificationMethod(Auth.VerificationMethod)",
+      "symbol": "System.UserManagement.initVerificationMethod(Auth.VerificationMethod)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.initVerificationMethod(Auth.VerificationMethod,String,Map<String,String>)",
+      "symbol": "System.UserManagement.initVerificationMethod(Auth.VerificationMethod,String,Map<String,String>)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.obfuscateUser(Id)",
+      "symbol": "System.UserManagement.obfuscateUser(Id)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.obfuscateUser(Id,String)",
+      "symbol": "System.UserManagement.obfuscateUser(Id,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.registerVerificationMethod(Auth.VerificationMethod,String)",
+      "symbol": "System.UserManagement.registerVerificationMethod(Auth.VerificationMethod,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.sendAsyncEmailConfirmation(String,String,String,String)",
+      "symbol": "System.UserManagement.sendAsyncEmailConfirmation(String,String,String,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.verifyPasswordlessLogin(Id,Auth.VerificationMethod,String,String,String)",
+      "symbol": "System.UserManagement.verifyPasswordlessLogin(Id,Auth.VerificationMethod,String,String,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.verifyRegisterVerificationMethod(String,Auth.VerificationMethod)",
+      "symbol": "System.UserManagement.verifyRegisterVerificationMethod(String,Auth.VerificationMethod)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.verifySelfRegistration(Auth.VerificationMethod,String,String,String)",
+      "symbol": "System.UserManagement.verifySelfRegistration(Auth.VerificationMethod,String,String,String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement.verifyVerificationMethod(String,String,Auth.VerificationMethod)",
+      "symbol": "System.UserManagement.verifyVerificationMethod(String,String,Auth.VerificationMethod)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.Version(Integer,Integer)",
+      "symbol": "System.Version.Version(Integer,Integer)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.Version(Integer,Integer,Integer)",
+      "symbol": "System.Version.Version(Integer,Integer,Integer)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.compareTo(Version)",
+      "symbol": "System.Version.compareTo(Version)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.equals(Object)",
+      "symbol": "System.Version.equals(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.hashCode()",
+      "symbol": "System.Version.hashCode()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.major()",
+      "symbol": "System.Version.major()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.minor()",
+      "symbol": "System.Version.minor()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.patch()",
+      "symbol": "System.Version.patch()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version.toString()",
+      "symbol": "System.Version.toString()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCalloutFuture.clone()",
+      "symbol": "System.WebServiceCalloutFuture.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebStoreContext.WebStoreContext()",
+      "symbol": "System.WebStoreContext.WebStoreContext()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebStoreContext.clone()",
+      "symbol": "System.WebStoreContext.clone()",
+      "kind": "shape"
+    }
+  ],
+  "notes": "API 67 dual-oracle compile-shape coverage for 170 methods/constructors on 36 org-visible System types."
+}

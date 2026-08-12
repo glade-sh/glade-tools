@@ -1,0 +1,7 @@
+{
+  "name": "current-base-json-generator-write-raw-value-unsupported",
+  "command": {"kind": "exec", "args": ["JSONGenerator gen = JSON.createGenerator(false); gen.writeRawValue('{}');"]},
+  "source": [{"path": "anonymous.apex", "content": "JSONGenerator gen = JSON.createGenerator(false); gen.writeRawValue('{}');"}],
+  "expected": {"error": {"type": "UnsupportedFeature", "message": "unsupported call \"JSONGenerator.writeRawValue\""}},
+  "evidence": [{"surfaceId": "apex:System.JSONGenerator.writeRawValue(String)", "symbol": "JSONGenerator.writeRawValue", "kind": "exec", "notes": "Current Salesforce rejects this method as absent."}]
+}

@@ -273,7 +273,7 @@ func TestRunVisualforceCaptureAnnotatesProbeMetadataAndContractText(t *testing.T
 }`), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	body := []byte("<html><body><h1>Core</h1><p>Hello 005QL00000jgvsqYAA</p></body></html>")
+	body := []byte("<html><body><h1>Core</h1><p>Hello 005000000000001AAA</p></body></html>")
 	client := &fakeVisualforceHTTPClient{responses: map[string]*http.Response{
 		"/apex/Core": {
 			StatusCode: http.StatusOK,
@@ -294,7 +294,7 @@ func TestRunVisualforceCaptureAnnotatesProbeMetadataAndContractText(t *testing.T
 		t.Fatal(err)
 	}
 	page := report.Pages[0]
-	if page.Raw[0].NormalizedText != "Core Hello 005QL00000jgvsqYAA" {
+	if page.Raw[0].NormalizedText != "Core Hello 005000000000001AAA" {
 		t.Fatalf("raw normalized text = %q", page.Raw[0].NormalizedText)
 	}
 	data, err := json.Marshal(page)

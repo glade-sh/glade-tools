@@ -1,0 +1,195 @@
+{
+  "name": "current-base-system-visible-types-compile-api67",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.AppExchangeTrialTemplate value000;\nSystem.Aura value001;\nSystem.CallbackStatus value002;\nSystem.Cases value003;\nSystem.Collator value004;\nSystem.Continuation value005;\nSystem.Domain value006;\nSystem.DomainCreator value007;\nSystem.DomainParser value008;\nSystem.DomainType value009;\nSystem.EmailMessages value010;\nSystem.FinalizerContextImpl value011;\nSystem.FlexQueue value012;\nSystem.Formula value013;\nSystem.FormulaRecalcFieldError value014;\nSystem.FormulaRecalcResult value015;\nSystem.Http value016;\nSystem.Network value017;\nSystem.OrgLimit value018;\nSystem.OrgLimits value019;\nSystem.Packaging value020;\nSystem.ParentJobResult value021;\nSystem.QueueableContextImpl value022;\nSystem.RemoteObjectController value023;\nSystem.ResetPasswordResult value024;\nSystem.SchedulableContextImpl value025;\nSystem.SetupScope value026;\nSystem.SupportPredictiveService value027;\nSystem.System value028;\nSystem.UIRequest value029;\nSystem.UUID value030;\nSystem.UserManagement value031;\nSystem.Version value032;\nSystem.WebServiceCallout value033;\nSystem.WebServiceCalloutFuture value034;\nSystem.WebStoreContext value035;\n"
+    ]
+  },
+  "expected": {},
+  "evidence": [
+    {
+      "surfaceId": "apex:System.AppExchangeTrialTemplate",
+      "symbol": "System.AppExchangeTrialTemplate",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Aura",
+      "symbol": "System.Aura",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus",
+      "symbol": "System.CallbackStatus",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Cases",
+      "symbol": "System.Cases",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Collator",
+      "symbol": "System.Collator",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation",
+      "symbol": "System.Continuation",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Domain",
+      "symbol": "System.Domain",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainCreator",
+      "symbol": "System.DomainCreator",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainParser",
+      "symbol": "System.DomainParser",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType",
+      "symbol": "System.DomainType",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.EmailMessages",
+      "symbol": "System.EmailMessages",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContextImpl",
+      "symbol": "System.FinalizerContextImpl",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FlexQueue",
+      "symbol": "System.FlexQueue",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Formula",
+      "symbol": "System.Formula",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcFieldError",
+      "symbol": "System.FormulaRecalcFieldError",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.FormulaRecalcResult",
+      "symbol": "System.FormulaRecalcResult",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Http",
+      "symbol": "System.Http",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Network",
+      "symbol": "System.Network",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimit",
+      "symbol": "System.OrgLimit",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.OrgLimits",
+      "symbol": "System.OrgLimits",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Packaging",
+      "symbol": "System.Packaging",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult",
+      "symbol": "System.ParentJobResult",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.QueueableContextImpl",
+      "symbol": "System.QueueableContextImpl",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController",
+      "symbol": "System.RemoteObjectController",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ResetPasswordResult",
+      "symbol": "System.ResetPasswordResult",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SchedulableContextImpl",
+      "symbol": "System.SchedulableContextImpl",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope",
+      "symbol": "System.SetupScope",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SupportPredictiveService",
+      "symbol": "System.SupportPredictiveService",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.System",
+      "symbol": "System.System",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UIRequest",
+      "symbol": "System.UIRequest",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UUID",
+      "symbol": "System.UUID",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.UserManagement",
+      "symbol": "System.UserManagement",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Version",
+      "symbol": "System.Version",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCallout",
+      "symbol": "System.WebServiceCallout",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCalloutFuture",
+      "symbol": "System.WebServiceCalloutFuture",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebStoreContext",
+      "symbol": "System.WebStoreContext",
+      "kind": "shape"
+    }
+  ],
+  "notes": "API 67 dual-oracle compile-shape coverage for org-visible System type declarations; internal/non-visible types are tracked as Salesforce blockers."
+}

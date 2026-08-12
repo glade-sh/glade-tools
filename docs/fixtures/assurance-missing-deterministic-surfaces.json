@@ -1,0 +1,87 @@
+{
+  "name": "assurance-missing-deterministic-surfaces",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Answers",
+      "symbol": "Answers",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Cache.Visibility.ALL",
+      "symbol": "Cache.Visibility.ALL",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Messaging.Email",
+      "symbol": "Messaging.Email",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Messaging.SendEmailError",
+      "symbol": "Messaging.SendEmailError",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Messaging.SendEmailResult",
+      "symbol": "Messaging.SendEmailResult",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployCallbackContext",
+      "symbol": "Metadata.DeployCallbackContext",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployDetails",
+      "symbol": "Metadata.DeployDetails",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployMessage",
+      "symbol": "Metadata.DeployMessage",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:Metadata.Operations",
+      "symbol": "Metadata.Operations",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:System.Messaging",
+      "symbol": "Messaging",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:System.Messaging.sendEmail",
+      "symbol": "Messaging.sendEmail",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    },
+    {
+      "surfaceId": "apex:System.Search",
+      "symbol": "Search",
+      "kind": "test",
+      "notes": "Source-backed deterministic test probe for the private-corpus obligation."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/AssuranceMissingDeterministicSurfacesTest.cls",
+      "content": "@isTest private class AssuranceMissingDeterministicSurfacesTest { @isTest static void rows() { Answers answers = new Answers(); System.assertNotEquals(null, answers); System.assertNotEquals(null, answers.clone()); Cache.Visibility visibility = Cache.Visibility.ALL; System.assertEquals(Cache.Visibility.ALL, visibility); Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage(); email.setToAddresses(new List<String>{'assurance@example.test'}); List<Messaging.Email> emails = new List<Messaging.Email>{email}; List<Messaging.SendEmailResult> results = Messaging.sendEmail(emails, false); Messaging.SendEmailResult result = results[0]; Messaging.SendEmailError error = result.getErrors().isEmpty() ? null : result.getErrors()[0]; System.assertNotEquals(null, result); System.assert(error == null || error.getMessage() != null); Metadata.DeployCallbackContext callbackContext = new Metadata.DeployCallbackContext(); Metadata.DeployDetails details = new Metadata.DeployDetails(); Metadata.DeployMessage message = new Metadata.DeployMessage(); Metadata.Operations operations = new Metadata.Operations(); System.assertNotEquals(null, callbackContext); System.assertNotEquals(null, details); System.assertNotEquals(null, message); System.assertNotEquals(null, operations); Messaging.SingleEmailMessage systemMessaging = new Messaging.SingleEmailMessage(); System.assertNotEquals(null, systemMessaging); Account account = new Account(Name = 'assurance search'); insert account; Test.setFixedSearchResults(new List<Id>{account.Id}); List<List<SObject>> searchRows = Search.query('FIND {assurance*} IN ALL FIELDS RETURNING Account(Id, Name)'); System.assertEquals(1, searchRows.size()); } }"
+    }
+  ],
+  "salesforceEligible": true
+}

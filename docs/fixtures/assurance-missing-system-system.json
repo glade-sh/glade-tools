@@ -1,0 +1,23 @@
+{
+  "name": "assurance-missing-system-system",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.debug('assurance System.System');"
+    ]
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:System.System",
+      "symbol": "System.debug",
+      "kind": "exec",
+      "notes": "Anonymous execution exercises the canonical System.System namespace root."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.debug('assurance System.System');"
+    }
+  ]
+}

@@ -10,15 +10,18 @@ const (
 )
 
 type Case struct {
-	ID          string   `json:"id"`
-	Area        string   `json:"area"`
-	API         string   `json:"api"`
-	Mode        Mode     `json:"mode"`
-	SetupClass  string   `json:"setupClass,omitempty"`
-	Statements  []string `json:"statements,omitempty"`
-	Expression  string   `json:"expression"`
-	ValueType   string   `json:"valueType,omitempty"`
-	ExpectThrow bool     `json:"expectThrow,omitempty"`
+	ID                          string   `json:"id"`
+	Area                        string   `json:"area"`
+	API                         string   `json:"api"`
+	Mode                        Mode     `json:"mode"`
+	SurfaceIDs                  []string `json:"surfaceIds,omitempty"`
+	SetupClass                  string   `json:"setupClass,omitempty"`
+	Statements                  []string `json:"statements,omitempty"`
+	Expression                  string   `json:"expression"`
+	ValueType                   string   `json:"valueType,omitempty"`
+	ExpectThrow                 bool     `json:"expectThrow,omitempty"`
+	UnstableValue               string   `json:"unstableValue,omitempty"`
+	ExceptionMessageContractual bool     `json:"exceptionMessageContractual,omitempty"`
 }
 
 type Result struct {

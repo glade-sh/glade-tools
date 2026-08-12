@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "name": "salesforce-current-base-schema-g02-cb146-api67-20260803",
+  "packetId": "SF-Schema-G02-CB146-20260803",
+  "candidate": {
+    "path": "evidence/glade-candidate-current-base-0a0f624-cgo",
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
+  },
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "orgId": "00D000000000001EAA",
+    "apiVersion": "67.0",
+    "executePath": "evidence/current-base/schema-runtime-batch-20260803/salesforce-g02-current.raw.json",
+    "executeSha256": "70b7ead4cb0af6f528bbea908902c0eb67af2f4d8445ab20e3e105d80f550d53"
+  },
+  "comparisons": [
+    {
+      "caseId": "schema-g02-cb146-api67-exact",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.aipredictionfield",
+        "apex:Schema.DescribeFieldResult.bytelength",
+        "apex:Schema.DescribeFieldResult.cascadedelete",
+        "apex:Schema.DescribeFieldResult.casesensitive",
+        "apex:Schema.DescribeFieldResult.compoundfieldname",
+        "apex:Schema.DescribeFieldResult.controller",
+        "apex:Schema.DescribeFieldResult.datatranslationenabled",
+        "apex:Schema.DescribeFieldResult.defaultvalue",
+        "apex:Schema.DescribeFieldResult.defaultvalueformula",
+        "apex:Schema.DescribeFieldResult.deprecatedandhidden",
+        "apex:Schema.DescribeFieldResult.digits",
+        "apex:Schema.DescribeFieldResult.displaylocationindecimal",
+        "apex:Schema.DescribeFieldResult.encrypted",
+        "apex:Schema.DescribeFieldResult.filterable",
+        "apex:Schema.DescribeFieldResult.formulatreatnullnumberaszero",
+        "apex:Schema.DescribeFieldResult.highscalenumber",
+        "apex:Schema.DescribeFieldResult.htmlformatted",
+        "apex:Schema.DescribeFieldResult.inlinehelptext",
+        "apex:Schema.DescribeFieldResult.label",
+        "apex:Schema.DescribeFieldResult.length",
+        "apex:Schema.DescribeFieldResult.localname",
+        "apex:Schema.DescribeFieldResult.mask",
+        "apex:Schema.DescribeFieldResult.masktype",
+        "apex:Schema.DescribeFieldResult.namefield",
+        "apex:Schema.DescribeFieldResult.namepointing",
+        "apex:Schema.DescribeFieldResult.permissionable",
+        "apex:Schema.DescribeFieldResult.querybydistance",
+        "apex:Schema.DescribeFieldResult.referencetargetfield",
+        "apex:Schema.DescribeFieldResult.relationshiporder",
+        "apex:Schema.DescribeFieldResult.restricteddelete",
+        "apex:Schema.DescribeFieldResult.restrictedpicklist",
+        "apex:Schema.DescribeFieldResult.searchprefilterable",
+        "apex:Schema.DescribeFieldResult.sobjectfield",
+        "apex:Schema.DescribeFieldResult.sortable",
+        "apex:Schema.DescribeFieldResult.writerequiresmasterread",
+        "apex:Schema.DescribeSObjectResult.associateentitytype",
+        "apex:Schema.DescribeSObjectResult.associateparententity",
+        "apex:Schema.DescribeSObjectResult.datatranslationenabled",
+        "apex:Schema.DescribeSObjectResult.defaultimplementation",
+        "apex:Schema.DescribeSObjectResult.deprecatedandhidden",
+        "apex:Schema.DescribeSObjectResult.feedenabled",
+        "apex:Schema.DescribeSObjectResult.hassubtypes",
+        "apex:Schema.DescribeSObjectResult.implementedby",
+        "apex:Schema.DescribeSObjectResult.implementsinterfaces",
+        "apex:Schema.DescribeSObjectResult.isinterface",
+        "apex:Schema.DescribeSObjectResult.issubtype",
+        "apex:Schema.DescribeSObjectResult.keyprefix",
+        "apex:Schema.DescribeSObjectResult.label",
+        "apex:Schema.DescribeSObjectResult.labelplural",
+        "apex:Schema.DescribeSObjectResult.localname",
+        "apex:Schema.DescribeSObjectResult.mergeable",
+        "apex:Schema.DescribeSObjectResult.name",
+        "apex:Schema.DescribeSObjectResult.sobjectdescribeoption",
+        "apex:Schema.FieldSetMember.type"
+      ],
+      "sfObservation": "54 typed Schema describe rows match API 67 after canonical ID/projection normalization; local runs stable.",
+      "gladeObservation": "54 typed Schema describe rows match Salesforce API 67; two local runs stable."
+    }
+  ],
+  "excluded": [
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.sobjecttype",
+      "status": "mismatch",
+      "classification": "serialization-projection-artifact",
+      "reason": "The current candidate and API 67 observations differ; retained as an open or valid-red row.",
+      "salesforceObservation": {
+        "actualType": "Schema.SObjectType",
+        "actualValueJson": "CB146E2_Broad__c"
+      },
+      "gladeObservation": {
+        "actualType": "Schema.SObjectType",
+        "actualValueJson": "{\"object\":\"CB146E2_Broad__c\"}"
+      }
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.mruenabled",
+      "status": "mismatch",
+      "classification": "context-dependent",
+      "reason": "The current candidate and API 67 observations differ; retained as an open or valid-red row.",
+      "salesforceObservation": {
+        "actualType": "Boolean",
+        "actualValueJson": "false"
+      },
+      "gladeObservation": {
+        "actualType": "Boolean",
+        "actualValueJson": "true"
+      }
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.sobjecttype",
+      "status": "mismatch",
+      "classification": "serialization-projection-artifact",
+      "reason": "The current candidate and API 67 observations differ; retained as an open or valid-red row.",
+      "salesforceObservation": {
+        "actualType": "Schema.SObjectType",
+        "actualValueJson": "CB146E2_Broad__c"
+      },
+      "gladeObservation": {
+        "actualType": "Schema.SObjectType",
+        "actualValueJson": "{\"object\":\"CB146E2_Broad__c\"}"
+      }
+    },
+    {
+      "surfaceId": "apex:Schema.FieldSet.fields",
+      "status": "mismatch",
+      "classification": "serialization-projection-artifact",
+      "reason": "The current candidate and API 67 observations differ; retained as an open or valid-red row.",
+      "salesforceObservation": {
+        "actualType": "List<Schema.FieldSetMember>",
+        "actualValueJson": "[{\"dbRequired\":false,\"fieldPath\":\"CB146E2_Text__c\",\"label\":\"CB146E2 Text\",\"required\":false,\"type\":\"string\",\"typeApex\":\"STRING\"},{\"dbRequired\":false,\"fieldPath\":\"CB146E2_Number__c\",\"label\":\"CB146E2 Number\",\"required\":false,\"type\":\"double\",\"typeApex\":\"DOUBLE\"}]"
+      },
+      "gladeObservation": {
+        "actualType": "List<Schema.FieldSetMember>",
+        "actualValueJson": "[{\"dbRequired\":false,\"fieldPath\":\"CB146E2_Text__c\",\"label\":\"CB146E2 Text\",\"required\":false,\"sObjectField\":{\"Name\":\"CB146E2_Text__c\",\"field\":\"CB146E2_Text__c\",\"label\":\"CB146E2 Text\",\"name\":\"CB146E2_Text__c\",\"object\":\"CB146E2_Broad__c\"},\"type\":\"STRING\"},{\"dbRequired\":false,\"fieldPath\":\"CB146E2_Number__c\",\"label\":\"CB146E2 Number\",\"required\":false,\"sObjectField\":{\"Name\":\"CB146E2_Number__c\",\"field\":\"CB146E2_Number__c\",\"label\":\"CB146E2 Number\",\"name\":\"CB146E2_Number__c\",\"object\":\"CB146E2_Broad__c\"},\"type\":\"DOUBLE\"}]"
+      }
+    }
+  ],
+  "replay": {
+    "localReports": [
+      "evidence/current-base/schema-runtime-batch-20260803/glade-g02-current.json",
+      "evidence/current-base/schema-runtime-batch-20260803/glade-g02-current-2.json"
+    ],
+    "salesforceReport": "evidence/current-base/schema-runtime-batch-20260803/salesforce-g02-current.raw.json"
+  },
+  "local": {
+    "candidatePath": "evidence/glade-candidate-current-base-0a0f624-cgo",
+    "candidateSha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4",
+    "sourcePath": "evidence/current-base/cb146-schema-database-broad-evidence/scenarios/G02-schema-describe.apex",
+    "sourceSha256": "ebe6af472381a0259dacfde78f401034cda494562849bd9ac3176cedc3e63f8d",
+    "reportPath": "evidence/current-base/rebind-0a0f624-cgo/glade-g02-current.json",
+    "reportSha256": "dd8cac768554820dd50d9f3aaaa77ca5c0af33e846f02d9f87e6ba7f054796e1",
+    "reportPathSecond": "evidence/current-base/rebind-0a0f624-cgo/glade-g02-current-2.json",
+    "reportSha256Second": "dd8cac768554820dd50d9f3aaaa77ca5c0af33e846f02d9f87e6ba7f054796e1"
+  },
+  "fixturePath": "docs/fixtures/current-base-schema-g02-cb146-api67-20260803.json",
+  "fixtureSha256": "c4857003e5f8061a4f6f20a14be2966cdb8cc333cd08ae9563cd509bfa7ed253"
+}

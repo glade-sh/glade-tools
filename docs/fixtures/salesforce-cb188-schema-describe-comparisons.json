@@ -1,0 +1,412 @@
+{
+  "packet": "CB188",
+  "candidate": {
+    "path": "evidence/glade-candidate-21a6cad0",
+    "commit": "21a6cad08b832fe226f89a87b1fe3ca4306763cf",
+    "sha256": "842b01329a56c334abeb787e146a7096843a01b26c2640cdead99b126430d655"
+  },
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-cb188-schema-20260802",
+    "orgId": "00D000000000001EAA",
+    "apiVersion": "67.0",
+    "deletedAfterCapture": true
+  },
+  "comparisons": [
+    {
+      "caseId": "cb188-sobjecttype-equals",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectType.equals(Object)"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobjecttype-hashcode",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectType.hashCode()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobjecttype-tostring",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectType.toString()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobjecttype-newsobject",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectType.newSObject()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobjecttype-newsobject-defaults",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectType.newSObject(Id,Boolean)"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobjectfield-equals",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectField.equals(Object)"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobjectfield-hashcode",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectField.hashCode()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobjectfield-tostring",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectField.toString()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobject-describe-keyprefix",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.getKeyPrefix()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value 001 String",
+      "gladeObservation": "value 001 String"
+    },
+    {
+      "caseId": "cb188-sobject-describe-localname",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.getLocalName()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value Account String",
+      "gladeObservation": "value Account String"
+    },
+    {
+      "caseId": "cb188-sobject-describe-sobjecttype",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.getSObjectType()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value Account String",
+      "gladeObservation": "value Account String"
+    },
+    {
+      "caseId": "cb188-sobject-describe-option",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.getSObjectDescribeOption()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value DEFERRED String",
+      "gladeObservation": "value DEFERRED String"
+    },
+    {
+      "caseId": "cb188-sobject-describe-fields-property",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.fields"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-sobject-describe-custom",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.isCustom()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-sobject-describe-customsetting",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.isCustomSetting()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-sobject-describe-deprecated",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.isDeprecatedAndHidden()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-byte-length",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getByteLength()"
+      ],
+      "expectedObservation": "value Integer",
+      "sfObservation": "value 765 Integer",
+      "gladeObservation": "value 765 Integer"
+    },
+    {
+      "caseId": "cb188-name-calculated-formula",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getCalculatedFormula()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value  String",
+      "gladeObservation": "value  String"
+    },
+    {
+      "caseId": "cb188-name-compound-field-name",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getCompoundFieldName()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value Name String",
+      "gladeObservation": "value Name String"
+    },
+    {
+      "caseId": "cb188-name-sobject-type",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getSObjectType()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value Account String",
+      "gladeObservation": "value Account String"
+    },
+    {
+      "caseId": "cb188-name-sobject-field",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getSobjectField()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value Name String",
+      "gladeObservation": "value Name String"
+    },
+    {
+      "caseId": "cb188-name-nillable",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isNillable()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-external-id",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isExternalId()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-unique",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isUnique()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-encrypted",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isEncrypted()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-calculated",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isCalculated()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-autonumber",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isAutoNumber()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-case-sensitive",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isCaseSensitive()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-custom",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isCustom()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-html-formatted",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isHtmlFormatted()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-default-value",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getDefaultValue()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-name-default-value-formula",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getDefaultValueFormula()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-name-defaulted-on-create",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isDefaultedOnCreate()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value false Boolean",
+      "gladeObservation": "value false Boolean"
+    },
+    {
+      "caseId": "cb188-name-sortable",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.isSortable()"
+      ],
+      "expectedObservation": "value Boolean",
+      "sfObservation": "value true Boolean",
+      "gladeObservation": "value true Boolean"
+    },
+    {
+      "caseId": "cb188-contact-account-reference-to",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getReferenceTo()"
+      ],
+      "expectedObservation": "value Integer",
+      "sfObservation": "value 1 Integer",
+      "gladeObservation": "value 1 Integer"
+    },
+    {
+      "caseId": "cb188-contact-account-relationship-name",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getRelationshipName()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value Account String",
+      "gladeObservation": "value Account String"
+    },
+    {
+      "caseId": "cb188-contact-account-reference-target-field",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getReferenceTargetField()"
+      ],
+      "expectedObservation": "value String",
+      "sfObservation": "value  String",
+      "gladeObservation": "value  String"
+    },
+    {
+      "caseId": "cb188-contact-account-relationship-order",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.DescribeFieldResult.getRelationshipOrder()"
+      ],
+      "expectedObservation": "value Integer",
+      "sfObservation": "value  Integer",
+      "gladeObservation": "value  Integer"
+    }
+  ],
+  "excluded": [
+    {
+      "caseId": "cb188-sobject-describe-mergeable",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.isMergeable()"
+      ],
+      "reason": "API 67 Salesforce returned true while the pinned candidate returned false; retained as a product correction candidate and not credited."
+    },
+    {
+      "caseId": "cb188-sobject-describe-mru",
+      "surfaceIds": [
+        "apex:Schema.DescribeSObjectResult.isMruEnabled()"
+      ],
+      "reason": "Setup-dependent MRU state is intentionally left open and not credited."
+    }
+  ]
+}

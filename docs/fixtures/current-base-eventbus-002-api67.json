@@ -1,0 +1,184 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254"
+  },
+  "command": {
+    "kind": "check"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException",
+      "symbol": "eventbus.InvalidReplayIdException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException()",
+      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException(Exception)",
+      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException(String)",
+      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException(String,Exception)",
+      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException.clone()",
+      "symbol": "eventbus.InvalidReplayIdException.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.RetryableException",
+      "symbol": "eventbus.RetryableException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.RetryableException.RetryableException()",
+      "symbol": "eventbus.RetryableException.RetryableException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.RetryableException.RetryableException(Exception)",
+      "symbol": "eventbus.RetryableException.RetryableException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.RetryableException.RetryableException(String)",
+      "symbol": "eventbus.RetryableException.RetryableException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.RetryableException.RetryableException(String,Exception)",
+      "symbol": "eventbus.RetryableException.RetryableException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.RetryableException.clone()",
+      "symbol": "eventbus.RetryableException.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.SuccessResult",
+      "symbol": "eventbus.SuccessResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.SuccessResult.SuccessResult()",
+      "symbol": "eventbus.SuccessResult.SuccessResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.SuccessResult.getEventUuids()",
+      "symbol": "eventbus.SuccessResult.getEventUuids"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TestBroker",
+      "symbol": "eventbus.TestBroker"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TestBroker.TestBroker()",
+      "symbol": "eventbus.TestBroker.TestBroker"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TestBroker.clone()",
+      "symbol": "eventbus.TestBroker.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TestEventService",
+      "symbol": "eventbus.TestEventService"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TestEventService.TestEventService()",
+      "symbol": "eventbus.TestEventService.TestEventService"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TestEventService.clone()",
+      "symbol": "eventbus.TestEventService.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext",
+      "symbol": "eventbus.TriggerContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext.TriggerContext()",
+      "symbol": "eventbus.TriggerContext.TriggerContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext.clone()",
+      "symbol": "eventbus.TriggerContext.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext.currentContext()",
+      "symbol": "eventbus.TriggerContext.currentContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext.getResumeCheckpoint()",
+      "symbol": "eventbus.TriggerContext.getResumeCheckpoint"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext.setResumeCheckpoint(String)",
+      "symbol": "eventbus.TriggerContext.setResumeCheckpoint"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext.lastError",
+      "symbol": "eventbus.TriggerContext.lastError"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:eventbus.TriggerContext.retries",
+      "symbol": "eventbus.TriggerContext.retries"
+    }
+  ],
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  },
+  "mode": "compile-shape",
+  "name": "current-base-eventbus-002-api67",
+  "notes": "Covers the 29 missing rows from current-base-local-runtime-required-eventbus-002 with compile-shape evidence. The bounded runtime probe exposed an existing unsupported call for TriggerContext.setResumeCheckpoint; no product code is changed and this fixture makes no runtime-completeness claim for that method.",
+  "profile": {
+    "laneId": "current-base-local-runtime-required-eventbus-002",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 29,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "The bound command is glade check despite test-like source symbols; EventBus runtime execution is not claimed.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "These eventbus test and exception helper types are exercised as deterministic local contracts; no hosted event-bus delivery claim is made.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseEventBus002Test { @isTest static void helperAndExceptionContracts() { Exception cause = null; eventbus.InvalidReplayIdException invalid0 = new eventbus.InvalidReplayIdException(); eventbus.InvalidReplayIdException invalid1 = new eventbus.InvalidReplayIdException(cause); eventbus.InvalidReplayIdException invalid2 = new eventbus.InvalidReplayIdException('invalid'); eventbus.InvalidReplayIdException invalid3 = new eventbus.InvalidReplayIdException('invalid', cause); System.assertEquals('eventbus.InvalidReplayIdException', invalid0.getTypeName()); System.assertNotEquals(null, invalid0.clone()); System.assertNotEquals(null, invalid1.clone()); System.assertNotEquals(null, invalid2.clone()); System.assertNotEquals(null, invalid3.clone()); eventbus.RetryableException retry0 = new eventbus.RetryableException(); eventbus.RetryableException retry1 = new eventbus.RetryableException(cause); eventbus.RetryableException retry2 = new eventbus.RetryableException('retry'); eventbus.RetryableException retry3 = new eventbus.RetryableException('retry', cause); System.assertEquals('eventbus.RetryableException', retry0.getTypeName()); System.assertNotEquals(null, retry0.clone()); System.assertNotEquals(null, retry1.clone()); System.assertNotEquals(null, retry2.clone()); System.assertNotEquals(null, retry3.clone()); eventbus.SuccessResult success = new eventbus.SuccessResult(); System.assertNotEquals(null, success.getEventUuids()); eventbus.TestBroker broker = new eventbus.TestBroker(); System.assertNotEquals(null, broker.clone()); broker.deliver(); broker.fail(); eventbus.TestEventService service = new eventbus.TestEventService(); System.assertNotEquals(null, service.clone()); eventbus.TriggerContext triggerContext = new eventbus.TriggerContext(); triggerContext.setResumeCheckpoint('replay-1'); System.assertEquals('replay-1', triggerContext.getResumeCheckpoint()); triggerContext.lastError = 'none'; triggerContext.retries = 0; System.assertEquals('none', triggerContext.lastError); System.assertEquals(0, triggerContext.retries); System.assertNotEquals(null, triggerContext.clone()); System.assertNotEquals(null, eventbus.TriggerContext.currentContext()); } }",
+      "path": "force-app/main/default/classes/CurrentBaseEventBus002Test.cls"
+    }
+  ]
+}

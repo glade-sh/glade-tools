@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "docsDir": "/Users/matt/Dev/glade/example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/lwc",
+  "docsDir": "private-docs-source/lwc",
   "rows": [
     {
       "id": "api-module:experience/blockBuilderApi",

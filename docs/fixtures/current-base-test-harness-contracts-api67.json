@@ -1,0 +1,59 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Test.setContinuationResponse(String,HttpResponse)",
+      "symbol": "System.Test.setContinuationResponse"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Test.setCurrentPageReference(Object)",
+      "symbol": "System.Test.setCurrentPageReference"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Test.testInstall(InstallHandler,Version)",
+      "symbol": "System.Test.testInstall"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Test.testInstall(InstallHandler,Version,Boolean)",
+      "symbol": "System.Test.testInstall"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String)",
+      "symbol": "System.Test.testSandboxPostCopyScript"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Test.testSandboxPostCopyScript(SandboxPostCopy,Id,Id,String,Boolean)",
+      "symbol": "System.Test.testSandboxPostCopyScript"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Test.testUninstall(UninstallHandler)",
+      "symbol": "System.Test.testUninstall"
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-test-harness-contracts-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "These System.Test harness callbacks require Glade's deterministic local test broker; hosted Salesforce execution is not a portable oracle for the local-only callback state.",
+  "source": [
+    {
+      "content": "public class CurrentBaseTestHarnessInstall implements InstallHandler { public static Boolean called = false; public void onInstall(InstallContext context) { called = true; } } public class CurrentBaseTestHarnessUninstall implements UninstallHandler { public static Boolean called = false; public void onUninstall(UninstallContext context) { called = true; } } public class CurrentBaseTestHarnessSandbox implements SandboxPostCopy { public static Boolean called = false; public void runApexClass(SandboxContext context) { called = true; } } public class CurrentBaseTestHarnessContinuation { public String resume() { HttpResponse response = (HttpResponse)Continuation.getResponse('harness'); return response.getBody(); } } @isTest private class CurrentBaseTestHarnessContractsTest { @isTest static void callbacksRun() { Object page = new PageReference('/apex/harness'); Test.setCurrentPageReference(page); System.assertEquals('/apex/harness', ApexPages.currentPage().getUrl()); HttpResponse response = new HttpResponse(); response.setBody('continued'); Test.setContinuationResponse('harness', response); Continuation continuation = new Continuation(60); continuation.addHttpRequest(new HttpRequest()); continuation.continuationMethod = 'resume'; System.assertEquals('continued', (String)Test.invokeContinuationMethod(new CurrentBaseTestHarnessContinuation(), continuation)); Test.testInstall(new CurrentBaseTestHarnessInstall(), null); Test.testInstall(new CurrentBaseTestHarnessInstall(), new Version(1, 47, 0), true); Test.testUninstall(new CurrentBaseTestHarnessUninstall()); Test.testSandboxPostCopyScript(new CurrentBaseTestHarnessSandbox(), '00D000000000001', '0GR000000000001', 'preview'); Test.testSandboxPostCopyScript(new CurrentBaseTestHarnessSandbox(), '00D000000000001', '0GR000000000001', 'preview', true); System.assert(CurrentBaseTestHarnessInstall.called); System.assert(CurrentBaseTestHarnessUninstall.called); System.assert(CurrentBaseTestHarnessSandbox.called); } }",
+      "path": "force-app/main/default/classes/CurrentBaseTestHarnessContracts.cls"
+    }
+  ]
+}

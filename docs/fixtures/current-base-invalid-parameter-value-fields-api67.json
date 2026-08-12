@@ -1,0 +1,32 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "Exception value = new InvalidParameterValueException('parameter', 'value'); System.assertEquals(0, value.getInaccessibleFields().size());"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.InvalidParameterValueException.getInaccessibleFields()",
+      "symbol": "System.InvalidParameterValueException.getInaccessibleFields"
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-invalid-parameter-value-fields-api67",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This exception accessor is validated against Glade's local error object; the hosted fixture is deferred because the API 67 scratch runner does not expose a stable synthetic InvalidParameterValueException path.",
+  "source": [
+    {
+      "content": "Exception value = new InvalidParameterValueException('parameter', 'value'); System.assertEquals(0, value.getInaccessibleFields().size());",
+      "path": "anonymous.apex"
+    }
+  ]
+}

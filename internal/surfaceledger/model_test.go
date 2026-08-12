@@ -168,8 +168,8 @@ func TestCanonicalSurfaceIDsCleanApexNames(t *testing.T) {
 		t.Fatalf("cleaned Approval id = %q, want %q", got, want)
 	}
 
-	got = ApexMemberID("System", "BusinessHours", "add", []string{"String", "Datetime", "Long"})
-	want = ApexMemberID("", "BusinessHours", "add", []string{"String", "Datetime", "Long"})
+	got = ApexMemberID("System", "BusinessHours", "add", []string{"Id", "Datetime", "Long"})
+	want = ApexMemberID("", "BusinessHours", "add", []string{"Id", "Datetime", "Long"})
 	if got != want {
 		t.Fatalf("cleaned BusinessHours id = %q, want %q", got, want)
 	}

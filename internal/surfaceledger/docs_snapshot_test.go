@@ -1,8 +1,10 @@
 package surfaceledger
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
@@ -26,6 +28,20 @@ func TestBuildDocsSnapshotKeepsProductPathInIdentity(t *testing.T) {
 	}
 	if byID[ApexTypeID("System", "Object")].DocsSource != "apex/apex_methods_system_object.md" {
 		t.Fatalf("apex docs source = %q", byID[ApexTypeID("System", "Object")].DocsSource)
+	}
+}
+
+func TestBuildDocsSnapshotRejectsEmptySource(t *testing.T) {
+	if _, err := BuildDocsSnapshot(t.TempDir()); err == nil {
+		t.Fatal("BuildDocsSnapshot accepted an empty docs source")
+	}
+}
+
+func TestBuildDocsSnapshotRejectsNonApexSource(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "lightning-aura/guide.md", "# Guide\n\nNarrative only.\n")
+	if _, err := BuildDocsSnapshot(root); err == nil {
+		t.Fatal("BuildDocsSnapshot accepted a source without Apex rows")
 	}
 }
 
@@ -279,6 +295,24 @@ func TestBuildDocsSnapshotUsesApexSignatureParameterTypes(t *testing.T) {
 	}
 	if _, ok := byID[ApexMemberID("System", "Database", "executeBatch", []string{"Object"})]; !ok {
 		t.Fatalf("Database.executeBatch single-argument docs row did not use typed parameter list: %#v", rows)
+	}
+}
+
+func TestBuildDocsSnapshotInfersConnectApiStandaloneMethodIdentity(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "apex/apex_ConnectAPI_OMSAnalytics_productExpand.md", "# productsExpand(scope, products, expand)\n\n## Signature\n\n`public static ConnectApi.ProductsListOutputRepresentation productsExpand(String scope, List<String> products, List<ConnectApi.ProductExpandType> expand)`\n")
+
+	rows, err := BuildDocsSnapshot(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	want := ApexMemberID("ConnectApi", "OMSAnalytics", "productsExpand", []string{"String", "List<String>", "List<ConnectApi.ProductExpandType>"})
+	if _, ok := byID[want]; !ok {
+		t.Fatalf("missing canonical ConnectApi docs row %s in %#v", want, rows)
+	}
+	if _, ok := byID["apex:ConnectApi.productsExpand(scope,"]; ok {
+		t.Fatalf("kept malformed title-as-type docs row in %#v", rows)
 	}
 }
 
@@ -756,6 +790,112 @@ func TestRowsFromDocsInventorySkipsApexPreviewBulletSignatures(t *testing.T) {
 		if _, ok := byID[id]; ok {
 			t.Fatalf("kept heading-only docs row %s in %#v", id, rows)
 		}
+	}
+}
+
+func TestRowsFromDocsInventorySkipsApexHeadingAliasesWithoutTypedDeclarations(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{
+		Documents: []apexdocs.Document{{
+			SourcePath: "apex/apex_interface_mock_MyAdapter.md",
+			Kind:       "interface",
+			Namespace:  "mock",
+			Name:       "MyAdapter",
+			Members: []apexdocs.Member{
+				{
+					Kind:      "member",
+					Name:      "Response",
+					Signature: "Response Mappings for Header Attributes",
+					Section:   "Tax Mappings",
+				},
+				{
+					Kind:       "method",
+					Name:       "processRequest",
+					Signature:  "public String processRequest(MockContext ctx)",
+					ReturnType: "String",
+					Parameters: []string{"MockContext"},
+				},
+				{
+					Kind:         "property",
+					Name:         "isValid",
+					Signature:    "public Boolean isValid {get; set;}",
+					PropertyType: "Boolean",
+				},
+			},
+		}, {
+			SourcePath: "apex/apex_class_mock_InnerType.md",
+			Kind:       "class",
+			Namespace:  "mock",
+			Name:       "InnerType",
+			Members: []apexdocs.Member{{
+				Kind:       "method",
+				Name:       "valueOf",
+				Signature:  "public static InnerType valueOf(String s)",
+				ReturnType: "InnerType",
+				Parameters: []string{"String"},
+			}},
+		}},
+	})
+	byID := rowsByID(rows)
+
+	// Heading alias must be excluded.
+	bad := ApexMemberID("mock", "MyAdapter", "Response", nil)
+	if _, ok := byID[bad]; ok {
+		t.Fatalf("kept heading-alias member row %s", bad)
+	}
+
+	// Real method must remain.
+	goodMethod := ApexMemberID("mock", "MyAdapter", "processRequest", []string{"MockContext"})
+	if _, ok := byID[goodMethod]; !ok {
+		t.Fatalf("missing real method row %s", goodMethod)
+	}
+
+	// Real property must remain.
+	goodProp := ApexMemberID("mock", "MyAdapter", "isValid", nil)
+	if row, ok := byID[goodProp]; !ok || row.Kind != KindProperty {
+		t.Fatalf("missing or misclassified property row %s: %#v", goodProp, row)
+	}
+
+	// Standalone inner type must remain.
+	goodType := ApexTypeID("mock", "InnerType")
+	if _, ok := byID[goodType]; !ok {
+		t.Fatalf("missing standalone inner type row %s", goodType)
+	}
+
+	// Inner type's method must remain.
+	goodInnerMember := ApexMemberID("mock", "InnerType", "valueOf", []string{"String"})
+	if _, ok := byID[goodInnerMember]; !ok {
+		t.Fatalf("missing inner type member row %s", goodInnerMember)
+	}
+}
+
+func TestSortRowsPreservesDuplicateSurfaceOrder(t *testing.T) {
+	rows := make([]SurfaceLedgerRow, 0, 100)
+	var want []string
+	for i := 0; i < 100; i++ {
+		if i%3 == 0 {
+			signature := fmt.Sprintf("overload-%03d", i)
+			rows = append(rows, SurfaceLedgerRow{
+				SurfaceID: "apex:mock.Adapter.overload",
+				Signature: signature,
+			})
+			want = append(want, signature)
+			continue
+		}
+		rows = append(rows, SurfaceLedgerRow{
+			SurfaceID: fmt.Sprintf("apex:mock.Type%03d", 100-i),
+		})
+	}
+
+	sortRows(rows)
+
+	var got []string
+	for _, row := range rows {
+		if row.SurfaceID == "apex:mock.Adapter.overload" {
+			got = append(got, row.Signature)
+		}
+	}
+	if !slices.Equal(got, want) {
+		t.Fatalf("duplicate surface order changed:\ngot  %v\nwant %v", got, want)
 	}
 }
 

@@ -1,45 +1,174 @@
 {
-  "name": "apex-tail-supported-shape-evidence",
+  "command": {
+    "kind": "check"
+  },
   "evidence": [
-    {"surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()", "symbol": "ApexPages.KnowledgeArticleVersionStandardController.setDataCategory", "kind": "shape", "notes": "Local Visualforce controller support exposes the Knowledge article data category setter shape."},
-    {"surfaceId": "apex:Approval.process(List<Approval.ProcessRequest>)", "symbol": "Approval.process(List<Approval.ProcessRequest>)", "kind": "shape", "notes": "Local Approval support exposes the list process request overload shape."},
-    {"surfaceId": "apex:Approval.process(List<Approval.ProcessRequest>,Boolean)", "symbol": "Approval.process(List<Approval.ProcessRequest>, Boolean)", "kind": "shape", "notes": "Local Approval support exposes the list process request all-or-none overload shape."},
-    {"surfaceId": "apex:DataSource.AsyncDeleteCallback.processDelete()", "symbol": "DataSource.AsyncDeleteCallback.processDelete", "kind": "shape", "notes": "Async DML callback interfaces are modeled for local callback dispatch."},
-    {"surfaceId": "apex:DataSource.AsyncSaveCallback.processSave()", "symbol": "DataSource.AsyncSaveCallback.processSave", "kind": "shape", "notes": "Async DML callback interfaces are modeled for local callback dispatch."},
-    {"surfaceId": "apex:Messaging.SingleEmailMessage.setDocumentAttachments()", "symbol": "Messaging.SingleEmailMessage.setDocumentAttachments", "kind": "shape", "notes": "Local email message support exposes the document attachment setter shape."},
-    {"surfaceId": "apex:Schema.DescribeFieldResult", "symbol": "Schema.DescribeFieldResult", "kind": "shape", "notes": "Schema describe field results are modeled as local describe DTO shapes."},
-    {"surfaceId": "apex:Schema.SObjectTypeFieldSets.get(String)", "symbol": "Schema.SObjectTypeFieldSets.get", "kind": "shape", "notes": "Schema field set maps expose typed get(String) shape for local describe metadata."},
-    {"surfaceId": "apex:Schema.SObjectTypeFieldSets.getMap()", "symbol": "Schema.SObjectTypeFieldSets.getMap", "kind": "shape", "notes": "Schema field set maps expose typed getMap() shape for local describe metadata."},
-    {"surfaceId": "apex:Schema.SObjectTypeFields.get(String)", "symbol": "Schema.SObjectTypeFields.get", "kind": "shape", "notes": "Schema fields maps expose typed get(String) shape for local describe metadata."},
-    {"surfaceId": "apex:Schema.SObjectTypeFields.getMap()", "symbol": "Schema.SObjectTypeFields.getMap", "kind": "shape", "notes": "Schema fields maps expose typed getMap() shape for local describe metadata."},
-    {"surfaceId": "apex:System.Address.getDistance()", "symbol": "Address.getDistance", "kind": "shape", "notes": "Local Address support exposes getDistance as a deterministic value object helper shape."},
-    {"surfaceId": "apex:System.HttpRequest client certificate local mock metadata", "symbol": "HttpRequest client certificate metadata", "kind": "shape", "notes": "Local HttpRequest support stores client certificate metadata for mock callout inspection."},
-    {"surfaceId": "apex:System.Location.getDistance()", "symbol": "Location.getDistance", "kind": "shape", "notes": "Local Location support exposes getDistance as a deterministic value object helper shape."},
-    {"surfaceId": "apex:System.Location.newInstance()", "symbol": "Location.newInstance", "kind": "shape", "notes": "Local Location support exposes the factory shape."},
-    {"surfaceId": "apex:System.QuickAction.describeAvailableActions", "symbol": "QuickAction.describeAvailableActions", "kind": "shape", "notes": "QuickAction describe helpers are represented as local service-bound shapes."},
-    {"surfaceId": "apex:System.QuickAction.describeAvailableQuickActions()", "symbol": "QuickAction.describeAvailableQuickActions", "kind": "shape", "notes": "QuickAction describe helpers are represented as local service-bound shapes."},
-    {"surfaceId": "apex:System.QuickAction.describeQuickActions()", "symbol": "QuickAction.describeQuickActions", "kind": "shape", "notes": "QuickAction describe helpers are represented as local service-bound shapes."},
-    {"surfaceId": "apex:System.QuickAction.performQuickAction()", "symbol": "QuickAction.performQuickAction", "kind": "shape", "notes": "QuickAction perform helpers are represented as local service-bound shapes."},
-    {"surfaceId": "apex:System.QuickAction.performQuickActions()", "symbol": "QuickAction.performQuickActions", "kind": "shape", "notes": "QuickAction perform helpers are represented as local service-bound shapes."},
-    {"surfaceId": "apex:System.SObject.addError(Exception)", "symbol": "SObject.addError(Exception)", "kind": "shape", "notes": "Local SObject error collection support exposes the Exception overload shape."},
-    {"surfaceId": "apex:System.Set.addAll(Set<Object>)", "symbol": "Set.addAll(Set<Object>)", "kind": "shape", "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally."},
-    {"surfaceId": "apex:System.Set.containsAll(Set<Object>)", "symbol": "Set.containsAll(Set<Object>)", "kind": "shape", "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally."},
-    {"surfaceId": "apex:System.Set.removeAll(Set<Object>)", "symbol": "Set.removeAll(Set<Object>)", "kind": "shape", "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally."},
-    {"surfaceId": "apex:System.String.template()", "symbol": "String.template", "kind": "shape", "notes": "Local String support exposes the template helper shape."},
-    {"surfaceId": "apex:System.System.runAs(User)", "symbol": "System.runAs(User)", "kind": "shape", "notes": "Local test isolation support exposes the runAs(User) shape."}
-  ],
-  "source": [
     {
-      "path": "force-app/main/default/classes/ApexTailShapeProbe.cls",
-      "content": "public class ApexTailShapeProbe {}"
+      "kind": "shape",
+      "notes": "Local Visualforce controller support exposes the Knowledge article data category setter shape.",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.setDataCategory"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local Approval support exposes the list process request overload shape.",
+      "surfaceId": "apex:Approval.process(List<Approval.ProcessRequest>)",
+      "symbol": "Approval.process(List<Approval.ProcessRequest>)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local Approval support exposes the list process request all-or-none overload shape.",
+      "surfaceId": "apex:Approval.process(List<Approval.ProcessRequest>,Boolean)",
+      "symbol": "Approval.process(List<Approval.ProcessRequest>, Boolean)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Async DML callback interfaces are modeled for local callback dispatch.",
+      "surfaceId": "apex:DataSource.AsyncDeleteCallback.processDelete()",
+      "symbol": "DataSource.AsyncDeleteCallback.processDelete"
+    },
+    {
+      "kind": "shape",
+      "notes": "Async DML callback interfaces are modeled for local callback dispatch.",
+      "surfaceId": "apex:DataSource.AsyncSaveCallback.processSave()",
+      "symbol": "DataSource.AsyncSaveCallback.processSave"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local email message support exposes the document attachment setter shape.",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.setDocumentAttachments()",
+      "symbol": "Messaging.SingleEmailMessage.setDocumentAttachments"
+    },
+    {
+      "kind": "shape",
+      "notes": "Schema describe field results are modeled as local describe DTO shapes.",
+      "surfaceId": "apex:Schema.DescribeFieldResult",
+      "symbol": "Schema.DescribeFieldResult"
+    },
+    {
+      "kind": "shape",
+      "notes": "Schema field set maps expose typed get(String) shape for local describe metadata.",
+      "surfaceId": "apex:Schema.SObjectTypeFieldSets.get(String)",
+      "symbol": "Schema.SObjectTypeFieldSets.get"
+    },
+    {
+      "kind": "shape",
+      "notes": "Schema field set maps expose typed getMap() shape for local describe metadata.",
+      "surfaceId": "apex:Schema.SObjectTypeFieldSets.getMap()",
+      "symbol": "Schema.SObjectTypeFieldSets.getMap"
+    },
+    {
+      "kind": "shape",
+      "notes": "Schema fields maps expose typed get(String) shape for local describe metadata.",
+      "surfaceId": "apex:Schema.SObjectTypeFields.get(String)",
+      "symbol": "Schema.SObjectTypeFields.get"
+    },
+    {
+      "kind": "shape",
+      "notes": "Schema fields maps expose typed getMap() shape for local describe metadata.",
+      "surfaceId": "apex:Schema.SObjectTypeFields.getMap()",
+      "symbol": "Schema.SObjectTypeFields.getMap"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local Address support exposes getDistance as a deterministic value object helper shape.",
+      "surfaceId": "apex:System.Address.getDistance(Location,String)",
+      "symbol": "Address.getDistance(Location,String)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local HttpRequest support stores client certificate metadata for mock callout inspection.",
+      "surfaceId": "apex:System.HttpRequest client certificate local mock metadata",
+      "symbol": "HttpRequest client certificate metadata"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local Location support exposes getDistance as a deterministic value object helper shape.",
+      "surfaceId": "apex:System.Location.getDistance()",
+      "symbol": "Location.getDistance"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local Location support exposes the factory shape.",
+      "surfaceId": "apex:System.Location.newInstance()",
+      "symbol": "Location.newInstance"
+    },
+    {
+      "kind": "shape",
+      "notes": "QuickAction describe helpers are represented as local service-bound shapes.",
+      "surfaceId": "apex:System.QuickAction.describeAvailableActions",
+      "symbol": "QuickAction.describeAvailableActions"
+    },
+    {
+      "kind": "shape",
+      "notes": "QuickAction describe helpers are represented as local service-bound shapes.",
+      "surfaceId": "apex:System.QuickAction.describeAvailableQuickActions()",
+      "symbol": "QuickAction.describeAvailableQuickActions"
+    },
+    {
+      "kind": "shape",
+      "notes": "QuickAction describe helpers are represented as local service-bound shapes.",
+      "surfaceId": "apex:System.QuickAction.describeQuickActions()",
+      "symbol": "QuickAction.describeQuickActions"
+    },
+    {
+      "kind": "shape",
+      "notes": "QuickAction perform helpers are represented as local service-bound shapes.",
+      "surfaceId": "apex:System.QuickAction.performQuickAction()",
+      "symbol": "QuickAction.performQuickAction"
+    },
+    {
+      "kind": "shape",
+      "notes": "QuickAction perform helpers are represented as local service-bound shapes.",
+      "surfaceId": "apex:System.QuickAction.performQuickActions()",
+      "symbol": "QuickAction.performQuickActions"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local SObject error collection support exposes the Exception overload shape.",
+      "surfaceId": "apex:System.SObject.addError(Exception)",
+      "symbol": "SObject.addError(Exception)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally.",
+      "surfaceId": "apex:System.Set.addAll(Set<Object>)",
+      "symbol": "Set.addAll(Set<Object>)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally.",
+      "surfaceId": "apex:System.Set.containsAll(Set<Object>)",
+      "symbol": "Set.containsAll(Set<Object>)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally.",
+      "surfaceId": "apex:System.Set.removeAll(Set<Object>)",
+      "symbol": "Set.removeAll(Set<Object>)"
+    },
+    {
+      "kind": "shape",
+      "notes": "Local test isolation support exposes the runAs(User) shape.",
+      "surfaceId": "apex:System.System.runAs(User)",
+      "symbol": "System.runAs(User)"
     }
   ],
-  "command": {
-    "kind": "test"
-  },
   "expected": {
     "result": {
       "ok": true
     }
-  }
+  },
+  "name": "apex-tail-supported-shape-evidence",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "The source is a compile-shape probe with no @isTest entry point; bind it to glade check rather than crediting a zero-test replay.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Local compile-shape probe only; source has no Salesforce @isTest entry point and is not a deployable hosted test.",
+  "source": [
+    {
+      "content": "public class ApexTailShapeProbe {}",
+      "path": "force-app/main/default/classes/ApexTailShapeProbe.cls"
+    }
+  ]
 }

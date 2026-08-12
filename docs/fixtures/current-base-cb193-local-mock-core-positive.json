@@ -1,0 +1,278 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "381e27e47e720ac7dbecb906bf275d2d5bcdd37f",
+    "sha256": "976c2ceceb2a0936889129d2dc7314d2065fbc538caf54bbb534f20e4f588166"
+  },
+  "command": {
+    "args": [
+      "current-base-cb193-local-mock-core-positive.apex"
+    ],
+    "kind": "exec",
+    "limitMode": "permissive"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.contains(List<String>)",
+      "symbol": "Cache.Org.contains(List<String>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.contains(Set<String>)",
+      "symbol": "Cache.Org.contains(Set<String>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.contains(String)",
+      "symbol": "Cache.Org.contains(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.put(String,Object)",
+      "symbol": "Cache.Org.put(String,Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.put(String,Object,Cache.Visibility)",
+      "symbol": "Cache.Org.put(String,Object,Cache.Visibility)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.put(String,Object,Integer)",
+      "symbol": "Cache.Org.put(String,Object,Integer)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.put(String,Object,Integer,Cache.Visibility,Boolean)",
+      "symbol": "Cache.Org.put(String,Object,Integer,Cache.Visibility,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.remove(List<String>)",
+      "symbol": "Cache.Org.remove(List<String>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Org.remove(String)",
+      "symbol": "Cache.Org.remove(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.contains(Set<String>)",
+      "symbol": "Cache.Session.contains(Set<String>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.contains(String)",
+      "symbol": "Cache.Session.contains(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.put(String,Object)",
+      "symbol": "Cache.Session.put(String,Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.put(String,Object,Cache.Visibility)",
+      "symbol": "Cache.Session.put(String,Object,Cache.Visibility)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.put(String,Object,Integer)",
+      "symbol": "Cache.Session.put(String,Object,Integer)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.put(String,Object,Integer,Cache.Visibility,Boolean)",
+      "symbol": "Cache.Session.put(String,Object,Integer,Cache.Visibility,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Cache.Session.remove(String)",
+      "symbol": "Cache.Session.remove(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.CustomMetadata",
+      "symbol": "Metadata.CustomMetadata"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.CustomMetadataValue",
+      "symbol": "Metadata.CustomMetadataValue"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.DeployContainer",
+      "symbol": "Metadata.DeployContainer"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.DeployResult",
+      "symbol": "Metadata.DeployResult"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.DeployStatus",
+      "symbol": "Metadata.DeployStatus"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations",
+      "symbol": "Metadata.Operations"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations.enqueueDeployment(Metadata.DeployContainer,Metadata.DeployCallback)",
+      "symbol": "Metadata.Operations.enqueueDeployment"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations.checkDeployStatus(Id)",
+      "symbol": "Metadata.Operations.checkDeployStatus(Id)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations.checkDeployStatus(Id,Boolean)",
+      "symbol": "Metadata.Operations.checkDeployStatus(Id,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations.checkDeployStatus(String)",
+      "symbol": "Metadata.Operations.checkDeployStatus(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations.checkDeployStatus(String,Boolean)",
+      "symbol": "Metadata.Operations.checkDeployStatus(String,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations.retrieve(Metadata.MetadataType,List<String>)",
+      "symbol": "Metadata.Operations.retrieve(Metadata.MetadataType,List<String>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Metadata.Operations.retrieve(Metadata.MetadataType,List<String>,Boolean)",
+      "symbol": "Metadata.Operations.retrieve(Metadata.MetadataType,List<String>,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.Email()",
+      "symbol": "Messaging.Email.Email()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.getBccSender()",
+      "symbol": "Messaging.Email.getBccSender"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.getEmailPriority()",
+      "symbol": "Messaging.Email.getEmailPriority"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.getReplyTo()",
+      "symbol": "Messaging.Email.getReplyTo"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.getSaveAsActivity()",
+      "symbol": "Messaging.Email.getSaveAsActivity"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.getSenderDisplayName()",
+      "symbol": "Messaging.Email.getSenderDisplayName"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.getSubject()",
+      "symbol": "Messaging.Email.getSubject"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.getUseSignature()",
+      "symbol": "Messaging.Email.getUseSignature"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.setBccSender(Boolean)",
+      "symbol": "Messaging.Email.setBccSender"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.setEmailPriority(String)",
+      "symbol": "Messaging.Email.setEmailPriority"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.setReplyTo(String)",
+      "symbol": "Messaging.Email.setReplyTo"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.setSaveAsActivity(Boolean)",
+      "symbol": "Messaging.Email.setSaveAsActivity"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.setSenderDisplayName(String)",
+      "symbol": "Messaging.Email.setSenderDisplayName"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.setSubject(String)",
+      "symbol": "Messaging.Email.setSubject"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Messaging.Email.setUseSignature(Boolean)",
+      "symbol": "Messaging.Email.setUseSignature"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)",
+      "symbol": "UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)",
+      "symbol": "UserProvisioning.UserProvisioningProcessHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningLog.log(String,String)",
+      "symbol": "userprovisioning.UserProvisioningLog.log(String,String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningLog.log(String,String,String)",
+      "symbol": "userprovisioning.UserProvisioningLog.log(String,String,String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:UserProvisioning.UserProvisioningLog.log(String,String,String,String,String)",
+      "symbol": "userprovisioning.UserProvisioningLog.log(String,String,String,String,String)"
+    }
+  ],
+  "expected": {
+    "result": {
+      "assertions": "all direct assertions passed",
+      "exitCode": 0,
+      "status": "passed"
+    }
+  },
+  "name": "current-base-cb193-local-mock-core-positive",
+  "packetId": "CB193",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 removed Map.containsValue after version 54; this is a local runtime compatibility contract.",
+  "source": [
+    {
+      "path": "current-base-cb193-local-mock-core-positive.apex"
+    }
+  ]
+}

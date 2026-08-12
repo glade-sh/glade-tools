@@ -36,6 +36,23 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if args[0] == "compat" {
 		args = args[1:]
 	}
+	if len(args) >= 2 && args[0] == "corpus" && args[1] == "assurance" {
+		if err := runCorpusAssurance(ctx, args[2:], stdout); err != nil {
+			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	if args[0] == "salesforce" {
+		return runSalesforceVerify(ctx, args[1:], stdout, stderr)
+	}
+	if args[0] == "accepted-evidence" {
+		if err := runAcceptedEvidence(ctx, args[1:], stdout, stderr); err != nil {
+			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+			return 1
+		}
+		return 0
+	}
 	if err := runCompat(ctx, args, stdout); err != nil {
 		fmt.Fprintf(stderr, "glade-tools: %v\n", err)
 		return 1
@@ -73,7 +90,8 @@ Commands:
   ui-controllers     Discover Visualforce controller surfaces.
   server-examples    Probe checked server route examples.
   surface            Refresh and inspect the Salesforce surface ledger.
-  corpus             Run Glade over a public corpus and classify diagnostics.
+	corpus             Run Glade over a public corpus and classify diagnostics.
+	corpus assurance   Run sealed private-corpus daily-development assurance.
   visualforce        Capture scratch-org Visualforce rendering evidence.
   lwc                Capture LWC shell evidence and native API parity.
   dashboard          Generate compatibility dashboard.
@@ -95,6 +113,7 @@ Commands:
   oracle-stdlib      Run scratch-org standard-library oracle probes.
   apex-rules         Compare checked Apex language-rule probes with Salesforce.
   orgpackage         Capture installed package artifacts from a Salesforce org.
+  salesforce verify  Run unified Salesforce correctness verification.
 
 Compatibility:
   glade-tools compat <command> is accepted for old scripts.

@@ -1,0 +1,53 @@
+{
+  "name": "current-base-cb206-metadata-messaging-deterministic-api67",
+  "apiVersion": "67.0",
+  "mode": "exec",
+  "candidate": {
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
+  },
+  "profile": {
+    "path": "evidence/current-base/canonical-bundle-current-base-0a0f624-cgo-20260803/apex-support-profile.json",
+    "selection": "Metadata/Messaging deterministic-mock missing-evidence",
+    "selectedRowCount": 4
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Metadata.DeployCallbackContext",
+      "symbol": "Metadata.DeployCallbackContext",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Metadata.DeployCallbackContext.DeployCallbackContext()",
+      "symbol": "Metadata.DeployCallbackContext",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Messaging.InboundEmail",
+      "symbol": "Messaging.InboundEmail",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Messaging.EmailFileAttachment",
+      "symbol": "Messaging.EmailFileAttachment",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "List<Object> rows = new List<Object>();\ntry { Metadata.DeployCallbackContext v = new Metadata.DeployCallbackContext(); rows.add(new Map<String,Object>{'id'=>'metadata-deploy-callback-context','ok'=>v != null}); } catch (Exception e) { rows.add(new Map<String,Object>{'id'=>'metadata-deploy-callback-context','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()}); }\ntry { Messaging.InboundEmail v = new Messaging.InboundEmail(); rows.add(new Map<String,Object>{'id'=>'messaging-inbound-email','ok'=>v != null}); } catch (Exception e) { rows.add(new Map<String,Object>{'id'=>'messaging-inbound-email','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()}); }\ntry { Messaging.EmailFileAttachment v = new Messaging.EmailFileAttachment(); rows.add(new Map<String,Object>{'id'=>'messaging-email-file-attachment','ok'=>v != null}); } catch (Exception e) { rows.add(new Map<String,Object>{'id'=>'messaging-email-file-attachment','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()}); }\nSystem.debug('GLADE_BROAD_ORACLE:' + JSON.serialize(rows));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Object> rows = new List<Object>();\ntry { Metadata.DeployCallbackContext v = new Metadata.DeployCallbackContext(); rows.add(new Map<String,Object>{'id'=>'metadata-deploy-callback-context','ok'=>v != null}); } catch (Exception e) { rows.add(new Map<String,Object>{'id'=>'metadata-deploy-callback-context','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()}); }\ntry { Messaging.InboundEmail v = new Messaging.InboundEmail(); rows.add(new Map<String,Object>{'id'=>'messaging-inbound-email','ok'=>v != null}); } catch (Exception e) { rows.add(new Map<String,Object>{'id'=>'messaging-inbound-email','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()}); }\ntry { Messaging.EmailFileAttachment v = new Messaging.EmailFileAttachment(); rows.add(new Map<String,Object>{'id'=>'messaging-email-file-attachment','ok'=>v != null}); } catch (Exception e) { rows.add(new Map<String,Object>{'id'=>'messaging-email-file-attachment','exceptionType'=>e.getTypeName(),'exceptionMessage'=>e.getMessage()}); }\nSystem.debug('GLADE_BROAD_ORACLE:' + JSON.serialize(rows));\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "current-base-system-exception-constructor-probe",
+  "apiVersion": "67.0",
+  "evidence": [
+    {"surfaceId": "apex:System.SearchException.SearchException()", "symbol": "SearchException.SearchException", "kind": "exec"},
+    {"surfaceId": "apex:System.SearchException.SearchException(Exception)", "symbol": "SearchException.SearchException", "kind": "exec"},
+    {"surfaceId": "apex:System.SearchException.SearchException(String,Exception)", "symbol": "SearchException.SearchException", "kind": "exec"},
+    {"surfaceId": "apex:System.SecurityException.SecurityException()", "symbol": "SecurityException.SecurityException", "kind": "exec"},
+    {"surfaceId": "apex:System.SecurityException.SecurityException(Exception)", "symbol": "SecurityException.SecurityException", "kind": "exec"},
+    {"surfaceId": "apex:System.SecurityException.SecurityException(String)", "symbol": "SecurityException.SecurityException", "kind": "exec"},
+    {"surfaceId": "apex:System.SecurityException.SecurityException(String,Exception)", "symbol": "SecurityException.SecurityException", "kind": "exec"},
+    {"surfaceId": "apex:System.SerializationException", "symbol": "SerializationException", "kind": "exec"},
+    {"surfaceId": "apex:System.SerializationException.SerializationException()", "symbol": "SerializationException.SerializationException", "kind": "exec"},
+    {"surfaceId": "apex:System.SerializationException.SerializationException(Exception)", "symbol": "SerializationException.SerializationException", "kind": "exec"},
+    {"surfaceId": "apex:System.SerializationException.SerializationException(String)", "symbol": "SerializationException.SerializationException", "kind": "exec"},
+    {"surfaceId": "apex:System.SerializationException.SerializationException(String,Exception)", "symbol": "SerializationException.SerializationException", "kind": "exec"},
+    {"surfaceId": "apex:System.StringException.StringException()", "symbol": "StringException.StringException", "kind": "exec"},
+    {"surfaceId": "apex:System.StringException.StringException(Exception)", "symbol": "StringException.StringException", "kind": "exec"},
+    {"surfaceId": "apex:System.StringException.StringException(String)", "symbol": "StringException.StringException", "kind": "exec"},
+    {"surfaceId": "apex:System.StringException.StringException(String,Exception)", "symbol": "StringException.StringException", "kind": "exec"},
+    {"surfaceId": "apex:System.TransientCursorException", "symbol": "TransientCursorException", "kind": "exec"},
+    {"surfaceId": "apex:System.TransientCursorException.TransientCursorException()", "symbol": "TransientCursorException.TransientCursorException", "kind": "exec"},
+    {"surfaceId": "apex:System.TransientCursorException.TransientCursorException(Exception)", "symbol": "TransientCursorException.TransientCursorException", "kind": "exec"},
+    {"surfaceId": "apex:System.TransientCursorException.TransientCursorException(String)", "symbol": "TransientCursorException.TransientCursorException", "kind": "exec"},
+    {"surfaceId": "apex:System.TransientCursorException.TransientCursorException(String,Exception)", "symbol": "TransientCursorException.TransientCursorException", "kind": "exec"},
+    {"surfaceId": "apex:System.TypeException.TypeException()", "symbol": "TypeException.TypeException", "kind": "exec"},
+    {"surfaceId": "apex:System.TypeException.TypeException(Exception)", "symbol": "TypeException.TypeException", "kind": "exec"},
+    {"surfaceId": "apex:System.TypeException.TypeException(String)", "symbol": "TypeException.TypeException", "kind": "exec"},
+    {"surfaceId": "apex:System.TypeException.TypeException(String,Exception)", "symbol": "TypeException.TypeException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnexpectedException", "symbol": "UnexpectedException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnexpectedException.UnexpectedException()", "symbol": "UnexpectedException.UnexpectedException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnexpectedException.UnexpectedException(Exception)", "symbol": "UnexpectedException.UnexpectedException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnexpectedException.UnexpectedException(String)", "symbol": "UnexpectedException.UnexpectedException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnexpectedException.UnexpectedException(String,Exception)", "symbol": "UnexpectedException.UnexpectedException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnsupportedOperationException", "symbol": "UnsupportedOperationException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnsupportedOperationException.UnsupportedOperationException()", "symbol": "UnsupportedOperationException.UnsupportedOperationException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnsupportedOperationException.UnsupportedOperationException(Exception)", "symbol": "UnsupportedOperationException.UnsupportedOperationException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnsupportedOperationException.UnsupportedOperationException(String)", "symbol": "UnsupportedOperationException.UnsupportedOperationException", "kind": "exec"},
+    {"surfaceId": "apex:System.UnsupportedOperationException.UnsupportedOperationException(String,Exception)", "symbol": "UnsupportedOperationException.UnsupportedOperationException", "kind": "exec"},
+    {"surfaceId": "apex:System.XmlException", "symbol": "XmlException", "kind": "exec"},
+    {"surfaceId": "apex:System.XmlException.XmlException()", "symbol": "XmlException.XmlException", "kind": "exec"},
+    {"surfaceId": "apex:System.XmlException.XmlException(Exception)", "symbol": "XmlException.XmlException", "kind": "exec"},
+    {"surfaceId": "apex:System.XmlException.XmlException(String)", "symbol": "XmlException.XmlException", "kind": "exec"},
+    {"surfaceId": "apex:System.XmlException.XmlException(String,Exception)", "symbol": "XmlException.XmlException", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "QueryException cause = new QueryException('cause'); SearchException search0 = new SearchException(); SearchException search1 = new SearchException(cause); SearchException search2 = new SearchException('search', cause); SecurityException security0 = new SecurityException(); SecurityException security1 = new SecurityException(cause); SecurityException security2 = new SecurityException('security'); SecurityException security3 = new SecurityException('security', cause); SerializationException serialization0 = new SerializationException(); SerializationException serialization1 = new SerializationException(cause); SerializationException serialization2 = new SerializationException('serialization'); SerializationException serialization3 = new SerializationException('serialization', cause); StringException string0 = new StringException(); StringException string1 = new StringException(cause); StringException string2 = new StringException('string'); StringException string3 = new StringException('string', cause); TransientCursorException cursor0 = new TransientCursorException(); TransientCursorException cursor1 = new TransientCursorException(cause); TransientCursorException cursor2 = new TransientCursorException('cursor'); TransientCursorException cursor3 = new TransientCursorException('cursor', cause); TypeException type0 = new TypeException(); TypeException type1 = new TypeException(cause); TypeException type2 = new TypeException('type'); TypeException type3 = new TypeException('type', cause); UnexpectedException unexpected0 = new UnexpectedException(); UnexpectedException unexpected1 = new UnexpectedException(cause); UnexpectedException unexpected2 = new UnexpectedException('unexpected'); UnexpectedException unexpected3 = new UnexpectedException('unexpected', cause); UnsupportedOperationException unsupported0 = new UnsupportedOperationException(); UnsupportedOperationException unsupported1 = new UnsupportedOperationException(cause); UnsupportedOperationException unsupported2 = new UnsupportedOperationException('unsupported'); UnsupportedOperationException unsupported3 = new UnsupportedOperationException('unsupported', cause); XmlException xml0 = new XmlException(); XmlException xml1 = new XmlException(cause); XmlException xml2 = new XmlException('xml'); XmlException xml3 = new XmlException('xml', cause);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "QueryException cause = new QueryException('cause'); SearchException search0 = new SearchException(); SearchException search1 = new SearchException(cause); SearchException search2 = new SearchException('search', cause); SecurityException security0 = new SecurityException(); SecurityException security1 = new SecurityException(cause); SecurityException security2 = new SecurityException('security'); SecurityException security3 = new SecurityException('security', cause); SerializationException serialization0 = new SerializationException(); SerializationException serialization1 = new SerializationException(cause); SerializationException serialization2 = new SerializationException('serialization'); SerializationException serialization3 = new SerializationException('serialization', cause); StringException string0 = new StringException(); StringException string1 = new StringException(cause); StringException string2 = new StringException('string'); StringException string3 = new StringException('string', cause); TransientCursorException cursor0 = new TransientCursorException(); TransientCursorException cursor1 = new TransientCursorException(cause); TransientCursorException cursor2 = new TransientCursorException('cursor'); TransientCursorException cursor3 = new TransientCursorException('cursor', cause); TypeException type0 = new TypeException(); TypeException type1 = new TypeException(cause); TypeException type2 = new TypeException('type'); TypeException type3 = new TypeException('type', cause); UnexpectedException unexpected0 = new UnexpectedException(); UnexpectedException unexpected1 = new UnexpectedException(cause); UnexpectedException unexpected2 = new UnexpectedException('unexpected'); UnexpectedException unexpected3 = new UnexpectedException('unexpected', cause); UnsupportedOperationException unsupported0 = new UnsupportedOperationException(); UnsupportedOperationException unsupported1 = new UnsupportedOperationException(cause); UnsupportedOperationException unsupported2 = new UnsupportedOperationException('unsupported'); UnsupportedOperationException unsupported3 = new UnsupportedOperationException('unsupported', cause); XmlException xml0 = new XmlException(); XmlException xml1 = new XmlException(cause); XmlException xml2 = new XmlException('xml'); XmlException xml3 = new XmlException('xml', cause);"
+    ]
+  },
+  "expected": {"result": {"ok": true}}
+}

@@ -1,0 +1,92 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.Action.invoke()",
+      "symbol": "ApexPages.Action.invoke()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.Component.clone()",
+      "symbol": "ApexPages.Component.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.ComponentIteration.clone()",
+      "symbol": "ApexPages.ComponentIteration.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardController",
+      "symbol": "ApexPages.IdeaStandardController"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardController.IdeaStandardController()",
+      "symbol": "ApexPages.IdeaStandardController.IdeaStandardController()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardController.equals(Object)",
+      "symbol": "ApexPages.IdeaStandardController.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardController.hashCode()",
+      "symbol": "ApexPages.IdeaStandardController.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardController.toString()",
+      "symbol": "ApexPages.IdeaStandardController.toString()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardSetController",
+      "symbol": "ApexPages.IdeaStandardSetController"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardSetController.IdeaStandardSetController()",
+      "symbol": "ApexPages.IdeaStandardSetController.IdeaStandardSetController()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:ApexPages.IdeaStandardSetController.equals(Object)",
+      "symbol": "ApexPages.IdeaStandardSetController.equals(Object)"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-apexpages-local-runtime-001-api67",
+  "notes": "Current-base lane current-base-local-runtime-required-ApexPages-001: eleven uncovered rows.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-local-runtime-required-ApexPages-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 11,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local Visualforce controller and component behavior only; it does not claim hosted Visualforce execution.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseApexPagesLocalRuntime001Test { @isTest static void apexPagesLocalRuntime001Witness() { ApexPages.Action action = new ApexPages.Action('{!list}'); System.assertNotEquals(null, action.invoke()); ApexPages.Component component = new ApexPages.Component(); System.assertNotEquals(null, component.clone()); ApexPages.ComponentIteration iteration = new ApexPages.ComponentIteration(); System.assertNotEquals(null, iteration.clone()); ApexPages.IdeaStandardController controller = new ApexPages.IdeaStandardController(); System.assertEquals(true, controller.equals(controller)); System.assertNotEquals(0, controller.hashCode()); System.assert(controller.toString().length() > 0); ApexPages.IdeaStandardSetController setController = new ApexPages.IdeaStandardSetController(); System.assertEquals(true, setController.equals(setController)); } }",
+      "path": "force-app/main/default/classes/CurrentBaseApexPagesLocalRuntime001Test.cls"
+    }
+  ]
+}

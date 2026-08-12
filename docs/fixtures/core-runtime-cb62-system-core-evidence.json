@@ -1,0 +1,17 @@
+{
+  "name": "core-runtime-cb62-system-core-evidence",
+  "evidence": [
+    {"surfaceId": "apex:System.Assert", "symbol": "System.Assert", "kind": "test", "notes": "CB57 passing local System.Assert type case."},
+    {"surfaceId": "apex:System.Date", "symbol": "System.Date", "kind": "test", "notes": "CB57 passing local Date construction case."},
+    {"surfaceId": "apex:System.Location", "symbol": "System.Location", "kind": "test", "notes": "CB57 passing local Location value case."},
+    {"surfaceId": "apex:System.JSON", "symbol": "System.JSON", "kind": "test", "notes": "CB57 passing local JSON serialization case."},
+    {"surfaceId": "apex:System.Pattern", "symbol": "System.Pattern", "kind": "test", "notes": "CB57 passing canonical local Pattern case."},
+    {"surfaceId": "apex:System.Type", "symbol": "System.Type", "kind": "test", "notes": "CB57 passing one-argument local Type lookup case."},
+    {"surfaceId": "apex:System.Crypto", "symbol": "System.Crypto", "kind": "test", "notes": "CB57 passing deterministic local digest case."}
+  ],
+  "source": [
+    {"path": "force-app/main/classes/CoreRuntimeCB62SystemCoreEvidenceTest.cls", "content": "@isTest private class CoreRuntimeCB62SystemCoreEvidenceTest { @isTest static void rows() { System.Assert.isTrue(true); Date stableDate = Date.newInstance(2024, 2, 29); System.assertEquals('2024-02-29', String.valueOf(stableDate)); Location point = Location.newInstance(37.7749, -122.4194); System.assertEquals(37.7749, point.getLatitude()); Map<String,Object> serial = new Map<String,Object>{'b'=>2, 'a'=>1, 'n'=>null}; System.assert(JSON.serialize(serial, true).contains('n')); String dotallInput = String.fromCharArray(new List<Integer>{65, 10, 66}); Pattern canonicalPattern = Pattern.compile('(?is)a.b'); System.assert(canonicalPattern.matcher(dotallInput).find()); Type accountType = Type.forName('Account'); System.assertEquals('Account', accountType.getName()); System.assertEquals('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad', EncodingUtil.convertToHex(Crypto.generateDigest('SHA-256', Blob.valueOf('abc')))); } }"}
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}}
+}

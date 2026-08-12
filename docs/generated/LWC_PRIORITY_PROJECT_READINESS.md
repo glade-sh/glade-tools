@@ -1,11 +1,11 @@
 lwc corpus: repos=10 packages=15 bundles=387 meta=482 js=940 html=519 unsupportedTags=0
-- base-components-recipes: bundles=121 meta=121 js=284 html=119
-- sf-cred-pkg-develop: bundles=158 meta=253 js=484 html=273
-- src-nbm-solhub-develop: bundles=8 meta=8 js=8 html=7
-- src-nmb-namz-prog-develop: bundles=0 meta=0 js=0 html=0
-- src-nmb-nc-develop: bundles=37 meta=37 js=46 html=30
-- src-nmb-nu-develop: bundles=58 meta=58 js=113 html=87
-- src-nmb-nudev-develop: bundles=5 meta=5 js=5 html=3
-- src-nmb-nuq-develop: bundles=0 meta=0 js=0 html=0
-- src-nmb-nutpl-develop: bundles=0 meta=0 js=0 html=0
-- src-nmb-nutplx-master: bundles=0 meta=0 js=0 html=0
+- private-corpus-010: bundles=121 meta=121 js=284 html=119
+- private-corpus-009: bundles=158 meta=253 js=484 html=273
+- private-corpus-001: bundles=8 meta=8 js=8 html=7
+- private-corpus-002: bundles=0 meta=0 js=0 html=0
+- private-corpus-003: bundles=37 meta=37 js=46 html=30
+- private-corpus-004: bundles=58 meta=58 js=113 html=87
+- private-corpus-005: bundles=5 meta=5 js=5 html=3
+- private-corpus-006: bundles=0 meta=0 js=0 html=0
+- private-corpus-007: bundles=0 meta=0 js=0 html=0
+- private-corpus-008: bundles=0 meta=0 js=0 html=0

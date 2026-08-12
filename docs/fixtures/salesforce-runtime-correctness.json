@@ -1,0 +1,13 @@
+{
+  "apiVersion": "67.0",
+  "comparisons": [
+    {
+      "caseId": "decimal-round-default-positive-tie",
+      "status": "inconclusive",
+      "expectedObservation": "value Integer",
+      "sfObservation": "",
+      "gladeObservation": ""
+    }
+  ],
+  "_note": "This fixture is seeded from oracleprobe.StdlibCases().  Cases are populated by the verifier lane — do not duplicate the case catalog here."
+}

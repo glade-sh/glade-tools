@@ -1,0 +1,97 @@
+{
+  "name": "current-base-eventbus-change-event-header-fields",
+  "apiVersion": "67.0",
+  "notes": "Wave26 current-base eventbus lane: EventBus.ChangeEventHeader is constructible locally and the Summer '26 docs inventory documents writable get/set properties for changeorigin, changetype, commitnumber, committimestamp, commituser, difffields, entityname, nulledfields, recordids, sequencenumber, and transactionkey. changedfields is intentionally excluded because its documented signature is not an explicit {get; set;} property, so assignment is not yet dual-proven.",
+  "command": {
+    "kind": "test"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CurrentBaseEventBusChangeEventHeaderTest.cls",
+      "content": "@isTest private class CurrentBaseEventBusChangeEventHeaderTest {\n @isTest static void documentedFieldsRoundTripWitness() {\n  EventBus.ChangeEventHeader header = new EventBus.ChangeEventHeader();\n  header.changeorigin = 'com.salesforce.api';\n  header.changetype = 'UPDATE';\n  header.commitnumber = 42L;\n  header.committimestamp = 123456789L;\n  header.commituser = '005000000000001AAA';\n  header.difffields = new List<String>{'Description'};\n  header.entityname = 'Account';\n  header.nulledfields = new List<String>();\n  header.recordids = new List<String>{'001000000000001AAA'};\n  header.sequencenumber = 7;\n  header.transactionkey = 'txn-20260807';\n  System.assertEquals('com.salesforce.api', header.changeorigin);\n  System.assertEquals('UPDATE', header.changetype);\n  System.assertEquals(42L, header.commitnumber);\n  System.assertEquals(123456789L, header.committimestamp);\n  System.assertEquals('005000000000001AAA', header.commituser);\n  System.assertEquals('Description', header.difffields[0]);\n  System.assertEquals('Account', header.entityname);\n  System.assertEquals(0, header.nulledfields.size());\n  System.assertEquals('001000000000001AAA', header.recordids[0]);\n  System.assertEquals(7, header.sequencenumber);\n  System.assertEquals('txn-20260807', header.transactionkey);\n }\n}\n"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.ChangeEventHeader()",
+      "symbol": "EventBus.ChangeEventHeader",
+      "kind": "test",
+      "notes": "EventBus.ChangeEventHeader is constructible locally; Salesforce exposes the no-arg class in API 47+."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.changeorigin",
+      "symbol": "EventBus.ChangeEventHeader.changeorigin",
+      "kind": "test",
+      "notes": "Documented {get; set;} property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.changetype",
+      "symbol": "EventBus.ChangeEventHeader.changetype",
+      "kind": "test",
+      "notes": "Documented {get; set;} property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.commitnumber",
+      "symbol": "EventBus.ChangeEventHeader.commitnumber",
+      "kind": "test",
+      "notes": "Documented {get; set;} Long property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.committimestamp",
+      "symbol": "EventBus.ChangeEventHeader.committimestamp",
+      "kind": "test",
+      "notes": "Documented {get; set;} Long property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.commituser",
+      "symbol": "EventBus.ChangeEventHeader.commituser",
+      "kind": "test",
+      "notes": "Documented {get; set;} property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.difffields",
+      "symbol": "EventBus.ChangeEventHeader.difffields",
+      "kind": "test",
+      "notes": "Documented {get; set;} List<String> property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.entityname",
+      "symbol": "EventBus.ChangeEventHeader.entityname",
+      "kind": "test",
+      "notes": "Documented {get; set;} property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.nulledfields",
+      "symbol": "EventBus.ChangeEventHeader.nulledfields",
+      "kind": "test",
+      "notes": "Documented {get; set;} List<String> property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.recordids",
+      "symbol": "EventBus.ChangeEventHeader.recordids",
+      "kind": "test",
+      "notes": "Documented {get; set;} List<String> property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.sequencenumber",
+      "symbol": "EventBus.ChangeEventHeader.sequencenumber",
+      "kind": "test",
+      "notes": "Documented {get; set;} Integer property round-trips on a locally constructed header."
+    },
+    {
+      "surfaceId": "apex:eventbus.ChangeEventHeader.transactionkey",
+      "symbol": "EventBus.ChangeEventHeader.transactionkey",
+      "kind": "test",
+      "notes": "Documented {get; set;} property round-trips on a locally constructed header."
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  }
+}

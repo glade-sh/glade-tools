@@ -1,0 +1,25 @@
+{
+  "comparisons": [
+    {
+      "caseId": "cb182-schema-describe-dml-result-accessors",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:Schema.SObjectType.getDescribe()",
+        "apex:Schema.DescribeSObjectResult.getName()",
+        "apex:Schema.DescribeSObjectResult.getLabel()",
+        "apex:Schema.SObjectField.getDescribe()",
+        "apex:Schema.DescribeFieldResult.getName()",
+        "apex:Schema.DescribeFieldResult.getLabel()",
+        "apex:Database.SaveResult.isSuccess()",
+        "apex:Database.SaveResult.getId()",
+        "apex:Database.SaveResult.getErrors()",
+        "apex:Database.DeleteResult.isSuccess()",
+        "apex:Database.DeleteResult.getId()",
+        "apex:Database.DeleteResult.getErrors()"
+      ],
+      "expectedObservation": "Boolean true after Account token describe plus successful insert and delete result accessor checks",
+      "sfObservation": "Boolean true on API 67.0 anonymous Apex",
+      "gladeObservation": "Boolean true from the exact c98ea2b5 candidate"
+    }
+  ]
+}

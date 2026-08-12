@@ -778,7 +778,7 @@ func TestStubBehaviorSeparatesServiceMethodsFromPassiveDTOs(t *testing.T) {
 	assertStubBehaviorPrefix(t, entries, "Apex.Stack.pop()", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "ApexPages.addMessages(Object)", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "ApexPages.Action.getExpression()", StubBehaviorImplemented)
-	assertStubBehaviorPrefix(t, entries, "ApexPages.Action.invoke()", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "ApexPages.Action.invoke()", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "ApexPages.Component.getComponentById(String)", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "ApexPages.KnowledgeArticleVersionStandardController.setDataCategory(String,String)", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "ApexPages.StandardSetController.getListViewOptions()", StubBehaviorImplemented)
@@ -1069,6 +1069,18 @@ func TestStubBehaviorSeparatesServiceMethodsFromPassiveDTOs(t *testing.T) {
 	assertStubBehaviorExact(t, entries, "JSONException.initCause(Exception)", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "DmlException.getNumDml()", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "EmailException.getNumDml()", StubBehaviorUnsupported)
+}
+
+func TestAuthTokenBehaviorKeepsHostedLookupsUnsupportedAndRevokeImplemented(t *testing.T) {
+	entries := map[string]StubBehaviorEntry{}
+	for _, entry := range BuildStubBehaviorReport().Entries {
+		entries[entry.ID] = entry
+	}
+
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.getAccessToken(", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.getAccessTokenMap(", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.refreshAccessToken(", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "Auth.AuthToken.revokeAccess(", StubBehaviorImplemented)
 }
 
 func assertStubBehaviorExact(t *testing.T, entries map[string]StubBehaviorEntry, id string, want StubBehaviorStatus) {

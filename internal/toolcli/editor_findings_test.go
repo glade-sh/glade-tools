@@ -89,6 +89,15 @@ func TestCompatLWCCaptureEditorFindingsJSON(t *testing.T) {
 
 func TestCompatLWCCaptureEditorFindingsJSONOnDeployFailure(t *testing.T) {
 	root := t.TempDir()
+	bin := filepath.Join(root, "bin")
+	if err := os.MkdirAll(bin, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	fakeSF := filepath.Join(bin, "sf")
+	if err := os.WriteFile(fakeSF, []byte("#!/bin/sh\nexit 1\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", bin+string(os.PathListSeparator)+os.Getenv("PATH"))
 	outPath := filepath.Join(root, "reports", "lwc-org-capture.json")
 	var stdout, stderr bytes.Buffer
 	code := Run(context.Background(), []string{

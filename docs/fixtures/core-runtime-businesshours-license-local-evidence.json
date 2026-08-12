@@ -2,13 +2,13 @@
   "name": "core-runtime-businesshours-license-local-evidence",
   "evidence": [
     {
-      "surfaceId": "apex:BusinessHours.add(String,Datetime,Long)",
+      "surfaceId": "apex:BusinessHours.add(Id,Datetime,Long)",
       "symbol": "BusinessHours.add",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records support deterministic business-hours datetime addition."
     },
     {
-      "surfaceId": "apex:BusinessHours.addGmt(String,Datetime,Long)",
+      "surfaceId": "apex:BusinessHours.addGmt(Id,Datetime,Long)",
       "symbol": "BusinessHours.addGmt",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records support deterministic GMT business-hours datetime addition."
@@ -26,7 +26,7 @@
       "notes": "Seeded local BusinessHours records support inside/outside window checks."
     },
     {
-      "surfaceId": "apex:BusinessHours.nextStartDate(String,Datetime)",
+      "surfaceId": "apex:BusinessHours.nextStartDate(Id,Datetime)",
       "symbol": "BusinessHours.nextStartDate",
       "kind": "exec",
       "notes": "Seeded local BusinessHours records return the next deterministic local business window."

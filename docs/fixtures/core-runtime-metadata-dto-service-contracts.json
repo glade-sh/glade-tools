@@ -51,11 +51,6 @@
       "kind": "test"
     },
     {
-      "surfaceId": "apex:Metadata.MetadataType.CustomMetadata",
-      "symbol": "Metadata.MetadataType.CustomMetadata",
-      "kind": "test"
-    },
-    {
       "surfaceId": "apex:Metadata.MetadataType.Layout",
       "symbol": "Metadata.MetadataType.Layout",
       "kind": "test",
@@ -71,7 +66,7 @@
   "source": [
     {
       "path": "force-app/main/classes/MetadataDtoServiceContractsTest.cls",
-      "content": "private class MetadataCallbackProbe implements Metadata.DeployCallback { public void handleResult(Metadata.DeployResult result, Metadata.DeployCallbackContext context) { String jobId = context == null ? null : context.getCallbackJobId(); System.assert(result == null || jobId == null || result.id != null); } }\n@isTest private class MetadataDtoServiceContractsTest { @isTest static void metadataDtoShapeCompilesAndRuns() { Metadata.DeployCallback callback = new MetadataCallbackProbe(); callback.handleResult(new Metadata.DeployResult(), new Metadata.DeployCallbackContext()); Metadata.CustomMetadata custom = new Metadata.CustomMetadata(); custom.fullName = 'Feature.Default'; Metadata.Metadata base = custom; Metadata.Metadata cloned = (Metadata.Metadata)base.clone(); System.assertEquals('Feature.Default', cloned.fullName); Metadata.DeployResult result = new Metadata.DeployResult(); result.status = Metadata.DeployStatus.Canceled; System.assertEquals(Metadata.DeployStatus.Canceled, result.status); System.assert(Metadata.DeployStatus.Canceling != null); System.assert(Metadata.DeployStatus.Failed != null); System.assert(Metadata.DeployStatus.InProgress != null); System.assert(Metadata.DeployStatus.Pending != null); System.assert(Metadata.DeployStatus.Succeeded != null); System.assert(Metadata.DeployStatus.SucceededPartial != null); System.assert(Metadata.DeployStatus.values().size() >= 6); Metadata.MetadataType customType = Metadata.MetadataType.CustomMetadata; Metadata.MetadataType layoutType = Metadata.MetadataType.Layout; Metadata.MetadataType omniType = Metadata.MetadataType.OmniInteractionAccessConfig; System.assert(customType != null); System.assert(layoutType != null); System.assert(omniType != null); } }"
+      "content": "@isTest private class MetadataDtoServiceContractsTest { private class MetadataCallbackProbe implements Metadata.DeployCallback { public void handleResult(Metadata.DeployResult result, Metadata.DeployCallbackContext context) { String jobId = context == null ? null : context.getCallbackJobId(); System.assert(result == null || jobId == null || result.id != null); } } @isTest static void metadataDtoShapeCompilesAndRuns() { Metadata.DeployCallback callback = new MetadataCallbackProbe(); callback.handleResult(new Metadata.DeployResult(), new Metadata.DeployCallbackContext()); Metadata.CustomMetadata custom = new Metadata.CustomMetadata(); custom.fullName = 'Feature.Default'; Metadata.Metadata base = custom; Metadata.Metadata cloned = (Metadata.Metadata)base.clone(); System.assertEquals('Feature.Default', cloned.fullName); Metadata.DeployResult result = new Metadata.DeployResult(); result.status = Metadata.DeployStatus.Canceled; System.assertEquals(Metadata.DeployStatus.Canceled, result.status); System.assert(Metadata.DeployStatus.Canceling != null); System.assert(Metadata.DeployStatus.Failed != null); System.assert(Metadata.DeployStatus.InProgress != null); System.assert(Metadata.DeployStatus.Pending != null); System.assert(Metadata.DeployStatus.Succeeded != null); System.assert(Metadata.DeployStatus.SucceededPartial != null); System.assert(Metadata.DeployStatus.values().size() >= 6); Metadata.MetadataType customType = Metadata.MetadataType.CustomMetadata; Metadata.MetadataType layoutType = Metadata.MetadataType.Layout; Metadata.MetadataType omniType = Metadata.MetadataType.OmniInteractionAccessConfig; System.assert(customType != null); System.assert(layoutType != null); System.assert(omniType != null); } }"
     }
   ],
   "command": {
@@ -85,5 +80,6 @@
       "failed": 0,
       "errors": 0
     }
-  }
+  },
+  "salesforceEligible": true
 }

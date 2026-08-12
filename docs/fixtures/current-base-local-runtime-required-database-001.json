@@ -1,0 +1,213 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.AssignmentRuleHeader",
+      "symbol": "Database.AssignmentRuleHeader"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.AssignmentRuleHeader.AssignmentRuleHeader()",
+      "symbol": "Database.AssignmentRuleHeader"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.AssignmentRuleHeader.AssignmentRuleId",
+      "symbol": "Database.AssignmentRuleHeader.AssignmentRuleId"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.AssignmentRuleHeader.UseDefaultRule",
+      "symbol": "Database.AssignmentRuleHeader.UseDefaultRule"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.AssignmentRuleHeader.clone()",
+      "symbol": "Database.AssignmentRuleHeader.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.Cursor.Cursor()",
+      "symbol": "Database.Cursor"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.Cursor.clone()",
+      "symbol": "Database.Cursor.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.CursorFetchResult",
+      "symbol": "Database.CursorFetchResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.CursorFetchResult.CursorFetchResult()",
+      "symbol": "Database.CursorFetchResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.CursorFetchResult.clone()",
+      "symbol": "Database.CursorFetchResult.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DeleteResult.DeleteResult()",
+      "symbol": "Database.DeleteResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DeletedRecord",
+      "symbol": "Database.DeletedRecord"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DeletedRecord.DeletedRecord()",
+      "symbol": "Database.DeletedRecord"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DeletedRecord.equals(Object)",
+      "symbol": "Database.DeletedRecord.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DeletedRecord.hashCode()",
+      "symbol": "Database.DeletedRecord.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DeletedRecord.toString()",
+      "symbol": "Database.DeletedRecord.toString"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateError",
+      "symbol": "Database.DuplicateError"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateError.DuplicateError()",
+      "symbol": "Database.DuplicateError"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateError.duplicateresult",
+      "symbol": "Database.DuplicateError.duplicateresult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateError.equals(Object)",
+      "symbol": "Database.DuplicateError.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateError.hashCode()",
+      "symbol": "Database.DuplicateError.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateError.toString()",
+      "symbol": "Database.DuplicateError.toString"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateRuleHeader",
+      "symbol": "Database.DuplicateRuleHeader"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateRuleHeader.AllowSave",
+      "symbol": "Database.DuplicateRuleHeader.AllowSave"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateRuleHeader.DuplicateRuleHeader()",
+      "symbol": "Database.DuplicateRuleHeader"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateRuleHeader.RunAsCurrentUser",
+      "symbol": "Database.DuplicateRuleHeader.RunAsCurrentUser"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.DuplicateRuleHeader.clone()",
+      "symbol": "Database.DuplicateRuleHeader.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.EmailHeader",
+      "symbol": "Database.EmailHeader"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.EmailHeader.EmailHeader()",
+      "symbol": "Database.EmailHeader"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.EmailHeader.TriggerAutoResponseEmail",
+      "symbol": "Database.EmailHeader.TriggerAutoResponseEmail"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.EmailHeader.TriggerOtherEmail",
+      "symbol": "Database.EmailHeader.TriggerOtherEmail"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.EmailHeader.TriggerUserEmail",
+      "symbol": "Database.EmailHeader.TriggerUserEmail"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.EmailHeader.clone()",
+      "symbol": "Database.EmailHeader.clone"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.EmptyRecycleBinResult.EmptyRecycleBinResult()",
+      "symbol": "Database.EmptyRecycleBinResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.Error.Error()",
+      "symbol": "Database.Error"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.Error.fields",
+      "symbol": "Database.Error.fields"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-local-runtime-required-Database-001",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-001: deterministic local constructor, field, clone, equality, and passive-result contracts for the missing surface rows.",
+  "profile": {
+    "laneId": "current-base-local-runtime-required-Database-001",
+    "selectedRowCount": 36
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture exercises locally constructible Database DTOs and default runtime objects; it is not a valid Salesforce compile/probe oracle.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabase001Test { @isTest static void missingDatabaseOneContracts() { Database.AssignmentRuleHeader assignment = new Database.AssignmentRuleHeader(); assignment.AssignmentRuleId = '01Q000000000001'; assignment.UseDefaultRule = true; Object assignmentCopy = assignment.clone(); System.assertEquals('01Q000000000001', assignmentCopy.AssignmentRuleId); System.assertEquals(true, assignmentCopy.UseDefaultRule); Database.Cursor cursor = new Database.Cursor(); System.assertNotEquals(null, cursor); System.assertNotEquals(null, cursor.clone()); Database.CursorFetchResult fetchResult = new Database.CursorFetchResult(); System.assertEquals(0, fetchResult.getNumDeletedRecords()); System.assertNotEquals(null, fetchResult.clone()); Database.DeleteResult deleteResult = new Database.DeleteResult(); System.assertEquals(false, deleteResult.isSuccess()); Database.DeletedRecord deletedRecord = new Database.DeletedRecord(); System.assert(deletedRecord.equals(deletedRecord)); System.assertEquals(deletedRecord.hashCode(), deletedRecord.hashCode()); System.assertNotEquals(null, deletedRecord.toString()); Database.DuplicateError duplicateError = new Database.DuplicateError(); System.assertEquals(null, duplicateError.duplicateresult); System.assert(duplicateError.equals(duplicateError)); System.assertEquals(duplicateError.hashCode(), duplicateError.hashCode()); System.assertNotEquals(null, duplicateError.toString()); Database.DuplicateRuleHeader duplicateHeader = new Database.DuplicateRuleHeader(); duplicateHeader.AllowSave = true; duplicateHeader.RunAsCurrentUser = false; Object duplicateHeaderCopy = duplicateHeader.clone(); System.assertEquals(true, duplicateHeaderCopy.AllowSave); System.assertEquals(false, duplicateHeaderCopy.RunAsCurrentUser); Database.EmailHeader emailHeader = new Database.EmailHeader(); emailHeader.TriggerAutoResponseEmail = true; emailHeader.TriggerOtherEmail = false; emailHeader.TriggerUserEmail = true; Object emailHeaderCopy = emailHeader.clone(); System.assertEquals(true, emailHeaderCopy.TriggerAutoResponseEmail); System.assertEquals(false, emailHeaderCopy.TriggerOtherEmail); System.assertEquals(true, emailHeaderCopy.TriggerUserEmail); Database.EmptyRecycleBinResult emptyResult = new Database.EmptyRecycleBinResult(); System.assertEquals(false, emptyResult.isSuccess()); Database.Error error = new Database.Error(); error.fields = new List<String>{'Name'}; error.message = 'required'; error.statuscode = System.StatusCode.REQUIRED_FIELD_MISSING; System.assertEquals('Name', error.fields[0]); System.assertEquals('required', error.message); System.assertEquals('REQUIRED_FIELD_MISSING', String.valueOf(error.statuscode)); } }",
+      "path": "force-app/main/classes/CurrentBaseLocalRuntimeRequiredDatabase001Test.cls"
+    }
+  ]
+}

@@ -2,11 +2,6 @@
   "name": "platform-unsupported-surfaces",
   "evidence": [
     {
-      "symbol": "Approval.*",
-      "kind": "unsupported",
-      "notes": "Approval process/request surfaces stay explicitly unsupported."
-    },
-    {
       "symbol": "Auth.*",
       "kind": "server",
       "notes": "Auth token/JWT/OAuth/cloud surfaces stay explicitly unsupported."

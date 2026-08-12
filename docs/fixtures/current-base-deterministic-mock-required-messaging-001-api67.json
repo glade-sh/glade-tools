@@ -1,0 +1,198 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.ActionResult.ActionResult()",
+      "symbol": "Messaging.ActionResult.ActionResult()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.ActionableNotification.ActionableNotification()",
+      "symbol": "Messaging.ActionableNotification.ActionableNotification()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResult",
+      "symbol": "Messaging.AuthenticationResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResult.AuthenticationResult()",
+      "symbol": "Messaging.AuthenticationResult.AuthenticationResult()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResult.authenticationResultFields",
+      "symbol": "Messaging.AuthenticationResult.authenticationResultFields"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResult.clone()",
+      "symbol": "Messaging.AuthenticationResult.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResult.method",
+      "symbol": "Messaging.AuthenticationResult.method"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResult.result",
+      "symbol": "Messaging.AuthenticationResult.result"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResultField",
+      "symbol": "Messaging.AuthenticationResultField"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResultField.AuthenticationResultField()",
+      "symbol": "Messaging.AuthenticationResultField.AuthenticationResultField()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResultField.clone()",
+      "symbol": "Messaging.AuthenticationResultField.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResultField.name",
+      "symbol": "Messaging.AuthenticationResultField.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.AuthenticationResultField.value",
+      "symbol": "Messaging.AuthenticationResultField.value"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.BinaryAttachment",
+      "symbol": "Messaging.BinaryAttachment"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.BinaryAttachment.BinaryAttachment()",
+      "symbol": "Messaging.BinaryAttachment.BinaryAttachment()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.BinaryAttachment.body",
+      "symbol": "Messaging.BinaryAttachment.body"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.BinaryAttachment.clone()",
+      "symbol": "Messaging.BinaryAttachment.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.BinaryAttachment.fileName",
+      "symbol": "Messaging.BinaryAttachment.fileName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.BinaryAttachment.headers",
+      "symbol": "Messaging.BinaryAttachment.headers"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.BinaryAttachment.mimeTypeSubType",
+      "symbol": "Messaging.BinaryAttachment.mimeTypeSubType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Builder",
+      "symbol": "Messaging.Builder"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Builder.Builder()",
+      "symbol": "Messaging.Builder.Builder()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Builder.clone()",
+      "symbol": "Messaging.Builder.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.EmailFileAttachment.id",
+      "symbol": "Messaging.EmailFileAttachment.id"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Header",
+      "symbol": "Messaging.Header"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Header.Header()",
+      "symbol": "Messaging.Header.Header()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Header.clone()",
+      "symbol": "Messaging.Header.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Header.name",
+      "symbol": "Messaging.Header.name"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.Header.value",
+      "symbol": "Messaging.Header.value"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.InboundEmailHandler",
+      "symbol": "Messaging.InboundEmailHandler"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.MassEmailMessage",
+      "symbol": "Messaging.MassEmailMessage"
+    },
+    {
+      "kind": "test",
+      "notes": "The docs inventory emits a constructor-shaped row for this callback interface; the local witness exercises the interface through a concrete handler implementation.",
+      "surfaceId": "apex:Messaging.NotificationActionHandler.NotificationActionHandler()",
+      "symbol": "Messaging.NotificationActionHandler.NotificationActionHandler()"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-deterministic-mock-required-messaging-001-api67",
+  "notes": "Current-base Messaging-001 lane: constructors, clone boundaries, DTO fields, and callback/interface shapes are exercised locally without live delivery.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Messaging-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 32,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Messaging DTO and callback shapes are covered as deterministic local mocks; this fixture does not claim hosted email delivery or Salesforce compile parity.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseMessagingDeterministic001Test { private class Handler implements Messaging.InboundEmailHandler { public Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope envelope) { Messaging.InboundEmailResult result = new Messaging.InboundEmailResult(); result.success = true; result.message = envelope.toAddress; return result; } } private class NotificationHandler implements Messaging.NotificationActionHandler { public Messaging.ActionResult executeAction(Messaging.ActionableNotification notification) { return new Messaging.ActionResult.Builder().build(); } } @isTest static void dtoShapes() { Messaging.ActionResult action = new Messaging.ActionResult.Builder().build(); System.assertNotEquals(null, action); Messaging.ActionableNotification notification = new Messaging.ActionableNotification.Builder().build(); System.assertNotEquals(null, notification); Messaging.AuthenticationResultField authField = new Messaging.AuthenticationResultField(); authField.name = 'smtp.mailfrom'; authField.value = 'example.test'; System.assertNotEquals(null, authField.clone()); Messaging.AuthenticationResult auth = new Messaging.AuthenticationResult(); auth.authenticationResultFields = new List<Messaging.AuthenticationResultField>{authField}; auth.method = 'spf'; auth.result = 'pass'; System.assertNotEquals(null, auth.clone()); System.assertEquals('spf', auth.method); System.assertEquals('pass', auth.result); Messaging.BinaryAttachment binary = new Messaging.BinaryAttachment(); binary.body = Blob.valueOf('attachment'); binary.fileName = 'attachment.bin'; binary.headers = new List<Messaging.Header>(); binary.mimeTypeSubType = 'application/octet-stream'; System.assertNotEquals(null, binary.clone()); System.assertEquals('attachment.bin', binary.fileName); Messaging.Builder builder = new Messaging.Builder(); System.assertNotEquals(null, builder.clone()); Messaging.EmailFileAttachment file = new Messaging.EmailFileAttachment(); System.assertEquals(null, file.id); Messaging.Header header = new Messaging.Header(); header.name = 'Content-Type'; header.value = 'text/plain'; System.assertNotEquals(null, header.clone()); System.assertEquals('Content-Type', header.name); System.assertEquals('text/plain', header.value); Messaging.MassEmailMessage mass = new Messaging.MassEmailMessage(); System.assertNotEquals(null, mass); NotificationHandler notificationHandler = new NotificationHandler(); System.assertNotEquals(null, notificationHandler); Handler handler = new Handler(); Messaging.InboundEmailResult handled = handler.handleInboundEmail(new Messaging.InboundEmail(), new Messaging.InboundEnvelope()); System.assertEquals(true, handled.success); System.assertEquals(null, handled.message); } }",
+      "path": "force-app/main/default/classes/CurrentBaseMessagingDeterministic001Test.cls"
+    }
+  ]
+}

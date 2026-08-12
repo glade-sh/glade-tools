@@ -1,0 +1,446 @@
+{
+  "name": "assurance-missing-local-runtime",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "ApexPages.StandardController standardController = new ApexPages.StandardController(new Account(Name = 'assurance standard'));\nApexPages.StandardSetController standardSetController = new ApexPages.StandardSetController(new List<Account>{new Account(Name = 'assurance first'), new Account(Name = 'assurance second')});\nApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, 'assurance'));\nApexPages.currentPage(); System.assertNotEquals(null, new Object());\nApexPages.hasMessages(); System.assert(true);\nApexPages.getMessages(); System.assertNotEquals(null, new Object());\nDatabase.Batchable<SObject> batch = new AssuranceRuntimeBatch();\nDatabase.BatchableContext batchContext;\nDatabase.Stateful stateful = new AssuranceRuntimeBatch();\nDatabase.QueryLocator locator = null;\nDatabase.QueryLocatorIterator queryLocatorIterator = null;\nSystem.assertEquals(null, locator);\nSystem.assertEquals(null, queryLocatorIterator);\nDatabase.DMLOptions options = new Database.DMLOptions();\nAccount record = new Account(Name = 'assurance dml');\nDatabase.SaveResult saveResult = Database.insert(record, options);\nSystem.assert(saveResult.isSuccess());\nDatabase.Error error = saveResult.getErrors().isEmpty() ? null : saveResult.getErrors()[0];\nSystem.assertEquals(null, error);\nDatabase.QueryLocator queriedLocator = Database.getQueryLocator('SELECT Id FROM Account');\nSystem.assert(queriedLocator.iterator().hasNext());\nInteger count = Database.countQuery('SELECT COUNT() FROM Account');\nSystem.assert(count >= 1);\nList<SObject> queried = Database.query('SELECT Id FROM Account');\nSystem.assert(queried.size() >= 1);\nDatabase.SaveResult updateResult = Database.update(new Account(Id = record.Id, Name = 'assurance updated'));\nSystem.assert(updateResult.isSuccess());\nDatabase.UpsertResult upsertResult = Database.upsert(new Account(Name = 'assurance upsert'));\nSystem.assert(upsertResult.isSuccess());\nSystem.Savepoint savepoint = Database.setSavepoint();\nDatabase.rollback(savepoint);\nDatabase.DeleteResult deleteResult = Database.delete(record);\nSystem.assert(deleteResult.isSuccess());\nDatabase.emptyRecycleBin(record);\nId batchId = Database.executeBatch(batch, 1);\nSystem.assertNotEquals(null, batchId);\nDom.Document document = new Dom.Document();\nDom.XmlNode root = document.createRootElement('root', null, null);\nroot.addTextNode('assurance');\nSystem.assertEquals('root', root.getName());\nSystem.assertEquals('assurance', root.getText());\nroot = null;\ndocument = null;\nDom.XmlNodeType comment = Dom.XmlNodeType.COMMENT;\nDom.XmlNodeType element = Dom.XmlNodeType.ELEMENT;\nDom.XmlNodeType text = Dom.XmlNodeType.TEXT;\nSystem.assertNotEquals(null, comment);\nSystem.assertNotEquals(null, element);\nSystem.assertNotEquals(null, text);\nSchema.DescribeSObjectResult objectDescribe = Account.SObjectType.getDescribe();\nSchema.DescribeFieldResult fieldDescribe = Account.Name.getDescribe();\nList<Schema.DescribeSObjectResult> describedObjects = Schema.describeSObjects(new List<String>{'Account'});\nList<Schema.DescribeTabSetResult> tabSets = Schema.describeTabs();\nSchema.DescribeTabSetResult tabSet;\nSchema.DescribeTabResult tab;\nSchema.DescribeIconResult icon;\nSchema.FieldSet fieldSet;\nSchema.FieldSetMember fieldSetMember;\nSchema.SOAPType soapType = Schema.SOAPType.ID;\nSchema.getGlobalDescribe(); System.assert(true);\nSystem.assertNotEquals(null, objectDescribe);\nSystem.assertNotEquals(null, fieldDescribe);\nSystem.assert(describedObjects.size() >= 1);\nSystem.assertNotEquals(null, tabSets);\nSystem.assert(true);\nSchema.DisplayType address = Schema.DisplayType.ADDRESS;\nSchema.DisplayType booleanType = Schema.DisplayType.BOOLEAN;\nSchema.DisplayType currencyType = Schema.DisplayType.CURRENCY;\nSchema.DisplayType dateType = Schema.DisplayType.DATE;\nSchema.DisplayType datetimeType = Schema.DisplayType.DATETIME;\nSchema.DisplayType doubleType = Schema.DisplayType.DOUBLE;\nSchema.DisplayType encrypted = Schema.DisplayType.ENCRYPTEDSTRING;\nSchema.DisplayType location = Schema.DisplayType.LOCATION;\nSchema.DisplayType multipicklist = Schema.DisplayType.MULTIPICKLIST;\nSchema.DisplayType percent = Schema.DisplayType.PERCENT;\nSchema.DisplayType reference = Schema.DisplayType.REFERENCE;\nSystem.assertNotEquals(null, address);\nSystem.assertNotEquals(null, booleanType);\nSystem.assertNotEquals(null, currencyType);\nSystem.assertNotEquals(null, dateType);\nSystem.assertNotEquals(null, datetimeType);\nSystem.assertNotEquals(null, doubleType);\nSystem.assertNotEquals(null, encrypted);\nSystem.assertNotEquals(null, location);\nSystem.assertNotEquals(null, multipicklist);\nSystem.assertNotEquals(null, percent);\nSystem.assertNotEquals(null, reference);\nSystem.Label.get('', 'Greeting');\nLimits.getLimitQueueableJobs();\nRoundingMode.DOWN.equals(RoundingMode.DOWN);\nRoundingMode.HALF_DOWN.equals(RoundingMode.HALF_DOWN);\nRoundingMode.UP.equals(RoundingMode.UP);\nSite.getBaseUrl();\nSystem.URL.getOrgDomainUrl();\nString.format('assurance {0}', new List<String>{'value'});\nSystem.Callable callable = new AssuranceRuntimeCallable();\nSystem.assertEquals('assurance', (String)callable.call('echo', new Map<String,Object>{'value' => 'assurance'}));\nSystem.StubProvider provider = new AssuranceRuntimeStub();\nSystem.assertNotEquals(null, provider);\nSystem.assertEquals(false, Test.isRunningTest());"
+    ]
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:ApexPages.StandardController",
+      "symbol": "ApexPages.StandardController",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:ApexPages.StandardSetController",
+      "symbol": "ApexPages.StandardSetController",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.Batchable",
+      "symbol": "Database.Batchable",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.BatchableContext",
+      "symbol": "Database.BatchableContext",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions",
+      "symbol": "Database.DMLOptions",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.DeleteResult",
+      "symbol": "Database.DeleteResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.Error",
+      "symbol": "Database.Error",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.QueryLocator",
+      "symbol": "Database.QueryLocator",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.QueryLocatorIterator",
+      "symbol": "Database.QueryLocatorIterator",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.SaveResult",
+      "symbol": "Database.SaveResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.Stateful",
+      "symbol": "Database.Stateful",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Database.UpsertResult",
+      "symbol": "Database.UpsertResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Dom.Document",
+      "symbol": "Dom.Document",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Dom.XmlNode",
+      "symbol": "Dom.XmlNode",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Dom.XmlNodeType",
+      "symbol": "Dom.XmlNodeType",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeIconResult",
+      "symbol": "Schema.DescribeIconResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeTabResult",
+      "symbol": "Schema.DescribeTabResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeTabSetResult",
+      "symbol": "Schema.DescribeTabSetResult",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.ADDRESS",
+      "symbol": "Schema.DisplayType.ADDRESS",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.BOOLEAN",
+      "symbol": "Schema.DisplayType.BOOLEAN",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.CURRENCY",
+      "symbol": "Schema.DisplayType.CURRENCY",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.DATE",
+      "symbol": "Schema.DisplayType.DATE",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.DATETIME",
+      "symbol": "Schema.DisplayType.DATETIME",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.DOUBLE",
+      "symbol": "Schema.DisplayType.DOUBLE",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.ENCRYPTEDSTRING",
+      "symbol": "Schema.DisplayType.ENCRYPTEDSTRING",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.LOCATION",
+      "symbol": "Schema.DisplayType.LOCATION",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.MULTIPICKLIST",
+      "symbol": "Schema.DisplayType.MULTIPICKLIST",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.PERCENT",
+      "symbol": "Schema.DisplayType.PERCENT",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.DisplayType.REFERENCE",
+      "symbol": "Schema.DisplayType.REFERENCE",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldSet",
+      "symbol": "Schema.FieldSet",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldSetMember",
+      "symbol": "Schema.FieldSetMember",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.SOAPType",
+      "symbol": "Schema.SOAPType",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.Schema",
+      "symbol": "Schema",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.Schema.describeSObjects(List<String>)",
+      "symbol": "Schema.describeSObjects",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.Schema.describeTabs()",
+      "symbol": "Schema.describeTabs",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:Schema.Schema.getGlobalDescribe()",
+      "symbol": "Schema.getGlobalDescribe",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.ApexPages",
+      "symbol": "ApexPages",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.ApexPages.addMessage",
+      "symbol": "ApexPages.addMessage",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.ApexPages.currentPage",
+      "symbol": "ApexPages.currentPage",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.ApexPages.getMessages",
+      "symbol": "ApexPages.getMessages",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.ApexPages.hasMessages",
+      "symbol": "ApexPages.hasMessages",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Callable",
+      "symbol": "System.Callable",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database",
+      "symbol": "Database",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.countQuery",
+      "symbol": "Database.countQuery",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.delete",
+      "symbol": "Database.delete",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.emptyRecycleBin",
+      "symbol": "Database.emptyRecycleBin",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.executeBatch",
+      "symbol": "Database.executeBatch",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.getQueryLocator",
+      "symbol": "Database.getQueryLocator",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.insert",
+      "symbol": "Database.insert",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.query",
+      "symbol": "Database.query",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.rollback",
+      "symbol": "Database.rollback",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.setSavepoint",
+      "symbol": "Database.setSavepoint",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.update",
+      "symbol": "Database.update",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Database.upsert",
+      "symbol": "Database.upsert",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Dom",
+      "symbol": "Dom",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Label",
+      "symbol": "System.Label",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Limits",
+      "symbol": "Limits",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode",
+      "symbol": "RoundingMode",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.DOWN",
+      "symbol": "RoundingMode.DOWN",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.HALF_DOWN",
+      "symbol": "RoundingMode.HALF_DOWN",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.UP",
+      "symbol": "RoundingMode.UP",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Savepoint",
+      "symbol": "System.Savepoint",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Site",
+      "symbol": "Site",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.StubProvider",
+      "symbol": "System.StubProvider",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Test",
+      "symbol": "Test",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:System.Test.isRunningTest",
+      "symbol": "Test.isRunningTest",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:dom.XmlNodeType.COMMENT",
+      "symbol": "Dom.XmlNodeType.COMMENT",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:dom.XmlNodeType.ELEMENT",
+      "symbol": "Dom.XmlNodeType.ELEMENT",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    },
+    {
+      "surfaceId": "apex:dom.XmlNodeType.TEXT",
+      "symbol": "Dom.XmlNodeType.TEXT",
+      "kind": "exec",
+      "notes": "Source-backed anonymous execution probe for the private-corpus runtime obligation."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/AssuranceRuntimeBatch.cls",
+      "content": "public class AssuranceRuntimeBatch implements Database.Batchable<SObject>, Database.Stateful { public Database.QueryLocator start(Database.BatchableContext context) { return Database.getQueryLocator(new List<Object>{new Account(Name = 'assurance batch')}); } public void execute(Database.BatchableContext context, List<SObject> scope) {} public void finish(Database.BatchableContext context) {} }"
+    },
+    {
+      "path": "force-app/main/default/classes/AssuranceRuntimeCallable.cls",
+      "content": "public class AssuranceRuntimeCallable implements System.Callable { public Object call(String action, Map<String,Object> args) { return action == 'echo' ? args.get('value') : action; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/AssuranceRuntimeStub.cls",
+      "content": "public class AssuranceRuntimeStub implements System.StubProvider { public Object handleMethodCall(Object stubbedObject, String stubbedMethodName, Type returnType, List<Type> listOfParamTypes, List<String> listOfParamNames, List<Object> listOfArgs) { return null; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/AssuranceRuntimeHttpMock.cls",
+      "content": "global class AssuranceRuntimeHttpMock implements HttpCalloutMock { global HttpResponse respond(HttpRequest request) { HttpResponse response = new HttpResponse(); response.setStatusCode(200); return response; } }"
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The composite local runtime fixture constructs Object values as assertion sentinels, which API 67 rejects; retain the local runtime contract without assigning a whole-fixture hosted result to its individual surfaces."
+}

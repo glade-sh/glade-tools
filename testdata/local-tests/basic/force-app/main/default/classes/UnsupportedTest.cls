@@ -1,6 +1,7 @@
 @isTest
 private class UnsupportedTest {
   @isTest static void unsupported() {
-    Pattern.compile('a', Pattern.COMMENTS);
+    PageReference page = new PageReference('/apex/Test');
+    page.getContent();
   }
 }

@@ -1,0 +1,71 @@
+{
+  "name": "core-runtime-cb72-frozen-behavior-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean,Id)",
+      "symbol": "System.Security.stripInaccessible",
+      "kind": "exec",
+      "notes": "Intentional deterministic local security contract for the four-argument overload; local permission state only, with no hosted org permission state claimed."
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.describePlugin(String)",
+      "symbol": "Process.SparkPlugApi.describePlugin",
+      "kind": "exec",
+      "notes": "Existing local SparkPlug runtime and stub-behavior path returns the deterministic missing-plugin exception shape."
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.describePlugins()",
+      "symbol": "Process.SparkPlugApi.describePlugins",
+      "kind": "exec",
+      "notes": "Existing local SparkPlug runtime and stub-behavior path returns a deterministic typed discovery result."
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.invokePluginWithJson(String,String)",
+      "symbol": "Process.SparkPlugApi.invokePluginWithJson",
+      "kind": "exec",
+      "notes": "Existing local SparkPlug runtime and stub-behavior path returns the deterministic missing-plugin exception shape."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob,Blob)",
+      "symbol": "System.Crypto.decryptWithManagedIV",
+      "kind": "exec",
+      "notes": "Existing local AES-GCM managed-IV path authenticates additional data and round-trips plaintext; ciphertext values are unstable."
+    },
+    {
+      "surfaceId": "apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob,Blob)",
+      "symbol": "System.Crypto.encryptWithManagedIV",
+      "kind": "exec",
+      "notes": "Existing local AES-GCM managed-IV path encrypts with additional authenticated data; ciphertext values are unstable."
+    },
+    {
+      "surfaceId": "apex:System.TimeZone.getDisplayName()",
+      "symbol": "System.TimeZone.getDisplayName",
+      "kind": "exec",
+      "notes": "Canonical zero-argument callable is exercised by the deterministic local TimeZone model."
+    },
+    {
+      "surfaceId": "apex:System.TimeZone.getTimeZone(String)",
+      "symbol": "System.TimeZone.getTimeZone",
+      "kind": "exec",
+      "notes": "Canonical one-String callable is exercised by the deterministic local TimeZone model."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "try { Process.SparkPlugApi.describePlugin('CB72Missing'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\nSystem.assertNotEquals(null, Process.SparkPlugApi.describePlugins());\ntry { Process.SparkPlugApi.invokePluginWithJson('CB72Missing', '{}'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\nBlob key = Blob.valueOf('0123456789abcdef0123456789abcdef');\nBlob data = Blob.valueOf('hello');\nBlob aad = Blob.valueOf('aad');\nBlob ciphertext = Crypto.encryptWithManagedIV('AES256-GCM', key, data, aad);\nSystem.assertEquals('hello', Crypto.decryptWithManagedIV('AES256-GCM', key, ciphertext, aad).toString());\nId permissionSetId = null;\nSObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, new List<Account>{new Account(Name = 'CB72')}, false, permissionSetId);\nSystem.assertNotEquals(null, decision);\nSystem.assertNotEquals(null, TimeZone.getTimeZone('UTC').getDisplayName());\nSystem.assertNotEquals(null, TimeZone.getTimeZone('UTC'));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "try { Process.SparkPlugApi.describePlugin('CB72Missing'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\nSystem.assertNotEquals(null, Process.SparkPlugApi.describePlugins());\ntry { Process.SparkPlugApi.invokePluginWithJson('CB72Missing', '{}'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\nBlob key = Blob.valueOf('0123456789abcdef0123456789abcdef');\nBlob data = Blob.valueOf('hello');\nBlob aad = Blob.valueOf('aad');\nBlob ciphertext = Crypto.encryptWithManagedIV('AES256-GCM', key, data, aad);\nSystem.assertEquals('hello', Crypto.decryptWithManagedIV('AES256-GCM', key, ciphertext, aad).toString());\nId permissionSetId = null;\nSObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, new List<Account>{new Account(Name = 'CB72')}, false, permissionSetId);\nSystem.assertNotEquals(null, decision);\nSystem.assertNotEquals(null, TimeZone.getTimeZone('UTC').getDisplayName());\nSystem.assertNotEquals(null, TimeZone.getTimeZone('UTC'));\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

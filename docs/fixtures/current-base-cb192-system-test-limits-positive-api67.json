@@ -1,0 +1,46 @@
+{
+  "name": "current-base-cb192-system-test-limits-positive-api67",
+  "packetId": "CB192",
+  "apiVersion": "67.0",
+  "mode": "test-class",
+  "candidate": {
+    "commit": "381e27e47e720ac7dbecb906bf275d2d5bcdd37f",
+    "sha256": "976c2ceceb2a0936889129d2dc7314d2065fbc538caf54bbb534f20e4f588166"
+  },
+  "profile": {
+    "path": "evidence/current-base/profile-381e27e4-cb191-20260802-1505/apex-support-profile.json",
+    "sha256": "d50cde1597365eb721c796e6e071d30e924e23e0e5b42181a3296dfc5a4c7200",
+    "selection": "local-runtime-required",
+    "areas": ["System.Test", "System.Limits"],
+    "selectedRowCount": 132
+  },
+  "canonicalSnapshot": {
+    "name": "GLADE_SNAPSHOT.json",
+    "path": "evidence/current-base/surface-381e27e4-cb191-20260802-1505/GLADE_SNAPSHOT.json",
+    "sha256": "07389a70201b1e14020278c7bea88e24afaa98398864861ddfc36b02ae8dd7e4"
+  },
+  "scenario": {
+    "className": "CB192SystemTestLimitsOracle",
+    "methodName": "broadSystemTestLimits",
+    "sourcePath": "evidence/sf-cb192-system-test-limits-current-oracle/shared-project/force-app/main/default/classes/CB192SystemTestLimitsOracle.cls",
+    "sourceSha256": "e18201c21093b8cfa418f83b60c136b1e1b50ef044a378619ededf2757d01cf1",
+    "salesforceMode": "test-class",
+    "localMode": "test-class"
+  },
+  "evidence": [
+    {"surfaceId": "apex:System.Test.isRunningTest()", "symbol": "System.Test.isRunningTest", "kind": "test-class"},
+    {"surfaceId": "apex:System.Test.setMock(Type,Object)", "symbol": "System.Test.setMock", "kind": "test-class"},
+    {"surfaceId": "apex:System.Test.startTest()", "symbol": "System.Test.startTest", "kind": "test-class"},
+    {"surfaceId": "apex:System.Test.stopTest()", "symbol": "System.Test.stopTest", "kind": "test-class"},
+    {"surfaceId": "apex:System.Limits.getDmlRows", "symbol": "System.Limits.getDmlRows", "kind": "test-class"},
+    {"surfaceId": "apex:System.Limits.getDmlStatements", "symbol": "System.Limits.getDmlStatements", "kind": "test-class"},
+    {"surfaceId": "apex:System.Limits.getQueries()", "symbol": "System.Limits.getQueries", "kind": "test-class"},
+    {"surfaceId": "apex:System.Limits.getQueryRows()", "symbol": "System.Limits.getQueryRows", "kind": "test-class"},
+    {"surfaceId": "apex:System.Assert.areEqual(Object,Object)", "symbol": "System.Assert.areEqual", "kind": "test-class"}
+  ],
+  "command": {
+    "kind": "test-class",
+    "local": "glade-candidate-381e27e4 test --project shared-project --class CB192SystemTestLimitsOracle --method broadSystemTestLimits --json --no-progress --no-cache --no-parallel-methods",
+    "salesforce": "sf apex run test --target-org glade-cb190-schema-20260802 --tests CB192SystemTestLimitsOracle.broadSystemTestLimits --result-format json --synchronous --api-version 67.0"
+  }
+}

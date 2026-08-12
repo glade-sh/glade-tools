@@ -1,0 +1,177 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.ApplicationContext",
+      "symbol": "Canvas.ApplicationContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.ApplicationContext.ApplicationContext()",
+      "symbol": "Canvas.ApplicationContext.ApplicationContext()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasLifecycleHandler",
+      "symbol": "Canvas.CanvasLifecycleHandler"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasLifecycleHandler.CanvasLifecycleHandler()",
+      "symbol": "Canvas.CanvasLifecycleHandler.CanvasLifecycleHandler()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasRenderException",
+      "symbol": "Canvas.CanvasRenderException"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasRenderException.CanvasRenderException()",
+      "symbol": "Canvas.CanvasRenderException.CanvasRenderException()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasRenderException.CanvasRenderException(Exception)",
+      "symbol": "Canvas.CanvasRenderException.CanvasRenderException(Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasRenderException.CanvasRenderException(String)",
+      "symbol": "Canvas.CanvasRenderException.CanvasRenderException(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasRenderException.CanvasRenderException(String,Exception)",
+      "symbol": "Canvas.CanvasRenderException.CanvasRenderException(String,Exception)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.CanvasRenderException.clone()",
+      "symbol": "Canvas.CanvasRenderException.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.ContextTypeEnum.ORGANIZATION",
+      "symbol": "Canvas.ContextTypeEnum.ORGANIZATION"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.ContextTypeEnum.RECORD_DETAIL",
+      "symbol": "Canvas.ContextTypeEnum.RECORD_DETAIL"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.EnvironmentContext",
+      "symbol": "Canvas.EnvironmentContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.EnvironmentContext.EnvironmentContext()",
+      "symbol": "Canvas.EnvironmentContext.EnvironmentContext()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.RenderContext",
+      "symbol": "Canvas.RenderContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.RenderContext.RenderContext()",
+      "symbol": "Canvas.RenderContext.RenderContext()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test",
+      "symbol": "Canvas.Test"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_CANVAS_URL",
+      "symbol": "Canvas.Test.KEY_CANVAS_URL"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_DEVELOPER_NAME",
+      "symbol": "Canvas.Test.KEY_DEVELOPER_NAME"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_DISPLAY_LOCATION",
+      "symbol": "Canvas.Test.KEY_DISPLAY_LOCATION"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_LOCATION_URL",
+      "symbol": "Canvas.Test.KEY_LOCATION_URL"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_NAME",
+      "symbol": "Canvas.Test.KEY_NAME"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_NAMESPACE",
+      "symbol": "Canvas.Test.KEY_NAMESPACE"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_SUB_LOCATION",
+      "symbol": "Canvas.Test.KEY_SUB_LOCATION"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.KEY_VERSION",
+      "symbol": "Canvas.Test.KEY_VERSION"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.Test()",
+      "symbol": "Canvas.Test.Test()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Canvas.Test.clone()",
+      "symbol": "Canvas.Test.clone()"
+    },
+    {
+      "kind": "test",
+      "notes": "The executable uses the Canvas namespace through the default System platform surface; no separate hosted Canvas service is claimed.",
+      "surfaceId": "apex:System.Canvas",
+      "symbol": "System.Canvas"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-canvas-001-deterministic-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-Canvas-001: constructors, enum values, test constants, and deterministic local Canvas DTO cloning are exercised without claiming a hosted Canvas application integration.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "laneId": "current-base-deterministic-mock-required-Canvas-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 28,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Canvas mock and passive object boundaries only and makes no hosted Canvas parity claim.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseCanvas001DeterministicTest { @isTest static void canvasObjectsAndConstants() { Canvas.ApplicationContext application = new Canvas.ApplicationContext(); Canvas.EnvironmentContext environment = new Canvas.EnvironmentContext(); Canvas.RenderContext render = new Canvas.RenderContext(); Canvas.CanvasLifecycleHandler handler = new Canvas.CanvasLifecycleHandler(); Canvas.CanvasRenderException empty = new Canvas.CanvasRenderException(); QueryException cause = new QueryException('cause'); Canvas.CanvasRenderException fromCause = new Canvas.CanvasRenderException(cause); Canvas.CanvasRenderException fromMessage = new Canvas.CanvasRenderException('message'); Canvas.CanvasRenderException fromBoth = new Canvas.CanvasRenderException('message', cause); System.assertNotEquals(null, application); System.assertNotEquals(null, environment); System.assertNotEquals(null, render); System.assertNotEquals(null, handler); System.assertNotEquals(null, empty.clone()); System.assertNotEquals(null, fromCause.clone()); System.assertNotEquals(null, fromMessage.clone()); System.assertNotEquals(null, fromBoth.clone()); Canvas.ContextTypeEnum organization = Canvas.ContextTypeEnum.ORGANIZATION; Canvas.ContextTypeEnum recordDetail = Canvas.ContextTypeEnum.RECORD_DETAIL; System.assertNotEquals(null, organization); System.assertNotEquals(null, recordDetail); System.assertEquals(3, Canvas.ContextTypeEnum.values().size()); Object canvasUrl = Canvas.Test.KEY_CANVAS_URL; Object developerName = Canvas.Test.KEY_DEVELOPER_NAME; Object displayLocation = Canvas.Test.KEY_DISPLAY_LOCATION; Object locationUrl = Canvas.Test.KEY_LOCATION_URL; Object name = Canvas.Test.KEY_NAME; Object namespaceName = Canvas.Test.KEY_NAMESPACE; Object subLocation = Canvas.Test.KEY_SUB_LOCATION; Object version = Canvas.Test.KEY_VERSION; System.assertNotEquals(null, canvasUrl); System.assertNotEquals(null, developerName); System.assertNotEquals(null, displayLocation); System.assertNotEquals(null, locationUrl); System.assertNotEquals(null, name); System.assertNotEquals(null, namespaceName); System.assertNotEquals(null, subLocation); System.assertNotEquals(null, version); } }",
+      "path": "force-app/main/default/classes/CurrentBaseCanvas001DeterministicTest.cls"
+    }
+  ]
+}

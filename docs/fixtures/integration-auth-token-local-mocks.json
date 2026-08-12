@@ -1,0 +1,29 @@
+{
+  "name": "integration-auth-token-local-mocks",
+  "evidence": [
+    {
+      "surfaceId": "apex:Auth.AuthToken.revokeAccess(String,String,String,String)",
+      "symbol": "Auth.AuthToken.revokeAccess(String,String,String,String)",
+      "kind": "exec",
+      "notes": "Salesforce and Glade deterministically return true for the valid-ID revokeAccess case."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals(true, Auth.AuthToken.revokeAccess('005000000000001', 'provider', null, 'remote'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals(true, Auth.AuthToken.revokeAccess('005000000000001', 'provider', null, 'remote'));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

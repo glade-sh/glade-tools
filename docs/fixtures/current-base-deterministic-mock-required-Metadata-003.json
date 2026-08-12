@@ -1,0 +1,249 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "sha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.configName",
+      "symbol": "Metadata.OmniInteractionAccessConfig.configName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isAsyncCardCachingEnabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isAsyncCardCachingEnabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardApexRemoteDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardApexRemoteDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardCacheDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardCacheDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardDataTfrmDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardDataTfrmDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardIntegrationProcDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardIntegrationProcDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardRestApiDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardRestApiDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardSoqlDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardSoqlDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardSoslDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardSoslDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isCardStreamingApiDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isCardStreamingApiDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.isDataTfrmEncrpFieldsDisabled",
+      "symbol": "Metadata.OmniInteractionAccessConfig.isDataTfrmEncrpFieldsDisabled"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.masterLabel",
+      "symbol": "Metadata.OmniInteractionAccessConfig.masterLabel"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.OmniInteractionAccessConfig.setupOwner",
+      "symbol": "Metadata.OmniInteractionAccessConfig.setupOwner"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.Operations.Operations()",
+      "symbol": "Metadata.Operations.Operations()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionList",
+      "symbol": "Metadata.PlatformActionList"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionList.PlatformActionList()",
+      "symbol": "Metadata.PlatformActionList.PlatformActionList()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionList.actionListContext",
+      "symbol": "Metadata.PlatformActionList.actionListContext"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionList.platformActionListItems",
+      "symbol": "Metadata.PlatformActionList.platformActionListItems"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionList.relatedSourceEntity",
+      "symbol": "Metadata.PlatformActionList.relatedSourceEntity"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListContextEnum",
+      "symbol": "Metadata.PlatformActionListContextEnum"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListContextEnum.equals(Object)",
+      "symbol": "Metadata.PlatformActionListContextEnum.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListContextEnum.hashCode()",
+      "symbol": "Metadata.PlatformActionListContextEnum.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListContextEnum.ordinal()",
+      "symbol": "Metadata.PlatformActionListContextEnum.ordinal()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListContextEnum.valueOf(String)",
+      "symbol": "Metadata.PlatformActionListContextEnum.valueOf(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListContextEnum.values()",
+      "symbol": "Metadata.PlatformActionListContextEnum.values()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListItem",
+      "symbol": "Metadata.PlatformActionListItem"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListItem.PlatformActionListItem()",
+      "symbol": "Metadata.PlatformActionListItem.PlatformActionListItem()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListItem.actionName",
+      "symbol": "Metadata.PlatformActionListItem.actionName"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListItem.actionType",
+      "symbol": "Metadata.PlatformActionListItem.actionType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListItem.sortOrder",
+      "symbol": "Metadata.PlatformActionListItem.sortOrder"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionListItem.subtype",
+      "symbol": "Metadata.PlatformActionListItem.subtype"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionTypeEnum",
+      "symbol": "Metadata.PlatformActionTypeEnum"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionTypeEnum.equals(Object)",
+      "symbol": "Metadata.PlatformActionTypeEnum.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionTypeEnum.hashCode()",
+      "symbol": "Metadata.PlatformActionTypeEnum.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionTypeEnum.ordinal()",
+      "symbol": "Metadata.PlatformActionTypeEnum.ordinal()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionTypeEnum.valueOf(String)",
+      "symbol": "Metadata.PlatformActionTypeEnum.valueOf(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PlatformActionTypeEnum.values()",
+      "symbol": "Metadata.PlatformActionTypeEnum.values()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PrimaryTabComponents",
+      "symbol": "Metadata.PrimaryTabComponents"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PrimaryTabComponents.PrimaryTabComponents()",
+      "symbol": "Metadata.PrimaryTabComponents.PrimaryTabComponents()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PrimaryTabComponents.component",
+      "symbol": "Metadata.PrimaryTabComponents.component"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.PrimaryTabComponents.containers",
+      "symbol": "Metadata.PrimaryTabComponents.containers"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.QuickActionList",
+      "symbol": "Metadata.QuickActionList"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-deterministic-mock-required-Metadata-003",
+  "notes": "Current-base Metadata-003 covers only the 42 queue rows not already present in existing fixture evidence. The source exercises local Omni configuration fields, platform action DTOs/enums, operations construction, and primary-tab collections.",
+  "profile": {
+    "laneId": "current-base-deterministic-mock-required-Metadata-003",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 42,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The current Salesforce compile oracle does not accept the Metadata DTO surface in this lane; this fixture records local deterministic-mock construction and member behavior only and makes no Salesforce compile claim.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseDeterministicMockRequiredMetadata003Test { @isTest static void metadata003Witness() { Metadata.OmniInteractionAccessConfig config = new Metadata.OmniInteractionAccessConfig(); config.configName = 'Omni'; config.isAsyncCardCachingEnabled = false; config.isCardApexRemoteDisabled = true; config.isCardCacheDisabled = false; config.isCardDataTfrmDisabled = true; config.isCardIntegrationProcDisabled = false; config.isCardRestApiDisabled = true; config.isCardSoqlDisabled = false; config.isCardSoslDisabled = true; config.isCardStreamingApiDisabled = false; config.isDataTfrmEncrpFieldsDisabled = true; config.masterLabel = 'Fixture config'; config.setupOwner = 'User'; System.assertEquals('Omni', config.configName); System.assertEquals(true, config.isCardApexRemoteDisabled); System.assertEquals('Fixture config', config.masterLabel); Metadata.Operations operations = new Metadata.Operations(); System.assertNotEquals(null, operations); Metadata.PlatformActionList actionList = new Metadata.PlatformActionList(); actionList.actionListContext = Metadata.PlatformActionListContextEnum.Record; actionList.relatedSourceEntity = 'Account'; Metadata.PlatformActionListItem action = new Metadata.PlatformActionListItem(); action.actionName = 'Account.New'; action.actionType = Metadata.PlatformActionTypeEnum.QuickAction; action.sortOrder = 1; action.subtype = 'Standard'; actionList.platformActionListItems = new List<Metadata.PlatformActionListItem>{action}; System.assertEquals('Account.New', actionList.platformActionListItems[0].actionName); System.assertEquals(1, actionList.platformActionListItems[0].sortOrder); Metadata.PlatformActionListContextEnum context = Metadata.PlatformActionListContextEnum.Record; System.assertEquals(true, context.equals(Metadata.PlatformActionListContextEnum.valueOf('Record'))); System.assertNotEquals(null, context.hashCode()); System.assert(context.ordinal() >= 0); System.assert(Metadata.PlatformActionListContextEnum.values().size() > 0); Metadata.PlatformActionTypeEnum actionType = Metadata.PlatformActionTypeEnum.QuickAction; System.assertEquals(true, actionType.equals(Metadata.PlatformActionTypeEnum.valueOf('QuickAction'))); System.assertNotEquals(null, actionType.hashCode()); System.assert(actionType.ordinal() >= 0); System.assert(Metadata.PlatformActionTypeEnum.values().size() > 0); Metadata.PrimaryTabComponents primary = new Metadata.PrimaryTabComponents(); primary.component = new List<Metadata.ConsoleComponent>{new Metadata.ConsoleComponent()}; primary.containers = new List<Metadata.Container>{new Metadata.Container()}; System.assertEquals(1, primary.component.size()); System.assertEquals(1, primary.containers.size()); Metadata.QuickActionList quickActions = new Metadata.QuickActionList(); System.assertNotEquals(null, quickActions); } }",
+      "path": "force-app/main/classes/CurrentBaseDeterministicMockRequiredMetadata003Test.cls"
+    }
+  ]
+}

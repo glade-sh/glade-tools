@@ -1,0 +1,33 @@
+{
+  "comparisons": [
+    {
+      "caseId": "cb183-apexpages-message-and-single-email-positive",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:ApexPages.Severity",
+        "apex:ApexPages.Severity.ERROR",
+        "apex:ApexPages.Severity.INFO",
+        "apex:ApexPages.Severity.WARNING",
+        "apex:ApexPages.Severity.CONFIRM",
+        "apex:ApexPages.Severity.FATAL",
+        "apex:ApexPages.Message",
+        "apex:ApexPages.Message.Message(ApexPages.Severity,String)",
+        "apex:ApexPages.Message.getSeverity()",
+        "apex:ApexPages.Message.getSummary()",
+        "apex:ApexPages.Message.Message(ApexPages.Severity,String,String)",
+        "apex:ApexPages.Message.getDetail()",
+        "apex:ApexPages.Message.Message(ApexPages.Severity,String,String,String)",
+        "apex:ApexPages.Message.getComponentLabel()",
+        "apex:Messaging.SingleEmailMessage",
+        "apex:Messaging.SingleEmailMessage.SingleEmailMessage()",
+        "apex:Messaging.SingleEmailMessage.setSubject(String)",
+        "apex:Messaging.SingleEmailMessage.getSubject()",
+        "apex:Messaging.SingleEmailMessage.setToAddresses(List<String>)",
+        "apex:Messaging.SingleEmailMessage.getToAddresses()"
+      ],
+      "expectedObservation": "Boolean true for context-free message and email DTO accessors",
+      "sfObservation": "Boolean true on API 67.0 anonymous Apex",
+      "gladeObservation": "Boolean true from exact candidate a0dc2fb662b5a785f66eae7d9024875b0468827c1a6ed8469308c34cdd4123ac"
+    }
+  ]
+}

@@ -169,7 +169,7 @@ func compatUsage() string {
 		"matrix|mvp [--json] [--require-ready]",
 		"local-tests [--project <root>] [--class <name>] [--class-list <a,b>] [--class-file <path>] [--start-class <name>] [--method <name>] [--changed-since <ref>] [--blockers-only] [--top-failures <n>] [--max-failure-groups <n>] [--timeout <ms-per-test>] [--parallel <n|auto>] [--parallel-methods] [--shard-count <n|auto>] [--shard-index <i|auto>] [--write-class-shards <dir>] [--duration-history <path>] [--progress] [--analyze] [--profile-on-timeout] [--cpu-profile <path>] [--mem-profile <path>] [--perf-json <path>] [--json] [--check <path>]",
 		"local-tests compare --base-bin <path> --candidate-bin <path> --project <root> --out <new-dir> --workers <n> --runs 5 --manifest <path> [--json]",
-		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check> [flags]",
+		"surface <refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight> [flags]",
 		"corpus check --root <corpus-root> --glade <binary> --out <dir> [--fail-on-unclassified] [--max-unclassified <n>] [--fail-on-check-closure]",
 		"visualforce capture --local --glade-bin <path> --project <root> [--pages <a,b>] [--phase <n>] [--out <path>] [--json]",
 		"visualforce capture --target-org <alias> [--project <root>] [--pages <a,b>] [--phase <n>] [--out <path>] [--skip-deploy] [--batch-size <n>] [--json]",
@@ -188,7 +188,7 @@ func compatUsage() string {
 		"server-examples [--project <root>] [--project-filter <substring>] [--route <substring>] [--probe <substring>] [--outcome <pass|fail|unsupported|missing>] [--blockers-only] [--json]",
 		"dashboard|gaps|stdlib [--output <path>|--check <path>]",
 		"stdlib --json",
-		"oracle-stdlib --target-org <alias> [--output <path>]",
+		"oracle-stdlib --target-org <alias> [--cases <json>] [--work-dir <dir>] [--output <path>]",
 		"docs-inventory --source <dir> [--json|--output <path>|--check <path>|--diff <path>]",
 		"catalog (--inventory <path>|--completions <path>) [--json|--output <path>|--check <path>]",
 		"reconcile (--inventory <path>|--catalog <path>) [--json|--output <path>|--check <path>] [--max-unknown <n>]",
@@ -1907,19 +1907,34 @@ func runCompatStdlib(args []string, w io.Writer) error {
 
 func runCompatOracleStdlib(ctx context.Context, args []string, w io.Writer) error {
 	targetOrg := ""
+	casesPath := ""
+	workDir := ""
 	outputPath := ""
+	usage := "usage: glade-tools oracle-stdlib --target-org <alias> [--cases <json>] [--work-dir <dir>] [--output <path>]"
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--target-org":
 			i++
 			if i >= len(args) {
-				return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+				return errors.New(usage)
 			}
 			targetOrg = args[i]
+		case "--cases":
+			i++
+			if i >= len(args) {
+				return errors.New(usage)
+			}
+			casesPath = args[i]
+		case "--work-dir":
+			i++
+			if i >= len(args) {
+				return errors.New(usage)
+			}
+			workDir = args[i]
 		case "--output":
 			i++
 			if i >= len(args) {
-				return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+				return errors.New(usage)
 			}
 			outputPath = args[i]
 		default:
@@ -1927,9 +1942,17 @@ func runCompatOracleStdlib(ctx context.Context, args []string, w io.Writer) erro
 		}
 	}
 	if targetOrg == "" {
-		return errors.New("usage: glade-tools oracle-stdlib --target-org <alias> [--output <path>]")
+		return errors.New(usage)
 	}
-	report, err := oracleprobe.RunAnonymous(ctx, oracleprobe.StdlibCases(), oracleprobe.Options{TargetOrg: targetOrg})
+	cases := oracleprobe.StdlibCases()
+	if casesPath != "" {
+		var err error
+		cases, err = oracleprobe.LoadCases(casesPath)
+		if err != nil {
+			return err
+		}
+	}
+	report, err := oracleprobe.RunAnonymous(ctx, cases, oracleprobe.Options{TargetOrg: targetOrg, WorkDir: workDir})
 	if err != nil {
 		return err
 	}

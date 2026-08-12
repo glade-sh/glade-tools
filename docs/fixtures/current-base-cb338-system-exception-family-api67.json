@@ -1,0 +1,232 @@
+{
+  "name": "current-base-cb338-system-exception-family-api67",
+  "packetId": "CB338",
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "08684af56dc10d65e9185286428f157cfbf41f1f",
+    "sha256": "79f8f4adc44c195d93c247ea2fa070b89260e17e772fbe0dda6391a7824275ca",
+    "toolsCommit": "1eb172d54eafaabe10b58846024d0e7aeae99b65"
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:System.AssertException.equals(Object)",
+      "symbol": "System.AssertException.equals(Object)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.hashCode()",
+      "symbol": "System.AssertException.hashCode()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AssertException.toString()",
+      "symbol": "System.AssertException.toString()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AsyncException.AsyncException()",
+      "symbol": "System.AsyncException.AsyncException()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AsyncException.AsyncException(Exception)",
+      "symbol": "System.AsyncException.AsyncException(Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AsyncException.AsyncException(String,Exception)",
+      "symbol": "System.AsyncException.AsyncException(String,Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AsyncException.equals(Object)",
+      "symbol": "System.AsyncException.equals(Object)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.AsyncException.hashCode()",
+      "symbol": "System.AsyncException.hashCode()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException",
+      "symbol": "System.BigObjectException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException.BigObjectException()",
+      "symbol": "System.BigObjectException.BigObjectException()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException.BigObjectException(Exception)",
+      "symbol": "System.BigObjectException.BigObjectException(Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException.BigObjectException(String)",
+      "symbol": "System.BigObjectException.BigObjectException(String)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException.BigObjectException(String,Exception)",
+      "symbol": "System.BigObjectException.BigObjectException(String,Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException.equals(Object)",
+      "symbol": "System.BigObjectException.equals(Object)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException.hashCode()",
+      "symbol": "System.BigObjectException.hashCode()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.BigObjectException.toString()",
+      "symbol": "System.BigObjectException.toString()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException",
+      "symbol": "System.CalloutException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException.CalloutException()",
+      "symbol": "System.CalloutException.CalloutException()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException.CalloutException(Exception)",
+      "symbol": "System.CalloutException.CalloutException(Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException.CalloutException(String)",
+      "symbol": "System.CalloutException.CalloutException(String)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException.CalloutException(String,Exception)",
+      "symbol": "System.CalloutException.CalloutException(String,Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException.equals(Object)",
+      "symbol": "System.CalloutException.equals(Object)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException.hashCode()",
+      "symbol": "System.CalloutException.hashCode()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CalloutException.toString()",
+      "symbol": "System.CalloutException.toString()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException",
+      "symbol": "System.CanvasException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException.CanvasException()",
+      "symbol": "System.CanvasException.CanvasException()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException.CanvasException(Exception)",
+      "symbol": "System.CanvasException.CanvasException(Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException.CanvasException(String)",
+      "symbol": "System.CanvasException.CanvasException(String)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException.CanvasException(String,Exception)",
+      "symbol": "System.CanvasException.CanvasException(String,Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException.equals(Object)",
+      "symbol": "System.CanvasException.equals(Object)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException.hashCode()",
+      "symbol": "System.CanvasException.hashCode()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.CanvasException.toString()",
+      "symbol": "System.CanvasException.toString()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException",
+      "symbol": "System.DataWeaveScriptException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException.DataWeaveScriptException()",
+      "symbol": "System.DataWeaveScriptException.DataWeaveScriptException()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException.DataWeaveScriptException(Exception)",
+      "symbol": "System.DataWeaveScriptException.DataWeaveScriptException(Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException.DataWeaveScriptException(String)",
+      "symbol": "System.DataWeaveScriptException.DataWeaveScriptException(String)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException.DataWeaveScriptException(String,Exception)",
+      "symbol": "System.DataWeaveScriptException.DataWeaveScriptException(String,Exception)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException.equals(Object)",
+      "symbol": "System.DataWeaveScriptException.equals(Object)",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException.hashCode()",
+      "symbol": "System.DataWeaveScriptException.hashCode()",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DataWeaveScriptException.toString()",
+      "symbol": "System.DataWeaveScriptException.toString()",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "QueryException cause = new QueryException('CB338 cause');\nList<String> rows = new List<String>();\n\nAssertException assert0 = new AssertException();\nAssertException assertS = new AssertException('CB338 AssertException');\nAssertException assertE = new AssertException(cause);\nAssertException assertSE = new AssertException('CB338 AssertException cause', cause);\nrows.add('AssertException|0|' + assert0.getTypeName() + '|' + assert0.getMessage() + '|' + assert0.toString() + '|' + assert0.equals(assert0) + '|' + (assert0.hashCode() == assert0.hashCode()));\nrows.add('AssertException|S|' + assertS.getTypeName() + '|' + assertS.getMessage() + '|' + assertS.toString() + '|' + assertS.equals(assertS) + '|' + (assertS.hashCode() == assertS.hashCode()));\nrows.add('AssertException|E|' + assertE.getTypeName() + '|' + assertE.getMessage() + '|' + assertE.toString() + '|' + assertE.equals(assertE) + '|' + (assertE.hashCode() == assertE.hashCode()));\nrows.add('AssertException|SE|' + assertSE.getTypeName() + '|' + assertSE.getMessage() + '|' + assertSE.toString() + '|' + assertSE.equals(assertSE) + '|' + (assertSE.hashCode() == assertSE.hashCode()));\n\nAsyncException async0 = new AsyncException();\nAsyncException asyncS = new AsyncException('CB338 AsyncException');\nAsyncException asyncE = new AsyncException(cause);\nAsyncException asyncSE = new AsyncException('CB338 AsyncException cause', cause);\nrows.add('AsyncException|0|' + async0.getTypeName() + '|' + async0.getMessage() + '|' + async0.toString() + '|' + async0.equals(async0) + '|' + (async0.hashCode() == async0.hashCode()));\nrows.add('AsyncException|S|' + asyncS.getTypeName() + '|' + asyncS.getMessage() + '|' + asyncS.toString() + '|' + asyncS.equals(asyncS) + '|' + (asyncS.hashCode() == asyncS.hashCode()));\nrows.add('AsyncException|E|' + asyncE.getTypeName() + '|' + asyncE.getMessage() + '|' + asyncE.toString() + '|' + asyncE.equals(asyncE) + '|' + (asyncE.hashCode() == asyncE.hashCode()));\nrows.add('AsyncException|SE|' + asyncSE.getTypeName() + '|' + asyncSE.getMessage() + '|' + asyncSE.toString() + '|' + asyncSE.equals(asyncSE) + '|' + (asyncSE.hashCode() == asyncSE.hashCode()));\n\nBigObjectException big0 = new BigObjectException();\nBigObjectException bigS = new BigObjectException('CB338 BigObjectException');\nBigObjectException bigE = new BigObjectException(cause);\nBigObjectException bigSE = new BigObjectException('CB338 BigObjectException cause', cause);\nrows.add('BigObjectException|0|' + big0.getTypeName() + '|' + big0.getMessage() + '|' + big0.toString() + '|' + big0.equals(big0) + '|' + (big0.hashCode() == big0.hashCode()));\nrows.add('BigObjectException|S|' + bigS.getTypeName() + '|' + bigS.getMessage() + '|' + bigS.toString() + '|' + bigS.equals(bigS) + '|' + (bigS.hashCode() == bigS.hashCode()));\nrows.add('BigObjectException|E|' + bigE.getTypeName() + '|' + bigE.getMessage() + '|' + bigE.toString() + '|' + bigE.equals(bigE) + '|' + (bigE.hashCode() == bigE.hashCode()));\nrows.add('BigObjectException|SE|' + bigSE.getTypeName() + '|' + bigSE.getMessage() + '|' + bigSE.toString() + '|' + bigSE.equals(bigSE) + '|' + (bigSE.hashCode() == bigSE.hashCode()));\n\nCalloutException callout0 = new CalloutException();\nCalloutException calloutS = new CalloutException('CB338 CalloutException');\nCalloutException calloutE = new CalloutException(cause);\nCalloutException calloutSE = new CalloutException('CB338 CalloutException cause', cause);\nrows.add('CalloutException|0|' + callout0.getTypeName() + '|' + callout0.getMessage() + '|' + callout0.toString() + '|' + callout0.equals(callout0) + '|' + (callout0.hashCode() == callout0.hashCode()));\nrows.add('CalloutException|S|' + calloutS.getTypeName() + '|' + calloutS.getMessage() + '|' + calloutS.toString() + '|' + calloutS.equals(calloutS) + '|' + (calloutS.hashCode() == calloutS.hashCode()));\nrows.add('CalloutException|E|' + calloutE.getTypeName() + '|' + calloutE.getMessage() + '|' + calloutE.toString() + '|' + calloutE.equals(calloutE) + '|' + (calloutE.hashCode() == calloutE.hashCode()));\nrows.add('CalloutException|SE|' + calloutSE.getTypeName() + '|' + calloutSE.getMessage() + '|' + calloutSE.toString() + '|' + calloutSE.equals(calloutSE) + '|' + (calloutSE.hashCode() == calloutSE.hashCode()));\n\nCanvasException canvas0 = new CanvasException();\nCanvasException canvasS = new CanvasException('CB338 CanvasException');\nCanvasException canvasE = new CanvasException(cause);\nCanvasException canvasSE = new CanvasException('CB338 CanvasException cause', cause);\nrows.add('CanvasException|0|' + canvas0.getTypeName() + '|' + canvas0.getMessage() + '|' + canvas0.toString() + '|' + canvas0.equals(canvas0) + '|' + (canvas0.hashCode() == canvas0.hashCode()));\nrows.add('CanvasException|S|' + canvasS.getTypeName() + '|' + canvasS.getMessage() + '|' + canvasS.toString() + '|' + canvasS.equals(canvasS) + '|' + (canvasS.hashCode() == canvasS.hashCode()));\nrows.add('CanvasException|E|' + canvasE.getTypeName() + '|' + canvasE.getMessage() + '|' + canvasE.toString() + '|' + canvasE.equals(canvasE) + '|' + (canvasE.hashCode() == canvasE.hashCode()));\nrows.add('CanvasException|SE|' + canvasSE.getTypeName() + '|' + canvasSE.getMessage() + '|' + canvasSE.toString() + '|' + canvasSE.equals(canvasSE) + '|' + (canvasSE.hashCode() == canvasSE.hashCode()));\n\nDataWeaveScriptException data0 = new DataWeaveScriptException();\nDataWeaveScriptException dataS = new DataWeaveScriptException('CB338 DataWeaveScriptException');\nrows.add('DataWeaveScriptException|0|' + data0.getTypeName() + '|' + data0.getMessage() + '|' + data0.toString() + '|' + data0.equals(data0) + '|' + (data0.hashCode() == data0.hashCode()));\nrows.add('DataWeaveScriptException|S|' + dataS.getTypeName() + '|' + dataS.getMessage() + '|' + dataS.toString() + '|' + dataS.equals(dataS) + '|' + (dataS.hashCode() == dataS.hashCode()));\n\nSystem.debug('CB338|' + String.join(rows, '||'));\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "QueryException cause = new QueryException('CB338 cause');\nList<String> rows = new List<String>();\n\nAssertException assert0 = new AssertException();\nAssertException assertS = new AssertException('CB338 AssertException');\nAssertException assertE = new AssertException(cause);\nAssertException assertSE = new AssertException('CB338 AssertException cause', cause);\nrows.add('AssertException|0|' + assert0.getTypeName() + '|' + assert0.getMessage() + '|' + assert0.toString() + '|' + assert0.equals(assert0) + '|' + (assert0.hashCode() == assert0.hashCode()));\nrows.add('AssertException|S|' + assertS.getTypeName() + '|' + assertS.getMessage() + '|' + assertS.toString() + '|' + assertS.equals(assertS) + '|' + (assertS.hashCode() == assertS.hashCode()));\nrows.add('AssertException|E|' + assertE.getTypeName() + '|' + assertE.getMessage() + '|' + assertE.toString() + '|' + assertE.equals(assertE) + '|' + (assertE.hashCode() == assertE.hashCode()));\nrows.add('AssertException|SE|' + assertSE.getTypeName() + '|' + assertSE.getMessage() + '|' + assertSE.toString() + '|' + assertSE.equals(assertSE) + '|' + (assertSE.hashCode() == assertSE.hashCode()));\n\nAsyncException async0 = new AsyncException();\nAsyncException asyncS = new AsyncException('CB338 AsyncException');\nAsyncException asyncE = new AsyncException(cause);\nAsyncException asyncSE = new AsyncException('CB338 AsyncException cause', cause);\nrows.add('AsyncException|0|' + async0.getTypeName() + '|' + async0.getMessage() + '|' + async0.toString() + '|' + async0.equals(async0) + '|' + (async0.hashCode() == async0.hashCode()));\nrows.add('AsyncException|S|' + asyncS.getTypeName() + '|' + asyncS.getMessage() + '|' + asyncS.toString() + '|' + asyncS.equals(asyncS) + '|' + (asyncS.hashCode() == asyncS.hashCode()));\nrows.add('AsyncException|E|' + asyncE.getTypeName() + '|' + asyncE.getMessage() + '|' + asyncE.toString() + '|' + asyncE.equals(asyncE) + '|' + (asyncE.hashCode() == asyncE.hashCode()));\nrows.add('AsyncException|SE|' + asyncSE.getTypeName() + '|' + asyncSE.getMessage() + '|' + asyncSE.toString() + '|' + asyncSE.equals(asyncSE) + '|' + (asyncSE.hashCode() == asyncSE.hashCode()));\n\nBigObjectException big0 = new BigObjectException();\nBigObjectException bigS = new BigObjectException('CB338 BigObjectException');\nBigObjectException bigE = new BigObjectException(cause);\nBigObjectException bigSE = new BigObjectException('CB338 BigObjectException cause', cause);\nrows.add('BigObjectException|0|' + big0.getTypeName() + '|' + big0.getMessage() + '|' + big0.toString() + '|' + big0.equals(big0) + '|' + (big0.hashCode() == big0.hashCode()));\nrows.add('BigObjectException|S|' + bigS.getTypeName() + '|' + bigS.getMessage() + '|' + bigS.toString() + '|' + bigS.equals(bigS) + '|' + (bigS.hashCode() == bigS.hashCode()));\nrows.add('BigObjectException|E|' + bigE.getTypeName() + '|' + bigE.getMessage() + '|' + bigE.toString() + '|' + bigE.equals(bigE) + '|' + (bigE.hashCode() == bigE.hashCode()));\nrows.add('BigObjectException|SE|' + bigSE.getTypeName() + '|' + bigSE.getMessage() + '|' + bigSE.toString() + '|' + bigSE.equals(bigSE) + '|' + (bigSE.hashCode() == bigSE.hashCode()));\n\nCalloutException callout0 = new CalloutException();\nCalloutException calloutS = new CalloutException('CB338 CalloutException');\nCalloutException calloutE = new CalloutException(cause);\nCalloutException calloutSE = new CalloutException('CB338 CalloutException cause', cause);\nrows.add('CalloutException|0|' + callout0.getTypeName() + '|' + callout0.getMessage() + '|' + callout0.toString() + '|' + callout0.equals(callout0) + '|' + (callout0.hashCode() == callout0.hashCode()));\nrows.add('CalloutException|S|' + calloutS.getTypeName() + '|' + calloutS.getMessage() + '|' + calloutS.toString() + '|' + calloutS.equals(calloutS) + '|' + (calloutS.hashCode() == calloutS.hashCode()));\nrows.add('CalloutException|E|' + calloutE.getTypeName() + '|' + calloutE.getMessage() + '|' + calloutE.toString() + '|' + calloutE.equals(calloutE) + '|' + (calloutE.hashCode() == calloutE.hashCode()));\nrows.add('CalloutException|SE|' + calloutSE.getTypeName() + '|' + calloutSE.getMessage() + '|' + calloutSE.toString() + '|' + calloutSE.equals(calloutSE) + '|' + (calloutSE.hashCode() == calloutSE.hashCode()));\n\nCanvasException canvas0 = new CanvasException();\nCanvasException canvasS = new CanvasException('CB338 CanvasException');\nCanvasException canvasE = new CanvasException(cause);\nCanvasException canvasSE = new CanvasException('CB338 CanvasException cause', cause);\nrows.add('CanvasException|0|' + canvas0.getTypeName() + '|' + canvas0.getMessage() + '|' + canvas0.toString() + '|' + canvas0.equals(canvas0) + '|' + (canvas0.hashCode() == canvas0.hashCode()));\nrows.add('CanvasException|S|' + canvasS.getTypeName() + '|' + canvasS.getMessage() + '|' + canvasS.toString() + '|' + canvasS.equals(canvasS) + '|' + (canvasS.hashCode() == canvasS.hashCode()));\nrows.add('CanvasException|E|' + canvasE.getTypeName() + '|' + canvasE.getMessage() + '|' + canvasE.toString() + '|' + canvasE.equals(canvasE) + '|' + (canvasE.hashCode() == canvasE.hashCode()));\nrows.add('CanvasException|SE|' + canvasSE.getTypeName() + '|' + canvasSE.getMessage() + '|' + canvasSE.toString() + '|' + canvasSE.equals(canvasSE) + '|' + (canvasSE.hashCode() == canvasSE.hashCode()));\n\nDataWeaveScriptException data0 = new DataWeaveScriptException();\nDataWeaveScriptException dataS = new DataWeaveScriptException('CB338 DataWeaveScriptException');\nrows.add('DataWeaveScriptException|0|' + data0.getTypeName() + '|' + data0.getMessage() + '|' + data0.toString() + '|' + data0.equals(data0) + '|' + (data0.hashCode() == data0.hashCode()));\nrows.add('DataWeaveScriptException|S|' + dataS.getTypeName() + '|' + dataS.getMessage() + '|' + dataS.toString() + '|' + dataS.equals(dataS) + '|' + (dataS.hashCode() == dataS.hashCode()));\n\nSystem.debug('CB338|' + String.join(rows, '||'));\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": [
+        "CB338|AssertException|0|System.AssertException|Script-thrown exception|System.AssertException: Script-thrown exception|true|true||AssertException|S|System.AssertException|CB338 AssertException|System.AssertException: CB338 AssertException|true|true||AssertException|E|System.AssertException|Script-thrown exception|System.AssertException: Script-thrown exception|true|true||AssertException|SE|System.AssertException|CB338 AssertException cause|System.AssertException: CB338 AssertException cause|true|true||AsyncException|0|System.AsyncException|Script-thrown exception|System.AsyncException: Script-thrown exception|true|true||AsyncException|S|System.AsyncException|CB338 AsyncException|System.AsyncException: CB338 AsyncException|true|true||AsyncException|E|System.AsyncException|Script-thrown exception|System.AsyncException: Script-thrown exception|true|true||AsyncException|SE|System.AsyncException|CB338 AsyncException cause|System.AsyncException: CB338 AsyncException cause|true|true||BigObjectException|0|System.BigObjectException|Script-thrown exception|System.BigObjectException: Script-thrown exception|true|true||BigObjectException|S|System.BigObjectException|CB338 BigObjectException|System.BigObjectException: CB338 BigObjectException|true|true||BigObjectException|E|System.BigObjectException|Script-thrown exception|System.BigObjectException: Script-thrown exception|true|true||BigObjectException|SE|System.BigObjectException|CB338 BigObjectException cause|System.BigObjectException: CB338 BigObjectException cause|true|true||CalloutException|0|System.CalloutException|Script-thrown exception|System.CalloutException: Script-thrown exception|true|true||CalloutException|S|System.CalloutException|CB338 CalloutException|System.CalloutException: CB338 CalloutException|true|true||CalloutException|E|System.CalloutException|Script-thrown exception|System.CalloutException: Script-thrown exception|true|true||CalloutException|SE|System.CalloutException|CB338 CalloutException cause|System.CalloutException: CB338 CalloutException cause|true|true||CanvasException|0|System.CanvasException|Script-thrown exception|System.CanvasException: Script-thrown exception|true|true||CanvasException|S|System.CanvasException|CB338 CanvasException|System.CanvasException: CB338 CanvasException|true|true||CanvasException|E|System.CanvasException|Script-thrown exception|System.CanvasException: Script-thrown exception|true|true||CanvasException|SE|System.CanvasException|CB338 CanvasException cause|System.CanvasException: CB338 CanvasException cause|true|true||DataWeaveScriptException|0|System.DataWeaveScriptException|Script-thrown exception|System.DataWeaveScriptException: Script-thrown exception|true|true||DataWeaveScriptException|S|System.DataWeaveScriptException|CB338 DataWeaveScriptException|System.DataWeaveScriptException: CB338 DataWeaveScriptException|true|true"
+      ],
+      "ok": true
+    }
+  }
+}

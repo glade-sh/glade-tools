@@ -47,7 +47,6 @@ func TestBuildGladeSnapshotIncludesSurfaceClosureTailShapes(t *testing.T) {
 		id       string
 		behavior BehaviorState
 	}{
-		{ApexMemberID("System", "Site", "getPrefix", nil), BehaviorUnsupported},
 		{ApexMemberID("System", "List", "List", []string{"Set<T>"}), BehaviorPassive},
 	}
 	for _, tt := range tests {
@@ -208,16 +207,16 @@ func TestBuildGladeSnapshotIncludesMessagingLocalTestDTOShapes(t *testing.T) {
 	for _, id := range []string{
 		ApexMemberID("Messaging", "Email", "setTemplateID", []string{"Id"}),
 		ApexTypeID("Messaging", "InboundEmail.AuthenticationResult"),
-		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "InboundEmail.AuthenticationResult", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "AuthenticationResult", []string{}),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "authenticationResultFields", nil),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "method", nil),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResult", "result", nil),
 		ApexTypeID("Messaging", "InboundEmail.AuthenticationResultField"),
-		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "InboundEmail.AuthenticationResultField", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "AuthenticationResultField", []string{}),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "name", nil),
 		ApexMemberID("Messaging", "InboundEmail.AuthenticationResultField", "value", nil),
-		ApexMemberID("Messaging", "InboundEmail.BinaryAttachment", "InboundEmail.BinaryAttachment", []string{}),
-		ApexMemberID("Messaging", "InboundEmail.TextAttachment", "InboundEmail.TextAttachment", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.BinaryAttachment", "BinaryAttachment", []string{}),
+		ApexMemberID("Messaging", "InboundEmail.TextAttachment", "TextAttachment", []string{}),
 		ApexMemberID("Messaging", "SingleEmailMessage", "setDocumentAttachments", []string{"List<Id>"}),
 		ApexMemberID("Messaging", "SingleEmailMessage", "setFileAttachments", []string{"List<Messaging.EmailFileAttachment>"}),
 	} {
@@ -246,13 +245,13 @@ func TestBuildGladeSnapshotUsesSchemaDescribePropertyIDs(t *testing.T) {
 
 func TestStdlibAPIIDParsesQualifiedSchemaMethods(t *testing.T) {
 	got := idFromStdlibAPI("Schema.describeDataCategoryGroups(List<String>)")
-	want := ApexMemberID("Schema", "Schema", "describeDataCategoryGroups", []string{"List<String>"})
+	want := ApexMemberID("System", "Schema", "describeDataCategoryGroups", []string{"List<String>"})
 	if got != want {
 		t.Fatalf("id = %q, want %q", got, want)
 	}
 
 	got = idFromStdlibAPI("Schema.describeDataCategoryGroupStructures(List<Schema.DataCategoryGroupSobjectTypePair>,Boolean)")
-	want = ApexMemberID("Schema", "Schema", "describeDataCategoryGroupStructures", []string{"List<Schema.DataCategoryGroupSobjectTypePair>", "Boolean"})
+	want = ApexMemberID("System", "Schema", "describeDataCategoryGroupStructures", []string{"List<Schema.DataCategoryGroupSobjectTypePair>", "Boolean"})
 	if got != want {
 		t.Fatalf("id = %q, want %q", got, want)
 	}
@@ -261,7 +260,7 @@ func TestStdlibAPIIDParsesQualifiedSchemaMethods(t *testing.T) {
 func TestBuildGladeSnapshotPromotesBusinessHoursLocalContract(t *testing.T) {
 	rows := BuildGladeSnapshot()
 	byID := rowsByID(rows)
-	id := ApexMemberID("", "BusinessHours", "add", []string{"String", "Datetime", "Long"})
+	id := ApexMemberID("", "BusinessHours", "add", []string{"Id", "Datetime", "Long"})
 	row, ok := byID[id]
 	if !ok {
 		t.Fatalf("missing BusinessHours row %s", id)
@@ -271,12 +270,8 @@ func TestBuildGladeSnapshotPromotesBusinessHoursLocalContract(t *testing.T) {
 	}
 
 	id = ApexTypeID("System", "BusinessHours malformed local holiday metadata")
-	row, ok = byID[id]
-	if !ok {
-		t.Fatalf("missing BusinessHours boundary row %s", id)
-	}
-	if row.GladeBehavior != BehaviorUnsupported {
-		t.Fatalf("BusinessHours boundary behavior = %s, want %s", row.GladeBehavior, BehaviorUnsupported)
+	if _, ok = byID[id]; ok {
+		t.Fatalf("synthetic BusinessHours boundary row remains: %s", id)
 	}
 }
 
@@ -345,8 +340,7 @@ func TestBuildGladeSnapshotAddsFixtureBackedSystemAliasRows(t *testing.T) {
 		kind     string
 		behavior BehaviorState
 	}{
-		{id: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", kind: KindMethod, behavior: BehaviorSupported},
-		{id: "apex:System.Iterator.remove", kind: KindMethod, behavior: BehaviorUnsupported},
+		{id: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", kind: KindMethod, behavior: BehaviorUnsupported},
 		{id: "apex:System.CustomMetadataType.getAll", kind: KindMethod, behavior: BehaviorSupported},
 		{id: "apex:System.Messaging.MassEmailMessage", kind: KindType, behavior: BehaviorPassive},
 		{id: "apex:System.Matcher.hasTransparentBounds", kind: KindMethod, behavior: BehaviorSupported},
@@ -567,5 +561,203 @@ func TestMergeGladeBehaviorKeepsSupportedOverGenericUnsupported(t *testing.T) {
 	got = mergeGladeBehavior(BehaviorPartial, BehaviorUnsupported)
 	if got != BehaviorPartial {
 		t.Fatalf("behavior = %q, want %q", got, BehaviorPartial)
+	}
+}
+
+func TestBuildGladeSnapshotIncludesSummer26ReleaseAliases(t *testing.T) {
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+	for _, tc := range []struct {
+		id   string
+		kind string
+	}{
+		{id: "apex:System.Database.convertLead(leadsToConvert,accessLevel)", kind: KindMethod},
+		{id: "apex:System.Database.convertLead(leadToConvert,accessLevel)", kind: KindMethod},
+		{id: "apex:System.String.template(valueMap)", kind: KindMethod},
+		{id: "apex:System.System.attachFinalizer(finalizer)", kind: KindMethod},
+	} {
+		row, ok := byID[tc.id]
+		if !ok {
+			t.Fatalf("missing Summer '26 release alias row %s", tc.id)
+		}
+		if row.GladeShape != ShapeSignatureKnown || row.GladeBehavior != BehaviorSupported {
+			t.Fatalf("%s shape/behavior = %s/%s, want %s/%s", tc.id, row.GladeShape, row.GladeBehavior, ShapeSignatureKnown, BehaviorSupported)
+		}
+		if row.Kind != tc.kind {
+			t.Fatalf("%s kind = %s, want %s", tc.id, row.Kind, tc.kind)
+		}
+		if !hasSource(row.Sources, "apex-mirror-alias") && !hasSource(row.Sources, "apex-fixture-alias") {
+			t.Fatalf("%s sources = %#v, want release alias source", tc.id, row.Sources)
+		}
+	}
+}
+
+// --- CB17: method-family shape reconciliation tests ---
+
+func TestCB17_FamilyRowPromotedFromExactShapedSibling(t *testing.T) {
+	// A signatureless Apex method-family row (no '(' in surfaceId) becomes
+	// type-known when a sibling overload with the same namespace, type, member,
+	// and kind has an explicit parameter list in its surfaceId.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	tests := []struct {
+		familyID string
+	}{
+		{ApexMemberID("System", "Assert", "areEqual", nil)},
+		{ApexMemberID("System", "Test", "startTest", nil)},
+		{ApexMemberID("System", "JSON", "deserialize", nil)},
+	}
+	for _, tt := range tests {
+		row, ok := byID[tt.familyID]
+		if !ok {
+			t.Fatalf("missing family row %s", tt.familyID)
+		}
+		if row.GladeShape != ShapeTypeKnown {
+			t.Fatalf("%s gladeShape = %s, want %s", tt.familyID, row.GladeShape, ShapeTypeKnown)
+		}
+		if !hasSource(row.Sources, "standard-symbol-family") {
+			t.Fatalf("%s sources = %#v, want standard-symbol-family", tt.familyID, row.Sources)
+		}
+	}
+}
+
+func TestCB17_FamilyReconciliationIndependentOfOrder(t *testing.T) {
+	// Multiple calls to BuildGladeSnapshot produce identical shape and behavior.
+	var first map[string]SurfaceLedgerRow
+	familyIDs := []string{
+		ApexMemberID("System", "Assert", "areEqual", nil),
+		ApexMemberID("System", "Test", "startTest", nil),
+		ApexMemberID("System", "JSON", "deserialize", nil),
+	}
+	for i := 0; i < 5; i++ {
+		byID := rowsByID(BuildGladeSnapshot())
+		if first == nil {
+			first = byID
+			continue
+		}
+		for _, id := range familyIDs {
+			r1, ok1 := first[id]
+			r2, ok2 := byID[id]
+			if ok1 != ok2 {
+				t.Fatalf("run %d: presence of %s changed", i, id)
+			}
+			if r1.GladeShape != r2.GladeShape || r1.GladeBehavior != r2.GladeBehavior {
+				t.Fatalf("run %d: %s shape/behavior changed", i, id)
+			}
+		}
+	}
+}
+
+func TestCB17_BehaviorStatesPreserved(t *testing.T) {
+	// Shape reconciliation must not alter GladeBehavior byte-for-byte.
+	// Rows promoted from absent to type-known keep their original behavior.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	tests := []struct {
+		id       string
+		behavior BehaviorState
+	}{
+		// startTest: promoted from absent stdlib-matrix row, behavior supported
+		{ApexMemberID("System", "Test", "startTest", nil), BehaviorSupported},
+		// deserialize: promoted from absent stdlib-matrix row, behavior supported
+		{ApexMemberID("System", "JSON", "deserialize", nil), BehaviorSupported},
+		// areEqual: promoted from absent stdlib-matrix row, behavior supported
+		{ApexMemberID("System", "Assert", "areEqual", nil), BehaviorSupported},
+	}
+	for _, tt := range tests {
+		row, ok := byID[tt.id]
+		if !ok {
+			t.Fatalf("missing family row %s", tt.id)
+		}
+		if row.GladeShape != ShapeTypeKnown {
+			t.Fatalf("%s gladeShape = %s, want %s", tt.id, row.GladeShape, ShapeTypeKnown)
+		}
+		if row.GladeBehavior != tt.behavior {
+			t.Fatalf("%s behavior = %s, want %s", tt.id, row.GladeBehavior, tt.behavior)
+		}
+	}
+}
+
+func TestCB17_FamilyRowNotPromotedOnMismatch(t *testing.T) {
+	// A family row is not promoted when the shaped sibling differs by
+	// namespace, type, member, or kind.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	// Each member's family row is promoted from its own shaped siblings,
+	// not from a different member's siblings.
+	tests := []struct {
+		familyID string
+	}{
+		{ApexMemberID("System", "Assert", "areEqual", nil)},
+		{ApexMemberID("System", "Assert", "isTrue", nil)},
+	}
+	for _, tt := range tests {
+		row, ok := byID[tt.familyID]
+		if !ok || row.GladeShape != ShapeTypeKnown {
+			t.Fatalf("%s shape = %s, want type-known", tt.familyID, row.GladeShape)
+		}
+	}
+
+	// A type row must not be promoted by a method sibling.
+	assertTypeID := ApexTypeID("System", "Assert")
+	if row, ok := byID[assertTypeID]; ok && row.GladeShape == ShapeSignatureKnown {
+		t.Fatalf("Assert type row shape = %s, should not be promoted by method sibling", row.GladeShape)
+	}
+}
+
+func TestCB17_FamilyRowNotPromotedFromSignaturelessOrAbsent(t *testing.T) {
+	// A family row must not be promoted by another signatureless sibling
+	// or by an absent sibling.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	// publishAfterCommit (nil params) exists via system-fixture-alias.
+	// It must not be promoted by another signatureless sibling like publish.
+	pubAfterID := ApexMemberID("System", "EventBus", "publishAfterCommit", nil)
+	if row, ok := byID[pubAfterID]; ok && row.GladeShape == ShapeTypeKnown {
+		// It must NOT be type-known — none of its shaped siblings are
+		// parameterized overloads.
+		if !hasSource(row.Sources, "system-fixture-alias") {
+			t.Fatalf("publishAfterCommit shape = %s from non-fixture source", row.GladeShape)
+		}
+	}
+}
+
+func TestCB17_JSONDeserializeBehaviorPreserved(t *testing.T) {
+	// System.JSON.deserialize has behavior supported in BuildGladeSnapshot
+	// (from stdlib). Shape reconciliation must not alter this.
+	// The merged ledger becomes unsupported via explicit fixture evidence.
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+
+	familyID := ApexMemberID("System", "JSON", "deserialize", nil)
+	row, ok := byID[familyID]
+	if !ok {
+		t.Fatalf("missing family row %s", familyID)
+	}
+	if row.GladeShape != ShapeTypeKnown {
+		t.Fatalf("%s gladeShape = %s, want %s", familyID, row.GladeShape, ShapeTypeKnown)
+	}
+	if row.GladeBehavior != BehaviorSupported {
+		t.Fatalf("%s behavior = %s, want %s", familyID, row.GladeBehavior, BehaviorSupported)
+	}
+}
+
+func TestBuildGladeSnapshotReportsAnswersFindSimilarSupported(t *testing.T) {
+	rows := BuildGladeSnapshot()
+	byID := rowsByID(rows)
+	id := "apex:Answers.findSimilar(Object)"
+	row, ok := byID[id]
+	if !ok {
+		t.Fatalf("missing Answers.findSimilar(Object) in Glade snapshot")
+	}
+	if row.GladeBehavior != BehaviorSupported {
+		t.Fatalf("Answers.findSimilar(Object) behavior = %s, want %s", row.GladeBehavior, BehaviorSupported)
+	}
+	if row.GladeShape == ShapeAbsent {
+		t.Fatalf("Answers.findSimilar(Object) shape is absent, want non-absent")
 	}
 }

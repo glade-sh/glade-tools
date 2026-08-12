@@ -1,0 +1,47 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "A public Salesforce pagination-cursor delete-filter enum exercised against Glade's deterministic local SOQL rows.",
+      "surfaceId": "apex:Database.PaginationCursor.DeleteFilter",
+      "symbol": "Database.PaginationCursor.DeleteFilter"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-local-runtime-required-Database.PaginationCursor-001",
+  "notes": "Current-base lane current-base-local-runtime-required-Database.PaginationCursor-001: the Database.PaginationCursor.DeleteFilter type is exercised against deterministic local SOQL rows.",
+  "profile": {
+    "laneId": "current-base-local-runtime-required-Database.PaginationCursor-001",
+    "selectedRowCount": 1
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects the local Database pagination cursor method; retained as local evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>",
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml"
+    },
+    {
+      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabasePaginationCursor001Test { @isTest static void paginationCursorDeleteFilterUsesDeterministicLocalRows() { insert new Account(Name = 'Pagination'); Database.PaginationCursor cursor = Database.getPaginationCursor('SELECT Id FROM Account'); Database.PaginationCursor.DeleteFilter filter = Database.PaginationCursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assertEquals(Database.PaginationCursor.DeleteFilter.NO_FILTER, filter); } }",
+      "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredDatabasePaginationCursor001Test.cls"
+    }
+  ]
+}

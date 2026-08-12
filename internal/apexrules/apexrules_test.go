@@ -136,27 +136,27 @@ func TestCheckedApexLanguageRulesCatalogCoversEveryReservedIdentifier(t *testing
 		outcome Outcome
 		status  string
 	}{
-		"APEX-RELEASE-GETTER-SELF-ASSIGNMENT":              {OutcomeReject, StatusOraclePending},
-		"APEX-RELEASE-GETTER-EXTERNAL-ASSIGNMENT":          {OutcomeReject, StatusOraclePending},
+		"APEX-RELEASE-GETTER-SELF-ASSIGNMENT":              {OutcomeReject, StatusSupported},
+		"APEX-RELEASE-GETTER-EXTERNAL-ASSIGNMENT":          {OutcomeReject, StatusSupported},
 		"APEX-RELEASE-RECEIVER-QUALIFIED-OVERLOAD":         {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-QUERYLOCATOR-RUNTIME-CAST":           {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-SOBJECT":       {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-ACCOUNT":       {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-QUERYLOCATOR-SYSTEM-ITERABLE":        {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-QUERYLOCATOR-ITERABLE-STRING":        {OutcomeAccept, StatusSupported},
-		"APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION":        {OutcomeAccept, StatusConfirmedGap},
+		"APEX-RELEASE-BACKSLASH-ESCAPED-ANNOTATION":        {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-NESTED-WEBSERVICE-PROPERTY":          {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-MERGE-SOBJECT-COLLECTION":            {OutcomeAccept, StatusSupported},
 		"APEX-RELEASE-UNGROUPED-COUNT-LIMIT":               {OutcomeAccept, StatusSupported},
-		"APEX-RELEASE-SIBLING-FOR-INITIALIZER-SCOPES":      {OutcomeAccept, StatusOraclePending},
-		"APEX-RELEASE-STATIC-METHOD-HIDING":                {OutcomeAccept, StatusOraclePending},
-		"APEX-RELEASE-STATIC-GETTER-SELF-ASSIGNMENT":       {OutcomeReject, StatusOraclePending},
-		"APEX-RELEASE-NESTED-INTERFACE-INSTANCEOF":         {OutcomeAccept, StatusOraclePending},
-		"APEX-RELEASE-STANDARD-RELATIONSHIP-TRAVERSAL":     {OutcomeAccept, StatusOraclePending},
-		"APEX-RELEASE-STATIC-INHERITED-INSTANCE-NAME":      {OutcomeAccept, StatusConfirmedGap},
-		"APEX-RELEASE-INTERFACE-INSTANCEOF-IMPLEMENTATION": {OutcomeAccept, StatusOraclePending},
-		"APEX-RELEASE-MERGE-ACCOUNT-ID-COLLECTION":         {OutcomeAccept, StatusConfirmedGap},
-		"APEX-RELEASE-FINALLY-RETURN-REACHABILITY":         {OutcomeReject, StatusOraclePending},
+		"APEX-RELEASE-SIBLING-FOR-INITIALIZER-SCOPES":      {OutcomeAccept, StatusSupported},
+		"APEX-RELEASE-STATIC-METHOD-HIDING":                {OutcomeAccept, StatusSupported},
+		"APEX-RELEASE-STATIC-GETTER-SELF-ASSIGNMENT":       {OutcomeReject, StatusSupported},
+		"APEX-RELEASE-NESTED-INTERFACE-INSTANCEOF":         {OutcomeAccept, StatusSupported},
+		"APEX-RELEASE-STANDARD-RELATIONSHIP-TRAVERSAL":     {OutcomeAccept, StatusSupported},
+		"APEX-RELEASE-STATIC-INHERITED-INSTANCE-NAME":      {OutcomeAccept, StatusSupported},
+		"APEX-RELEASE-INTERFACE-INSTANCEOF-IMPLEMENTATION": {OutcomeAccept, StatusSupported},
+		"APEX-RELEASE-MERGE-ACCOUNT-ID-COLLECTION":         {OutcomeAccept, StatusSupported},
+		"APEX-RELEASE-FINALLY-RETURN-REACHABILITY":         {OutcomeReject, StatusSupported},
 		"APEX-RELEASE-UNREACHABLE-AFTER-RETURN":            {OutcomeReject, StatusSupported},
 	}
 	byID := make(map[string]Rule, len(catalog.Rules))
@@ -201,6 +201,82 @@ func TestCompareObservedReportsCatalogOracleDriftSeparatelyFromGladeParity(t *te
 	}
 	if result.OracleMatched || !result.Matched {
 		t.Fatalf("catalog drift and Glade parity were conflated: %#v", result)
+	}
+}
+
+func TestCompareObservedMarksMissingSalesforceResultInconclusive(t *testing.T) {
+	rules := []Rule{{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported}}
+	results := CompareObserved(
+		rules,
+		map[string]SalesforceResult{},
+		map[string]Outcome{"APEX-001": OutcomeReject},
+	)
+	if len(results) != 1 {
+		t.Fatalf("len(results) = %d, want 1", len(results))
+	}
+	result := results[0]
+	if result.ExecStatus != "inconclusive" {
+		t.Fatalf("ExecStatus = %q, want inconclusive", result.ExecStatus)
+	}
+	if result.Matched {
+		t.Fatalf("Matched = true, want false (missing Salesforce is not a behavioral match)")
+	}
+}
+
+func TestCompareObservedMarksMissingGladeResultInconclusive(t *testing.T) {
+	rules := []Rule{{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported}}
+	results := CompareObserved(
+		rules,
+		map[string]SalesforceResult{"APEX-001": {Outcome: OutcomeReject}},
+		map[string]Outcome{},
+	)
+	if len(results) != 1 {
+		t.Fatalf("len(results) = %d, want 1", len(results))
+	}
+	result := results[0]
+	if result.ExecStatus != "inconclusive" {
+		t.Fatalf("ExecStatus = %q, want inconclusive", result.ExecStatus)
+	}
+	if result.Matched {
+		t.Fatalf("Matched = true, want false (missing Glade is not a behavioral match)")
+	}
+}
+
+func TestCompareObservedPreservesCompleteBehavioralComparison(t *testing.T) {
+	rules := []Rule{
+		{ID: "APEX-001", Oracle: OutcomeReject, Status: StatusSupported},
+		{ID: "APEX-002", Oracle: OutcomeAccept, Status: StatusSupported},
+	}
+	results := CompareObserved(
+		rules,
+		map[string]SalesforceResult{
+			"APEX-001": {Outcome: OutcomeReject},
+			"APEX-002": {Outcome: OutcomeAccept},
+		},
+		map[string]Outcome{
+			"APEX-001": OutcomeReject,
+			"APEX-002": OutcomeReject,
+		},
+	)
+	if len(results) != 2 {
+		t.Fatalf("len(results) = %d, want 2", len(results))
+	}
+	matched := results[0]
+	if matched.ExecStatus != "" {
+		t.Fatalf("ExecStatus = %q, want empty for complete result", matched.ExecStatus)
+	}
+	if !matched.Matched {
+		t.Fatalf("Matched = false, want true (both reject)")
+	}
+	if !matched.OracleMatched {
+		t.Fatalf("OracleMatched = false, want true (catalog matches Salesforce)")
+	}
+	mismatched := results[1]
+	if mismatched.ExecStatus != "" {
+		t.Fatalf("ExecStatus = %q, want empty for complete result", mismatched.ExecStatus)
+	}
+	if mismatched.Matched {
+		t.Fatalf("Matched = true, want false (Salesforce accepts, Glade rejects)")
 	}
 }
 

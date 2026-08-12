@@ -1,5 +1,7 @@
 {
   "name": "core-runtime-process-plugin-contracts",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "Fixture evidence explicitly covers the local Process.Plugin service-contract shape; platform invocation is not claimed.",
   "evidence": [
     {
       "surfaceId": "apex:Process.Plugin.describe()",

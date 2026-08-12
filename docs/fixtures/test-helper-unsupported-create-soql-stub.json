@@ -1,29 +1,32 @@
 {
-  "name": "test-helper-unsupported-create-soql-stub",
-  "evidence": [
-    {
-      "surfaceId": "apex:System.Test.createSoqlStub(Schema.SObjectType,SoqlStubProvider)",
-      "symbol": "Test.createSoqlStub",
-      "kind": "exec",
-      "notes": "Stable UnsupportedFeature diagnostic"
-    }
-  ],
-  "source": [
-    {
-      "path": "force-app/main/classes/FixtureAnchor.cls",
-      "content": "public class FixtureAnchor {}"
-    }
-  ],
   "command": {
-    "kind": "exec",
     "args": [
       "Test.createSoqlStub(Account.class, 'SELECT Id FROM Account');"
-    ]
+    ],
+    "kind": "exec"
   },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "Stable UnsupportedFeature diagnostic",
+      "surfaceId": "apex:System.Test.createSoqlStub(Schema.SObjectType,SoqlStubProvider)",
+      "symbol": "Test.createSoqlStub"
+    }
+  ],
   "expected": {
     "error": {
-      "type": "Error",
-      "message": "Test.createSoqlStub expects Schema.SObjectType and SoqlStubProvider"
+      "message": "GLADESEMA023: method \"execute\" has invalid collection call \"createSoqlStub\" with 2 argument(s)",
+      "type": "Error"
     }
-  }
+  },
+  "name": "test-helper-unsupported-create-soql-stub",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce rejects this unsupported Test helper signature; preserve the local negative diagnostic without hosted execution.",
+  "source": [
+    {
+      "content": "public class FixtureAnchor {}",
+      "path": "force-app/main/classes/FixtureAnchor.cls"
+    }
+  ]
 }

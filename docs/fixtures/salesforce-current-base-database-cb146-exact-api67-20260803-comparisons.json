@@ -1,0 +1,89 @@
+{
+  "batch": "database-cb146-exact-current-open-20260803",
+  "candidate": {
+    "commit": "0a0f624e9c6fc82f8efc824852aef2808cd823fa",
+    "path": "evidence/glade-candidate-current-base-0a0f624-cgo",
+    "sha256": "773bd1ddc0d1a41c2972032837321714bba3255dbc21187a43fc52d306dee4e4"
+  },
+  "profile": "evidence/current-base/canonical-bundle-current-base-0a0f624-cgo-20260803/apex-support-profile.json",
+  "selection": {
+    "source": "CB146 comparison outcome exact-match intersect current canonical nonDeferredGaps",
+    "count": 31,
+    "groups": {
+      "G05": 17,
+      "G06": 12,
+      "G12": 2
+    }
+  },
+  "ids": [
+    "apex:Database.DeleteResult.errors",
+    "apex:Database.DeleteResult.id",
+    "apex:Database.DeleteResult.success",
+    "apex:Database.DeletedRecord.deleteddate",
+    "apex:Database.DeletedRecord.id",
+    "apex:Database.EmptyRecycleBinResult.id",
+    "apex:Database.EmptyRecycleBinResult.success",
+    "apex:Database.LeadConvert.accountrecord",
+    "apex:Database.LeadConvert.bypassaccountdedupecheck",
+    "apex:Database.LeadConvert.bypasscontactdedupecheck",
+    "apex:Database.LeadConvert.contactrecord",
+    "apex:Database.LeadConvert.convertedstatus",
+    "apex:Database.LeadConvert.donotcreateopportunity",
+    "apex:Database.LeadConvert.getAccountRecord()",
+    "apex:Database.LeadConvert.getContactRecord()",
+    "apex:Database.LeadConvert.getOpportunityRecord()",
+    "apex:Database.LeadConvert.getRelatedPersonAccountRecord()",
+    "apex:Database.LeadConvert.opportunityrecord",
+    "apex:Database.LeadConvert.relatedpersonaccountrecord",
+    "apex:Database.MergeResult.id",
+    "apex:Database.MergeResult.mergedrecordids",
+    "apex:Database.MergeResult.success",
+    "apex:Database.MergeResult.updatedrelatedids",
+    "apex:Database.SaveResult.id",
+    "apex:Database.SaveResult.success",
+    "apex:Database.UndeleteResult.id",
+    "apex:Database.UndeleteResult.success",
+    "apex:Database.UpsertResult.created",
+    "apex:Database.UpsertResult.errors",
+    "apex:Database.UpsertResult.id",
+    "apex:Database.UpsertResult.success"
+  ],
+  "probe": {
+    "source": "evidence/current-base/database-next-batch-20260803/grouped-database-probe.apex",
+    "sourceSha256": "eac1459cd159c0dbba6bdd602e807ada6b8bc6004252dc970d5469d8b8d24cc9",
+    "localReport": "evidence/current-base/database-next-batch-20260803/local-grouped.json",
+    "localSha256": "ba393bc99c913f9bdaabada25beaafdb2ad4d154b0bad1bb0ad892a4101456fd",
+    "salesforceReport": "evidence/current-base/database-next-batch-20260803/sf-grouped-run-perm.json",
+    "salesforceSha256": "1ad046a339e0d468156cac16d951270a820f50db6c1d1c3320eb660b6b434597",
+    "comparison": "evidence/current-base/database-next-batch-20260803/grouped-comparison.json",
+    "comparisonSha256": "c52805f3807101ba4d9bb776f34d2267156dfb17573710bfe20fc4c621db7bd8",
+    "normalizedEqual": true,
+    "localRows": 31,
+    "salesforceRows": 31
+  },
+  "name": "salesforce-current-base-database-cb146-exact-api67-20260803",
+  "apiVersion": "67.0",
+  "mode": "grouped-anonymous-cb146",
+  "salesforce": {
+    "targetOrgAlias": "glade-sf-correctness",
+    "targetOrgId": "00D000000000001EAA",
+    "apiVersion": "67.0",
+    "deployPath": "evidence/current-base/database-next-batch-20260803/sf-deploy.json",
+    "permissionSetDeployPath": "evidence/current-base/database-next-batch-20260803/sf-perm-deploy.json",
+    "permissionSetAssignPath": "evidence/current-base/database-next-batch-20260803/sf-perm-assign.json"
+  },
+  "cleanup": {
+    "proofPath": "evidence/current-base/database-next-batch-20260803/cleanup-proof.json",
+    "proofSha256": "5c5a32c231084920e7d3fcaea3761af86e4dc0207cc78581d10c55b958acb006",
+    "timelinePath": "evidence/current-base/database-next-batch-20260803/cleanup-timeline.json",
+    "timelineSha256": "de5f155065885908a56f4683a080d97900d93260eed6f10c492a242550029812",
+    "artifactHashesPath": "evidence/current-base/database-next-batch-20260803/cleanup-artifact-sha256.txt",
+    "postCleanup": {
+      "probeClasses": 0,
+      "permissionSets": 0,
+      "assignments": 0,
+      "probeRows": 0,
+      "preExistingObjects": 2
+    }
+  }
+}

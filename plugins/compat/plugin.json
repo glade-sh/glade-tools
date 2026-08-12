@@ -55,6 +55,13 @@
     },
     {
       "path": [
+        "corpus",
+        "assurance"
+      ],
+      "summary": "Run sealed private-corpus daily-development assurance."
+    },
+    {
+      "path": [
         "matrix"
       ],
       "summary": "Print the full capability matrix."
@@ -214,6 +221,13 @@
         "apex-rules"
       ],
       "summary": "Compare checked Apex language-rule probes with Salesforce."
+    },
+    {
+      "path": [
+        "salesforce",
+        "verify"
+      ],
+      "summary": "Run unified Salesforce correctness verification."
     }
   ],
   "editor": {

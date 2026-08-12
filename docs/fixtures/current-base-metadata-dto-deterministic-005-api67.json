@@ -1,0 +1,287 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.label",
+      "symbol": "Metadata.SidebarComponent.label"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.lookup",
+      "symbol": "Metadata.SidebarComponent.lookup"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.page_x",
+      "symbol": "Metadata.SidebarComponent.page_x"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.relatedLists",
+      "symbol": "Metadata.SidebarComponent.relatedLists"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.unit",
+      "symbol": "Metadata.SidebarComponent.unit"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.updateAction",
+      "symbol": "Metadata.SidebarComponent.updateAction"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SidebarComponent.width",
+      "symbol": "Metadata.SidebarComponent.width"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SortOrder",
+      "symbol": "Metadata.SortOrder"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SortOrder.equals(Object)",
+      "symbol": "Metadata.SortOrder.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SortOrder.hashCode()",
+      "symbol": "Metadata.SortOrder.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SortOrder.ordinal()",
+      "symbol": "Metadata.SortOrder.ordinal()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SortOrder.valueOf(String)",
+      "symbol": "Metadata.SortOrder.valueOf(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SortOrder.values()",
+      "symbol": "Metadata.SortOrder.values()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.StatusCode",
+      "symbol": "Metadata.StatusCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.StatusCode.equals(Object)",
+      "symbol": "Metadata.StatusCode.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.StatusCode.hashCode()",
+      "symbol": "Metadata.StatusCode.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.StatusCode.ordinal()",
+      "symbol": "Metadata.StatusCode.ordinal()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.StatusCode.valueOf(String)",
+      "symbol": "Metadata.StatusCode.valueOf(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.StatusCode.values()",
+      "symbol": "Metadata.StatusCode.values()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SubtabComponents",
+      "symbol": "Metadata.SubtabComponents"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SubtabComponents.SubtabComponents()",
+      "symbol": "Metadata.SubtabComponents.SubtabComponents()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SubtabComponents.component",
+      "symbol": "Metadata.SubtabComponents.component"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SubtabComponents.containers",
+      "symbol": "Metadata.SubtabComponents.containers"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout",
+      "symbol": "Metadata.SummaryLayout"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout.SummaryLayout()",
+      "symbol": "Metadata.SummaryLayout.SummaryLayout()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout.masterLabel",
+      "symbol": "Metadata.SummaryLayout.masterLabel"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout.sizeX",
+      "symbol": "Metadata.SummaryLayout.sizeX"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout.sizeY",
+      "symbol": "Metadata.SummaryLayout.sizeY"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout.sizeZ",
+      "symbol": "Metadata.SummaryLayout.sizeZ"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout.summaryLayoutItems",
+      "symbol": "Metadata.SummaryLayout.summaryLayoutItems"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayout.summaryLayoutStyle",
+      "symbol": "Metadata.SummaryLayout.summaryLayoutStyle"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutItem",
+      "symbol": "Metadata.SummaryLayoutItem"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutItem.SummaryLayoutItem()",
+      "symbol": "Metadata.SummaryLayoutItem.SummaryLayoutItem()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutItem.customLink",
+      "symbol": "Metadata.SummaryLayoutItem.customLink"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutItem.field",
+      "symbol": "Metadata.SummaryLayoutItem.field"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutItem.posX",
+      "symbol": "Metadata.SummaryLayoutItem.posX"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutItem.posY",
+      "symbol": "Metadata.SummaryLayoutItem.posY"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutItem.posZ",
+      "symbol": "Metadata.SummaryLayoutItem.posZ"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutStyleEnum",
+      "symbol": "Metadata.SummaryLayoutStyleEnum"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutStyleEnum.equals(Object)",
+      "symbol": "Metadata.SummaryLayoutStyleEnum.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutStyleEnum.hashCode()",
+      "symbol": "Metadata.SummaryLayoutStyleEnum.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutStyleEnum.ordinal()",
+      "symbol": "Metadata.SummaryLayoutStyleEnum.ordinal()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutStyleEnum.valueOf(String)",
+      "symbol": "Metadata.SummaryLayoutStyleEnum.valueOf(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.SummaryLayoutStyleEnum.values()",
+      "symbol": "Metadata.SummaryLayoutStyleEnum.values()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.UiBehavior",
+      "symbol": "Metadata.UiBehavior"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.UiBehavior.equals(Object)",
+      "symbol": "Metadata.UiBehavior.equals(Object)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.UiBehavior.hashCode()",
+      "symbol": "Metadata.UiBehavior.hashCode()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.UiBehavior.ordinal()",
+      "symbol": "Metadata.UiBehavior.ordinal()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.UiBehavior.valueOf(String)",
+      "symbol": "Metadata.UiBehavior.valueOf(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Metadata.UiBehavior.values()",
+      "symbol": "Metadata.UiBehavior.values()"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-metadata-dto-deterministic-005-api67",
+  "notes": "Wave26 current-base lane current-base-deterministic-mock-required-Metadata-005: 50 uncovered apex:Metadata rows covered with local deterministic-mock DTO/enum evidence (construction, public fields, clone, valueOf/values/ordinal/equals/hashCode). No hosted Metadata API deployment or retrieve is exercised.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-Metadata-005",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave26/canonical/apex-support-profile.json",
+    "selectedRowCount": 50,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce compile oracle rejects Metadata DTO types in Apex (observed: Invalid type: Metadata.AsyncResult, Metadata.ConsoleComponent, Metadata.CustomField; System.Metadata also invalid); this fixture preserves local deterministic-mock evidence without claiming Salesforce availability.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseMetadataDtoDeterministic005Test {\n    @isTest static void metadataDtoDeterministic005Witness() {\n        Metadata.SidebarComponent sidebar = new Metadata.SidebarComponent();\n        System.assertNotEquals(null, sidebar);\n        sidebar.label = 'Help';\n        sidebar.lookup = 'Lookup';\n        sidebar.page_x = 'Page';\n        sidebar.relatedLists = new List<Metadata.RelatedList>{new Metadata.RelatedList()};\n        sidebar.unit = 'px';\n        sidebar.updateAction = 'Update';\n        sidebar.width = 200;\n        System.assertEquals('Help', sidebar.label);\n        System.assertEquals('Lookup', sidebar.lookup);\n        System.assertEquals('Page', sidebar.page_x);\n        System.assertEquals(1, sidebar.relatedLists.size());\n        System.assertEquals('px', sidebar.unit);\n        System.assertEquals('Update', sidebar.updateAction);\n        System.assertEquals(200, sidebar.width);\n\n        Metadata.SortOrder ascOrder = Metadata.SortOrder.Asc_x;\n        Metadata.SortOrder descOrder = Metadata.SortOrder.Desc_x;\n        System.assertEquals(true, ascOrder.equals(ascOrder));\n        System.assertNotEquals(null, ascOrder.hashCode());\n        System.assertEquals(0, ascOrder.ordinal());\n        System.assertEquals(true, Metadata.SortOrder.valueOf('Asc_x').equals(ascOrder));\n        System.assertEquals(2, Metadata.SortOrder.values().size());\n        System.assertEquals(true, Metadata.SortOrder.Desc_x.equals(descOrder));\n\n        Metadata.StatusCode statusCode = Metadata.StatusCode.APEX_FAILED;\n        System.assertEquals(true, statusCode.equals(statusCode));\n        System.assertNotEquals(null, statusCode.hashCode());\n        System.assertEquals(true, Metadata.StatusCode.valueOf('APEX_FAILED').equals(statusCode));\n        System.assert(Metadata.StatusCode.values().size() > 0);\n\n        Metadata.SubtabComponents subtab = new Metadata.SubtabComponents();\n        System.assertNotEquals(null, subtab);\n        subtab.component = new List<Metadata.ConsoleComponent>{new Metadata.ConsoleComponent()};\n        subtab.containers = new List<Metadata.Container>{new Metadata.Container()};\n        System.assertEquals(1, subtab.component.size());\n        System.assertEquals(1, subtab.containers.size());\n\n        Metadata.SummaryLayout summary = new Metadata.SummaryLayout();\n        System.assertNotEquals(null, summary);\n        summary.masterLabel = 'Summary';\n        summary.sizeX = 1;\n        summary.sizeY = 2;\n        summary.sizeZ = 3;\n        summary.summaryLayoutItems = new List<Metadata.SummaryLayoutItem>{new Metadata.SummaryLayoutItem()};\n        summary.summaryLayoutStyle = Metadata.SummaryLayoutStyleEnum.Default_x;\n        System.assertEquals('Summary', summary.masterLabel);\n        System.assertEquals(1, summary.sizeX);\n        System.assertEquals(2, summary.sizeY);\n        System.assertEquals(3, summary.sizeZ);\n        System.assertEquals(1, summary.summaryLayoutItems.size());\n        System.assertEquals(true, Metadata.SummaryLayoutStyleEnum.Default_x.equals(summary.summaryLayoutStyle));\n\n        Metadata.SummaryLayoutItem item = new Metadata.SummaryLayoutItem();\n        System.assertNotEquals(null, item);\n        item.customLink = 'Link';\n        item.field = 'Name';\n        item.posX = 1;\n        item.posY = 2;\n        item.posZ = 3;\n        System.assertEquals('Link', item.customLink);\n        System.assertEquals('Name', item.field);\n        System.assertEquals(1, item.posX);\n        System.assertEquals(2, item.posY);\n        System.assertEquals(3, item.posZ);\n\n        Metadata.SummaryLayoutStyleEnum style = Metadata.SummaryLayoutStyleEnum.Default_x;\n        System.assertEquals(true, style.equals(style));\n        System.assertNotEquals(null, style.hashCode());\n        System.assertEquals(2, style.ordinal());\n        System.assertEquals(true, Metadata.SummaryLayoutStyleEnum.valueOf('Default_x').equals(style));\n        System.assertEquals(10, Metadata.SummaryLayoutStyleEnum.values().size());\n\n        Metadata.UiBehavior behavior = Metadata.UiBehavior.Required;\n        System.assertEquals(true, behavior.equals(behavior));\n        System.assertNotEquals(null, behavior.hashCode());\n        System.assertEquals(2, behavior.ordinal());\n        System.assertEquals(true, Metadata.UiBehavior.valueOf('Required').equals(behavior));\n        System.assertEquals(3, Metadata.UiBehavior.values().size());\n\n        System.assertNotEquals(null, sidebar.clone());\n        System.assertNotEquals(null, subtab.clone());\n        System.assertNotEquals(null, summary.clone());\n        System.assertNotEquals(null, item.clone());\n    }\n}",
+      "path": "force-app/main/default/classes/CurrentBaseMetadataDtoDeterministic005Test.cls"
+    }
+  ]
+}

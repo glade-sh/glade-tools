@@ -1,0 +1,39 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "Deterministic local DTO construction only; no Salesforce-hosted setup behavior is claimed.",
+      "surfaceId": "apex:setup.FlowPerformanceSetupDetails",
+      "symbol": "setup.FlowPerformanceSetupDetails"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-deterministic-mock-required-setup-001",
+  "notes": "Current-base lane current-base-deterministic-mock-required-setup-001: one uncovered setup type with a deterministic local construction witness; no hosted flow-performance setup behavior is exercised.",
+  "profile": {
+    "laneId": "current-base-deterministic-mock-required-setup-001",
+    "selectedRowCount": 1
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The Summer '26 reference inventory names setup.FlowPerformanceSetupDetails but documents no Apex-executable constructor or members. This fixture proves only Glade's deterministic local DTO shape and does not claim a Salesforce compile-oracle contract.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseDeterministicMockRequiredSetup001Test { @isTest static void setupDtoShapeIsConstructible() { setup.FlowPerformanceSetupDetails details = new setup.FlowPerformanceSetupDetails(); System.assertNotEquals(null, details); } }",
+      "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredSetup001Test.cls"
+    }
+  ]
+}

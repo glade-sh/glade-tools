@@ -74,10 +74,19 @@ func Check(ctx context.Context, options Options) (Report, error) {
 	if err != nil {
 		return Report{}, err
 	}
+	if len(projects) == 0 {
+		return Report{}, fmt.Errorf("no SFDX projects discovered in %s", options.Root)
+	}
 	report := Report{Counts: map[string]int{}}
 	for _, project := range projects {
+		if err := ctx.Err(); err != nil {
+			return Report{}, err
+		}
 		result, diagnostics := runProject(ctx, options.Glade, project)
 		report.Projects = append(report.Projects, result)
+		if result.Error != "" && result.Diagnostics == 0 {
+			return report, fmt.Errorf("project %s: %s", result.Name, result.Error)
+		}
 		for _, diagnostic := range diagnostics {
 			report.Counts[diagnostic.Class]++
 			report.Diagnostics = append(report.Diagnostics, diagnostic)
@@ -222,12 +231,37 @@ func runProject(ctx context.Context, glade string, project string) (ProjectResul
 	cmd.Stderr = &stderr
 	out, err := cmd.Output()
 	exitCode := 0
+	var launchErr error
 	if err != nil {
-		exitCode = 1
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			exitCode = exitErr.ExitCode()
 			out = append(out, exitErr.Stderr...)
+		} else {
+			launchErr = err
+			exitCode = 1
 		}
+	}
+	if launchErr != nil {
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			launchErr = ctxErr
+		}
+		projectName := filepath.Base(project)
+		result := ProjectResult{Name: projectName, Path: project, ExitCode: exitCode, Error: launchErr.Error()}
+		return result, nil
+	}
+	if exitCode != 0 && len(bytes.TrimSpace(out)) == 0 {
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			projectName := filepath.Base(project)
+			result := ProjectResult{Name: projectName, Path: project, ExitCode: exitCode, Error: ctxErr.Error()}
+			return result, nil
+		}
+		raw := strings.TrimSpace(stderr.String())
+		if raw == "" {
+			raw = "(no output)"
+		}
+		projectName := filepath.Base(project)
+		result := ProjectResult{Name: projectName, Path: project, ExitCode: exitCode, Error: fmt.Sprintf("exited %d with no JSON output: %s", exitCode, raw)}
+		return result, nil
 	}
 	projectName := filepath.Base(project)
 	result := ProjectResult{Name: projectName, Path: project, ExitCode: exitCode}

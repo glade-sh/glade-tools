@@ -2,28 +2,34 @@
   "name": "core-runtime-asyncinfo-context-unsupported",
   "evidence": [
     {
+      "surfaceId": "apex:System.AsyncInfo",
+      "symbol": "AsyncInfo",
+      "kind": "exec",
+      "notes": "Out-of-context AsyncException is the executed Salesforce-shaped context-guard contract; Queueable or Finalizer execution supplies the supported AsyncInfo type."
+    },
+    {
       "surfaceId": "apex:System.AsyncInfo.hasMaxStackDepth()",
       "symbol": "AsyncInfo.hasMaxStackDepth",
-      "kind": "unsupported",
-      "notes": "Local execution has no Queueable or Finalizer context for stack-depth metadata."
+      "kind": "exec",
+      "notes": "Out-of-context AsyncException is the executed Salesforce-shaped context-guard contract; Queueable or Finalizer execution supplies the supported method."
     },
     {
       "surfaceId": "apex:System.AsyncInfo.getCurrentQueueableStackDepth()",
       "symbol": "AsyncInfo.getCurrentQueueableStackDepth",
-      "kind": "unsupported",
-      "notes": "Local execution has no Queueable or Finalizer context for stack-depth metadata."
+      "kind": "exec",
+      "notes": "Out-of-context AsyncException is the executed Salesforce-shaped context-guard contract; Queueable or Finalizer execution supplies the supported method."
     },
     {
       "surfaceId": "apex:System.AsyncInfo.getMaximumQueueableStackDepth()",
       "symbol": "AsyncInfo.getMaximumQueueableStackDepth",
-      "kind": "unsupported",
-      "notes": "Local execution has no Queueable or Finalizer context for stack-depth metadata."
+      "kind": "exec",
+      "notes": "Out-of-context AsyncException is the executed Salesforce-shaped context-guard contract; Queueable or Finalizer execution supplies the supported method."
     },
     {
       "surfaceId": "apex:System.AsyncInfo.getMinimumQueueableDelayInMinutes()",
       "symbol": "AsyncInfo.getMinimumQueueableDelayInMinutes",
-      "kind": "unsupported",
-      "notes": "Local execution has no Queueable or Finalizer context for queueable delay metadata."
+      "kind": "exec",
+      "notes": "Out-of-context AsyncException is the executed Salesforce-shaped context-guard contract; Queueable or Finalizer execution supplies the supported method."
     }
   ],
   "source": [

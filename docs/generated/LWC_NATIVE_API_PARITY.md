@@ -1,6 +1,6 @@
 # Native LWC API Parity Ledger
 
-Docs source: `/Users/matt/Dev/glade/example-projects/Salesforce Docs Scraper/salesforce-docs-expanded-run/lwc`
+Docs source: `private-docs-source/lwc`
 
 Rows: 157
 

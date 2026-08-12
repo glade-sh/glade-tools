@@ -1,497 +1,500 @@
 {
-  "name": "commerce-industry-tail-local-evidence",
-  "evidence": [
-    {
-      "surfaceId": "apex:CommerceDxSampleapp.InvalidPriceException.getTypeName()",
-      "symbol": "CommerceDxSampleapp.InvalidPriceException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:CommerceExtension.ResolutionException.getTypeName()",
-      "symbol": "CommerceExtension.ResolutionException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:Datacloud.FindDuplicates.findDuplicates(List<Object>)",
-      "symbol": "Datacloud.FindDuplicates.findDuplicates(List<Object>)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:Datacloud.FindDuplicatesByIds.findDuplicatesByIds(List<Id>)",
-      "symbol": "Datacloud.FindDuplicatesByIds.findDuplicatesByIds(List<Id>)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object)",
-      "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)",
-      "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)",
-      "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch",
-      "symbol": "RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.CatalogRatesPreferenceEnum.Skip",
-      "symbol": "RevSalesTrxn.CatalogRatesPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.ConfigurationExecutionEnum.Force",
-      "symbol": "RevSalesTrxn.ConfigurationExecutionEnum.Force",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.ConfigurationExecutionEnum.Skip",
-      "symbol": "RevSalesTrxn.ConfigurationExecutionEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.ConfigurationExecutionEnum.System",
-      "symbol": "RevSalesTrxn.ConfigurationExecutionEnum.System",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.AddProducts",
-      "symbol": "RevSalesTrxn.GroupRampActionEnum.AddProducts",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.ConvertToNonRampedGroup",
-      "symbol": "RevSalesTrxn.GroupRampActionEnum.ConvertToNonRampedGroup",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.DeleteProducts",
-      "symbol": "RevSalesTrxn.GroupRampActionEnum.DeleteProducts",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.DeleteSegment",
-      "symbol": "RevSalesTrxn.GroupRampActionEnum.DeleteSegment",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.EditGroup",
-      "symbol": "RevSalesTrxn.GroupRampActionEnum.EditGroup",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.EditRampSchedule",
-      "symbol": "RevSalesTrxn.GroupRampActionEnum.EditRampSchedule",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.PersistPreferenceEnum.Skip",
-      "symbol": "RevSalesTrxn.PersistPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.PlaceSalesTransactionException.getTypeName()",
-      "symbol": "RevSalesTrxn.PlaceSalesTransactionException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.PricingPreferenceEnum.Force",
-      "symbol": "RevSalesTrxn.PricingPreferenceEnum.Force",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.PricingPreferenceEnum.Skip",
-      "symbol": "RevSalesTrxn.PricingPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.PricingPreferenceEnum.System",
-      "symbol": "RevSalesTrxn.PricingPreferenceEnum.System",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:RevSalesTrxn.TaxPreferenceEnum.Skip",
-      "symbol": "RevSalesTrxn.TaxPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:SF_Archive.ArchiverAccessorException.getTypeName()",
-      "symbol": "SF_Archive.ArchiverAccessorException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:chatteranswers.AccountCreator.createAccount(String,String,Id)",
-      "symbol": "chatteranswers.AccountCreator.createAccount(String,String,Id)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:commerce_inventory.CommerceInventoryService.checkInventory(commerce_inventory.InventoryCheckAvailability)",
-      "symbol": "commerce_inventory.CommerceInventoryService.checkInventory(commerce_inventory.InventoryCheckAvailability)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:commerce_inventory.CommerceInventoryService.getInventoryLevel(commerce_inventory.InventoryLevelsRequest)",
-      "symbol": "commerce_inventory.CommerceInventoryService.getInventoryLevel(commerce_inventory.InventoryLevelsRequest)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:commerce_inventory.CommerceInventoryService.getReservation(String)",
-      "symbol": "commerce_inventory.CommerceInventoryService.getReservation(String)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:commerce_ordermanagement.ProductExpandService.returnReasons(commerce_ordermanagement.ProductExpandRequest)",
-      "symbol": "commerce_ordermanagement.ProductExpandService.returnReasons(commerce_ordermanagement.ProductExpandRequest)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:commerceorders.CatalogRatesPreferenceEnum.Fetch",
-      "symbol": "commerceorders.CatalogRatesPreferenceEnum.Fetch",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commerceorders.CatalogRatesPreferenceEnum.Skip",
-      "symbol": "commerceorders.CatalogRatesPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commerceorders.ConfigurationInputEnum.RunAndAllowErrors",
-      "symbol": "commerceorders.ConfigurationInputEnum.RunAndAllowErrors",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commerceorders.ConfigurationInputEnum.RunAndBlockErrors",
-      "symbol": "commerceorders.ConfigurationInputEnum.RunAndBlockErrors",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commerceorders.ConfigurationInputEnum.Skip",
-      "symbol": "commerceorders.ConfigurationInputEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commerceorders.PricingPreferenceEnum.Force",
-      "symbol": "commerceorders.PricingPreferenceEnum.Force",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commerceorders.PricingPreferenceEnum.Skip",
-      "symbol": "commerceorders.PricingPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commerceorders.PricingPreferenceEnum.System",
-      "symbol": "commerceorders.PricingPreferenceEnum.System",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercepricing.PricingEngineException.getTypeName()",
-      "symbol": "commercepricing.PricingEngineException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:commercepromotions.PromotionApiException.getTypeName()",
-      "symbol": "commercepromotions.PromotionApiException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:commercetax.CalculateTaxType.Actual",
-      "symbol": "commercetax.CalculateTaxType.Actual",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.CalculateTaxType.Estimated",
-      "symbol": "commercetax.CalculateTaxType.Estimated",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.RequestType.CalculateTax",
-      "symbol": "commercetax.RequestType.CalculateTax",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.ResultCode.ReferenceDocumentCodeMissing",
-      "symbol": "commercetax.ResultCode.ReferenceDocumentCodeMissing",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.ResultCode.TaxEngineError",
-      "symbol": "commercetax.ResultCode.TaxEngineError",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.TaxTransactionStatus.Committed",
-      "symbol": "commercetax.TaxTransactionStatus.Committed",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.TaxTransactionStatus.Uncommitted",
-      "symbol": "commercetax.TaxTransactionStatus.Uncommitted",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.TaxTransactionType.Credit",
-      "symbol": "commercetax.TaxTransactionType.Credit",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.TaxTransactionType.Debit",
-      "symbol": "commercetax.TaxTransactionType.Debit",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:commercetax.TaxTransactionType.Void",
-      "symbol": "commercetax.TaxTransactionType.Void",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:data_mask.DataMaskIntegrationUtil.getJobs()",
-      "symbol": "data_mask.DataMaskIntegrationUtil.getJobs()",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:data_mask.DataMaskIntegrationUtil.getRunLogResponse(String)",
-      "symbol": "data_mask.DataMaskIntegrationUtil.getRunLogResponse(String)",
-      "kind": "exec",
-      "notes": "Local runtime returns deterministic defaults for this service or container helper surface."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.ATMCRMAuthenticationPortalUserException.getTypeName()",
-      "symbol": "healthcloudext.ATMCRMAuthenticationPortalUserException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.AppointmentManagementException.getTypeName()",
-      "symbol": "healthcloudext.AppointmentManagementException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.BenefitsVerificationException.getTypeName()",
-      "symbol": "healthcloudext.BenefitsVerificationException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.BookingStatus.Canceled",
-      "symbol": "healthcloudext.BookingStatus.Canceled",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.BookingStatus.NoShow",
-      "symbol": "healthcloudext.BookingStatus.NoShow",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.BookingStatus.Proposed",
-      "symbol": "healthcloudext.BookingStatus.Proposed",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.BookingStatus.Rejected",
-      "symbol": "healthcloudext.BookingStatus.Rejected",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.BookingStatus.Scheduled",
-      "symbol": "healthcloudext.BookingStatus.Scheduled",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:healthcloudext.QuotasAndAllocationException.getTypeName()",
-      "symbol": "healthcloudext.QuotasAndAllocationException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:placequote.CatalogRatesPreferenceEnum.Fetch",
-      "symbol": "placequote.CatalogRatesPreferenceEnum.Fetch",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:placequote.CatalogRatesPreferenceEnum.Skip",
-      "symbol": "placequote.CatalogRatesPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:placequote.ConfigurationInputEnum.RunAndAllowErrors",
-      "symbol": "placequote.ConfigurationInputEnum.RunAndAllowErrors",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:placequote.ConfigurationInputEnum.RunAndBlockErrors",
-      "symbol": "placequote.ConfigurationInputEnum.RunAndBlockErrors",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:placequote.ConfigurationInputEnum.Skip",
-      "symbol": "placequote.ConfigurationInputEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:placequote.PlaceQuoteException.getTypeName()",
-      "symbol": "placequote.PlaceQuoteException.getTypeName()",
-      "kind": "exec",
-      "notes": "Local runtime exception getTypeName returns the qualified exception type."
-    },
-    {
-      "surfaceId": "apex:placequote.PricingPreferenceEnum.Force",
-      "symbol": "placequote.PricingPreferenceEnum.Force",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:placequote.PricingPreferenceEnum.Skip",
-      "symbol": "placequote.PricingPreferenceEnum.Skip",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:placequote.PricingPreferenceEnum.System",
-      "symbol": "placequote.PricingPreferenceEnum.System",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdatakit.AccountEngagmentDataStreamTypeEnum.EmailActivity",
-      "symbol": "sfdatakit.AccountEngagmentDataStreamTypeEnum.EmailActivity",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdatakit.AccountEngagmentDataStreamTypeEnum.FormActivity",
-      "symbol": "sfdatakit.AccountEngagmentDataStreamTypeEnum.FormActivity",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdatakit.AccountEngagmentDataStreamTypeEnum.WebPageActivity",
-      "symbol": "sfdatakit.AccountEngagmentDataStreamTypeEnum.WebPageActivity",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.EmailActivity",
-      "symbol": "sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.EmailActivity",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.FormActivity",
-      "symbol": "sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.FormActivity",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.WebPageActivity",
-      "symbol": "sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.WebPageActivity",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdc_enablement.LearningItemProgressStatus.Completed",
-      "symbol": "sfdc_enablement.LearningItemProgressStatus.Completed",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdc_enablement.LearningItemProgressStatus.InProgress",
-      "symbol": "sfdc_enablement.LearningItemProgressStatus.InProgress",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    },
-    {
-      "surfaceId": "apex:sfdc_enablement.LearningItemProgressStatus.NotStarted",
-      "symbol": "sfdc_enablement.LearningItemProgressStatus.NotStarted",
-      "kind": "exec",
-      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime."
-    }
-  ],
-  "source": [
-    {
-      "path": "anonymous.apex",
-      "content": "System.assertEquals('CommerceDxSampleapp.InvalidPriceException', new CommerceDxSampleapp.InvalidPriceException().getTypeName());\nSystem.assertEquals('CommerceExtension.ResolutionException', new CommerceExtension.ResolutionException().getTypeName());\nList<Datacloud.FindDuplicatesResult> duplicateRows = Datacloud.FindDuplicates.findDuplicates(new List<Object>{ new Account(Name = 'Acme') });\nSystem.assertEquals(1, duplicateRows.size());\nSystem.assert(duplicateRows.get(0).isSuccess());\nSystem.assertEquals(0, duplicateRows.get(0).getDuplicateResults().size());\nList<Datacloud.FindDuplicatesResult> duplicateRowsById = Datacloud.FindDuplicatesByIds.findDuplicatesByIds(new List<Id>{ '001000000000001AAA' });\nSystem.assertEquals(1, duplicateRowsById.size());\nIsvPartners.AppAnalytics.logCustomInteraction('clicked');\nIsvPartners.AppAnalytics.logCustomInteraction('clicked', '001000000000001AAA');\nIsvPartners.AppAnalytics.logCustomInteraction('clicked', UUID.fromString('00112233-4455-6677-8899-aabbccddeeff'));\nSystem.assertEquals('Fetch', RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', RevSalesTrxn.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('Force', RevSalesTrxn.ConfigurationExecutionEnum.Force.name());\nSystem.assertEquals('Skip', RevSalesTrxn.ConfigurationExecutionEnum.Skip.name());\nSystem.assertEquals('System', RevSalesTrxn.ConfigurationExecutionEnum.System.name());\nSystem.assertEquals('AddProducts', RevSalesTrxn.GroupRampActionEnum.AddProducts.name());\nSystem.assertEquals('ConvertToNonRampedGroup', RevSalesTrxn.GroupRampActionEnum.ConvertToNonRampedGroup.name());\nSystem.assertEquals('DeleteProducts', RevSalesTrxn.GroupRampActionEnum.DeleteProducts.name());\nSystem.assertEquals('DeleteSegment', RevSalesTrxn.GroupRampActionEnum.DeleteSegment.name());\nSystem.assertEquals('EditGroup', RevSalesTrxn.GroupRampActionEnum.EditGroup.name());\nSystem.assertEquals('EditRampSchedule', RevSalesTrxn.GroupRampActionEnum.EditRampSchedule.name());\nSystem.assertEquals('Skip', RevSalesTrxn.PersistPreferenceEnum.Skip.name());\nSystem.assertEquals('Force', RevSalesTrxn.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', RevSalesTrxn.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', RevSalesTrxn.PricingPreferenceEnum.System.name());\nSystem.assertEquals('Skip', RevSalesTrxn.TaxPreferenceEnum.Skip.name());\nSystem.assertEquals('RevSalesTrxn.PlaceSalesTransactionException', new RevSalesTrxn.PlaceSalesTransactionException().getTypeName());\nSystem.assertEquals('SF_Archive.ArchiverAccessorException', new SF_Archive.ArchiverAccessorException().getTypeName());\nSystem.assertEquals('001000000000001', new chatteranswers.AccountCreator().createAccount('Ada', 'Lovelace', UserInfo.getUserId()));\ncommerce_inventory.CommerceInventoryService inventoryService = new commerce_inventory.CommerceInventoryService();\ncommerce_inventory.InventoryLevelsResponse levels = inventoryService.getInventoryLevel(new commerce_inventory.InventoryLevelsRequest('LOCATION', new Set<commerce_inventory.InventoryLevelsItemRequest>()));\nSystem.assertNotEquals(null, levels);\nSystem.assertEquals(0, levels.getItemsInventoryLevels().size());\ncommerce_inventory.InventoryReservation reservation = inventoryService.getReservation('0aB000000000001AAA');\nSystem.assertNotEquals(null, reservation);\nSystem.assertEquals(0, reservation.getDurationInSeconds());\nSystem.assertEquals(0, reservation.getItems().size());\ncommerce_inventory.InventoryCheckAvailability availability = inventoryService.checkInventory(new commerce_inventory.InventoryCheckAvailability(new Set<commerce_inventory.InventoryCheckItemAvailability>()));\nSystem.assertNotEquals(null, availability);\nSystem.assertEquals(0, availability.getInventoryCheckItemAvailability().size());\ncommerce_ordermanagement.ProductExpandResponse expandResponse = new commerce_ordermanagement.ProductExpandService().returnReasons(new commerce_ordermanagement.ProductExpandRequest());\nSystem.assertNotEquals(null, expandResponse);\nSystem.assertEquals(null, expandResponse.getSucceed());\nSystem.assertEquals('Fetch', commerceorders.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', commerceorders.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('RunAndAllowErrors', commerceorders.ConfigurationInputEnum.RunAndAllowErrors.name());\nSystem.assertEquals('RunAndBlockErrors', commerceorders.ConfigurationInputEnum.RunAndBlockErrors.name());\nSystem.assertEquals('Skip', commerceorders.ConfigurationInputEnum.Skip.name());\nSystem.assertEquals('Force', commerceorders.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', commerceorders.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', commerceorders.PricingPreferenceEnum.System.name());\nSystem.assertEquals('commercepricing.PricingEngineException', new commercepricing.PricingEngineException().getTypeName());\nSystem.assertEquals('commercepromotions.PromotionApiException', new commercepromotions.PromotionApiException().getTypeName());\nSystem.assertEquals('Actual', commercetax.CalculateTaxType.Actual.name());\nSystem.assertEquals('Estimated', commercetax.CalculateTaxType.Estimated.name());\nSystem.assertEquals('CalculateTax', commercetax.RequestType.CalculateTax.name());\nSystem.assertEquals('ReferenceDocumentCodeMissing', commercetax.ResultCode.ReferenceDocumentCodeMissing.name());\nSystem.assertEquals('TaxEngineError', commercetax.ResultCode.TaxEngineError.name());\nSystem.assertEquals('Committed', commercetax.TaxTransactionStatus.Committed.name());\nSystem.assertEquals('Uncommitted', commercetax.TaxTransactionStatus.Uncommitted.name());\nSystem.assertEquals('Credit', commercetax.TaxTransactionType.Credit.name());\nSystem.assertEquals('Debit', commercetax.TaxTransactionType.Debit.name());\nSystem.assertEquals('Void', commercetax.TaxTransactionType.Void.name());\nSystem.assertEquals('[]', data_mask.DataMaskIntegrationUtil.getJobs());\nSystem.assertEquals('{}', data_mask.DataMaskIntegrationUtil.getRunLogResponse('job-local'));\nSystem.assertEquals('healthcloudext.ATMCRMAuthenticationPortalUserException', new healthcloudext.ATMCRMAuthenticationPortalUserException().getTypeName());\nSystem.assertEquals('healthcloudext.AppointmentManagementException', new healthcloudext.AppointmentManagementException().getTypeName());\nSystem.assertEquals('healthcloudext.BenefitsVerificationException', new healthcloudext.BenefitsVerificationException().getTypeName());\nSystem.assertEquals('healthcloudext.QuotasAndAllocationException', new healthcloudext.QuotasAndAllocationException().getTypeName());\nSystem.assertEquals('Canceled', healthcloudext.BookingStatus.Canceled.name());\nSystem.assertEquals('NoShow', healthcloudext.BookingStatus.NoShow.name());\nSystem.assertEquals('Proposed', healthcloudext.BookingStatus.Proposed.name());\nSystem.assertEquals('Rejected', healthcloudext.BookingStatus.Rejected.name());\nSystem.assertEquals('Scheduled', healthcloudext.BookingStatus.Scheduled.name());\nSystem.assertEquals('placequote.PlaceQuoteException', new placequote.PlaceQuoteException().getTypeName());\nSystem.assertEquals('Fetch', placequote.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', placequote.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('RunAndAllowErrors', placequote.ConfigurationInputEnum.RunAndAllowErrors.name());\nSystem.assertEquals('RunAndBlockErrors', placequote.ConfigurationInputEnum.RunAndBlockErrors.name());\nSystem.assertEquals('Skip', placequote.ConfigurationInputEnum.Skip.name());\nSystem.assertEquals('Force', placequote.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', placequote.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', placequote.PricingPreferenceEnum.System.name());\nSystem.assertEquals('EmailActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.EmailActivity.name());\nSystem.assertEquals('FormActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.FormActivity.name());\nSystem.assertEquals('WebPageActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.WebPageActivity.name());\nSystem.assertEquals('EmailActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.EmailActivity.name());\nSystem.assertEquals('FormActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.FormActivity.name());\nSystem.assertEquals('WebPageActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.WebPageActivity.name());\nSystem.assertEquals('Completed', sfdc_enablement.LearningItemProgressStatus.Completed.name());\nSystem.assertEquals('InProgress', sfdc_enablement.LearningItemProgressStatus.InProgress.name());\nSystem.assertEquals('NotStarted', sfdc_enablement.LearningItemProgressStatus.NotStarted.name());\n"
-    }
-  ],
   "command": {
-    "kind": "exec",
     "args": [
       "System.assertEquals('CommerceDxSampleapp.InvalidPriceException', new CommerceDxSampleapp.InvalidPriceException().getTypeName());\nSystem.assertEquals('CommerceExtension.ResolutionException', new CommerceExtension.ResolutionException().getTypeName());\nList<Datacloud.FindDuplicatesResult> duplicateRows = Datacloud.FindDuplicates.findDuplicates(new List<Object>{ new Account(Name = 'Acme') });\nSystem.assertEquals(1, duplicateRows.size());\nSystem.assert(duplicateRows.get(0).isSuccess());\nSystem.assertEquals(0, duplicateRows.get(0).getDuplicateResults().size());\nList<Datacloud.FindDuplicatesResult> duplicateRowsById = Datacloud.FindDuplicatesByIds.findDuplicatesByIds(new List<Id>{ '001000000000001AAA' });\nSystem.assertEquals(1, duplicateRowsById.size());\nIsvPartners.AppAnalytics.logCustomInteraction('clicked');\nIsvPartners.AppAnalytics.logCustomInteraction('clicked', '001000000000001AAA');\nIsvPartners.AppAnalytics.logCustomInteraction('clicked', UUID.fromString('00112233-4455-6677-8899-aabbccddeeff'));\nSystem.assertEquals('Fetch', RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', RevSalesTrxn.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('Force', RevSalesTrxn.ConfigurationExecutionEnum.Force.name());\nSystem.assertEquals('Skip', RevSalesTrxn.ConfigurationExecutionEnum.Skip.name());\nSystem.assertEquals('System', RevSalesTrxn.ConfigurationExecutionEnum.System.name());\nSystem.assertEquals('AddProducts', RevSalesTrxn.GroupRampActionEnum.AddProducts.name());\nSystem.assertEquals('ConvertToNonRampedGroup', RevSalesTrxn.GroupRampActionEnum.ConvertToNonRampedGroup.name());\nSystem.assertEquals('DeleteProducts', RevSalesTrxn.GroupRampActionEnum.DeleteProducts.name());\nSystem.assertEquals('DeleteSegment', RevSalesTrxn.GroupRampActionEnum.DeleteSegment.name());\nSystem.assertEquals('EditGroup', RevSalesTrxn.GroupRampActionEnum.EditGroup.name());\nSystem.assertEquals('EditRampSchedule', RevSalesTrxn.GroupRampActionEnum.EditRampSchedule.name());\nSystem.assertEquals('Skip', RevSalesTrxn.PersistPreferenceEnum.Skip.name());\nSystem.assertEquals('Force', RevSalesTrxn.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', RevSalesTrxn.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', RevSalesTrxn.PricingPreferenceEnum.System.name());\nSystem.assertEquals('Skip', RevSalesTrxn.TaxPreferenceEnum.Skip.name());\nSystem.assertEquals('RevSalesTrxn.PlaceSalesTransactionException', new RevSalesTrxn.PlaceSalesTransactionException().getTypeName());\nSystem.assertEquals('SF_Archive.ArchiverAccessorException', new SF_Archive.ArchiverAccessorException().getTypeName());\nSystem.assertEquals('001000000000001', new chatteranswers.AccountCreator().createAccount('Ada', 'Lovelace', UserInfo.getUserId()));\ncommerce_inventory.CommerceInventoryService inventoryService = new commerce_inventory.CommerceInventoryService();\ncommerce_inventory.InventoryLevelsResponse levels = inventoryService.getInventoryLevel(new commerce_inventory.InventoryLevelsRequest('LOCATION', new Set<commerce_inventory.InventoryLevelsItemRequest>()));\nSystem.assertNotEquals(null, levels);\nSystem.assertEquals(0, levels.getItemsInventoryLevels().size());\ncommerce_inventory.InventoryReservation reservation = inventoryService.getReservation('0aB000000000001AAA');\nSystem.assertNotEquals(null, reservation);\nSystem.assertEquals(0, reservation.getDurationInSeconds());\nSystem.assertEquals(0, reservation.getItems().size());\ncommerce_inventory.InventoryCheckAvailability availability = inventoryService.checkInventory(new commerce_inventory.InventoryCheckAvailability(new Set<commerce_inventory.InventoryCheckItemAvailability>()));\nSystem.assertNotEquals(null, availability);\nSystem.assertEquals(0, availability.getInventoryCheckItemAvailability().size());\ncommerce_ordermanagement.ProductExpandResponse expandResponse = new commerce_ordermanagement.ProductExpandService().returnReasons(new commerce_ordermanagement.ProductExpandRequest());\nSystem.assertNotEquals(null, expandResponse);\nSystem.assertEquals(null, expandResponse.getSucceed());\nSystem.assertEquals('Fetch', commerceorders.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', commerceorders.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('RunAndAllowErrors', commerceorders.ConfigurationInputEnum.RunAndAllowErrors.name());\nSystem.assertEquals('RunAndBlockErrors', commerceorders.ConfigurationInputEnum.RunAndBlockErrors.name());\nSystem.assertEquals('Skip', commerceorders.ConfigurationInputEnum.Skip.name());\nSystem.assertEquals('Force', commerceorders.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', commerceorders.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', commerceorders.PricingPreferenceEnum.System.name());\nSystem.assertEquals('commercepricing.PricingEngineException', new commercepricing.PricingEngineException().getTypeName());\nSystem.assertEquals('commercepromotions.PromotionApiException', new commercepromotions.PromotionApiException().getTypeName());\nSystem.assertEquals('Actual', commercetax.CalculateTaxType.Actual.name());\nSystem.assertEquals('Estimated', commercetax.CalculateTaxType.Estimated.name());\nSystem.assertEquals('CalculateTax', commercetax.RequestType.CalculateTax.name());\nSystem.assertEquals('ReferenceDocumentCodeMissing', commercetax.ResultCode.ReferenceDocumentCodeMissing.name());\nSystem.assertEquals('TaxEngineError', commercetax.ResultCode.TaxEngineError.name());\nSystem.assertEquals('Committed', commercetax.TaxTransactionStatus.Committed.name());\nSystem.assertEquals('Uncommitted', commercetax.TaxTransactionStatus.Uncommitted.name());\nSystem.assertEquals('Credit', commercetax.TaxTransactionType.Credit.name());\nSystem.assertEquals('Debit', commercetax.TaxTransactionType.Debit.name());\nSystem.assertEquals('Void', commercetax.TaxTransactionType.Void.name());\nSystem.assertEquals('[]', data_mask.DataMaskIntegrationUtil.getJobs());\nSystem.assertEquals('{}', data_mask.DataMaskIntegrationUtil.getRunLogResponse('job-local'));\nSystem.assertEquals('healthcloudext.ATMCRMAuthenticationPortalUserException', new healthcloudext.ATMCRMAuthenticationPortalUserException().getTypeName());\nSystem.assertEquals('healthcloudext.AppointmentManagementException', new healthcloudext.AppointmentManagementException().getTypeName());\nSystem.assertEquals('healthcloudext.BenefitsVerificationException', new healthcloudext.BenefitsVerificationException().getTypeName());\nSystem.assertEquals('healthcloudext.QuotasAndAllocationException', new healthcloudext.QuotasAndAllocationException().getTypeName());\nSystem.assertEquals('Canceled', healthcloudext.BookingStatus.Canceled.name());\nSystem.assertEquals('NoShow', healthcloudext.BookingStatus.NoShow.name());\nSystem.assertEquals('Proposed', healthcloudext.BookingStatus.Proposed.name());\nSystem.assertEquals('Rejected', healthcloudext.BookingStatus.Rejected.name());\nSystem.assertEquals('Scheduled', healthcloudext.BookingStatus.Scheduled.name());\nSystem.assertEquals('placequote.PlaceQuoteException', new placequote.PlaceQuoteException().getTypeName());\nSystem.assertEquals('Fetch', placequote.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', placequote.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('RunAndAllowErrors', placequote.ConfigurationInputEnum.RunAndAllowErrors.name());\nSystem.assertEquals('RunAndBlockErrors', placequote.ConfigurationInputEnum.RunAndBlockErrors.name());\nSystem.assertEquals('Skip', placequote.ConfigurationInputEnum.Skip.name());\nSystem.assertEquals('Force', placequote.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', placequote.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', placequote.PricingPreferenceEnum.System.name());\nSystem.assertEquals('EmailActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.EmailActivity.name());\nSystem.assertEquals('FormActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.FormActivity.name());\nSystem.assertEquals('WebPageActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.WebPageActivity.name());\nSystem.assertEquals('EmailActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.EmailActivity.name());\nSystem.assertEquals('FormActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.FormActivity.name());\nSystem.assertEquals('WebPageActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.WebPageActivity.name());\nSystem.assertEquals('Completed', sfdc_enablement.LearningItemProgressStatus.Completed.name());\nSystem.assertEquals('InProgress', sfdc_enablement.LearningItemProgressStatus.InProgress.name());\nSystem.assertEquals('NotStarted', sfdc_enablement.LearningItemProgressStatus.NotStarted.name());\n"
-    ]
+    ],
+    "kind": "exec"
   },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:CommerceDxSampleapp.InvalidPriceException.getTypeName()",
+      "symbol": "CommerceDxSampleapp.InvalidPriceException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:CommerceExtension.ResolutionException.getTypeName()",
+      "symbol": "CommerceExtension.ResolutionException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:Datacloud.FindDuplicates.findDuplicates(List<Object>)",
+      "symbol": "Datacloud.FindDuplicates.findDuplicates(List<Object>)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:Datacloud.FindDuplicatesByIds.findDuplicatesByIds(List<Id>)",
+      "symbol": "Datacloud.FindDuplicatesByIds.findDuplicatesByIds(List<Id>)"
+    },
+    {
+      "kind": "unsupported",
+      "notes": "IsvPartners.AppAnalytics is a Salesforce-hosted analytics service; this fixture preserves the service-only classification instead of claiming deterministic local behavior.",
+      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object)",
+      "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object)"
+    },
+    {
+      "kind": "unsupported",
+      "notes": "IsvPartners.AppAnalytics is a Salesforce-hosted analytics service; this fixture preserves the service-only classification instead of claiming deterministic local behavior.",
+      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)",
+      "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)"
+    },
+    {
+      "kind": "unsupported",
+      "notes": "IsvPartners.AppAnalytics is a Salesforce-hosted analytics service; this fixture preserves the service-only classification instead of claiming deterministic local behavior.",
+      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)",
+      "symbol": "IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch",
+      "symbol": "RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.CatalogRatesPreferenceEnum.Skip",
+      "symbol": "RevSalesTrxn.CatalogRatesPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.ConfigurationExecutionEnum.Force",
+      "symbol": "RevSalesTrxn.ConfigurationExecutionEnum.Force"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.ConfigurationExecutionEnum.Skip",
+      "symbol": "RevSalesTrxn.ConfigurationExecutionEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.ConfigurationExecutionEnum.System",
+      "symbol": "RevSalesTrxn.ConfigurationExecutionEnum.System"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.AddProducts",
+      "symbol": "RevSalesTrxn.GroupRampActionEnum.AddProducts"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.ConvertToNonRampedGroup",
+      "symbol": "RevSalesTrxn.GroupRampActionEnum.ConvertToNonRampedGroup"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.DeleteProducts",
+      "symbol": "RevSalesTrxn.GroupRampActionEnum.DeleteProducts"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.DeleteSegment",
+      "symbol": "RevSalesTrxn.GroupRampActionEnum.DeleteSegment"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.EditGroup",
+      "symbol": "RevSalesTrxn.GroupRampActionEnum.EditGroup"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.GroupRampActionEnum.EditRampSchedule",
+      "symbol": "RevSalesTrxn.GroupRampActionEnum.EditRampSchedule"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.PersistPreferenceEnum.Skip",
+      "symbol": "RevSalesTrxn.PersistPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:RevSalesTrxn.PlaceSalesTransactionException.getTypeName()",
+      "symbol": "RevSalesTrxn.PlaceSalesTransactionException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.PricingPreferenceEnum.Force",
+      "symbol": "RevSalesTrxn.PricingPreferenceEnum.Force"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.PricingPreferenceEnum.Skip",
+      "symbol": "RevSalesTrxn.PricingPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.PricingPreferenceEnum.System",
+      "symbol": "RevSalesTrxn.PricingPreferenceEnum.System"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:RevSalesTrxn.TaxPreferenceEnum.Skip",
+      "symbol": "RevSalesTrxn.TaxPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:SF_Archive.ArchiverAccessorException.getTypeName()",
+      "symbol": "SF_Archive.ArchiverAccessorException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:chatteranswers.AccountCreator.createAccount(String,String,Id)",
+      "symbol": "chatteranswers.AccountCreator.createAccount(String,String,Id)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:commerce_inventory.CommerceInventoryService.checkInventory(commerce_inventory.InventoryCheckAvailability)",
+      "symbol": "commerce_inventory.CommerceInventoryService.checkInventory(commerce_inventory.InventoryCheckAvailability)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:commerce_inventory.CommerceInventoryService.getInventoryLevel(commerce_inventory.InventoryLevelsRequest)",
+      "symbol": "commerce_inventory.CommerceInventoryService.getInventoryLevel(commerce_inventory.InventoryLevelsRequest)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:commerce_inventory.CommerceInventoryService.getReservation(String)",
+      "symbol": "commerce_inventory.CommerceInventoryService.getReservation(String)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:commerce_ordermanagement.ProductExpandService.returnReasons(commerce_ordermanagement.ProductExpandRequest)",
+      "symbol": "commerce_ordermanagement.ProductExpandService.returnReasons(commerce_ordermanagement.ProductExpandRequest)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.CatalogRatesPreferenceEnum.Fetch",
+      "symbol": "commerceorders.CatalogRatesPreferenceEnum.Fetch"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.CatalogRatesPreferenceEnum.Skip",
+      "symbol": "commerceorders.CatalogRatesPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.ConfigurationInputEnum.RunAndAllowErrors",
+      "symbol": "commerceorders.ConfigurationInputEnum.RunAndAllowErrors"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.ConfigurationInputEnum.RunAndBlockErrors",
+      "symbol": "commerceorders.ConfigurationInputEnum.RunAndBlockErrors"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.ConfigurationInputEnum.Skip",
+      "symbol": "commerceorders.ConfigurationInputEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.PricingPreferenceEnum.Force",
+      "symbol": "commerceorders.PricingPreferenceEnum.Force"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.PricingPreferenceEnum.Skip",
+      "symbol": "commerceorders.PricingPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commerceorders.PricingPreferenceEnum.System",
+      "symbol": "commerceorders.PricingPreferenceEnum.System"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:commercepricing.PricingEngineException.getTypeName()",
+      "symbol": "commercepricing.PricingEngineException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:commercepromotions.PromotionApiException.getTypeName()",
+      "symbol": "commercepromotions.PromotionApiException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.CalculateTaxType.Actual",
+      "symbol": "commercetax.CalculateTaxType.Actual"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.CalculateTaxType.Estimated",
+      "symbol": "commercetax.CalculateTaxType.Estimated"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.RequestType.CalculateTax",
+      "symbol": "commercetax.RequestType.CalculateTax"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.ResultCode.ReferenceDocumentCodeMissing",
+      "symbol": "commercetax.ResultCode.ReferenceDocumentCodeMissing"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.ResultCode.TaxEngineError",
+      "symbol": "commercetax.ResultCode.TaxEngineError"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.TaxTransactionStatus.Committed",
+      "symbol": "commercetax.TaxTransactionStatus.Committed"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.TaxTransactionStatus.Uncommitted",
+      "symbol": "commercetax.TaxTransactionStatus.Uncommitted"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.TaxTransactionType.Credit",
+      "symbol": "commercetax.TaxTransactionType.Credit"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.TaxTransactionType.Debit",
+      "symbol": "commercetax.TaxTransactionType.Debit"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:commercetax.TaxTransactionType.Void",
+      "symbol": "commercetax.TaxTransactionType.Void"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:data_mask.DataMaskIntegrationUtil.getJobs()",
+      "symbol": "data_mask.DataMaskIntegrationUtil.getJobs()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
+      "surfaceId": "apex:data_mask.DataMaskIntegrationUtil.getRunLogResponse(String)",
+      "symbol": "data_mask.DataMaskIntegrationUtil.getRunLogResponse(String)"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:healthcloudext.ATMCRMAuthenticationPortalUserException.getTypeName()",
+      "symbol": "healthcloudext.ATMCRMAuthenticationPortalUserException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:healthcloudext.AppointmentManagementException.getTypeName()",
+      "symbol": "healthcloudext.AppointmentManagementException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:healthcloudext.BenefitsVerificationException.getTypeName()",
+      "symbol": "healthcloudext.BenefitsVerificationException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:healthcloudext.BookingStatus.Canceled",
+      "symbol": "healthcloudext.BookingStatus.Canceled"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:healthcloudext.BookingStatus.NoShow",
+      "symbol": "healthcloudext.BookingStatus.NoShow"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:healthcloudext.BookingStatus.Proposed",
+      "symbol": "healthcloudext.BookingStatus.Proposed"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:healthcloudext.BookingStatus.Rejected",
+      "symbol": "healthcloudext.BookingStatus.Rejected"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:healthcloudext.BookingStatus.Scheduled",
+      "symbol": "healthcloudext.BookingStatus.Scheduled"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:healthcloudext.QuotasAndAllocationException.getTypeName()",
+      "symbol": "healthcloudext.QuotasAndAllocationException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.CatalogRatesPreferenceEnum.Fetch",
+      "symbol": "placequote.CatalogRatesPreferenceEnum.Fetch"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.CatalogRatesPreferenceEnum.Skip",
+      "symbol": "placequote.CatalogRatesPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.ConfigurationInputEnum.RunAndAllowErrors",
+      "symbol": "placequote.ConfigurationInputEnum.RunAndAllowErrors"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.ConfigurationInputEnum.RunAndBlockErrors",
+      "symbol": "placequote.ConfigurationInputEnum.RunAndBlockErrors"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.ConfigurationInputEnum.Skip",
+      "symbol": "placequote.ConfigurationInputEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local runtime exception getTypeName returns the qualified exception type.",
+      "surfaceId": "apex:placequote.PlaceQuoteException.getTypeName()",
+      "symbol": "placequote.PlaceQuoteException.getTypeName()"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.PricingPreferenceEnum.Force",
+      "symbol": "placequote.PricingPreferenceEnum.Force"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.PricingPreferenceEnum.Skip",
+      "symbol": "placequote.PricingPreferenceEnum.Skip"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:placequote.PricingPreferenceEnum.System",
+      "symbol": "placequote.PricingPreferenceEnum.System"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdatakit.AccountEngagmentDataStreamTypeEnum.EmailActivity",
+      "symbol": "sfdatakit.AccountEngagmentDataStreamTypeEnum.EmailActivity"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdatakit.AccountEngagmentDataStreamTypeEnum.FormActivity",
+      "symbol": "sfdatakit.AccountEngagmentDataStreamTypeEnum.FormActivity"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdatakit.AccountEngagmentDataStreamTypeEnum.WebPageActivity",
+      "symbol": "sfdatakit.AccountEngagmentDataStreamTypeEnum.WebPageActivity"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.EmailActivity",
+      "symbol": "sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.EmailActivity"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.FormActivity",
+      "symbol": "sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.FormActivity"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.WebPageActivity",
+      "symbol": "sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.WebPageActivity"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdc_enablement.LearningItemProgressStatus.Completed",
+      "symbol": "sfdc_enablement.LearningItemProgressStatus.Completed"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdc_enablement.LearningItemProgressStatus.InProgress",
+      "symbol": "sfdc_enablement.LearningItemProgressStatus.InProgress"
+    },
+    {
+      "kind": "exec",
+      "notes": "Generated enum constants materialize as typed enum values and report their Apex names at runtime.",
+      "surfaceId": "apex:sfdc_enablement.LearningItemProgressStatus.NotStarted",
+      "symbol": "sfdc_enablement.LearningItemProgressStatus.NotStarted"
+    }
+  ],
   "expected": {
     "result": {
       "debug": null,
       "ok": true
     }
-  }
+  },
+  "name": "commerce-industry-tail-local-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org cannot resolve the local Commerce exception type; retained as local commerce evidence and excluded from hosted parity.",
+  "source": [
+    {
+      "content": "System.assertEquals('CommerceDxSampleapp.InvalidPriceException', new CommerceDxSampleapp.InvalidPriceException().getTypeName());\nSystem.assertEquals('CommerceExtension.ResolutionException', new CommerceExtension.ResolutionException().getTypeName());\nList<Datacloud.FindDuplicatesResult> duplicateRows = Datacloud.FindDuplicates.findDuplicates(new List<Object>{ new Account(Name = 'Acme') });\nSystem.assertEquals(1, duplicateRows.size());\nSystem.assert(duplicateRows.get(0).isSuccess());\nSystem.assertEquals(0, duplicateRows.get(0).getDuplicateResults().size());\nList<Datacloud.FindDuplicatesResult> duplicateRowsById = Datacloud.FindDuplicatesByIds.findDuplicatesByIds(new List<Id>{ '001000000000001AAA' });\nSystem.assertEquals(1, duplicateRowsById.size());\nIsvPartners.AppAnalytics.logCustomInteraction('clicked');\nIsvPartners.AppAnalytics.logCustomInteraction('clicked', '001000000000001AAA');\nIsvPartners.AppAnalytics.logCustomInteraction('clicked', UUID.fromString('00112233-4455-6677-8899-aabbccddeeff'));\nSystem.assertEquals('Fetch', RevSalesTrxn.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', RevSalesTrxn.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('Force', RevSalesTrxn.ConfigurationExecutionEnum.Force.name());\nSystem.assertEquals('Skip', RevSalesTrxn.ConfigurationExecutionEnum.Skip.name());\nSystem.assertEquals('System', RevSalesTrxn.ConfigurationExecutionEnum.System.name());\nSystem.assertEquals('AddProducts', RevSalesTrxn.GroupRampActionEnum.AddProducts.name());\nSystem.assertEquals('ConvertToNonRampedGroup', RevSalesTrxn.GroupRampActionEnum.ConvertToNonRampedGroup.name());\nSystem.assertEquals('DeleteProducts', RevSalesTrxn.GroupRampActionEnum.DeleteProducts.name());\nSystem.assertEquals('DeleteSegment', RevSalesTrxn.GroupRampActionEnum.DeleteSegment.name());\nSystem.assertEquals('EditGroup', RevSalesTrxn.GroupRampActionEnum.EditGroup.name());\nSystem.assertEquals('EditRampSchedule', RevSalesTrxn.GroupRampActionEnum.EditRampSchedule.name());\nSystem.assertEquals('Skip', RevSalesTrxn.PersistPreferenceEnum.Skip.name());\nSystem.assertEquals('Force', RevSalesTrxn.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', RevSalesTrxn.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', RevSalesTrxn.PricingPreferenceEnum.System.name());\nSystem.assertEquals('Skip', RevSalesTrxn.TaxPreferenceEnum.Skip.name());\nSystem.assertEquals('RevSalesTrxn.PlaceSalesTransactionException', new RevSalesTrxn.PlaceSalesTransactionException().getTypeName());\nSystem.assertEquals('SF_Archive.ArchiverAccessorException', new SF_Archive.ArchiverAccessorException().getTypeName());\nSystem.assertEquals('001000000000001', new chatteranswers.AccountCreator().createAccount('Ada', 'Lovelace', UserInfo.getUserId()));\ncommerce_inventory.CommerceInventoryService inventoryService = new commerce_inventory.CommerceInventoryService();\ncommerce_inventory.InventoryLevelsResponse levels = inventoryService.getInventoryLevel(new commerce_inventory.InventoryLevelsRequest('LOCATION', new Set<commerce_inventory.InventoryLevelsItemRequest>()));\nSystem.assertNotEquals(null, levels);\nSystem.assertEquals(0, levels.getItemsInventoryLevels().size());\ncommerce_inventory.InventoryReservation reservation = inventoryService.getReservation('0aB000000000001AAA');\nSystem.assertNotEquals(null, reservation);\nSystem.assertEquals(0, reservation.getDurationInSeconds());\nSystem.assertEquals(0, reservation.getItems().size());\ncommerce_inventory.InventoryCheckAvailability availability = inventoryService.checkInventory(new commerce_inventory.InventoryCheckAvailability(new Set<commerce_inventory.InventoryCheckItemAvailability>()));\nSystem.assertNotEquals(null, availability);\nSystem.assertEquals(0, availability.getInventoryCheckItemAvailability().size());\ncommerce_ordermanagement.ProductExpandResponse expandResponse = new commerce_ordermanagement.ProductExpandService().returnReasons(new commerce_ordermanagement.ProductExpandRequest());\nSystem.assertNotEquals(null, expandResponse);\nSystem.assertEquals(null, expandResponse.getSucceed());\nSystem.assertEquals('Fetch', commerceorders.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', commerceorders.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('RunAndAllowErrors', commerceorders.ConfigurationInputEnum.RunAndAllowErrors.name());\nSystem.assertEquals('RunAndBlockErrors', commerceorders.ConfigurationInputEnum.RunAndBlockErrors.name());\nSystem.assertEquals('Skip', commerceorders.ConfigurationInputEnum.Skip.name());\nSystem.assertEquals('Force', commerceorders.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', commerceorders.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', commerceorders.PricingPreferenceEnum.System.name());\nSystem.assertEquals('commercepricing.PricingEngineException', new commercepricing.PricingEngineException().getTypeName());\nSystem.assertEquals('commercepromotions.PromotionApiException', new commercepromotions.PromotionApiException().getTypeName());\nSystem.assertEquals('Actual', commercetax.CalculateTaxType.Actual.name());\nSystem.assertEquals('Estimated', commercetax.CalculateTaxType.Estimated.name());\nSystem.assertEquals('CalculateTax', commercetax.RequestType.CalculateTax.name());\nSystem.assertEquals('ReferenceDocumentCodeMissing', commercetax.ResultCode.ReferenceDocumentCodeMissing.name());\nSystem.assertEquals('TaxEngineError', commercetax.ResultCode.TaxEngineError.name());\nSystem.assertEquals('Committed', commercetax.TaxTransactionStatus.Committed.name());\nSystem.assertEquals('Uncommitted', commercetax.TaxTransactionStatus.Uncommitted.name());\nSystem.assertEquals('Credit', commercetax.TaxTransactionType.Credit.name());\nSystem.assertEquals('Debit', commercetax.TaxTransactionType.Debit.name());\nSystem.assertEquals('Void', commercetax.TaxTransactionType.Void.name());\nSystem.assertEquals('[]', data_mask.DataMaskIntegrationUtil.getJobs());\nSystem.assertEquals('{}', data_mask.DataMaskIntegrationUtil.getRunLogResponse('job-local'));\nSystem.assertEquals('healthcloudext.ATMCRMAuthenticationPortalUserException', new healthcloudext.ATMCRMAuthenticationPortalUserException().getTypeName());\nSystem.assertEquals('healthcloudext.AppointmentManagementException', new healthcloudext.AppointmentManagementException().getTypeName());\nSystem.assertEquals('healthcloudext.BenefitsVerificationException', new healthcloudext.BenefitsVerificationException().getTypeName());\nSystem.assertEquals('healthcloudext.QuotasAndAllocationException', new healthcloudext.QuotasAndAllocationException().getTypeName());\nSystem.assertEquals('Canceled', healthcloudext.BookingStatus.Canceled.name());\nSystem.assertEquals('NoShow', healthcloudext.BookingStatus.NoShow.name());\nSystem.assertEquals('Proposed', healthcloudext.BookingStatus.Proposed.name());\nSystem.assertEquals('Rejected', healthcloudext.BookingStatus.Rejected.name());\nSystem.assertEquals('Scheduled', healthcloudext.BookingStatus.Scheduled.name());\nSystem.assertEquals('placequote.PlaceQuoteException', new placequote.PlaceQuoteException().getTypeName());\nSystem.assertEquals('Fetch', placequote.CatalogRatesPreferenceEnum.Fetch.name());\nSystem.assertEquals('Skip', placequote.CatalogRatesPreferenceEnum.Skip.name());\nSystem.assertEquals('RunAndAllowErrors', placequote.ConfigurationInputEnum.RunAndAllowErrors.name());\nSystem.assertEquals('RunAndBlockErrors', placequote.ConfigurationInputEnum.RunAndBlockErrors.name());\nSystem.assertEquals('Skip', placequote.ConfigurationInputEnum.Skip.name());\nSystem.assertEquals('Force', placequote.PricingPreferenceEnum.Force.name());\nSystem.assertEquals('Skip', placequote.PricingPreferenceEnum.Skip.name());\nSystem.assertEquals('System', placequote.PricingPreferenceEnum.System.name());\nSystem.assertEquals('EmailActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.EmailActivity.name());\nSystem.assertEquals('FormActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.FormActivity.name());\nSystem.assertEquals('WebPageActivity', sfdatakit.AccountEngagmentDataStreamTypeEnum.WebPageActivity.name());\nSystem.assertEquals('EmailActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.EmailActivity.name());\nSystem.assertEquals('FormActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.FormActivity.name());\nSystem.assertEquals('WebPageActivity', sfdatakit.DeployComponentBundleAccountEngagementConfig.AccountEngagmentDataStreamTypeEnum.WebPageActivity.name());\nSystem.assertEquals('Completed', sfdc_enablement.LearningItemProgressStatus.Completed.name());\nSystem.assertEquals('InProgress', sfdc_enablement.LearningItemProgressStatus.InProgress.name());\nSystem.assertEquals('NotStarted', sfdc_enablement.LearningItemProgressStatus.NotStarted.name());\n",
+      "path": "anonymous.apex"
+    }
+  ]
 }

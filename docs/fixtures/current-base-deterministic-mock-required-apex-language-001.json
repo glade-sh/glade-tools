@@ -1,0 +1,56 @@
+{
+  "name": "current-base-deterministic-mock-required-apex-language-001",
+  "proofObligation": "compile-shape-required",
+  "proofObligationReason": "The bound command is glade check and the evidence covers name/type resolution; runtime execution is not claimed.",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": true,
+  "notes": "Current-base lane current-base-deterministic-mock-required-apex-language-001: two uncovered Apex language rows with executable local precedence witnesses.",
+  "profile": {
+    "laneId": "current-base-deterministic-mock-required-apex-language-001",
+    "selectedRowCount": 2
+  },
+  "command": {
+    "kind": "check"
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/classes/Database.cls",
+      "content": "public class Database { public String query(String soql) { return 'local'; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/Shared.cls",
+      "content": "public class Shared { public String value; }"
+    },
+    {
+      "path": "force-app/main/default/classes/UsesPrecedence.cls",
+      "content": "public class UsesPrecedence { public void run() { Database Database = new Database(); String value = Database.query('SELECT Name FROM Account'); } }"
+    },
+    {
+      "path": "force-app/main/default/classes/UsesInnerPrecedence.cls",
+      "content": "public class UsesInnerPrecedence { public class Shared { public Integer value; } public void run(Object obj) { Integer value = ((Shared)obj).value; } }"
+    }
+  ],
+  "evidence": [
+    {
+      "surfaceId": "apex-language:NamespaceClassVariablePrecedence",
+      "symbol": "Apex namespace, class, and variable precedence",
+      "kind": "test",
+      "notes": "A local variable named Database resolves before the local class and the System.Database namespace."
+    },
+    {
+      "surfaceId": "apex-language:TypeResolutionSystemNamespace",
+      "symbol": "Apex type resolution and System namespace",
+      "kind": "test",
+      "notes": "An inner Shared type resolves before a top-level Shared type, while System.String remains explicitly qualified."
+    }
+  ],
+  "expected": {
+    "result": {
+      "ok": true,
+      "files": 4,
+      "types": 5,
+      "diagnostics": 0
+    }
+  }
+}

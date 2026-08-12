@@ -1,0 +1,77 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.Action",
+      "symbol": "workflow.Action"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.Action.Action()",
+      "symbol": "workflow.Action.Action()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.ActionDml",
+      "symbol": "workflow.ActionDml"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.ActionDml.ActionDml()",
+      "symbol": "workflow.ActionDml.ActionDml()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.Context",
+      "symbol": "workflow.Context"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.Context.Context()",
+      "symbol": "workflow.Context.Context()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.Context.clone()",
+      "symbol": "workflow.Context.clone()"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:workflow.Context.sobjects",
+      "symbol": "workflow.Context.sobjects"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-workflow-deterministic-mock-001-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-workflow-001: eight uncovered action and context rows.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
+    "laneId": "current-base-deterministic-mock-required-workflow-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 8,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves the local workflow action mock shape only; it does not claim hosted workflow execution.",
+  "source": [
+    {
+      "content": "@isTest private class CurrentBaseWorkflowDeterministic001Test { @isTest static void workflowDeterministic001Witness() { workflow.Action action = new workflow.Action(); System.assertEquals(0, action.invoke(null).size()); workflow.ActionDml dml = new workflow.ActionDml(); System.assertNotEquals(null, dml); dml.invoke(); workflow.Context context = new workflow.Context(); System.assertNotEquals(null, context); System.assertNotEquals(null, context.clone()); Object sobjects = context.sobjects; } }",
+      "path": "force-app/main/default/classes/CurrentBaseWorkflowDeterministic001Test.cls"
+    }
+  ]
+}

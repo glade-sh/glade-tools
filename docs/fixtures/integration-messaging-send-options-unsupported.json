@@ -2,12 +2,6 @@
   "name": "integration-messaging-send-options-unsupported",
   "evidence": [
     {
-      "surfaceId": "apex:Messaging.SendEmailOptions",
-      "symbol": "Messaging.SendEmailOptions",
-      "kind": "unsupported",
-      "notes": "Local send-options object behavior is not modeled."
-    },
-    {
       "symbol": "Messaging.sendEmail options overload",
       "kind": "exec",
       "notes": "The local sendEmail result model supports Boolean allOrNothing only; richer send options return UnsupportedFeature."

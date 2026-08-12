@@ -1,0 +1,573 @@
+{
+  "name": "core-runtime-exception-api67-safe-family-accessors",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.LicenseException.getCause()",
+      "symbol": "LicenseException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.getLineNumber()",
+      "symbol": "LicenseException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.getMessage()",
+      "symbol": "LicenseException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.getStackTraceString()",
+      "symbol": "LicenseException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.getTypeName()",
+      "symbol": "LicenseException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.setMessage(String)",
+      "symbol": "LicenseException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.getCause()",
+      "symbol": "LimitException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.getLineNumber()",
+      "symbol": "LimitException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.getMessage()",
+      "symbol": "LimitException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.getStackTraceString()",
+      "symbol": "LimitException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.getTypeName()",
+      "symbol": "LimitException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.setMessage(String)",
+      "symbol": "LimitException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.getCause()",
+      "symbol": "ListException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.getLineNumber()",
+      "symbol": "ListException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.getMessage()",
+      "symbol": "ListException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.getStackTraceString()",
+      "symbol": "ListException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.getTypeName()",
+      "symbol": "ListException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.setMessage(String)",
+      "symbol": "ListException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.getCause()",
+      "symbol": "NoSuchElementException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.getLineNumber()",
+      "symbol": "NoSuchElementException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.getMessage()",
+      "symbol": "NoSuchElementException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.getStackTraceString()",
+      "symbol": "NoSuchElementException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.getTypeName()",
+      "symbol": "NoSuchElementException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.setMessage(String)",
+      "symbol": "NoSuchElementException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.getCause()",
+      "symbol": "PlatformCacheException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.getLineNumber()",
+      "symbol": "PlatformCacheException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.getMessage()",
+      "symbol": "PlatformCacheException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.getStackTraceString()",
+      "symbol": "PlatformCacheException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.getTypeName()",
+      "symbol": "PlatformCacheException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.setMessage(String)",
+      "symbol": "PlatformCacheException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.getCause()",
+      "symbol": "PolyglotException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.getLineNumber()",
+      "symbol": "PolyglotException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.getMessage()",
+      "symbol": "PolyglotException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.getStackTraceString()",
+      "symbol": "PolyglotException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.getTypeName()",
+      "symbol": "PolyglotException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.setMessage(String)",
+      "symbol": "PolyglotException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.QueryException.getCause()",
+      "symbol": "QueryException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.QueryException.setMessage(String)",
+      "symbol": "QueryException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.getCause()",
+      "symbol": "RequiredFeatureMissingException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.getLineNumber()",
+      "symbol": "RequiredFeatureMissingException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.getMessage()",
+      "symbol": "RequiredFeatureMissingException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.getStackTraceString()",
+      "symbol": "RequiredFeatureMissingException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.getTypeName()",
+      "symbol": "RequiredFeatureMissingException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.setMessage(String)",
+      "symbol": "RequiredFeatureMissingException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.getCause()",
+      "symbol": "SObjectException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.getLineNumber()",
+      "symbol": "SObjectException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.getMessage()",
+      "symbol": "SObjectException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.getStackTraceString()",
+      "symbol": "SObjectException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.getTypeName()",
+      "symbol": "SObjectException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.setMessage(String)",
+      "symbol": "SObjectException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.getCause()",
+      "symbol": "SearchException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.getLineNumber()",
+      "symbol": "SearchException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.getMessage()",
+      "symbol": "SearchException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.getStackTraceString()",
+      "symbol": "SearchException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.getTypeName()",
+      "symbol": "SearchException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.setMessage(String)",
+      "symbol": "SearchException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.getCause()",
+      "symbol": "SecurityException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.getLineNumber()",
+      "symbol": "SecurityException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.getMessage()",
+      "symbol": "SecurityException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.getStackTraceString()",
+      "symbol": "SecurityException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.getTypeName()",
+      "symbol": "SecurityException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.setMessage(String)",
+      "symbol": "SecurityException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.getCause()",
+      "symbol": "SerializationException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.getLineNumber()",
+      "symbol": "SerializationException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.getMessage()",
+      "symbol": "SerializationException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.getStackTraceString()",
+      "symbol": "SerializationException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.getTypeName()",
+      "symbol": "SerializationException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.setMessage(String)",
+      "symbol": "SerializationException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.getCause()",
+      "symbol": "StringException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.getLineNumber()",
+      "symbol": "StringException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.getMessage()",
+      "symbol": "StringException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.getStackTraceString()",
+      "symbol": "StringException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.getTypeName()",
+      "symbol": "StringException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.setMessage(String)",
+      "symbol": "StringException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.getCause()",
+      "symbol": "TransientCursorException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.getLineNumber()",
+      "symbol": "TransientCursorException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.getMessage()",
+      "symbol": "TransientCursorException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.getStackTraceString()",
+      "symbol": "TransientCursorException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.getTypeName()",
+      "symbol": "TransientCursorException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.setMessage(String)",
+      "symbol": "TransientCursorException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.getCause()",
+      "symbol": "TypeException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.getLineNumber()",
+      "symbol": "TypeException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.getMessage()",
+      "symbol": "TypeException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.getStackTraceString()",
+      "symbol": "TypeException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.getTypeName()",
+      "symbol": "TypeException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.setMessage(String)",
+      "symbol": "TypeException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.getCause()",
+      "symbol": "UnexpectedException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.getLineNumber()",
+      "symbol": "UnexpectedException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.getMessage()",
+      "symbol": "UnexpectedException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.getStackTraceString()",
+      "symbol": "UnexpectedException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.getTypeName()",
+      "symbol": "UnexpectedException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.setMessage(String)",
+      "symbol": "UnexpectedException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnsupportedOperationException.getTypeName()",
+      "symbol": "UnsupportedOperationException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.getCause()",
+      "symbol": "VisualforceException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.getLineNumber()",
+      "symbol": "VisualforceException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.getMessage()",
+      "symbol": "VisualforceException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.getStackTraceString()",
+      "symbol": "VisualforceException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.getTypeName()",
+      "symbol": "VisualforceException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.VisualforceException.setMessage(String)",
+      "symbol": "VisualforceException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.getCause()",
+      "symbol": "WaveTemplateException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.getLineNumber()",
+      "symbol": "WaveTemplateException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.getMessage()",
+      "symbol": "WaveTemplateException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.getStackTraceString()",
+      "symbol": "WaveTemplateException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.getTypeName()",
+      "symbol": "WaveTemplateException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.WaveTemplateException.setMessage(String)",
+      "symbol": "WaveTemplateException.setMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.getCause()",
+      "symbol": "XmlException.getCause",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.getLineNumber()",
+      "symbol": "XmlException.getLineNumber",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.getMessage()",
+      "symbol": "XmlException.getMessage",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.getStackTraceString()",
+      "symbol": "XmlException.getStackTraceString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.getTypeName()",
+      "symbol": "XmlException.getTypeName",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.setMessage(String)",
+      "symbol": "XmlException.setMessage",
+      "kind": "exec"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "LicenseException ex0 = new LicenseException('license message');\nSystem.assertEquals('license message', ex0.getMessage());\nSystem.assertNotEquals(null, ex0.getTypeName());\nSystem.assert(ex0.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex0.getStackTraceString());\nSystem.assertEquals(null, ex0.getCause());\nex0.setMessage('changed license');\nSystem.assertEquals('changed license', ex0.getMessage());\nLimitException ex1 = new LimitException('limit message');\nSystem.assertEquals('limit message', ex1.getMessage());\nSystem.assertNotEquals(null, ex1.getTypeName());\nSystem.assert(ex1.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex1.getStackTraceString());\nSystem.assertEquals(null, ex1.getCause());\nex1.setMessage('changed limit');\nSystem.assertEquals('changed limit', ex1.getMessage());\nListException ex2 = new ListException('list message');\nSystem.assertEquals('list message', ex2.getMessage());\nSystem.assertNotEquals(null, ex2.getTypeName());\nSystem.assert(ex2.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex2.getStackTraceString());\nSystem.assertEquals(null, ex2.getCause());\nex2.setMessage('changed list');\nSystem.assertEquals('changed list', ex2.getMessage());\nNoSuchElementException ex5 = new NoSuchElementException('nosuchelement message');\nSystem.assertEquals('nosuchelement message', ex5.getMessage());\nSystem.assertNotEquals(null, ex5.getTypeName());\nSystem.assert(ex5.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex5.getStackTraceString());\nSystem.assertEquals(null, ex5.getCause());\nex5.setMessage('changed nosuchelement');\nSystem.assertEquals('changed nosuchelement', ex5.getMessage());\nPlatformCacheException ex7 = new PlatformCacheException('platformcache message');\nSystem.assertEquals('platformcache message', ex7.getMessage());\nSystem.assertNotEquals(null, ex7.getTypeName());\nSystem.assert(ex7.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex7.getStackTraceString());\nSystem.assertEquals(null, ex7.getCause());\nex7.setMessage('changed platformcache');\nSystem.assertEquals('changed platformcache', ex7.getMessage());\nPolyglotException ex8 = new PolyglotException('polyglot message');\nSystem.assertEquals('polyglot message', ex8.getMessage());\nSystem.assertNotEquals(null, ex8.getTypeName());\nSystem.assert(ex8.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex8.getStackTraceString());\nSystem.assertEquals(null, ex8.getCause());\nex8.setMessage('changed polyglot');\nSystem.assertEquals('changed polyglot', ex8.getMessage());\nQueryException ex10 = new QueryException('query message');\nSystem.assertEquals('query message', ex10.getMessage());\nSystem.assertNotEquals(null, ex10.getTypeName());\nSystem.assert(ex10.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex10.getStackTraceString());\nSystem.assertEquals(null, ex10.getCause());\nex10.setMessage('changed query');\nSystem.assertEquals('changed query', ex10.getMessage());\nRequiredFeatureMissingException ex11 = new RequiredFeatureMissingException('requiredfeaturemissing message');\nSystem.assertEquals('requiredfeaturemissing message', ex11.getMessage());\nSystem.assertNotEquals(null, ex11.getTypeName());\nSystem.assert(ex11.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex11.getStackTraceString());\nSystem.assertEquals(null, ex11.getCause());\nex11.setMessage('changed requiredfeaturemissing');\nSystem.assertEquals('changed requiredfeaturemissing', ex11.getMessage());\nSObjectException ex12 = new SObjectException('sobject message');\nSystem.assertEquals('sobject message', ex12.getMessage());\nSystem.assertNotEquals(null, ex12.getTypeName());\nSystem.assert(ex12.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex12.getStackTraceString());\nSystem.assertEquals(null, ex12.getCause());\nex12.setMessage('changed sobject');\nSystem.assertEquals('changed sobject', ex12.getMessage());\nSearchException ex13 = new SearchException('search message');\nSystem.assertEquals('search message', ex13.getMessage());\nSystem.assertNotEquals(null, ex13.getTypeName());\nSystem.assert(ex13.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex13.getStackTraceString());\nSystem.assertEquals(null, ex13.getCause());\nex13.setMessage('changed search');\nSystem.assertEquals('changed search', ex13.getMessage());\nSecurityException ex14 = new SecurityException('security message');\nSystem.assertEquals('security message', ex14.getMessage());\nSystem.assertNotEquals(null, ex14.getTypeName());\nSystem.assert(ex14.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex14.getStackTraceString());\nSystem.assertEquals(null, ex14.getCause());\nex14.setMessage('changed security');\nSystem.assertEquals('changed security', ex14.getMessage());\nSerializationException ex15 = new SerializationException('serialization message');\nSystem.assertEquals('serialization message', ex15.getMessage());\nSystem.assertNotEquals(null, ex15.getTypeName());\nSystem.assert(ex15.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex15.getStackTraceString());\nSystem.assertEquals(null, ex15.getCause());\nex15.setMessage('changed serialization');\nSystem.assertEquals('changed serialization', ex15.getMessage());\nStringException ex16 = new StringException('string message');\nSystem.assertEquals('string message', ex16.getMessage());\nSystem.assertNotEquals(null, ex16.getTypeName());\nSystem.assert(ex16.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex16.getStackTraceString());\nSystem.assertEquals(null, ex16.getCause());\nex16.setMessage('changed string');\nSystem.assertEquals('changed string', ex16.getMessage());\nTransientCursorException ex18 = new TransientCursorException('transientcursor message');\nSystem.assertEquals('transientcursor message', ex18.getMessage());\nSystem.assertNotEquals(null, ex18.getTypeName());\nSystem.assert(ex18.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex18.getStackTraceString());\nSystem.assertEquals(null, ex18.getCause());\nex18.setMessage('changed transientcursor');\nSystem.assertEquals('changed transientcursor', ex18.getMessage());\nTypeException ex19 = new TypeException('type message');\nSystem.assertEquals('type message', ex19.getMessage());\nSystem.assertNotEquals(null, ex19.getTypeName());\nSystem.assert(ex19.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex19.getStackTraceString());\nSystem.assertEquals(null, ex19.getCause());\nex19.setMessage('changed type');\nSystem.assertEquals('changed type', ex19.getMessage());\nUnexpectedException ex20 = new UnexpectedException('unexpected message');\nSystem.assertEquals('unexpected message', ex20.getMessage());\nSystem.assertNotEquals(null, ex20.getTypeName());\nSystem.assert(ex20.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex20.getStackTraceString());\nSystem.assertEquals(null, ex20.getCause());\nex20.setMessage('changed unexpected');\nSystem.assertEquals('changed unexpected', ex20.getMessage());\nUnsupportedOperationException ex21 = new UnsupportedOperationException('unsupportedoperation message');\nSystem.assertNotEquals(null, ex21.getTypeName());\nVisualforceException ex22 = new VisualforceException('visualforce message');\nSystem.assertEquals('visualforce message', ex22.getMessage());\nSystem.assertNotEquals(null, ex22.getTypeName());\nSystem.assert(ex22.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex22.getStackTraceString());\nSystem.assertEquals(null, ex22.getCause());\nex22.setMessage('changed visualforce');\nSystem.assertEquals('changed visualforce', ex22.getMessage());\nWaveTemplateException ex23 = new WaveTemplateException('wavetemplate message');\nSystem.assertEquals('wavetemplate message', ex23.getMessage());\nSystem.assertNotEquals(null, ex23.getTypeName());\nSystem.assert(ex23.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex23.getStackTraceString());\nSystem.assertEquals(null, ex23.getCause());\nex23.setMessage('changed wavetemplate');\nSystem.assertEquals('changed wavetemplate', ex23.getMessage());\nXmlException ex24 = new XmlException('xml message');\nSystem.assertEquals('xml message', ex24.getMessage());\nSystem.assertNotEquals(null, ex24.getTypeName());\nSystem.assert(ex24.getLineNumber() >= 0);\nSystem.assertNotEquals(null, ex24.getStackTraceString());\nSystem.assertEquals(null, ex24.getCause());\nex24.setMessage('changed xml');\nSystem.assertEquals('changed xml', ex24.getMessage());\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "notes": "API 67 dual-oracle subset: excludes context-bound exception constructors, initCause methods not present on all exception types, and getInaccessibleFields behavior that Salesforce restricts to query exceptions."
+}

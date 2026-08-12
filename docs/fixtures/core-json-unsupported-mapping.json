@@ -1,12 +1,5 @@
 {
   "name": "core-json-unsupported-mapping",
-  "evidence": [
-    {
-      "symbol": "JSON.deserialize",
-      "kind": "exec",
-      "notes": "Unregistered class/SObject targets return a typed UnsupportedFeature diagnostic instead of inventing mapping parity."
-    }
-  ],
   "source": [
     {
       "path": "anonymous.apex",

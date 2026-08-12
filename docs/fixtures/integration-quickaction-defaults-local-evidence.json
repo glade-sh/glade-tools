@@ -2,12 +2,6 @@
   "name": "integration-quickaction-defaults-local-evidence",
   "evidence": [
     {
-      "surfaceId": "apex:System.QuickAction.describeAvailableActions(String)",
-      "symbol": "QuickAction.describeAvailableActions",
-      "kind": "exec",
-      "notes": "Quick action discovery returns deterministic local metadata DTOs without live UI action service execution."
-    },
-    {
       "surfaceId": "apex:System.QuickAction.describeQuickActions(List<String>)",
       "symbol": "QuickAction.describeQuickActions",
       "kind": "exec",

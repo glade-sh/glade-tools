@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "release": "Spring '26",
+  "apiVersion": "66.0",
+  "digest": "5027360634685096ec3144da477673445270c58f510b604346b11fdcfaf7d22e",
+  "acquisition": "glade-tools owned six-family docs scrape, Atlas Spring 260.0",
+  "sourceFamilies": [
+    "apex-reference",
+    "aura-reference",
+    "lwc-reference",
+    "rest-api-reference",
+    "tooling-api-reference",
+    "visualforce-reference"
+  ]
+}

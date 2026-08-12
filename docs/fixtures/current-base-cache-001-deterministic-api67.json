@@ -1,0 +1,71 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:Cache.CacheBuilder",
+      "symbol": "Cache.CacheBuilder"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Cache.CacheBuilder.doLoad(String)",
+      "symbol": "Cache.CacheBuilder.doLoad(String)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Cache.PlatformCacheDelegateWrapper",
+      "symbol": "Cache.PlatformCacheDelegateWrapper"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Cache.ScanResult",
+      "symbol": "Cache.ScanResult"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Cache.SecondaryKeyApi",
+      "symbol": "Cache.SecondaryKeyApi"
+    },
+    {
+      "kind": "test",
+      "notes": "The executable uses the Cache platform namespace through the default System platform surface; no hosted cache service is claimed.",
+      "surfaceId": "apex:System.Cache",
+      "symbol": "System.Cache"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-cache-001-deterministic-api67",
+  "notes": "Current-base lane current-base-deterministic-mock-required-Cache-001: CacheBuilder callback shape, delegate construction, ScanResult construction, and SecondaryKeyApi construction are deterministic local contracts.",
+  "profile": {
+    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
+    "laneId": "current-base-deterministic-mock-required-Cache-001",
+    "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
+    "selectedRowCount": 6,
+    "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses Glade's local Cache builder and scan DTO boundaries only and makes no hosted Platform Cache parity claim.",
+  "source": [
+    {
+      "content": "public class CurrentBaseCache001Builder implements Cache.CacheBuilder { public Object doLoad(String key) { return 'loaded:' + key; } }",
+      "path": "force-app/main/default/classes/CurrentBaseCache001Builder.cls"
+    },
+    {
+      "content": "@isTest private class CurrentBaseCache001DeterministicTest { @isTest static void cacheContracts() { CurrentBaseCache001Builder builder = new CurrentBaseCache001Builder(); System.assertEquals('loaded:probe', builder.doLoad('probe')); Cache.PlatformCacheDelegateWrapper delegate = new Cache.PlatformCacheDelegateWrapper(); System.assertNotEquals(null, delegate); System.assertNotEquals(null, delegate.clone()); Map<String,Object> values = new Map<String,Object>(); values.put('key', 'value'); Cache.ScanResult scan = new Cache.ScanResult(values, 'locator', true); System.assertNotEquals(null, scan); Cache.SecondaryKeyApi secondary = new Cache.SecondaryKeyApi(); System.assertNotEquals(null, secondary); } }",
+      "path": "force-app/main/default/classes/CurrentBaseCache001DeterministicTest.cls"
+    }
+  ]
+}

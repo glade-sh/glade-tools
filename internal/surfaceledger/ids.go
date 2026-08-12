@@ -143,7 +143,7 @@ func canonicalApexQualifiedParts(namespace, typeName string) (string, string) {
 			namespace = "Schema"
 		case "QueryLocator", "QueryLocatorChunkIterator", "QueryLocatorIterator", "DeleteResult", "DMLOptions", "EmptyRecycleBinResult", "Error", "SaveResult", "UndeleteResult", "UpsertResult":
 			namespace = "Database"
-		case "Answers", "Approval", "BusinessHours", "Ideas", "QueueableDuplicateSignature", "QueueableDuplicateSignature.Builder":
+		case "Answers", "Approval", "BusinessHours", "Ideas", "PushUpgradeCustomizationRepository", "QueueableDuplicateSignature", "QueueableDuplicateSignature.Builder":
 			namespace = ""
 		}
 	}
@@ -152,6 +152,17 @@ func canonicalApexQualifiedParts(namespace, typeName string) (string, string) {
 
 func canonicalApexMemberParameters(namespace, typeName, memberName string, parameters []string) []string {
 	out := cleanList(parameters)
+	if namespace == "System" && typeName == "EventBus" && canonicalApexMemberName(memberName) == "publishWithAccessLevel" {
+		return canonicalEventBusAccessLevelParameters(parameters)
+	}
+	if namespace == "" && typeName == "BusinessHours" {
+		switch memberName {
+		case "add", "addGmt", "nextStartDate":
+			if len(out) > 0 && out[0] == "String" {
+				out[0] = "Id"
+			}
+		}
+	}
 	if namespace == "" && (typeName == "Answers" || typeName == "Ideas") && memberName == "findSimilar" {
 		if len(out) > 0 && (out[0] == "Question" || out[0] == "Idea") {
 			out[0] = "Object"
@@ -180,6 +191,35 @@ func canonicalApexMemberParameters(namespace, typeName, memberName string, param
 	return out
 }
 
+func canonicalEventBusAccessLevelParameters(parameters []string) []string {
+	spellings := make([]string, 0, len(parameters))
+	for _, parameter := range parameters {
+		parameter = cleanIdentityPart(parameter)
+		if parameter != "" {
+			spellings = append(spellings, parameter)
+		}
+	}
+	switch strings.ToLower(strings.Join(spellings, ",")) {
+	case "sobject,accesslevel":
+		return []string{"SObject", "AccessLevel"}
+	case "sobject,object,accesslevel":
+		return []string{"SObject", "Object", "AccessLevel"}
+	case "list<sobject>,accesslevel":
+		return []string{"List<SObject>", "AccessLevel"}
+	case "list<sobject>,object,accesslevel":
+		return []string{"List<SObject>", "Object", "AccessLevel"}
+	case "object,object":
+		return []string{"SObject", "AccessLevel"}
+	case "object,object,object":
+		return []string{"SObject", "Object", "AccessLevel"}
+	case "list<object>,object":
+		return []string{"List<SObject>", "AccessLevel"}
+	case "list<object>,object,object":
+		return []string{"List<SObject>", "Object", "AccessLevel"}
+	}
+	return cleanList(parameters)
+}
+
 func canonicalApexNamespaceName(namespace string) string {
 	namespace = cleanIdentityPart(namespace)
 	if known, ok := canonicalKnownApexName(namespace, canonicalApexNamespaces); ok {
@@ -200,6 +240,9 @@ func surfaceIDKey(id string) string {
 	id = cleanIdentityPart(id)
 	if strings.HasPrefix(id, "apex:") {
 		rest := strings.TrimPrefix(id, "apex:")
+		if rest == "System.Schema" || strings.HasPrefix(rest, "System.Schema.") {
+			rest = "Schema.Schema" + strings.TrimPrefix(rest, "System.Schema")
+		}
 		if strings.HasPrefix(rest, "System.QueryLocator") {
 			rest = "Database.QueryLocator" + strings.TrimPrefix(rest, "System.QueryLocator")
 		}
@@ -233,7 +276,13 @@ func canonicalApexIDParameterList(rest string) string {
 		return rest
 	}
 	params := rest[open+1 : len(rest)-1]
-	return rest[:open+1] + strings.Join(cleanList(splitSurfaceParameterList(params)), ",") + ")"
+	parameterTypes := splitSurfaceParameterList(params)
+	if strings.EqualFold(rest[:open], "System.EventBus.publishWithAccessLevel") {
+		parameterTypes = canonicalEventBusAccessLevelParameters(parameterTypes)
+	} else {
+		parameterTypes = cleanList(parameterTypes)
+	}
+	return rest[:open+1] + strings.Join(parameterTypes, ",") + ")"
 }
 
 func canonicalApexIDConstructorName(rest string) string {

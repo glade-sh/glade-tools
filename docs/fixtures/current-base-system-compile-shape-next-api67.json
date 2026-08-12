@@ -1,0 +1,180 @@
+{
+  "name": "current-base-system-compile-shape-next-api67",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "if (false) {\nObject cbValue001 = (Ideas)null;\nObject cbValue002 = new Ideas();\nObject cbValue003 = ((Ideas)null).clone();\nIdeas.markRead((String)null);\nObject cbValue028 = System.CallbackStatus.CANCELLED;\nObject cbValue029 = System.CallbackStatus.COMPLETED;\nObject cbValue030 = System.CallbackStatus.PENDING;\nObject cbValue031 = System.CallbackStatus.TIMED_OUT;\nObject cbValue035 = ((System.Continuation)null).continuationMethod;\nObject cbValue037 = ((System.Continuation)null).timeout;\nObject cbValue046 = System.DomainType.CMS_DOMAIN;\nObject cbValue047 = System.DomainType.CONTENT_DOMAIN;\nObject cbValue048 = System.DomainType.CUSTOMER_360_ADMIN_DOMAIN;\nObject cbValue049 = System.DomainType.CUSTOMER_360_DOMAIN;\nObject cbValue050 = System.DomainType.EXPERIENCE_CLOUD_SITES_BUILDER_DOMAIN;\nObject cbValue051 = System.DomainType.EXPERIENCE_CLOUD_SITES_DOMAIN;\nObject cbValue052 = System.DomainType.EXPERIENCE_CLOUD_SITES_LIVE_PREVIEW_DOMAIN;\nObject cbValue053 = System.DomainType.EXPERIENCE_CLOUD_SITES_PREVIEW_DOMAIN;\nObject cbValue054 = System.DomainType.LIGHTNING_CONTAINER_COMPONENT_DOMAIN;\nObject cbValue055 = System.DomainType.LIGHTNING_DOMAIN;\nObject cbValue056 = System.DomainType.ORG_MY_DOMAIN;\nObject cbValue057 = System.DomainType.SALESFORCE_SITES_DOMAIN;\nObject cbValue058 = System.DomainType.SETUP_DOMAIN;\nObject cbValue059 = System.DomainType.VISUALFORCE_DOMAIN;\nObject cbValue100 = ((System.ResetPasswordResult)null).password;\nObject cbValue101 = System.SetupScope.ORGANIZATION;\nObject cbValue102 = System.SetupScope.PROFILE;\nObject cbValue103 = System.SetupScope.USER;\nObject cbValue104 = System.SupportPredictiveService.findSimilarCases((String)null);\nObject cbValue108 = System.WebServiceCallout.beginInvoke((Object)null, (Object)null, (Object)null, (Object)null, (List<Object>)null);\nObject cbValue109 = System.WebServiceCallout.endInvoke((Object)null);\nObject cbValue011 = (System.ApplicationReadWriteMode)null;\nObject cbValue105 = (System.TracerSpan)null;\n}"
+    ]
+  },
+  "expected": {},
+  "evidence": [
+    {
+      "surfaceId": "apex:Ideas",
+      "symbol": "Ideas",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:Ideas.Ideas()",
+      "symbol": "Ideas.Ideas()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:Ideas.clone()",
+      "symbol": "Ideas.clone()",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:Ideas.markRead(String)",
+      "symbol": "Ideas.markRead(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.CANCELLED",
+      "symbol": "System.CallbackStatus.CANCELLED",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.COMPLETED",
+      "symbol": "System.CallbackStatus.COMPLETED",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.PENDING",
+      "symbol": "System.CallbackStatus.PENDING",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.CallbackStatus.TIMED_OUT",
+      "symbol": "System.CallbackStatus.TIMED_OUT",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.continuationMethod",
+      "symbol": "System.Continuation.continuationMethod",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.Continuation.timeout",
+      "symbol": "System.Continuation.timeout",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.CMS_DOMAIN",
+      "symbol": "System.DomainType.CMS_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.CONTENT_DOMAIN",
+      "symbol": "System.DomainType.CONTENT_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.CUSTOMER_360_ADMIN_DOMAIN",
+      "symbol": "System.DomainType.CUSTOMER_360_ADMIN_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.CUSTOMER_360_DOMAIN",
+      "symbol": "System.DomainType.CUSTOMER_360_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_BUILDER_DOMAIN",
+      "symbol": "System.DomainType.EXPERIENCE_CLOUD_SITES_BUILDER_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_DOMAIN",
+      "symbol": "System.DomainType.EXPERIENCE_CLOUD_SITES_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_LIVE_PREVIEW_DOMAIN",
+      "symbol": "System.DomainType.EXPERIENCE_CLOUD_SITES_LIVE_PREVIEW_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.EXPERIENCE_CLOUD_SITES_PREVIEW_DOMAIN",
+      "symbol": "System.DomainType.EXPERIENCE_CLOUD_SITES_PREVIEW_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.LIGHTNING_CONTAINER_COMPONENT_DOMAIN",
+      "symbol": "System.DomainType.LIGHTNING_CONTAINER_COMPONENT_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.LIGHTNING_DOMAIN",
+      "symbol": "System.DomainType.LIGHTNING_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.ORG_MY_DOMAIN",
+      "symbol": "System.DomainType.ORG_MY_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.SALESFORCE_SITES_DOMAIN",
+      "symbol": "System.DomainType.SALESFORCE_SITES_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.SETUP_DOMAIN",
+      "symbol": "System.DomainType.SETUP_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.DomainType.VISUALFORCE_DOMAIN",
+      "symbol": "System.DomainType.VISUALFORCE_DOMAIN",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ResetPasswordResult.password",
+      "symbol": "System.ResetPasswordResult.password",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.ORGANIZATION",
+      "symbol": "System.SetupScope.ORGANIZATION",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.PROFILE",
+      "symbol": "System.SetupScope.PROFILE",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SetupScope.USER",
+      "symbol": "System.SetupScope.USER",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.SupportPredictiveService.findSimilarCases(String)",
+      "symbol": "System.SupportPredictiveService.findSimilarCases(String)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCallout.beginInvoke(Object,Object,Object,Object,List)",
+      "symbol": "System.WebServiceCallout.beginInvoke(Object,Object,Object,Object,List)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.WebServiceCallout.endInvoke(Object)",
+      "symbol": "System.WebServiceCallout.endInvoke(Object)",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.ApplicationReadWriteMode",
+      "symbol": "System.ApplicationReadWriteMode",
+      "kind": "shape"
+    },
+    {
+      "surfaceId": "apex:System.TracerSpan",
+      "symbol": "System.TracerSpan",
+      "kind": "shape"
+    }
+  ],
+  "notes": "API 67 dual-oracle compile-shape coverage for 33 System surfaces where both local and Salesforce compiled in the isolated next packet."
+}

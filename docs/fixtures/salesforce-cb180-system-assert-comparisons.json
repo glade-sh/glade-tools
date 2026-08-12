@@ -1,0 +1,29 @@
+{
+  "comparisons": [
+    {
+      "caseId": "cb180-system-assert-positive-overloads",
+      "status": "pass",
+      "surfaceIds": [
+        "apex:System.Assert.areEqual(Object,Object)",
+        "apex:System.Assert.areEqual(Object,Object,String)",
+        "apex:System.Assert.areNotEqual(Object,Object)",
+        "apex:System.Assert.areNotEqual(Object,Object,String)",
+        "apex:System.Assert.isFalse(Boolean)",
+        "apex:System.Assert.isFalse(Boolean,String)",
+        "apex:System.Assert.isTrue(Boolean)",
+        "apex:System.Assert.isTrue(Boolean,String)",
+        "apex:System.Assert.isNotNull(Object)",
+        "apex:System.Assert.isNotNull(Object,String)",
+        "apex:System.Assert.isNull(Object)",
+        "apex:System.Assert.isNull(Object,String)",
+        "apex:System.Assert.isInstanceOfType(Object,Type)",
+        "apex:System.Assert.isInstanceOfType(Object,Type,String)",
+        "apex:System.Assert.isNotInstanceOfType(Object,Type)",
+        "apex:System.Assert.isNotInstanceOfType(Object,Type,String)"
+      ],
+      "expectedObservation": "Boolean true for every positive assertion",
+      "sfObservation": "Boolean true on API 67.0 anonymous Apex",
+      "gladeObservation": "Boolean true from the exact c98ea2b5 candidate"
+    }
+  ]
+}
