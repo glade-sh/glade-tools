@@ -29,6 +29,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/salesforce-correctness-evidence"
           printf '%s\n' "Salesforce correctness workflow started." \
             > "$RUNNER_TEMP/salesforce-correctness-evidence/workflow-started.txt"
+          scratch_identity="glade-correctness-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "SF_SCRATCH_ALIAS=$scratch_identity" >> "$GITHUB_ENV"
+          echo "SF_SCRATCH_MARKER=$scratch_identity" >> "$GITHUB_ENV"
       - name: Validate glade commit input
         env:
           GLADE_SHA: ${{ inputs.glade_sha }}
@@ -97,11 +100,23 @@ jobs:
           chmod 600 "$AUTH_FILE"
           if ! sf org login sfdx-url \
             --sfdx-url-file "$AUTH_FILE" \
-            --alias glade-salesforce-correctness \
+            --alias glade-dev-hub \
             --json > "$LOGIN_RESULT" 2> "$LOGIN_ERROR"; then
             echo "Salesforce authentication failed." >&2
             exit 1
           fi
+      - name: Create scratch org
+        run: |
+          set -euo pipefail
+          definition="$RUNNER_TEMP/scratch-def.json"
+          printf '%s\n' '{"orgName":"Glade Salesforce Correctness","edition":"Developer"}' > "$definition"
+          sf org create scratch \
+            --target-dev-hub glade-dev-hub \
+            --definition-file "$definition" \
+            --alias "$SF_SCRATCH_ALIAS" \
+            --name "$SF_SCRATCH_MARKER" \
+            --duration-days 1 \
+            --json > "$RUNNER_TEMP/salesforce-correctness-evidence/org-create.json"
       - name: Build glade-tools
         run: |
           go build -o "$RUNNER_TEMP/glade-tools" ./cmd/glade-tools
@@ -112,8 +127,99 @@ jobs:
             "$TOOLS_BIN" \
             "$(realpath ../glade)" \
             "$GLADE_CANDIDATE" \
-            glade-salesforce-correctness \
+            "$SF_SCRATCH_ALIAS" \
             "$RUNNER_TEMP/salesforce-correctness-evidence/gate"
+      - name: Delete scratch org
+        if: always()
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/salesforce-correctness-evidence"
+
+          set +e
+          sf org delete scratch \
+            --target-org "$SF_SCRATCH_ALIAS" \
+            --no-prompt \
+            --json > "$evidence/org-cleanup.json" 2>&1
+          set -e
+
+          scratch_query="SELECT Id, ScratchOrg, SignupUsername, Status FROM ScratchOrgInfo WHERE OrgName = '$SF_SCRATCH_MARKER'"
+          request_status="NONE"
+          scratch_org="-"
+          for poll in {1..12}; do
+            scratch_info="$evidence/scratch-org-info-$poll.json"
+            sf data query --target-org glade-dev-hub --query "$scratch_query" --json > "$scratch_info"
+            read -r request_status scratch_org < <(python3 - "$scratch_info" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1]))
+          records = payload.get("result", {}).get("records", [])
+          if payload.get("status") != 0 or payload.get("result", {}).get("totalSize") != len(records) or len(records) > 1:
+              raise SystemExit("invalid ScratchOrgInfo marker result")
+          if not records:
+              print("NONE -")
+              raise SystemExit
+          row = records[0]
+          if not re.fullmatch(r"2SR[0-9A-Za-z]{12}(?:[0-9A-Za-z]{3})?", row.get("Id", "")) or not row.get("Status"):
+              raise SystemExit("invalid ScratchOrgInfo identity")
+          org = row.get("ScratchOrg") or "-"
+          if org != "-" and not re.fullmatch(r"00D[0-9A-Za-z]{12}(?:[0-9A-Za-z]{3})?", org):
+              raise SystemExit("invalid scratch org identity")
+          print(row["Status"], org)
+          PY
+            )
+            if [[ "$scratch_org" != "-" || "$request_status" == "Error" ]]; then
+              break
+            fi
+            if [[ "$poll" -lt 12 ]]; then
+              sleep 5
+            fi
+          done
+
+          if [[ "$scratch_org" != "-" ]]; then
+            active_query="SELECT Id, ScratchOrg FROM ActiveScratchOrg WHERE ScratchOrg = '$scratch_org'"
+            sf data query --target-org glade-dev-hub --query "$active_query" --json \
+              > "$evidence/active-scratch-org.json"
+            active_id="$(python3 - "$evidence/active-scratch-org.json" "$scratch_org" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1]))
+          records = payload.get("result", {}).get("records", [])
+          if payload.get("status") != 0 or payload.get("result", {}).get("totalSize") != len(records) or len(records) > 1:
+              raise SystemExit("invalid ActiveScratchOrg result")
+          if not records:
+              print("-")
+              raise SystemExit
+          row = records[0]
+          if row.get("ScratchOrg") != sys.argv[2] or not re.fullmatch(r"2AS[0-9A-Za-z]{12}(?:[0-9A-Za-z]{3})?", row.get("Id", "")):
+              raise SystemExit("invalid ActiveScratchOrg identity")
+          print(row["Id"])
+          PY
+          )"
+            if [[ "$active_id" != "-" ]]; then
+              sf data delete record --target-org glade-dev-hub \
+                --sobject ActiveScratchOrg --record-id "$active_id" --json \
+                > "$evidence/active-scratch-org-cleanup.json"
+            fi
+            sf data query --target-org glade-dev-hub --query "$active_query" --json \
+              > "$evidence/active-scratch-org-post-cleanup.json"
+            python3 - "$evidence/active-scratch-org-post-cleanup.json" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1]))
+          records = payload.get("result", {}).get("records", [])
+          if payload.get("status") != 0 or payload.get("result", {}).get("totalSize") != 0 or records:
+              raise SystemExit("remaining ActiveScratchOrg residue")
+          PY
+          elif [[ "$request_status" != "NONE" && "$request_status" != "Error" ]]; then
+            echo "scratch org request remains pending" >&2
+            exit 1
+          fi
+
+          set +e
+          sf org logout --target-org "$SF_SCRATCH_ALIAS" --no-prompt --json \
+            > "$evidence/org-logout.json" 2>&1
+          sf org display --target-org "$SF_SCRATCH_ALIAS" --json \
+            > "$evidence/org-post-cleanup.json" 2>&1
+          display_status=$?
+          set -e
+          test "$display_status" -ne 0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:

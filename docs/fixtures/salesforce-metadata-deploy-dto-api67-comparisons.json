@@ -16,7 +16,7 @@
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
-    "targetOrgId": "00DO400000bt08ZMAQ",
+    "targetOrgId": "00D000000000001EAA",
     "apiVersion": "67.0",
     "executePath": "evidence/current-base/metadata-mock-batch-20260803/salesforce-deploy-dto.json",
     "executeSha256": "51ab2d15f2706699e4e22ed5c017397f1c97b590f1944ecf22a8c179e049176e"

@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -40,7 +41,7 @@ type cb206MetadataMessagingComparison struct {
 	} `json:"comparisons"`
 }
 
-func TestCB206MetadataMessagingRowsHaveExactFixtureAndOracleEvidence(t *testing.T) {
+func TestCB206FixtureAndComparisonAreExact(t *testing.T) {
 	toolsRoot := filepath.Join("..", "..")
 	comparisonPath := filepath.Join(toolsRoot, "docs", "fixtures", "salesforce-current-base-cb206-metadata-messaging-deterministic-api67-comparisons.json")
 	var comparison cb206MetadataMessagingComparison
@@ -71,9 +72,20 @@ func TestCB206MetadataMessagingRowsHaveExactFixtureAndOracleEvidence(t *testing.
 		t.Fatal(err)
 	}
 	assertExactIDs(t, evidenceIDsInSet(oracleEvidence, wantIDs), wantIDs)
+}
 
+func TestCB206RetainedEvidenceMatchesComparison(t *testing.T) {
+	toolsRoot := filepath.Join("..", "..")
+	comparisonPath := filepath.Join(toolsRoot, "docs", "fixtures", "salesforce-current-base-cb206-metadata-messaging-deterministic-api67-comparisons.json")
+	var comparison cb206MetadataMessagingComparison
+	readJSON(t, comparisonPath, &comparison)
 	evidenceRoot, err := filepath.Abs(filepath.Join(toolsRoot, "..", ".."))
 	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(evidenceRoot, comparison.Local.CandidatePath)); os.IsNotExist(err) {
+		t.Skip("retained CB206 evidence is not mounted")
+	} else if err != nil {
 		t.Fatal(err)
 	}
 	assertMetadataDTOBatchSHA256(t, filepath.Join(evidenceRoot, comparison.Local.CandidatePath), comparison.Local.CandidateSHA)

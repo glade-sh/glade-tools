@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"testing"
 )
 
@@ -34,7 +35,7 @@ func TestBuildReportRequiresDirectEvidencePaths(t *testing.T) {
 	}
 	root := t.TempDir()
 	path := func(name string) string { return filepath.Join(root, name) }
-	request := AssuranceReportRequest{InventoryPath: path("IN_SCOPE.json"), RootManifestPath: path("MANIFEST.json"), LedgerPath: path("ledger.json"), SourceProfilePath: path("source-profile.json"), PolicyPath: path("support-policy.json"), DecisionPath: path("USAGE_DECISIONS.json"), UsagePath: path("CORPUS_USAGE.json"), ProfilePath: path("ASSURANCE_PROFILE.json"), FixtureManifestPath: path("fixtures.json"), ReplayPath: path("REPLAY.json"), ReplayHostManifestPaths: []string{path("local-manifest.json"), path("replay-worker-manifest.json")}, ReplayShardPaths: []string{path("local-shard.json"), path("replay-worker-shard.json")}, AttemptPath: path("ATTEMPT.json"), LocalProofPath: path("LOCAL_PROOF.json"), OraclePlanPath: path("ORACLE_PLAN.json"), ExclusionRequestPath: path("EXCLUSION_REQUEST.json"), ExclusionPolicyPath: path("exclusion-policy.json"), AuthorityPath: path("EXCLUSION_AUTHORITY.json"), ReleaseValidationPath: path("RELEASE_VALIDATION.json"), BundlePath: path("bundle.json"), FilterScriptPath: path("filter.py"), ScratchDefinitionPath: path("scratch.json"), ToolsAMD64Path: path("tools-amd64"), SalesforceFiles: []SalesforceShardFiles{{ShardPath: path("shard.json"), DispatchPath: path("dispatch.json"), PreflightPath: path("preflight.json"), CreationPath: path("creation.json"), CleanupPath: path("cleanup.json")}}, RemoteCleanupPaths: []string{path("replay-worker-cleanup.json"), path("salesforce-worker-cleanup.json")}, RemoteCleanupAuthorityPaths: []string{path("replay-worker-authority.json"), path("salesforce-worker-authority.json")}, JSONPath: path("ASSURANCE.json"), HTMLPath: path("ASSURANCE.html"), ReceiptPath: path("RECEIPT.json")}
+	request := AssuranceReportRequest{InventoryPath: path("IN_SCOPE.json"), RootManifestPath: path("MANIFEST.json"), LedgerPath: path("ledger.json"), SourceProfilePath: path("source-profile.json"), PolicyPath: path("support-policy.json"), DecisionPath: path("USAGE_DECISIONS.json"), UsagePath: path("CORPUS_USAGE.json"), ProfilePath: path("ASSURANCE_PROFILE.json"), FixtureManifestPath: path("fixtures.json"), ReplayPath: path("REPLAY.json"), ReplayHostManifestPaths: []string{path("local-manifest.json"), path("replay-worker-manifest.json")}, ReplayShardPaths: []string{path("local-shard.json"), path("replay-worker-shard.json")}, AttemptPath: path("ATTEMPT.json"), LocalProofPath: path("LOCAL_PROOF.json"), OraclePlanPath: path("ORACLE_PLAN.json"), ExclusionRequestPath: path("EXCLUSION_REQUEST.json"), ExclusionPolicyPath: path("exclusion-policy.json"), AuthorityPath: path("EXCLUSION_AUTHORITY.json"), ReleaseValidationPath: path("RELEASE_VALIDATION.json"), BundlePath: path("bundle.json"), FilterScriptPath: path("filter.py"), ScratchDefinitionPath: path("scratch.json"), ToolsAMD64Path: path("tools-amd64"), SalesforceFiles: []SalesforceShardFiles{{ShardPath: path("shard.json"), DispatchPath: path("dispatch.json"), PreflightPath: path("preflight.json"), CreationPath: path("creation.json"), CleanupPath: path("cleanup.json")}}, RemoteCleanupPaths: []string{path("replay-worker-cleanup.json"), path("salesforce-worker-cleanup.json")}, RemoteCleanupAuthorityPaths: []string{path("replay-worker-authority.json"), path("salesforce-worker-authority.json")}, JSONPath: path("ASSURANCE.json"), HTMLPath: path("ASSURANCE.html"), ReceiptPath: path("RECEIPT.json"), PacketPath: path("packet")}
 	if err := requiredReportEvidencePaths(request); err != nil {
 		t.Fatalf("complete direct evidence paths rejected: %v", err)
 	}
@@ -50,14 +51,55 @@ func TestReportPostflightHashReadsDiskAfterSnapshot(t *testing.T) {
 	if err := os.WriteFile(path, old, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	setReportSnapshot(map[string][]byte{path: append([]byte(nil), old...)})
+	setReportSnapshot(map[string]reportInputSnapshot{path: {Data: append([]byte(nil), old...), Mode: 0o600}})
 	t.Cleanup(clearReportSnapshot)
 	expected := map[string]string{path: replayBytesSHA256(old)}
 	if err := os.WriteFile(path, []byte(`{"version":2}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := revalidateReportInputHashes(AssuranceReportRequest{InventoryPath: path}, expected); err == nil {
+	if err := revalidateReportInputHashes(singleReportInputRequest(path), expected); err == nil {
 		t.Fatal("postflight revalidation accepted a changed on-disk input")
+	}
+}
+
+func TestReportPostflightRejectsModeChange(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "input.json")
+	data := []byte(`{"version":1}`)
+	if err := os.WriteFile(path, data, 0o640); err != nil {
+		t.Fatal(err)
+	}
+	setReportSnapshot(map[string]reportInputSnapshot{path: {Data: append([]byte(nil), data...), Mode: 0o640}})
+	t.Cleanup(clearReportSnapshot)
+	if err := os.Chmod(path, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := revalidateReportInputHashes(singleReportInputRequest(path), map[string]string{path: replayBytesSHA256(data)}); err == nil {
+		t.Fatal("postflight revalidation accepted a changed on-disk mode")
+	}
+}
+
+func TestReadRegularFileSnapshotRejectsSymlink(t *testing.T) {
+	root := t.TempDir()
+	target, link := filepath.Join(root, "target"), filepath.Join(root, "link")
+	if err := os.WriteFile(target, []byte("sealed\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(target, link); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readRegularFileSnapshot(link); err == nil {
+		t.Fatal("snapshot accepted a symlink")
+	}
+}
+
+func singleReportInputRequest(path string) AssuranceReportRequest {
+	return AssuranceReportRequest{
+		InventoryPath: path, RootManifestPath: path, LedgerPath: path, SourceProfilePath: path,
+		PolicyPath: path, DecisionPath: path, UsagePath: path, ProfilePath: path,
+		FixtureManifestPath: path, ReplayPath: path, AttemptPath: path, LocalProofPath: path,
+		OraclePlanPath: path, ExclusionRequestPath: path, ExclusionPolicyPath: path,
+		AuthorityPath: path, ReleaseValidationPath: path, BundlePath: path,
+		FilterScriptPath: path, ScratchDefinitionPath: path, ToolsAMD64Path: path,
 	}
 }
 
@@ -130,6 +172,19 @@ func TestWriteHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 	}
 }
 
+func TestHTMLShowsReadinessAndNonParityIndependently(t *testing.T) {
+	report := []byte(`{"schemaVersion":1,"rows":[{"surfaceId":"apex:Example.run","compileReady":true,"testReady":true,"nonParity":true,"exclusionReason":"hosted execution"}],"repositorySurfaceRows":[{"repositoryId":"private-corpus-001","surfaceId":"apex:Example.run","compileReady":true,"testReady":true,"nonParity":true,"nonParityReason":"hosted execution"}]}`)
+	html, err := renderAssuranceHTML(report)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"<th>Readiness</th><th>Non-parity</th>", "function nonparity(x)", "nonparity(x)"} {
+		if !strings.Contains(string(html), want) {
+			t.Fatalf("HTML does not independently render readiness and non-parity: missing %q", want)
+		}
+	}
+}
+
 func TestReceiptWritesAnAcyclicReceiptLast(t *testing.T) {
 	root := t.TempDir()
 	jsonPath, htmlPath, receiptPath := filepath.Join(root, "ASSURANCE.json"), filepath.Join(root, "ASSURANCE.html"), filepath.Join(root, "RECEIPT.json")
@@ -143,6 +198,73 @@ func TestReceiptWritesAnAcyclicReceiptLast(t *testing.T) {
 	}
 	if _, err := os.Stat(receiptPath); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRetainReportPacketCopiesSnapshotBytesAndModes(t *testing.T) {
+	oldUmask := syscall.Umask(0o077)
+	defer syscall.Umask(oldUmask)
+	root := t.TempDir()
+	source := filepath.Join(root, "input.json")
+	if err := os.WriteFile(source, []byte("sealed\n"), 0o640); err != nil {
+		t.Fatal(err)
+	}
+	setReportSnapshot(map[string]reportInputSnapshot{source: {Data: []byte("sealed\n"), Mode: 0o640}})
+	defer clearReportSnapshot()
+	packet := filepath.Join(root, "packet")
+	hash, err := retainReportPacket(packet, []string{source}, map[string]string{source: replayBytesSHA256([]byte("sealed\n"))})
+	if err != nil || !sha256Pattern.MatchString(hash) {
+		t.Fatalf("retainReportPacket = %q, %v", hash, err)
+	}
+	data, err := os.ReadFile(filepath.Join(packet, "DIRECT_INPUT_000"))
+	info, statErr := os.Stat(filepath.Join(packet, "DIRECT_INPUT_000"))
+	if err != nil || statErr != nil || string(data) != "sealed\n" || info.Mode().Perm() != 0o640 {
+		t.Fatalf("retained input = %q, %v, %v", data, err, statErr)
+	}
+	if localProofFileSHA256(t, filepath.Join(packet, "MANIFEST.json")) != hash {
+		t.Fatal("packet manifest hash does not match retained manifest")
+	}
+}
+
+func TestRetainReportPacketIncludesSealedSalesforceExecutorTree(t *testing.T) {
+	root := t.TempDir()
+	direct := filepath.Join(root, "input.json")
+	if err := os.WriteFile(direct, []byte("direct\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	setReportSnapshot(map[string]reportInputSnapshot{direct: {Data: []byte("direct\n"), Mode: 0o600}})
+	defer clearReportSnapshot()
+	extra := map[string]reportInputSnapshot{
+		"salesforce-executor-000/EXECUTOR_MANIFEST.json": {Data: []byte("manifest\n"), Mode: 0o640},
+		"salesforce-executor-000/filter/results.json":    {Data: []byte("results\n"), Mode: 0o600},
+	}
+	packet := filepath.Join(root, "packet")
+	if _, err := retainReportPacket(packet, []string{direct}, map[string]string{direct: replayBytesSHA256([]byte("direct\n"))}, extra); err != nil {
+		t.Fatalf("retainReportPacket: %v", err)
+	}
+	for name, want := range extra {
+		data, err := os.ReadFile(filepath.Join(packet, filepath.FromSlash(name)))
+		info, statErr := os.Stat(filepath.Join(packet, filepath.FromSlash(name)))
+		if err != nil || statErr != nil || string(data) != string(want.Data) || info.Mode().Perm() != want.Mode.Perm() {
+			t.Fatalf("retained executor input %q = %q mode=%v, err=%v statErr=%v", name, data, info.Mode(), err, statErr)
+		}
+	}
+}
+
+func TestReportSalesforceExecutorSnapshotsUseStableShardPaths(t *testing.T) {
+	snapshots := []salesforceShardEvidenceSnapshot{{Shard: SalesforceShard{ShardIndex: 1}, Executor: salesforceExecutorSnapshot{
+		ManifestSHA256: replayBytesSHA256([]byte("manifest\n")),
+		Manifest:       reportInputSnapshot{Data: []byte("manifest\n"), Mode: 0o640},
+		Snapshots: map[string]reportInputSnapshot{
+			"filter/results.json": {Data: []byte("results\n"), Mode: 0o600},
+		},
+	}}}
+	got, err := reportSalesforceExecutorSnapshots(snapshots)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got["salesforce-executor-001/EXECUTOR_MANIFEST.json"].Data) != "manifest\n" || string(got["salesforce-executor-001/filter/results.json"].Data) != "results\n" {
+		t.Fatalf("executor packet snapshots = %#v", got)
 	}
 }
 

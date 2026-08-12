@@ -72,8 +72,8 @@
     {
       "kind": "shape",
       "notes": "Local Address support exposes getDistance as a deterministic value object helper shape.",
-      "surfaceId": "apex:System.Address.getDistance()",
-      "symbol": "Address.getDistance"
+      "surfaceId": "apex:System.Address.getDistance(Location,String)",
+      "symbol": "Address.getDistance(Location,String)"
     },
     {
       "kind": "shape",

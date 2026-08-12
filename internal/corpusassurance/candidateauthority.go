@@ -1,10 +1,14 @@
 package corpusassurance
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -23,6 +27,7 @@ type candidateAuthorityDocument struct {
 	Status             string                   `json:"status"`
 	Binding            candidateAuthorityInput  `json:"binding"`
 	BoundInputs        candidateAuthorityInput  `json:"boundInputs"`
+	Build              candidateBuildBinding    `json:"build"`
 	SourceBuildReceipt candidateAuthoritySource `json:"sourceBuildReceipt"`
 	Review             candidateAuthoritySource `json:"review"`
 }
@@ -47,6 +52,16 @@ type candidateBuildReceipt struct {
 	Tools         candidateTool    `json:"tools"`
 }
 
+type candidateBuildBinding struct {
+	SourceRoot  string                   `json:"sourceRoot"`
+	SourceTree  string                   `json:"sourceTree"`
+	Go          candidateAuthoritySource `json:"go"`
+	Arguments   []string                 `json:"arguments"`
+	Environment []string                 `json:"environment"`
+}
+
+var validateSealedCandidateBuild = validateCandidateBuildFromSource
+
 type candidateTool struct {
 	RuntimeArtifact
 	Path string `json:"path"`
@@ -65,11 +80,11 @@ func CreateCandidateAuthority(request CandidateAuthorityRequest) (candidateAutho
 	} else if !os.IsNotExist(err) {
 		return candidateAuthorityInput{}, err
 	}
-	input, receiptSource, reviewSource, err := validateCandidateAuthoritySources(request.CandidateRoot, request.ReceiptPath, request.ReviewPath)
+	input, build, receiptSource, reviewSource, err := validateCandidateAuthoritySources(request.CandidateRoot, request.ReceiptPath, request.ReviewPath)
 	if err != nil {
 		return candidateAuthorityInput{}, err
 	}
-	document := candidateAuthorityDocument{SchemaVersion: 1, Status: candidateAuthorityStatus, Binding: input, BoundInputs: input, SourceBuildReceipt: receiptSource, Review: reviewSource}
+	document := candidateAuthorityDocument{SchemaVersion: 1, Status: candidateAuthorityStatus, Binding: input, BoundInputs: input, Build: build, SourceBuildReceipt: receiptSource, Review: reviewSource}
 	if err := WriteNewJSON(request.OutputPath, document); err != nil {
 		return candidateAuthorityInput{}, err
 	}
@@ -111,36 +126,151 @@ func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (ca
 	if err := validateCandidateTool(receipt.Tools); err != nil {
 		return candidateAuthorityInput{}, fmt.Errorf("candidate authority tools are stale")
 	}
+	if err := validateSealedCandidateBuild(document.Build.SourceRoot, candidate, document.Build); err != nil {
+		return candidateAuthorityInput{}, fmt.Errorf("candidate authority source build is stale")
+	}
 	return input, nil
 }
 
-func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath string) (candidateAuthorityInput, candidateAuthoritySource, candidateAuthoritySource, error) {
+func validateCandidateAuthoritySources(candidateRoot, receiptPath, reviewPath string) (candidateAuthorityInput, candidateBuildBinding, candidateAuthoritySource, candidateAuthoritySource, error) {
 	receipt, receiptBytes, err := readExactCandidateBuildReceipt(receiptPath)
 	input := candidateAuthorityInput{Candidate: receipt.Candidate, Tools: receipt.Tools}
 	if err != nil || !validCandidateBuildReceipt(receipt, input) {
-		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
 	if err := validateCleanGitRoot(candidateRoot, receipt.Candidate.Commit); err != nil {
-		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
 	}
 	actual, err := runtimeArtifactFor(receipt.Candidate.Path, receipt.Candidate.Commit)
 	if err != nil || actual.SHA256 != receipt.Candidate.SHA256 {
-		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority binary is stale")
 	}
 	if err := validateCandidateTool(receipt.Tools); err != nil {
-		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools are stale")
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools are stale")
+	}
+	build, err := deriveCandidateBuildBinding(candidateRoot)
+	if err != nil || validateSealedCandidateBuild(candidateRoot, receipt.Candidate, build) != nil {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority source build is invalid")
 	}
 	if err := validateCandidateParser(receipt.Candidate, candidateRoot); err != nil {
-		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
 	reviewBytes, err := os.ReadFile(reviewPath)
 	if err != nil {
-		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
 	if err := validateCandidateAuthorityReviewBytes(reviewBytes, receipt.Candidate, receipt.Tools); err != nil {
-		return candidateAuthorityInput{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
-	return input, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
+	return input, build, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
+}
+
+func deriveCandidateBuildBinding(sourceRoot string) (candidateBuildBinding, error) {
+	canonical, err := filepath.EvalSymlinks(sourceRoot)
+	if err != nil || !filepath.IsAbs(canonical) {
+		return candidateBuildBinding{}, fmt.Errorf("candidate source root is unavailable")
+	}
+	top, err := gitOutput(canonical, "rev-parse", "--show-toplevel")
+	if err != nil {
+		return candidateBuildBinding{}, err
+	}
+	top, err = filepath.EvalSymlinks(top)
+	if err != nil || filepath.Clean(top) != filepath.Clean(canonical) {
+		return candidateBuildBinding{}, fmt.Errorf("candidate source root is not the Git root")
+	}
+	tree, err := gitOutput(canonical, "rev-parse", "HEAD^{tree}")
+	if err != nil || !commitPattern.MatchString(tree) {
+		return candidateBuildBinding{}, fmt.Errorf("candidate source tree is unavailable")
+	}
+	environment := append(fixedReleaseEnvironment(), "CGO_ENABLED=1")
+	goPath, err := fixedReleaseGoBinary(environment)
+	if err != nil {
+		return candidateBuildBinding{}, err
+	}
+	goSHA256, err := sha256File(goPath)
+	if err != nil {
+		return candidateBuildBinding{}, err
+	}
+	return candidateBuildBinding{
+		SourceRoot:  canonical,
+		SourceTree:  tree,
+		Go:          candidateAuthoritySource{Path: goPath, SHA256: goSHA256},
+		Arguments:   []string{"build", "-trimpath", "-o", "<candidate>", "./cmd/glade"},
+		Environment: environment,
+	}, nil
+}
+
+func validateCandidateBuildBinding(sourceRoot string, _ attemptCandidate, binding candidateBuildBinding) error {
+	derived, err := deriveCandidateBuildBinding(sourceRoot)
+	if err != nil || !reflect.DeepEqual(binding, derived) {
+		return fmt.Errorf("candidate build binding does not match sealed source")
+	}
+	return nil
+}
+
+func validateCandidateBuildFromSource(sourceRoot string, candidate attemptCandidate, binding candidateBuildBinding) error {
+	if err := validateCandidateBuildBinding(sourceRoot, candidate, binding); err != nil {
+		return err
+	}
+	before, err := runtimeArtifactFor(candidate.Path, candidate.Commit)
+	if err != nil || before.SHA256 != candidate.SHA256 {
+		return fmt.Errorf("candidate binary is stale")
+	}
+	root, err := os.MkdirTemp("", "glade-candidate-rebuild-")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(root)
+	rebuilt := filepath.Join(root, "glade")
+	if err := runBoundCandidateBuild(binding, rebuilt); err != nil {
+		return err
+	}
+	rebuiltSHA256, err := sha256File(rebuilt)
+	if err != nil || rebuiltSHA256 != candidate.SHA256 {
+		return fmt.Errorf("candidate binary is not reproducible from sealed source")
+	}
+	after, err := runtimeArtifactFor(candidate.Path, candidate.Commit)
+	if err != nil || after != before || validateCleanGitRoot(binding.SourceRoot, candidate.Commit) != nil {
+		return fmt.Errorf("candidate source or binary changed during build validation")
+	}
+	tree, err := gitOutput(binding.SourceRoot, "rev-parse", "HEAD^{tree}")
+	if err != nil || tree != binding.SourceTree {
+		return fmt.Errorf("candidate source tree changed during build validation")
+	}
+	return nil
+}
+
+func runBoundCandidateBuild(binding candidateBuildBinding, outputPath string) error {
+	if !filepath.IsAbs(outputPath) || len(binding.Arguments) != 5 || binding.Arguments[3] != "<candidate>" {
+		return fmt.Errorf("candidate build output is invalid")
+	}
+	before, err := sha256File(binding.Go.Path)
+	if err != nil || before != binding.Go.SHA256 {
+		return fmt.Errorf("candidate Go executable is stale")
+	}
+	for _, value := range binding.Environment {
+		name, path, ok := strings.Cut(value, "=")
+		if ok && (name == "HOME" || name == "GOCACHE" || name == "GOMODCACHE") {
+			if err := os.MkdirAll(path, 0o700); err != nil {
+				return err
+			}
+		}
+	}
+	arguments := append([]string(nil), binding.Arguments...)
+	arguments[3] = outputPath
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	var stderr bytes.Buffer
+	command := exec.CommandContext(ctx, binding.Go.Path, arguments...)
+	command.Dir, command.Env, command.Stderr = binding.SourceRoot, append([]string(nil), binding.Environment...), &stderr
+	if err := command.Run(); err != nil || ctx.Err() == context.DeadlineExceeded {
+		return fmt.Errorf("candidate source build failed: %w", err)
+	}
+	after, err := sha256File(binding.Go.Path)
+	if err != nil || after != before {
+		return fmt.Errorf("candidate Go executable changed during build")
+	}
+	return nil
 }
 
 func validateCandidateParser(candidate attemptCandidate, workingDirectory string) error {

@@ -36,6 +36,9 @@ class SalesforceFirstFilterTest(unittest.TestCase):
     def test_fixture_source_survives_cleanup(self):
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp) / "out"
+            sf_bin = Path(temp) / "sf"
+            sf_bin.write_text("#!/bin/sh\n")
+            sf_bin.chmod(0o700)
             cleaned = []
             cleanup_source_present = []
 
@@ -53,7 +56,7 @@ class SalesforceFirstFilterTest(unittest.TestCase):
 
             fixture = {"name": "fixture.json", "command": {"kind": "check"}, "source": [{"path": "force-app/main/default/classes/Probe.cls", "content": "public class Probe {}"}]}
             with patch.object(FILTER, "run_sf_stream", run_sf_stream), patch.object(FILTER, "org_cleanup", destructive_cleanup):
-                FILTER.run_one((1, "fixture.json", fixture, ["apex:Probe"]), out, "assurance-sf0", "/usr/local/bin/sf")
+                FILTER.run_one((1, "fixture.json", fixture, ["apex:Probe"]), out, "assurance-sf0", str(sf_bin))
 
             project = out / "projects" / "fixture"
             self.assertTrue((project / "force-app").is_dir())

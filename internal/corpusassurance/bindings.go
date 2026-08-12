@@ -14,10 +14,34 @@ import (
 
 var reportSnapshotState struct {
 	sync.RWMutex
-	files map[string][]byte
+	files map[string]reportInputSnapshot
 }
 
-func setReportSnapshot(files map[string][]byte) {
+type reportInputSnapshot struct {
+	Data []byte
+	Mode os.FileMode
+}
+
+func readRegularFileSnapshot(path string) (reportInputSnapshot, error) {
+	before, err := os.Lstat(path)
+	if err != nil || !before.Mode().IsRegular() {
+		return reportInputSnapshot{}, fmt.Errorf("snapshot regular file %s", path)
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return reportInputSnapshot{}, err
+	}
+	info, statErr := file.Stat()
+	data, readErr := io.ReadAll(file)
+	closeErr := file.Close()
+	after, lstatErr := os.Lstat(path)
+	if statErr != nil || readErr != nil || closeErr != nil || lstatErr != nil || !info.Mode().IsRegular() || !after.Mode().IsRegular() || !os.SameFile(before, info) || !os.SameFile(info, after) || before.Mode() != info.Mode() || info.Mode() != after.Mode() {
+		return reportInputSnapshot{}, fmt.Errorf("snapshot regular file %s", path)
+	}
+	return reportInputSnapshot{Data: data, Mode: info.Mode()}, nil
+}
+
+func setReportSnapshot(files map[string]reportInputSnapshot) {
 	reportSnapshotState.Lock()
 	reportSnapshotState.files = files
 	reportSnapshotState.Unlock()
@@ -31,7 +55,8 @@ func clearReportSnapshot() {
 
 func readAssuranceFile(path string) ([]byte, error) {
 	reportSnapshotState.RLock()
-	data, ok := reportSnapshotState.files[path]
+	snapshot, ok := reportSnapshotState.files[path]
+	data := snapshot.Data
 	if ok {
 		data = append([]byte(nil), data...)
 	}
@@ -40,6 +65,14 @@ func readAssuranceFile(path string) ([]byte, error) {
 		return data, nil
 	}
 	return os.ReadFile(path)
+}
+
+func readReportSnapshot(path string) (reportInputSnapshot, bool) {
+	reportSnapshotState.RLock()
+	snapshot, ok := reportSnapshotState.files[path]
+	snapshot.Data = append([]byte(nil), snapshot.Data...)
+	reportSnapshotState.RUnlock()
+	return snapshot, ok
 }
 
 type SealedHostInputs struct {

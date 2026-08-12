@@ -3391,7 +3391,7 @@
       "caseId": "cb109-handler-userinfo",
       "expectedObservation": "value String [\"005000000000001AAA\",\"system\",\"System User\",\"en_US\",\"en_US\",\"UTC\",\"Standard\",false]",
       "gladeObservation": "value String [\"005000000000001AAA\",\"system\",\"System User\",\"en_US\",\"en_US\",\"UTC\",\"Standard\",false] from pinned candidate 381e27e4",
-      "sfObservation": "value String [\"005O400000sKYMnIAO\",\"test-pska1ybvy4ik@example.com\",\"User User\",\"en_US\",\"en_US\",\"America/Los_Angeles\",\"Standard\",false] on retained API 67.0 Salesforce evidence; not re-executed",
+      "sfObservation": "value String [\"005000000000001AAA\",\"user@example.invalid\",\"User User\",\"en_US\",\"en_US\",\"America/Los_Angeles\",\"Standard\",false] on retained API 67.0 Salesforce evidence; identifiers pseudonymized; not re-executed",
       "status": "pass",
       "surfaceIds": [
         "apex:System.UserInfo",

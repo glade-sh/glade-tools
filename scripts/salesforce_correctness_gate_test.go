@@ -313,18 +313,21 @@ func TestSalesforceCorrectnessGateWorkflowContract(t *testing.T) {
 		`AUTH_URL: ${{ secrets.SF_SFDX_AUTH_URL }}`, `AUTH_FILE="$RUNNER_TEMP/sfdx-auth-url.txt"`,
 		`trap 'rm -f "$AUTH_FILE" "$LOGIN_RESULT" "$LOGIN_ERROR"' EXIT`,
 		`printf '%s' "$AUTH_URL" > "$AUTH_FILE"`, `chmod 600 "$AUTH_FILE"`,
-		`--alias glade-salesforce-correctness \`, "scripts/release-build.sh",
+		`--alias glade-dev-hub \`, `sf org create scratch`, `--target-dev-hub glade-dev-hub`, `--alias "$SF_SCRATCH_ALIAS"`, `--name "$SF_SCRATCH_MARKER"`, "scripts/release-build.sh",
 		"RELEASE_SHARED_PAYLOAD_ARCHIVE", "RELEASE_SHARED_PAYLOAD_SHA256",
 		`glade_${VERSION}_linux_amd64.tar.gz`, "./cmd/glade-tools",
 		`scripts/salesforce-correctness-gate.sh \
             "$TOOLS_BIN" \
             "$(realpath ../glade)" \
             "$GLADE_CANDIDATE" \
-            glade-salesforce-correctness \
+            "$SF_SCRATCH_ALIAS" \
             "$RUNNER_TEMP/salesforce-correctness-evidence/gate"`,
 		`if: always()
         with:
           name: salesforce-correctness-evidence`, "retention-days: 90",
+		`name: Delete scratch org`, `if: always()`, `sf org delete scratch`,
+		`FROM ScratchOrgInfo WHERE OrgName`, `FROM ActiveScratchOrg WHERE ScratchOrg`,
+		`--sobject ActiveScratchOrg`, `remaining ActiveScratchOrg residue`,
 	} {
 		must(marker)
 	}

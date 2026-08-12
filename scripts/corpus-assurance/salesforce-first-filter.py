@@ -54,8 +54,8 @@ def validate_local_summary_binding(manifest_path: Path, summary_path: Path) -> N
 
 
 def validate_worker_execution(sf_bin: str, orgs: list[str]) -> None:
-    if sf_bin != "/usr/local/bin/sf":
-        raise ValueError("Salesforce CLI path must be /usr/local/bin/sf")
+    if not os.path.isabs(sf_bin) or not os.path.isfile(sf_bin) or not os.access(sf_bin, os.X_OK):
+        raise ValueError("Salesforce CLI path must be an absolute executable file")
     if not orgs or len(orgs) != len(set(orgs)):
         raise ValueError("org aliases must be non-empty and unique")
     if len(orgs) > MAX_REMOTE_ORGS:

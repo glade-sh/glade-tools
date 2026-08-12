@@ -241,6 +241,7 @@ func TestCB65EventBusGenericToolingRowsMergeWithExactContracts(t *testing.T) {
 			TypeName:      base.TypeName,
 			MemberName:    base.MemberName,
 			Kind:          base.Kind,
+			Parameters:    contract.parameters,
 			GladeBehavior: BehaviorSupported,
 			Evidence:      EvidenceFixture,
 		}))
@@ -332,10 +333,10 @@ func TestCB65EventBusFixtureExercisesAndMergesAllFourOverloads(t *testing.T) {
 	}
 	command := fixture.Command.Args[0]
 	for _, invocation := range []string{
-		"EventBus.publishWithAccessLevel(new Account(Name = 'User'), AccessLevel.USER_MODE)",
-		"EventBus.publishWithAccessLevel(new Account(Name = 'Callback'), null, AccessLevel.USER_MODE)",
-		"EventBus.publishWithAccessLevel(new List<Account>{new Account(Name = 'List')}, AccessLevel.SYSTEM_MODE)",
-		"EventBus.publishWithAccessLevel(new List<Account>{new Account(Name = 'ListCallback')}, null, AccessLevel.SYSTEM_MODE)",
+		"EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), AccessLevel.USER_MODE)",
+		"EventBus.publishWithAccessLevel(new Event_Recipes_Demo__e(), null, AccessLevel.USER_MODE)",
+		"EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, AccessLevel.SYSTEM_MODE)",
+		"EventBus.publishWithAccessLevel(new List<SObject>{new Event_Recipes_Demo__e()}, null, AccessLevel.SYSTEM_MODE)",
 	} {
 		if strings.Count(command, invocation) != 1 {
 			t.Errorf("fixture command invocation %q count = %d, want exactly once", invocation, strings.Count(command, invocation))

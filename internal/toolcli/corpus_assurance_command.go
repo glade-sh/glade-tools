@@ -18,6 +18,10 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		printCorpusAssuranceHelp(w)
 		return nil
 	}
+	if len(args) > 1 && isHelpArg(args[1]) {
+		printCorpusAssuranceHelp(w)
+		return nil
+	}
 	switch args[0] {
 	case "candidate-authority":
 		flags := flag.NewFlagSet("corpus assurance candidate-authority", flag.ContinueOnError)
@@ -393,7 +397,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		exclusionRequest, exclusionPolicy, authority := flags.String("exclusion-request", "", ""), flags.String("exclusion-policy", "", ""), flags.String("exclusion-authority", "", "")
 		release, bundle := flags.String("release-validation", "", ""), flags.String("bundle", "", "")
 		filter, scratch, toolsAMD64 := flags.String("filter-script", "", ""), flags.String("scratch-definition", "", ""), flags.String("tools-amd64", "", "")
-		jsonOutput, htmlOutput, receiptOutput := flags.String("output", "", ""), flags.String("html-output", "", ""), flags.String("receipt-output", "", "")
+		jsonOutput, htmlOutput, receiptOutput, packetOutput := flags.String("output", "", ""), flags.String("html-output", "", ""), flags.String("receipt-output", "", ""), flags.String("packet-output", "", "")
 		var shards, dispatches, creations, cleanups, preflights, remoteCleanups, replayHosts, replayShards assurancePathList
 		flags.Var(&shards, "shard", "")
 		flags.Var(&dispatches, "dispatch", "")
@@ -408,7 +412,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*inventory, *root, *ledger, *sourceProfile, *policy, *decisions, *usage, *profile, *fixtures, *replay, *attempt, *proof, *plan, *exclusionRequest, *exclusionPolicy, *authority, *release, *bundle, *filter, *scratch, *toolsAMD64, *jsonOutput, *htmlOutput, *receiptOutput); err != nil || len(shards) == 0 || len(shards) != len(dispatches) || len(shards) != len(creations) || len(shards) != len(cleanups) || len(shards) != len(preflights) || len(remoteCleanups) != 2 || len(remoteAuthorities) != 2 || len(replayHosts) != 2 || len(replayShards) != 2 {
+		if err := requiredAssuranceFlags(*inventory, *root, *ledger, *sourceProfile, *policy, *decisions, *usage, *profile, *fixtures, *replay, *attempt, *proof, *plan, *exclusionRequest, *exclusionPolicy, *authority, *release, *bundle, *filter, *scratch, *toolsAMD64, *jsonOutput, *htmlOutput, *receiptOutput, *packetOutput); err != nil || len(shards) == 0 || len(shards) != len(dispatches) || len(shards) != len(creations) || len(shards) != len(cleanups) || len(shards) != len(preflights) || len(remoteCleanups) != 2 || len(remoteAuthorities) != 2 || len(replayHosts) != 2 || len(replayShards) != 2 {
 			if err != nil {
 				return err
 			}
@@ -418,7 +422,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		for index := range files {
 			files[index] = corpusassurance.SalesforceShardFiles{ShardPath: shards[index], DispatchPath: dispatches[index], CreationPath: creations[index], CleanupPath: cleanups[index], PreflightPath: preflights[index]}
 		}
-		receipt, err := corpusassurance.BuildAssuranceReport(corpusassurance.AssuranceReportRequest{InventoryPath: *inventory, RootManifestPath: *root, LedgerPath: *ledger, SourceProfilePath: *sourceProfile, PolicyPath: *policy, DecisionPath: *decisions, UsagePath: *usage, ProfilePath: *profile, FixtureManifestPath: *fixtures, ReplayPath: *replay, ReplayHostManifestPaths: replayHosts, ReplayShardPaths: replayShards, AttemptPath: *attempt, LocalProofPath: *proof, OraclePlanPath: *plan, ExclusionRequestPath: *exclusionRequest, ExclusionPolicyPath: *exclusionPolicy, AuthorityPath: *authority, ReleaseValidationPath: *release, BundlePath: *bundle, FilterScriptPath: *filter, ScratchDefinitionPath: *scratch, ToolsAMD64Path: *toolsAMD64, SalesforceFiles: files, RemoteCleanupPaths: remoteCleanups, RemoteCleanupAuthorityPaths: remoteAuthorities, JSONPath: *jsonOutput, HTMLPath: *htmlOutput, ReceiptPath: *receiptOutput})
+		receipt, err := corpusassurance.BuildAssuranceReport(corpusassurance.AssuranceReportRequest{InventoryPath: *inventory, RootManifestPath: *root, LedgerPath: *ledger, SourceProfilePath: *sourceProfile, PolicyPath: *policy, DecisionPath: *decisions, UsagePath: *usage, ProfilePath: *profile, FixtureManifestPath: *fixtures, ReplayPath: *replay, ReplayHostManifestPaths: replayHosts, ReplayShardPaths: replayShards, AttemptPath: *attempt, LocalProofPath: *proof, OraclePlanPath: *plan, ExclusionRequestPath: *exclusionRequest, ExclusionPolicyPath: *exclusionPolicy, AuthorityPath: *authority, ReleaseValidationPath: *release, BundlePath: *bundle, FilterScriptPath: *filter, ScratchDefinitionPath: *scratch, ToolsAMD64Path: *toolsAMD64, SalesforceFiles: files, RemoteCleanupPaths: remoteCleanups, RemoteCleanupAuthorityPaths: remoteAuthorities, JSONPath: *jsonOutput, HTMLPath: *htmlOutput, ReceiptPath: *receiptOutput, PacketPath: *packetOutput})
 		if err != nil {
 			return err
 		}
@@ -474,7 +478,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 
 Usage:
   glade-tools corpus assurance candidate-authority --candidate-root <glade-root> --receipt <candidate-receipt.json> --review <REVIEW.md> --output <CANDIDATE_AUTHORITY.json>
-  glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <RECONCILIATION.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --salesforce-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --output <ATTEMPT.json>
+  glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --salesforce-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --output <ATTEMPT.json>
   glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --attempt <ATTEMPT.json> --output <new-dir>
   glade-tools corpus assurance usage-draft --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --output <USAGE_DECISION_DRAFT.json>
   glade-tools corpus assurance usage --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --decisions <USAGE_DECISIONS.json> --output <CORPUS_USAGE.json>
@@ -487,13 +491,13 @@ Usage:
   glade-tools corpus assurance exclusion-request --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --output <EXCLUSION_REQUEST.json>
   glade-tools corpus assurance authorize-exclusions --request <EXCLUSION_REQUEST.json> --plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --sealed-usage <CORPUS_USAGE.json> --policy <policy.json> --output <EXCLUSION_AUTHORITY.json>
   glade-tools corpus assurance oracle-bundle --attempt <ATTEMPT.json> --dev-hub-authority <DEV_HUB_AUTHORITY.json> --profile <ASSURANCE_PROFILE.json> --oracle-plan <ORACLE_PLAN.json> --exclusion-authority <EXCLUSION_AUTHORITY.json> --release-validation <RELEASE_VALIDATION.json> --local-proof <LOCAL_PROOF.json> --fixture-manifest <fixtures.json> --filter-script <filter.py> --scratch-definition <scratch.json> --tools-root <clean-glade-tools-root> --output <new-dir>
-  glade-tools corpus assurance org-create --bundle <bundle.json> --alias <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_CREATION.json>
-  glade-tools corpus assurance org-preflight --bundle <bundle.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_PREFLIGHT.json>
+  glade-tools corpus assurance org-create --bundle <bundle.json> --alias <scratch-alias> --sf-bin <absolute-sf> --output <ORG_CREATION.json>
+  glade-tools corpus assurance org-preflight --bundle <bundle.json> --target-org <scratch-alias> --sf-bin <absolute-sf> --output <ORG_PREFLIGHT.json>
   glade-tools corpus assurance salesforce-dispatch --bundle <bundle.json> --target-org <scratch-alias> --executor-root <attempt/executor/shard-N> --run-id <attempt-shard-N> --shard-index <0|1> --shard-count 2 --output <SALESFORCE_DISPATCH.json>
-  glade-tools corpus assurance salesforce-run --bundle <bundle.json> --dispatch <SALESFORCE_DISPATCH.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <SALESFORCE_SHARD.json>
-  glade-tools corpus assurance org-cleanup --bundle <bundle.json> --creation <ORG_CREATION.json>[.invalidated] [--org-preflight <ORG_PREFLIGHT.json>] --target-org <scratch-alias> --sf-bin /usr/local/bin/sf --output <ORG_CLEANUP.json>
+  glade-tools corpus assurance salesforce-run --bundle <bundle.json> --dispatch <SALESFORCE_DISPATCH.json> --org-preflight <ORG_PREFLIGHT.json> --target-org <scratch-alias> --sf-bin <absolute-sf> --output <SALESFORCE_SHARD.json>
+  glade-tools corpus assurance org-cleanup --bundle <bundle.json> --creation <ORG_CREATION.json>[.invalidated] [--org-preflight <ORG_PREFLIGHT.json>] --target-org <scratch-alias> --sf-bin <absolute-sf> --output <ORG_CLEANUP.json>
   glade-tools corpus assurance salesforce-reconcile --oracle-plan <ORACLE_PLAN.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --preflight <ORG_PREFLIGHT.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --preflight <ORG_PREFLIGHT.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json>
-  glade-tools corpus assurance report --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --ledger <ledger.json> --source-profile <source-profile.json> --policy <support-policy.json> --decisions <USAGE_DECISIONS.json> --sealed-usage <CORPUS_USAGE.json> --profile <ASSURANCE_PROFILE.json> --fixture-manifest <fixtures.json> --replay <REPLAY.json> --attempt <ATTEMPT.json> --local-proof <LOCAL_PROOF.json> --oracle-plan <ORACLE_PLAN.json> --exclusion-request <EXCLUSION_REQUEST.json> --exclusion-policy <exclusion-policy.json> --exclusion-authority <EXCLUSION_AUTHORITY.json> --release-validation <RELEASE_VALIDATION.json> --bundle <bundle.json> --filter-script <filter.py> --scratch-definition <scratch.json> --tools-amd64 <glade-tools-amd64> --remote-cleanup <REMOTE_CLEANUP.json> --remote-cleanup <REMOTE_CLEANUP.json> --remote-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --remote-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --replay-host-manifest <manifest.json> --replay-host-manifest <manifest.json> --replay-shard <REPLAY_SHARD.json> --replay-shard <REPLAY_SHARD.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --preflight <ORG_PREFLIGHT.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --preflight <ORG_PREFLIGHT.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --output <ASSURANCE.json> --html-output <ASSURANCE.html> --receipt-output <RECEIPT.json>
+  glade-tools corpus assurance report --inventory-spec <IN_SCOPE.json> --replay-host-manifest <manifest.json> --replay-host-manifest <manifest.json> --replay-shard <REPLAY_SHARD.json> --replay-shard <REPLAY_SHARD.json> [remaining sealed evidence flags] --packet-output <packet-dir> --output <ASSURANCE.json> --html-output <ASSURANCE.html> --receipt-output <RECEIPT.json>
 	  glade-tools corpus assurance cleanup --attempt <ATTEMPT.json> --binding <REMOTE_CLEANUP_AUTHORITY.json> --output <REMOTE_CLEANUP.json>
 `)
 }

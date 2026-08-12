@@ -13,7 +13,12 @@ import (
 	"testing"
 )
 
+const testSalesforceScratchMarker = "glade-assurance-0123456789abcdef0123456789abcdef"
+
+var salesforceCLIPath string
+
 func TestMain(m *testing.M) {
+	validateSealedCandidateBuild = validateCandidateBuildBinding
 	root, err := os.MkdirTemp("", "glade-tools-sf-test-")
 	if err != nil {
 		panic(err)
@@ -186,7 +191,7 @@ func TestSalesforceDeployObservationRequiresMaterializedComponent(t *testing.T) 
 func TestValidSalesforceInvocationRejectsTestWithoutRuntimeCommand(t *testing.T) {
 	project, org := "/private/tmp/worker/projects/fixture", "assurance-sf0@example.invalid"
 	invocation := salesforceInvocationForTest(project, org, "test")
-	if validSalesforceInvocation(invocation, project, org, "test", []string{"FixtureTest"}, "", "") {
+	if validSalesforceInvocation(invocation, salesforceCLIPath, project, org, "test", []string{"FixtureTest"}, "", "") {
 		t.Fatal("accepted a test receipt without its runtime-test command")
 	}
 }
@@ -207,6 +212,12 @@ func TestValidateSalesforceShardsRejectsReusedOrgAlias(t *testing.T) {
 
 func TestValidSalesforceDispatchAcceptsItsSealedRemotePythonHash(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
+	remotePythonSHA := strings.Repeat("a", 64)
+	remoteExecution := SalesforceExecutionAuthority{SFBinary: "/remote/bin/sf", SFSHA256: strings.Repeat("b", 64), PythonBinary: "/usr/bin/python3", PythonSHA256: remotePythonSHA, Environment: []string{"HOME=/remote/home", "PATH=/remote/bin:/usr/bin:/bin", "SF_USE_GENERIC_UNIX_KEYCHAIN=true", "TMPDIR=/remote/tmp"}}
+	authorityBytes, err := json.Marshal(SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D000000000001", Username: "sealed-dev-hub@example.invalid", Execution: remoteExecution})
+	if err != nil || os.WriteFile(inputs.devHubAuthorityPath, append(authorityBytes, '\n'), 0o600) != nil {
+		t.Fatal(err)
+	}
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	outputRoot := filepath.Join(t.TempDir(), "salesforce-worker")
 	bundle, err := BuildOracleBundle(inputs.request(outputRoot))
@@ -233,11 +244,10 @@ func TestValidSalesforceDispatchAcceptsItsSealedRemotePythonHash(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	remotePythonSHA := strings.Repeat("a", 64)
 	if remotePythonSHA == mustSealedPythonSHA(t) {
 		t.Fatal("test requires a remote Python hash")
 	}
-	environment := mustFixedSalesforceEnvironment(t)
+	environment := remoteExecution.Environment
 	document, err := json.Marshal(map[string]any{
 		"schemaVersion":           1,
 		"bundleSha256":            bundleSHA,
@@ -579,9 +589,7 @@ func TestValidateSalesforceShardFilesRejectsMissingStagedBundle(t *testing.T) {
 func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 	root := t.TempDir()
 	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
-	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
+	writeSyntheticDevHubBundle(t, bundlePath)
 	commands := 0
 	runner := func(ctx context.Context, path string, args ...string) (salesforceCommandOutput, error) {
 		commands++
@@ -620,9 +628,7 @@ func TestRunSalesforceOrgPreflightSealsZeroEightTypeInventory(t *testing.T) {
 func TestRunSalesforceOrgPreflightRejectsMissingCount(t *testing.T) {
 	root := t.TempDir()
 	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
-	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
+	writeSyntheticDevHubBundle(t, bundlePath)
 	_, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
 		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","status":"Active","username":"assurance-sf0@example.invalid"}}`)}, nil
@@ -640,9 +646,7 @@ func TestRunSalesforceOrgPreflightRejectsMissingCount(t *testing.T) {
 func TestRunSalesforceOrgPreflightRejectsBundleChangedDuringCommands(t *testing.T) {
 	root := t.TempDir()
 	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
-	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
+	writeSyntheticDevHubBundle(t, bundlePath)
 	validations := 0
 	_, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{
 		BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath,
@@ -671,9 +675,7 @@ func TestRunSalesforceOrgPreflightRejectsBundleChangedDuringCommands(t *testing.
 func TestRunSalesforceOrgPreflightRejectsBundleHashChangedDuringCommands(t *testing.T) {
 	root := t.TempDir()
 	bundlePath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "preflight.json")
-	if err := os.WriteFile(bundlePath, []byte(`{"bundle":true}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
+	writeSyntheticDevHubBundle(t, bundlePath)
 	_, err := RunSalesforceOrgPreflight(SalesforceOrgPreflightRequest{
 		BundlePath: bundlePath, TargetOrg: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath,
 		validateBundle: func(string) error { return nil },
@@ -703,8 +705,11 @@ func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
 		t.Fatal(err)
 	}
 	creation, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{BundlePath: bundlePath, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
-		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		}
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
 		}
 		if path != salesforceCLIPath || !containsString(args, "--definition-file") || !containsString(args, "sealed-dev-hub") {
 			return salesforceCommandOutput{}, fmt.Errorf("unexpected create invocation %s %v", path, args)
@@ -719,6 +724,40 @@ func TestRunSalesforceOrgCreateSealsFreshBundleBoundReceipt(t *testing.T) {
 	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRunSalesforceOrgCreateUsesUniquePersistedMarkerPerAttempt(t *testing.T) {
+	root := t.TempDir()
+	bundlePath := filepath.Join(root, "bundle.json")
+	writeSyntheticDevHubBundle(t, bundlePath)
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	runner := func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		}
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
+	}
+	create := func(name string) SalesforceOrgCreation {
+		output := filepath.Join(root, name)
+		creation, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{BundlePath: bundlePath, Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: output, validateBundle: func(string) error { return nil }, runner: runner})
+		if err != nil {
+			t.Fatalf("RunSalesforceOrgCreate: %v", err)
+		}
+		reservation, err := readExactJSON[salesforceOrgReservation](output + ".reservation")
+		if err != nil || reservation.Marker != creation.Marker || !containsString(creation.Command.Command, creation.Marker) {
+			t.Fatalf("creation marker was not persisted end to end: creation=%#v reservation=%#v err=%v", creation, reservation, err)
+		}
+		return creation
+	}
+	first, second := create("first.json"), create("second.json")
+	if first.Marker == second.Marker {
+		t.Fatalf("same bundle and alias reused marker %q", first.Marker)
 	}
 }
 
@@ -740,8 +779,11 @@ func TestRunSalesforceOrgCreateRejectsBundleChangedDuringCreation(t *testing.T) 
 			return nil
 		},
 		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
-			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
 				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+			}
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+				return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
 			}
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
 		},
@@ -765,8 +807,11 @@ func TestRunSalesforceOrgCreateRejectsBundleHashChangedDuringCreation(t *testing
 		BundlePath: bundlePath, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath,
 		validateBundle: func(string) error { return nil },
 		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
-			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
 				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+			}
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+				return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
 			}
 			if err := os.WriteFile(bundlePath, []byte(`{"bundle":false}`), 0o600); err != nil {
 				t.Fatal(err)
@@ -800,8 +845,11 @@ func TestRunSalesforceOrgCreateSealsInvalidatedCleanupAuthorityAfterCreate(t *te
 			return nil
 		},
 		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
-			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
 				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+			}
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+				return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
 			}
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
 		},
@@ -826,8 +874,11 @@ func TestRunSalesforceOrgCreateSealsInvalidatedAuthorityWhenDevHubCheckFails(t *
 		BundlePath: bundlePath, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: outputPath,
 		validateBundle: func(string) error { return nil },
 		runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
-			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
 				return salesforceCommandOutput{}, errors.New("Dev Hub check unavailable")
+			}
+			if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+				return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
 			}
 			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"orgId":"00D000000000001"}}`)}, nil
 		},
@@ -846,8 +897,8 @@ func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 	bundlePath, creationPath, preflightPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "preflight.json"), filepath.Join(root, "cleanup.json")
 	writeSyntheticDevHubBundle(t, bundlePath)
 	bundleSHA := localProofFileSHA256(t, bundlePath)
-	createArgs := salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), "sealed-dev-hub", "assurance-sf0")
-	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "sealed-dev-hub", DevHubOrgID: "00D0", DevHubUsername: "sealed-dev-hub@example.invalid", Alias: "assurance-sf0", OrgID: "00D0", Command: salesforceCommandForTest(t, bundlePath, createArgs), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", "sealed-dev-hub", "--json"})}
+	createArgs := salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), "sealed-dev-hub", "assurance-sf0", testSalesforceScratchMarker)
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "sealed-dev-hub", DevHubOrgID: "00D0", DevHubUsername: "sealed-dev-hub@example.invalid", Alias: "assurance-sf0", Marker: testSalesforceScratchMarker, OrgID: "00D0", Command: salesforceCommandForTest(t, bundlePath, createArgs), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", "sealed-dev-hub", "--json"})}
 	if err := WriteNewJSON(creationPath, creation); err != nil {
 		t.Fatal(err)
 	}
@@ -889,8 +940,8 @@ func TestRunSalesforceOrgCleanupAcceptsAnInvalidatedCreationWithoutPreflight(t *
 	bundlePath, creationPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.invalidated.json"), filepath.Join(root, "cleanup.json")
 	writeSyntheticDevHubBundle(t, bundlePath)
 	bundleSHA := localProofFileSHA256(t, bundlePath)
-	args := salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), "sealed-dev-hub", "assurance-sf0")
-	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "sealed-dev-hub", DevHubOrgID: "00D0", DevHubUsername: "sealed-dev-hub@example.invalid", Alias: "assurance-sf0", OrgID: "00D0", Invalidated: true, Command: salesforceCommandForTest(t, bundlePath, args), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", "sealed-dev-hub", "--json"})}
+	args := salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), "sealed-dev-hub", "assurance-sf0", testSalesforceScratchMarker)
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "sealed-dev-hub", DevHubOrgID: "00D0", DevHubUsername: "sealed-dev-hub@example.invalid", Alias: "assurance-sf0", Marker: testSalesforceScratchMarker, OrgID: "00D0", Invalidated: true, Command: salesforceCommandForTest(t, bundlePath, args), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", "sealed-dev-hub", "--json"})}
 	if err := WriteNewJSON(creationPath, creation); err != nil {
 		t.Fatal(err)
 	}
@@ -908,13 +959,163 @@ func TestRunSalesforceOrgCleanupAcceptsAnInvalidatedCreationWithoutPreflight(t *
 	}
 }
 
+func TestRunSalesforceOrgCleanupAcceptsNormalCreationWithoutPreflight(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "cleanup.json")
+	writeSyntheticDevHubBundle(t, bundlePath)
+	bundleSHA := localProofFileSHA256(t, bundlePath)
+	args := salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), "sealed-dev-hub", "assurance-sf0", testSalesforceScratchMarker)
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "sealed-dev-hub", DevHubOrgID: "00D0", DevHubUsername: "sealed-dev-hub@example.invalid", Alias: "assurance-sf0", Marker: testSalesforceScratchMarker, OrgID: "00D0", Command: salesforceCommandForTest(t, bundlePath, args), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", "sealed-dev-hub", "--json"})}
+	if err := WriteNewJSON(creationPath, creation); err != nil {
+		t.Fatal(err)
+	}
+	cleanup, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, TargetOrg: "assurance-sf0", DevHub: "sealed-dev-hub", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: cleanupRunnerForTest()})
+	if err != nil || !cleanup.ResidueAbsent || cleanup.OrgID != creation.OrgID {
+		t.Fatalf("RunSalesforceOrgCleanup = %#v, %v", cleanup, err)
+	}
+}
+
+func TestFailedSalesforceOrgCreateLeavesCleanupConsumableReservation(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, cleanupPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "cleanup.json")
+	writeSyntheticDevHubBundle(t, bundlePath)
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{BundlePath: bundlePath, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: creationPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`not-json`), ExitCode: 1}, nil
+	}})
+	if err == nil {
+		t.Fatal("failed Salesforce org creation unexpectedly passed")
+	}
+	cleanup, cleanupErr := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, TargetOrg: "assurance-sf0", DevHub: "sealed-dev-hub", SFBin: salesforceCLIPath, OutputPath: cleanupPath, validateBundle: func(string) error { return nil }, runner: cleanupRunnerForTest()})
+	if cleanupErr != nil || !cleanup.ResidueAbsent {
+		t.Fatalf("reservation cleanup = %#v, %v", cleanup, cleanupErr)
+	}
+}
+
+func TestFailedSalesforceOrgCreateCleanupDeletesServerOrgWhenLocalAliasIsMissing(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, cleanupPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "cleanup.json")
+	writeSyntheticDevHubBundle(t, bundlePath)
+	if err := os.WriteFile(filepath.Join(root, "corpus-assurance-scratch-def.json"), []byte(`{"orgName":"Glade Assurance","edition":"Developer","features":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	var marker string
+	_, err := RunSalesforceOrgCreate(SalesforceOrgCreateRequest{BundlePath: bundlePath, Alias: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: creationPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
+		}
+		for index := range args[:len(args)-1] {
+			if args[index] == "--name" {
+				marker = args[index+1]
+			}
+		}
+		if !validSalesforceScratchMarker(marker) {
+			return salesforceCommandOutput{}, fmt.Errorf("create omitted server marker")
+		}
+		return salesforceCommandOutput{Stdout: []byte(`not-json`), ExitCode: 1}, nil
+	}})
+	if err == nil {
+		t.Fatal("failed Salesforce org creation unexpectedly passed")
+	}
+	serverDeleted := false
+	runner := func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		joined := strings.Join(args, " ")
+		switch {
+		case strings.HasPrefix(joined, "org display --target-org sealed-dev-hub"):
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		case strings.HasPrefix(joined, "org display --target-org assurance-sf0"):
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
+		case strings.Contains(joined, "FROM ScratchOrgInfo"):
+			if !strings.Contains(joined, marker) {
+				return salesforceCommandOutput{}, fmt.Errorf("scratch query omitted server marker")
+			}
+			if !strings.Contains(joined, "WHERE OrgName =") {
+				return salesforceCommandOutput{}, fmt.Errorf("scratch query did not use filterable marker field")
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":1,"records":[{"Id":"2SR000000000001","ScratchOrg":"00D000000000001","SignupUsername":"scratch@example.invalid","Status":"Active"}]}}`)}, nil
+		case strings.Contains(joined, "FROM ActiveScratchOrg") && !serverDeleted:
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":1,"records":[{"Id":"2AS000000000001","ScratchOrg":"00D000000000001"}]}}`)}, nil
+		case strings.Contains(joined, "FROM ActiveScratchOrg"):
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)}, nil
+		case strings.HasPrefix(joined, "data delete record --target-org sealed-dev-hub --sobject ActiveScratchOrg --record-id 2AS000000000001"):
+			serverDeleted = true
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"2AS000000000001","success":true}}`)}, nil
+		default:
+			return salesforceCommandOutput{}, fmt.Errorf("unexpected cleanup command %v", args)
+		}
+	}
+	cleanup, cleanupErr := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, TargetOrg: "assurance-sf0", SFBin: salesforceCLIPath, OutputPath: cleanupPath, validateBundle: func(string) error { return nil }, runner: runner})
+	if cleanupErr != nil || !cleanup.ResidueAbsent || !serverDeleted || cleanup.OrgID != "00D000000000001" {
+		t.Fatalf("reservation cleanup = %#v, serverDeleted=%t, err=%v", cleanup, serverDeleted, cleanupErr)
+	}
+}
+
+func TestReservedCleanupDoesNotDeleteAliasReusedByAnotherAttempt(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, outputPath := filepath.Join(root, "bundle.json"), filepath.Join(root, "creation.json"), filepath.Join(root, "cleanup.json")
+	writeSyntheticDevHubBundle(t, bundlePath)
+	absence := salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", "assurance-sf0", "--json"})
+	absence.Passed, absence.ExitCode = false, 1
+	absence.Output.Stdout = []byte(`{"status":1,"message":"not found"}`)
+	absence.StdoutSHA256 = replayBytesSHA256(absence.Output.Stdout)
+	bundleSHA := localProofFileSHA256(t, bundlePath)
+	if err := WriteNewJSON(creationPath+".reservation", salesforceOrgReservation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: "sealed-dev-hub", Alias: "assurance-sf0", Marker: testSalesforceScratchMarker, AliasAbsent: absence}); err != nil {
+		t.Fatal(err)
+	}
+	deleted := false
+	runner := func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if containsString(args, "sealed-dev-hub") {
+			if len(args) >= 2 && args[0] == "data" && args[1] == "query" {
+				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)}, nil
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		}
+		if len(args) >= 2 && args[1] == "delete" {
+			deleted = true
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0}`)}, nil
+		}
+		if !deleted {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D1","status":"Active","username":"scratch@example.invalid"}}`)}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
+	}
+	cleanup, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, TargetOrg: "assurance-sf0", DevHub: "sealed-dev-hub", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: runner})
+	if err != nil || deleted || !cleanup.ResidueAbsent || cleanup.OrgID != "" {
+		t.Fatalf("reserved cleanup = %#v, deleted=%t, err=%v", cleanup, deleted, err)
+	}
+}
+
+func cleanupRunnerForTest() salesforceCommandRunner {
+	return func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "data" && args[1] == "query" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)}, nil
+		}
+		if containsString(args, "sealed-dev-hub") {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		}
+		if len(args) >= 2 && args[0] == "org" && args[1] == "delete" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0}`)}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"not found"}`), ExitCode: 1}, nil
+	}
+}
+
 func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(t *testing.T) {
 	zero := 0
 	candidate := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
 	tools := RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}
 	plan := OraclePlan{Candidate: candidate, Tools: tools, Rows: []OraclePlanRow{{SurfaceID: "apex:System.run()", Action: oracleRuntime}, {SurfaceID: "apex:System.compile()", Action: oracleCompile}}}
 	bundle := OracleBundle{Candidate: candidate, Tools: tools, ToolsAMD64: RuntimeArtifact{Commit: tools.Commit, OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("9", 64)}, ToolsAMD64SHA256: strings.Repeat("9", 64), ProfileSHA256: strings.Repeat("e", 64), OraclePlanSHA256: strings.Repeat("f", 64), TransportManifestSHA256: strings.Repeat("1", 64), LocalProofSummarySHA256: strings.Repeat("2", 64), FilterSHA256: strings.Repeat("3", 64)}
-	bundlePath := "/private/tmp/bundle.json"
+	bundlePath := filepath.Join(t.TempDir(), "bundle.json")
+	bindSyntheticDevHubAuthority(t, bundlePath, &bundle)
+	if err := WriteNewJSON(bundlePath, bundle); err != nil {
+		t.Fatal(err)
+	}
 	preflight := SalesforceOrgPreflight{SchemaVersion: 1, BundleSHA256: strings.Repeat("4", 64), OrgAlias: "assurance-sf0", OrgID: "00D0", OrgUsername: "assurance-sf0@example.invalid", OrgStatus: "Active", Inventory: SalesforceInventory{Counts: map[string]int{}}}
 	preflightArgs := [][]string{{"org", "display", "--target-org", preflight.OrgAlias, "--json"}}
 	for _, kind := range salesforceInventoryTypes {
@@ -963,7 +1164,7 @@ func TestNormalizeSalesforceFilterResultsRequiresSealedPlanBundleAndOrgEvidence(
 }
 
 func TestSalesforceFilterArgsDeriveEveryIdentityFromTheSealedBundle(t *testing.T) {
-	bundle := OracleBundle{Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}, Tools: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}, ToolsAMD64: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("3", 64)}, ToolsAMD64SHA256: strings.Repeat("3", 64), AttemptSHA256: strings.Repeat("4", 64), OraclePlanSHA256: strings.Repeat("e", 64), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), Fixtures: []OracleBundleFixture{{ID: "system"}}}
+	bundle := OracleBundle{Candidate: RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}, Tools: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("d", 64)}, ToolsAMD64: RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("3", 64)}, ToolsAMD64SHA256: strings.Repeat("3", 64), AttemptSHA256: strings.Repeat("4", 64), OraclePlanSHA256: strings.Repeat("e", 64), TransportManifestSHA256: strings.Repeat("f", 64), LocalProofSummarySHA256: strings.Repeat("1", 64), SalesforceExecution: testSalesforceExecutionAuthority(t), Fixtures: []OracleBundleFixture{{ID: "system"}}}
 	args, err := salesforceFilterArgs("/private/tmp/assurance/transport/salesforce-first-filter.py", "/private/tmp/assurance/bundle", "/private/tmp/assurance/executor/shard-0", "attempt-shard-0", "assurance-sf0", bundle, strings.Repeat("2", 64), 0, 2)
 	if err != nil {
 		t.Fatal(err)
@@ -1072,6 +1273,7 @@ func TestRunSalesforceShardSealsFilterAndFreshPostflight(t *testing.T) {
 		AttemptSHA256: strings.Repeat("a", 64), TransportManifestSHA256: transportSHA, LocalProofSummarySHA256: strings.Repeat("1", 64), FilterSHA256: filterSHA,
 		Fixtures: []OracleBundleFixture{{ID: "system", Name: "system", Path: fixturePath, SHA256: fixtureSHA, SurfaceIDs: []string{"apex:System.run()"}}},
 	}
+	bindSyntheticDevHubAuthority(t, bundlePath, &bundle)
 	if err := WriteNewJSON(bundlePath, bundle); err != nil {
 		t.Fatal(err)
 	}
@@ -1298,8 +1500,17 @@ func salesforcePreflightForTest(t *testing.T, alias, bundleSHA, bundlePath strin
 
 func writeSyntheticDevHubBundle(t *testing.T, bundlePath string) {
 	t.Helper()
+	bundle := OracleBundle{}
+	bindSyntheticDevHubAuthority(t, bundlePath, &bundle)
+	if err := WriteNewJSON(bundlePath, bundle); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func bindSyntheticDevHubAuthority(t *testing.T, bundlePath string, bundle *OracleBundle) {
+	t.Helper()
 	authorityPath := filepath.Join(filepath.Dir(bundlePath), "DEV_HUB_AUTHORITY.json")
-	authority := SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D0", Username: "sealed-dev-hub@example.invalid"}
+	authority := SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D0", Username: "sealed-dev-hub@example.invalid", Execution: testSalesforceExecutionAuthority(t)}
 	if err := WriteNewJSON(authorityPath, authority); err != nil {
 		t.Fatal(err)
 	}
@@ -1307,9 +1518,24 @@ func writeSyntheticDevHubBundle(t *testing.T, bundlePath string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := WriteNewJSON(bundlePath, OracleBundle{DevHubAuthoritySHA256: authoritySHA, DevHub: authority.Alias, DevHubOrgID: authority.OrgID, DevHubUsername: authority.Username}); err != nil {
+	bundle.DevHubAuthoritySHA256, bundle.DevHub, bundle.DevHubOrgID, bundle.DevHubUsername, bundle.SalesforceExecution = authoritySHA, authority.Alias, authority.OrgID, authority.Username, authority.Execution
+}
+
+func testSalesforceExecutionAuthority(t *testing.T) SalesforceExecutionAuthority {
+	t.Helper()
+	environment, err := fixedSalesforceEnvironment()
+	if err != nil {
 		t.Fatal(err)
 	}
+	sfSHA, err := sha256File(salesforceCLIPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pythonSHA, err := sealedPythonSHA256()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return SalesforceExecutionAuthority{SFBinary: salesforceCLIPath, SFSHA256: sfSHA, PythonBinary: "/usr/bin/python3", PythonSHA256: pythonSHA, Environment: environment}
 }
 
 func salesforceCountOutputForTest(args []string) []byte {
@@ -1419,7 +1645,7 @@ func salesforceShardFilesForTest(t *testing.T, shardPath, bundlePath, bundleSHA,
 	if data, err := json.Marshal(shard); err != nil || os.WriteFile(shardPath, append(data, '\n'), 0o600) != nil {
 		t.Fatal(err)
 	}
-	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: bundle.DevHub, DevHubOrgID: bundle.DevHubOrgID, DevHubUsername: bundle.DevHubUsername, Alias: alias, OrgID: orgID, Command: salesforceCommandForTest(t, bundlePath, salesforceOrgCreateArgs(filepath.Join(filepath.Dir(bundlePath), "corpus-assurance-scratch-def.json"), bundle.DevHub, alias)), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", bundle.DevHub, "--json"})}
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: bundle.DevHub, DevHubOrgID: bundle.DevHubOrgID, DevHubUsername: bundle.DevHubUsername, Alias: alias, Marker: testSalesforceScratchMarker, OrgID: orgID, Command: salesforceCommandForTest(t, bundlePath, salesforceOrgCreateArgs(filepath.Join(filepath.Dir(bundlePath), "corpus-assurance-scratch-def.json"), bundle.DevHub, alias, testSalesforceScratchMarker)), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", bundle.DevHub, "--json"})}
 	creation.DevHubCommand.Output.Stdout = []byte(`{"status":0,"result":{"id":"` + bundle.DevHubOrgID + `","status":"Active","username":"` + bundle.DevHubUsername + `"}}`)
 	creation.DevHubCommand.StdoutSHA256 = replayBytesSHA256(creation.DevHubCommand.Output.Stdout)
 	creation.Command.Output.Stdout = []byte(`{"status":0,"result":{"orgId":"` + orgID + `"}}`)
@@ -1538,7 +1764,7 @@ func salesforceOrgCleanupForTest() CleanupReceipt {
 
 func salesforceInvocationForTest(project, org, kind string) *salesforceFilterInvocation {
 	hash, _ := sha256File(salesforceCLIPath)
-	return &salesforceFilterInvocation{SFBinary: salesforceCLIPath, Environment: map[string]string{"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}, TargetOrg: org, Commands: []salesforceFilterCommand{{Purpose: "deploy-or-exec", Args: expectedSalesforceCommand(project, org, kind), ExecutableSHA256: hash, ExecutableAfterSHA256: hash}}}
+	return &salesforceFilterInvocation{SFBinary: salesforceCLIPath, Environment: map[string]string{"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}, TargetOrg: org, Commands: []salesforceFilterCommand{{Purpose: "deploy-or-exec", Args: expectedSalesforceCommand(salesforceCLIPath, project, org, kind), ExecutableSHA256: hash, ExecutableAfterSHA256: hash}}}
 }
 
 func writeSalesforceExecutorEvidenceForTest(t *testing.T, bundlePath string, shard SalesforceShard) {
@@ -1644,6 +1870,14 @@ func mustFixedSalesforceEnvironment(t *testing.T) []string {
 		t.Fatal(err)
 	}
 	return environment
+}
+
+func fixedSalesforceEnvironment() ([]string, error) {
+	return []string{"HOME=/tmp", "PATH=" + strings.Join([]string{filepath.Dir(salesforceCLIPath), "/usr/bin", "/bin"}, string(filepath.ListSeparator)), "SF_USE_GENERIC_UNIX_KEYCHAIN=true", "TMPDIR=/tmp"}, nil
+}
+
+func sealedPythonSHA256() (string, error) {
+	return sha256File("/usr/bin/python3")
 }
 
 func mustSealedPythonSHA(t *testing.T) string {

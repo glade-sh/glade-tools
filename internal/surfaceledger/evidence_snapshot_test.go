@@ -217,8 +217,8 @@ func TestBuildEvidenceSnapshotMarksApexShapeEvidenceAsShapeOnly(t *testing.T) {
 	data := `{
   "name": "shape-only",
   "evidence": [{
-    "symbol": "System.Site.getPrefix",
-    "surfaceId": "apex:System.Site.getPrefix",
+    "symbol": "System.Address.getDistance(Location,String)",
+    "surfaceId": "apex:System.Address.getDistance(Location,String)",
     "kind": "shape"
   }],
   "command": {"kind": "test"},
@@ -231,7 +231,7 @@ func TestBuildEvidenceSnapshotMarksApexShapeEvidenceAsShapeOnly(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	row := rowsByID(rows)["apex:System.Site.getPrefix"]
+	row := rowsByID(rows)["apex:System.Address.getDistance(Location,String)"]
 	if row.Product != ProductApex || row.GladeShape == ShapeAbsent || row.GladeBehavior != BehaviorNone || row.Evidence != EvidenceFixture {
 		t.Fatalf("shape row = product:%s shape:%s behavior:%s evidence:%s rows:%#v", row.Product, row.GladeShape, row.GladeBehavior, row.Evidence, rows)
 	}
@@ -432,7 +432,7 @@ func TestBuildEvidenceSnapshotReadsApexTailShapeEvidence(t *testing.T) {
 		"apex:Schema.SObjectTypeFieldSets.getMap()",
 		"apex:Schema.SObjectTypeFields.get(String)",
 		"apex:Schema.SObjectTypeFields.getMap()",
-		"apex:System.Address.getDistance()",
+		"apex:System.Address.getDistance(Location,String)",
 		"apex:System.HttpRequest client certificate local mock metadata",
 		"apex:System.Location.getDistance()",
 		"apex:System.Location.newInstance()",

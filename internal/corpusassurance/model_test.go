@@ -44,6 +44,10 @@ func TestManifestValidatesRuntimeAndRedactsPrivatePaths(t *testing.T) {
 	if err := ValidateRuntimeArtifact(runtime); err != nil {
 		t.Fatalf("ValidateRuntimeArtifact(valid): %v", err)
 	}
+	runtime.OS = "linux"
+	if err := ValidateRuntimeArtifact(runtime); err != nil {
+		t.Fatalf("ValidateRuntimeArtifact(linux): %v", err)
+	}
 	runtime.Arch = "armv7"
 	if err := ValidateRuntimeArtifact(runtime); err == nil {
 		t.Fatal("ValidateRuntimeArtifact accepted unsupported architecture")

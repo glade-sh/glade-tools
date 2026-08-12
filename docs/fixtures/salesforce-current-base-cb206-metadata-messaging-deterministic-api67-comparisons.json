@@ -26,7 +26,7 @@
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
-    "targetOrgId": "00DO400000bt08ZMAQ",
+    "targetOrgId": "00D000000000001EAA",
     "apiVersion": "67.0",
     "executePath": "evidence/current-base/metadata-mock-batch-20260803/salesforce-metadata-auth-messaging.json",
     "executeSha256": "a08f1fc354b33821a5f26501a6d1af43167bb9cd64b0b15058ea7ce511fe1760"
@@ -34,7 +34,7 @@
   "localFixtures": [
     {
       "path": "docs/fixtures/current-base-cb206-metadata-messaging-deterministic-api67.json",
-      "sha256": "cdfaafe2801552cf5ff5938bc3d422cf7c60f470331bfc5841947ab7f97002e0"
+      "sha256": "94411eba28ba1894b737ac09eecac1a03b037bd75502b86ac7ff271fffbc44b7"
     }
   ],
   "comparisons": [

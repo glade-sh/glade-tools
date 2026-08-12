@@ -7,7 +7,7 @@
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-cb188-schema-20260802",
-    "orgId": "00DO500000pLAqDMAW",
+    "orgId": "00D000000000001EAA",
     "apiVersion": "67.0",
     "deletedAfterCapture": true
   },

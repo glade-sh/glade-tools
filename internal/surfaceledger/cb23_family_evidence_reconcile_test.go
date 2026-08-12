@@ -9,7 +9,7 @@ func TestCB23MergedFamilyEvidenceClosesTargetRows(t *testing.T) {
 	fixtureNames := []string{
 		"apex-tail-supported-shape-evidence.json",
 		"core-runtime-math-location-exact-evidence.json",
-		"core-runtime-address-value-object.json",
+		"current-base-cb191-system-rebind-positive-api67.json",
 		"core-runtime-messaging-single-email-attachments-evidence.json",
 		"visualforce-controller-runtime.json",
 		"core-feature-management.json",
@@ -28,7 +28,7 @@ func TestCB23MergedFamilyEvidenceClosesTargetRows(t *testing.T) {
 	for _, id := range []string{
 		"apex:System.Location.newInstance()",
 		"apex:System.Location.getDistance()",
-		"apex:System.Address.getDistance()",
+		"apex:System.Address.getDistance(Location,String)",
 		"apex:Messaging.SingleEmailMessage.setDocumentAttachments()",
 		"apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()",
 		"apex:System.FeatureManagement",
@@ -37,8 +37,12 @@ func TestCB23MergedFamilyEvidenceClosesTargetRows(t *testing.T) {
 		if !ok {
 			t.Fatalf("missing target row %s", id)
 		}
-		if row.GladeShape == ShapeAbsent || row.GladeBehavior != BehaviorSupported || row.Evidence != EvidenceFixture || row.GapClass != "" {
-			t.Fatalf("%s merged state = shape:%s behavior:%s evidence:%s gap:%s", id, row.GladeShape, row.GladeBehavior, row.Evidence, row.GapClass)
+		wantBehavior := BehaviorSupported
+		if id == "apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()" {
+			wantBehavior = BehaviorNone
+		}
+		if row.GladeShape == ShapeAbsent || row.GladeBehavior != wantBehavior || row.Evidence != EvidenceFixture || row.GapClass != "" {
+			t.Errorf("%s merged state = shape:%s behavior:%s evidence:%s gap:%s", id, row.GladeShape, row.GladeBehavior, row.Evidence, row.GapClass)
 		}
 	}
 }

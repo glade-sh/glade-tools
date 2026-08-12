@@ -1010,6 +1010,7 @@ func isSyntheticStdlibAPI(api string) bool {
 }
 
 var nonCanonicalGeneratedSurfaceIDs = map[string]struct{}{
+	"apex:System.EventBus.publishWithAccessLevel()":                                                          {},
 	"apex:Schema.ChildRelationship.ChildRelationship()":                                                      {},
 	"apex:Schema.DescribeColorResult.DescribeColorResult()":                                                  {},
 	"apex:Schema.DescribeDataCategoryGroupResult.DescribeDataCategoryGroupResult()":                          {},

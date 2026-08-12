@@ -202,7 +202,7 @@ func fixedReleaseGoBinary(environment []string) (string, error) {
 }
 
 func fixedReleaseEnvironment() []string {
-	return []string{"HOME=/private/tmp/glade-assurance-home", "PATH=" + fixedReleasePath(runtime.GOROOT()), "TMPDIR=/private/tmp", "GOCACHE=/private/tmp/glade-assurance-go-cache", "GOMODCACHE=/private/tmp/glade-assurance-go-mod", "GOWORK=off", "GOENV=off", "GOTOOLCHAIN=local"}
+	return []string{"HOME=/tmp/glade-assurance-home", "PATH=" + fixedReleasePath(runtime.GOROOT()), "TMPDIR=/tmp", "GOCACHE=/tmp/glade-assurance-go-cache", "GOMODCACHE=/tmp/glade-assurance-go-mod", "GOWORK=off", "GOENV=off", "GOTOOLCHAIN=local"}
 }
 
 func fixedReleasePath(goRoot string) string {

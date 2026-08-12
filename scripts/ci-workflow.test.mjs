@@ -6,6 +6,10 @@ const workflow = readFileSync(
   new URL("../.github/workflows/ci.yml", import.meta.url),
   "utf8",
 );
+const salesforceCorrectnessWorkflow = readFileSync(
+  new URL("../.github/workflows/salesforce-correctness.yml", import.meta.url),
+  "utf8",
+);
 
 test("CI does not duplicate pull request checks on feature branch pushes", () => {
   assert.match(
@@ -26,13 +30,27 @@ test("CI uses a bounded timeout long enough for the release proof", () => {
   assert.match(workflow, /test:[\s\S]*?- run: scripts\/release-check\.sh/);
 });
 
-test("CI runs only the Darwin assurance package on a bounded macOS job", () => {
-  assert.match(workflow, /assurance:\n\s+runs-on: macos-14\n\s+timeout-minutes: 15/);
-  assert.match(workflow, /assurance:[\s\S]*?- run: go test -count=1 \.\/internal\/corpusassurance/);
-  assert.doesNotMatch(workflow, /assurance:[\s\S]*?- run: scripts\/release-check\.sh/);
+test("CI does not duplicate assurance already covered by release-check", () => {
+  assert.doesNotMatch(workflow, /^  assurance:/m);
+  assert.match(workflow, /test:[\s\S]*?- run: scripts\/release-check\.sh/);
+  assert.match(
+    workflow,
+    /macos-release-upload:[\s\S]*?go test \.\/internal\/corpusassurance/,
+  );
 });
 
 test("CI does not install a fake Salesforce CLI into a system path", () => {
   assert.doesNotMatch(workflow, /\/usr\/local\/bin\/sf/);
   assert.doesNotMatch(workflow, /sudo install/);
+});
+
+test("manual Salesforce correctness uses attempt-unique server cleanup authority", () => {
+  assert.match(salesforceCorrectnessWorkflow, /GITHUB_RUN_ID.*GITHUB_RUN_ATTEMPT/);
+  assert.match(salesforceCorrectnessWorkflow, /--name "\$SF_SCRATCH_MARKER"/);
+  assert.match(salesforceCorrectnessWorkflow, /FROM ScratchOrgInfo WHERE OrgName/);
+  assert.match(salesforceCorrectnessWorkflow, /for poll in \{1\.\.12\}/);
+  assert.match(salesforceCorrectnessWorkflow, /sleep 5/);
+  assert.match(salesforceCorrectnessWorkflow, /FROM ActiveScratchOrg WHERE ScratchOrg/);
+  assert.match(salesforceCorrectnessWorkflow, /--sobject ActiveScratchOrg/);
+  assert.match(salesforceCorrectnessWorkflow, /remaining ActiveScratchOrg residue/);
 });

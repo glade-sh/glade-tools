@@ -313,7 +313,7 @@ func TestFixedReleasePathIncludesMacOSSystemAdministrationTools(t *testing.T) {
 }
 
 func TestFixedReleaseEnvironmentUsesWritableSealedHome(t *testing.T) {
-	if !strings.Contains(strings.Join(fixedReleaseEnvironment(), "\n"), "HOME=/private/tmp/glade-assurance-home") {
+	if !strings.Contains(strings.Join(fixedReleaseEnvironment(), "\n"), "HOME=/tmp/glade-assurance-home") {
 		t.Fatalf("release environment has no writable sealed home: %#v", fixedReleaseEnvironment())
 	}
 }

@@ -66,7 +66,7 @@
   "mode": "grouped-anonymous-cb146",
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
-    "targetOrgId": "00DO400000bt08ZMAQ",
+    "targetOrgId": "00D000000000001EAA",
     "apiVersion": "67.0",
     "deployPath": "evidence/current-base/database-next-batch-20260803/sf-deploy.json",
     "permissionSetDeployPath": "evidence/current-base/database-next-batch-20260803/sf-perm-deploy.json",

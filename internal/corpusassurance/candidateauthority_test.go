@@ -90,6 +90,31 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	}
 }
 
+func TestCandidateBuildValidatorBindsExactSource(t *testing.T) {
+	root := newInventoryRepository(t, map[string]string{
+		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
+		"cmd/glade/main.go": "package main\nimport \"fmt\"\nfunc main() { fmt.Println(`{\"command\":\"doctor\",\"parserOK\":true}`) }\n",
+	})
+	binding, err := deriveCandidateBuildBinding(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	candidatePath := filepath.Join(t.TempDir(), "glade")
+	if err := runBoundCandidateBuild(binding, candidatePath); err != nil {
+		t.Fatal(err)
+	}
+	candidate := attemptCandidate{Commit: testGitOutput(t, root, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+	if err := validateCandidateBuildFromSource(root, candidate, binding); err != nil {
+		t.Fatalf("exact source build rejected: %v", err)
+	}
+	if err := os.WriteFile(candidatePath, append([]byte("not the build\n"), []byte(candidate.SHA256)...), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateCandidateBuildFromSource(root, candidate, binding); err == nil {
+		t.Fatal("source build validation accepted an unrelated binary")
+	}
+}
+
 func TestCreateCandidateAuthorityRejectsToolsThatAreNotExecuting(t *testing.T) {
 	root := t.TempDir()
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})

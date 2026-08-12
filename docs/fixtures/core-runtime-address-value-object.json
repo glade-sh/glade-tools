@@ -8,11 +8,6 @@
   "evidence": [
     {
       "kind": "exec",
-      "surfaceId": "apex:System.Address.getDistance()",
-      "symbol": "Address.getDistance"
-    },
-    {
-      "kind": "exec",
       "surfaceId": "apex:System.Address.getStreet()",
       "symbol": "Address.getStreet"
     },

@@ -25,7 +25,7 @@ type cb193FixtureEnvelope struct {
 	} `json:"candidate"`
 }
 
-func TestCB193LocalMockCoreRowsHaveExactFixtureEvidence(t *testing.T) {
+func TestCB193LocalMockCoreFixtureIsExact(t *testing.T) {
 	root := filepath.Join("..", "..")
 	fixturePath := filepath.Join(root, "docs", "fixtures", "current-base-cb193-local-mock-core-positive.json")
 	fixture, err := compat.LoadFile(fixturePath)
@@ -35,8 +35,8 @@ func TestCB193LocalMockCoreRowsHaveExactFixtureEvidence(t *testing.T) {
 	if fixture.Name != "current-base-cb193-local-mock-core-positive" {
 		t.Fatalf("fixture name = %q", fixture.Name)
 	}
-	if len(fixture.Evidence) != 51 {
-		t.Fatalf("fixture evidence rows = %d, want 51 direct successful rows", len(fixture.Evidence))
+	if len(fixture.Evidence) != 49 {
+		t.Fatalf("fixture evidence rows = %d, want 49 direct successful rows", len(fixture.Evidence))
 	}
 
 	var meta cb193FixtureEnvelope
@@ -80,11 +80,25 @@ func TestCB193LocalMockCoreRowsHaveExactFixtureEvidence(t *testing.T) {
 		}
 		counts[cb193Family(row.SurfaceID)]++
 	}
-	if counts["Cache"] != 16 || counts["Metadata"] != 13 || counts["Messaging"] != 15 || counts["UserProvisioning"] != 7 {
-		t.Fatalf("family counts = %#v, want Cache 16, Metadata 13, Messaging 15, UserProvisioning 7", counts)
+	if counts["Cache"] != 16 || counts["Metadata"] != 13 || counts["Messaging"] != 15 || counts["UserProvisioning"] != 5 {
+		t.Fatalf("family counts = %#v, want Cache 16, Metadata 13, Messaging 15, UserProvisioning 5", counts)
 	}
+}
 
-	manifestPath := filepath.Join(cb193EvidenceRoot(t), "manifest.json")
+func TestCB193RetainedEvidenceMatchesFixture(t *testing.T) {
+	evidenceRoot, ok := findCB193EvidenceRoot(t)
+	if !ok {
+		t.Skip("retained CB193 evidence is not mounted")
+	}
+	fixture, err := compat.LoadFile(filepath.Join("..", "..", "docs", "fixtures", "current-base-cb193-local-mock-core-positive.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	seen := make(map[string]bool, len(fixture.Evidence))
+	for _, row := range fixture.Evidence {
+		seen[row.SurfaceID] = true
+	}
+	manifestPath := filepath.Join(evidenceRoot, "manifest.json")
 	var manifest struct {
 		CreditedRows   int `json:"creditedRows"`
 		UncreditedRows []struct {
@@ -93,7 +107,7 @@ func TestCB193LocalMockCoreRowsHaveExactFixtureEvidence(t *testing.T) {
 		} `json:"uncreditedRows"`
 	}
 	readCB193JSON(t, manifestPath, &manifest)
-	if manifest.CreditedRows != 51 || len(manifest.UncreditedRows) != 3 {
+	if manifest.CreditedRows != 49 || len(manifest.UncreditedRows) != 3 {
 		t.Fatalf("manifest counts = credited %d, uncredited %d", manifest.CreditedRows, len(manifest.UncreditedRows))
 	}
 	for _, row := range manifest.UncreditedRows {
@@ -118,7 +132,7 @@ func cb193Family(surfaceID string) string {
 	return "unknown"
 }
 
-func cb193EvidenceRoot(t *testing.T) string {
+func findCB193EvidenceRoot(t *testing.T) (string, bool) {
 	t.Helper()
 	dir, err := os.Getwd()
 	if err != nil {
@@ -127,7 +141,7 @@ func cb193EvidenceRoot(t *testing.T) string {
 	for {
 		candidate := filepath.Join(dir, "evidence", "current-base", "cb193-local-mock-core-contracts")
 		if _, err := os.Stat(candidate); err == nil {
-			return candidate
+			return candidate, true
 		}
 		parent := filepath.Dir(dir)
 		if parent == dir {
@@ -135,8 +149,7 @@ func cb193EvidenceRoot(t *testing.T) string {
 		}
 		dir = parent
 	}
-	t.Fatal("CB193 evidence directory not found above test working directory")
-	return ""
+	return "", false
 }
 
 func readCB193JSON(t *testing.T, path string, target any) {

@@ -9,7 +9,7 @@
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
-    "orgId": "00DO400000bt08ZMAQ",
+    "orgId": "00D000000000001EAA",
     "apiVersion": "67.0",
     "executePath": "evidence/current-base/schema-runtime-batch-20260803/salesforce-g02-current.raw.json",
     "executeSha256": "70b7ead4cb0af6f528bbea908902c0eb67af2f4d8445ab20e3e105d80f550d53"

@@ -34,10 +34,9 @@ packages=(
 	./internal/toolcli
 	./scripts
 )
-if [[ "$(go env GOOS)" == "darwin" ]]; then
-	packages+=(./internal/corpusassurance)
-fi
+packages+=(./internal/corpusassurance)
 go test "${packages[@]}"
+go test -count=1 ./internal/surfaceledger -run 'TestCB(23MergedFamilyEvidenceClosesTargetRows|56HostedPolicyCoversOnlyDeclaredServiceEffects|65EventBusAccessLevelSurfaceIDsAreCanonicalAndUnique|65EventBusFixtureExercisesAndMergesAllFourOverloads|193LocalMockCoreFixtureIsExact|206FixtureAndComparisonAreExact)$'
 go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json
 go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json
 go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json

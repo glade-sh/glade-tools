@@ -56,7 +56,7 @@
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
     "apiVersion": "67.0",
-    "orgId": "00DO400000bt08ZMAQ",
+    "orgId": "00D000000000001EAA",
     "testClass": "DatabaseDmlObjectListParityTest",
     "testRun": {
       "outcome": "Passed",

@@ -316,7 +316,7 @@ const cb112TestJSON = `{
   "packetId": "CB112",
   "sourceBatch": "CB107-B15",
   "candidate": {"path": "/test/candidate", "sha256": "ab03"},
-  "selectedOrg": {"alias": "glade-sf-sweep-2", "orgId": "00DRL00000TTINR2A5", "apiVersion": "67.0"},
+  "selectedOrg": {"alias": "glade-sf-sweep-2", "orgId": "00D000000000001EAA", "apiVersion": "67.0"},
   "rows": [
     {
       "surfaceId": "apex:Messaging.ActionError",

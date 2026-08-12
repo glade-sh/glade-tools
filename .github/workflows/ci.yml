@@ -51,50 +51,9 @@ jobs:
       - run: node --test scripts/*.test.mjs
       - run: scripts/release-check.sh
 
-  assurance:
-    runs-on: macos-14
-    timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: glade-tools
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          path: glade-tools
-      - uses: actions/create-github-app-token@v3
-        id: app-token
-        with:
-          client-id: ${{ vars.GLADE_APP_CLIENT_ID }}
-          private-key: ${{ secrets.GLADE_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: |
-            glade
-            glade-tools
-          permission-contents: read
-      - name: Resolve glade ref
-        id: glade-ref
-        env:
-          GLADE_REMOTE: https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/glade-sh/glade.git
-        run: |
-          requested_ref="$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"
-          scripts/resolve-sibling-ref.sh "$GLADE_REMOTE" "$requested_ref" main
-      - uses: actions/checkout@v6
-        with:
-          repository: glade-sh/glade
-          path: glade
-          ref: ${{ steps.glade-ref.outputs.ref }}
-          token: ${{ steps.app-token.outputs.token }}
-      - name: Verify pinned glade checkout
-        run: test "$(git -C ../glade rev-parse HEAD)" = "$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"
-      - uses: actions/setup-go@v6
-        with:
-          go-version: "1.26.3"
-          cache-dependency-path: glade-tools/go.sum
-      - run: go test -count=1 ./internal/corpusassurance
-
   macos-release-upload:
     runs-on: macos-14
-    timeout-minutes: 3
+    timeout-minutes: 8
     defaults:
       run:
         working-directory: glade-tools
@@ -129,6 +88,8 @@ jobs:
         with:
           go-version: "1.26.3"
           cache-dependency-path: glade-tools/go.sum
+      - name: Test assurance on macOS
+        run: go test ./internal/corpusassurance
       - name: Test release uploader with macOS system Bash
         run: |
           go_bin="$(command -v go)"

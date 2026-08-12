@@ -25,7 +25,7 @@
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
-    "orgId": "00DO400000bt08ZMAQ",
+    "orgId": "00D000000000001EAA",
     "apiVersion": "67.0",
     "deployPath": "evidence/current-base/metadata-enum-batch-20260803/salesforce-deploy.json",
     "testPath": "evidence/current-base/metadata-enum-batch-20260803/salesforce-test-command.json",

@@ -9,7 +9,7 @@
       "apex:Schema.DescribeSObjectResult.getChildRelationships()", "apex:Schema.ChildRelationship", "apex:Schema.ChildRelationship.getChildSObject()"
     ],
     "expectedObservation": "Boolean true for Account token/describe, record-type, picklist, and child-relationship scenarios",
-    "sfObservation": "All four API 67.0 Salesforce anonymous-Apex scenarios returned Boolean true in isolated scratch org 00Ddq00000EcrPpEAJ.",
+    "sfObservation": "All four API 67.0 Salesforce anonymous-Apex scenarios returned Boolean true in an isolated scratch org.",
     "gladeObservation": "All four scenarios returned Boolean true from candidate source d4af92179693e5b1d9f9b67ee692914cc62606dc, binary SHA-256 18bb46f704d8d837e45ab5eddde2aa745ae71b98d180737dc86e19b65affe9e5."
   }]
 }

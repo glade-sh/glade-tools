@@ -25,7 +25,7 @@
   },
   "salesforce": {
     "targetOrgAlias": "glade-sf-correctness",
-    "targetOrgId": "00DO400000bt08ZMAQ",
+    "targetOrgId": "00D000000000001EAA",
     "apiVersion": "67.0",
     "executePath": "evidence/current-base/system-exception-batch-20260803/salesforce-exec-safe4.json",
     "executeSha256": "98b5cad7df82c7d5980fb8192f2a4328a9962ada08a9aff2d130f5716f7b6f07"

@@ -51,7 +51,7 @@ func ValidateRuntimeArtifact(artifact RuntimeArtifact) error {
 	if !commitPattern.MatchString(artifact.Commit) || !sha256Pattern.MatchString(artifact.SHA256) {
 		return fmt.Errorf("runtime artifact must bind a 40-character commit and sha256")
 	}
-	if artifact.OS != "darwin" || (artifact.Arch != "arm64" && artifact.Arch != "amd64") {
+	if (artifact.OS != "darwin" && artifact.OS != "linux") || (artifact.Arch != "arm64" && artifact.Arch != "amd64") {
 		return fmt.Errorf("unsupported runtime %s/%s", artifact.OS, artifact.Arch)
 	}
 	return nil

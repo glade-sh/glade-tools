@@ -56,6 +56,7 @@ func TestCB56CurrentProductRowsReflectLunaMaxRuntimeSymbols(t *testing.T) {
 
 func TestCB56NonCanonicalRowsDoNotBecomeLedgerObligations(t *testing.T) {
 	nonCanonical := []string{
+		"apex:System.EventBus.publishWithAccessLevel()",
 		"apex:System.Assert.areEqual(Object,Object,Object)",
 		"apex:System.Assert.areNotEqual(Object,Object,Object)",
 		"apex:System.Assert.isTrue(Boolean,Object)",
@@ -207,8 +208,8 @@ func TestCB56HostedPolicyCoversOnlyDeclaredServiceEffects(t *testing.T) {
 		"apex:Auth.JWT.getAud()": DispositionDeterministicMockRequired,
 		"apex:Auth.JWTUtil.parseJWTFromStringWithoutValidation(String)":          DispositionDeterministicMockRequired,
 		"apex:Messaging.SingleEmailMessage.setCustomHeaders(Map<String,String>)": DispositionDeterministicMockRequired,
-		"apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob,Blob)":          DispositionLocalRuntimeRequired,
-		"apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob,Blob)":          DispositionLocalRuntimeRequired,
+		"apex:System.Crypto.decryptWithManagedIV(String,Blob,Blob,Blob)":         DispositionLocalRuntimeRequired,
+		"apex:System.Crypto.encryptWithManagedIV(String,Blob,Blob,Blob)":         DispositionLocalRuntimeRequired,
 		"apex:System.Http.send(HttpRequest)":                                     DispositionDeterministicMockRequired,
 		"apex:Context.IndustriesContext.getContext(Map<String,Object>)":          DispositionDeterministicMockRequired,
 		"apex:applauncher.AppMenu.setOrgSortOrder(List<Id>)":                     DispositionDeterministicMockRequired,

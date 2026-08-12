@@ -62,6 +62,7 @@ type AssuranceReportRequest struct {
 	JSONPath                    string
 	HTMLPath                    string
 	ReceiptPath                 string
+	PacketPath                  string
 	remoteRunner                salesforceCommandRunner
 }
 
@@ -159,17 +160,38 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 			inputs[fmt.Sprintf("salesforce-%s-%d.json", name, index)] = hash
 		}
 	}
+	executorInputs, err := reportSalesforceExecutorSnapshots(salesforceSnapshots)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	for name, snapshot := range executorInputs {
+		inputs[name] = replayBytesSHA256(snapshot.Data)
+	}
 	for index, path := range reportInputPaths(request) {
 		inputs[fmt.Sprintf("DIRECT_INPUT_%03d", index)] = initialInputHashes[path]
 	}
 	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
 		return AssuranceReceipt{}, err
 	}
+	if err := revalidateReportSalesforceExecutors(salesforceSnapshots); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	packetManifestSHA256, err := retainReportPacket(request.PacketPath, reportInputPaths(request), initialInputHashes, executorInputs)
+	if err != nil {
+		return AssuranceReceipt{}, err
+	}
+	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	if err := revalidateReportSalesforceExecutors(salesforceSnapshots); err != nil {
+		return AssuranceReceipt{}, err
+	}
+	inputs["PACKET_MANIFEST.json"] = packetManifestSHA256
 	return writeAssuranceArtifacts(AssuranceReport{SchemaVersion: 1, Rows: rows, RepositorySurfaceRows: repositoryRows, RepositorySummaries: repositorySummaries}, request.JSONPath, request.HTMLPath, request.ReceiptPath, inputs)
 }
 
 func requiredReportEvidencePaths(request AssuranceReportRequest) error {
-	paths := []string{request.InventoryPath, request.RootManifestPath, request.LedgerPath, request.SourceProfilePath, request.PolicyPath, request.DecisionPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.AttemptPath, request.LocalProofPath, request.OraclePlanPath, request.ExclusionRequestPath, request.ExclusionPolicyPath, request.AuthorityPath, request.ReleaseValidationPath, request.BundlePath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.JSONPath, request.HTMLPath, request.ReceiptPath}
+	paths := []string{request.InventoryPath, request.RootManifestPath, request.LedgerPath, request.SourceProfilePath, request.PolicyPath, request.DecisionPath, request.UsagePath, request.ProfilePath, request.FixtureManifestPath, request.ReplayPath, request.AttemptPath, request.LocalProofPath, request.OraclePlanPath, request.ExclusionRequestPath, request.ExclusionPolicyPath, request.AuthorityPath, request.ReleaseValidationPath, request.BundlePath, request.FilterScriptPath, request.ScratchDefinitionPath, request.ToolsAMD64Path, request.JSONPath, request.HTMLPath, request.ReceiptPath, request.PacketPath}
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return fmt.Errorf("absolute direct assurance paths are required")
@@ -197,6 +219,90 @@ func requiredReportEvidencePaths(request AssuranceReportRequest) error {
 		}
 	}
 	return nil
+}
+
+type reportPacketManifest struct {
+	SchemaVersion int                        `json:"schemaVersion"`
+	Files         []reportPacketManifestFile `json:"files"`
+}
+
+type reportPacketManifestFile struct {
+	Name   string      `json:"name"`
+	SHA256 string      `json:"sha256"`
+	Mode   os.FileMode `json:"mode"`
+}
+
+func retainReportPacket(output string, paths []string, hashes map[string]string, supplemental ...map[string]reportInputSnapshot) (string, error) {
+	if !filepath.IsAbs(output) {
+		return "", fmt.Errorf("absolute assurance packet path is required")
+	}
+	if err := os.Mkdir(output, 0o700); err != nil {
+		return "", err
+	}
+	complete := false
+	defer func() {
+		if !complete {
+			_ = os.RemoveAll(output)
+		}
+	}()
+	manifest := reportPacketManifest{SchemaVersion: 1, Files: make([]reportPacketManifestFile, 0, len(paths))}
+	retain := func(name string, snapshot reportInputSnapshot, expectedSHA256 string) error {
+		if name == "" || filepath.IsAbs(name) || filepath.ToSlash(filepath.Clean(name)) != name || name == "MANIFEST.json" || !snapshot.Mode.IsRegular() || replayBytesSHA256(snapshot.Data) != expectedSHA256 {
+			return fmt.Errorf("invalid assurance packet input %s", name)
+		}
+		retainedPath := filepath.Join(output, filepath.FromSlash(name))
+		if err := os.MkdirAll(filepath.Dir(retainedPath), 0o700); err != nil {
+			return err
+		}
+		if err := os.WriteFile(retainedPath, snapshot.Data, snapshot.Mode.Perm()); err != nil {
+			return err
+		}
+		if err := os.Chmod(retainedPath, snapshot.Mode.Perm()); err != nil {
+			return err
+		}
+		info, statErr := os.Lstat(retainedPath)
+		retainedSHA256, hashErr := sha256FileDirect(retainedPath)
+		if statErr != nil || hashErr != nil || !info.Mode().IsRegular() || info.Mode().Perm() != snapshot.Mode.Perm() || retainedSHA256 != expectedSHA256 {
+			return fmt.Errorf("verify retained assurance packet input %s", name)
+		}
+		manifest.Files = append(manifest.Files, reportPacketManifestFile{Name: name, SHA256: retainedSHA256, Mode: info.Mode().Perm()})
+		return nil
+	}
+	for index, path := range paths {
+		snapshot, ok := readReportSnapshot(path)
+		if !ok || !snapshot.Mode.IsRegular() || replayBytesSHA256(snapshot.Data) != hashes[path] {
+			return "", fmt.Errorf("retain assurance packet input %s", path)
+		}
+		name := fmt.Sprintf("DIRECT_INPUT_%03d", index)
+		if err := retain(name, snapshot, hashes[path]); err != nil {
+			return "", err
+		}
+	}
+	if len(supplemental) > 1 {
+		return "", fmt.Errorf("multiple supplemental assurance packet maps")
+	}
+	if len(supplemental) == 1 {
+		names := make([]string, 0, len(supplemental[0]))
+		for name := range supplemental[0] {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			snapshot := supplemental[0][name]
+			if err := retain(name, snapshot, replayBytesSHA256(snapshot.Data)); err != nil {
+				return "", err
+			}
+		}
+	}
+	manifestPath := filepath.Join(output, "MANIFEST.json")
+	if err := WriteNewJSON(manifestPath, manifest); err != nil {
+		return "", err
+	}
+	hash, err := sha256File(manifestPath)
+	if err == nil {
+		complete = true
+	}
+	return hash, err
 }
 
 func validateReportReplayEvidence(request AssuranceReportRequest, merge ReplayMerge) (map[string]string, error) {
@@ -368,14 +474,14 @@ func policyAuthorizesRows(policy, rows []ExclusionPolicyRow) bool {
 
 func snapshotReportInputHashes(request AssuranceReportRequest) (map[string]string, error) {
 	hashes := map[string]string{}
-	files := map[string][]byte{}
+	files := map[string]reportInputSnapshot{}
 	for _, path := range reportInputPaths(request) {
-		data, err := os.ReadFile(path)
+		snapshot, err := readRegularFileSnapshot(path)
 		if err != nil {
 			return nil, fmt.Errorf("hash report input %s: %w", path, err)
 		}
-		files[path] = append([]byte(nil), data...)
-		hashes[path] = replayBytesSHA256(data)
+		files[path] = snapshot
+		hashes[path] = replayBytesSHA256(snapshot.Data)
 	}
 	setReportSnapshot(files)
 	return hashes, nil
@@ -384,7 +490,9 @@ func snapshotReportInputHashes(request AssuranceReportRequest) (map[string]strin
 func revalidateReportInputHashes(request AssuranceReportRequest, expected map[string]string) error {
 	for _, path := range reportInputPaths(request) {
 		hash, err := sha256FileDirect(path)
-		if err != nil || hash != expected[path] {
+		info, statErr := os.Lstat(path)
+		snapshot, ok := readReportSnapshot(path)
+		if err != nil || statErr != nil || !ok || hash != expected[path] || info.Mode() != snapshot.Mode {
 			return fmt.Errorf("report input changed during generation: %s", path)
 		}
 	}
@@ -409,6 +517,40 @@ func reportInputPaths(request AssuranceReportRequest) []string {
 		}
 	}
 	return unique
+}
+
+func reportSalesforceExecutorSnapshots(shards []salesforceShardEvidenceSnapshot) (map[string]reportInputSnapshot, error) {
+	files := map[string]reportInputSnapshot{}
+	seenShards := map[int]bool{}
+	for _, shard := range shards {
+		if shard.Shard.ShardIndex < 0 || seenShards[shard.Shard.ShardIndex] {
+			return nil, fmt.Errorf("invalid retained Salesforce executor shard index")
+		}
+		seenShards[shard.Shard.ShardIndex] = true
+		prefix := fmt.Sprintf("salesforce-executor-%03d", shard.Shard.ShardIndex)
+		manifestName := prefix + "/" + salesforceExecutorManifestName
+		if !shard.Executor.Manifest.Mode.IsRegular() || replayBytesSHA256(shard.Executor.Manifest.Data) != shard.Executor.ManifestSHA256 {
+			return nil, fmt.Errorf("invalid retained Salesforce executor manifest")
+		}
+		files[manifestName] = shard.Executor.Manifest
+		for path, snapshot := range shard.Executor.Snapshots {
+			if path == "" || filepath.IsAbs(path) || filepath.ToSlash(filepath.Clean(path)) != path || !snapshot.Mode.IsRegular() {
+				return nil, fmt.Errorf("invalid retained Salesforce executor path")
+			}
+			files[prefix+"/"+path] = snapshot
+		}
+	}
+	return files, nil
+}
+
+func revalidateReportSalesforceExecutors(shards []salesforceShardEvidenceSnapshot) error {
+	for _, shard := range shards {
+		after, err := readSealedSalesforceExecutor(shard.Shard.ExecutorRoot)
+		if err != nil || !reflect.DeepEqual(after, shard.Executor) {
+			return fmt.Errorf("Salesforce executor evidence changed during report generation")
+		}
+	}
+	return nil
 }
 
 // AssuranceSurfaceRow is the public, neutral per-surface release outcome.

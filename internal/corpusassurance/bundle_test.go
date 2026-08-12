@@ -198,7 +198,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	}
 	root := filepath.Dir(request.OutputPath)
 	devHubAuthorityPath := filepath.Join(root, "DEV_HUB_AUTHORITY.json")
-	if err := WriteNewJSON(devHubAuthorityPath, SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D000000000001", Username: "sealed-dev-hub@example.invalid"}); err != nil {
+	if err := WriteNewJSON(devHubAuthorityPath, SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D000000000001", Username: "sealed-dev-hub@example.invalid", Execution: testSalesforceExecutionAuthority(t)}); err != nil {
 		t.Fatal(err)
 	}
 	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "scripts/smoke.sh": "#!/bin/sh\n"})

@@ -8,11 +8,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
 )
 
-const approvedSalesforceFilterSHA256 = "23ae6321d202e756ecddc689ef58ad3f3c610647c98e6d9aa20c667b3b6c39ec"
+const approvedSalesforceFilterSHA256 = "f3de3dd22f2c47f299e084c56321369dd3bc6a52ed7dc5966998db44e304c825"
 
 // testApprovedSalesforceFilterSHA256 is package-private so synthetic unit
 // fixtures can exercise the sealing protocol without exposing a caller choice.
@@ -39,27 +40,28 @@ type OracleBundleRequest struct {
 // OracleBundle is the acyclic receipt for the self-contained Salesforce staging
 // tree. Its SHA-256 is the bundle identity used by every Salesforce shard.
 type OracleBundle struct {
-	SchemaVersion            int                   `json:"schemaVersion"`
-	Candidate                RuntimeArtifact       `json:"candidate"`
-	Tools                    RuntimeArtifact       `json:"tools"`
-	ToolsAMD64               RuntimeArtifact       `json:"toolsAmd64"`
-	ProfileSHA256            string                `json:"profileSha256"`
-	OraclePlanSHA256         string                `json:"oraclePlanSha256"`
-	ExclusionAuthoritySHA256 string                `json:"exclusionAuthoritySha256"`
-	ReleaseValidationSHA256  string                `json:"releaseValidationSha256"`
-	AttemptSHA256            string                `json:"attemptSha256"`
-	LocalProofSHA256         string                `json:"localProofSha256"`
-	LocalProofSummarySHA256  string                `json:"localProofSummarySha256"`
-	FixtureManifestSHA256    string                `json:"fixtureManifestSha256"`
-	TransportManifestSHA256  string                `json:"transportManifestSha256"`
-	FilterSHA256             string                `json:"filterSha256"`
-	ScratchDefinitionSHA256  string                `json:"scratchDefinitionSha256"`
-	DevHubAuthoritySHA256    string                `json:"devHubAuthoritySha256"`
-	DevHub                   string                `json:"devHub"`
-	DevHubOrgID              string                `json:"devHubOrgId"`
-	DevHubUsername           string                `json:"devHubUsername"`
-	ToolsAMD64SHA256         string                `json:"toolsAmd64Sha256"`
-	Fixtures                 []OracleBundleFixture `json:"fixtures"`
+	SchemaVersion            int                          `json:"schemaVersion"`
+	Candidate                RuntimeArtifact              `json:"candidate"`
+	Tools                    RuntimeArtifact              `json:"tools"`
+	ToolsAMD64               RuntimeArtifact              `json:"toolsAmd64"`
+	ProfileSHA256            string                       `json:"profileSha256"`
+	OraclePlanSHA256         string                       `json:"oraclePlanSha256"`
+	ExclusionAuthoritySHA256 string                       `json:"exclusionAuthoritySha256"`
+	ReleaseValidationSHA256  string                       `json:"releaseValidationSha256"`
+	AttemptSHA256            string                       `json:"attemptSha256"`
+	LocalProofSHA256         string                       `json:"localProofSha256"`
+	LocalProofSummarySHA256  string                       `json:"localProofSummarySha256"`
+	FixtureManifestSHA256    string                       `json:"fixtureManifestSha256"`
+	TransportManifestSHA256  string                       `json:"transportManifestSha256"`
+	FilterSHA256             string                       `json:"filterSha256"`
+	ScratchDefinitionSHA256  string                       `json:"scratchDefinitionSha256"`
+	DevHubAuthoritySHA256    string                       `json:"devHubAuthoritySha256"`
+	DevHub                   string                       `json:"devHub"`
+	DevHubOrgID              string                       `json:"devHubOrgId"`
+	DevHubUsername           string                       `json:"devHubUsername"`
+	SalesforceExecution      SalesforceExecutionAuthority `json:"salesforceExecution"`
+	ToolsAMD64SHA256         string                       `json:"toolsAmd64Sha256"`
+	Fixtures                 []OracleBundleFixture        `json:"fixtures"`
 }
 
 type oracleTransportManifest struct {
@@ -284,7 +286,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if current, err := amd64ToolsArtifactFor(toolsAMD64Path, attempt.Tools.Commit); err != nil || current != toolsAMD64 {
 		return OracleBundle{}, fmt.Errorf("amd64 tools changed during staging")
 	}
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], DevHubAuthoritySHA256: devHubAuthoritySHA, DevHub: devHubAuthority.Alias, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
+	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], DevHubAuthoritySHA256: devHubAuthoritySHA, DevHub: devHubAuthority.Alias, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, SalesforceExecution: devHubAuthority.Execution, ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
 	if err := WriteNewJSON(filepath.Join(bundleRoot, "bundle.json"), bundle); err != nil {
 		return OracleBundle{}, err
 	}
@@ -415,7 +417,7 @@ func ValidateOracleBundle(bundlePath string) error {
 	if err != nil {
 		return fmt.Errorf("read oracle bundle: %w", err)
 	}
-	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.Tools.Arch != "arm64" || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) || bundle.DevHub == "" || bundle.DevHubOrgID == "" || bundle.DevHubUsername == "" {
+	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.Tools.Arch != "arm64" || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) || bundle.DevHub == "" || bundle.DevHubOrgID == "" || bundle.DevHubUsername == "" || !validSalesforceExecutionAuthority(bundle.SalesforceExecution) {
 		return fmt.Errorf("invalid oracle bundle")
 	}
 	if err := validateApprovedOracleBundleFilter(bundle); err != nil {
@@ -466,7 +468,7 @@ func ValidateOracleBundle(bundlePath string) error {
 		return fmt.Errorf("invalid staged assurance attempt")
 	}
 	devHubAuthority, _, err := readExactJSONBytes[SalesforceDevHubAuthority](filepath.Join(bundleRoot, "DEV_HUB_AUTHORITY.json"))
-	if err != nil || !validSalesforceDevHubAuthority(devHubAuthority) || devHubAuthority.Alias != bundle.DevHub || devHubAuthority.OrgID != bundle.DevHubOrgID || devHubAuthority.Username != bundle.DevHubUsername {
+	if err != nil || !validSalesforceDevHubAuthority(devHubAuthority) || devHubAuthority.Alias != bundle.DevHub || devHubAuthority.OrgID != bundle.DevHubOrgID || devHubAuthority.Username != bundle.DevHubUsername || !reflect.DeepEqual(devHubAuthority.Execution, bundle.SalesforceExecution) {
 		return fmt.Errorf("invalid staged Salesforce Dev Hub authority")
 	}
 	release, _, err := readExactJSONBytes[ReleaseValidation](filepath.Join(bundleRoot, "RELEASE_VALIDATION.json"))

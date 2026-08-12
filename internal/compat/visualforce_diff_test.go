@@ -276,7 +276,7 @@ func TestDiffVisualforceCaptureReportsUsesNormalizedTextAsContractFallback(t *te
     "html": {
       "status": "pass",
       "body": "<html><body><h1>Wrong shell</h1></body></html>",
-      "normalizedText": "Account Console 005QL00000jgvsqYAA"
+      "normalizedText": "Account Console 005000000000001AAA"
     }
   }]
 }`)
@@ -286,7 +286,7 @@ func TestDiffVisualforceCaptureReportsUsesNormalizedTextAsContractFallback(t *te
     "html": {
       "status": "pass",
       "body": "<html><body><h1>Different shell</h1></body></html>",
-      "normalizedText": "Account Console 005QL00000jgvsqYAA"
+      "normalizedText": "Account Console 005000000000001AAA"
     }
   }]
 }`)
@@ -306,7 +306,7 @@ func TestDiffVisualforceCaptureReportsPreservesMissingSalesforceIDGaps(t *testin
     "name": "Globals",
     "html": {
       "status": "pass",
-      "body": "<html><body>User: 005QL00000jgvsqYAA Org: 00DQL00000VntW92AJ</body></html>"
+      "body": "<html><body>User: 005000000000001AAA Org: 00D000000000001EAA</body></html>"
     }
   }]
 }`)
