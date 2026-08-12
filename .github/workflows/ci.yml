@@ -49,6 +49,7 @@ jobs:
           go-version: "1.26.3"
           cache-dependency-path: glade-tools/go.sum
       - run: node --test scripts/*.test.mjs
+      - run: scripts/release-check.sh
 
   assurance:
     runs-on: macos-14
@@ -89,9 +90,7 @@ jobs:
         with:
           go-version: "1.26.3"
           cache-dependency-path: glade-tools/go.sum
-      - name: Provide Salesforce CLI test stub when absent
-        run: test -x /usr/local/bin/sf || sudo install -m 755 /usr/bin/true /usr/local/bin/sf
-      - run: scripts/release-check.sh
+      - run: go test -count=1 ./internal/corpusassurance
 
   macos-release-upload:
     runs-on: macos-14

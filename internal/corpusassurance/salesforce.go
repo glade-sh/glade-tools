@@ -17,6 +17,9 @@ import (
 	"time"
 )
 
+const productionSalesforceCLIPath = "/usr/local/bin/sf"
+
+var salesforceCLIPath = productionSalesforceCLIPath
 var salesforceInventoryTypes = []string{"ApexClass", "ApexPage", "ApexTrigger", "CustomObject", "CustomField", "FieldSet", "StaticResource", "PlatformCachePartition"}
 
 type SalesforceInventory struct {
@@ -478,7 +481,7 @@ func sealedSalesforceExecutorRoot(attemptRoot, executorRoot string) error {
 // eight-type postflight receipt, and writes the normalized shard only after
 // the staged bundle still validates.
 func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.DispatchPath) || !filepath.IsAbs(request.PreflightPath) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.DispatchPath) || !filepath.IsAbs(request.PreflightPath) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != salesforceCLIPath {
 		return SalesforceShard{}, fmt.Errorf("invalid Salesforce shard request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
@@ -631,7 +634,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 // RunSalesforceOrgCreate creates one short-lived org from the scratch
 // definition sealed in the staged bundle. Its receipt is cleanup authority.
 func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCreation, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.OutputPath) || request.Alias == "" || request.SFBin != "/usr/local/bin/sf" {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.OutputPath) || request.Alias == "" || request.SFBin != salesforceCLIPath {
 		return SalesforceOrgCreation{}, fmt.Errorf("invalid Salesforce org creation request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
@@ -710,7 +713,7 @@ func RunSalesforceOrgCreate(request SalesforceOrgCreateRequest) (SalesforceOrgCr
 // RunSalesforceOrgCleanup deletes only an org whose exact creation and
 // preflight receipts bind it to this bundle, then verifies the alias is gone.
 func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.CreationPath) || (request.PreflightPath != "" && !filepath.IsAbs(request.PreflightPath)) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.CreationPath) || (request.PreflightPath != "" && !filepath.IsAbs(request.PreflightPath)) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != salesforceCLIPath {
 		return SalesforceOrgCleanup{}, fmt.Errorf("invalid Salesforce cleanup request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
@@ -831,7 +834,7 @@ func runInvalidatedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (Sa
 
 func validInvalidatedSalesforceOrgCreation(creation SalesforceOrgCreation, devHub, alias string) bool {
 	command := creation.Command
-	if !creation.Invalidated || creation.SchemaVersion != 1 || !sha256Pattern.MatchString(creation.BundleSHA256) || creation.DevHub != devHub || creation.Alias != alias || creation.OrgID == "" || len(command.Command) != 13 || command.Command[0] != "/usr/local/bin/sf" || !validRetainedCommandOutput(command) || !command.Passed || command.ExitCode != 0 || command.TimedOut {
+	if !creation.Invalidated || creation.SchemaVersion != 1 || !sha256Pattern.MatchString(creation.BundleSHA256) || creation.DevHub != devHub || creation.Alias != alias || creation.OrgID == "" || len(command.Command) != 13 || command.Command[0] != salesforceCLIPath || !validRetainedCommandOutput(command) || !command.Passed || command.ExitCode != 0 || command.TimedOut {
 		return false
 	}
 	args := command.Command[1:]
@@ -1072,7 +1075,7 @@ func validSalesforceProjectManifest(entries []salesforceExecutorFile, expectedSH
 }
 
 func validSalesforceInvocation(invocation *salesforceFilterInvocation, project, org, kind string, testClasses []string, expectedBefore, expectedAfter string) bool {
-	if invocation == nil || invocation.SFBinary != "/usr/local/bin/sf" || !reflect.DeepEqual(invocation.Environment, map[string]string{"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}) || invocation.TargetOrg != org || len(invocation.Commands) == 0 {
+	if invocation == nil || invocation.SFBinary != salesforceCLIPath || !reflect.DeepEqual(invocation.Environment, map[string]string{"SF_USE_GENERIC_UNIX_KEYCHAIN": "true"}) || invocation.TargetOrg != org || len(invocation.Commands) == 0 {
 		return false
 	}
 	command := expectedSalesforceCommand(project, org, kind)
@@ -1094,7 +1097,7 @@ func validSalesforceCLIHashes(command salesforceFilterCommand, expectedBefore, e
 }
 
 func expectedSalesforceRuntimeTestCommand(project, org string, testClasses []string) []string {
-	parts := []string{"/usr/local/bin/sf", "apex", "run", "test", "--tests", strings.Join(testClasses, ","), "--target-org", org}
+	parts := []string{salesforceCLIPath, "apex", "run", "test", "--tests", strings.Join(testClasses, ","), "--target-org", org}
 	if len(testClasses) == 1 {
 		parts = append(parts, "--synchronous")
 	}
@@ -1121,7 +1124,7 @@ func validSalesforceOrgCleanupReceipt(cleanup CleanupReceipt, expectedBefore, ex
 }
 
 func expectedSalesforceCommand(project, org, kind string) []string {
-	parts := []string{"/usr/local/bin/sf"}
+	parts := []string{salesforceCLIPath}
 	if kind == "exec" {
 		return append(parts, "apex", "run", "--file", filepath.Join(project, "anonymous.apex"), "--target-org", org, "--api-version", "67.0", "--json")
 	} else {
@@ -1241,7 +1244,7 @@ func validSalesforceTestObservation(data []byte) bool {
 // newly created scratch org. It only writes a receipt after every command and
 // the staged bundle pass validation.
 func RunSalesforceOrgPreflight(request SalesforceOrgPreflightRequest) (SalesforceOrgPreflight, error) {
-	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != "/usr/local/bin/sf" {
+	if !filepath.IsAbs(request.BundlePath) || !filepath.IsAbs(request.OutputPath) || request.TargetOrg == "" || request.SFBin != salesforceCLIPath {
 		return SalesforceOrgPreflight{}, fmt.Errorf("invalid Salesforce preflight request")
 	}
 	if _, err := os.Lstat(request.OutputPath); err == nil {
@@ -1482,8 +1485,8 @@ func validSalesforceOrgPreflight(preflight SalesforceOrgPreflight, bundleSHA, bu
 	}
 	for index, args := range salesforcePreflightArgs(preflight.OrgAlias) {
 		command := preflight.Commands[index]
-		expectedCommand := append([]string{"/usr/local/bin/sf"}, args...)
-		expectedSpec := salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
+		expectedCommand := append([]string{salesforceCLIPath}, args...)
+		expectedSpec := salesforceCommandSpecSHA256(salesforceCLIPath, args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
 		if !validRetainedCommandOutput(command) || !equalStrings(command.Command, expectedCommand) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != expectedSpec || !command.Passed || command.ExitCode != 0 || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
 			return false
 		}
@@ -1514,9 +1517,9 @@ func salesforceOrgCreateArgs(definition, devHub, alias string) []string {
 func validSalesforceOrgCreation(creation SalesforceOrgCreation, bundleSHA, bundlePath, devHub, alias string) bool {
 	args := salesforceOrgCreateArgs(filepath.Join(filepath.Dir(bundlePath), "corpus-assurance-scratch-def.json"), devHub, alias)
 	environment, err := fixedSalesforceEnvironment()
-	expectedSpec := salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, creation.Command.ExecutableSHA256, creation.Command.ExecutableAfterSHA256)
+	expectedSpec := salesforceCommandSpecSHA256(salesforceCLIPath, args, filepath.Dir(bundlePath), environment, creation.Command.ExecutableSHA256, creation.Command.ExecutableAfterSHA256)
 	orgID, outputErr := retainedSalesforceOrgCreate(creation.Command)
-	return err == nil && outputErr == nil && orgID == creation.OrgID && filepath.IsAbs(bundlePath) && creation.SchemaVersion == 1 && creation.BundleSHA256 == bundleSHA && creation.DevHub == devHub && creation.Alias == alias && creation.OrgID != "" && equalStrings(creation.Command.Command, append([]string{"/usr/local/bin/sf"}, args...)) && creation.Command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(creation.Command.Environment, environment) && sha256Pattern.MatchString(creation.Command.ExecutableSHA256) && creation.Command.ExecutableSHA256 == creation.Command.ExecutableAfterSHA256 && creation.Command.CommandSpecSHA256 == expectedSpec && creation.Command.Passed && creation.Command.ExitCode == 0 && !creation.Command.TimedOut && sha256Pattern.MatchString(creation.Command.StdoutSHA256) && sha256Pattern.MatchString(creation.Command.StderrSHA256) && validSalesforceDevHubCommand(creation.DevHubCommand, bundlePath, devHub, creation.DevHubOrgID, creation.DevHubUsername)
+	return err == nil && outputErr == nil && orgID == creation.OrgID && filepath.IsAbs(bundlePath) && creation.SchemaVersion == 1 && creation.BundleSHA256 == bundleSHA && creation.DevHub == devHub && creation.Alias == alias && creation.OrgID != "" && equalStrings(creation.Command.Command, append([]string{salesforceCLIPath}, args...)) && creation.Command.WorkingDirectory == filepath.Dir(bundlePath) && reflect.DeepEqual(creation.Command.Environment, environment) && sha256Pattern.MatchString(creation.Command.ExecutableSHA256) && creation.Command.ExecutableSHA256 == creation.Command.ExecutableAfterSHA256 && creation.Command.CommandSpecSHA256 == expectedSpec && creation.Command.Passed && creation.Command.ExitCode == 0 && !creation.Command.TimedOut && sha256Pattern.MatchString(creation.Command.StdoutSHA256) && sha256Pattern.MatchString(creation.Command.StderrSHA256) && validSalesforceDevHubCommand(creation.DevHubCommand, bundlePath, devHub, creation.DevHubOrgID, creation.DevHubUsername)
 }
 
 func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePath string, creation SalesforceOrgCreation) bool {
@@ -1536,8 +1539,8 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 	}
 	for index, want := range expected {
 		command := cleanup.Commands[index]
-		spec := salesforceCommandSpecSHA256("/usr/local/bin/sf", want.args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
-		if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{"/usr/local/bin/sf"}, want.args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != spec || command.Passed != want.passed || (command.ExitCode == 0) != want.passed || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
+		spec := salesforceCommandSpecSHA256(salesforceCLIPath, want.args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256)
+		if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{salesforceCLIPath}, want.args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != spec || command.Passed != want.passed || (command.ExitCode == 0) != want.passed || command.TimedOut || !sha256Pattern.MatchString(command.StdoutSHA256) || !sha256Pattern.MatchString(command.StderrSHA256) {
 			return false
 		}
 		if index == 1 && validSalesforceOrgDisplayFailure(command.Output.Stdout) == false {
@@ -1553,7 +1556,7 @@ func validSalesforceDevHubCommand(command CommandResult, bundlePath, alias, orgI
 		return false
 	}
 	args := []string{"org", "display", "--target-org", alias, "--json"}
-	if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{"/usr/local/bin/sf"}, args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != salesforceCommandSpecSHA256("/usr/local/bin/sf", args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256) || !command.Passed || command.ExitCode != 0 || command.TimedOut {
+	if !validRetainedCommandOutput(command) || !equalStrings(command.Command, append([]string{salesforceCLIPath}, args...)) || command.WorkingDirectory != filepath.Dir(bundlePath) || !reflect.DeepEqual(command.Environment, environment) || !sha256Pattern.MatchString(command.ExecutableSHA256) || command.ExecutableSHA256 != command.ExecutableAfterSHA256 || command.CommandSpecSHA256 != salesforceCommandSpecSHA256(salesforceCLIPath, args, filepath.Dir(bundlePath), environment, command.ExecutableSHA256, command.ExecutableAfterSHA256) || !command.Passed || command.ExitCode != 0 || command.TimedOut {
 		return false
 	}
 	observedID, _, observedUsername, err := parseSalesforceOrgDisplay(command.Output.Stdout)
@@ -1628,7 +1631,7 @@ func salesforceFilterArgs(filterPath, bundleRoot, executorRoot, runID, orgAlias 
 		"--out", filepath.Join(executorRoot, "filter"),
 		"--limit", strconv.Itoa(len(bundle.Fixtures)),
 		"--orgs", orgAlias,
-		"--sf-bin", "/usr/local/bin/sf",
+		"--sf-bin", salesforceCLIPath,
 		"--candidate-commit", bundle.Candidate.Commit,
 		"--candidate-sha256", bundle.Candidate.SHA256,
 		"--tools-commit", bundle.Tools.Commit,

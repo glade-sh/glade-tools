@@ -14,26 +14,30 @@ fi
 # archive/worktree evidence probes; run that maintenance suite when its
 # external evidence roots are mounted rather than treating absent evidence as
 # a current-base parity failure.
-go test \
-	-count=1 \
-	./internal/apexdocs \
-	./internal/apexrules \
-	./internal/capability \
-	./internal/compat \
-	./internal/corpusassurance \
-	./internal/corpuscheck \
-	./internal/examplescan \
-	./internal/lwcparity \
-	./internal/metadata \
-	./internal/oracleprobe \
-	./internal/orgpackage \
-	./internal/perfscan \
-	./internal/perftool \
-	./internal/producttestverify \
-	./internal/projectscan \
-	./internal/uicontroller \
-	./internal/toolcli \
+packages=(
+	-count=1
+	./internal/apexdocs
+	./internal/apexrules
+	./internal/capability
+	./internal/compat
+	./internal/corpuscheck
+	./internal/examplescan
+	./internal/lwcparity
+	./internal/metadata
+	./internal/oracleprobe
+	./internal/orgpackage
+	./internal/perfscan
+	./internal/perftool
+	./internal/producttestverify
+	./internal/projectscan
+	./internal/uicontroller
+	./internal/toolcli
 	./scripts
+)
+if [[ "$(go env GOOS)" == "darwin" ]]; then
+	packages+=(./internal/corpusassurance)
+fi
+go test "${packages[@]}"
 go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json
 go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json
 go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json

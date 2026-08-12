@@ -23,16 +23,16 @@ test("CI checks product evidence against the catalog-pinned Glade commit", () =>
 
 test("CI uses a bounded timeout long enough for the release proof", () => {
   assert.match(workflow, /runs-on: ubuntu-latest\n\s+timeout-minutes: 15/);
+  assert.match(workflow, /test:[\s\S]*?- run: scripts\/release-check\.sh/);
 });
 
-test("CI runs the assurance release proof on a bounded macOS job", () => {
+test("CI runs only the Darwin assurance package on a bounded macOS job", () => {
   assert.match(workflow, /assurance:\n\s+runs-on: macos-14\n\s+timeout-minutes: 15/);
-  assert.match(workflow, /assurance:[\s\S]*?- run: scripts\/release-check\.sh/);
+  assert.match(workflow, /assurance:[\s\S]*?- run: go test -count=1 \.\/internal\/corpusassurance/);
+  assert.doesNotMatch(workflow, /assurance:[\s\S]*?- run: scripts\/release-check\.sh/);
 });
 
-test("CI supplies a Salesforce CLI test stub only when the macOS runner lacks one", () => {
-  assert.match(
-    workflow,
-    /assurance:[\s\S]*?test -x \/usr\/local\/bin\/sf \|\| sudo install -m 755 \/usr\/bin\/true \/usr\/local\/bin\/sf/,
-  );
+test("CI does not install a fake Salesforce CLI into a system path", () => {
+  assert.doesNotMatch(workflow, /\/usr\/local\/bin\/sf/);
+  assert.doesNotMatch(workflow, /sudo install/);
 });
