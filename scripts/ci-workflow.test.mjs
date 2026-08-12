@@ -24,3 +24,8 @@ test("CI checks product evidence against the catalog-pinned Glade commit", () =>
 test("CI uses a bounded timeout long enough for the release proof", () => {
   assert.match(workflow, /runs-on: ubuntu-latest\n\s+timeout-minutes: 15/);
 });
+
+test("CI runs the assurance release proof on a bounded macOS job", () => {
+  assert.match(workflow, /assurance:\n\s+runs-on: macos-14\n\s+timeout-minutes: 15/);
+  assert.match(workflow, /assurance:[\s\S]*?- run: scripts\/release-check\.sh/);
+});
