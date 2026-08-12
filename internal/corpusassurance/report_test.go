@@ -172,6 +172,29 @@ func TestWriteHTMLIsSelfContainedAndCreateOnly(t *testing.T) {
 	}
 }
 
+func TestHTMLProvidesAccessibleResponsiveShell(t *testing.T) {
+	html, err := renderAssuranceHTML([]byte(`{"schemaVersion":1,"rows":[]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		`<html lang="en">`,
+		`<meta name="viewport" content="width=device-width,initial-scale=1">`,
+		`<label>Namespace<select id="namespace">`,
+		`<label>Disposition<select id="disposition">`,
+		`<label>Repository<select id="repository">`,
+		`<label>Evidence<select id="evidence">`,
+		`<label>Exclusion<select id="exclusion">`,
+		`<label>Search<input id="text"`,
+		`class="table-scroll"`,
+		`overflow-x:auto`,
+	} {
+		if !strings.Contains(string(html), want) {
+			t.Fatalf("HTML misses accessible responsive shell %q", want)
+		}
+	}
+}
+
 func TestHTMLShowsReadinessAndNonParityIndependently(t *testing.T) {
 	report := []byte(`{"schemaVersion":1,"rows":[{"surfaceId":"apex:Example.run","compileReady":true,"testReady":true,"nonParity":true,"exclusionReason":"hosted execution"}],"repositorySurfaceRows":[{"repositoryId":"private-corpus-001","surfaceId":"apex:Example.run","compileReady":true,"testReady":true,"nonParity":true,"nonParityReason":"hosted execution"}]}`)
 	html, err := renderAssuranceHTML(report)
