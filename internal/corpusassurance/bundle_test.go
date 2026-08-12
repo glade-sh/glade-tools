@@ -38,6 +38,28 @@ func TestToolsAMD64BuildArgsForceFreshBuild(t *testing.T) {
 	}
 }
 
+func TestValidateOracleBundleAllowsNonArm64BuildHost(t *testing.T) {
+	bundle := OracleBundle{
+		SchemaVersion:         1,
+		Candidate:             RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "linux", Arch: "amd64", SHA256: strings.Repeat("b", 64)},
+		Tools:                 RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "linux", Arch: "amd64", SHA256: strings.Repeat("d", 64)},
+		ToolsAMD64:            RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "amd64", SHA256: strings.Repeat("e", 64)},
+		ToolsAMD64SHA256:      strings.Repeat("e", 64),
+		DevHubAuthoritySHA256: strings.Repeat("f", 64),
+		DevHub:                "sealed-dev-hub",
+		DevHubOrgID:           "00D000000000001",
+		DevHubUsername:        "sealed-dev-hub@example.invalid",
+		SalesforceExecution:   testSalesforceExecutionAuthority(t),
+	}
+	path := filepath.Join(t.TempDir(), "bundle.json")
+	if err := WriteNewJSON(path, bundle); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateOracleBundle(path); err == nil || err.Error() == "invalid oracle bundle" {
+		t.Fatalf("non-arm64 build host rejected before staged-input validation: %v", err)
+	}
+}
+
 func TestOracleReleaseValidationAcceptsSealedForeignRuntimeEnvironment(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)

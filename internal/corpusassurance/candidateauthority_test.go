@@ -74,8 +74,12 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	if err := json.Unmarshal(data, &platformTampered); err != nil {
 		t.Fatal(err)
 	}
-	platformTampered.Binding.Tools.Arch = "amd64"
-	platformTampered.BoundInputs.Tools.Arch = "amd64"
+	tamperedArch := "amd64"
+	if runtime.GOARCH == tamperedArch {
+		tamperedArch = "arm64"
+	}
+	platformTampered.Binding.Tools.Arch = tamperedArch
+	platformTampered.BoundInputs.Tools.Arch = tamperedArch
 	platformAuthorityPath := filepath.Join(root, "PLATFORM_TAMPERED_AUTHORITY.json")
 	writeCandidateAuthorityJSON(t, platformAuthorityPath, platformTampered)
 	if _, _, err := readCandidateAuthority(platformAuthorityPath); err == nil {

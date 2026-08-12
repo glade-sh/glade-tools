@@ -417,7 +417,7 @@ func ValidateOracleBundle(bundlePath string) error {
 	if err != nil {
 		return fmt.Errorf("read oracle bundle: %w", err)
 	}
-	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.Tools.Arch != "arm64" || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) || bundle.DevHub == "" || bundle.DevHubOrgID == "" || bundle.DevHubUsername == "" || !validSalesforceExecutionAuthority(bundle.SalesforceExecution) {
+	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) || bundle.DevHub == "" || bundle.DevHubOrgID == "" || bundle.DevHubUsername == "" || !validSalesforceExecutionAuthority(bundle.SalesforceExecution) {
 		return fmt.Errorf("invalid oracle bundle")
 	}
 	if err := validateApprovedOracleBundleFilter(bundle); err != nil {
