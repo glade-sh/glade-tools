@@ -175,7 +175,7 @@ func TestPluginArchiveBuildIsByteIdenticalAcrossCleanBuilds(t *testing.T) {
 	}
 }
 
-func TestReleaseCheckUsesPackageAndManifestEntrypointsWithoutDirectArchiveBuild(t *testing.T) {
+func TestReleaseCheckSplitsCoreAndReleaseEntrypointsWithoutDirectArchiveBuild(t *testing.T) {
 	check, err := os.ReadFile("release-check.sh")
 	if err != nil {
 		t.Fatalf("read release-check.sh: %v", err)
@@ -185,7 +185,10 @@ func TestReleaseCheckUsesPackageAndManifestEntrypointsWithoutDirectArchiveBuild(
 		t.Fatal(err)
 	}
 	for _, line := range []string{
-		"./scripts",
+		"node --test scripts/*.test.mjs",
+		"go test \"${packages[@]}\"",
+		"go test -count=1 ./scripts",
+		"go test -count=1 ./internal/surfaceledger -run 'TestCB(23MergedFamilyEvidenceClosesTargetRows|56HostedPolicyCoversOnlyDeclaredServiceEffects|65EventBusAccessLevelSurfaceIDsAreCanonicalAndUnique|65EventBusFixtureExercisesAndMergesAllFourOverloads|193LocalMockCoreFixtureIsExact|206FixtureAndComparisonAreExact)$'",
 		"go run ./cmd/glade-plugin-compat manifest --json",
 		"go run ./cmd/glade-plugin-performance manifest --json",
 		"go run ./cmd/glade-plugin-orgpackage manifest --json",
@@ -196,6 +199,18 @@ func TestReleaseCheckUsesPackageAndManifestEntrypointsWithoutDirectArchiveBuild(
 			}
 		})
 	}
+	t.Run("rejects another shared active command", func(t *testing.T) {
+		shared := strings.ReplaceAll(checkText, "git diff --check", "git diff --check\n\t\techo shared")
+		if err := releaseCheckContractError(shared); err == nil {
+			t.Fatal("release-check.sh accepted another shared active command")
+		}
+	})
+	t.Run("rejects caller-directory-dependent default dispatch", func(t *testing.T) {
+		dispatch := `all) "$ROOT/scripts/release-check.sh" core; "$ROOT/scripts/release-check.sh" release ;;`
+		if err := releaseCheckContractError(strings.Replace(checkText, dispatch, `all) "$0" core; "$0" release ;;`, 1)); err == nil {
+			t.Fatal("release-check.sh accepted caller-directory-dependent default dispatch")
+		}
+	})
 	t.Run("rejects ignored manifest failure", func(t *testing.T) {
 		line := "go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json"
 		if err := releaseCheckContractError(strings.Replace(checkText, line, line+" || true", 1)); err == nil {
@@ -208,45 +223,95 @@ func releaseCheckContractError(checkText string) error {
 	if strings.Contains(checkText, "scripts/build-plugin-archives.sh") {
 		return fmt.Errorf("release-check.sh must not directly build plugin archives")
 	}
-	manifests := map[string]bool{
-		"go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json":           false,
-		"go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json": false,
-		"go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json":   false,
+	if strings.Contains(checkText, `[[ -d "${ROOT}/../glade" ]]`) {
+		return fmt.Errorf("release-check.sh must not repeat the sibling directory preflight per lane")
 	}
-	var packages, scriptsPackage, runsPackages bool
+	if !strings.Contains(checkText, "case \"${1:-all}\" in") ||
+		!strings.Contains(checkText, `all) "$ROOT/scripts/release-check.sh" core; "$ROOT/scripts/release-check.sh" release ;;`) ||
+		!strings.Contains(checkText, `*) echo "usage: $0 [all|core|release]" >&2; exit 2 ;;`) {
+		return fmt.Errorf("release-check.sh must accept only core, release, and their default union")
+	}
+	wantCore := []string{
+		"git diff --check",
+		"node --test scripts/*.test.mjs",
+		`go test "${packages[@]}"`,
+	}
+	wantRelease := []string{
+		"git diff --check",
+		"go test -count=1 ./scripts",
+		"go test -count=1 ./internal/surfaceledger -run 'TestCB(23MergedFamilyEvidenceClosesTargetRows|56HostedPolicyCoversOnlyDeclaredServiceEffects|65EventBusAccessLevelSurfaceIDsAreCanonicalAndUnique|65EventBusFixtureExercisesAndMergesAllFourOverloads|193LocalMockCoreFixtureIsExact|206FixtureAndComparisonAreExact)$'",
+		"go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json",
+		"go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json",
+		"go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json",
+	}
+	gotCore := releaseCheckActiveLines(checkText, "core")
+	gotRelease := releaseCheckActiveLines(checkText, "release")
+	if strings.Join(gotCore, "\n") != strings.Join(wantCore, "\n") || strings.Join(gotRelease, "\n") != strings.Join(wantRelease, "\n") {
+		return fmt.Errorf("release-check.sh lane commands = core %q, release %q", gotCore, gotRelease)
+	}
+	if strings.Join(releaseCheckSharedLines(gotCore, gotRelease), "\n") != "git diff --check" {
+		return fmt.Errorf("release-check.sh must share only git diff --check")
+	}
+	wantPackages := []string{
+		"-count=1", "./internal/apexdocs", "./internal/apexrules", "./internal/capability", "./internal/compat",
+		"./internal/corpuscheck", "./internal/examplescan", "./internal/lwcparity", "./internal/metadata", "./internal/oracleprobe",
+		"./internal/orgpackage", "./internal/perfscan", "./internal/perftool", "./internal/producttestverify", "./internal/projectscan",
+		"./internal/uicontroller", "./internal/toolcli", "./internal/corpusassurance",
+	}
+	var gotPackages []string
+	inPackages := false
 	for _, line := range strings.Split(checkText, "\n") {
 		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
 		if line == "packages=(" {
-			packages = true
+			inPackages = true
 			continue
 		}
-		if packages {
-			if line == ")" {
-				packages = false
-			} else if line == "./scripts" {
-				scriptsPackage = true
-			}
-			continue
+		if inPackages && line == ")" {
+			break
 		}
-		if line == `go test "${packages[@]}"` {
-			runsPackages = true
-		}
-		if _, found := manifests[line]; found {
-			manifests[line] = true
+		if inPackages && line != "" && !strings.HasPrefix(line, "#") {
+			gotPackages = append(gotPackages, line)
 		}
 	}
-	if !scriptsPackage || !runsPackages {
-		return fmt.Errorf("release-check.sh must run ./scripts through packages")
-	}
-	for manifest, found := range manifests {
-		if !found {
-			return fmt.Errorf("release-check.sh missing active %q", manifest)
-		}
+	if strings.Join(gotPackages, "\n") != strings.Join(wantPackages, "\n") {
+		return fmt.Errorf("core packages = %q, want %q", gotPackages, wantPackages)
 	}
 	return nil
+}
+
+func releaseCheckLane(checkText, lane string) string {
+	start := "\t" + lane + ")\n"
+	startAt := strings.Index(checkText, start)
+	if startAt < 0 {
+		return ""
+	}
+	section := checkText[startAt+len(start):]
+	endAt := strings.Index(section, "\t\t;;")
+	if endAt < 0 {
+		return ""
+	}
+	return section[:endAt]
+}
+
+func releaseCheckActiveLines(checkText, lane string) (active []string) {
+	for _, line := range strings.Split(releaseCheckLane(checkText, lane), "\n") {
+		line = strings.TrimSpace(line)
+		if line != "" && !strings.HasPrefix(line, "#") {
+			active = append(active, line)
+		}
+	}
+	return active
+}
+
+func releaseCheckSharedLines(first, second []string) (shared []string) {
+	for _, line := range first {
+		for _, other := range second {
+			if line == other {
+				shared = append(shared, line)
+			}
+		}
+	}
+	return shared
 }
 
 func buildPluginArchives(t *testing.T, version, target, output string) {
