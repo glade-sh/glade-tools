@@ -1,0 +1,11 @@
+{
+  "name": "core-runtime-lowering-gap",
+  "source": [
+    {
+      "path": "force-app/main/classes/RuntimeLoweringGap.cls",
+      "content": "public class RuntimeLoweringGap { public void run() { Integer flags = 1 ^ 2; } }"
+    }
+  ],
+  "command": {"kind":"check"},
+  "expected": {"result":{"ok":true,"files":1,"types":1,"diagnostics":1}}
+}
