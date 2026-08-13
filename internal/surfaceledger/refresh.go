@@ -15,6 +15,7 @@ type RefreshOptions struct {
 	DiffFrom            string
 	EvidenceFixtureGlob []string
 	OracleEvidenceGlob  []string
+	SourceIdentityPath  string
 }
 
 type RefreshResult struct {
@@ -67,6 +68,13 @@ func Refresh(options RefreshOptions) (RefreshResult, error) {
 		evidenceRows = append(evidenceRows, oracleRows...)
 	}
 	ledger := Merge(docsRows, orgRows, gladeRows, evidenceRows)
+	if options.SourceIdentityPath != "" {
+		identity, err := ReadSourceIdentity(options.SourceIdentityPath)
+		if err != nil {
+			return RefreshResult{}, err
+		}
+		ApplySourceIdentity(&ledger, identity)
+	}
 	AssignPriorities(ledger.Rows)
 	ledger.Summary = Summarize(ledger.Rows)
 	if err := writeRefreshOutputs(options.OutputDir, docsRows, orgRows, gladeRows, evidenceRows, ledger, options.DiffFrom); err != nil {

@@ -115,9 +115,10 @@ const (
 const SourceStandardSObjectGeneratedShape = "standard-sobject-generated-shape"
 
 type SurfaceLedger struct {
-	SchemaVersion int                `json:"schemaVersion"`
-	Rows          []SurfaceLedgerRow `json:"rows"`
-	Summary       LedgerSummary      `json:"summary"`
+	SchemaVersion  int                `json:"schemaVersion"`
+	Rows           []SurfaceLedgerRow `json:"rows"`
+	Summary        LedgerSummary      `json:"summary"`
+	SourceIdentity *SourceIdentity    `json:"sourceIdentity,omitempty"`
 }
 
 type LedgerSummary struct {
@@ -163,6 +164,9 @@ type SurfaceLedgerRow struct {
 	DocsTitle  string   `json:"docsTitle,omitempty"`
 	APIVersion string   `json:"apiVersion,omitempty"`
 	Sources    []string `json:"sources,omitempty"`
+
+	DocsSourceAtlasVersion  string `json:"docsSourceAtlasVersion,omitempty"`
+	DocsSourceReleaseStatus string `json:"docsSourceReleaseStatus,omitempty"`
 
 	SalesforceSurfaceFamily   string `json:"salesforceSurfaceFamily,omitempty"`
 	GladeImplementationTarget string `json:"gladeImplementationTarget,omitempty"`

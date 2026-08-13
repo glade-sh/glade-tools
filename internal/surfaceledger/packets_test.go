@@ -67,6 +67,24 @@ func TestApexLanguagePacketOwnsLanguageRows(t *testing.T) {
 	}
 }
 
+func TestPacketManifestRetainsSelectableClosedRows(t *testing.T) {
+	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{{
+		SurfaceID: "apex-language:NamespaceClassVariablePrecedence",
+		Product:   "apex-language",
+		Bucket:    BucketImplemented,
+	}}}
+	manifest := BuildPacketManifest(ledger)
+	for _, packet := range manifest.Packets {
+		if packet.ID == "Apex.Language" {
+			if len(packet.RowIDs) != 1 || packet.RowIDs[0] != "apex-language:NamespaceClassVariablePrecedence" {
+				t.Fatalf("Apex.Language row IDs = %#v", packet.RowIDs)
+			}
+			return
+		}
+	}
+	t.Fatal("Apex.Language packet missing from manifest")
+}
+
 func TestPacketMarkdownIncludesAgentCloseoutRules(t *testing.T) {
 	packet, ok := AreaPacketByName("Core.Runtime.System.FeatureManagement")
 	if !ok {

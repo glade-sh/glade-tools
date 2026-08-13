@@ -202,6 +202,12 @@ func runCompatSurfaceRefresh(args []string, w io.Writer) error {
 				return errors.New("--oracle-evidence requires a value")
 			}
 			options.OracleEvidenceGlob = append(options.OracleEvidenceGlob, args[i])
+		case "--source-identity":
+			i++
+			if i >= len(args) {
+				return errors.New("--source-identity requires a value")
+			}
+			options.SourceIdentityPath = args[i]
 		case "--json":
 			jsonOut = true
 		case "--dry-run":
