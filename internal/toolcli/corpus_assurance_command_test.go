@@ -66,6 +66,16 @@ func TestCorpusAssuranceOracleProfile(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-profile")
 }
 
+func TestCorpusAssuranceCandidate(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "candidate-build")
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "candidate-authority")
+}
+
+func TestCorpusAssuranceAttempt(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "attempt-init")
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "attempt")
+}
+
 func TestCorpusAssuranceOracleDirectives(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-directives-draft")
 }
