@@ -120,6 +120,7 @@ func AreaRegistry() []AreaPacket {
 	}
 	packets = append(packets,
 		genericArea("Core.Runtime.Context.IndustriesContext", "Context IndustriesContext", "internal/vm context runtime", "product=apex namespace=Context typeName=IndustriesContext", []string{"internal/vm/**", "glade-tools/internal/capability/**"}),
+		genericArea("Apex.Language", "Apex Language", "glade-tools/internal/surfaceledger", "product=apex-language", []string{"docs/plans/**", "glade-tools/internal/surfaceledger/**"}),
 		genericArea("Core.Runtime.SystemAndStdlib", "System and Stdlib", "internal/vm", "product=apex namespace=System typeName!=FeatureManagement|Database", []string{"internal/vm/**", "glade-tools/internal/capability/**"}),
 		genericArea("Query.Runtime.SOQLSOSL", "SOQL SOSL", "internal/soql", "product=apex source=soql-sosl", []string{"internal/soql/**", "internal/sema/**", "internal/vm/soql_runtime.go"}),
 		genericArea("Data.Reference.ObjectsFields", "Objects and Fields", "internal/schema", "product=object-reference|field-reference", []string{"internal/schema/**", "internal/storage/standard_fields.go"}),
@@ -485,6 +486,8 @@ func PacketMarkdown(ledger SurfaceLedger, packet AreaPacket) string {
 func packetOwnsRow(packet AreaPacket, row SurfaceLedgerRow) bool {
 	surfaceFamily := row.SalesforceSurfaceFamily
 	switch packet.Name {
+	case "Apex.Language":
+		return row.Product == "apex-language" || strings.HasPrefix(row.SurfaceID, "apex-language:")
 	case "Ledger.Identity":
 		return row.GapClass == GapDocsOrgMismatch || row.GapClass == GapStaleGladeShape || row.GapClass == GapSignatureChanged
 	case "Core.Runtime.System.FeatureManagement":
