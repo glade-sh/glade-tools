@@ -219,7 +219,7 @@ func TestPlanOracleForUsageRejectsUndirectedMock(t *testing.T) {
 	}
 }
 
-func TestPlanOracleFromFilesBindsFreshInputs(t *testing.T) {
+func TestPlanOracleFromFiles(t *testing.T) {
 	root := t.TempDir()
 	profilePath := filepath.Join(root, "ASSURANCE_PROFILE.json")
 	sealedUsagePath := filepath.Join(root, "CORPUS_USAGE.json")

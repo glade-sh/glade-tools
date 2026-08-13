@@ -129,6 +129,22 @@ func TestBuildOracleBundleRequiresTheAttemptBoundByReleaseValidation(t *testing.
 	}
 }
 
+func TestBuildOracleBundleBindsRemoteCleanupAuthority(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	output := filepath.Join(t.TempDir(), "salesforce-worker")
+	bundle, err := BuildOracleBundle(inputs.request(output))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bundle.SalesforceRemoteCleanupAuthoritySHA256 != localProofFileSHA256(t, inputs.remoteAuthorityPath) {
+		t.Fatalf("remote cleanup authority hash = %q", bundle.SalesforceRemoteCleanupAuthoritySHA256)
+	}
+	if _, err := os.Stat(filepath.Join(output, "bundle", "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json")); err != nil {
+		t.Fatalf("staged remote cleanup authority: %v", err)
+	}
+}
+
 func TestBuildOracleBundleRejectsAReplacementAttempt(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)

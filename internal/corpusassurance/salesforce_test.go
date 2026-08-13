@@ -41,6 +41,56 @@ func TestParseSalesforceDevHubDisplayUsesConnectedStatus(t *testing.T) {
 	}
 }
 
+func TestCreateSalesforceDevHubAuthority(t *testing.T) {
+	root, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	sfPath := filepath.Join(root, "bin", "sf")
+	pythonPath := filepath.Join(root, "python", "python3")
+	if err := os.MkdirAll(filepath.Dir(sfPath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(pythonPath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{sfPath, pythonPath} {
+		if err := os.WriteFile(path, []byte("#!/bin/sh\nexit 0\n"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	output := filepath.Join(root, "authority.json")
+	authority, err := CreateSalesforceDevHubAuthority(SalesforceDevHubAuthorityRequest{
+		TargetOrg: "sealed-dev-hub",
+		SFBin:     sfPath,
+		PythonBin: pythonPath,
+		Home:      filepath.Join(root, "home"),
+		Path:      filepath.Dir(sfPath) + string(filepath.ListSeparator) + filepath.Dir(pythonPath),
+		TmpDir:    filepath.Join(root, "tmp"),
+		Output:    output,
+		runner: func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+			if path != sfPath || !reflect.DeepEqual(args, []string{"org", "display", "--target-org", "sealed-dev-hub", "--json"}) {
+				t.Fatalf("org display invocation = %q %q", path, args)
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","connectedStatus":"Connected","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if authority.SchemaVersion != 2 || authority.Alias != "sealed-dev-hub" || authority.OrgID != "00D000000000001" || !validSalesforceDevHubAuthority(authority) {
+		t.Fatalf("authority = %#v", authority)
+	}
+	if _, err := os.Stat(output); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := CreateSalesforceDevHubAuthority(SalesforceDevHubAuthorityRequest{TargetOrg: "sealed-dev-hub", SFBin: sfPath, PythonBin: pythonPath, Home: filepath.Join(root, "home"), Path: filepath.Dir(sfPath) + string(filepath.ListSeparator) + filepath.Dir(pythonPath), TmpDir: filepath.Join(root, "tmp"), Output: output, runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
+		return salesforceCommandOutput{}, nil
+	}}); err == nil {
+		t.Fatal("reused Dev Hub authority output")
+	}
+}
+
 func TestSalesforceBaselineInventoryRequiresOneFieldSet(t *testing.T) {
 	inventory := SalesforceInventory{Counts: map[string]int{}}
 	for _, kind := range salesforceInventoryTypes {
@@ -273,7 +323,7 @@ func TestValidSalesforceDispatchAcceptsItsSealedRemotePythonHash(t *testing.T) {
 	}
 }
 
-func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t *testing.T) {
+func TestCreateSalesforceReconciliationAndVerifyAfterRemoteCleanup(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	outputRoot := filepath.Join(t.TempDir(), "salesforce-worker")

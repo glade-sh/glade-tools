@@ -62,6 +62,42 @@ func TestCorpusAssuranceSubcommandHelpPrintsUsage(t *testing.T) {
 	}
 }
 
+func TestCorpusAssuranceOracleProfile(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-profile")
+}
+
+func TestCorpusAssuranceOracleDirectives(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-directives-draft")
+}
+
+func TestCorpusAssuranceOraclePlan(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-plan")
+}
+
+func TestCorpusAssuranceDevHubAuthority(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "dev-hub-authority")
+}
+
+func TestCorpusAssuranceSalesforceReconcile(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "salesforce-reconcile")
+}
+
+func TestCorpusAssuranceReport(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "report")
+}
+
+func TestCorpusAssuranceRemoteFailurePreserve(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "remote-failure-preserve")
+}
+
+func assertCorpusAssuranceCommandRejectsMissingFlags(t *testing.T, command string) {
+	t.Helper()
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", command}, &stdout, &stderr); code == 0 {
+		t.Fatalf("%s unexpectedly accepted missing flags", command)
+	}
+}
+
 func TestCorpusAssuranceUsageDraftExecutes(t *testing.T) {
 	root := t.TempDir()
 	checkout := filepath.Join(root, "checkout")
