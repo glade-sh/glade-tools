@@ -14,11 +14,22 @@ const fullFixturesWorkflow = readFileSync(
   new URL("../.github/workflows/full-fixtures.yml", import.meta.url),
   "utf8",
 );
+const releaseWorkflow = readFileSync(
+  new URL("../.github/workflows/release.yml", import.meta.url),
+  "utf8",
+);
 const jobs = workflow.slice(workflow.indexOf("\njobs:\n"));
+const releaseJobs = releaseWorkflow.slice(releaseWorkflow.indexOf("\njobs:\n"));
 
 function job(name) {
   const match = jobs.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  \\w[\\w-]*:|(?![\\s\\S]))`, "m"));
   assert.ok(match, `missing ${name} job`);
+  return match[1];
+}
+
+function releaseJob(name) {
+  const match = releaseJobs.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  \\w[\\w-]*:|(?![\\s\\S]))`, "m"));
+  assert.ok(match, `missing ${name} release job`);
   return match[1];
 }
 
@@ -137,4 +148,41 @@ test("full fixtures is a single bounded weekly and manual lane", () => {
     ],
   );
   assert.doesNotMatch(fixtureJob, /go test \.\/\.\.\//);
+});
+
+test("release requires exact-SHA CI and manual fixture authorities before tag publication", () => {
+  assert.deepEqual(
+    [...releaseJobs.matchAll(/^  (\w[\w-]*):$/gm)].map((match) => match[1]),
+    ["required-gates", "prepare", "build", "publish"],
+  );
+
+  const gate = releaseJob("required-gates");
+  for (const marker of [
+    "if: startsWith(github.ref, 'refs/tags/')",
+    "permissions:\n      actions: read\n      contents: read",
+    "uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3\n        with:\n          ref: ${{ github.sha }}\n          persist-credentials: false",
+    'scripts/verify-release-gates.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" > required-gates.json',
+    "name: required-gates",
+    "path: required-gates.json",
+    "retention-days: 90",
+  ]) {
+    assert.ok(gate.includes(marker), `required-gates missing ${marker}`);
+  }
+  assert.ok(
+    gate.indexOf("scripts/verify-release-gates.sh") < gate.indexOf("actions/upload-artifact@"),
+    "required-gates artifact can upload before verification",
+  );
+
+  const prepare = releaseJob("prepare");
+  assert.match(prepare, /needs: required-gates/);
+  assert.match(prepare, /if: startsWith\(github\.ref, 'refs\/tags\/'\) && needs\.required-gates\.result == 'success'/);
+
+  const build = releaseJob("build");
+  assert.match(build, /needs:\n\s+- required-gates\n\s+- prepare/);
+  assert.match(build, /startsWith\(github\.ref, 'refs\/tags\/'\)[\s\S]*needs\.required-gates\.result == 'success'[\s\S]*needs\.prepare\.result == 'success'/);
+  assert.match(build, /github\.event_name == 'workflow_dispatch'[\s\S]*needs\.required-gates\.result == 'skipped'[\s\S]*needs\.prepare\.result == 'skipped'/);
+  assert.doesNotMatch(build, /needs\.prepare\.result == 'success' \|\| needs\.prepare\.result == 'skipped'/);
+  assert.match(build, /requested_ref="\$\(jq -er '\.gladeCommit \| select\(type == "string" and test\("\^\[0-9a-f\]\{40\}\$"\)\)' docs\/fixtures\/apex-language-rules\.json\)"/);
+  assert.match(build, /printf 'ref=%s\\n' "\$requested_ref" >> "\$GITHUB_OUTPUT"/);
+  assert.doesNotMatch(build, /resolve-sibling-ref\.sh|GLADE_REMOTE|REQUESTED_REF/);
 });

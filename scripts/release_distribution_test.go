@@ -39,7 +39,7 @@ func TestCIWorkflowResolvesGladeRefBeforeCheckout(t *testing.T) {
 	}
 }
 
-func TestReleaseWorkflowResolvesGladeRefAndUsesNotesFile(t *testing.T) {
+func TestReleaseWorkflowPinsCatalogGladeCommitAndUsesNotesFile(t *testing.T) {
 	workflowPath := filepath.Join("..", ".github", "workflows", "release.yml")
 	workflow, err := os.ReadFile(workflowPath)
 	if err != nil {
@@ -47,9 +47,12 @@ func TestReleaseWorkflowResolvesGladeRefAndUsesNotesFile(t *testing.T) {
 	}
 	workflowText := string(workflow)
 	for _, want := range []string{
-		"Resolve glade ref",
-		"scripts/resolve-sibling-ref.sh",
+		"Read pinned glade ref",
+		`requested_ref="$(jq -er '.gladeCommit | select(type == "string" and test("^[0-9a-f]{40}$"))' docs/fixtures/apex-language-rules.json)"`,
+		`printf 'ref=%s\n' "$requested_ref" >> "$GITHUB_OUTPUT"`,
 		"steps.glade-ref.outputs.ref",
+		"Verify pinned glade checkout",
+		`test "$(git -C ../glade rev-parse HEAD)" = "$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"`,
 		"Build release notes",
 		`scripts/release-notes.sh "$GITHUB_REF_NAME" > release-notes.md`,
 		"--notes-file release-notes.md",
@@ -60,6 +63,18 @@ func TestReleaseWorkflowResolvesGladeRefAndUsesNotesFile(t *testing.T) {
 	}
 	if strings.Contains(workflowText, `--notes "`) {
 		t.Fatalf("release.yml should not publish inline release notes")
+	}
+	for _, stale := range []string{"scripts/resolve-sibling-ref.sh", "GLADE_REMOTE", "REQUESTED_REF", `startsWith(github.ref, 'refs/tags/') && github.ref_name || 'main'`} {
+		if strings.Contains(workflowText, stale) {
+			t.Fatalf("release.yml retains mutable Glade fallback %q", stale)
+		}
+	}
+	resolveAt := strings.Index(workflowText, `requested_ref="$(jq -er '.gladeCommit | select(type == "string" and test("^[0-9a-f]{40}$"))' docs/fixtures/apex-language-rules.json)"`)
+	checkoutAt := strings.Index(workflowText, "repository: glade-sh/glade")
+	verifyAt := strings.Index(workflowText, "Verify pinned glade checkout")
+	buildAt := strings.Index(workflowText, "Build plugin archives")
+	if resolveAt < 0 || checkoutAt < resolveAt || verifyAt < checkoutAt || buildAt < verifyAt {
+		t.Fatal("release build must resolve, check out, and verify the catalog-pinned Glade commit before building")
 	}
 }
 
@@ -384,7 +399,7 @@ func validateDeterministicPluginArchive(t *testing.T, archivePath, plugin, binar
 }
 
 func TestReleaseWorkflowHelpersAreExecutable(t *testing.T) {
-	for _, path := range []string{"release-asset-upload.sh", "build-plugin-registry.py"} {
+	for _, path := range []string{"release-asset-upload.sh", "verify-release-gates.sh", "build-plugin-registry.py"} {
 		info, err := os.Stat(path)
 		if err != nil {
 			t.Fatalf("stat %s: %v", path, err)
