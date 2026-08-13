@@ -175,6 +175,80 @@ func TestPluginArchiveBuildIsByteIdenticalAcrossCleanBuilds(t *testing.T) {
 	}
 }
 
+func TestReleaseCheckUsesPackageAndManifestEntrypointsWithoutDirectArchiveBuild(t *testing.T) {
+	check, err := os.ReadFile("release-check.sh")
+	if err != nil {
+		t.Fatalf("read release-check.sh: %v", err)
+	}
+	checkText := string(check)
+	if err := releaseCheckContractError(checkText); err != nil {
+		t.Fatal(err)
+	}
+	for _, line := range []string{
+		"./scripts",
+		"go run ./cmd/glade-plugin-compat manifest --json",
+		"go run ./cmd/glade-plugin-performance manifest --json",
+		"go run ./cmd/glade-plugin-orgpackage manifest --json",
+	} {
+		t.Run("rejects commented "+line, func(t *testing.T) {
+			if err := releaseCheckContractError(strings.Replace(checkText, line, "# "+line, 1)); err == nil {
+				t.Fatalf("release-check.sh accepted commented %q", line)
+			}
+		})
+	}
+	t.Run("rejects ignored manifest failure", func(t *testing.T) {
+		line := "go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json"
+		if err := releaseCheckContractError(strings.Replace(checkText, line, line+" || true", 1)); err == nil {
+			t.Fatal("release-check.sh accepted an ignored manifest failure")
+		}
+	})
+}
+
+func releaseCheckContractError(checkText string) error {
+	if strings.Contains(checkText, "scripts/build-plugin-archives.sh") {
+		return fmt.Errorf("release-check.sh must not directly build plugin archives")
+	}
+	manifests := map[string]bool{
+		"go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json":           false,
+		"go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json": false,
+		"go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json":   false,
+	}
+	var packages, scriptsPackage, runsPackages bool
+	for _, line := range strings.Split(checkText, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		if line == "packages=(" {
+			packages = true
+			continue
+		}
+		if packages {
+			if line == ")" {
+				packages = false
+			} else if line == "./scripts" {
+				scriptsPackage = true
+			}
+			continue
+		}
+		if line == `go test "${packages[@]}"` {
+			runsPackages = true
+		}
+		if _, found := manifests[line]; found {
+			manifests[line] = true
+		}
+	}
+	if !scriptsPackage || !runsPackages {
+		return fmt.Errorf("release-check.sh must run ./scripts through packages")
+	}
+	for manifest, found := range manifests {
+		if !found {
+			return fmt.Errorf("release-check.sh missing active %q", manifest)
+		}
+	}
+	return nil
+}
+
 func buildPluginArchives(t *testing.T, version, target, output string) {
 	t.Helper()
 	cmd := exec.Command("bash", "build-plugin-archives.sh", version)
