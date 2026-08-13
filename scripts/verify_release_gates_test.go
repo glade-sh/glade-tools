@@ -17,10 +17,22 @@ type releaseGateFixture struct {
 
 func validReleaseGateFixture() releaseGateFixture {
 	return releaseGateFixture{
-		ciRuns:      `{"total_count":1,"workflow_runs":[{"id":101,"path":".github/workflows/ci.yml","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","event":"push","html_url":"https://example/run/101"}]}`,
+		ciRuns:      `{"total_count":1,"workflow_runs":[{"id":101,"path":".github/workflows/ci.yml","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","event":"push","created_at":"2026-01-02T00:00:00Z","html_url":"https://example/run/101"}]}`,
 		ciJobs:      `{"total_count":1,"jobs":[{"id":501,"name":"test","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","html_url":"https://example/job/501"}]}`,
-		fixtureRuns: `{"total_count":1,"workflow_runs":[{"id":201,"path":".github/workflows/full-fixtures.yml","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","event":"workflow_dispatch","html_url":"https://example/run/201"}]}`,
+		fixtureRuns: `{"total_count":1,"workflow_runs":[{"id":201,"path":".github/workflows/full-fixtures.yml","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","event":"workflow_dispatch","created_at":"2026-01-02T00:00:00Z","html_url":"https://example/run/201"}]}`,
 		fixtureJobs: `{"total_count":1,"jobs":[{"id":601,"name":"full-fixtures","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","html_url":"https://example/job/601"}]}`,
+	}
+}
+
+func TestVerifyReleaseGatesUsesNewestSuccessfulRun(t *testing.T) {
+	fixture := validReleaseGateFixture()
+	fixture.fixtureRuns = `{"total_count":2,"workflow_runs":[{"id":200,"path":".github/workflows/full-fixtures.yml","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","event":"workflow_dispatch","created_at":"2026-01-01T00:00:00Z","html_url":"https://example/run/200"},{"id":201,"path":".github/workflows/full-fixtures.yml","head_sha":"` + releaseGateSHA + `","status":"completed","conclusion":"success","event":"workflow_dispatch","created_at":"2026-01-02T00:00:00Z","html_url":"https://example/run/201"}]}`
+	out, _, err := runReleaseGateFixture(t, fixture, "glade-sh/glade-tools", releaseGateSHA)
+	if err != nil {
+		t.Fatalf("newest successful run rejected: %v\n%s", err, out)
+	}
+	if !strings.Contains(out, `"run_id": 201`) {
+		t.Fatalf("newest successful run not selected:\n%s", out)
 	}
 }
 
@@ -153,17 +165,13 @@ func TestVerifyReleaseGatesRejectsInvalidRuns(t *testing.T) {
 		"failed run": func(f *releaseGateFixture) {
 			f.ciRuns = strings.Replace(f.ciRuns, `"conclusion":"success"`, `"conclusion":"failure"`, 1)
 		},
-		"duplicate run": func(f *releaseGateFixture) {
-			f.ciRuns = strings.Replace(f.ciRuns, `"total_count":1`, `"total_count":2`, 1)
-			f.ciRuns = strings.Replace(f.ciRuns, `}]}`, `},{"id":102,"path":".github/workflows/ci.yml","head_sha":"`+releaseGateSHA+`","status":"completed","conclusion":"success","event":"push","html_url":"https://example/run/102"}]}`, 1)
-		},
 		"malformed response": func(f *releaseGateFixture) { f.fixtureRuns = `{"total_count":"one","workflow_runs":{}}` },
 	} {
 		t.Run(name, func(t *testing.T) {
 			fixture := valid
 			mutate(&fixture)
 			out, _, err := runReleaseGateFixture(t, fixture, "glade-sh/glade-tools", releaseGateSHA)
-			if err == nil || !strings.Contains(out, "no unique successful") {
+			if err == nil || !strings.Contains(out, "no successful") {
 				t.Fatalf("invalid run authority accepted: err=%v\n%s", err, out)
 			}
 		})

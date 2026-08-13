@@ -20,6 +20,7 @@ authority() {
 		def nonnegative_integer: type == "number" and . >= 0 and . == floor;
 		def positive_integer: type == "number" and . > 0 and . == floor;
 		def https_url: type == "string" and startswith("https://");
+		def iso8601: type == "string" and ((try fromdateiso8601 catch false) != false);
 		if type != "object"
 			or ((.total_count | nonnegative_integer) | not)
 			or (.workflow_runs | type) != "array"
@@ -32,14 +33,15 @@ authority() {
 				and .status == "completed"
 				and (.conclusion | type) == "string"
 				and (.event | type) == "string"
+				and (.created_at | iso8601)
 				and (.html_url | https_url)
 			) | not)
 		then error("malformed workflow runs")
 		else [.workflow_runs[] | select(.event == $event and .conclusion == "success")] as $matches
-		| if ($matches | length) == 1 then $matches[0] else error("non-unique workflow run") end
+		| ($matches | sort_by(.created_at, .id) | last) // error("missing successful workflow run")
 		end
 	' <<<"$runs_json")"; then
-		echo "no unique successful $event authority for $workflow at $repository@$sha" >&2
+		echo "no successful $event authority for $workflow at $repository@$sha" >&2
 		return 1
 	fi
 
