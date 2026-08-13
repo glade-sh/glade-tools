@@ -1,11 +1,14 @@
 package corpusassurance
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 )
@@ -21,6 +24,40 @@ type RemoteAttemptCleanupRequest struct {
 	OutputPath  string
 	runner      salesforceCommandRunner
 }
+
+type RemoteFailurePreserveRequest struct {
+	AttemptPath string
+	BindingPath string
+	Phase       string
+	PhaseExit   int
+	HandoffPath string
+	OutputPath  string
+	runner      remoteFailureCopyRunner
+}
+
+type RemoteFailureCopyCommand struct {
+	Command string `json:"command"`
+	Passed  bool   `json:"passed"`
+	Output  string `json:"output,omitempty"`
+}
+
+type RemoteFailurePreservation struct {
+	SchemaVersion      int                      `json:"schemaVersion"`
+	Status             string                   `json:"status"`
+	Phase              string                   `json:"phase"`
+	PhaseExit          int                      `json:"phaseExit"`
+	AttemptSHA256      string                   `json:"attemptSha256"`
+	AuthoritySHA256    string                   `json:"authoritySha256"`
+	Host               string                   `json:"host"`
+	RemoteRoot         string                   `json:"remoteRoot"`
+	Copy               RemoteFailureCopyCommand `json:"copy"`
+	Checksum           RemoteFailureCopyCommand `json:"checksum"`
+	TreeManifestSHA256 string                   `json:"treeManifestSha256,omitempty"`
+}
+
+type remoteFailureCopyRunner func(context.Context, string, string, string, bool) (salesforceCommandOutput, error)
+
+const remoteFailureCopyBinary = "/usr/bin/rsync"
 
 // RemoteAttemptAuthority is an independently sealed private operator input for
 // one host and one remote attempt root. Cleanup refuses caller-selected flags.
@@ -131,6 +168,173 @@ func RunRemoteAttemptCleanup(request RemoteAttemptCleanupRequest) (RemoteAttempt
 		return RemoteAttemptCleanupReceipt{}, err
 	}
 	return cleanup, nil
+}
+
+// PreserveRemoteFailure retains a failed remote phase before any reviewed
+// cleanup. It never deletes or invokes Salesforce commands on the remote host.
+func PreserveRemoteFailure(request RemoteFailurePreserveRequest) (RemoteFailurePreservation, error) {
+	if err := validateRemoteFailureRequest(request); err != nil {
+		return RemoteFailurePreservation{}, err
+	}
+	if _, err := os.Lstat(request.OutputPath); err == nil {
+		return RemoteFailurePreservation{}, fmt.Errorf("remote failure output already exists: %s", request.OutputPath)
+	} else if !os.IsNotExist(err) {
+		return RemoteFailurePreservation{}, err
+	}
+	if err := os.Mkdir(request.OutputPath, 0o700); err != nil {
+		return RemoteFailurePreservation{}, err
+	}
+	attempt, _, err := readExactJSONBytes[AssuranceAttempt](request.AttemptPath)
+	if err != nil || ValidateAssuranceAttempt(attempt) != nil {
+		return RemoteFailurePreservation{}, fmt.Errorf("invalid sealed attempt")
+	}
+	authority, authorityBytes, err := readRemoteAttemptAuthority(request.BindingPath)
+	if err != nil || !remoteCleanupAuthorityMatches(attempt, authority, replayBytesSHA256(authorityBytes)) {
+		return RemoteFailurePreservation{}, fmt.Errorf("remote failure authority is not bound to the sealed attempt")
+	}
+	if err := validateRemoteAttemptTarget(authority.AttemptSHA256, authority.Role, authority.Host, authority.Parent, authority.AttemptRoot); err != nil {
+		return RemoteFailurePreservation{}, err
+	}
+	remoteRoot := filepath.Join(request.OutputPath, "remote-root")
+	if err := os.Mkdir(remoteRoot, 0o700); err != nil {
+		return RemoteFailurePreservation{}, err
+	}
+	source := authority.Host + ":" + authority.AttemptRoot + "/"
+	copyCommand := "rsync -a " + source + " " + remoteRoot + "/"
+	checksumCommand := "rsync -a --checksum --dry-run " + source + " " + remoteRoot + "/"
+	runner := request.runner
+	if runner == nil {
+		runner = runRemoteFailureCopy
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), remoteCleanupTimeout)
+	defer cancel()
+	copyOutput, copyErr := runner(ctx, source, remoteRoot, copyCommand, false)
+	copy := RemoteFailureCopyCommand{Command: copyCommand, Passed: copyErr == nil && copyOutput.ExitCode == 0, Output: remoteFailureOutputText(copyOutput)}
+	checksum := RemoteFailureCopyCommand{Command: checksumCommand}
+	if copy.Passed {
+		checksumOutput, checksumErr := runner(ctx, source, remoteRoot, checksumCommand, true)
+		checksum.Passed = checksumErr == nil && checksumOutput.ExitCode == 0
+		checksum.Output = remoteFailureOutputText(checksumOutput)
+	}
+	status := "preservation-failed"
+	var treeSHA string
+	if copy.Passed && checksum.Passed {
+		status = "preserved"
+		if err := writeModeBearingTreeManifest(remoteRoot); err != nil {
+			status = "preservation-failed"
+		} else {
+			treeSHA, _ = sha256File(filepath.Join(remoteRoot, "TREE_MANIFEST.json"))
+		}
+	}
+	next := fmt.Sprintf("Recover remote root %s before deletion; inspect %s and start a successor attempt. Do not reuse this attempt.", authority.AttemptRoot, filepath.Join(request.OutputPath, "REMOTE_FAILURE.json"))
+	if err := writeNewText(filepath.Join(request.OutputPath, "NEXT_ACTION.md"), next+"\n", 0o600); err != nil {
+		return RemoteFailurePreservation{}, err
+	}
+	if err := updateBlockedHandoff(request.HandoffPath, "failed phase: "+request.Phase+" (exit "+fmt.Sprint(request.PhaseExit)+", "+status+")", next); err != nil {
+		status = "preservation-failed"
+	}
+	receipt := RemoteFailurePreservation{SchemaVersion: 1, Status: status, Phase: request.Phase, PhaseExit: request.PhaseExit, AttemptSHA256: attemptBindingHash(attempt), AuthoritySHA256: replayBytesSHA256(authorityBytes), Host: authority.Host, RemoteRoot: authority.AttemptRoot, Copy: copy, Checksum: checksum, TreeManifestSHA256: treeSHA}
+	if err := WriteNewJSON(filepath.Join(request.OutputPath, "REMOTE_FAILURE.json"), receipt); err != nil {
+		return RemoteFailurePreservation{}, err
+	}
+	if status != "preserved" {
+		return receipt, fmt.Errorf("remote failure preservation failed")
+	}
+	return receipt, nil
+}
+
+func remoteFailureOutputText(output salesforceCommandOutput) string {
+	return string(append(append([]byte{}, output.Stdout...), output.Stderr...))
+}
+
+func validateRemoteFailureRequest(request RemoteFailurePreserveRequest) error {
+	for _, path := range []string{request.AttemptPath, request.BindingPath, request.HandoffPath, request.OutputPath} {
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("absolute remote failure paths are required")
+		}
+	}
+	if request.PhaseExit == 0 || !safeAttemptRunID(request.Phase) || request.Phase == "" {
+		return fmt.Errorf("nonzero phase exit and safe phase are required")
+	}
+	if _, err := os.Stat(request.HandoffPath); err != nil {
+		return fmt.Errorf("handoff is unavailable: %w", err)
+	}
+	return nil
+}
+
+func runRemoteFailureCopy(ctx context.Context, source, destination, _ string, checksum bool) (salesforceCommandOutput, error) {
+	args := []string{"-a"}
+	if checksum {
+		args = append(args, "--checksum", "--dry-run")
+	}
+	args = append(args, source, destination+string(filepath.Separator))
+	command := exec.CommandContext(ctx, remoteFailureCopyBinary, args...)
+	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
+	command.Stdout, command.Stderr = stdout, stderr
+	err := command.Run()
+	output := salesforceCommandOutput{Stdout: stdout.Bytes(), Stderr: stderr.Bytes()}
+	if exit, ok := err.(*exec.ExitError); ok {
+		output.ExitCode = exit.ExitCode()
+		return output, nil
+	}
+	return output, err
+}
+
+func updateBlockedHandoff(path, last, next string) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	lines := strings.Split(string(data), "\n")
+	set := func(prefix, value string) {
+		for i, line := range lines {
+			if strings.HasPrefix(line, prefix) {
+				lines[i] = prefix + value
+				return
+			}
+		}
+		lines = append(lines, prefix+value)
+	}
+	set("Current gate: ", "blocked")
+	set("Last completed command: ", last)
+	set("Next command: ", next)
+	temp := path + ".next"
+	if err := os.WriteFile(temp, []byte(strings.Join(lines, "\n")), 0o600); err != nil {
+		return err
+	}
+	return os.Rename(temp, path)
+}
+
+func writeModeBearingTreeManifest(root string) error {
+	type entry struct {
+		Path   string `json:"path"`
+		Mode   string `json:"mode"`
+		SHA256 string `json:"sha256"`
+	}
+	entries := []entry{}
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil || path == root || filepath.Base(path) == "TREE_MANIFEST.json" {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		sha, err := sha256FileDirect(path)
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		entries = append(entries, entry{Path: filepath.ToSlash(rel), Mode: fmt.Sprintf("%04o", info.Mode()&os.ModePerm), SHA256: sha})
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	sort.Slice(entries, func(i, j int) bool { return entries[i].Path < entries[j].Path })
+	return WriteNewJSON(filepath.Join(root, "TREE_MANIFEST.json"), entries)
 }
 
 func validateRemoteAttemptCleanupRequest(request RemoteAttemptCleanupRequest) error {

@@ -33,37 +33,39 @@ type AssuranceReceipt struct {
 // AssuranceReportRequest names every direct, sealed input required to publish
 // the final public readiness projection.
 type AssuranceReportRequest struct {
-	InventoryPath               string
-	RootManifestPath            string
-	LedgerPath                  string
-	SourceProfilePath           string
-	PolicyPath                  string
-	DecisionPath                string
-	UsagePath                   string
-	ProfilePath                 string
-	FixtureManifestPath         string
-	ReplayPath                  string
-	ReplayHostManifestPaths     []string
-	ReplayShardPaths            []string
-	AttemptPath                 string
-	LocalProofPath              string
-	OraclePlanPath              string
-	ExclusionRequestPath        string
-	ExclusionPolicyPath         string
-	AuthorityPath               string
-	ReleaseValidationPath       string
-	BundlePath                  string
-	FilterScriptPath            string
-	ScratchDefinitionPath       string
-	ToolsAMD64Path              string
-	SalesforceFiles             []SalesforceShardFiles
-	RemoteCleanupPaths          []string
-	RemoteCleanupAuthorityPaths []string
-	JSONPath                    string
-	HTMLPath                    string
-	ReceiptPath                 string
-	PacketPath                  string
-	remoteRunner                salesforceCommandRunner
+	InventoryPath                string
+	RootManifestPath             string
+	LedgerPath                   string
+	SourceProfilePath            string
+	PolicyPath                   string
+	DecisionPath                 string
+	UsagePath                    string
+	ProfilePath                  string
+	FixtureManifestPath          string
+	ReplayPath                   string
+	ReplayHostManifestPaths      []string
+	ReplayShardPaths             []string
+	AttemptPath                  string
+	LocalProofPath               string
+	OraclePlanPath               string
+	ExclusionRequestPath         string
+	ExclusionPolicyPath          string
+	AuthorityPath                string
+	ReleaseValidationPath        string
+	BundlePath                   string
+	FilterScriptPath             string
+	ScratchDefinitionPath        string
+	ToolsAMD64Path               string
+	SalesforceFiles              []SalesforceShardFiles
+	SalesforceReconciliationPath string
+	SalesforcePacketPath         string
+	RemoteCleanupPaths           []string
+	RemoteCleanupAuthorityPaths  []string
+	JSONPath                     string
+	HTMLPath                     string
+	ReceiptPath                  string
+	PacketPath                   string
+	remoteRunner                 salesforceCommandRunner
 }
 
 // BuildAssuranceReport derives public outcomes only from sealed files, then
@@ -122,7 +124,14 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	}
 	stagedPlanPath := filepath.Join(filepath.Dir(request.BundlePath), "ORACLE_PLAN.json")
 	var salesforceSnapshots []salesforceShardEvidenceSnapshot
-	if err := validateSalesforceShardFiles(stagedPlanPath, request.SalesforceFiles, &salesforceSnapshots); err != nil {
+	retainedSalesforce := request.SalesforceReconciliationPath != ""
+	if retainedSalesforce {
+		var loadErr error
+		salesforceSnapshots, loadErr = loadSalesforceReconciliation(request.OraclePlanPath, request.SalesforceReconciliationPath, request.SalesforcePacketPath)
+		if loadErr != nil {
+			return AssuranceReceipt{}, loadErr
+		}
+	} else if err := validateSalesforceShardFiles(stagedPlanPath, request.SalesforceFiles, &salesforceSnapshots); err != nil {
 		return AssuranceReceipt{}, err
 	}
 	shards := make([]SalesforceShard, 0, len(salesforceSnapshots))
@@ -173,7 +182,12 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
 		return AssuranceReceipt{}, err
 	}
-	if err := revalidateReportSalesforceExecutors(salesforceSnapshots); err != nil {
+	if !retainedSalesforce {
+		if err := revalidateReportSalesforceExecutors(salesforceSnapshots); err != nil {
+			return AssuranceReceipt{}, err
+		}
+	}
+	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
 		return AssuranceReceipt{}, err
 	}
 	packetManifestSHA256, err := retainReportPacket(request.PacketPath, reportInputPaths(request), initialInputHashes, executorInputs)
@@ -183,7 +197,12 @@ func BuildAssuranceReport(request AssuranceReportRequest) (AssuranceReceipt, err
 	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
 		return AssuranceReceipt{}, err
 	}
-	if err := revalidateReportSalesforceExecutors(salesforceSnapshots); err != nil {
+	if !retainedSalesforce {
+		if err := revalidateReportSalesforceExecutors(salesforceSnapshots); err != nil {
+			return AssuranceReceipt{}, err
+		}
+	}
+	if err := revalidateReportInputHashes(request, initialInputHashes); err != nil {
 		return AssuranceReceipt{}, err
 	}
 	inputs["PACKET_MANIFEST.json"] = packetManifestSHA256
@@ -197,8 +216,15 @@ func requiredReportEvidencePaths(request AssuranceReportRequest) error {
 			return fmt.Errorf("absolute direct assurance paths are required")
 		}
 	}
-	if len(request.SalesforceFiles) == 0 || len(request.RemoteCleanupPaths) != 2 || len(request.RemoteCleanupAuthorityPaths) != 2 {
+	if len(request.RemoteCleanupPaths) != 2 || len(request.RemoteCleanupAuthorityPaths) != 2 {
 		return fmt.Errorf("complete Salesforce and remote cleanup evidence is required")
+	}
+	if request.SalesforceReconciliationPath == "" {
+		if len(request.SalesforceFiles) == 0 {
+			return fmt.Errorf("complete Salesforce shard evidence is required")
+		}
+	} else if !filepath.IsAbs(request.SalesforceReconciliationPath) || !filepath.IsAbs(request.SalesforcePacketPath) {
+		return fmt.Errorf("absolute Salesforce reconciliation paths are required")
 	}
 	if len(request.ReplayHostManifestPaths) != 2 || len(request.ReplayShardPaths) != 2 {
 		return fmt.Errorf("complete replay manifest and shard evidence is required")
@@ -442,16 +468,33 @@ func expectedReportCleanupRoots(request AssuranceReportRequest) (map[string]stri
 		}
 		roots[shard.Host] = filepath.Dir(filepath.Dir(filepath.Dir(hostRoot)))
 	}
-	for _, files := range request.SalesforceFiles {
-		shard, _, err := readExactJSONBytes[SalesforceShard](files.ShardPath)
-		if err != nil || !filepath.IsAbs(shard.ExecutorRoot) {
-			return nil, fmt.Errorf("Salesforce cleanup root is not sealed by the shard")
+	if request.SalesforceReconciliationPath != "" {
+		snapshots, err := loadSalesforceReconciliation(request.OraclePlanPath, request.SalesforceReconciliationPath, request.SalesforcePacketPath)
+		if err != nil {
+			return nil, fmt.Errorf("Salesforce cleanup root is not sealed by reconciliation: %w", err)
 		}
-		root := filepath.Clean(filepath.Dir(filepath.Dir(shard.ExecutorRoot)))
-		if roots["salesforce-worker"] != "" && roots["salesforce-worker"] != root {
-			return nil, fmt.Errorf("Salesforce shards do not share one cleanup root")
+		for _, snapshot := range snapshots {
+			if !filepath.IsAbs(snapshot.Shard.ExecutorRoot) {
+				return nil, fmt.Errorf("Salesforce cleanup root is not sealed by reconciliation")
+			}
+			root := filepath.Clean(filepath.Dir(filepath.Dir(snapshot.Shard.ExecutorRoot)))
+			if roots["salesforce-worker"] != "" && roots["salesforce-worker"] != root {
+				return nil, fmt.Errorf("Salesforce shards do not share one cleanup root")
+			}
+			roots["salesforce-worker"] = root
 		}
-		roots["salesforce-worker"] = root
+	} else {
+		for _, files := range request.SalesforceFiles {
+			shard, _, err := readExactJSONBytes[SalesforceShard](files.ShardPath)
+			if err != nil || !filepath.IsAbs(shard.ExecutorRoot) {
+				return nil, fmt.Errorf("Salesforce cleanup root is not sealed by the shard")
+			}
+			root := filepath.Clean(filepath.Dir(filepath.Dir(shard.ExecutorRoot)))
+			if roots["salesforce-worker"] != "" && roots["salesforce-worker"] != root {
+				return nil, fmt.Errorf("Salesforce shards do not share one cleanup root")
+			}
+			roots["salesforce-worker"] = root
+		}
 	}
 	if roots["replay-worker"] == "" || roots["salesforce-worker"] == "" {
 		return nil, fmt.Errorf("report requires sealed cleanup roots for both workers")
@@ -505,6 +548,9 @@ func reportInputPaths(request AssuranceReportRequest) []string {
 	paths = append(paths, request.ReplayShardPaths...)
 	paths = append(paths, request.RemoteCleanupPaths...)
 	paths = append(paths, request.RemoteCleanupAuthorityPaths...)
+	if request.SalesforceReconciliationPath != "" {
+		paths = append(paths, request.SalesforceReconciliationPath, filepath.Join(request.SalesforcePacketPath, reconciliationPacketManifestName))
+	}
 	for _, files := range request.SalesforceFiles {
 		paths = append(paths, files.ShardPath, files.DispatchPath, files.CreationPath, files.CleanupPath, files.PreflightPath)
 	}

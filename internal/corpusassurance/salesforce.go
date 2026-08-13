@@ -45,10 +45,116 @@ type SalesforceDevHubAuthority struct {
 	OrgID         string                       `json:"orgId"`
 	Username      string                       `json:"username"`
 	Execution     SalesforceExecutionAuthority `json:"execution"`
+	Command       CommandResult                `json:"command,omitempty"`
 }
 
 func validSalesforceDevHubAuthority(authority SalesforceDevHubAuthority) bool {
-	return authority.SchemaVersion == 1 && authority.Alias != "" && authority.OrgID != "" && authority.Username != "" && validSalesforceExecutionAuthority(authority.Execution)
+	if (authority.SchemaVersion != 1 && authority.SchemaVersion != 2) || authority.Alias == "" || authority.OrgID == "" || authority.Username == "" || !validSalesforceExecutionAuthority(authority.Execution) {
+		return false
+	}
+	if authority.SchemaVersion == 2 {
+		command := authority.Command
+		return command.Passed && command.ExitCode == 0 && !command.TimedOut && command.DurationMS >= 0 && command.DurationMS <= devHubAuthorityTimeout.Milliseconds() && len(command.Command) == 6 && command.Command[0] == authority.Execution.SFBinary && command.Command[1] == "org" && command.Command[2] == "display" && command.Command[3] == "--target-org" && command.Command[4] == authority.Alias && command.Command[5] == "--json" && command.WorkingDirectory != "" && reflect.DeepEqual(command.Environment, authority.Execution.Environment) && command.ExecutableSHA256 == authority.Execution.SFSHA256 && command.ExecutableAfterSHA256 == authority.Execution.SFSHA256 && command.CommandSpecSHA256 == salesforceCommandSpecSHA256(command.Command[0], command.Command[1:], command.WorkingDirectory, command.Environment, command.ExecutableSHA256, command.ExecutableAfterSHA256) && command.Output == nil && sha256Pattern.MatchString(command.StdoutSHA256) && sha256Pattern.MatchString(command.StderrSHA256)
+	}
+	return true
+}
+
+type SalesforceDevHubAuthorityRequest struct {
+	TargetOrg string
+	SFBin     string
+	PythonBin string
+	Home      string
+	Path      string
+	TmpDir    string
+	Output    string
+	runner    salesforceCommandRunner
+}
+
+const devHubAuthorityTimeout = 30 * time.Second
+
+// CreateSalesforceDevHubAuthority records one bounded org display using an
+// exact execution environment. The response is parsed in memory and omitted.
+func CreateSalesforceDevHubAuthority(request SalesforceDevHubAuthorityRequest) (SalesforceDevHubAuthority, error) {
+	for _, path := range []string{request.SFBin, request.PythonBin, request.Home, request.TmpDir, request.Output} {
+		if !filepath.IsAbs(path) {
+			return SalesforceDevHubAuthority{}, fmt.Errorf("absolute Dev Hub authority paths are required")
+		}
+	}
+	if request.TargetOrg == "" || request.Path == "" || strings.ContainsAny(request.TargetOrg, " \t\r\n") {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("invalid Dev Hub target or PATH")
+	}
+	if _, err := os.Lstat(request.Output); err == nil {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("Dev Hub authority output already exists: %s", request.Output)
+	} else if !os.IsNotExist(err) {
+		return SalesforceDevHubAuthority{}, err
+	}
+	if err := validateDevHubExecutable(request.SFBin); err != nil {
+		return SalesforceDevHubAuthority{}, err
+	}
+	if err := validateDevHubExecutable(request.PythonBin); err != nil {
+		return SalesforceDevHubAuthority{}, err
+	}
+	pathEntries := filepath.SplitList(request.Path)
+	if len(pathEntries) == 0 {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("exact PATH is required")
+	}
+	hasSF, hasPython := false, false
+	for _, entry := range pathEntries {
+		if !cleanAbsolutePath(entry) {
+			return SalesforceDevHubAuthority{}, fmt.Errorf("PATH entries must be clean absolute paths")
+		}
+		hasSF = hasSF || entry == filepath.Dir(request.SFBin)
+		hasPython = hasPython || entry == filepath.Dir(request.PythonBin)
+	}
+	if !hasSF || !hasPython {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("PATH must contain Salesforce CLI and Python directories")
+	}
+	sfSHA, err := sha256File(request.SFBin)
+	if err != nil {
+		return SalesforceDevHubAuthority{}, err
+	}
+	pythonSHA, err := sha256File(request.PythonBin)
+	if err != nil {
+		return SalesforceDevHubAuthority{}, err
+	}
+	environment := []string{"HOME=" + request.Home, "PATH=" + request.Path, "TMPDIR=" + request.TmpDir, "SF_USE_GENERIC_UNIX_KEYCHAIN=true"}
+	runner := request.runner
+	if runner == nil {
+		runner = runSalesforceCLI
+	}
+	args := []string{"org", "display", "--target-org", request.TargetOrg, "--json"}
+	ctx, cancel := context.WithTimeout(context.Background(), devHubAuthorityTimeout)
+	defer cancel()
+	ctx = context.WithValue(ctx, salesforceExecutionKey{}, salesforceExecution{workingDirectory: filepath.Dir(request.Output), environment: environment})
+	started := time.Now()
+	output, runErr := runner(ctx, request.SFBin, args...)
+	postSFSHA, sfErr := sha256File(request.SFBin)
+	postPythonSHA, pythonErr := sha256File(request.PythonBin)
+	if runErr != nil || output.ExitCode != 0 || ctx.Err() == context.DeadlineExceeded || sfErr != nil || pythonErr != nil || postSFSHA != sfSHA || postPythonSHA != pythonSHA {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("Dev Hub org display failed or execution tools changed")
+	}
+	orgID, status, username, err := parseSalesforceOrgDisplay(output.Stdout)
+	if err != nil || status != "Connected" && status != "Active" {
+		return SalesforceDevHubAuthority{}, fmt.Errorf("Dev Hub org display did not identify an active org")
+	}
+	command := CommandResult{Command: append([]string{request.SFBin}, args...), WorkingDirectory: filepath.Dir(request.Output), Environment: environment, ExecutableSHA256: sfSHA, ExecutableAfterSHA256: postSFSHA, CommandSpecSHA256: salesforceCommandSpecSHA256(request.SFBin, args, filepath.Dir(request.Output), environment, sfSHA, postSFSHA), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: true, TimedOut: false}
+	authority := SalesforceDevHubAuthority{SchemaVersion: 2, Alias: request.TargetOrg, OrgID: orgID, Username: username, Execution: SalesforceExecutionAuthority{SFBinary: request.SFBin, SFSHA256: sfSHA, PythonBinary: request.PythonBin, PythonSHA256: pythonSHA, Environment: environment}, Command: command}
+	if err := WriteNewJSON(request.Output, authority); err != nil {
+		return SalesforceDevHubAuthority{}, err
+	}
+	return authority, nil
+}
+
+func validateDevHubExecutable(path string) error {
+	info, err := os.Lstat(path)
+	if err != nil || !info.Mode().IsRegular() || info.Mode().Perm()&0o111 == 0 {
+		return fmt.Errorf("Dev Hub executable must be a regular executable")
+	}
+	canonical, err := filepath.EvalSymlinks(path)
+	if err != nil || canonical != path {
+		return fmt.Errorf("Dev Hub executable must not be a symlink")
+	}
+	return nil
 }
 
 type SalesforceExecutionAuthority struct {

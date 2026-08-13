@@ -102,8 +102,48 @@ type AssuranceProfileRow struct {
 // a deterministic mock is deployable unless it names an explicit exclusion.
 type OracleDirective struct {
 	SurfaceID       string `json:"surfaceId"`
+	Decision        string `json:"decision,omitempty"`
 	ExclusionClass  string `json:"exclusionClass,omitempty"`
 	ExclusionReason string `json:"exclusionReason,omitempty"`
+}
+
+// BuildOracleDirectiveDraft emits one human-review row for every current
+// assurance surface. It binds the exact profile, usage, and local proof bytes.
+func BuildOracleDirectiveDraft(profilePath, sealedUsagePath, localProofPath, outputPath string) (OracleDirectiveFile, error) {
+	for _, path := range []string{profilePath, sealedUsagePath, localProofPath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return OracleDirectiveFile{}, fmt.Errorf("absolute oracle directive paths are required")
+		}
+	}
+	if _, err := os.Lstat(outputPath); err == nil {
+		return OracleDirectiveFile{}, fmt.Errorf("oracle directive output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return OracleDirectiveFile{}, err
+	}
+	profile, profileBytes, err := readExactJSONBytes[AssuranceProfile](profilePath)
+	if err != nil {
+		return OracleDirectiveFile{}, err
+	}
+	usage, usageBytes, err := readExactJSONBytes[SealedCorpusUsage](sealedUsagePath)
+	if err != nil {
+		return OracleDirectiveFile{}, err
+	}
+	proof, proofBytes, err := readExactJSONBytes[LocalProof](localProofPath)
+	if err != nil {
+		return OracleDirectiveFile{}, err
+	}
+	if err := validateAssuranceOracleProfile(profile, usage, proof, replayBytesSHA256(usageBytes), replayBytesSHA256(proofBytes)); err != nil {
+		return OracleDirectiveFile{}, err
+	}
+	draft := OracleDirectiveFile{SchemaVersion: 2, ProfileSHA256: replayBytesSHA256(profileBytes), SealedUsageSHA256: replayBytesSHA256(usageBytes), LocalProofSHA256: replayBytesSHA256(proofBytes), Directives: make([]OracleDirective, 0, len(profile.Rows))}
+	for _, row := range profile.Rows {
+		draft.Directives = append(draft.Directives, OracleDirective{SurfaceID: row.SurfaceID})
+	}
+	sort.Slice(draft.Directives, func(i, j int) bool { return draft.Directives[i].SurfaceID < draft.Directives[j].SurfaceID })
+	if err := WriteNewJSON(outputPath, draft); err != nil {
+		return OracleDirectiveFile{}, err
+	}
+	return draft, nil
 }
 
 type OracleDirectiveFile struct {
@@ -663,14 +703,24 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 			return OraclePlan{}, fmt.Errorf("reconciled surface %q is absent from profile", surfaceID)
 		}
 		directive := directiveBySurface[surfaceID]
-		input := OracleInputRow{SurfaceID: surfaceID, Disposition: profileRow.Disposition, ExclusionClass: directive.ExclusionClass, ExclusionReason: directive.ExclusionReason}
+		input := OracleInputRow{SurfaceID: surfaceID, Disposition: profileRow.Disposition}
+		if directive.Decision == "" {
+			input.ExclusionClass, input.ExclusionReason = directive.ExclusionClass, directive.ExclusionReason
+		} else if directive.Decision == "exclude" {
+			input.ExclusionClass, input.ExclusionReason = directive.ExclusionClass, directive.ExclusionReason
+		} else if directive.Decision != "" && directive.Decision != "deploy" {
+			return OraclePlan{}, fmt.Errorf("oracle directive has unsupported decision %q", directive.Decision)
+		}
 		if profileRow.Disposition == deterministicMockRequired {
-			if directive.SurfaceID == "" {
+			if directive.SurfaceID == "" || directive.Decision == "" && directive.ExclusionClass == "" {
 				return OraclePlan{}, fmt.Errorf("deterministic mock %q requires an explicit deployability directive", surfaceID)
 			}
-			input.Deployable = directive.ExclusionClass == ""
-		} else if profileRow.Disposition != "hosted-deferred" && directive.SurfaceID != "" && directive.ExclusionClass == "" {
+			input.Deployable = directive.Decision == "deploy" || directive.Decision == "" && directive.ExclusionClass == ""
+		} else if profileRow.Disposition != "hosted-deferred" && directive.SurfaceID != "" && directive.ExclusionClass == "" && directive.Decision == "" {
 			return OraclePlan{}, fmt.Errorf("oracle directive lacks an exclusion for %q", surfaceID)
+		}
+		if profileRow.Disposition == "hosted-deferred" && directive.Decision == "deploy" {
+			return OraclePlan{}, fmt.Errorf("hosted surface %q cannot be deployed", surfaceID)
 		}
 		if profileRow.Disposition != "hosted-deferred" {
 			local, ok := proofs[surfaceID]
@@ -736,8 +786,17 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 	if err := validateAssuranceOracleProfile(profile, sealedUsage, proof, sealedUsageSHA256, proofSHA256); err != nil {
 		return OraclePlan{}, err
 	}
-	if directive.SchemaVersion != 1 || directive.ProfileSHA256 != profile.SourceProfileSHA256 || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
+	wantDirectiveProfileSHA := profile.SourceProfileSHA256
+	if directive.SchemaVersion == 2 {
+		wantDirectiveProfileSHA = profileSHA256
+	}
+	if (directive.SchemaVersion != 1 && directive.SchemaVersion != 2) || directive.ProfileSHA256 != wantDirectiveProfileSHA || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives do not bind authoritative inputs")
+	}
+	if directive.SchemaVersion == 2 {
+		if err := validateOracleDirectiveDecisions(directive, profile); err != nil {
+			return OraclePlan{}, err
+		}
 	}
 	projected := make([]OracleProfileRow, len(profile.Rows))
 	for i, row := range profile.Rows {
@@ -771,6 +830,40 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 		return OraclePlan{}, err
 	}
 	return plan, nil
+}
+
+func validateOracleDirectiveDecisions(file OracleDirectiveFile, profile AssuranceProfile) error {
+	if len(file.Directives) != len(profile.Rows) {
+		return fmt.Errorf("oracle directives do not cover the exact profile rows")
+	}
+	allowed := make(map[string]AssuranceProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		allowed[row.SurfaceID] = row
+	}
+	seen := make(map[string]bool, len(file.Directives))
+	for _, directive := range file.Directives {
+		row, ok := allowed[directive.SurfaceID]
+		if !ok || seen[directive.SurfaceID] || directive.Decision == "" {
+			return fmt.Errorf("oracle directive decision is incomplete or contains an unknown surface")
+		}
+		seen[directive.SurfaceID] = true
+		switch directive.Decision {
+		case "deploy":
+			if directive.ExclusionClass != "" || directive.ExclusionReason != "" || row.Disposition == "hosted-deferred" {
+				return fmt.Errorf("oracle deploy decision is invalid for %q", directive.SurfaceID)
+			}
+		case "exclude":
+			if directive.ExclusionClass == "" || directive.ExclusionReason == "" {
+				return fmt.Errorf("oracle exclusion decision is incomplete for %q", directive.SurfaceID)
+			}
+		default:
+			return fmt.Errorf("oracle directive has unsupported decision %q", directive.Decision)
+		}
+	}
+	if len(seen) != len(allowed) {
+		return fmt.Errorf("oracle directives are incomplete")
+	}
+	return nil
 }
 
 func validateAssuranceOracleProfile(profile AssuranceProfile, usage SealedCorpusUsage, proof LocalProof, usageSHA, proofSHA string) error {

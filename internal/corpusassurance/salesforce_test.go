@@ -560,11 +560,36 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, filesReusedCreation}); err == nil {
 		t.Fatal("accepted a creation receipt reused by two shards")
 	}
+	retainedRoot := t.TempDir()
+	reconciliation, err := CreateSalesforceReconciliation(SalesforceReconciliationRequest{OraclePlanPath: planPath, ShardFiles: []SalesforceShardFiles{files0, files1}, PacketOutput: filepath.Join(retainedRoot, "packet"), OutputPath: filepath.Join(retainedRoot, "SALESFORCE_RECONCILIATION.json")})
+	if err != nil {
+		t.Fatalf("CreateSalesforceReconciliation: %v", err)
+	}
+	if reconciliation.Status != "pass" || len(reconciliation.Rows) != 1 || len(reconciliation.Shards) != 2 {
+		t.Fatalf("reconciliation = %#v", reconciliation)
+	}
+	if err := VerifySalesforceReconciliation(planPath, filepath.Join(retainedRoot, "SALESFORCE_RECONCILIATION.json"), filepath.Join(retainedRoot, "packet")); err != nil {
+		t.Fatalf("VerifySalesforceReconciliation before cleanup: %v", err)
+	}
+	retainedPlan := filepath.Join(retainedRoot, "ORACLE_PLAN.json")
+	planBytes, err := os.ReadFile(planPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(retainedPlan, planBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
 	if err := os.WriteFile(bundlePath, []byte(`{"schemaVersion":1}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err == nil {
 		t.Fatal("accepted a replaced staged bundle")
+	}
+	if err := os.RemoveAll(attemptRoot); err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifySalesforceReconciliation(retainedPlan, filepath.Join(retainedRoot, "SALESFORCE_RECONCILIATION.json"), filepath.Join(retainedRoot, "packet")); err != nil {
+		t.Fatalf("VerifySalesforceReconciliation after remote cleanup: %v", err)
 	}
 }
 

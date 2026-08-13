@@ -130,6 +130,35 @@ atomically changes the handoff to `Current gate: blocked`. The next command is
 the receipt-specific recovery instruction. No remote root is deleted by the
 preservation helper.
 
+## Salesforce reconciliation handoff
+
+`oracle-bundle` requires the attempt-bound
+`SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json` and stages it unchanged. After both
+shards and both org-cleanup receipts pass, create the durable reconciliation
+before deleting the remote attempt root:
+
+```text
+glade-tools corpus assurance salesforce-reconcile \
+  --oracle-plan /absolute/ORACLE_PLAN.json \
+  --shard /absolute/SALESFORCE_SHARD_0.json \
+  --dispatch /absolute/SALESFORCE_DISPATCH_0.json \
+  --preflight /absolute/ORG_PREFLIGHT_0.json \
+  --creation /absolute/ORG_CREATION_0.json \
+  --cleanup /absolute/ORG_CLEANUP_0.json \
+  --shard /absolute/SALESFORCE_SHARD_1.json \
+  --dispatch /absolute/SALESFORCE_DISPATCH_1.json \
+  --preflight /absolute/ORG_PREFLIGHT_1.json \
+  --creation /absolute/ORG_CREATION_1.json \
+  --cleanup /absolute/ORG_CLEANUP_1.json \
+  --packet-output /absolute/salesforce-reconciliation-packet \
+  --output /absolute/SALESFORCE_RECONCILIATION.json
+```
+
+After copying the packet back, verify with `--receipt` and `--packet`. This
+mode reads only the retained bytes and modes. `report` accepts the same receipt
+and packet through `--salesforce-reconciliation` and `--salesforce-packet`, so
+it does not need the deleted executor roots.
+
 ## Packet return format
 
 ```text
