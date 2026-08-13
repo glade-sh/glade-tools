@@ -116,13 +116,20 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		inventory, ledger := flags.String("inventory-spec", "", ""), flags.String("ledger", "", "")
 		manifest, profile := flags.String("manifest", "", ""), flags.String("profile", "", "")
 		policy, output := flags.String("policy", "", ""), flags.String("output", "", "")
+		decisionTemplate := flags.String("decision-template", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
 		if err := requiredAssuranceFlags(*inventory, *ledger, *manifest, *profile, *policy, *output); err != nil {
 			return err
 		}
-		draft, err := corpusassurance.DraftUsageDecisions(*inventory, *ledger, *manifest, *profile, *policy, *output)
+		var draft corpusassurance.UsageDecisionDraft
+		var err error
+		if *decisionTemplate == "" {
+			draft, err = corpusassurance.DraftUsageDecisions(*inventory, *ledger, *manifest, *profile, *policy, *output)
+		} else {
+			draft, err = corpusassurance.DraftUsageDecisionsWithTemplate(*inventory, *ledger, *manifest, *profile, *policy, *output, *decisionTemplate)
+		}
 		if err != nil {
 			return err
 		}
@@ -521,7 +528,7 @@ Usage:
   glade-tools corpus assurance attempt-init --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-host <operator@replay-worker> --replay-parent <absolute-parent> --salesforce-host <operator@salesforce-worker> --salesforce-parent <absolute-parent> --run-id <run-id> --output-dir <attempt-bindings-dir>
   glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --salesforce-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --output <ATTEMPT.json>
   glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --attempt <ATTEMPT.json> --output <new-dir>
-  glade-tools corpus assurance usage-draft --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --output <USAGE_DECISION_DRAFT.json>
+  glade-tools corpus assurance usage-draft --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --output <USAGE_DECISION_DRAFT.json> [--decision-template <USAGE_DECISIONS.json>]
   glade-tools corpus assurance usage --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --decisions <USAGE_DECISIONS.json> --output <CORPUS_USAGE.json>
   glade-tools corpus assurance replay --host <local|replay-worker> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>

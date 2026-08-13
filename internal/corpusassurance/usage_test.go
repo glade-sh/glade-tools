@@ -353,9 +353,14 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 		t.Fatal(err)
 	}
 	unresolvedDraftPath := filepath.Join(root, "unresolved-draft.json")
-	unresolvedDraft, err := DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, unresolvedDraftPath)
+	decisionTemplatePath := filepath.Join(root, "USAGE_DECISIONS.json")
+	unresolvedDraft, err := DraftUsageDecisionsWithTemplate(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, unresolvedDraftPath, decisionTemplatePath)
 	if err != nil {
 		t.Fatal(err)
+	}
+	decisionTemplate, _, err := readExactJSONBytes[UsageDecisionFile](decisionTemplatePath)
+	if err != nil || decisionTemplate.SchemaVersion != 2 || decisionTemplate.ProfileSHA256 != unresolvedDraft.ProfileSHA256 || decisionTemplate.PolicySHA256 != unresolvedDraft.PolicySHA256 || decisionTemplate.RawUsageSHA256 != unresolvedDraft.RawUsageSHA256 || len(decisionTemplate.Decisions) != len(unresolvedDraft.Unresolved) || decisionTemplate.Decisions[0].UsageKey != unresolvedDraft.Unresolved[0].UsageKey || decisionTemplate.Decisions[0].Class != "" || decisionTemplate.Decisions[0].Reason != "" {
+		t.Fatalf("decision template = %#v, err=%v", decisionTemplate, err)
 	}
 	unresolvedData, err := os.ReadFile(unresolvedDraftPath)
 	if err != nil {
