@@ -12,8 +12,84 @@ on:
         default: "0.2.0"
 
 jobs:
-  prepare:
+  salesforce-authority:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: glade-tools
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          path: glade-tools
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Read pinned glade ref
+        id: glade-ref
+        run: |
+          requested_ref="$(jq -er '.gladeCommit | select(type == "string" and test("^[0-9a-f]{40}$"))' docs/fixtures/apex-language-rules.json)"
+          printf 'ref=%s\n' "$requested_ref" >> "$GITHUB_OUTPUT"
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ vars.GLADE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GLADE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: glade
+          permission-checks: read
+          permission-contents: read
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: glade-sh/glade
+          path: glade
+          ref: ${{ steps.glade-ref.outputs.ref }}
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+      - name: Verify pinned glade checkout
+        run: |
+          requested_ref="$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"
+          test "$(git -C ../glade rev-parse HEAD)" = "$requested_ref"
+      - name: Verify Salesforce release authority
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_REPOSITORY: glade-sh/glade
+        run: |
+          requested_ref="$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"
+          ../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$GITHUB_SHA" > salesforce-release-authority.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: salesforce-release-authority
+          path: glade-tools/salesforce-release-authority.json
+          if-no-files-found: error
+          retention-days: 90
+
+  required-gates:
+    needs: salesforce-authority
     if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify required release gates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/verify-release-gates.sh "$GITHUB_REPOSITORY" "$GITHUB_SHA" > required-gates.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: required-gates
+          path: required-gates.json
+          if-no-files-found: error
+          retention-days: 90
+
+  prepare:
+    needs: required-gates
+    if: startsWith(github.ref, 'refs/tags/') && needs.required-gates.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,8 +114,20 @@ jobs:
           fi
 
   build:
-    needs: prepare
-    if: always() && (needs.prepare.result == 'success' || needs.prepare.result == 'skipped')
+    needs:
+      - salesforce-authority
+      - required-gates
+      - prepare
+    if: >-
+      always() &&
+      ((startsWith(github.ref, 'refs/tags/') &&
+        needs.salesforce-authority.result == 'success' &&
+        needs.required-gates.result == 'success' &&
+        needs.prepare.result == 'success') ||
+       (github.event_name == 'workflow_dispatch' &&
+        needs.salesforce-authority.result == 'success' &&
+        needs.required-gates.result == 'skipped' &&
+        needs.prepare.result == 'skipped'))
     strategy:
       fail-fast: false
       matrix:
@@ -80,18 +168,19 @@ jobs:
             glade
             glade-tools
           permission-contents: read
-      - name: Resolve glade ref
+      - name: Read pinned glade ref
         id: glade-ref
-        env:
-          GLADE_REMOTE: https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/glade-sh/glade.git
-          REQUESTED_REF: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'main' }}
-        run: scripts/resolve-sibling-ref.sh "$GLADE_REMOTE" "$REQUESTED_REF" main
+        run: |
+          requested_ref="$(jq -er '.gladeCommit | select(type == "string" and test("^[0-9a-f]{40}$"))' docs/fixtures/apex-language-rules.json)"
+          printf 'ref=%s\n' "$requested_ref" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v6
         with:
           repository: glade-sh/glade
           path: glade
           ref: ${{ steps.glade-ref.outputs.ref }}
           token: ${{ steps.app-token.outputs.token }}
+      - name: Verify pinned glade checkout
+        run: test "$(git -C ../glade rev-parse HEAD)" = "$(jq -r '.gladeCommit' docs/fixtures/apex-language-rules.json)"
       - uses: actions/setup-go@v6
         with:
           go-version: "1.26.3"

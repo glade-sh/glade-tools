@@ -4,11 +4,6 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT}"
 
-git diff --check
-if [[ ! -d "${ROOT}/../glade" ]]; then
-	echo "glade sibling repo not found at ${ROOT}/../glade" >&2
-	exit 1
-fi
 # Keep the release gate bounded to packages whose current-base fixtures and
 # provenance are checked into this repository. surfaceledger also contains
 # archive/worktree evidence probes; run that maintenance suite when its
@@ -32,12 +27,23 @@ packages=(
 	./internal/projectscan
 	./internal/uicontroller
 	./internal/toolcli
-	./scripts
+	./internal/corpusassurance
 )
-packages+=(./internal/corpusassurance)
-go test "${packages[@]}"
-go test -count=1 ./internal/surfaceledger -run 'TestCB(23MergedFamilyEvidenceClosesTargetRows|56HostedPolicyCoversOnlyDeclaredServiceEffects|65EventBusAccessLevelSurfaceIDsAreCanonicalAndUnique|65EventBusFixtureExercisesAndMergesAllFourOverloads|193LocalMockCoreFixtureIsExact|206FixtureAndComparisonAreExact)$'
-go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json
-go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json
-go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json
-OUT_DIR=/tmp/glade-plugin-release TARGETS="$(go env GOOS)/$(go env GOARCH)" CHECK=1 scripts/build-plugin-archives.sh 0.2.0
+
+case "${1:-all}" in
+	core)
+		git diff --check
+		node --test scripts/*.test.mjs
+		go test "${packages[@]}"
+		;;
+	release)
+		git diff --check
+		go test -count=1 ./scripts
+		go test -count=1 ./internal/surfaceledger -run 'TestCB(23MergedFamilyEvidenceClosesTargetRows|56HostedPolicyCoversOnlyDeclaredServiceEffects|65EventBusAccessLevelSurfaceIDsAreCanonicalAndUnique|65EventBusFixtureExercisesAndMergesAllFourOverloads|193LocalMockCoreFixtureIsExact|206FixtureAndComparisonAreExact)$'
+		go run ./cmd/glade-plugin-compat manifest --json >/tmp/glade-plugin-compat-manifest.json
+		go run ./cmd/glade-plugin-performance manifest --json >/tmp/glade-plugin-performance-manifest.json
+		go run ./cmd/glade-plugin-orgpackage manifest --json >/tmp/glade-plugin-orgpackage-manifest.json
+		;;
+	all) "$ROOT/scripts/release-check.sh" core; "$ROOT/scripts/release-check.sh" release ;;
+	*) echo "usage: $0 [all|core|release]" >&2; exit 2 ;;
+esac

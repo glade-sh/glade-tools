@@ -42,6 +42,10 @@ jobs:
           fi
           GLADE_SHA="${GLADE_SHA,,}"
           echo "GLADE_SHA=${GLADE_SHA}" >> "$GITHUB_ENV"
+          TOOLS_SHA="$(git rev-parse HEAD)"
+          [[ "$TOOLS_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$TOOLS_SHA" = "$GITHUB_SHA"
+          echo "TOOLS_SHA=${TOOLS_SHA}" >> "$GITHUB_ENV"
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
@@ -220,6 +224,20 @@ jobs:
           display_status=$?
           set -e
           test "$display_status" -ne 0
+      - name: Write Salesforce release authority
+        run: |
+          evidence="$RUNNER_TEMP/salesforce-correctness-evidence"
+          receipt="$evidence/salesforce-release-authority.json"
+          sidecar="$evidence/salesforce-release-authority.json.sha256"
+          jq -S -c -n \
+            --arg gladeSHA "$GLADE_SHA" \
+            --arg toolsSHA "$TOOLS_SHA" \
+            --argjson workflowRunID "$GITHUB_RUN_ID" \
+            --argjson workflowRunAttempt "$GITHUB_RUN_ATTEMPT" \
+            --arg workflowRunURL "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT" \
+            '{schemaVersion: 1, gladeSHA: $gladeSHA, toolsSHA: $toolsSHA, workflowRunID: $workflowRunID, workflowRunAttempt: $workflowRunAttempt, workflowRunURL: $workflowRunURL, gateStatus: "PASS", cleanupStatus: "PASS", evidenceArtifactName: "salesforce-correctness-evidence"}' \
+            > "$receipt"
+          printf '%s  %s\n' "$(shasum -a 256 "$receipt" | awk '{print $1}')" "$(basename "$receipt")" > "$sidecar"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
@@ -227,3 +245,18 @@ jobs:
           path: ${{ runner.temp }}/salesforce-correctness-evidence
           if-no-files-found: error
           retention-days: 90
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: authority-token
+        with:
+          client-id: ${{ vars.GLADE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GLADE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: glade
+          permission-checks: write
+      - name: Publish Salesforce release authority
+        env:
+          GH_TOKEN: ${{ steps.authority-token.outputs.token }}
+        run: |
+          receipt="$RUNNER_TEMP/salesforce-correctness-evidence/salesforce-release-authority.json"
+          sidecar="$RUNNER_TEMP/salesforce-correctness-evidence/salesforce-release-authority.json.sha256"
+          scripts/publish-salesforce-authority.sh "$receipt" "$sidecar" "glade-sh/glade" "Salesforce Correctness"
