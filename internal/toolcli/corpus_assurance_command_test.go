@@ -22,10 +22,19 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
-	for _, command := range []string{"candidate-build", "candidate-authority", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof-plan", "local-proof", "release-validate", "oracle-plan", "exclusion-request", "authorize-exclusions", "oracle-bundle", "org-create", "org-preflight", "salesforce-run", "org-cleanup", "report", "cleanup"} {
+	commands := []string{"candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof-plan", "local-proof", "release-validate", "oracle-plan", "exclusion-request", "authorize-exclusions", "oracle-bundle", "org-create", "org-preflight", "salesforce-run", "org-cleanup", "report", "cleanup"}
+	for _, command := range commands {
 		if !strings.Contains(stdout.String(), "glade-tools corpus assurance "+command+" ") {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}
+	}
+	last := -1
+	for _, command := range []string{"candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "local-proof-plan", "local-proof", "release-validate"} {
+		position := strings.Index(stdout.String(), "glade-tools corpus assurance "+command+" ")
+		if position <= last {
+			t.Fatalf("help order moved %q after position %d:\n%s", command, last, stdout.String())
+		}
+		last = position
 	}
 	for _, flag := range []string{"--replay-host-manifest <manifest.json>", "--replay-shard <REPLAY_SHARD.json>"} {
 		if !strings.Contains(stdout.String(), flag) {
