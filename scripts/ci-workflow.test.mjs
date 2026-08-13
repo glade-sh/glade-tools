@@ -18,6 +18,10 @@ const releaseWorkflow = readFileSync(
   new URL("../.github/workflows/release.yml", import.meta.url),
   "utf8",
 );
+const apexLanguageRules = JSON.parse(readFileSync(
+  new URL("../docs/fixtures/apex-language-rules.json", import.meta.url),
+  "utf8",
+));
 const jobs = workflow.slice(workflow.indexOf("\njobs:\n"));
 const releaseJobs = releaseWorkflow.slice(releaseWorkflow.indexOf("\njobs:\n"));
 
@@ -106,6 +110,40 @@ test("manual Salesforce correctness uses attempt-unique server cleanup authority
   assert.match(salesforceCorrectnessWorkflow, /remaining ActiveScratchOrg residue/);
 });
 
+test("Salesforce correctness publishes one exact cross-repository authority", () => {
+  assert.equal(apexLanguageRules.gladeCommit, "5a212543819661d8b4c5d4168bb643789737123a");
+  for (const marker of [
+    'TOOLS_SHA="$(git rev-parse HEAD)"',
+    'test "$TOOLS_SHA" = "$GITHUB_SHA"',
+    "jq -S -c -n",
+    'gateStatus: "PASS"',
+    'cleanupStatus: "PASS"',
+    "salesforce-release-authority.json.sha256",
+    "permission-checks: write",
+    'scripts/publish-salesforce-authority.sh "$receipt" "$sidecar" "glade-sh/glade" "Salesforce Correctness"',
+  ]) {
+    assert.ok(salesforceCorrectnessWorkflow.includes(marker), `Salesforce authority workflow missing ${marker}`);
+  }
+  assert.ok(
+    salesforceCorrectnessWorkflow.indexOf("Delete scratch org") < salesforceCorrectnessWorkflow.indexOf("Write Salesforce release authority"),
+    "authority receipt can precede cleanup",
+  );
+  assert.ok(
+    salesforceCorrectnessWorkflow.indexOf("Write Salesforce release authority") < salesforceCorrectnessWorkflow.indexOf("Publish Salesforce release authority"),
+    "authority can publish before receipt validation",
+  );
+  assert.ok(
+    salesforceCorrectnessWorkflow.indexOf("name: salesforce-correctness-evidence") < salesforceCorrectnessWorkflow.indexOf("Publish Salesforce release authority"),
+    "authority can publish before evidence upload",
+  );
+  const publisherToken = salesforceCorrectnessWorkflow.slice(
+    salesforceCorrectnessWorkflow.indexOf("id: authority-token"),
+    salesforceCorrectnessWorkflow.indexOf("name: Publish Salesforce release authority"),
+  );
+  assert.match(publisherToken, /permission-checks: write/);
+  assert.doesNotMatch(publisherToken, /permission-contents:/);
+});
+
 test("full fixtures is a single bounded weekly and manual lane", () => {
   assert.equal((fullFixturesWorkflow.match(/^name: Full Fixtures$/gm) ?? []).length, 1);
   const triggers = fullFixturesWorkflow.match(/^on:\n([\s\S]*?)^permissions:/m)?.[1];
@@ -153,7 +191,7 @@ test("full fixtures is a single bounded weekly and manual lane", () => {
 test("release requires exact-SHA CI and manual fixture authorities before tag publication", () => {
   assert.deepEqual(
     [...releaseJobs.matchAll(/^  (\w[\w-]*):$/gm)].map((match) => match[1]),
-    ["required-gates", "prepare", "build", "publish"],
+    ["salesforce-authority", "required-gates", "prepare", "build", "publish"],
   );
 
   const gate = releaseJob("required-gates");
@@ -178,11 +216,26 @@ test("release requires exact-SHA CI and manual fixture authorities before tag pu
   assert.match(prepare, /if: startsWith\(github\.ref, 'refs\/tags\/'\) && needs\.required-gates\.result == 'success'/);
 
   const build = releaseJob("build");
-  assert.match(build, /needs:\n\s+- required-gates\n\s+- prepare/);
+  assert.match(build, /needs:\n\s+- salesforce-authority\n\s+- required-gates\n\s+- prepare/);
   assert.match(build, /startsWith\(github\.ref, 'refs\/tags\/'\)[\s\S]*needs\.required-gates\.result == 'success'[\s\S]*needs\.prepare\.result == 'success'/);
   assert.match(build, /github\.event_name == 'workflow_dispatch'[\s\S]*needs\.required-gates\.result == 'skipped'[\s\S]*needs\.prepare\.result == 'skipped'/);
   assert.doesNotMatch(build, /needs\.prepare\.result == 'success' \|\| needs\.prepare\.result == 'skipped'/);
   assert.match(build, /requested_ref="\$\(jq -er '\.gladeCommit \| select\(type == "string" and test\("\^\[0-9a-f\]\{40\}\$"\)\)' docs\/fixtures\/apex-language-rules\.json\)"/);
   assert.match(build, /printf 'ref=%s\\n' "\$requested_ref" >> "\$GITHUB_OUTPUT"/);
   assert.doesNotMatch(build, /resolve-sibling-ref\.sh|GLADE_REMOTE|REQUESTED_REF/);
+});
+
+test("release verifies the catalog-pinned Glade Salesforce authority before prepare and build", () => {
+  const authority = releaseJob("salesforce-authority");
+  for (const marker of [
+    "repository: glade-sh/glade",
+    "ref: ${{ steps.glade-ref.outputs.ref }}",
+    'test "$(git -C ../glade rev-parse HEAD)" = "$requested_ref"',
+    '../glade/scripts/verify-salesforce-check.sh "$requested_ref" "$GITHUB_SHA" > salesforce-release-authority.json',
+    "name: salesforce-release-authority",
+  ]) {
+    assert.ok(authority.includes(marker), `release Salesforce authority missing ${marker}`);
+  }
+  assert.match(releaseJob("required-gates"), /needs: salesforce-authority/);
+  assert.match(releaseJob("build"), /needs:\n\s+- salesforce-authority\n\s+- required-gates\n\s+- prepare/);
 });
