@@ -41,6 +41,68 @@ func TestCreateAssuranceAttemptDerivesCandidateFromSealedAuthority(t *testing.T)
 	}
 }
 
+func TestCreateAssuranceAttemptWithAuthorities(t *testing.T) {
+	root := t.TempDir()
+	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})
+	candidatePath := filepath.Join(root, "glade")
+	writeCandidateAuthorityExecutable(t, candidatePath, true)
+	toolsPath, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	inventoryPath := filepath.Join(root, "IN_SCOPE.json")
+	if err := WriteNewJSON(inventoryPath, InventorySpec{SchemaVersion: 1, Scope: "private-corpus-assurance", Repositories: []InventoryEntry{{ID: "private-corpus-001", CheckoutPath: candidateRoot, ExpectedCommit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD")}}}); err != nil {
+		t.Fatal(err)
+	}
+	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
+	authorityPath := filepath.Join(root, "CANDIDATE_AUTHORITY.json")
+	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, toolsRoot, candidateToolForTest(t, toolsRoot, toolsPath))
+	outputDir := filepath.Join(root, "attempt")
+	replayParent := filepath.Join(root, "glade-assurance-replay")
+	salesforceParent := filepath.Join(root, "glade-assurance-salesforce")
+	if err := os.MkdirAll(replayParent, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(salesforceParent, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	attempt, err := CreateAssuranceAttemptWithAuthorities(AssuranceAttemptInitRequest{
+		InventoryPath:          inventoryPath,
+		CandidateAuthorityPath: authorityPath,
+		CandidatePath:          candidatePath,
+		CandidateRoot:          candidateRoot,
+		ToolsPath:              toolsPath,
+		ToolsRoot:              toolsRoot,
+		ReplayHost:             "operator@replay-worker",
+		ReplayParent:           replayParent,
+		SalesforceHost:         "operator@salesforce-worker",
+		SalesforceParent:       salesforceParent,
+		RunID:                  "test-run",
+		OutputDir:              outputDir,
+	})
+	if err != nil {
+		t.Fatalf("CreateAssuranceAttemptWithAuthorities: %v", err)
+	}
+	loaded, err := LoadAssuranceAttempt(filepath.Join(outputDir, "ATTEMPT.json"))
+	if err != nil || !reflect.DeepEqual(loaded, attempt) {
+		t.Fatalf("loaded attempt = %#v, err=%v", loaded, err)
+	}
+	for _, role := range []string{"replay-worker", "salesforce-worker"} {
+		path := filepath.Join(outputDir, map[string]string{"replay-worker": "REPLAY_REMOTE_CLEANUP_AUTHORITY.json", "salesforce-worker": "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json"}[role])
+		authority, data, err := readRemoteAttemptAuthority(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if authority.AttemptSHA256 != attemptBindingHash(attempt) || filepath.Dir(authority.AttemptRoot) != map[string]string{"replay-worker": replayParent, "salesforce-worker": salesforceParent}[role] || replayBytesSHA256(data) != attempt.RemoteCleanupAuthoritySHA256[role] {
+			t.Fatalf("%s authority = %#v", role, authority)
+		}
+	}
+	if info, err := os.Stat(outputDir); err != nil || info.Mode().Perm() != 0o700 {
+		t.Fatalf("output dir mode = %v, %v", info.Mode().Perm(), err)
+	}
+}
+
 func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testing.T) {
 	root := t.TempDir()
 	candidateRoot := newInventoryRepository(t, map[string]string{"main.go": "package main\n"})

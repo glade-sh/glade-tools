@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
 
 const remoteCleanupTimeout = 30 * time.Second
 const remoteCleanupBinary = "/usr/bin/ssh"
+
+var safeRemoteSSHHost = regexp.MustCompile(`^[A-Za-z0-9._-]+@[A-Za-z0-9._-]+$`)
 
 type RemoteAttemptCleanupRequest struct {
 	AttemptPath string
@@ -138,13 +141,13 @@ func validateRemoteAttemptCleanupRequest(request RemoteAttemptCleanupRequest) er
 }
 
 func validateRemoteAttemptTarget(attemptSHA, role, host, parent, attemptRoot string) error {
-	if role != "replay-worker" && role != "salesforce-worker" || host == "" || strings.HasPrefix(host, "-") || !filepath.IsAbs(parent) || !filepath.IsAbs(attemptRoot) {
+	if role != "replay-worker" && role != "salesforce-worker" || !safeRemoteSSHHost.MatchString(host) || !filepath.IsAbs(parent) || !filepath.IsAbs(attemptRoot) {
 		return fmt.Errorf("invalid remote cleanup authority target")
 	}
 	if !sha256Pattern.MatchString(attemptSHA) {
 		return fmt.Errorf("invalid remote cleanup authority attempt hash")
 	}
-	if !validRemoteAttemptParent(parent) || filepath.Dir(filepath.Clean(attemptRoot)) != filepath.Clean(parent) {
+	if !validRemoteAttemptParent(parent) || strings.IndexFunc(parent, func(r rune) bool { return r == '\n' || r == '\r' || r == '\t' || r == ' ' }) >= 0 || strings.IndexFunc(attemptRoot, func(r rune) bool { return r == '\n' || r == '\r' || r == '\t' || r == ' ' }) >= 0 || filepath.Dir(filepath.Clean(attemptRoot)) != filepath.Clean(parent) {
 		return fmt.Errorf("attempt root must be a direct child of parent")
 	}
 	if basename := filepath.Base(filepath.Clean(attemptRoot)); !strings.HasPrefix(basename, "assurance-"+attemptSHA[:16]+"-") || strings.ContainsRune(basename, '/') {

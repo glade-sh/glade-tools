@@ -57,6 +57,26 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "candidate-authority", 1, *output)
+	case "attempt-init":
+		flags := flag.NewFlagSet("corpus assurance attempt-init", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		inventory, authority := flags.String("inventory-spec", "", ""), flags.String("candidate-authority", "", "")
+		candidate, candidateRoot := flags.String("candidate", "", ""), flags.String("candidate-root", "", "")
+		tools, toolsRoot := flags.String("tools", "", ""), flags.String("tools-root", "", "")
+		replayHost, replayParent := flags.String("replay-host", "", ""), flags.String("replay-parent", "", "")
+		salesforceHost, salesforceParent := flags.String("salesforce-host", "", ""), flags.String("salesforce-parent", "", "")
+		runID, outputDir := flags.String("run-id", "", ""), flags.String("output-dir", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*inventory, *authority, *candidate, *candidateRoot, *tools, *toolsRoot, *replayHost, *replayParent, *salesforceHost, *salesforceParent, *runID, *outputDir); err != nil {
+			return err
+		}
+		_, err := corpusassurance.CreateAssuranceAttemptWithAuthorities(corpusassurance.AssuranceAttemptInitRequest{InventoryPath: *inventory, CandidateAuthorityPath: *authority, CandidatePath: *candidate, CandidateRoot: *candidateRoot, ToolsPath: *tools, ToolsRoot: *toolsRoot, ReplayHost: *replayHost, ReplayParent: *replayParent, SalesforceHost: *salesforceHost, SalesforceParent: *salesforceParent, RunID: *runID, OutputDir: *outputDir})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "attempt-init", 3, *outputDir)
 	case "attempt":
 		flags := flag.NewFlagSet("corpus assurance attempt", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -498,6 +518,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 Usage:
   glade-tools corpus assurance candidate-build --candidate-root <glade-root> --tools-root <glade-tools-root> --candidate-ref <ref> --tools-ref <ref> --candidate-output <glade> --tools-output <glade-tools> --receipt-output <CANDIDATE_BUILD_RECEIPT.json> --review-output <REVIEW.md> --tools-freeze-output <TOOLS_COMMIT>
   glade-tools corpus assurance candidate-authority --candidate-root <glade-root> --tools-root <glade-tools-root> --receipt <candidate-receipt.json> --review <REVIEW.md> --output <CANDIDATE_AUTHORITY.json>
+  glade-tools corpus assurance attempt-init --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-host <operator@replay-worker> --replay-parent <absolute-parent> --salesforce-host <operator@salesforce-worker> --salesforce-parent <absolute-parent> --run-id <run-id> --output-dir <attempt-bindings-dir>
   glade-tools corpus assurance attempt --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --salesforce-cleanup-authority <REMOTE_CLEANUP_AUTHORITY.json> --output <ATTEMPT.json>
   glade-tools corpus assurance prepare --inventory-spec <IN_SCOPE.json> --attempt <ATTEMPT.json> --output <new-dir>
   glade-tools corpus assurance usage-draft --inventory-spec <IN_SCOPE.json> --ledger <ledger.json> --manifest <MANIFEST.json> --profile <source-profile.json> --policy <support-policy.json> --output <USAGE_DECISION_DRAFT.json>
