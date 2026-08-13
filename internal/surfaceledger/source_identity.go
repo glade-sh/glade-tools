@@ -17,6 +17,7 @@ type SourceIdentity struct {
 	User            string                          `json:"user,omitempty"`
 	LatestAtlas     string                          `json:"latestAtlas,omitempty"`
 	FallbackDocsets map[string]SourceDocsetIdentity `json:"fallbackDocsets,omitempty"`
+	LatestDocsets   map[string]SourceDocsetIdentity `json:"latestDocsets,omitempty"`
 }
 
 type SourceDocsetIdentity struct {
@@ -57,12 +58,58 @@ func ValidateSourceIdentity(identity SourceIdentity, docsSource string) error {
 	if !strings.EqualFold(actualHash, identity.ManifestSHA256) {
 		return fmt.Errorf("docs manifest hash %s does not match source identity %s", actualHash, identity.ManifestSHA256)
 	}
-	var entries []json.RawMessage
+	var entries []struct {
+		Docset string `json:"docset"`
+	}
 	if err := json.Unmarshal(data, &entries); err != nil {
 		return fmt.Errorf("decode docs manifest: %w", err)
 	}
 	if len(entries) != identity.ManifestEntries {
 		return fmt.Errorf("docs manifest entries %d do not match source identity %d", len(entries), identity.ManifestEntries)
+	}
+	docsets := map[string]bool{}
+	for _, entry := range entries {
+		if entry.Docset != "" {
+			docsets[entry.Docset] = true
+		}
+	}
+	if len(docsets) == 0 {
+		return nil
+	}
+	for docset := range docsets {
+		fallback, isFallback := identity.FallbackDocsets[docset]
+		latest, isLatest := identity.LatestDocsets[docset]
+		if isFallback == isLatest {
+			return fmt.Errorf("manifest docset %q must have exactly one latest or fallback binding", docset)
+		}
+		versionData, err := os.ReadFile(filepath.Join(docsRoot, docset, "_version.json"))
+		if err != nil {
+			return fmt.Errorf("read docset identity %s: %w", docset, err)
+		}
+		var version struct {
+			Version           string `json:"version"`
+			AtlasVersionLabel string `json:"atlas_version_label"`
+		}
+		if err := json.Unmarshal(versionData, &version); err != nil {
+			return fmt.Errorf("decode docset identity %s: %w", docset, err)
+		}
+		if isFallback {
+			if fallback.AtlasVersion == "" || version.Version != fallback.AtlasVersion {
+				return fmt.Errorf("fallback docset %q version %q does not match %q", docset, version.Version, fallback.AtlasVersion)
+			}
+		} else if latest.AtlasVersion == "" || version.Version != "latest" || !strings.Contains(version.AtlasVersionLabel, latest.AtlasVersion) {
+			return fmt.Errorf("latest docset %q release metadata does not match %q", docset, latest.AtlasVersion)
+		}
+	}
+	for docset := range identity.FallbackDocsets {
+		if !docsets[docset] {
+			return fmt.Errorf("fallback binding %q is not present in the docs manifest", docset)
+		}
+	}
+	for docset := range identity.LatestDocsets {
+		if !docsets[docset] {
+			return fmt.Errorf("latest binding %q is not present in the docs manifest", docset)
+		}
 	}
 	return nil
 }
@@ -81,8 +128,8 @@ func ApplySourceIdentity(ledger *SurfaceLedger, identity SourceIdentity) {
 			row.DocsSourceReleaseStatus = "non-parity-fallback"
 			continue
 		}
-		if identity.LatestAtlas != "" {
-			row.DocsSourceAtlasVersion = identity.LatestAtlas
+		if latest, ok := identity.LatestDocsets[family]; ok {
+			row.DocsSourceAtlasVersion = latest.AtlasVersion
 			row.DocsSourceReleaseStatus = "latest"
 		}
 	}

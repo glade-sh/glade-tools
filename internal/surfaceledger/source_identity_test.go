@@ -33,6 +33,30 @@ func TestValidateSourceIdentityBindsDocsRootAndManifest(t *testing.T) {
 	}
 }
 
+func TestValidateSourceIdentityRequiresEveryManifestDocsetBinding(t *testing.T) {
+	root := t.TempDir()
+	manifest := []byte(`[{"docset":"apex","path":"apex/one.md"}]`)
+	if err := os.WriteFile(filepath.Join(root, "manifest.json"), manifest, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(filepath.Join(root, "apex"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	version := []byte(`{"version":"latest","atlas_version_label":"current release (resolved to 262.0)"}`)
+	if err := os.WriteFile(filepath.Join(root, "apex", "_version.json"), version, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	identity := SourceIdentity{
+		SourceRoot:      root,
+		ManifestSHA256:  fmt.Sprintf("%x", sha256.Sum256(manifest)),
+		ManifestEntries: 1,
+		LatestDocsets:   map[string]SourceDocsetIdentity{"other": {AtlasVersion: "262.0"}},
+	}
+	if err := ValidateSourceIdentity(identity, root); err == nil {
+		t.Fatal("unbound manifest docset accepted")
+	}
+}
+
 func TestApplySourceIdentityAnnotatesFallbackRows(t *testing.T) {
 	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{
 		{SurfaceID: "connect-rest-api:quickreference", DocsSource: "connect-rest-api/quickreference.md"},
@@ -42,6 +66,7 @@ func TestApplySourceIdentityAnnotatesFallbackRows(t *testing.T) {
 		ManifestSHA256:  "manifest-sha",
 		LatestAtlas:     "262.0",
 		FallbackDocsets: map[string]SourceDocsetIdentity{"connect-rest-api": {AtlasVersion: "260.0"}},
+		LatestDocsets:   map[string]SourceDocsetIdentity{"apex": {AtlasVersion: "262.0"}},
 	}
 	ApplySourceIdentity(&ledger, identity)
 	if got := ledger.Rows[0].DocsSourceAtlasVersion; got != "260.0" {
