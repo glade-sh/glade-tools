@@ -57,6 +57,12 @@ func TestPlanOracleRejectsMissingEvidenceAndUnjustifiedExclusions(t *testing.T) 
 	}
 }
 
+func TestPlanOracleRejectsDeployForExplicitUnsupportedObligation(t *testing.T) {
+	if _, err := planOracle([]OracleInputRow{{SurfaceID: "apex:Unsupported.run", Disposition: compileShapeRequired, Obligation: "explicit-unsupported", CompilePassed: true}}); err == nil {
+		t.Fatal("planOracle accepted deployable handling for an explicit-unsupported obligation")
+	}
+}
+
 func TestOracleBundleFixtureSelectionDerivesOnlySalesforceRequiredOwnedFixtures(t *testing.T) {
 	eligible := true
 	plan := OraclePlan{
@@ -122,6 +128,9 @@ func TestBuildOracleBundleStagesOnlySealedDerivedTransportInputs(t *testing.T) {
 	}
 	if len(bundle.Fixtures) != 1 || bundle.Fixtures[0].ID != "runtime" || bundle.TransportManifestSHA256 == "" || bundle.LocalProofSummarySHA256 == "" {
 		t.Fatalf("bundle = %#v", bundle)
+	}
+	if bundle.SchemaVersion != 2 {
+		t.Fatalf("bundle schema version = %d, want 2", bundle.SchemaVersion)
 	}
 	for _, path := range []string{filepath.Join(outputPath, "bundle", "bundle.json"), filepath.Join(outputPath, "bundle", "profile.json"), filepath.Join(outputPath, "bundle", "fixture-manifest.json"), filepath.Join(outputPath, "bundle", "LOCAL_PROOF_SUMMARY.json"), filepath.Join(outputPath, "transport", "salesforce-first-filter.py"), filepath.Join(outputPath, "bin", "glade-tools-darwin-amd64")} {
 		if _, err := os.Stat(path); err != nil {

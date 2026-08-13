@@ -2218,7 +2218,7 @@ func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 		return fmt.Errorf("validate staged Oracle bundle: %w", err)
 	}
 	bundle, bundleBytes, err := readExactJSONBytes[OracleBundle](bundlePath)
-	if err != nil || bundle.SchemaVersion != 1 || bundle.OraclePlanSHA256 != planSHA || bundle.Candidate != plan.Candidate || bundle.Tools != plan.Tools {
+	if err != nil || (bundle.SchemaVersion != 1 && bundle.SchemaVersion != 2) || bundle.OraclePlanSHA256 != planSHA || bundle.Candidate != plan.Candidate || bundle.Tools != plan.Tools {
 		return fmt.Errorf("staged Oracle bundle does not bind the sealed plan")
 	}
 	bundleSHA := replayBytesSHA256(bundleBytes)

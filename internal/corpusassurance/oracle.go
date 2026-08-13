@@ -14,16 +14,18 @@ import (
 )
 
 const (
-	oracleRuntime           = "runtime"
-	oracleCompile           = "compile"
-	oracleLocalContractOnly = "local-contract-only"
-	oracleWaiver            = "waiver"
-	oracleUnknown           = "unknown"
+	oracleRuntime             = "runtime"
+	oracleCompile             = "compile"
+	oracleLocalContractOnly   = "local-contract-only"
+	oracleWaiver              = "waiver"
+	oracleUnknown             = "unknown"
+	oracleExplicitUnsupported = "explicit-unsupported"
 )
 
 type OracleInputRow struct {
 	SurfaceID        string `json:"surfaceId"`
 	Disposition      string `json:"disposition"`
+	Obligation       string `json:"obligation,omitempty"`
 	RuntimeObserved  bool   `json:"runtimeObserved,omitempty"`
 	BehaviorObserved bool   `json:"behaviorObserved,omitempty"`
 	CompilePassed    bool   `json:"compilePassed,omitempty"`
@@ -63,6 +65,7 @@ type OraclePlan struct {
 type OracleProfileRow struct {
 	SurfaceID   string `json:"surfaceId"`
 	Disposition string `json:"disposition"`
+	Obligation  string `json:"obligation,omitempty"`
 }
 
 // AssuranceProfile is the fresh, reduced profile sent to the Salesforce
@@ -604,6 +607,9 @@ func planOracle(rows []OracleInputRow) (OraclePlan, error) {
 			return OraclePlan{}, fmt.Errorf("invalid or duplicate oracle surface %q", row.SurfaceID)
 		}
 		seen[row.SurfaceID] = true
+		if row.Obligation == oracleExplicitUnsupported && row.ExclusionClass == "" {
+			return OraclePlan{}, fmt.Errorf("%s has an explicit-unsupported obligation without an exclusion", row.SurfaceID)
+		}
 		out := OraclePlanRow{SurfaceID: row.SurfaceID}
 		if row.Disposition != "hosted-deferred" && row.ExclusionClass != "" {
 			if err := setOracleExclusion(&out, row); err != nil {
@@ -703,7 +709,7 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 			return OraclePlan{}, fmt.Errorf("reconciled surface %q is absent from profile", surfaceID)
 		}
 		directive := directiveBySurface[surfaceID]
-		input := OracleInputRow{SurfaceID: surfaceID, Disposition: profileRow.Disposition}
+		input := OracleInputRow{SurfaceID: surfaceID, Disposition: profileRow.Disposition, Obligation: profileRow.Obligation}
 		if directive.Decision == "" {
 			input.ExclusionClass, input.ExclusionReason = directive.ExclusionClass, directive.ExclusionReason
 		} else if directive.Decision == "exclude" {
@@ -721,6 +727,9 @@ func planOracleForUsage(reconciled UsageReconciliation, profile []OracleProfileR
 		}
 		if profileRow.Disposition == "hosted-deferred" && directive.Decision == "deploy" {
 			return OraclePlan{}, fmt.Errorf("hosted surface %q cannot be deployed", surfaceID)
+		}
+		if profileRow.Obligation == oracleExplicitUnsupported && directive.Decision == "deploy" {
+			return OraclePlan{}, fmt.Errorf("explicit-unsupported surface %q cannot be deployed", surfaceID)
 		}
 		if profileRow.Disposition != "hosted-deferred" {
 			local, ok := proofs[surfaceID]
@@ -797,7 +806,7 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 	}
 	projected := make([]OracleProfileRow, len(profile.Rows))
 	for i, row := range profile.Rows {
-		projected[i] = OracleProfileRow{SurfaceID: row.SurfaceID, Disposition: row.Disposition}
+		projected[i] = OracleProfileRow{SurfaceID: row.SurfaceID, Disposition: row.Disposition, Obligation: row.Obligation}
 	}
 	plan, err := planOracleForUsage(sealedUsage.Reconciliation, projected, proof, directive.Directives)
 	if err != nil {
@@ -853,7 +862,7 @@ func validateOracleDirectiveDecisions(file OracleDirectiveFile, profile Assuranc
 		seen[directive.SurfaceID] = true
 		switch directive.Decision {
 		case "deploy":
-			if directive.ExclusionClass != "" || directive.ExclusionReason != "" || row.Disposition == "hosted-deferred" {
+			if directive.ExclusionClass != "" || directive.ExclusionReason != "" || row.Disposition == "hosted-deferred" || row.Obligation == oracleExplicitUnsupported {
 				return fmt.Errorf("oracle deploy decision is invalid for %q", directive.SurfaceID)
 			}
 		case "exclude":

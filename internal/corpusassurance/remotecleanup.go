@@ -399,10 +399,17 @@ func verifyRemoteAttemptAbsent(authority RemoteAttemptAuthority, runner salesfor
 
 func readRemoteAttemptAuthority(path string) (RemoteAttemptAuthority, []byte, error) {
 	authority, data, err := readExactJSONBytes[RemoteAttemptAuthority](path)
-	if err != nil || authority.SchemaVersion != 1 || !sha256Pattern.MatchString(authority.AttemptSHA256) || validateRemoteAttemptTarget(authority.AttemptSHA256, authority.Role, authority.Host, authority.Parent, authority.AttemptRoot) != nil {
+	if err != nil || (authority.SchemaVersion != 1 && authority.SchemaVersion != 2) || !sha256Pattern.MatchString(authority.AttemptSHA256) || validateRemoteAttemptTarget(authority.AttemptSHA256, authority.Role, authority.Host, authority.Parent, authority.AttemptRoot) != nil {
 		return RemoteAttemptAuthority{}, nil, fmt.Errorf("invalid remote cleanup authority")
 	}
 	return authority, data, nil
+}
+
+func validateNewRemoteAttemptAuthority(authority RemoteAttemptAuthority) error {
+	if authority.SchemaVersion != 2 || !sha256Pattern.MatchString(authority.AttemptSHA256) || validateRemoteAttemptTarget(authority.AttemptSHA256, authority.Role, authority.Host, authority.Parent, authority.AttemptRoot) != nil {
+		return fmt.Errorf("new oracle bundles require remote cleanup authority schema version 2")
+	}
+	return nil
 }
 
 func shellQuote(value string) string {

@@ -219,10 +219,8 @@ func requiredReportEvidencePaths(request AssuranceReportRequest) error {
 	if len(request.RemoteCleanupPaths) != 2 || len(request.RemoteCleanupAuthorityPaths) != 2 {
 		return fmt.Errorf("complete Salesforce and remote cleanup evidence is required")
 	}
-	if request.SalesforceReconciliationPath == "" {
-		if len(request.SalesforceFiles) == 0 {
-			return fmt.Errorf("complete Salesforce shard evidence is required")
-		}
+	if request.SalesforceReconciliationPath == "" || request.SalesforcePacketPath == "" || len(request.SalesforceFiles) != 0 {
+		return fmt.Errorf("new reports require retained Salesforce reconciliation and packet evidence")
 	} else if !filepath.IsAbs(request.SalesforceReconciliationPath) || !filepath.IsAbs(request.SalesforcePacketPath) {
 		return fmt.Errorf("absolute Salesforce reconciliation paths are required")
 	}

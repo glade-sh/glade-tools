@@ -145,6 +145,28 @@ func TestBuildOracleBundleBindsRemoteCleanupAuthority(t *testing.T) {
 	}
 }
 
+func TestValidateOracleBundleRejectsNewBundleWithoutRemoteCleanupAuthority(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	outputRoot := filepath.Join(t.TempDir(), "salesforce-worker")
+	if _, err := BuildOracleBundle(inputs.request(outputRoot)); err != nil {
+		t.Fatal(err)
+	}
+	bundlePath := filepath.Join(outputRoot, "bundle", "bundle.json")
+	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundle.SalesforceRemoteCleanupAuthoritySHA256 = ""
+	bundleBytes, err := json.Marshal(bundle)
+	if err != nil || os.WriteFile(bundlePath, append(bundleBytes, '\n'), 0o600) != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateOracleBundle(bundlePath); err == nil {
+		t.Fatal("ValidateOracleBundle accepted a new bundle without remote cleanup authority")
+	}
+}
+
 func TestBuildOracleBundleRejectsAReplacementAttempt(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
@@ -256,7 +278,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	if err := os.MkdirAll(parent, 0o700); err != nil {
 		t.Fatal(err)
 	}
-	remoteAuthority := RemoteAttemptAuthority{SchemaVersion: 1, AttemptSHA256: attemptBindingHash(attempt), Role: "salesforce-worker", Host: "operator@salesforce-worker", Parent: parent, AttemptRoot: filepath.Join(parent, "assurance-"+attemptBindingHash(attempt)[:16]+"-test-salesforce-worker")}
+	remoteAuthority := RemoteAttemptAuthority{SchemaVersion: 2, AttemptSHA256: attemptBindingHash(attempt), Role: "salesforce-worker", Host: "operator@salesforce-worker", Parent: parent, AttemptRoot: filepath.Join(parent, "assurance-"+attemptBindingHash(attempt)[:16]+"-test-salesforce-worker")}
 	if err := WriteNewJSON(remoteAuthorityPath, remoteAuthority); err != nil {
 		t.Fatal(err)
 	}

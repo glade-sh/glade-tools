@@ -152,7 +152,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		return OracleBundle{}, fmt.Errorf("release validation does not bind sealed assurance attempt")
 	}
 	remoteAuthority, remoteAuthorityBytes, err := readRemoteAttemptAuthority(request.RemoteCleanupAuthorityPath)
-	if err != nil || remoteAuthority.Role != "salesforce-worker" || !remoteCleanupAuthorityMatches(attempt, remoteAuthority, replayBytesSHA256(remoteAuthorityBytes)) {
+	if err != nil || validateNewRemoteAttemptAuthority(remoteAuthority) != nil || remoteAuthority.Role != "salesforce-worker" || !remoteCleanupAuthorityMatches(attempt, remoteAuthority, replayBytesSHA256(remoteAuthorityBytes)) {
 		return OracleBundle{}, fmt.Errorf("Salesforce remote cleanup authority does not bind sealed assurance attempt")
 	}
 	proofAttempt, proofAttemptBytes, err := readExactJSONBytes[AssuranceAttempt](proof.AttemptPath)
@@ -293,7 +293,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 	if current, err := amd64ToolsArtifactFor(toolsAMD64Path, attempt.Tools.Commit); err != nil || current != toolsAMD64 {
 		return OracleBundle{}, fmt.Errorf("amd64 tools changed during staging")
 	}
-	bundle := OracleBundle{SchemaVersion: 1, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], SalesforceRemoteCleanupAuthoritySHA256: remoteAuthoritySHA, LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], DevHubAuthoritySHA256: devHubAuthoritySHA, DevHub: devHubAuthority.Alias, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, SalesforceExecution: devHubAuthority.Execution, ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
+	bundle := OracleBundle{SchemaVersion: 2, Candidate: plan.Candidate, Tools: plan.Tools, ToolsAMD64: toolsAMD64, ProfileSHA256: profileSHA, OraclePlanSHA256: planSHA, ExclusionAuthoritySHA256: authoritySHA, ReleaseValidationSHA256: inputs[request.ReleaseValidationPath], AttemptSHA256: inputs[request.AttemptPath], SalesforceRemoteCleanupAuthoritySHA256: remoteAuthoritySHA, LocalProofSHA256: proofSHA, LocalProofSummarySHA256: summarySHA, FixtureManifestSHA256: manifestSHA, TransportManifestSHA256: transportSHA, FilterSHA256: inputs[request.FilterScriptPath], ScratchDefinitionSHA256: inputs[request.ScratchDefinitionPath], DevHubAuthoritySHA256: devHubAuthoritySHA, DevHub: devHubAuthority.Alias, DevHubOrgID: devHubAuthority.OrgID, DevHubUsername: devHubAuthority.Username, SalesforceExecution: devHubAuthority.Execution, ToolsAMD64SHA256: toolsAMD64.SHA256, Fixtures: fixtures}
 	if err := WriteNewJSON(filepath.Join(bundleRoot, "bundle.json"), bundle); err != nil {
 		return OracleBundle{}, err
 	}
@@ -424,7 +424,7 @@ func ValidateOracleBundle(bundlePath string) error {
 	if err != nil {
 		return fmt.Errorf("read oracle bundle: %w", err)
 	}
-	if len(bundleBytes) == 0 || bundle.SchemaVersion != 1 || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) || bundle.DevHub == "" || bundle.DevHubOrgID == "" || bundle.DevHubUsername == "" || !validSalesforceExecutionAuthority(bundle.SalesforceExecution) {
+	if len(bundleBytes) == 0 || (bundle.SchemaVersion != 1 && bundle.SchemaVersion != 2) || ValidateRuntimeArtifact(bundle.Candidate) != nil || ValidateRuntimeArtifact(bundle.Tools) != nil || ValidateRuntimeArtifact(bundle.ToolsAMD64) != nil || bundle.ToolsAMD64.Arch != "amd64" || bundle.ToolsAMD64.Commit != bundle.Tools.Commit || bundle.ToolsAMD64.SHA256 != bundle.ToolsAMD64SHA256 || !sha256Pattern.MatchString(bundle.DevHubAuthoritySHA256) || bundle.DevHub == "" || bundle.DevHubOrgID == "" || bundle.DevHubUsername == "" || !validSalesforceExecutionAuthority(bundle.SalesforceExecution) {
 		return fmt.Errorf("invalid oracle bundle")
 	}
 	if err := validateApprovedOracleBundleFilter(bundle); err != nil {
@@ -464,9 +464,11 @@ func ValidateOracleBundle(bundlePath string) error {
 		}
 		authority, data, err := readRemoteAttemptAuthority(filepath.Join(bundleRoot, "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json"))
 		attempt, attemptData, attemptErr := readExactJSONBytes[AssuranceAttempt](filepath.Join(bundleRoot, "ATTEMPT.json"))
-		if err != nil || attemptErr != nil || replayBytesSHA256(data) != bundle.SalesforceRemoteCleanupAuthoritySHA256 || !remoteCleanupAuthorityMatches(attempt, authority, replayBytesSHA256(data)) || authority.Role != "salesforce-worker" || replayBytesSHA256(attemptData) != bundle.AttemptSHA256 {
+		if err != nil || (bundle.SchemaVersion == 2 && validateNewRemoteAttemptAuthority(authority) != nil) || attemptErr != nil || replayBytesSHA256(data) != bundle.SalesforceRemoteCleanupAuthoritySHA256 || !remoteCleanupAuthorityMatches(attempt, authority, replayBytesSHA256(data)) || authority.Role != "salesforce-worker" || replayBytesSHA256(attemptData) != bundle.AttemptSHA256 {
 			return fmt.Errorf("invalid staged Salesforce remote cleanup authority")
 		}
+	} else if bundle.SchemaVersion == 2 {
+		return fmt.Errorf("invalid staged Salesforce remote cleanup authority")
 	}
 	profile, _, err := readExactJSONBytes[AssuranceProfile](filepath.Join(bundleRoot, "profile.json"))
 	if err != nil || profile.SchemaVersion != 1 || profile.LocalProofSHA256 != bundle.LocalProofSHA256 {
@@ -485,7 +487,7 @@ func ValidateOracleBundle(bundlePath string) error {
 		return fmt.Errorf("invalid staged assurance attempt")
 	}
 	devHubAuthority, _, err := readExactJSONBytes[SalesforceDevHubAuthority](filepath.Join(bundleRoot, "DEV_HUB_AUTHORITY.json"))
-	if err != nil || !validSalesforceDevHubAuthority(devHubAuthority) || devHubAuthority.Alias != bundle.DevHub || devHubAuthority.OrgID != bundle.DevHubOrgID || devHubAuthority.Username != bundle.DevHubUsername || !reflect.DeepEqual(devHubAuthority.Execution, bundle.SalesforceExecution) {
+	if err != nil || !validSalesforceDevHubAuthority(devHubAuthority) || (bundle.SchemaVersion == 2 && validateNewSalesforceDevHubAuthority(devHubAuthority) != nil) || devHubAuthority.Alias != bundle.DevHub || devHubAuthority.OrgID != bundle.DevHubOrgID || devHubAuthority.Username != bundle.DevHubUsername || !reflect.DeepEqual(devHubAuthority.Execution, bundle.SalesforceExecution) {
 		return fmt.Errorf("invalid staged Salesforce Dev Hub authority")
 	}
 	release, _, err := readExactJSONBytes[ReleaseValidation](filepath.Join(bundleRoot, "RELEASE_VALIDATION.json"))

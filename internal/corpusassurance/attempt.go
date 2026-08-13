@@ -134,7 +134,7 @@ func CreateAssuranceAttemptWithAuthorities(request AssuranceAttemptInitRequest) 
 		if err := validateRemoteAttemptTarget(attemptSHA, role, target.host, target.parent, attemptRoot); err != nil {
 			return AssuranceAttempt{}, err
 		}
-		if err := WriteNewJSON(authorityPaths[role], RemoteAttemptAuthority{SchemaVersion: 1, AttemptSHA256: attemptSHA, Role: role, Host: target.host, Parent: filepath.Clean(target.parent), AttemptRoot: filepath.Clean(attemptRoot)}); err != nil {
+		if err := WriteNewJSON(authorityPaths[role], RemoteAttemptAuthority{SchemaVersion: 2, AttemptSHA256: attemptSHA, Role: role, Host: target.host, Parent: filepath.Clean(target.parent), AttemptRoot: filepath.Clean(attemptRoot)}); err != nil {
 			return AssuranceAttempt{}, fmt.Errorf("write %s authority in %s: %w", role, request.OutputDir, err)
 		}
 		boundPaths[role] = authorityPaths[role]
