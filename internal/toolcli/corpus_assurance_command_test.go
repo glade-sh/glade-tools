@@ -96,6 +96,12 @@ func TestCorpusAssuranceReport(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "report")
 }
 
+func TestCorpusAssuranceReportRequiresRetainedSalesforceReconciliation(t *testing.T) {
+	if err := requireRetainedSalesforceReconciliation("", ""); err == nil {
+		t.Fatal("report accepted live Salesforce shard inputs without retained reconciliation")
+	}
+}
+
 func TestCorpusAssuranceRemoteFailurePreserve(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "remote-failure-preserve")
 }

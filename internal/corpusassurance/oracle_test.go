@@ -260,7 +260,7 @@ func TestPlanOracleFromFiles(t *testing.T) {
 	if err := WriteNewJSON(profilePath, profile); err != nil {
 		t.Fatal(err)
 	}
-	directives := OracleDirectiveFile{SchemaVersion: 1, ProfileSHA256: strings.Repeat("e", 64), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LocalProofSHA256: localProofFileSHA256(t, proofPath)}
+	directives := OracleDirectiveFile{SchemaVersion: 2, ProfileSHA256: localProofFileSHA256(t, profilePath), SealedUsageSHA256: localProofFileSHA256(t, sealedUsagePath), LocalProofSHA256: localProofFileSHA256(t, proofPath), Directives: []OracleDirective{{SurfaceID: "apex:System.run()", Decision: "deploy"}}}
 	if err := WriteNewJSON(directivePath, directives); err != nil {
 		t.Fatal(err)
 	}
@@ -283,6 +283,28 @@ func TestPlanOracleFromFiles(t *testing.T) {
 	}
 	if _, err := PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proofPath, directivePath, outputPath); err == nil {
 		t.Fatal("PlanOracleFromFiles accepted a profile with forged sealed policy lineage")
+	}
+}
+
+func TestNewOraclePlansRejectHistoricalDirectiveSchema(t *testing.T) {
+	if err := validateNewOracleDirectiveFile(OracleDirectiveFile{SchemaVersion: 1}); err == nil {
+		t.Fatal("new oracle planning accepted a historical schema 1 directive")
+	}
+}
+
+func TestBuildOracleDirectiveDraft(t *testing.T) {
+	root := t.TempDir()
+	output := filepath.Join(root, "ORACLE_DIRECTIVES.json")
+	if err := os.WriteFile(output, []byte("existing\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := BuildOracleDirectiveDraft(filepath.Join(root, "profile.json"), filepath.Join(root, "usage.json"), filepath.Join(root, "proof.json"), output)
+	if err == nil || !strings.Contains(err.Error(), "already exists") {
+		t.Fatalf("BuildOracleDirectiveDraft error = %v", err)
+	}
+	data, readErr := os.ReadFile(output)
+	if readErr != nil || string(data) != "existing\n" {
+		t.Fatalf("draft output changed: %q, %v", data, readErr)
 	}
 }
 

@@ -213,7 +213,7 @@ func PreserveRemoteFailure(request RemoteFailurePreserveRequest) (RemoteFailureP
 	checksum := RemoteFailureCopyCommand{Command: checksumCommand}
 	if copy.Passed {
 		checksumOutput, checksumErr := runner(ctx, source, remoteRoot, checksumCommand, true)
-		checksum.Passed = checksumErr == nil && checksumOutput.ExitCode == 0
+		checksum.Passed = checksumErr == nil && checksumOutput.ExitCode == 0 && strings.TrimSpace(remoteFailureOutputText(checksumOutput)) == ""
 		checksum.Output = remoteFailureOutputText(checksumOutput)
 	}
 	status := "preservation-failed"

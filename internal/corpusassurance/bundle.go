@@ -121,7 +121,7 @@ func BuildOracleBundle(request OracleBundleRequest) (OracleBundle, error) {
 		return OracleBundle{}, fmt.Errorf("read assurance profile: %w", err)
 	}
 	devHubAuthority, devHubAuthorityBytes, err := readExactJSONBytes[SalesforceDevHubAuthority](request.DevHubAuthorityPath)
-	if err != nil || !validSalesforceDevHubAuthority(devHubAuthority) {
+	if err != nil || validateNewSalesforceDevHubAuthority(devHubAuthority) != nil {
 		return OracleBundle{}, fmt.Errorf("read sealed Salesforce Dev Hub authority")
 	}
 	plan, planBytes, err := readExactJSONBytes[OraclePlan](request.PlanPath)

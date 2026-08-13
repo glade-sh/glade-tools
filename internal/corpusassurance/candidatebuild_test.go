@@ -54,3 +54,38 @@ func TestCreateCandidateBuildReceiptBuildsAndBindsExactBinaries(t *testing.T) {
 		t.Fatal("CreateCandidateBuildReceipt overwrote create-only outputs")
 	}
 }
+
+func TestCreateCandidateBuildReceiptRejectsUnboundInputs(t *testing.T) {
+	for _, testCase := range []struct {
+		name   string
+		mutate func(*CandidateBuildRequest)
+	}{
+		{name: "non-absolute root", mutate: func(request *CandidateBuildRequest) { request.CandidateRoot = "candidate" }},
+		{name: "dirty root", mutate: func(request *CandidateBuildRequest) {
+			if err := os.WriteFile(filepath.Join(request.CandidateRoot, "untracked"), []byte("dirty"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{name: "unknown ref", mutate: func(request *CandidateBuildRequest) { request.CandidateRef = "missing-ref" }},
+		{name: "ref and head mismatch", mutate: func(request *CandidateBuildRequest) { request.CandidateRef = "HEAD^" }},
+		{name: "pre-existing output", mutate: func(request *CandidateBuildRequest) {
+			if err := os.MkdirAll(filepath.Dir(request.CandidateOutput), 0o700); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(request.CandidateOutput, []byte("existing"), 0o700); err != nil {
+				t.Fatal(err)
+			}
+		}},
+	} {
+		t.Run(testCase.name, func(t *testing.T) {
+			root := t.TempDir()
+			candidateRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.invalid/candidate\n\ngo 1.22\n", "cmd/glade/main.go": "package main\nfunc main() {}\n"})
+			toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.invalid/tools\n\ngo 1.22\n", "cmd/glade-tools/main.go": "package main\nfunc main() {}\n"})
+			request := CandidateBuildRequest{CandidateRoot: candidateRoot, ToolsRoot: toolsRoot, CandidateRef: "HEAD", ToolsRef: "HEAD", CandidateOutput: filepath.Join(root, "bin", "glade"), ToolsOutput: filepath.Join(root, "bin", "glade-tools"), ReceiptOutput: filepath.Join(root, "bindings", "CANDIDATE_BUILD_RECEIPT.json"), ReviewOutput: filepath.Join(root, "bindings", "REVIEW.md"), ToolsFreezeOutput: filepath.Join(root, "bindings", "TOOLS_COMMIT")}
+			testCase.mutate(&request)
+			if _, err := CreateCandidateBuildReceipt(request); err == nil {
+				t.Fatal("CreateCandidateBuildReceipt accepted unbound input")
+			}
+		})
+	}
+}

@@ -45,6 +45,16 @@ func TestBuildReportRequiresDirectEvidencePaths(t *testing.T) {
 	}
 }
 
+func TestBuildAssuranceReportAfterRemoteCleanup(t *testing.T) {
+	root := t.TempDir()
+	path := func(name string) string { return filepath.Join(root, name) }
+	request := AssuranceReportRequest{
+		InventoryPath: path("IN_SCOPE.json"), RootManifestPath: path("MANIFEST.json"), LedgerPath: path("ledger.json"), SourceProfilePath: path("source-profile.json"), PolicyPath: path("support-policy.json"), DecisionPath: path("USAGE_DECISIONS.json"), UsagePath: path("CORPUS_USAGE.json"), ProfilePath: path("ASSURANCE_PROFILE.json"), FixtureManifestPath: path("fixtures.json"), ReplayPath: path("REPLAY.json"), ReplayHostManifestPaths: []string{path("local-manifest.json"), path("replay-worker-manifest.json")}, ReplayShardPaths: []string{path("local-shard.json"), path("replay-worker-shard.json")}, AttemptPath: path("ATTEMPT.json"), LocalProofPath: path("LOCAL_PROOF.json"), OraclePlanPath: path("ORACLE_PLAN.json"), ExclusionRequestPath: path("EXCLUSION_REQUEST.json"), ExclusionPolicyPath: path("exclusion-policy.json"), AuthorityPath: path("EXCLUSION_AUTHORITY.json"), ReleaseValidationPath: path("RELEASE_VALIDATION.json"), BundlePath: path("bundle.json"), FilterScriptPath: path("filter.py"), ScratchDefinitionPath: path("scratch.json"), ToolsAMD64Path: path("tools-amd64"), SalesforceReconciliationPath: path("SALESFORCE_RECONCILIATION.json"), SalesforcePacketPath: path("salesforce-reconciliation-packet"), RemoteCleanupPaths: []string{path("replay-worker-cleanup.json"), path("salesforce-worker-cleanup.json")}, RemoteCleanupAuthorityPaths: []string{path("replay-worker-authority.json"), path("salesforce-worker-authority.json")}, JSONPath: path("ASSURANCE.json"), HTMLPath: path("ASSURANCE.html"), ReceiptPath: path("RECEIPT.json"), PacketPath: path("packet")}
+	if err := requiredReportEvidencePaths(request); err != nil {
+		t.Fatalf("retained reconciliation evidence rejected after remote cleanup: %v", err)
+	}
+}
+
 func TestReportPostflightHashReadsDiskAfterSnapshot(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "input.json")
 	old := []byte(`{"version":1}`)

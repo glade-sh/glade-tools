@@ -534,7 +534,7 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*inventory, *root, *ledger, *sourceProfile, *policy, *decisions, *usage, *profile, *fixtures, *replay, *attempt, *proof, *plan, *exclusionRequest, *exclusionPolicy, *authority, *release, *bundle, *filter, *scratch, *toolsAMD64, *jsonOutput, *htmlOutput, *receiptOutput, *packetOutput); err != nil || (len(shards) == 0 && (*salesforceReconciliation == "" || *salesforcePacket == "")) || (*salesforceReconciliation == "" && len(shards) != len(dispatches)) || (*salesforceReconciliation == "" && len(shards) != len(creations)) || (*salesforceReconciliation == "" && len(shards) != len(cleanups)) || (*salesforceReconciliation == "" && len(shards) != len(preflights)) || len(remoteCleanups) != 2 || len(remoteAuthorities) != 2 || len(replayHosts) != 2 || len(replayShards) != 2 {
+		if err := requiredAssuranceFlags(*inventory, *root, *ledger, *sourceProfile, *policy, *decisions, *usage, *profile, *fixtures, *replay, *attempt, *proof, *plan, *exclusionRequest, *exclusionPolicy, *authority, *release, *bundle, *filter, *scratch, *toolsAMD64, *jsonOutput, *htmlOutput, *receiptOutput, *packetOutput); err != nil || requireRetainedSalesforceReconciliation(*salesforceReconciliation, *salesforcePacket) != nil || len(shards) != 0 || len(dispatches) != 0 || len(creations) != 0 || len(cleanups) != 0 || len(preflights) != 0 || len(remoteCleanups) != 2 || len(remoteAuthorities) != 2 || len(replayHosts) != 2 || len(replayShards) != 2 {
 			if err != nil {
 				return err
 			}
@@ -587,6 +587,13 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 	default:
 		return errors.New("unknown corpus assurance command")
 	}
+}
+
+func requireRetainedSalesforceReconciliation(reconciliation, packet string) error {
+	if reconciliation == "" || packet == "" {
+		return errors.New("new reports require retained Salesforce reconciliation and packet evidence")
+	}
+	return nil
 }
 
 func requiredAssuranceFlags(values ...string) error {

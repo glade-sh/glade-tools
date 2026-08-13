@@ -91,6 +91,13 @@ func TestCreateSalesforceDevHubAuthority(t *testing.T) {
 	}
 }
 
+func TestNewOracleBundleRejectsHistoricalDevHubAuthoritySchema(t *testing.T) {
+	authority := SalesforceDevHubAuthority{SchemaVersion: 1}
+	if err := validateNewSalesforceDevHubAuthority(authority); err == nil {
+		t.Fatal("new oracle bundle accepted a historical schema 1 Dev Hub authority")
+	}
+}
+
 func TestSalesforceBaselineInventoryRequiresOneFieldSet(t *testing.T) {
 	inventory := SalesforceInventory{Counts: map[string]int{}}
 	for _, kind := range salesforceInventoryTypes {
@@ -266,7 +273,7 @@ func TestValidSalesforceDispatchAcceptsItsSealedRemotePythonHash(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	remotePythonSHA := strings.Repeat("a", 64)
 	remoteExecution := SalesforceExecutionAuthority{SFBinary: "/remote/bin/sf", SFSHA256: strings.Repeat("b", 64), PythonBinary: "/usr/bin/python3", PythonSHA256: remotePythonSHA, Environment: []string{"HOME=/remote/home", "PATH=/remote/bin:/usr/bin:/bin", "SF_USE_GENERIC_UNIX_KEYCHAIN=true", "TMPDIR=/remote/tmp"}}
-	authorityBytes, err := json.Marshal(SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D000000000001", Username: "sealed-dev-hub@example.invalid", Execution: remoteExecution})
+	authorityBytes, err := json.Marshal(testSalesforceDevHubAuthority(t, "sealed-dev-hub", "00D000000000001", "sealed-dev-hub@example.invalid", remoteExecution))
 	if err != nil || os.WriteFile(inputs.devHubAuthorityPath, append(authorityBytes, '\n'), 0o600) != nil {
 		t.Fatal(err)
 	}
@@ -1591,7 +1598,7 @@ func writeSyntheticDevHubBundle(t *testing.T, bundlePath string) {
 func bindSyntheticDevHubAuthority(t *testing.T, bundlePath string, bundle *OracleBundle) {
 	t.Helper()
 	authorityPath := filepath.Join(filepath.Dir(bundlePath), "DEV_HUB_AUTHORITY.json")
-	authority := SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D0", Username: "sealed-dev-hub@example.invalid", Execution: testSalesforceExecutionAuthority(t)}
+	authority := testSalesforceDevHubAuthority(t, "sealed-dev-hub", "00D0", "sealed-dev-hub@example.invalid", testSalesforceExecutionAuthority(t))
 	if err := WriteNewJSON(authorityPath, authority); err != nil {
 		t.Fatal(err)
 	}
@@ -1617,6 +1624,24 @@ func testSalesforceExecutionAuthority(t *testing.T) SalesforceExecutionAuthority
 		t.Fatal(err)
 	}
 	return SalesforceExecutionAuthority{SFBinary: salesforceCLIPath, SFSHA256: sfSHA, PythonBinary: "/usr/bin/python3", PythonSHA256: pythonSHA, Environment: environment}
+}
+
+func testSalesforceDevHubAuthority(t *testing.T, alias, orgID, username string, execution SalesforceExecutionAuthority) SalesforceDevHubAuthority {
+	t.Helper()
+	workingDirectory := t.TempDir()
+	args := []string{"org", "display", "--target-org", alias, "--json"}
+	command := CommandResult{
+		Command:               append([]string{execution.SFBinary}, args...),
+		WorkingDirectory:      workingDirectory,
+		Environment:           execution.Environment,
+		ExecutableSHA256:      execution.SFSHA256,
+		ExecutableAfterSHA256: execution.SFSHA256,
+		CommandSpecSHA256:     salesforceCommandSpecSHA256(execution.SFBinary, args, workingDirectory, execution.Environment, execution.SFSHA256, execution.SFSHA256),
+		StdoutSHA256:          strings.Repeat("a", 64),
+		StderrSHA256:          strings.Repeat("b", 64),
+		Passed:                true,
+	}
+	return SalesforceDevHubAuthority{SchemaVersion: 2, Alias: alias, OrgID: orgID, Username: username, Execution: execution, Command: command}
 }
 
 func salesforceCountOutputForTest(args []string) []byte {

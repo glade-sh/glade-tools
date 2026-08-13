@@ -775,6 +775,9 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 	if err != nil {
 		return OraclePlan{}, fmt.Errorf("read oracle directives: %w", err)
 	}
+	if err := validateNewOracleDirectiveFile(directive); err != nil {
+		return OraclePlan{}, err
+	}
 	profileSHA256, sealedUsageSHA256 := replayBytesSHA256(profileBytes), replayBytesSHA256(sealedUsageBytes)
 	manifestSHA256, proofSHA256, directiveSHA256 := replayBytesSHA256(manifestBytes), replayBytesSHA256(proofBytes), replayBytesSHA256(directiveBytes)
 	if profile.FixtureManifestSHA256 != manifestSHA256 || proof.FixtureManifestSHA256 != manifestSHA256 {
@@ -786,17 +789,11 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 	if err := validateAssuranceOracleProfile(profile, sealedUsage, proof, sealedUsageSHA256, proofSHA256); err != nil {
 		return OraclePlan{}, err
 	}
-	wantDirectiveProfileSHA := profile.SourceProfileSHA256
-	if directive.SchemaVersion == 2 {
-		wantDirectiveProfileSHA = profileSHA256
-	}
-	if (directive.SchemaVersion != 1 && directive.SchemaVersion != 2) || directive.ProfileSHA256 != wantDirectiveProfileSHA || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
+	if directive.ProfileSHA256 != profileSHA256 || directive.SealedUsageSHA256 != sealedUsageSHA256 || directive.LocalProofSHA256 != proofSHA256 {
 		return OraclePlan{}, fmt.Errorf("oracle directives do not bind authoritative inputs")
 	}
-	if directive.SchemaVersion == 2 {
-		if err := validateOracleDirectiveDecisions(directive, profile); err != nil {
-			return OraclePlan{}, err
-		}
+	if err := validateOracleDirectiveDecisions(directive, profile); err != nil {
+		return OraclePlan{}, err
 	}
 	projected := make([]OracleProfileRow, len(profile.Rows))
 	for i, row := range profile.Rows {
@@ -830,6 +827,13 @@ func PlanOracleFromFiles(profilePath, sealedUsagePath, fixtureManifestPath, proo
 		return OraclePlan{}, err
 	}
 	return plan, nil
+}
+
+func validateNewOracleDirectiveFile(file OracleDirectiveFile) error {
+	if file.SchemaVersion != 2 {
+		return fmt.Errorf("new oracle plans require directive schema version 2")
+	}
+	return nil
 }
 
 func validateOracleDirectiveDecisions(file OracleDirectiveFile, profile AssuranceProfile) error {

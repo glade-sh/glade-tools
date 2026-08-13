@@ -59,6 +59,13 @@ func validSalesforceDevHubAuthority(authority SalesforceDevHubAuthority) bool {
 	return true
 }
 
+func validateNewSalesforceDevHubAuthority(authority SalesforceDevHubAuthority) error {
+	if authority.SchemaVersion != 2 || !validSalesforceDevHubAuthority(authority) {
+		return fmt.Errorf("new oracle bundles require Dev Hub authority schema version 2")
+	}
+	return nil
+}
+
 type SalesforceDevHubAuthorityRequest struct {
 	TargetOrg string
 	SFBin     string

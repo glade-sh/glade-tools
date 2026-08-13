@@ -44,7 +44,6 @@ validated before the next producer starts.
 candidate-build
 candidate-authority
 attempt-init
-attempt
 prepare
 usage-draft
 usage
@@ -119,10 +118,19 @@ Allowed `Current gate:` transitions are:
 
 ```text
 preflight -> candidate-build -> candidate-authority -> attempt-init
--> prepare -> usage-draft -> usage -> local-proof-plan -> local-proof
--> release-validate -> oracle-profile -> oracle-plan -> oracle-bundle
--> Salesforce lane -> reconcile -> cleanup -> report -> closed
+-> prepare -> usage-draft -> usage -> replay / merge-replay
+-> local-proof-plan -> local-proof -> release-validate
+-> oracle-profile -> oracle-directives-draft -> oracle-plan
+-> exclusion-request -> authorize-exclusions -> dev-hub-authority
+-> oracle-bundle -> org-create -> org-preflight
+-> salesforce-dispatch -> salesforce-run -> org-cleanup
+-> salesforce-reconcile -> cleanup -> report -> closed
 ```
+
+If a remote phase fails, branch from `salesforce-run` or `org-cleanup` to
+`remote-failure-preserve -> blocked`; recovery starts in a successor attempt
+after the retained root is reviewed. `attempt` is a legacy reader path for
+authorities created before `attempt-init`; it is not part of a new run.
 
 On a failed remote phase, `remote-failure-preserve` first writes
 `NEXT_ACTION.md`, retains the remote tree and its mode-bearing manifest, then
