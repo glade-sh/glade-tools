@@ -121,8 +121,11 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 	authorityPath := filepath.Join(root, "RECONCILIATION.json")
 	writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, toolsRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 	cleanupAuthorities := writeAttemptCleanupAuthorities(t, root, inventoryPath, fileSHA256(t, authorityPath), candidate, toolsRoot, toolsPath)
-	for name, mutate := range map[string]func(){
-		"candidate hash": func() {
+	for _, test := range []struct {
+		name   string
+		mutate func()
+	}{
+		{name: "candidate hash", mutate: func() {
 			data, err := os.ReadFile(authorityPath)
 			if err != nil {
 				t.Fatal(err)
@@ -130,19 +133,19 @@ func TestCreateAssuranceAttemptRejectsMismatchedAuthorityOrDirtySource(t *testin
 			if err := os.WriteFile(authorityPath, []byte(strings.ReplaceAll(string(data), candidate.SHA256, strings.Repeat("f", 64))), 0o600); err != nil {
 				t.Fatal(err)
 			}
-		},
-		"dirty tools": func() {
+		}},
+		{name: "dirty tools", mutate: func() {
 			if err := os.WriteFile(filepath.Join(toolsRoot, "dirty"), []byte("x"), 0o600); err != nil {
 				t.Fatal(err)
 			}
-		},
+		}},
 	} {
-		t.Run(name, func(t *testing.T) {
-			if name == "candidate hash" {
+		t.Run(test.name, func(t *testing.T) {
+			if test.name == "candidate hash" {
 				writeAttemptAuthority(t, authorityPath, candidate, candidateRoot, toolsRoot, candidateToolForTest(t, toolsRoot, toolsPath))
 			}
-			mutate()
-			if _, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: filepath.Join(root, name+".json")}); err == nil {
+			test.mutate()
+			if _, err := CreateAssuranceAttempt(AssuranceAttemptRequest{InventoryPath: inventoryPath, CandidateAuthorityPath: authorityPath, CandidatePath: candidatePath, CandidateRoot: candidateRoot, ToolsPath: toolsPath, ToolsRoot: toolsRoot, RemoteCleanupAuthorityPaths: cleanupAuthorities, OutputPath: filepath.Join(root, test.name+".json")}); err == nil {
 				t.Fatal("CreateAssuranceAttempt accepted an unsealed runtime")
 			}
 		})
