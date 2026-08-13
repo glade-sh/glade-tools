@@ -95,7 +95,7 @@ func writeAttemptAuthority(t *testing.T, path string, candidate sealedAttemptCan
 		t.Fatal(err)
 	}
 	receiptPath := filepath.Join(filepath.Dir(path), "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": tools})
+	writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
 	reviewPath := filepath.Join(filepath.Dir(path), "REVIEW.md")
 	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
 		t.Fatal(err)
