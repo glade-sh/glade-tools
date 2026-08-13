@@ -73,6 +73,9 @@ func Refresh(options RefreshOptions) (RefreshResult, error) {
 		if err != nil {
 			return RefreshResult{}, err
 		}
+		if err := ValidateSourceIdentity(identity, options.DocsSource); err != nil {
+			return RefreshResult{}, err
+		}
 		ApplySourceIdentity(&ledger, identity)
 	}
 	AssignPriorities(ledger.Rows)

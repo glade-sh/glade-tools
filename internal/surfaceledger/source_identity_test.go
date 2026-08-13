@@ -1,6 +1,37 @@
 package surfaceledger
 
-import "testing"
+import (
+	"crypto/sha256"
+	"fmt"
+	"os"
+	"path/filepath"
+	"testing"
+)
+
+func TestValidateSourceIdentityBindsDocsRootAndManifest(t *testing.T) {
+	root := t.TempDir()
+	manifest := []byte(`[{"path":"one.md"}]`)
+	if err := os.WriteFile(filepath.Join(root, "manifest.json"), manifest, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	identity := SourceIdentity{
+		SourceRoot:      root,
+		ManifestSHA256:  fmt.Sprintf("%x", sha256.Sum256(manifest)),
+		ManifestEntries: 1,
+	}
+	if err := ValidateSourceIdentity(identity, root); err != nil {
+		t.Fatalf("valid identity rejected: %v", err)
+	}
+	identity.SourceRoot = filepath.Join(root, "other")
+	if err := ValidateSourceIdentity(identity, root); err == nil {
+		t.Fatal("source root mismatch accepted")
+	}
+	identity.SourceRoot = root
+	identity.ManifestSHA256 = "stale"
+	if err := ValidateSourceIdentity(identity, root); err == nil {
+		t.Fatal("manifest hash mismatch accepted")
+	}
+}
 
 func TestApplySourceIdentityAnnotatesFallbackRows(t *testing.T) {
 	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{
@@ -8,9 +39,9 @@ func TestApplySourceIdentityAnnotatesFallbackRows(t *testing.T) {
 		{SurfaceID: "apex:System.List", DocsSource: "apex/apex_class_system_list.md"},
 	}}
 	identity := SourceIdentity{
-		ManifestSHA256:    "manifest-sha",
-		LatestAtlas:       "262.0",
-		FallbackDocsets:   map[string]SourceDocsetIdentity{"connect-rest-api": {AtlasVersion: "260.0"}},
+		ManifestSHA256:  "manifest-sha",
+		LatestAtlas:     "262.0",
+		FallbackDocsets: map[string]SourceDocsetIdentity{"connect-rest-api": {AtlasVersion: "260.0"}},
 	}
 	ApplySourceIdentity(&ledger, identity)
 	if got := ledger.Rows[0].DocsSourceAtlasVersion; got != "260.0" {

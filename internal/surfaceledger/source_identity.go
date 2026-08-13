@@ -1,9 +1,12 @@
 package surfaceledger
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type SourceIdentity struct {
@@ -31,6 +34,37 @@ func ReadSourceIdentity(path string) (SourceIdentity, error) {
 		return SourceIdentity{}, fmt.Errorf("decode source identity %s: %w", path, err)
 	}
 	return identity, nil
+}
+
+func ValidateSourceIdentity(identity SourceIdentity, docsSource string) error {
+	docsRoot, err := filepath.Abs(docsSource)
+	if err != nil {
+		return fmt.Errorf("resolve docs source: %w", err)
+	}
+	sourceRoot, err := filepath.Abs(identity.SourceRoot)
+	if err != nil || identity.SourceRoot == "" || sourceRoot != docsRoot {
+		return fmt.Errorf("source identity root %q does not match docs source %q", identity.SourceRoot, docsSource)
+	}
+	if identity.ManifestSHA256 == "" || identity.ManifestEntries <= 0 {
+		return fmt.Errorf("source identity is missing manifest binding")
+	}
+	manifestPath := filepath.Join(docsRoot, "manifest.json")
+	data, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return fmt.Errorf("read docs manifest: %w", err)
+	}
+	actualHash := fmt.Sprintf("%x", sha256.Sum256(data))
+	if !strings.EqualFold(actualHash, identity.ManifestSHA256) {
+		return fmt.Errorf("docs manifest hash %s does not match source identity %s", actualHash, identity.ManifestSHA256)
+	}
+	var entries []json.RawMessage
+	if err := json.Unmarshal(data, &entries); err != nil {
+		return fmt.Errorf("decode docs manifest: %w", err)
+	}
+	if len(entries) != identity.ManifestEntries {
+		return fmt.Errorf("docs manifest entries %d do not match source identity %d", len(entries), identity.ManifestEntries)
+	}
+	return nil
 }
 
 func ApplySourceIdentity(ledger *SurfaceLedger, identity SourceIdentity) {
