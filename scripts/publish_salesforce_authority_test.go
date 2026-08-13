@@ -60,13 +60,14 @@ func TestPublishSalesforceAuthorityRejectsInvalidReceipts(t *testing.T) {
 		env     map[string]string
 		digest  bool
 	}{
-		"wrong glade SHA": {receipt: changedAuthorityReceipt(valid, "gladeSHA", strings.Repeat("3", 40))},
-		"wrong tools SHA": {receipt: changedAuthorityReceipt(valid, "toolsSHA", strings.Repeat("4", 40))},
-		"non PASS":        {receipt: changedAuthorityReceipt(valid, "gateStatus", "FAIL")},
-		"malformed":       {raw: `{"schemaVersion":`},
-		"duplicate":       {raw: strings.Replace(string(mustMarshalAuthorityReceipt(t, valid)), `"gladeSHA":`, `"gladeSHA":"`+publishGladeSHA+`","gladeSHA":`, 1)},
-		"digest mismatch": {receipt: valid, digest: true},
-		"wrong run env":   {receipt: valid, env: map[string]string{"GITHUB_RUN_ID": "124"}},
+		"wrong glade SHA":    {receipt: changedAuthorityReceipt(valid, "gladeSHA", strings.Repeat("3", 40))},
+		"wrong tools SHA":    {receipt: changedAuthorityReceipt(valid, "toolsSHA", strings.Repeat("4", 40))},
+		"non PASS":           {receipt: changedAuthorityReceipt(valid, "gateStatus", "FAIL")},
+		"incomplete cleanup": {receipt: changedAuthorityReceipt(valid, "cleanupStatus", "FAIL")},
+		"malformed":          {raw: `{"schemaVersion":`},
+		"duplicate":          {raw: strings.Replace(string(mustMarshalAuthorityReceipt(t, valid)), `"gladeSHA":`, `"gladeSHA":"`+publishGladeSHA+`","gladeSHA":`, 1)},
+		"digest mismatch":    {receipt: valid, digest: true},
+		"wrong run env":      {receipt: valid, env: map[string]string{"GITHUB_RUN_ID": "124"}},
 	}
 	for name, testCase := range cases {
 		t.Run(name, func(t *testing.T) {
