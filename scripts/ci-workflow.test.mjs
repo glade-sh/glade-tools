@@ -87,6 +87,24 @@ test("CI runs only for main pushes and pull requests", () => {
   assert.doesNotMatch(workflow, /\n\s+tags:/);
 });
 
+test("CI cancels only superseded pull request runs", () => {
+  assert.match(
+    workflow,
+    /concurrency:\n  group: ci-\$\{\{ github\.event\.pull_request\.number \|\| github\.run_id \}\}\n  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/,
+  );
+});
+
+test("release and correctness workflows remain non-cancelling", () => {
+  for (const [name, text] of [
+    ["Full Fixtures", fullFixturesWorkflow],
+    ["Release", releaseWorkflow],
+    ["Salesforce Correctness", salesforceCorrectnessWorkflow],
+  ]) {
+    assert.doesNotMatch(text, /^concurrency:/m, `${name} must not define concurrency`);
+    assert.doesNotMatch(text, /cancel-in-progress:/, `${name} must not cancel runs`);
+  }
+});
+
 test("CI keeps macOS release upload coverage unchanged", () => {
   assert.match(
     workflow,
