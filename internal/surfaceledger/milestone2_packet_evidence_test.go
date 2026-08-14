@@ -206,7 +206,7 @@ func fullSHA(value string) bool {
 
 func assertReceiptArtifact(t *testing.T, root, relative, want string) {
 	t.Helper()
-	if relative == "" || filepath.IsAbs(relative) || filepath.Clean(relative) == "." || strings.HasPrefix(filepath.Clean(relative), ".."+string(filepath.Separator)) || !fullSHA(want) {
+	if relative == "" || filepath.IsAbs(relative) || filepath.Clean(relative) == "." || strings.HasPrefix(filepath.Clean(relative), ".."+string(filepath.Separator)) || !fullSHA256(want) {
 		t.Fatalf("invalid receipt artifact path or hash: path=%q sha=%q", relative, want)
 	}
 	data, err := os.ReadFile(filepath.Join(root, relative))
@@ -217,4 +217,16 @@ func assertReceiptArtifact(t *testing.T, root, relative, want string) {
 	if got := hex.EncodeToString(digest[:]); got != want {
 		t.Fatalf("receipt artifact %s SHA-256 = %s, want %s", relative, got, want)
 	}
+}
+
+func fullSHA256(value string) bool {
+	if len(value) != sha256.Size*2 {
+		return false
+	}
+	for _, ch := range value {
+		if (ch < '0' || ch > '9') && (ch < 'a' || ch > 'f') {
+			return false
+		}
+	}
+	return true
 }
