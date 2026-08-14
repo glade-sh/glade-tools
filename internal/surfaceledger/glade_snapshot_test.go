@@ -1,6 +1,25 @@
 package surfaceledger
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
+
+func TestBuildGladeSnapshotIsDeterministic(t *testing.T) {
+	want := BuildGladeSnapshot()
+	for i := 0; i < 3; i++ {
+		got := BuildGladeSnapshot()
+		if reflect.DeepEqual(got, want) {
+			continue
+		}
+		for rowIndex := 0; rowIndex < len(got) && rowIndex < len(want); rowIndex++ {
+			if !reflect.DeepEqual(got[rowIndex], want[rowIndex]) {
+				t.Fatalf("snapshot changed on run %d at row %d: got=%#v want=%#v", i+1, rowIndex, got[rowIndex], want[rowIndex])
+			}
+		}
+		t.Fatalf("snapshot changed on run %d: got %d rows want %d", i+1, len(got), len(want))
+	}
+}
 
 func TestBuildGladeSnapshotIncludesKnownStdlibBehavior(t *testing.T) {
 	rows := BuildGladeSnapshot()
