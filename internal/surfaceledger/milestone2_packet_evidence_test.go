@@ -8,7 +8,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
-const milestone2PacketFixture = "milestone2-api-defaults-packet.json"
+const milestone2PacketFixture = "milestone2-api-defaults-packet-23d239ba.json"
 
 var milestone2PacketSurfaceIDs = []string{
 	"unknown:milestone2-api66-body-caller66-database-default",
@@ -22,6 +22,23 @@ var milestone2PacketSurfaceIDs = []string{
 	"unknown:milestone2-explicit-system-dml",
 	"unknown:milestone2-api66-multiline",
 	"unknown:milestone2-api67-multiline",
+	"unknown:milestone2-api66-live-opening-newline",
+	"unknown:milestone2-api67-live-opening-newline",
+	"unknown:milestone2-api66-live-closing-same-line",
+	"unknown:milestone2-api67-live-closing-same-line",
+	"unknown:milestone2-api66-live-quote-runs",
+	"unknown:milestone2-api67-live-quote-runs",
+	"unknown:milestone2-api66-live-backslash",
+	"unknown:milestone2-api67-live-backslash",
+	"unknown:milestone2-api66-live-indentation",
+	"unknown:milestone2-api67-live-indentation",
+	"unknown:milestone2-api66-live-empty",
+	"unknown:milestone2-api67-live-empty",
+	"unknown:milestone2-api66-live-syntax-negative",
+	"unknown:milestone2-api67-live-syntax-negative",
+	"unknown:milestone2-api66-live-crlf-normalization",
+	"unknown:milestone2-api67-live-crlf-normalization",
+	"unknown:milestone2-api67-metadata-crlf-nonparity",
 }
 
 func TestMilestone2PacketLedgerUsesExactVersionCases(t *testing.T) {
@@ -52,6 +69,9 @@ func TestMilestone2PacketLedgerUsesExactVersionCases(t *testing.T) {
 		}
 		if !strings.Contains(evidence.Notes, "case=") {
 			t.Fatalf("packet row %q lacks an exact case id", evidence.SurfaceID)
+		}
+		if !strings.Contains(evidence.Notes, "candidate=23d239ba0a8bdb297ffc45aa6bfda88104f16ec8") {
+			t.Fatalf("packet row %q is not bound to the reviewed candidate", evidence.SurfaceID)
 		}
 	}
 	rows, err := BuildEvidenceSnapshot([]string{path})
