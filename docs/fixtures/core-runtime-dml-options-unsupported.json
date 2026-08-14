@@ -1,0 +1,41 @@
+{
+  "name": "core-runtime-dml-options-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Database.insert(Object,Database.DMLOptions)",
+      "symbol": "Database.insert",
+      "kind": "unsupported",
+      "notes": "A configured AssignmentRuleHeader is rejected before local DML because assignment-rule behavior is not modeled."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.AssignmentRuleHeader",
+      "symbol": "Database.DMLOptions.AssignmentRuleHeader",
+      "kind": "unsupported",
+      "notes": "Configured AssignmentRuleHeader returns the stable local UnsupportedFeature boundary."
+    },
+    {
+      "surfaceId": "apex:System.DMLOptions.assignmentRuleHeader",
+      "symbol": "Database.DMLOptions.assignmentRuleHeader",
+      "kind": "unsupported",
+      "notes": "Configured AssignmentRuleHeader is rejected through the documented System.DMLOptions alias as well."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.DMLOptions opts = new Database.DMLOptions();\nopts.AssignmentRuleHeader.AssignmentRuleId = '01Q000000000001AAA';\nDatabase.insert(new Account(Name = 'Rejected'), opts);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.DMLOptions opts = new Database.DMLOptions();\nopts.AssignmentRuleHeader.AssignmentRuleId = '01Q000000000001AAA';\nDatabase.insert(new Account(Name = 'Rejected'), opts);"
+    ]
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "unsupported call \"Database.DMLOptions.AssignmentRuleHeader local DML option behavior\""
+    }
+  }
+}

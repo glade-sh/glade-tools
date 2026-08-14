@@ -24,6 +24,7 @@ type AreaPacket struct {
 	DoneCriteria         []string `json:"doneCriteria"`
 	RatchetTarget        string   `json:"ratchetTarget"`
 	AreaRatchetCommand   string   `json:"areaRatchetCommand"`
+	SelectableClosedRows bool     `json:"selectableClosedRows,omitempty"`
 }
 
 type PacketManifest struct {
@@ -33,11 +34,13 @@ type PacketManifest struct {
 }
 
 type PacketManifestPacket struct {
-	ID           string   `json:"id"`
-	Owner        string   `json:"owner"`
-	SourceFamily string   `json:"sourceFamily,omitempty"`
-	SourceDir    string   `json:"sourceDir,omitempty"`
-	RowIDs       []string `json:"rowIds"`
+	ID                  string   `json:"id"`
+	Owner               string   `json:"owner"`
+	SourceFamily        string   `json:"sourceFamily,omitempty"`
+	SourceDir           string   `json:"sourceDir,omitempty"`
+	SourceAtlasVersion  string   `json:"sourceAtlasVersion,omitempty"`
+	SourceReleaseStatus string   `json:"sourceReleaseStatus,omitempty"`
+	RowIDs              []string `json:"rowIds"`
 }
 
 func AreaRegistry() []AreaPacket {
@@ -120,6 +123,7 @@ func AreaRegistry() []AreaPacket {
 	}
 	packets = append(packets,
 		genericArea("Core.Runtime.Context.IndustriesContext", "Context IndustriesContext", "internal/vm context runtime", "product=apex namespace=Context typeName=IndustriesContext", []string{"internal/vm/**", "glade-tools/internal/capability/**"}),
+		selectableClosedRows(genericArea("Apex.Language", "Apex Language", "glade-tools/internal/surfaceledger", "product=apex-language", []string{"docs/plans/**", "glade-tools/internal/surfaceledger/**"})),
 		genericArea("Core.Runtime.SystemAndStdlib", "System and Stdlib", "internal/vm", "product=apex namespace=System typeName!=FeatureManagement|Database", []string{"internal/vm/**", "glade-tools/internal/capability/**"}),
 		genericArea("Query.Runtime.SOQLSOSL", "SOQL SOSL", "internal/soql", "product=apex source=soql-sosl", []string{"internal/soql/**", "internal/sema/**", "internal/vm/soql_runtime.go"}),
 		genericArea("Data.Reference.ObjectsFields", "Objects and Fields", "internal/schema", "product=object-reference|field-reference", []string{"internal/schema/**", "internal/storage/standard_fields.go"}),
@@ -197,6 +201,9 @@ func BuildPacketManifest(ledger SurfaceLedger) PacketManifest {
 	}
 	for _, packet := range packets {
 		rows := byPacket[packet.Name]
+		if len(rows) == 0 && packet.SelectableClosedRows {
+			rows = PacketRows(ledger, packet)
+		}
 		if len(rows) == 0 {
 			continue
 		}
@@ -205,12 +212,15 @@ func BuildPacketManifest(ledger SurfaceLedger) PacketManifest {
 			rowIDs = append(rowIDs, row.SurfaceID)
 		}
 		sort.Strings(rowIDs)
+		version, status := sourceReleaseIdentity(rows)
 		manifest.Packets = append(manifest.Packets, PacketManifestPacket{
-			ID:           packet.Name,
-			Owner:        packet.Owner,
-			SourceFamily: sourceFamilyForManifestRows(rows),
-			SourceDir:    sourceDirForManifestPacket(packet),
-			RowIDs:       rowIDs,
+			ID:                  packet.Name,
+			Owner:               packet.Owner,
+			SourceFamily:        sourceFamilyForManifestRows(rows),
+			SourceDir:           sourceDirForManifestPacket(packet),
+			SourceAtlasVersion:  version,
+			SourceReleaseStatus: status,
+			RowIDs:              rowIDs,
 		})
 	}
 	families := make([]string, 0, len(bySourceFamily))
@@ -225,11 +235,14 @@ func BuildPacketManifest(ledger SurfaceLedger) PacketManifest {
 			rowIDs = append(rowIDs, row.SurfaceID)
 		}
 		sort.Strings(rowIDs)
+		version, status := sourceReleaseIdentity(rows)
 		manifest.Packets = append(manifest.Packets, PacketManifestPacket{
-			ID:           "SourceFamily." + manifestIDPart(family),
-			Owner:        ownerForManifestRows(rows),
-			SourceFamily: family,
-			RowIDs:       rowIDs,
+			ID:                  "SourceFamily." + manifestIDPart(family),
+			Owner:               ownerForManifestRows(rows),
+			SourceFamily:        family,
+			SourceAtlasVersion:  version,
+			SourceReleaseStatus: status,
+			RowIDs:              rowIDs,
 		})
 	}
 	manifest.UnassignedRows = append(manifest.UnassignedRows, unassigned...)
@@ -354,6 +367,11 @@ func genericArea(name, title, owner, filter string, allowed []string) AreaPacket
 	}
 }
 
+func selectableClosedRows(packet AreaPacket) AreaPacket {
+	packet.SelectableClosedRows = true
+	return packet
+}
+
 func AreaPacketByName(name string) (AreaPacket, bool) {
 	for _, packet := range AreaRegistry() {
 		if packet.Name == name || strings.EqualFold(packet.Title, name) {
@@ -387,6 +405,9 @@ func PacketMarkdown(ledger SurfaceLedger, packet AreaPacket) string {
 	fmt.Fprintf(&b, "- Owner: %s\n", packet.Owner)
 	fmt.Fprintf(&b, "- Ledger row filter: `%s`\n", packet.RowFilter)
 	fmt.Fprintf(&b, "- Ratchet target: %s\n", packet.RatchetTarget)
+	if version, status := sourceReleaseIdentity(rows); version != "" || status != "" {
+		fmt.Fprintf(&b, "- Docs release: %s (%s)\n", version, status)
+	}
 	fmt.Fprintln(&b)
 	writePacketList(&b, "dependsOn", packet.DependsOn)
 	writePacketList(&b, "mayRunInParallelWith", packet.MayRunInParallelWith)
@@ -403,7 +424,7 @@ func PacketMarkdown(ledger SurfaceLedger, packet AreaPacket) string {
 		fmt.Fprintln(&b, "- No rows matched this packet in the current ledger.")
 	} else {
 		for _, row := range rows {
-			fmt.Fprintf(&b, "- `%s` gap=%s bucket=%s priority=%d\n", row.SurfaceID, row.GapClass, row.Bucket, row.Priority)
+			fmt.Fprintf(&b, "- `%s` gap=%s bucket=%s priority=%d sourceVersion=%s sourceStatus=%s\n", row.SurfaceID, row.GapClass, row.Bucket, row.Priority, row.DocsSourceAtlasVersion, row.DocsSourceReleaseStatus)
 		}
 	}
 	fmt.Fprintln(&b)
@@ -414,6 +435,7 @@ func PacketMarkdown(ledger SurfaceLedger, packet AreaPacket) string {
 	fmt.Fprintln(&b, "glade-tools surface refresh \\")
 	fmt.Fprintln(&b, "  --docs \"$GLADE_SALESFORCE_DOCS_SOURCE\" \\")
 	fmt.Fprintln(&b, "  --tooling-completions testdata/generated/tooling_system_symbols.json.gz \\")
+	fmt.Fprintln(&b, "  --source-identity \"$GLADE_SALESFORCE_DOCS_SOURCE_IDENTITY\" \\")
 	fmt.Fprintln(&b, "  --out \"$tmp\"")
 	fmt.Fprintln(&b, "```")
 	fmt.Fprintln(&b)
@@ -485,6 +507,8 @@ func PacketMarkdown(ledger SurfaceLedger, packet AreaPacket) string {
 func packetOwnsRow(packet AreaPacket, row SurfaceLedgerRow) bool {
 	surfaceFamily := row.SalesforceSurfaceFamily
 	switch packet.Name {
+	case "Apex.Language":
+		return row.Product == "apex-language" || strings.HasPrefix(row.SurfaceID, "apex-language:")
 	case "Ledger.Identity":
 		return row.GapClass == GapDocsOrgMismatch || row.GapClass == GapStaleGladeShape || row.GapClass == GapSignatureChanged
 	case "Core.Runtime.System.FeatureManagement":

@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/glade-sh/glade/internal/apexast"
@@ -656,7 +657,12 @@ func addDataReferenceGladeRows(byID map[string]SurfaceLedgerRow) {
 			GladeBehavior: BehaviorSupported,
 			Sources:       []string{SourceStandardSObjectGeneratedShape},
 		})
+		fields := make([]storage.Field, 0, len(definition.Fields))
 		for _, field := range definition.Fields {
+			fields = append(fields, field)
+		}
+		sort.Slice(fields, func(i, j int) bool { return fields[i].APIName < fields[j].APIName })
+		for _, field := range fields {
 			fieldID := DataFieldID(definition.APIName, field.APIName)
 			byID[surfaceIDKey(fieldID)] = RowFromGeneratedDataReferenceShape(SurfaceLedgerRow{
 				SurfaceID:     fieldID,

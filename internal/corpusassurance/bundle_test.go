@@ -129,6 +129,44 @@ func TestBuildOracleBundleRequiresTheAttemptBoundByReleaseValidation(t *testing.
 	}
 }
 
+func TestBuildOracleBundleBindsRemoteCleanupAuthority(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	output := filepath.Join(t.TempDir(), "salesforce-worker")
+	bundle, err := BuildOracleBundle(inputs.request(output))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bundle.SalesforceRemoteCleanupAuthoritySHA256 != localProofFileSHA256(t, inputs.remoteAuthorityPath) {
+		t.Fatalf("remote cleanup authority hash = %q", bundle.SalesforceRemoteCleanupAuthoritySHA256)
+	}
+	if _, err := os.Stat(filepath.Join(output, "bundle", "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json")); err != nil {
+		t.Fatalf("staged remote cleanup authority: %v", err)
+	}
+}
+
+func TestValidateOracleBundleRejectsNewBundleWithoutRemoteCleanupAuthority(t *testing.T) {
+	inputs := oracleBundleTestInputsForLocalProof(t)
+	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
+	outputRoot := filepath.Join(t.TempDir(), "salesforce-worker")
+	if _, err := BuildOracleBundle(inputs.request(outputRoot)); err != nil {
+		t.Fatal(err)
+	}
+	bundlePath := filepath.Join(outputRoot, "bundle", "bundle.json")
+	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bundle.SalesforceRemoteCleanupAuthoritySHA256 = ""
+	bundleBytes, err := json.Marshal(bundle)
+	if err != nil || os.WriteFile(bundlePath, append(bundleBytes, '\n'), 0o600) != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateOracleBundle(bundlePath); err == nil {
+		t.Fatal("ValidateOracleBundle accepted a new bundle without remote cleanup authority")
+	}
+}
+
 func TestBuildOracleBundleRejectsAReplacementAttempt(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
@@ -181,6 +219,7 @@ type oracleBundleTestInputs struct {
 	plan                OraclePlan
 	gladeRoot           string
 	attemptPath         string
+	remoteAuthorityPath string
 	devHubAuthorityPath string
 	profilePath         string
 	planPath            string
@@ -196,18 +235,19 @@ type oracleBundleTestInputs struct {
 
 func (inputs oracleBundleTestInputs) request(outputPath string) OracleBundleRequest {
 	return OracleBundleRequest{
-		AttemptPath:           inputs.attemptPath,
-		DevHubAuthorityPath:   inputs.devHubAuthorityPath,
-		ProfilePath:           inputs.profilePath,
-		PlanPath:              inputs.planPath,
-		AuthorityPath:         inputs.authorityPath,
-		ReleaseValidationPath: inputs.releasePath,
-		LocalProofPath:        inputs.localProofPath,
-		FixtureManifestPath:   inputs.fixtureManifestPath,
-		FilterScriptPath:      inputs.filterPath,
-		ScratchDefinitionPath: inputs.scratchPath,
-		ToolsRoot:             inputs.toolsRoot,
-		OutputPath:            outputPath, expectedFilterSHA256: inputs.filterSHA256,
+		AttemptPath:                inputs.attemptPath,
+		RemoteCleanupAuthorityPath: inputs.remoteAuthorityPath,
+		DevHubAuthorityPath:        inputs.devHubAuthorityPath,
+		ProfilePath:                inputs.profilePath,
+		PlanPath:                   inputs.planPath,
+		AuthorityPath:              inputs.authorityPath,
+		ReleaseValidationPath:      inputs.releasePath,
+		LocalProofPath:             inputs.localProofPath,
+		FixtureManifestPath:        inputs.fixtureManifestPath,
+		FilterScriptPath:           inputs.filterPath,
+		ScratchDefinitionPath:      inputs.scratchPath,
+		ToolsRoot:                  inputs.toolsRoot,
+		OutputPath:                 outputPath, expectedFilterSHA256: inputs.filterSHA256,
 	}
 }
 
@@ -220,7 +260,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	}
 	root := filepath.Dir(request.OutputPath)
 	devHubAuthorityPath := filepath.Join(root, "DEV_HUB_AUTHORITY.json")
-	if err := WriteNewJSON(devHubAuthorityPath, SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D000000000001", Username: "sealed-dev-hub@example.invalid", Execution: testSalesforceExecutionAuthority(t)}); err != nil {
+	if err := WriteNewJSON(devHubAuthorityPath, testSalesforceDevHubAuthority(t, "sealed-dev-hub", "00D000000000001", "sealed-dev-hub@example.invalid", testSalesforceExecutionAuthority(t))); err != nil {
 		t.Fatal(err)
 	}
 	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "scripts/smoke.sh": "#!/bin/sh\n"})
@@ -229,7 +269,28 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 	candidate.Commit, tools.Commit = testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
 	replaceAssuranceAttemptForRuntimes(t, request.AttemptPath, candidate, tools)
 	proof.Candidate, proof.Tools = candidate, tools
-	proof.AttemptSHA256 = attemptHash(AssuranceAttempt{SchemaVersion: 1, InventorySHA256: strings.Repeat("a", 64), CandidateAuthoritySHA256: strings.Repeat("b", 64), Candidate: candidate, Tools: tools, RemoteCleanupAuthoritySHA256: testCleanupAuthorityHashes()})
+	attempt, _, err := readExactJSONBytes[AssuranceAttempt](request.AttemptPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	remoteAuthorityPath := filepath.Join(root, "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json")
+	parent := filepath.Join(root, "glade-assurance-test")
+	if err := os.MkdirAll(parent, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	remoteAuthority := RemoteAttemptAuthority{SchemaVersion: 2, AttemptSHA256: attemptBindingHash(attempt), Role: "salesforce-worker", Host: "operator@salesforce-worker", Parent: parent, AttemptRoot: filepath.Join(parent, "assurance-"+attemptBindingHash(attempt)[:16]+"-test-salesforce-worker")}
+	if err := WriteNewJSON(remoteAuthorityPath, remoteAuthority); err != nil {
+		t.Fatal(err)
+	}
+	attempt.RemoteCleanupAuthoritySHA256 = map[string]string{"replay-worker": strings.Repeat("0", 64), "salesforce-worker": localProofFileSHA256(t, remoteAuthorityPath)}
+	attemptBytes, err := json.Marshal(attempt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(request.AttemptPath, append(attemptBytes, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	proof.AttemptSHA256 = attemptHash(attempt)
 	if data, err := json.Marshal(proof); err != nil || os.WriteFile(request.OutputPath, append(data, '\n'), 0o600) != nil {
 		t.Fatal(err)
 	}
@@ -237,6 +298,7 @@ func oracleBundleTestInputsForLocalProof(t *testing.T) oracleBundleTestInputs {
 		proof:               proof,
 		gladeRoot:           gladeRoot,
 		attemptPath:         request.AttemptPath,
+		remoteAuthorityPath: remoteAuthorityPath,
 		devHubAuthorityPath: devHubAuthorityPath,
 		profilePath:         filepath.Join(root, "BUNDLE_PROFILE.json"),
 		planPath:            filepath.Join(root, "ORACLE_PLAN.json"),

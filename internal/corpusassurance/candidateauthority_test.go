@@ -22,7 +22,7 @@ func TestCreateCandidateAuthorityDerivesOnlySealedReceiptCandidate(t *testing.T)
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": tools})
+	writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
 	reviewPath := filepath.Join(root, "REVIEW.md")
 	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
 		t.Fatal(err)
@@ -166,7 +166,7 @@ func TestCreateCandidateAuthorityRejectsToolsThatAreNotExecuting(t *testing.T) {
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": tools})
+	writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
 	reviewPath := filepath.Join(root, "REVIEW.md")
 	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
 		t.Fatal(err)
@@ -193,7 +193,7 @@ func TestCreateAssuranceAttemptRejectsToolsOutsideCandidateAuthority(t *testing.
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	sealedTools := candidateToolForTest(t, sealedToolsRoot, sealedToolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": sealedTools})
+	writeCandidateBuildReceiptForTest(t, receiptPath, candidate, sealedTools)
 	receipt, _, err := readExactCandidateBuildReceipt(receiptPath)
 	if err != nil {
 		t.Fatal(err)
@@ -272,7 +272,7 @@ func TestCreateCandidateAuthorityRejectsInvalidReviewWithoutOutput(t *testing.T)
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": tools})
+	writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
 	reviewPath := filepath.Join(root, "REVIEW.md")
 	if err := os.WriteFile(reviewPath, []byte("invalid\n"), 0o600); err != nil {
 		t.Fatal(err)
@@ -299,7 +299,7 @@ func TestCreateCandidateAuthorityRejectsCandidateWithoutParser(t *testing.T) {
 	candidate := sealedAttemptCandidate{Commit: testGitOutput(t, candidateRoot, "rev-parse", "HEAD"), Path: candidatePath, SHA256: fileSHA256(t, candidatePath)}
 	tools := candidateToolForTest(t, toolsRoot, toolsPath)
 	receiptPath := filepath.Join(root, "candidate-receipt.json")
-	writeCandidateAuthorityJSON(t, receiptPath, map[string]any{"schemaVersion": 1, "status": "clean-exact-candidate", "sourceCommit": candidate.Commit, "binarySha256": candidate.SHA256, "cleanWorktree": true, "candidate": attemptCandidate(candidate), "tools": tools})
+	writeCandidateBuildReceiptForTest(t, receiptPath, candidate, tools)
 	reviewPath := filepath.Join(root, "REVIEW.md")
 	if err := os.WriteFile(reviewPath, candidateAuthorityReviewForTest(attemptCandidate(candidate), tools), 0o600); err != nil {
 		t.Fatal(err)
@@ -345,5 +345,11 @@ func candidateToolForTest(t *testing.T, root, path string) candidateTool {
 }
 
 func candidateAuthorityReviewForTest(candidate attemptCandidate, tools candidateTool) []byte {
-	return []byte("Verdict: PASS\nCandidate commit: " + candidate.Commit + "\nCandidate SHA-256: " + candidate.SHA256 + "\nTools commit: " + tools.Commit + "\nTools OS: " + tools.OS + "\nTools arch: " + tools.Arch + "\nTools SHA-256: " + tools.SHA256 + "\nTools path: " + tools.Path + "\n")
+	return []byte("Verdict: PASS\nCandidate commit: " + candidate.Commit + "\nCandidate SHA-256: " + candidate.SHA256 + "\nCandidate ref: HEAD\nCandidate ref commit: " + candidate.Commit + "\nTools commit: " + tools.Commit + "\nTools OS: " + tools.OS + "\nTools arch: " + tools.Arch + "\nTools SHA-256: " + tools.SHA256 + "\nTools path: " + tools.Path + "\nTools ref: HEAD\nTools ref commit: " + tools.Commit + "\n")
+}
+
+func writeCandidateBuildReceiptForTest(t *testing.T, path string, candidate sealedAttemptCandidate, tools candidateTool) {
+	t.Helper()
+	receipt := candidateBuildReceipt{SchemaVersion: 2, Status: "clean-exact-candidate", SourceCommit: candidate.Commit, BinarySHA256: candidate.SHA256, CleanWorktree: true, CandidateRef: "HEAD", CandidateRefCommit: candidate.Commit, ToolsRef: "HEAD", ToolsRefCommit: tools.Commit, Candidate: attemptCandidate(candidate), Tools: tools}
+	writeCandidateAuthorityJSON(t, path, receipt)
 }

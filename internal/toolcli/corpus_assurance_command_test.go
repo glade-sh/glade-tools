@@ -22,10 +22,19 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
-	for _, command := range []string{"candidate-authority", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof-plan", "local-proof", "release-validate", "oracle-plan", "exclusion-request", "authorize-exclusions", "oracle-bundle", "org-create", "org-preflight", "salesforce-run", "org-cleanup", "report", "cleanup"} {
+	commands := []string{"candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "org-create", "org-preflight", "salesforce-dispatch", "salesforce-run", "org-cleanup", "salesforce-reconcile", "remote-failure-preserve", "cleanup", "report"}
+	for _, command := range commands {
 		if !strings.Contains(stdout.String(), "glade-tools corpus assurance "+command+" ") {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}
+	}
+	last := -1
+	for _, command := range []string{"candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "salesforce-dispatch", "salesforce-run", "salesforce-reconcile", "remote-failure-preserve", "cleanup", "report"} {
+		position := strings.Index(stdout.String(), "glade-tools corpus assurance "+command+" ")
+		if position <= last {
+			t.Fatalf("help order moved %q after position %d:\n%s", command, last, stdout.String())
+		}
+		last = position
 	}
 	for _, flag := range []string{"--replay-host-manifest <manifest.json>", "--replay-shard <REPLAY_SHARD.json>"} {
 		if !strings.Contains(stdout.String(), flag) {
@@ -41,12 +50,67 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if !strings.Contains(stdout.String(), "[--org-preflight <ORG_PREFLIGHT.json>]") {
 		t.Fatalf("org-cleanup help does not document invalidated-receipt recovery:\n%s", stdout.String())
 	}
+	if !strings.Contains(stdout.String(), "oracle-bundle --attempt <ATTEMPT.json> --remote-cleanup-authority <SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json>") {
+		t.Fatalf("oracle-bundle help omits the bound Salesforce cleanup authority:\n%s", stdout.String())
+	}
 }
 
 func TestCorpusAssuranceSubcommandHelpPrintsUsage(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	if code := Run(context.Background(), []string{"corpus", "assurance", "local-proof", "--help"}, &stdout, &stderr); code != 0 || !strings.Contains(stdout.String(), "glade-tools corpus assurance local-proof ") {
 		t.Fatalf("subcommand help code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOracleProfile(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-profile")
+}
+
+func TestCorpusAssuranceCandidate(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "candidate-build")
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "candidate-authority")
+}
+
+func TestCorpusAssuranceAttempt(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "attempt-init")
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "attempt")
+}
+
+func TestCorpusAssuranceOracleDirectives(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-directives-draft")
+}
+
+func TestCorpusAssuranceOraclePlan(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "oracle-plan")
+}
+
+func TestCorpusAssuranceDevHubAuthority(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "dev-hub-authority")
+}
+
+func TestCorpusAssuranceSalesforceReconcile(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "salesforce-reconcile")
+}
+
+func TestCorpusAssuranceReport(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "report")
+}
+
+func TestCorpusAssuranceReportRequiresRetainedSalesforceReconciliation(t *testing.T) {
+	if err := requireRetainedSalesforceReconciliation("", ""); err == nil {
+		t.Fatal("report accepted live Salesforce shard inputs without retained reconciliation")
+	}
+}
+
+func TestCorpusAssuranceRemoteFailurePreserve(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "remote-failure-preserve")
+}
+
+func assertCorpusAssuranceCommandRejectsMissingFlags(t *testing.T, command string) {
+	t.Helper()
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", command}, &stdout, &stderr); code == 0 {
+		t.Fatalf("%s unexpectedly accepted missing flags", command)
 	}
 }
 

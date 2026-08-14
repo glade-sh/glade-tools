@@ -70,11 +70,12 @@ type UsageDecision struct {
 }
 
 type UsageDecisionFile struct {
-	SchemaVersion int             `json:"schemaVersion"`
-	ProfileSHA256 string          `json:"profileSha256"`
-	PolicySHA256  string          `json:"policySha256"`
-	UsageSHA256   string          `json:"usageSha256"`
-	Decisions     []UsageDecision `json:"decisions"`
+	SchemaVersion  int             `json:"schemaVersion"`
+	ProfileSHA256  string          `json:"profileSha256"`
+	PolicySHA256   string          `json:"policySha256"`
+	UsageSHA256    string          `json:"usageSha256,omitempty"`
+	RawUsageSHA256 string          `json:"rawUsageSha256,omitempty"`
+	Decisions      []UsageDecision `json:"decisions"`
 }
 
 type ReconciledUsageEntry struct {
@@ -123,15 +124,35 @@ type UsageDecisionDraft struct {
 // output may be used to author an explicit decision file that binds this raw
 // usage hash; it is not itself a decision authority.
 func DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, outputPath string) (UsageDecisionDraft, error) {
+	return DraftUsageDecisionsWithTemplate(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, outputPath, "")
+}
+
+// DraftUsageDecisionsWithTemplate also creates a create-only semantic decision
+// template bound to the exact draft inputs. Empty class, surface, and reason
+// fields are intentional review gates for unresolved usage.
+func DraftUsageDecisionsWithTemplate(inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, outputPath, decisionTemplatePath string) (UsageDecisionDraft, error) {
 	for _, path := range []string{inventoryPath, ledgerPath, manifestPath, profilePath, policyPath, outputPath} {
 		if !filepath.IsAbs(path) {
 			return UsageDecisionDraft{}, fmt.Errorf("usage draft paths must be absolute")
 		}
 	}
+	if decisionTemplatePath != "" && !filepath.IsAbs(decisionTemplatePath) {
+		return UsageDecisionDraft{}, fmt.Errorf("usage decision template path must be absolute")
+	}
 	if _, err := os.Lstat(outputPath); err == nil {
 		return UsageDecisionDraft{}, fmt.Errorf("usage decision draft output already exists: %s", outputPath)
 	} else if !os.IsNotExist(err) {
 		return UsageDecisionDraft{}, err
+	}
+	if decisionTemplatePath != "" {
+		if filepath.Clean(decisionTemplatePath) == filepath.Clean(outputPath) {
+			return UsageDecisionDraft{}, fmt.Errorf("usage draft outputs must be distinct")
+		}
+		if _, err := os.Lstat(decisionTemplatePath); err == nil {
+			return UsageDecisionDraft{}, fmt.Errorf("usage decision template output already exists: %s", decisionTemplatePath)
+		} else if !os.IsNotExist(err) {
+			return UsageDecisionDraft{}, err
+		}
 	}
 	inventory, inventoryBytes, err := readInventorySpec(inventoryPath)
 	if err != nil {
@@ -187,6 +208,16 @@ func DraftUsageDecisions(inventoryPath, ledgerPath, manifestPath, profilePath, p
 	}
 	if err := WriteNewJSON(outputPath, draft); err != nil {
 		return UsageDecisionDraft{}, err
+	}
+	if decisionTemplatePath != "" {
+		decisions := make([]UsageDecision, len(unresolved))
+		for i, entry := range unresolved {
+			decisions[i] = UsageDecision{UsageKey: entry.UsageKey}
+		}
+		template := UsageDecisionFile{SchemaVersion: 2, ProfileSHA256: draft.ProfileSHA256, PolicySHA256: draft.PolicySHA256, RawUsageSHA256: draft.RawUsageSHA256, Decisions: decisions}
+		if err := WriteNewJSON(decisionTemplatePath, template); err != nil {
+			return UsageDecisionDraft{}, err
+		}
 	}
 	return draft, nil
 }
@@ -292,7 +323,14 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
-	if decision.SchemaVersion != 1 || decision.ProfileSHA256 != replayBytesSHA256(profileBytes) || decision.PolicySHA256 != replayBytesSHA256(policyBytes) || decision.UsageSHA256 != replayBytesSHA256(firstBytes) {
+	decisionUsageSHA := decision.UsageSHA256
+	if decision.RawUsageSHA256 != "" {
+		if decisionUsageSHA != "" && decisionUsageSHA != decision.RawUsageSHA256 {
+			return SealedCorpusUsage{}, fmt.Errorf("usage decisions contain conflicting raw usage hashes")
+		}
+		decisionUsageSHA = decision.RawUsageSHA256
+	}
+	if (decision.SchemaVersion != 1 && decision.SchemaVersion != 2) || decision.ProfileSHA256 != replayBytesSHA256(profileBytes) || decision.PolicySHA256 != replayBytesSHA256(policyBytes) || decisionUsageSHA != replayBytesSHA256(firstBytes) {
 		return SealedCorpusUsage{}, fmt.Errorf("usage decisions do not bind fresh extraction")
 	}
 	reconciliation, err := reconcileUsage(profile, first.Usage, decision.Decisions)

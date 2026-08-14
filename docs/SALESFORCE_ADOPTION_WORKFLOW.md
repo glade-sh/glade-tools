@@ -1,0 +1,193 @@
+# Salesforce surface adoption workflow
+
+This is the operator handoff for a bounded Salesforce surface packet. Every
+packet has one exact candidate/tools pair, one reviewed input set, and one
+durable attempt root. A later run never repairs or relabels an earlier root.
+
+## Evidence levels
+
+1. **Packet gate** — focused tests and the exact SurfaceID delta for one
+   bounded feature family.
+2. **Wave gate** — packet gates, affected fixture sweeps, and broad product
+   tests for the wave.
+3. **Candidate gate** — clean candidate/tools bindings, candidate-bound local
+   proof, release validation, and fresh Salesforce evidence only for rows
+   receiving runtime-parity credit.
+
+The readiness sets are independent: `compile-ready`, `test-ready`,
+`runtime-parity-ready`, and `non-parity`. Local evidence never earns
+runtime-parity credit.
+
+## Canonical attempt layout
+
+```text
+/absolute/glade-evidence/salesforce-adoption/<attempt>/
+  glade/
+  glade-tools/
+  bootstrap/
+  bin/
+  artifacts/
+    inputs/ bindings/ surface/ packets/ inventory/ local-proof/
+    salesforce/ validation/ logs/
+```
+
+The source worktrees are clean siblings. The attempt root is not a Git
+repository and is not used for unrelated work. All paths in authoritative
+receipts are absolute and immutable after they are bound.
+
+## Command order
+
+Run the commands in this order. Each producer is create-only and its output is
+validated before the next producer starts.
+
+```text
+candidate-build
+candidate-authority
+attempt-init
+prepare
+usage-draft
+usage
+replay / merge-replay
+local-proof-plan
+local-proof
+release-validate
+oracle-profile
+oracle-directives-draft
+oracle-plan
+exclusion-request
+authorize-exclusions
+dev-hub-authority
+oracle-bundle
+org-create / org-preflight
+salesforce-dispatch / salesforce-run / org-cleanup
+salesforce-reconcile
+remote-failure-preserve, when a remote phase fails
+cleanup, only after reviewed retained evidence
+report
+```
+
+`attempt` remains available for authorities created by an older operator
+step. New runs use `attempt-init` so the cleanup-authority bootstrap does not
+require copied hashes.
+
+## Artifact categories
+
+- **Controlled inputs:** scope inventory, support policy, reviewed docs
+  manifest, source profile, fixture inputs, and human decisions. Copy them
+  into `artifacts/inputs/` before binding.
+- **Planning outputs:** ledgers, profiles, packet Markdown, progress reports,
+  and decision drafts. They are regenerable and never replace a receipt.
+- **Diagnostics:** named command logs under `artifacts/logs/`. Logs aid
+  recovery; they are not parity proof.
+- **Local proof:** candidate-bound fixtures, local decisions, and
+  `LOCAL_PROOF.json`.
+- **Salesforce proof:** the bound authority, oracle plan, bundle, paired
+  lifecycle receipts, shard evidence, and reconciliation packet.
+- **Final validation:** release validation and the final report/receipt.
+
+## Retry and successor rule
+
+Authoritative JSON, bound inputs, binaries, freeze files, and reviewed
+decisions are create-only. If a command fails after writing any output, leave
+the complete attempt intact and start a new attempt root with a new run ID.
+Never overwrite, rename, repair, or relabel the failed receipt. If source,
+tools, fixture, policy, decision, org, API version, command contract, or
+binary changes, start a successor attempt. Delete a failed root only after a
+validated successor records it as superseded.
+
+## Resume handoff
+
+`HANDOFF.md` is mutable operator state, not parity proof. Create it in the
+packet directory with this shape:
+
+```text
+Attempt root: /absolute/attempt
+Candidate ref: <ref>
+Candidate commit: <recorded by authority>
+Tools ref: <ref>
+Tools commit: <recorded by authority>
+SurfaceIDs: <exact sorted packet row set>
+Obligation: <local-runtime-required|deterministic-mock-required|compile-shape-required|explicit-unsupported|hosted-deferred>
+Owner: <product or evidence worker>
+Current gate: preflight
+Last completed command: <command and status>
+Next command: <exact next command>
+```
+
+Allowed `Current gate:` transitions are:
+
+```text
+preflight -> candidate-build -> candidate-authority -> attempt-init
+-> prepare -> usage-draft -> usage -> replay / merge-replay
+-> local-proof-plan -> local-proof -> release-validate
+-> oracle-profile -> oracle-directives-draft -> oracle-plan
+-> exclusion-request -> authorize-exclusions -> dev-hub-authority
+-> oracle-bundle -> org-create -> org-preflight
+-> salesforce-dispatch -> salesforce-run -> org-cleanup
+-> salesforce-reconcile -> cleanup -> report -> closed
+```
+
+If a remote phase fails, branch from `salesforce-run` or `org-cleanup` to
+`remote-failure-preserve -> blocked`; recovery starts in a successor attempt
+after the retained root is reviewed. `attempt` is a legacy reader path for
+authorities created before `attempt-init`; it is not part of a new run.
+
+On a failed remote phase, `remote-failure-preserve` first writes
+`NEXT_ACTION.md`, retains the remote tree and its mode-bearing manifest, then
+atomically changes the handoff to `Current gate: blocked`. The next command is
+the receipt-specific recovery instruction. No remote root is deleted by the
+preservation helper.
+
+## Salesforce reconciliation handoff
+
+`oracle-bundle` requires the attempt-bound
+`SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json` and stages it unchanged. After both
+shards and both org-cleanup receipts pass, create the durable reconciliation
+before deleting the remote attempt root:
+
+```text
+glade-tools corpus assurance salesforce-reconcile \
+  --oracle-plan /absolute/ORACLE_PLAN.json \
+  --shard /absolute/SALESFORCE_SHARD_0.json \
+  --dispatch /absolute/SALESFORCE_DISPATCH_0.json \
+  --preflight /absolute/ORG_PREFLIGHT_0.json \
+  --creation /absolute/ORG_CREATION_0.json \
+  --cleanup /absolute/ORG_CLEANUP_0.json \
+  --shard /absolute/SALESFORCE_SHARD_1.json \
+  --dispatch /absolute/SALESFORCE_DISPATCH_1.json \
+  --preflight /absolute/ORG_PREFLIGHT_1.json \
+  --creation /absolute/ORG_CREATION_1.json \
+  --cleanup /absolute/ORG_CLEANUP_1.json \
+  --packet-output /absolute/salesforce-reconciliation-packet \
+  --output /absolute/SALESFORCE_RECONCILIATION.json
+```
+
+After copying the packet back, verify with `--receipt` and `--packet`. This
+mode reads only the retained bytes and modes. `report` accepts the same receipt
+and packet through `--salesforce-reconciliation` and `--salesforce-packet`, so
+it does not need the deleted executor roots.
+
+## Packet return format
+
+```text
+Packet:
+Baseline commit:
+Product commit:
+Owned files:
+SurfaceIDs before:
+SurfaceIDs after:
+Focused RED command and failure:
+Focused GREEN command and result:
+Fixture command and result:
+Ratchet command and result:
+Explicit non-parity:
+Next highest-priority row:
+```
+
+The row set is reconciled by exact SurfaceID, not by estimated counts or
+member-name presence. Every selected row has one reviewed disposition and one
+owner. Unsupported and hosted behavior remains explicit.
+
+Public documentation changes only after final reconciliation and after the
+four readiness sets and exact exclusions are recorded. A local pass is never
+described as Salesforce runtime parity.

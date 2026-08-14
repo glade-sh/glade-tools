@@ -45,13 +45,17 @@ type candidateAuthoritySource struct {
 }
 
 type candidateBuildReceipt struct {
-	SchemaVersion int              `json:"schemaVersion"`
-	Status        string           `json:"status"`
-	SourceCommit  string           `json:"sourceCommit"`
-	BinarySHA256  string           `json:"binarySha256"`
-	CleanWorktree bool             `json:"cleanWorktree"`
-	Candidate     attemptCandidate `json:"candidate"`
-	Tools         candidateTool    `json:"tools"`
+	SchemaVersion      int              `json:"schemaVersion"`
+	Status             string           `json:"status"`
+	SourceCommit       string           `json:"sourceCommit"`
+	BinarySHA256       string           `json:"binarySha256"`
+	CleanWorktree      bool             `json:"cleanWorktree"`
+	CandidateRef       string           `json:"candidateRef,omitempty"`
+	CandidateRefCommit string           `json:"candidateRefCommit,omitempty"`
+	ToolsRef           string           `json:"toolsRef,omitempty"`
+	ToolsRefCommit     string           `json:"toolsRefCommit,omitempty"`
+	Candidate          attemptCandidate `json:"candidate"`
+	Tools              candidateTool    `json:"tools"`
 }
 
 type candidateBuildBinding struct {
@@ -119,7 +123,7 @@ func validateCandidateAuthorityDocument(document candidateAuthorityDocument) (ca
 		return candidateAuthorityInput{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
 	reviewBytes, err := os.ReadFile(document.Review.Path)
-	if err != nil || validateCandidateAuthorityReviewBytes(reviewBytes, candidate, receipt.Tools) != nil || replayBytesSHA256(reviewBytes) != document.Review.SHA256 {
+	if err != nil || validateCandidateAuthorityReviewForReceipt(reviewBytes, candidate, receipt.Tools, receipt) != nil || replayBytesSHA256(reviewBytes) != document.Review.SHA256 {
 		return candidateAuthorityInput{}, fmt.Errorf("candidate authority review is stale")
 	}
 	actual, err := runtimeArtifactFor(candidate.Path, candidate.Commit)
@@ -144,8 +148,14 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 	if err != nil || !validCandidateBuildReceipt(receipt, input) {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority build receipt is invalid")
 	}
+	if receipt.SchemaVersion != 2 {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("new candidate authorities require schema version 2 build receipts")
+	}
 	if err := validateCleanGitRoot(candidateRoot, receipt.Candidate.Commit); err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate source: %w", err)
+	}
+	if err := validateAdvertisedBuildRef(candidateRoot, receipt.CandidateRef, receipt.CandidateRefCommit); err != nil {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate advertised ref: %w", err)
 	}
 	actual, err := runtimeArtifactFor(receipt.Candidate.Path, receipt.Candidate.Commit)
 	if err != nil || actual.SHA256 != receipt.Candidate.SHA256 {
@@ -153,6 +163,9 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 	}
 	if err := validateCandidateTool(receipt.Tools); err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("candidate authority tools are stale")
+	}
+	if err := validateAdvertisedBuildRef(toolsRoot, receipt.ToolsRef, receipt.ToolsRefCommit); err != nil {
+		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, fmt.Errorf("tools advertised ref: %w", err)
 	}
 	build, err := deriveCandidateBuildBinding(candidateRoot)
 	if err != nil || validateSealedCandidateBuild(candidateRoot, receipt.Candidate, build) != nil {
@@ -169,7 +182,7 @@ func validateCandidateAuthoritySources(candidateRoot, toolsRoot, receiptPath, re
 	if err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
-	if err := validateCandidateAuthorityReviewBytes(reviewBytes, receipt.Candidate, receipt.Tools); err != nil {
+	if err := validateCandidateAuthorityReviewForReceipt(reviewBytes, receipt.Candidate, receipt.Tools, receipt); err != nil {
 		return candidateAuthorityInput{}, candidateBuildBinding{}, candidateBuildBinding{}, candidateAuthoritySource{}, candidateAuthoritySource{}, err
 	}
 	return input, build, toolsBuild, candidateAuthoritySource{Path: receiptPath, SHA256: replayBytesSHA256(receiptBytes)}, candidateAuthoritySource{Path: reviewPath, SHA256: replayBytesSHA256(reviewBytes)}, nil
@@ -349,7 +362,13 @@ func validCandidateDoctorJSON(data []byte) bool {
 
 func validCandidateBuildReceipt(receipt candidateBuildReceipt, input candidateAuthorityInput) bool {
 	candidate := input.Candidate
-	return receipt.SchemaVersion == 1 && receipt.Status == "clean-exact-candidate" && receipt.CleanWorktree && receipt.SourceCommit == candidate.Commit && receipt.BinarySHA256 == candidate.SHA256 && receipt.Candidate == candidate && receipt.Tools == input.Tools && commitPattern.MatchString(candidate.Commit) && filepath.IsAbs(candidate.Path) && sha256Pattern.MatchString(candidate.SHA256) && validateCandidateTool(receipt.Tools) == nil
+	if receipt.SchemaVersion != 1 && receipt.SchemaVersion != 2 {
+		return false
+	}
+	if receipt.SchemaVersion == 2 && (receipt.CandidateRef == "" || receipt.ToolsRef == "" || receipt.CandidateRefCommit != candidate.Commit || receipt.ToolsRefCommit != input.Tools.Commit) {
+		return false
+	}
+	return receipt.Status == "clean-exact-candidate" && receipt.CleanWorktree && receipt.SourceCommit == candidate.Commit && receipt.BinarySHA256 == candidate.SHA256 && receipt.Candidate == candidate && receipt.Tools == input.Tools && commitPattern.MatchString(candidate.Commit) && filepath.IsAbs(candidate.Path) && sha256Pattern.MatchString(candidate.SHA256) && validateCandidateTool(receipt.Tools) == nil
 }
 
 func validateCandidateTool(tool candidateTool) error {
@@ -376,10 +395,24 @@ func canonicalCandidateToolPath(path string) (string, error) {
 }
 
 func validateCandidateAuthorityReviewBytes(data []byte, candidate attemptCandidate, tools candidateTool) error {
-	if !strings.HasPrefix(string(data), "Verdict: PASS\n") {
+	return validateCandidateAuthorityReviewFields(data, "PASS", map[string]string{"Candidate commit": candidate.Commit, "Candidate SHA-256": candidate.SHA256, "Tools commit": tools.Commit, "Tools OS": tools.OS, "Tools arch": tools.Arch, "Tools SHA-256": tools.SHA256, "Tools path": tools.Path})
+}
+
+func validateCandidateAuthorityReviewForReceipt(data []byte, candidate attemptCandidate, tools candidateTool, receipt candidateBuildReceipt) error {
+	expected := map[string]string{"Candidate commit": candidate.Commit, "Candidate SHA-256": candidate.SHA256, "Tools commit": tools.Commit, "Tools OS": tools.OS, "Tools arch": tools.Arch, "Tools SHA-256": tools.SHA256, "Tools path": tools.Path}
+	if receipt.SchemaVersion == 2 {
+		expected["Candidate ref"] = receipt.CandidateRef
+		expected["Candidate ref commit"] = receipt.CandidateRefCommit
+		expected["Tools ref"] = receipt.ToolsRef
+		expected["Tools ref commit"] = receipt.ToolsRefCommit
+	}
+	return validateCandidateAuthorityReviewFields(data, "PASS", expected)
+}
+
+func validateCandidateAuthorityReviewFields(data []byte, verdict string, expected map[string]string) error {
+	if !strings.HasPrefix(string(data), "Verdict: "+verdict+"\n") {
 		return fmt.Errorf("candidate authority review is invalid")
 	}
-	expected := map[string]string{"Verdict": "PASS", "Candidate commit": candidate.Commit, "Candidate SHA-256": candidate.SHA256, "Tools commit": tools.Commit, "Tools OS": tools.OS, "Tools arch": tools.Arch, "Tools SHA-256": tools.SHA256, "Tools path": tools.Path}
 	seen := make(map[string]bool, len(expected))
 	for _, line := range strings.Split(string(data), "\n") {
 		label, value, ok := strings.Cut(line, ": ")

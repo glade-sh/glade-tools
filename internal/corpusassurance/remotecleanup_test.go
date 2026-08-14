@@ -30,6 +30,91 @@ func TestRunRemoteAttemptCleanupRejectsAnArbitraryBindingFile(t *testing.T) {
 	}
 }
 
+func TestValidateRemoteAttemptTarget(t *testing.T) {
+	validHash := strings.Repeat("a", 64)
+	validParent := "/private/tmp/glade-assurance-worker"
+	validRoot := filepath.Join(validParent, "assurance-"+validHash[:16]+"-run")
+	if err := validateRemoteAttemptTarget(validHash, "salesforce-worker", "operator@salesforce-worker", validParent, validRoot); err != nil {
+		t.Fatalf("valid remote target rejected: %v", err)
+	}
+	for _, target := range []struct {
+		name string
+		host string
+		root string
+	}{
+		{name: "unsafe host", host: "operator@host;rm", root: validRoot},
+		{name: "non-child root", host: "operator@salesforce-worker", root: "/private/tmp/glade-assurance-other/assurance-" + validHash[:16] + "-run"},
+	} {
+		t.Run(target.name, func(t *testing.T) {
+			if err := validateRemoteAttemptTarget(validHash, "salesforce-worker", target.host, validParent, target.root); err == nil {
+				t.Fatalf("accepted invalid remote target: %#v", target)
+			}
+		})
+	}
+}
+
+func TestPreserveRemoteFailureRetainsArtifactsWhenChecksumFails(t *testing.T) {
+	root := t.TempDir()
+	bindingPath := filepath.Join(root, "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json")
+	writeRemoteCleanupAuthority(t, bindingPath, "operator@salesforce-worker", filepath.Join(remoteCleanupParent, "forced-failure"))
+	handoff := filepath.Join(root, "HANDOFF.md")
+	if err := os.WriteFile(handoff, []byte("Current gate: Salesforce lane\nLast completed command: start\nNext command: run\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(root, "failure")
+	copyCalls := 0
+	receipt, err := PreserveRemoteFailure(RemoteFailurePreserveRequest{
+		AttemptPath: bindingPath + ".attempt", BindingPath: bindingPath, Phase: "salesforce-lane", PhaseExit: 1, HandoffPath: handoff, OutputPath: output,
+		runner: func(_ context.Context, _, destination, _ string, checksum bool) (salesforceCommandOutput, error) {
+			copyCalls++
+			if checksum {
+				return salesforceCommandOutput{ExitCode: 23, Stderr: []byte("checksum mismatch")}, nil
+			}
+			if err := os.WriteFile(filepath.Join(destination, "partial.json"), []byte("retained"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			return salesforceCommandOutput{ExitCode: 0}, nil
+		},
+	})
+	if err == nil || receipt.Status != "preservation-failed" || copyCalls != 2 {
+		t.Fatalf("receipt=%#v err=%v calls=%d", receipt, err, copyCalls)
+	}
+	for _, path := range []string{filepath.Join(output, "REMOTE_FAILURE.json"), filepath.Join(output, "NEXT_ACTION.md"), filepath.Join(output, "remote-root", "partial.json")} {
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("missing retained artifact %s: %v", path, err)
+		}
+	}
+	handoffData, err := os.ReadFile(handoff)
+	if err != nil || !strings.Contains(string(handoffData), "Current gate: blocked") || !strings.Contains(string(handoffData), "Recover remote root") {
+		t.Fatalf("handoff=%q err=%v", handoffData, err)
+	}
+}
+
+func TestPreserveRemoteFailureRejectsChecksumDryRunDifferences(t *testing.T) {
+	root := t.TempDir()
+	bindingPath := filepath.Join(root, "SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json")
+	writeRemoteCleanupAuthority(t, bindingPath, "operator@salesforce-worker", filepath.Join(remoteCleanupParent, "dry-run-difference"))
+	handoff := filepath.Join(root, "HANDOFF.md")
+	if err := os.WriteFile(handoff, []byte("Current gate: Salesforce lane\nLast completed command: start\nNext command: run\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	_, err := PreserveRemoteFailure(RemoteFailurePreserveRequest{
+		AttemptPath: bindingPath + ".attempt", BindingPath: bindingPath, Phase: "salesforce-lane", PhaseExit: 1, HandoffPath: handoff, OutputPath: filepath.Join(root, "failure"),
+		runner: func(_ context.Context, _, destination, _ string, checksum bool) (salesforceCommandOutput, error) {
+			if checksum {
+				return salesforceCommandOutput{ExitCode: 0, Stdout: []byte("changed.json\n")}, nil
+			}
+			if err := os.WriteFile(filepath.Join(destination, "partial.json"), []byte("retained"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			return salesforceCommandOutput{ExitCode: 0}, nil
+		},
+	})
+	if err == nil {
+		t.Fatal("PreserveRemoteFailure accepted checksum dry-run differences")
+	}
+}
+
 func TestRunRemoteAttemptCleanupAcceptsAuthorityBoundWorker(t *testing.T) {
 	root := t.TempDir()
 	parent := filepath.Join(root, "glade-assurance-worker")

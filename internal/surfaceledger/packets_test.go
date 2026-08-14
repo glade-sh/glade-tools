@@ -11,6 +11,7 @@ func TestAreaRegistryNamesInitialParallelAreas(t *testing.T) {
 		"Ledger.Identity",
 		"Core.Runtime.System.FeatureManagement",
 		"Core.Runtime.Database.Batchable",
+		"Apex.Language",
 		"Core.Runtime.SystemAndStdlib",
 		"Query.Runtime.SOQLSOSL",
 		"Data.Reference.ObjectsFields",
@@ -53,6 +54,35 @@ func TestAreaRegistryNamesInitialParallelAreas(t *testing.T) {
 			t.Fatalf("area registry missing %q", name)
 		}
 	}
+}
+
+func TestApexLanguagePacketOwnsLanguageRows(t *testing.T) {
+	packet, ok := AreaPacketByName("Apex.Language")
+	if !ok {
+		t.Fatal("missing Apex.Language packet")
+	}
+	rows := PacketRows(SurfaceLedger{Rows: []SurfaceLedgerRow{{SurfaceID: "apex-language:NamespaceClassVariablePrecedence", Bucket: BucketGap, GapClass: GapMissingShape}}}, packet)
+	if len(rows) != 1 || rows[0].SurfaceID != "apex-language:NamespaceClassVariablePrecedence" {
+		t.Fatalf("language rows = %#v", rows)
+	}
+}
+
+func TestPacketManifestRetainsSelectableClosedRows(t *testing.T) {
+	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{{
+		SurfaceID: "apex-language:NamespaceClassVariablePrecedence",
+		Product:   "apex-language",
+		Bucket:    BucketImplemented,
+	}}}
+	manifest := BuildPacketManifest(ledger)
+	for _, packet := range manifest.Packets {
+		if packet.ID == "Apex.Language" {
+			if len(packet.RowIDs) != 1 || packet.RowIDs[0] != "apex-language:NamespaceClassVariablePrecedence" {
+				t.Fatalf("Apex.Language row IDs = %#v", packet.RowIDs)
+			}
+			return
+		}
+	}
+	t.Fatal("Apex.Language packet missing from manifest")
 }
 
 func TestPacketMarkdownIncludesAgentCloseoutRules(t *testing.T) {

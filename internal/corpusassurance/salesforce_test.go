@@ -41,6 +41,63 @@ func TestParseSalesforceDevHubDisplayUsesConnectedStatus(t *testing.T) {
 	}
 }
 
+func TestCreateSalesforceDevHubAuthority(t *testing.T) {
+	root, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	sfPath := filepath.Join(root, "bin", "sf")
+	pythonPath := filepath.Join(root, "python", "python3")
+	if err := os.MkdirAll(filepath.Dir(sfPath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(pythonPath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{sfPath, pythonPath} {
+		if err := os.WriteFile(path, []byte("#!/bin/sh\nexit 0\n"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	output := filepath.Join(root, "authority.json")
+	authority, err := CreateSalesforceDevHubAuthority(SalesforceDevHubAuthorityRequest{
+		TargetOrg: "sealed-dev-hub",
+		SFBin:     sfPath,
+		PythonBin: pythonPath,
+		Home:      filepath.Join(root, "home"),
+		Path:      filepath.Dir(sfPath) + string(filepath.ListSeparator) + filepath.Dir(pythonPath),
+		TmpDir:    filepath.Join(root, "tmp"),
+		Output:    output,
+		runner: func(_ context.Context, path string, args ...string) (salesforceCommandOutput, error) {
+			if path != sfPath || !reflect.DeepEqual(args, []string{"org", "display", "--target-org", "sealed-dev-hub", "--json"}) {
+				t.Fatalf("org display invocation = %q %q", path, args)
+			}
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D000000000001","connectedStatus":"Connected","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if authority.SchemaVersion != 2 || authority.Alias != "sealed-dev-hub" || authority.OrgID != "00D000000000001" || !validSalesforceDevHubAuthority(authority) {
+		t.Fatalf("authority = %#v", authority)
+	}
+	if _, err := os.Stat(output); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := CreateSalesforceDevHubAuthority(SalesforceDevHubAuthorityRequest{TargetOrg: "sealed-dev-hub", SFBin: sfPath, PythonBin: pythonPath, Home: filepath.Join(root, "home"), Path: filepath.Dir(sfPath) + string(filepath.ListSeparator) + filepath.Dir(pythonPath), TmpDir: filepath.Join(root, "tmp"), Output: output, runner: func(context.Context, string, ...string) (salesforceCommandOutput, error) {
+		return salesforceCommandOutput{}, nil
+	}}); err == nil {
+		t.Fatal("reused Dev Hub authority output")
+	}
+}
+
+func TestNewOracleBundleRejectsHistoricalDevHubAuthoritySchema(t *testing.T) {
+	authority := SalesforceDevHubAuthority{SchemaVersion: 1}
+	if err := validateNewSalesforceDevHubAuthority(authority); err == nil {
+		t.Fatal("new oracle bundle accepted a historical schema 1 Dev Hub authority")
+	}
+}
+
 func TestSalesforceBaselineInventoryRequiresOneFieldSet(t *testing.T) {
 	inventory := SalesforceInventory{Counts: map[string]int{}}
 	for _, kind := range salesforceInventoryTypes {
@@ -216,7 +273,7 @@ func TestValidSalesforceDispatchAcceptsItsSealedRemotePythonHash(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	remotePythonSHA := strings.Repeat("a", 64)
 	remoteExecution := SalesforceExecutionAuthority{SFBinary: "/remote/bin/sf", SFSHA256: strings.Repeat("b", 64), PythonBinary: "/usr/bin/python3", PythonSHA256: remotePythonSHA, Environment: []string{"HOME=/remote/home", "PATH=/remote/bin:/usr/bin:/bin", "SF_USE_GENERIC_UNIX_KEYCHAIN=true", "TMPDIR=/remote/tmp"}}
-	authorityBytes, err := json.Marshal(SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D000000000001", Username: "sealed-dev-hub@example.invalid", Execution: remoteExecution})
+	authorityBytes, err := json.Marshal(testSalesforceDevHubAuthority(t, "sealed-dev-hub", "00D000000000001", "sealed-dev-hub@example.invalid", remoteExecution))
 	if err != nil || os.WriteFile(inputs.devHubAuthorityPath, append(authorityBytes, '\n'), 0o600) != nil {
 		t.Fatal(err)
 	}
@@ -273,7 +330,7 @@ func TestValidSalesforceDispatchAcceptsItsSealedRemotePythonHash(t *testing.T) {
 	}
 }
 
-func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t *testing.T) {
+func TestCreateSalesforceReconciliationAndVerifyAfterRemoteCleanup(t *testing.T) {
 	inputs := oracleBundleTestInputsForLocalProof(t)
 	writeSealedReleaseValidation(t, inputs, inputs.attemptPath)
 	outputRoot := filepath.Join(t.TempDir(), "salesforce-worker")
@@ -560,11 +617,36 @@ func TestValidateSalesforceShardFilesDerivesRequiredSurfacesFromTheSealedPlan(t 
 	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, filesReusedCreation}); err == nil {
 		t.Fatal("accepted a creation receipt reused by two shards")
 	}
+	retainedRoot := t.TempDir()
+	reconciliation, err := CreateSalesforceReconciliation(SalesforceReconciliationRequest{OraclePlanPath: planPath, ShardFiles: []SalesforceShardFiles{files0, files1}, PacketOutput: filepath.Join(retainedRoot, "packet"), OutputPath: filepath.Join(retainedRoot, "SALESFORCE_RECONCILIATION.json")})
+	if err != nil {
+		t.Fatalf("CreateSalesforceReconciliation: %v", err)
+	}
+	if reconciliation.Status != "pass" || len(reconciliation.Rows) != 1 || len(reconciliation.Shards) != 2 {
+		t.Fatalf("reconciliation = %#v", reconciliation)
+	}
+	if err := VerifySalesforceReconciliation(planPath, filepath.Join(retainedRoot, "SALESFORCE_RECONCILIATION.json"), filepath.Join(retainedRoot, "packet")); err != nil {
+		t.Fatalf("VerifySalesforceReconciliation before cleanup: %v", err)
+	}
+	retainedPlan := filepath.Join(retainedRoot, "ORACLE_PLAN.json")
+	planBytes, err := os.ReadFile(planPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(retainedPlan, planBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
 	if err := os.WriteFile(bundlePath, []byte(`{"schemaVersion":1}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := ValidateSalesforceShardFiles(planPath, []SalesforceShardFiles{files0, files1}); err == nil {
 		t.Fatal("accepted a replaced staged bundle")
+	}
+	if err := os.RemoveAll(attemptRoot); err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifySalesforceReconciliation(retainedPlan, filepath.Join(retainedRoot, "SALESFORCE_RECONCILIATION.json"), filepath.Join(retainedRoot, "packet")); err != nil {
+		t.Fatalf("VerifySalesforceReconciliation after remote cleanup: %v", err)
 	}
 }
 
@@ -1516,7 +1598,7 @@ func writeSyntheticDevHubBundle(t *testing.T, bundlePath string) {
 func bindSyntheticDevHubAuthority(t *testing.T, bundlePath string, bundle *OracleBundle) {
 	t.Helper()
 	authorityPath := filepath.Join(filepath.Dir(bundlePath), "DEV_HUB_AUTHORITY.json")
-	authority := SalesforceDevHubAuthority{SchemaVersion: 1, Alias: "sealed-dev-hub", OrgID: "00D0", Username: "sealed-dev-hub@example.invalid", Execution: testSalesforceExecutionAuthority(t)}
+	authority := testSalesforceDevHubAuthority(t, "sealed-dev-hub", "00D0", "sealed-dev-hub@example.invalid", testSalesforceExecutionAuthority(t))
 	if err := WriteNewJSON(authorityPath, authority); err != nil {
 		t.Fatal(err)
 	}
@@ -1542,6 +1624,24 @@ func testSalesforceExecutionAuthority(t *testing.T) SalesforceExecutionAuthority
 		t.Fatal(err)
 	}
 	return SalesforceExecutionAuthority{SFBinary: salesforceCLIPath, SFSHA256: sfSHA, PythonBinary: "/usr/bin/python3", PythonSHA256: pythonSHA, Environment: environment}
+}
+
+func testSalesforceDevHubAuthority(t *testing.T, alias, orgID, username string, execution SalesforceExecutionAuthority) SalesforceDevHubAuthority {
+	t.Helper()
+	workingDirectory := t.TempDir()
+	args := []string{"org", "display", "--target-org", alias, "--json"}
+	command := CommandResult{
+		Command:               append([]string{execution.SFBinary}, args...),
+		WorkingDirectory:      workingDirectory,
+		Environment:           execution.Environment,
+		ExecutableSHA256:      execution.SFSHA256,
+		ExecutableAfterSHA256: execution.SFSHA256,
+		CommandSpecSHA256:     salesforceCommandSpecSHA256(execution.SFBinary, args, workingDirectory, execution.Environment, execution.SFSHA256, execution.SFSHA256),
+		StdoutSHA256:          strings.Repeat("a", 64),
+		StderrSHA256:          strings.Repeat("b", 64),
+		Passed:                true,
+	}
+	return SalesforceDevHubAuthority{SchemaVersion: 2, Alias: alias, OrgID: orgID, Username: username, Execution: execution, Command: command}
 }
 
 func salesforceCountOutputForTest(args []string) []byte {
