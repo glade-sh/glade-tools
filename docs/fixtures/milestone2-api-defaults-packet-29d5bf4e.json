@@ -1,0 +1,180 @@
+{
+  "name": "milestone2-api-defaults-packet-29d5bf4e",
+  "provenance": {
+    "productCommit": "29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1",
+    "receiptPath": "salesforce-adoption/20260814-milestone2-api-defaults-29d5bf4e/MILESTONE2_RECEIPT.json"
+  },
+  "evidence": [
+    {
+      "surfaceId": "unknown:milestone2-api66-body-caller66-database-default",
+      "symbol": "API66 body caller66 database default",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-body-caller66-database-default; API 66.0 body and API 66.0 caller: omitted database access is the positive system-mode baseline."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-body-caller67-database-default",
+      "symbol": "API66 body caller67 database default",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-body-caller67-database-default; API 66.0 body and API 67.0 caller: worker keeps its exact system-mode body default."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-body-caller66-database-default",
+      "symbol": "API67 body caller66 database default",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-body-caller66-database-default; API 67.0 body and API 66.0 caller: negative control must enforce user mode in the body."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-body-caller67-database-default",
+      "symbol": "API67 body caller67 database default",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-body-caller67-database-default; API 67.0 body and API 67.0 caller: omitted database access is the positive user-mode case."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-sharing-default",
+      "symbol": "API66 omitted sharing",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-sharing-default; API 66.0 omitted class sharing retains the legacy baseline."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-sharing-default",
+      "symbol": "API67 omitted sharing",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-sharing-default; API 67.0 omitted class sharing is the positive with-sharing default."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-trigger-database-user-mode",
+      "symbol": "API67 trigger database mode",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-trigger-database-user-mode; API 67.0 trigger keeps without-sharing context while omitted database operations enforce user mode."
+    },
+    {
+      "surfaceId": "unknown:milestone2-explicit-user-dml",
+      "symbol": "Explicit user DML mode",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=explicit-user-dml; API 66.0 and API 67.0 statements use an exact explicit user-mode override."
+    },
+    {
+      "surfaceId": "unknown:milestone2-explicit-system-dml",
+      "symbol": "Explicit system DML mode",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=explicit-system-dml; API 66.0 and API 67.0 statements use an exact explicit system-mode override."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-multiline",
+      "symbol": "API66 multiline string",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-multiline; API 66.0 field, method, trigger, anonymous, and test bodies pass the live positive matrix without a version gate."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-multiline",
+      "symbol": "API67 multiline string",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-multiline; API 67.0 field, method, trigger, anonymous, and test bodies pass the live positive matrix without a version gate."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-opening-newline",
+      "symbol": "API66 live opening newline",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-opening-newline; live API 66 anonymous receipt trims the newline immediately after the opening delimiter."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-opening-newline",
+      "symbol": "API67 live opening newline",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-opening-newline; live API 67 anonymous receipt trims the newline immediately after the opening delimiter."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-closing-same-line",
+      "symbol": "API66 live closing delimiter",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-closing-same-line; live API 66 accepts the closing delimiter on the final-content line."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-closing-same-line",
+      "symbol": "API67 live closing delimiter",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-closing-same-line; live API 67 accepts the closing delimiter on the final-content line."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-quote-runs",
+      "symbol": "API66 live quote runs",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-quote-runs; live API 66 preserves one embedded quote and two adjacent quotes."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-quote-runs",
+      "symbol": "API67 live quote runs",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-quote-runs; live API 67 preserves one embedded quote and two adjacent quotes."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-backslash",
+      "symbol": "API66 live backslash",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-backslash; live API 66 preserves a doubled backslash before n as a literal backslash-plus-n sequence."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-backslash",
+      "symbol": "API67 live backslash",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-backslash; live API 67 preserves a doubled backslash before n as a literal backslash-plus-n sequence."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-indentation",
+      "symbol": "API66 live indentation",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-indentation; live API 66 preserves leading spaces in the multiline value."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-indentation",
+      "symbol": "API67 live indentation",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-indentation; live API 67 preserves leading spaces in the multiline value."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-empty",
+      "symbol": "API66 live empty multiline",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-empty; live API 66 newline-delimited empty value has length zero."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-empty",
+      "symbol": "API67 live empty multiline",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-empty; live API 67 newline-delimited empty value has length zero."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-syntax-negative",
+      "symbol": "API66 live syntax negative",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-syntax-negative; live API 66 rejects same-line opening and same-line empty forms while accepting a closing delimiter on the content line."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-syntax-negative",
+      "symbol": "API67 live syntax negative",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-syntax-negative; live API 67 rejects same-line opening and same-line empty forms while accepting a closing delimiter on the content line."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-live-crlf-normalization",
+      "symbol": "API66 live CRLF normalization",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api66-live-crlf-normalization; live API 66 accepts CRLF anonymous source and normalizes the value to LF."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-live-crlf-normalization",
+      "symbol": "API67 live CRLF normalization",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-live-crlf-normalization; live API 67 accepts CRLF anonymous source and normalizes the value to LF."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-metadata-crlf-nonparity",
+      "symbol": "API67 metadata CRLF non-parity",
+      "kind": "shape",
+      "notes": "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1; case=api67-metadata-crlf-nonparity; explicit boundary: metadata deployment of a CRLF Apex class rejects CR, so this path is non-parity and not counted as hosted runtime success."
+    }
+  ],
+  "command": {
+    "kind": "policy-evidence"
+  }
+}

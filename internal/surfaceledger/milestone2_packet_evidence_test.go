@@ -14,7 +14,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
-const milestone2PacketFixture = "milestone2-api-defaults-packet-82a03812.json"
+const milestone2PacketFixture = "milestone2-api-defaults-packet-29d5bf4e.json"
 
 var milestone2PacketSurfaceIDs = []string{
 	"unknown:milestone2-api66-body-caller66-database-default",
@@ -76,7 +76,7 @@ func TestMilestone2PacketLedgerUsesExactVersionCases(t *testing.T) {
 		if !strings.Contains(evidence.Notes, "case=") {
 			t.Fatalf("packet row %q lacks an exact case id", evidence.SurfaceID)
 		}
-		if !strings.Contains(evidence.Notes, "candidate=82a0381269b88e68d465e5c23fd08c08136e406f") {
+		if !strings.Contains(evidence.Notes, "candidate=29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1") {
 			t.Fatalf("packet row %q is not bound to the reviewed candidate", evidence.SurfaceID)
 		}
 	}
