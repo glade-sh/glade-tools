@@ -2,7 +2,9 @@
   "name": "milestone2-api-defaults-packet-29d5bf4e",
   "provenance": {
     "productCommit": "29d5bf4efd34cd2d80dba0af85d4d2d3b16ab3f1",
-    "receiptPath": "salesforce-adoption/20260814-milestone2-api-defaults-29d5bf4e/MILESTONE2_RECEIPT.json"
+    "receiptPath": "salesforce-adoption/20260814-milestone2-api-defaults-29d5bf4e/MILESTONE2_RECEIPT.json",
+    "liveMatrixPath": "salesforce-adoption/20260814-milestone2-api-defaults-92821abb/artifacts/live/MILESTONE2_MULTILINE_LIVE_MATRIX.md",
+    "liveMatrixSha256": "40191dcd2b8cafb0dbaad697699021c87e60c5b0b678af89240c4f104ebb9dd0"
   },
   "evidence": [
     {

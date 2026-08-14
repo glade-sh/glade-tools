@@ -98,17 +98,20 @@ func TestMilestone2ReceiptBindsBothCandidatesAndRetainsRawArtifacts(t *testing.T
 	}
 	var fixture struct {
 		Provenance struct {
-			ProductCommit string `json:"productCommit"`
-			ReceiptPath   string `json:"receiptPath"`
+			ProductCommit    string `json:"productCommit"`
+			ReceiptPath      string `json:"receiptPath"`
+			LiveMatrixPath   string `json:"liveMatrixPath"`
+			LiveMatrixSHA256 string `json:"liveMatrixSha256"`
 		} `json:"provenance"`
 	}
 	if err := json.Unmarshal(fixtureData, &fixture); err != nil {
 		t.Fatal(err)
 	}
-	if fixture.Provenance.ProductCommit == "" || fixture.Provenance.ReceiptPath == "" {
+	if fixture.Provenance.ProductCommit == "" || fixture.Provenance.ReceiptPath == "" || fixture.Provenance.LiveMatrixPath == "" || !fullSHA256(fixture.Provenance.LiveMatrixSHA256) {
 		t.Fatal("milestone 2 fixture is missing receipt provenance")
 	}
 	evidenceRoot := filepath.Join(toolsRoot, "..", "..", "..", "glade-evidence")
+	assertReceiptArtifact(t, evidenceRoot, fixture.Provenance.LiveMatrixPath, fixture.Provenance.LiveMatrixSHA256)
 	receiptPath := filepath.Join(evidenceRoot, filepath.FromSlash(fixture.Provenance.ReceiptPath))
 	receiptData, err := os.ReadFile(receiptPath)
 	if errors.Is(err, os.ErrNotExist) {
@@ -189,6 +192,9 @@ func TestMilestone2ReceiptBindsBothCandidatesAndRetainsRawArtifacts(t *testing.T
 		if !seenKind[want] {
 			t.Fatalf("receipt is missing artifact kind %q", want)
 		}
+	}
+	if !seenKind["sealed-salesforce-matrix"] {
+		t.Fatal("receipt is missing sealed successful Salesforce matrix")
 	}
 }
 
