@@ -1,0 +1,74 @@
+{
+  "name": "milestone2-api-defaults-packet",
+  "evidence": [
+    {
+      "surfaceId": "unknown:milestone2-api66-body-caller66-database-default",
+      "symbol": "API66 body caller66 database default",
+      "kind": "shape",
+      "notes": "case=api66-body-caller66-database-default; API 66.0 body and API 66.0 caller: omitted database access is the positive system-mode baseline."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-body-caller67-database-default",
+      "symbol": "API66 body caller67 database default",
+      "kind": "shape",
+      "notes": "case=api66-body-caller67-database-default; API 66.0 body and API 67.0 caller: worker keeps its exact system-mode body default."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-body-caller66-database-default",
+      "symbol": "API67 body caller66 database default",
+      "kind": "shape",
+      "notes": "case=api67-body-caller66-database-default; API 67.0 body and API 66.0 caller: negative control must enforce user mode in the body."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-body-caller67-database-default",
+      "symbol": "API67 body caller67 database default",
+      "kind": "shape",
+      "notes": "case=api67-body-caller67-database-default; API 67.0 body and API 67.0 caller: omitted database access is the positive user-mode case."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-sharing-default",
+      "symbol": "API66 omitted sharing",
+      "kind": "shape",
+      "notes": "case=api66-sharing-default; API 66.0 omitted class sharing retains the legacy baseline."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-sharing-default",
+      "symbol": "API67 omitted sharing",
+      "kind": "shape",
+      "notes": "case=api67-sharing-default; API 67.0 omitted class sharing is the positive with-sharing default."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-trigger-database-user-mode",
+      "symbol": "API67 trigger database mode",
+      "kind": "shape",
+      "notes": "case=api67-trigger-database-user-mode; API 67.0 trigger keeps without-sharing context while omitted database operations enforce user mode."
+    },
+    {
+      "surfaceId": "unknown:milestone2-explicit-user-dml",
+      "symbol": "Explicit user DML mode",
+      "kind": "shape",
+      "notes": "case=explicit-user-dml; API 66.0 and API 67.0 statements use an exact explicit user-mode override."
+    },
+    {
+      "surfaceId": "unknown:milestone2-explicit-system-dml",
+      "symbol": "Explicit system DML mode",
+      "kind": "shape",
+      "notes": "case=explicit-system-dml; API 66.0 and API 67.0 statements use an exact explicit system-mode override."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api66-multiline",
+      "symbol": "API66 multiline string",
+      "kind": "shape",
+      "notes": "case=api66-multiline; API 66.0 field, method, trigger, anonymous, and test bodies accept multiline strings without a version gate."
+    },
+    {
+      "surfaceId": "unknown:milestone2-api67-multiline",
+      "symbol": "API67 multiline string",
+      "kind": "shape",
+      "notes": "case=api67-multiline; API 67.0 field, method, trigger, anonymous, and test bodies accept multiline strings without a version gate."
+    }
+  ],
+  "command": {
+    "kind": "policy-evidence"
+  }
+}
