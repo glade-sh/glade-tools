@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-dml-options-email-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.DMLOptions.EmailHeader",
+      "symbol": "Database.DMLOptions.EmailHeader",
+      "kind": "unsupported",
+      "notes": "Configured EmailHeader returns the stable local UnsupportedFeature boundary before local DML."
+    },
+    {
+      "surfaceId": "apex:System.DMLOptions.emailHeader",
+      "symbol": "Database.DMLOptions.emailHeader",
+      "kind": "unsupported",
+      "notes": "Configured EmailHeader is rejected through the documented System.DMLOptions alias as well."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.DMLOptions opts = new Database.DMLOptions();\nopts.EmailHeader.TriggerUserEmail = true;\nDatabase.insert(new Account(Name = 'Rejected'), opts);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.DMLOptions opts = new Database.DMLOptions();\nopts.EmailHeader.TriggerUserEmail = true;\nDatabase.insert(new Account(Name = 'Rejected'), opts);"
+    ]
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "unsupported call \"Database.DMLOptions.EmailHeader local DML option behavior\""
+    }
+  }
+}

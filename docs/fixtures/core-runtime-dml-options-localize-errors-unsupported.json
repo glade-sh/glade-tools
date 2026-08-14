@@ -1,0 +1,29 @@
+{
+  "name": "core-runtime-dml-options-localize-errors-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.DMLOptions.LocalizeErrors",
+      "symbol": "Database.DMLOptions.LocalizeErrors",
+      "kind": "unsupported",
+      "notes": "Configured LocalizeErrors returns the stable local UnsupportedFeature boundary before local DML."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.DMLOptions opts = new Database.DMLOptions();\nopts.LocalizeErrors = true;\nDatabase.insert(new Account(Name = 'Rejected'), opts);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.DMLOptions opts = new Database.DMLOptions();\nopts.LocalizeErrors = true;\nDatabase.insert(new Account(Name = 'Rejected'), opts);"
+    ]
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "unsupported call \"Database.DMLOptions.LocalizeErrors local DML option behavior\""
+    }
+  }
+}

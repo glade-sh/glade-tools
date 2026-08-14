@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-dml-options-locale-unsupported",
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.DMLOptions.LocaleOptions",
+      "symbol": "Database.DMLOptions.LocaleOptions",
+      "kind": "unsupported",
+      "notes": "Configured LocaleOptions returns the stable local UnsupportedFeature boundary before local DML."
+    },
+    {
+      "surfaceId": "apex:System.DMLOptions.localeOptions",
+      "symbol": "Database.DMLOptions.localeOptions",
+      "kind": "unsupported",
+      "notes": "Configured LocaleOptions is rejected through the documented System.DMLOptions alias as well."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.DMLOptions opts = new Database.DMLOptions();\nopts.LocaleOptions = new Database.LocaleOptions();\nDatabase.insert(new Account(Name = 'Rejected'), opts);\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.DMLOptions opts = new Database.DMLOptions();\nopts.LocaleOptions = new Database.LocaleOptions();\nDatabase.insert(new Account(Name = 'Rejected'), opts);"
+    ]
+  },
+  "expected": {
+    "error": {
+      "type": "UnsupportedFeature",
+      "message": "unsupported call \"Database.DMLOptions.LocaleOptions local DML option behavior\""
+    }
+  }
+}

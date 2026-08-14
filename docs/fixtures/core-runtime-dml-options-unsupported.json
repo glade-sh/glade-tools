@@ -12,6 +12,12 @@
       "symbol": "Database.DMLOptions.AssignmentRuleHeader",
       "kind": "unsupported",
       "notes": "Configured AssignmentRuleHeader returns the stable local UnsupportedFeature boundary."
+    },
+    {
+      "surfaceId": "apex:System.DMLOptions.assignmentRuleHeader",
+      "symbol": "Database.DMLOptions.assignmentRuleHeader",
+      "kind": "unsupported",
+      "notes": "Configured AssignmentRuleHeader is rejected through the documented System.DMLOptions alias as well."
     }
   ],
   "source": [
