@@ -250,7 +250,6 @@ func skipDocumentedFixture(name string) bool {
 	case "apex-language-rules",
 		"apex-local-support-policy",
 		"async-test-harness-local-evidence",
-		"core-runtime-workflow-txnsecurity-local-defaults",
 		"core-runtime-json-dto-lwc-evidence",
 		"data-platform-schema-lwc-record-wire-evidence",
 		"local-tests-corpus",
