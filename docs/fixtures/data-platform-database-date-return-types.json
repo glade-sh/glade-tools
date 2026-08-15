@@ -1,0 +1,48 @@
+{
+  "name": "data-platform-database-date-return-types",
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.DeletedRecord.getDeletedDate()",
+      "symbol": "Database.DeletedRecord.getDeletedDate",
+      "kind": "test",
+      "notes": "DeletedRecord exposes a Salesforce Date rather than a Datetime."
+    },
+    {
+      "surfaceId": "apex:Database.GetDeletedResult.getEarliestDateAvailable()",
+      "symbol": "Database.GetDeletedResult.getEarliestDateAvailable",
+      "kind": "test",
+      "notes": "GetDeletedResult exposes the requested earliest sync date as Date."
+    },
+    {
+      "surfaceId": "apex:Database.GetDeletedResult.getLatestDateCovered()",
+      "symbol": "Database.GetDeletedResult.getLatestDateCovered",
+      "kind": "test",
+      "notes": "GetDeletedResult exposes the requested latest sync date as Date."
+    },
+    {
+      "surfaceId": "apex:Database.GetUpdatedResult.getLatestDateCovered()",
+      "symbol": "Database.GetUpdatedResult.getLatestDateCovered",
+      "kind": "test",
+      "notes": "GetUpdatedResult exposes the requested latest sync date as Date."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/DatabaseDateReturnTypesTest.cls",
+      "content": "@isTest private class DatabaseDateReturnTypesTest { @isTest static void syncResultsUseDateAccessors() { Date expected = Date.newInstance(2026, 5, 2); Datetime start = Datetime.newInstanceGmt(2026, 5, 2, 11, 59, 0); Datetime finish = Datetime.newInstanceGmt(2026, 5, 2, 12, 5, 0); Database.DeletedRecord deletedRecord = new Database.DeletedRecord(); Date deletedDate = deletedRecord.getDeletedDate(); System.assertEquals(null, deletedDate); Account deletedAccount = new Account(Name = 'M6 Date Return'); insert deletedAccount; delete deletedAccount; Datetime deletedWindowStart = Datetime.now().addMinutes(-1); Datetime deletedWindowEnd = Datetime.now().addMinutes(1); Database.GetDeletedResult observedDeleted = Database.getDeleted('Account', deletedWindowStart, deletedWindowEnd); System.assertEquals(1, observedDeleted.getDeletedRecords().size()); Date observedDeletedDate = observedDeleted.getDeletedRecords()[0].getDeletedDate(); System.assertEquals(Date.newInstance(deletedWindowStart.year(), deletedWindowStart.month(), deletedWindowStart.day()), observedDeletedDate); Database.GetDeletedResult deleted = Database.getDeleted('Account', start, finish); Date earliest = deleted.getEarliestDateAvailable(); Date latest = deleted.getLatestDateCovered(); System.assertEquals(expected, earliest); System.assertEquals(expected, latest); Database.GetUpdatedResult updated = Database.getUpdated('Account', start, finish); Date updatedLatest = updated.getLatestDateCovered(); System.assertEquals(expected, updatedLatest); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "salesforceEligible": true
+}
