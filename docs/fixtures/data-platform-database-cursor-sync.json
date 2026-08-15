@@ -186,7 +186,7 @@
       "surfaceId": "apex:Database.GetDeletedResult.getEarliestDateAvailable()",
       "symbol": "Database.GetDeletedResult.getEarliestDateAvailable",
       "kind": "test",
-      "notes": "GetDeletedResult exposes the requested earliest date."
+      "notes": "GetDeletedResult exposes the earliest retained deleted-record date, or the requested start date when no deletion history exists."
     },
     {
       "surfaceId": "apex:Database.GetDeletedResult.getLatestDateCovered()",
