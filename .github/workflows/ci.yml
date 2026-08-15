@@ -98,6 +98,7 @@ jobs:
     needs:
       - core
       - release
+      - macos-release-upload
     if: always()
     runs-on: ubuntu-latest
     steps:

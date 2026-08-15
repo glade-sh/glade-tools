@@ -147,9 +147,6 @@ func fillIdentity(base, next SurfaceLedgerRow) SurfaceLedgerRow {
 	if base.OrgReturnType == "" {
 		base.OrgReturnType = next.OrgReturnType
 	}
-	if base.GladeReturnType == "" {
-		base.GladeReturnType = next.GladeReturnType
-	}
 	if len(base.DocsParameters) == 0 {
 		base.DocsParameters = append([]string(nil), next.DocsParameters...)
 	}
