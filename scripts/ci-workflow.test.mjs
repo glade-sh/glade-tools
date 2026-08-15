@@ -78,7 +78,7 @@ test("CI has exactly core and release executing test lanes plus stable test aggr
   const aggregate = job("test");
   assert.match(aggregate, /needs:\n\s+- core\n\s+- release/);
   assert.match(aggregate, /if: always\(\)/);
-  assert.match(aggregate, /test "\$\{\{ needs\.core\.result \}\}" = success && test "\$\{\{ needs\.release\.result \}\}" = success/);
+  assert.match(aggregate, /test "\$\{\{ needs\.core\.result \}\}" = success && test "\$\{\{ needs\.release\.result \}\}" = success && test "\$\{\{ needs\.macos-release-upload\.result \}\}" = success/);
   assert.doesNotMatch(aggregate, /actions\/|resolve-sibling-ref|setup-go|node --test|release-check/);
 });
 

@@ -102,7 +102,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: test "${{ needs.core.result }}" = success && test "${{ needs.release.result }}" = success
+      - run: test "${{ needs.core.result }}" = success && test "${{ needs.release.result }}" = success && test "${{ needs.macos-release-upload.result }}" = success
 
   macos-release-upload:
     runs-on: macos-14
