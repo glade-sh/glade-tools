@@ -104,6 +104,9 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("salesforce-release-previous") {
 		t.Fatal("Salesforce release previous should stay out of documented fixture execution")
 	}
+	if shouldRunDocumentedFixture("core-runtime-workflow-txnsecurity-local-defaults") {
+		t.Fatal("policy-evidence fixture should stay out of documented fixture execution")
+	}
 	for _, name := range []string{
 		"salesforce-cb187-system-assert-comparisons",
 		"apex-api67-removals",
@@ -235,6 +238,7 @@ func skipDocumentedFixture(name string) bool {
 	case "apex-language-rules",
 		"apex-local-support-policy",
 		"async-test-harness-local-evidence",
+		"core-runtime-workflow-txnsecurity-local-defaults",
 		"core-runtime-json-dto-lwc-evidence",
 		"data-platform-schema-lwc-record-wire-evidence",
 		"local-tests-corpus",
@@ -380,6 +384,27 @@ func TestRunExecFixture(t *testing.T) {
 		Expected: ExpectedBehavior{
 			Stdout: "hello\n",
 			Result: json.RawMessage(`{"debug":["hello"],"ok":true}`),
+		},
+	}
+	result, err := Run(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.OK {
+		t.Fatalf("result = %#v", result)
+	}
+}
+
+func TestRunExecFixtureUsesProjectSourceAPIVersion(t *testing.T) {
+	fixture := Fixture{
+		Name: "exec-project-api-version",
+		Project: ProjectConfig{
+			SourceAPIVersion: "67.0",
+		},
+		Source:  []SourceFile{{Path: "anonymous.apex", Content: "System.assertEquals('67.0.0', System.requestVersion().toString());"}},
+		Command: Invocation{Kind: "exec", Args: []string{"System.assertEquals('67.0.0', System.requestVersion().toString());"}},
+		Expected: ExpectedBehavior{
+			Result: json.RawMessage(`{"debug":null,"ok":true}`),
 		},
 	}
 	result, err := Run(fixture)
