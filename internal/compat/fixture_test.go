@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/glade-sh/glade/internal/apextest"
 	"github.com/glade-sh/glade/internal/storage"
 	"github.com/glade-sh/glade/internal/vm"
 )
@@ -157,6 +158,7 @@ func TestRunDocumentedFixtures(t *testing.T) {
 			if !shouldRunDocumentedFixture(name) {
 				t.Skipf("documented fixture execution skipped; set %s=1 to run the full sweep", fullDocumentedFixturesEnv)
 			}
+			defer apextest.InvalidateRuntimeCaches()
 			fixture, err := LoadFile(path)
 			if err != nil {
 				t.Fatal(err)
