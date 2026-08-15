@@ -29,8 +29,14 @@ private class EnterpriseComposedTest {
     System.assertEquals(1, LegacyFlowAction.Calls);
 
     List<Object> tabSets = Schema.describeTabs();
-    System.assertEquals(1, tabSets.size());
-    Object tabSet = tabSets.get(0);
+    System.assertEquals(13, tabSets.size());
+    Object tabSet;
+    for (Object candidate : tabSets) {
+      if (candidate.getLabel() == 'All Tabs') {
+        tabSet = candidate;
+      }
+    }
+    System.assertNotEquals(null, tabSet);
     List<Object> tabs = tabSet.getTabs();
     Boolean foundWorkOrderTab = false;
     for (Object tab : tabs) {

@@ -78,7 +78,7 @@ test("CI has exactly core and release executing test lanes plus stable test aggr
   const aggregate = job("test");
   assert.match(aggregate, /needs:\n\s+- core\n\s+- release/);
   assert.match(aggregate, /if: always\(\)/);
-  assert.match(aggregate, /test "\$\{\{ needs\.core\.result \}\}" = success && test "\$\{\{ needs\.release\.result \}\}" = success/);
+  assert.match(aggregate, /test "\$\{\{ needs\.core\.result \}\}" = success && test "\$\{\{ needs\.release\.result \}\}" = success && test "\$\{\{ needs\.macos-release-upload\.result \}\}" = success/);
   assert.doesNotMatch(aggregate, /actions\/|resolve-sibling-ref|setup-go|node --test|release-check/);
 });
 
@@ -129,7 +129,7 @@ test("manual Salesforce correctness uses attempt-unique server cleanup authority
 });
 
 test("Salesforce correctness publishes one exact cross-repository authority", () => {
-  assert.equal(apexLanguageRules.gladeCommit, "5a212543819661d8b4c5d4168bb643789737123a");
+  assert.equal(apexLanguageRules.gladeCommit, "24c645621d87b608d0c1cd5118bb03aa29c17ad8");
   for (const marker of [
     'TOOLS_SHA="$(git rev-parse HEAD)"',
     'test "$TOOLS_SHA" = "$GITHUB_SHA"',

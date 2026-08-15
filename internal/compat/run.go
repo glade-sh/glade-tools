@@ -139,7 +139,7 @@ func runExecFixture(fixture Fixture) (RunResult, error) {
 	}
 	var stdout bytes.Buffer
 	machine := vm.New(&stdout)
-	if len(fixture.Schema) > 0 || !metadataRegistryEmpty(fixture.Metadata) || len(fixture.SeedData) > 0 || fixture.Project.Namespace != "" {
+	if len(fixture.Schema) > 0 || !metadataRegistryEmpty(fixture.Metadata) || len(fixture.SeedData) > 0 || fixture.Project.Namespace != "" || fixture.Project.SourceAPIVersion != "" {
 		org, err := orgFromFixture(fixture)
 		if err != nil {
 			return RunResult{Name: fixture.Name, Kind: fixture.Command.Kind}, err

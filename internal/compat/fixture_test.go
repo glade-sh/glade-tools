@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/glade-sh/glade/internal/apextest"
 	"github.com/glade-sh/glade/internal/storage"
 	"github.com/glade-sh/glade/internal/vm"
 )
@@ -104,6 +105,16 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("salesforce-release-previous") {
 		t.Fatal("Salesforce release previous should stay out of documented fixture execution")
 	}
+	for _, path := range documentedFixturePaths(t) {
+		name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+		fixture, err := LoadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.EqualFold(fixture.Command.Kind, "policy-evidence") && shouldRunDocumentedFixtureDocument(name, fixture.Command.Kind) {
+			t.Fatalf("policy-evidence fixture %s should stay out of documented fixture execution", name)
+		}
+	}
 	for _, name := range []string{
 		"salesforce-cb187-system-assert-comparisons",
 		"apex-api67-removals",
@@ -158,6 +169,10 @@ func TestRunDocumentedFixtures(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			if !shouldRunDocumentedFixtureDocument(name, fixture.Command.Kind) {
+				t.Skipf("documented fixture command kind %q is validated by a focused test", fixture.Command.Kind)
+			}
+			defer apextest.InvalidateRuntimeCaches()
 			result, err := Run(fixture)
 			if err != nil {
 				t.Fatalf("%s: %v", path, err)
@@ -276,6 +291,13 @@ func shouldRunDocumentedFixture(name string) bool {
 	return ok
 }
 
+func shouldRunDocumentedFixtureDocument(name, commandKind string) bool {
+	if strings.EqualFold(commandKind, "policy-evidence") {
+		return false
+	}
+	return shouldRunDocumentedFixture(name)
+}
+
 func TestValidateFixture(t *testing.T) {
 	fixture := Fixture{
 		Name:    "parser-smoke",
@@ -380,6 +402,27 @@ func TestRunExecFixture(t *testing.T) {
 		Expected: ExpectedBehavior{
 			Stdout: "hello\n",
 			Result: json.RawMessage(`{"debug":["hello"],"ok":true}`),
+		},
+	}
+	result, err := Run(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.OK {
+		t.Fatalf("result = %#v", result)
+	}
+}
+
+func TestRunExecFixtureUsesProjectSourceAPIVersion(t *testing.T) {
+	fixture := Fixture{
+		Name: "exec-project-api-version",
+		Project: ProjectConfig{
+			SourceAPIVersion: "67.0",
+		},
+		Source:  []SourceFile{{Path: "anonymous.apex", Content: "System.assertEquals('67.0.0', System.requestVersion().toString());"}},
+		Command: Invocation{Kind: "exec", Args: []string{"System.assertEquals('67.0.0', System.requestVersion().toString());"}},
+		Expected: ExpectedBehavior{
+			Result: json.RawMessage(`{"debug":null,"ok":true}`),
 		},
 	}
 	result, err := Run(fixture)

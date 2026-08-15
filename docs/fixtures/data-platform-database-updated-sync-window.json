@@ -17,7 +17,7 @@
     },
     {
       "kind": "test",
-      "notes": "GetUpdatedResult carries the requested latest covered DateTime.",
+      "notes": "GetUpdatedResult carries the requested latest covered Date.",
       "surfaceId": "apex:System.Database.GetUpdatedResult.getLatestDateCovered()",
       "symbol": "Database.GetUpdatedResult.getLatestDateCovered()"
     }

@@ -2114,6 +2114,23 @@
       "reason": "hosted package namespace reflection"
     },
     {
+      "namespace": "sfdw",
+      "disposition": "hosted-deferred",
+      "reason": "Salesforce Data Cloud consumption DTOs are hosted service surface"
+    },
+    {
+      "surfacePrefix": "apex:System.setAuthorizationExpirationDate(authExpDate)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "new System platform method requires an explicit local compile-shape decision before runtime support"
+    },
+    {
+      "surfacePrefix": "apex:System.setGatewayResultCodeDescription(gatewayResultCodeDescription)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "new System platform method requires an explicit local compile-shape decision before runtime support"
+    },
+    {
       "surfacePrefix": "apex:System.TouchHandledException.TouchHandledException()",
       "disposition": "compile-shape-required",
       "override": true,
