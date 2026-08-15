@@ -11,7 +11,7 @@
       "surfaceId": "apex:Database.GetDeletedResult.getEarliestDateAvailable()",
       "symbol": "Database.GetDeletedResult.getEarliestDateAvailable",
       "kind": "test",
-      "notes": "GetDeletedResult exposes the earliest retained deleted-record date as Date, falling back to the requested start date when no deletion history exists."
+      "notes": "GetDeletedResult exposes the earliest retained deleted-record date as Date; the local runtime returns null when no retained deletion exists, and this no-history edge has no Salesforce oracle receipt."
     },
     {
       "surfaceId": "apex:Database.GetDeletedResult.getLatestDateCovered()",
