@@ -32,6 +32,49 @@ func TestComputeDeltaPreflightMergesRowsAndRemovesTombstones(t *testing.T) {
 	}
 }
 
+func TestComputeDeltaPreflightReportsReturnTypeChanges(t *testing.T) {
+	const surfaceID = "apex:Database.GetUpdatedResult.getLatestDateCovered()"
+	base := []SurfaceLedgerRow{{
+		SurfaceID:       surfaceID,
+		Product:         ProductApex,
+		Namespace:       "Database",
+		TypeName:        "GetUpdatedResult",
+		MemberName:      "getLatestDateCovered",
+		Kind:            KindMethod,
+		Signature:       "public Date getLatestDateCovered()",
+		ReturnType:      "Date",
+		GladeReturnType: "Datetime",
+		GladeShape:      ShapeSignatureKnown,
+		GladeBehavior:   BehaviorSupported,
+		Evidence:        EvidenceFixture,
+		Docs:            SourceAbsent,
+		Org:             SourceAbsent,
+	}}
+	additions := []SurfaceLedgerRow{{
+		SurfaceID:       surfaceID,
+		Product:         ProductApex,
+		Namespace:       "Database",
+		TypeName:        "GetUpdatedResult",
+		MemberName:      "getLatestDateCovered",
+		Kind:            KindMethod,
+		Signature:       "public Date getLatestDateCovered()",
+		ReturnType:      "Date",
+		GladeReturnType: "Date",
+		GladeShape:      ShapeSignatureKnown,
+		GladeBehavior:   BehaviorSupported,
+		Evidence:        EvidenceFixture,
+		Docs:            SourceAbsent,
+		Org:             SourceAbsent,
+	}}
+	_, result, err := ComputeDeltaPreflight(base, additions, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("ComputeDeltaPreflight: %v", err)
+	}
+	if got, want := result.ChangedIDs, []string{surfaceID}; !equalStrings(got, want) {
+		t.Fatalf("changed IDs = %v, want %v", got, want)
+	}
+}
+
 func TestComputeDeltaPreflightTombstonesWinOverAdditions(t *testing.T) {
 	additions := []SurfaceLedgerRow{{
 		SurfaceID:     "apex:System.Invalid",
