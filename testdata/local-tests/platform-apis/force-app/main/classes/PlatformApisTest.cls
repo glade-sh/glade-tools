@@ -12,7 +12,7 @@ private class PlatformApisTest {
   }
 
   @isTest static void contextAndOrganizationApisUseLocalContracts() {
-    System.assertEquals('local-site', Site.getSiteId());
+    System.assertEquals(null, Site.getSiteId());
     System.assertEquals(false, Auth.CommunitiesUtil.isGuestUser());
 
     ConnectApi.OrganizationSettings settings = ConnectApi.Organization.getSettings();
@@ -25,11 +25,11 @@ private class PlatformApisTest {
     orgCache.put('name', 'Acme');
     System.assert(orgCache.contains('name'));
     System.assertEquals('Acme', (String) orgCache.get('name'));
-    System.assertEquals('Acme', (String) orgCache.remove('name'));
+    System.assertEquals(true, orgCache.remove('name'));
     System.assertEquals(false, orgCache.contains('name'));
 
     Cache.SessionPartition sessionCache = Cache.Session.getPartition('local');
-    sessionCache.put('count', 7, 60);
+    sessionCache.put('count', 7, 300);
     System.assertEquals(7, (Integer) sessionCache.get('count'));
   }
 

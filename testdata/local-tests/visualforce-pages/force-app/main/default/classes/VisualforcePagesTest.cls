@@ -29,11 +29,14 @@ private class VisualforcePagesTest {
 
   @isTest static void standardSetControllerAndMessagesResetBetweenMethods() {
     System.assert(!ApexPages.hasMessages());
-    ApexPages.StandardSetController controller = new ApexPages.StandardSetController(new List<Account>{
+    insert new List<Account>{
       new Account(Name = 'First'),
       new Account(Name = 'Second'),
       new Account(Name = 'Third')
-    });
+    };
+    ApexPages.StandardSetController controller = new ApexPages.StandardSetController(
+      Database.getQueryLocator('SELECT Id, Name FROM Account ORDER BY Name')
+    );
     controller.setPageSize(2);
     System.assert(controller.getHasNext());
     controller.next();

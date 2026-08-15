@@ -1,6 +1,7 @@
 {
   "namespace": "pkgx",
   "version": "1.0",
+  "sourceHash": "fixture-source-hash",
   "builtAt": "2026-05-20T00:00:00Z",
   "apexTypes": [
     {

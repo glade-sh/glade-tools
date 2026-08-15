@@ -17,10 +17,10 @@ private class NamedCredentialCalloutTest {
     billing.setHeader('X-Correlation-Id', 'billing-001');
     HttpResponse billingResponse = http.send(billing);
     System.assertEquals(207, billingResponse.getStatusCode());
-    System.assertEquals('application/json', billingResponse.getHeader('content-type'));
+    System.assertEquals('application/json', billingResponse.getHeader('Content-Type'));
     System.assertEquals('billing-accounts\n', billingResponse.getBody());
     System.assertEquals('callout:Billing/v1/accounts', billing.getEndpoint());
-    System.assertEquals('billing-001', billing.getHeader('x-correlation-id'));
+    System.assertEquals('billing-001', billing.getHeader('X-Correlation-Id'));
 
     HttpRequest tax = new HttpRequest();
     tax.setEndpoint('callout:pkg__TaxService/v2/rates');
@@ -52,7 +52,7 @@ private class NamedCredentialCalloutTest {
 
     HttpResponse response = new Http().send(request);
     System.assertEquals(202, response.getStatusCode());
-    System.assertEquals('fixture', response.getHeader('x-source'));
+    System.assertEquals('fixture', response.getHeader('X-Source'));
     System.assertEquals('billing-detail\n', response.getBody());
     System.assertEquals('62696c6c696e672d64657461696c0a', EncodingUtil.convertToHex(Blob.valueOf(response.getBody())));
   }

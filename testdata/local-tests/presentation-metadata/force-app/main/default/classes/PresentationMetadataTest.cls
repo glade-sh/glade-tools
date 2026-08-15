@@ -2,8 +2,14 @@
 private class PresentationMetadataTest {
   @isTest static void describesLocalTabs() {
     List<Object> tabSets = Schema.describeTabs();
-    System.assertEquals(1, tabSets.size());
-    Object tabSet = tabSets.get(0);
+    System.assertEquals(13, tabSets.size());
+    Object tabSet;
+    for (Object candidate : tabSets) {
+      if (candidate.getLabel() == 'All Tabs') {
+        tabSet = candidate;
+      }
+    }
+    System.assertNotEquals(null, tabSet);
     System.assertEquals('All Tabs', tabSet.getLabel());
     List<Object> tabs = tabSet.getTabs();
     Boolean foundWidgetTab = false;
