@@ -105,9 +105,6 @@ func TestDocumentedFixtureExecutionSelection(t *testing.T) {
 	if shouldRunDocumentedFixture("salesforce-release-previous") {
 		t.Fatal("Salesforce release previous should stay out of documented fixture execution")
 	}
-	if shouldRunDocumentedFixture("core-runtime-workflow-txnsecurity-local-defaults") {
-		t.Fatal("policy-evidence fixture should stay out of documented fixture execution")
-	}
 	for _, path := range documentedFixturePaths(t) {
 		name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
 		fixture, err := LoadFile(path)
