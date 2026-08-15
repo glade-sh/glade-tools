@@ -2241,8 +2241,8 @@ func TestRunLocalTestsProgressShowsCountsElapsedAndETA(t *testing.T) {
 		"elapsed=",
 		"eta=",
 		"pass=1",
-		"fail=2",
-		"error=0",
+		"fail=1",
+		"error=1",
 		"running=UnsupportedTest.unsupported",
 	} {
 		if !strings.Contains(out, want) {
