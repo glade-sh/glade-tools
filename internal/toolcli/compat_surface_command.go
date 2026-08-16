@@ -1140,11 +1140,17 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 				return err
 			}
 		}
+		if err := verifySupportProfileInputsBeforeWrite(inputs); err != nil {
+			return err
+		}
 		if err := atomicWriteFile(output, jsonBuf.data); err != nil {
 			return err
 		}
 		fmt.Fprintf(w, "surface support-profile: %s\n", output)
 		if htmlOutput != "" {
+			if err := verifySupportProfileInputsBeforeWrite(inputs); err != nil {
+				return err
+			}
 			if err := atomicWriteFile(htmlOutput, htmlBuf.data); err != nil {
 				return err
 			}
@@ -1220,6 +1226,29 @@ func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshot
 		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, Path: path, SHA256: digest})
 	}
 	return inputs, nil
+}
+
+func verifySupportProfileInputsBeforeWrite(inputs *surfaceledger.SupportProfileInputs) error {
+	if inputs == nil {
+		return fmt.Errorf("support-profile inputs are required before artifact write")
+	}
+	for _, input := range inputs.Files {
+		canonical, err := filepath.EvalSymlinks(input.Path)
+		if err != nil {
+			return fmt.Errorf("support-profile input %s changed before artifact write: %w", input.Name, err)
+		}
+		if filepath.Clean(canonical) != filepath.Clean(input.Path) {
+			return fmt.Errorf("support-profile input %s changed before artifact write: path identity changed", input.Name)
+		}
+		data, err := os.ReadFile(input.Path)
+		if err != nil {
+			return fmt.Errorf("support-profile input %s changed before artifact write: %w", input.Name, err)
+		}
+		if fmt.Sprintf("%x", sha256.Sum256(data)) != input.SHA256 {
+			return fmt.Errorf("support-profile input %s changed before artifact write: digest mismatch", input.Name)
+		}
+	}
+	return nil
 }
 
 func stringsBuilderFromErrors(errors []string) string {

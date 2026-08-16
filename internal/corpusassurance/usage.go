@@ -464,6 +464,7 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 	}
 	seenArtifacts := make([]sealedArtifact, 0, len(snapshotNames)+1)
 	sealedProfileInputs := make([]sealedUsageInput, 0, len(snapshotNames)+3)
+	snapshotBytes := make(map[string][]byte, len(snapshotNames))
 	seenCorpusUsage := false
 	for _, input := range inputs {
 		expected, isCoreInput := expectedBytes[input.Name]
@@ -485,6 +486,9 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 		data, err := os.ReadFile(input.Path)
 		if err != nil {
 			return nil, fmt.Errorf("read support profile input %q: %w", input.Name, err)
+		}
+		if isSnapshot {
+			snapshotBytes[input.Name] = append([]byte(nil), data...)
 		}
 		if input.SHA256 != replayBytesSHA256(data) || (isCoreInput && !bytes.Equal(data, expected)) {
 			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
@@ -513,7 +517,31 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 	if len(want) != 0 {
 		return nil, fmt.Errorf("support profile lacks sealed ledger and policy inputs")
 	}
+	if err := verifySourceSnapshotBindings(ledgerBytes, snapshotBytes); err != nil {
+		return nil, err
+	}
 	return sealedProfileInputs, nil
+}
+
+func verifySourceSnapshotBindings(ledgerBytes []byte, snapshotBytes map[string][]byte) error {
+	ledger, err := surfaceledger.ParseLedgerJSON(ledgerBytes)
+	if err != nil {
+		return fmt.Errorf("support profile ledger is not valid JSON: %w", err)
+	}
+	if ledger.SourceSnapshotBindings == nil {
+		return fmt.Errorf("support profile ledger lacks source snapshot bindings")
+	}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		want, ok := ledger.SourceSnapshotBindings.Files[name]
+		if !ok || want == "" {
+			return fmt.Errorf("support profile ledger lacks source snapshot binding for %s", name)
+		}
+		data, ok := snapshotBytes[name]
+		if !ok || want != replayBytesSHA256(data) {
+			return fmt.Errorf("support profile snapshot %q is not bound to the supplied ledger", name)
+		}
+	}
+	return nil
 }
 
 // usageProfileRowsFromLedger assigns the canonical usage key from the sealed

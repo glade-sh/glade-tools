@@ -234,9 +234,6 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 	root := t.TempDir()
 	ledgerPath := filepath.Join(root, "ledger.json")
 	policyPath := filepath.Join(root, "policy.json")
-	if err := os.WriteFile(ledgerPath, []byte("ledger"), 0o600); err != nil {
-		t.Fatal(err)
-	}
 	if err := os.WriteFile(policyPath, []byte("policy"), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -245,8 +242,8 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 	if err := os.WriteFile(corpusUsagePath, corpusUsageData, 0o600); err != nil {
 		t.Fatal(err)
 	}
+	snapshotData := make(map[string][]byte, 4)
 	inputs := []surfaceledger.SupportProfileInput{
-		{Name: "ledger", Path: ledgerPath, SHA256: replayBytesSHA256([]byte("ledger"))},
 		{Name: "policy", Path: policyPath, SHA256: replayBytesSHA256([]byte("policy"))},
 	}
 	inputs = append(inputs, surfaceledger.SupportProfileInput{Name: "corpus-usage", Path: corpusUsagePath, SHA256: replayBytesSHA256(corpusUsageData)})
@@ -256,9 +253,15 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 		if err := os.WriteFile(path, data, 0o600); err != nil {
 			t.Fatal(err)
 		}
+		snapshotData[name] = data
 		inputs = append(inputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: replayBytesSHA256(data)})
 	}
-	sealed, err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy"))
+	ledgerData := boundLedgerBytes(t, nil, snapshotData)
+	if err := os.WriteFile(ledgerPath, ledgerData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	inputs = append([]surfaceledger.SupportProfileInput{{Name: "ledger", Path: ledgerPath, SHA256: replayBytesSHA256(ledgerData)}}, inputs...)
+	sealed, err := verifyUsageProfileInputs(inputs, ledgerData, []byte("policy"))
 	if err != nil {
 		t.Fatalf("verifyUsageProfileInputs: %v", err)
 	}
@@ -271,8 +274,44 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 	}
 	duplicateCorpusInputs := append([]surfaceledger.SupportProfileInput{}, inputs...)
 	duplicateCorpusInputs = append(duplicateCorpusInputs, surfaceledger.SupportProfileInput{Name: "corpus-usage", Path: duplicateCorpusPath, SHA256: replayBytesSHA256(corpusUsageData)})
-	if _, err := verifyUsageProfileInputs(duplicateCorpusInputs, []byte("ledger"), []byte("policy")); err == nil {
+	if _, err := verifyUsageProfileInputs(duplicateCorpusInputs, ledgerData, []byte("policy")); err == nil {
 		t.Fatal("verifyUsageProfileInputs accepted duplicate corpus-usage inputs")
+	}
+}
+
+func TestVerifyUsageProfileInputsRejectsUnrelatedSnapshotSet(t *testing.T) {
+	root := t.TempDir()
+	policyPath := filepath.Join(root, "policy.json")
+	if err := os.WriteFile(policyPath, []byte("policy"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	corpusUsagePath := filepath.Join(root, "corpus-usage.json")
+	if err := os.WriteFile(corpusUsagePath, []byte(`{"usage":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	snapshotData := make(map[string][]byte, 4)
+	inputs := []surfaceledger.SupportProfileInput{{Name: "policy", Path: policyPath, SHA256: replayBytesSHA256([]byte("policy"))}, {Name: "corpus-usage", Path: corpusUsagePath, SHA256: replayBytesSHA256([]byte(`{"usage":[]}`))}}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		data := []byte("supplied-" + name)
+		path := filepath.Join(root, name)
+		if err := os.WriteFile(path, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		snapshotData[name] = data
+		inputs = append(inputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: replayBytesSHA256(data)})
+	}
+	foreign := make(map[string][]byte, len(snapshotData))
+	for name, data := range snapshotData {
+		foreign[name] = append([]byte("foreign-"), data...)
+	}
+	ledgerData := boundLedgerBytes(t, nil, foreign)
+	ledgerPath := filepath.Join(root, "ledger.json")
+	if err := os.WriteFile(ledgerPath, ledgerData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	inputs = append([]surfaceledger.SupportProfileInput{{Name: "ledger", Path: ledgerPath, SHA256: replayBytesSHA256(ledgerData)}}, inputs...)
+	if _, err := verifyUsageProfileInputs(inputs, ledgerData, []byte("policy")); err == nil {
+		t.Fatal("verifyUsageProfileInputs accepted snapshots unrelated to the ledger")
 	}
 }
 
@@ -335,21 +374,16 @@ func TestVerifiedProfileSnapshotInputRejectsPostflightMutation(t *testing.T) {
 	root := t.TempDir()
 	ledgerPath := filepath.Join(root, "ledger.json")
 	policyPath := filepath.Join(root, "policy.json")
-	if err := os.WriteFile(ledgerPath, []byte("ledger"), 0o600); err != nil {
-		t.Fatal(err)
-	}
 	if err := os.WriteFile(policyPath, []byte("policy"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	inputs := []surfaceledger.SupportProfileInput{
-		{Name: "ledger", Path: ledgerPath, SHA256: replayBytesSHA256([]byte("ledger"))},
-		{Name: "policy", Path: policyPath, SHA256: replayBytesSHA256([]byte("policy"))},
-	}
+	inputs := []surfaceledger.SupportProfileInput{{Name: "policy", Path: policyPath, SHA256: replayBytesSHA256([]byte("policy"))}}
 	corpusUsagePath := filepath.Join(root, "corpus-usage.json")
 	corpusUsageData := []byte(`{"usage":[]}`)
 	if err := os.WriteFile(corpusUsagePath, corpusUsageData, 0o600); err != nil {
 		t.Fatal(err)
 	}
+	snapshotData := make(map[string][]byte, 4)
 	inputs = append(inputs, surfaceledger.SupportProfileInput{Name: "corpus-usage", Path: corpusUsagePath, SHA256: replayBytesSHA256(corpusUsageData)})
 	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
 		path := filepath.Join(root, name)
@@ -357,9 +391,15 @@ func TestVerifiedProfileSnapshotInputRejectsPostflightMutation(t *testing.T) {
 		if err := os.WriteFile(path, data, 0o600); err != nil {
 			t.Fatal(err)
 		}
+		snapshotData[name] = data
 		inputs = append(inputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: replayBytesSHA256(data)})
 	}
-	sealed, err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy"))
+	ledgerData := boundLedgerBytes(t, nil, snapshotData)
+	if err := os.WriteFile(ledgerPath, ledgerData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	inputs = append([]surfaceledger.SupportProfileInput{{Name: "ledger", Path: ledgerPath, SHA256: replayBytesSHA256(ledgerData)}}, inputs...)
+	sealed, err := verifyUsageProfileInputs(inputs, ledgerData, []byte("policy"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -392,28 +432,32 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 	}
 	ledgerPath := filepath.Join(root, "LEDGER.json")
 	ledger := surfaceledger.SurfaceLedger{SchemaVersion: surfaceledger.SchemaVersion, Rows: []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}}
-	if err := WriteNewJSON(ledgerPath, ledger); err != nil {
-		t.Fatal(err)
-	}
 	policyPath := filepath.Join(root, "policy.json")
 	if err := WriteNewJSON(policyPath, surfaceledger.SupportPolicy{Rules: []surfaceledger.SupportPolicyRule{{Namespace: "System", Disposition: surfaceledger.DispositionLocalRuntimeRequired, Reason: "test"}}}); err != nil {
 		t.Fatal(err)
 	}
 	profilePath := filepath.Join(root, "profile.json")
-	profileInputs := []surfaceledger.SupportProfileInput{{Name: "ledger", Path: ledgerPath, SHA256: localProofFileSHA256(t, ledgerPath)}, {Name: "policy", Path: policyPath, SHA256: localProofFileSHA256(t, policyPath)}}
 	corpusUsagePath := filepath.Join(root, "corpus-usage.json")
 	corpusUsageData := []byte(`{"usage":[]}`)
 	if err := os.WriteFile(corpusUsagePath, corpusUsageData, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	profileInputs = append(profileInputs, surfaceledger.SupportProfileInput{Name: "corpus-usage", Path: corpusUsagePath, SHA256: localProofFileSHA256(t, corpusUsagePath)})
+	snapshotData := make(map[string][]byte, 4)
 	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
 		path := filepath.Join(root, name)
 		data := []byte(name)
 		if err := os.WriteFile(path, data, 0o600); err != nil {
 			t.Fatal(err)
 		}
-		profileInputs = append(profileInputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: localProofFileSHA256(t, path)})
+		snapshotData[name] = data
+	}
+	ledgerData := boundLedgerBytes(t, ledger.Rows, snapshotData)
+	if err := os.WriteFile(ledgerPath, ledgerData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	profileInputs := []surfaceledger.SupportProfileInput{{Name: "ledger", Path: ledgerPath, SHA256: localProofFileSHA256(t, ledgerPath)}, {Name: "policy", Path: policyPath, SHA256: localProofFileSHA256(t, policyPath)}, {Name: "corpus-usage", Path: corpusUsagePath, SHA256: localProofFileSHA256(t, corpusUsagePath)}}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		profileInputs = append(profileInputs, surfaceledger.SupportProfileInput{Name: name, Path: filepath.Join(root, name), SHA256: localProofFileSHA256(t, filepath.Join(root, name))})
 	}
 	if err := WriteNewJSON(profilePath, surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug", Disposition: surfaceledger.DispositionLocalRuntimeRequired}, {SurfaceID: "apex-language:NamespaceClassVariablePrecedence"}}, Inputs: &surfaceledger.SupportProfileInputs{Files: profileInputs}}); err != nil {
 		t.Fatal(err)
@@ -603,6 +647,25 @@ func TestDraftUsageReconciliationRetainsMixedObligationsForDecision(t *testing.T
 	if err != nil || len(automatic) != 0 || len(unresolved) != 1 || unresolved[0].UsageKey != usage.UsageKey {
 		t.Fatalf("automatic=%#v unresolved=%#v err=%v", automatic, unresolved, err)
 	}
+}
+
+func boundLedgerBytes(t *testing.T, rows []surfaceledger.SurfaceLedgerRow, snapshots map[string][]byte) []byte {
+	t.Helper()
+	files := make(map[string]string, len(snapshots))
+	for name, data := range snapshots {
+		files[name] = replayBytesSHA256(data)
+	}
+	data, err := json.Marshal(surfaceledger.SurfaceLedger{
+		SchemaVersion: surfaceledger.SchemaVersion,
+		Rows:          rows,
+		SourceSnapshotBindings: &surfaceledger.SourceSnapshotBindings{
+			Files: files,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return data
 }
 
 func writeUsageRepo(t *testing.T, source string) string {
