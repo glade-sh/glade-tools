@@ -41,6 +41,7 @@ type PacketManifestPacket struct {
 	SourceAtlasVersion  string   `json:"sourceAtlasVersion,omitempty"`
 	SourceReleaseStatus string   `json:"sourceReleaseStatus,omitempty"`
 	RowIDs              []string `json:"rowIds"`
+	ClosedRowIDs        []string `json:"closedRowIds,omitempty"`
 }
 
 func AreaRegistry() []AreaPacket {
@@ -201,10 +202,15 @@ func BuildPacketManifest(ledger SurfaceLedger) PacketManifest {
 	}
 	for _, packet := range packets {
 		rows := byPacket[packet.Name]
-		if len(rows) == 0 && packet.SelectableClosedRows {
-			rows = PacketRows(ledger, packet)
+		var closedRows []SurfaceLedgerRow
+		if packet.SelectableClosedRows {
+			for _, row := range PacketRows(ledger, packet) {
+				if row.Bucket != BucketGap && row.Bucket != BucketFailure {
+					closedRows = append(closedRows, row)
+				}
+			}
 		}
-		if len(rows) == 0 {
+		if len(rows) == 0 && len(closedRows) == 0 {
 			continue
 		}
 		rowIDs := make([]string, 0, len(rows))
@@ -212,15 +218,25 @@ func BuildPacketManifest(ledger SurfaceLedger) PacketManifest {
 			rowIDs = append(rowIDs, row.SurfaceID)
 		}
 		sort.Strings(rowIDs)
-		version, status := sourceReleaseIdentity(rows)
+		closedRowIDs := make([]string, 0, len(closedRows))
+		for _, row := range closedRows {
+			closedRowIDs = append(closedRowIDs, row.SurfaceID)
+		}
+		sort.Strings(closedRowIDs)
+		identityRows := rows
+		if len(identityRows) == 0 {
+			identityRows = closedRows
+		}
+		version, status := sourceReleaseIdentity(identityRows)
 		manifest.Packets = append(manifest.Packets, PacketManifestPacket{
 			ID:                  packet.Name,
 			Owner:               packet.Owner,
-			SourceFamily:        sourceFamilyForManifestRows(rows),
+			SourceFamily:        sourceFamilyForManifestRows(identityRows),
 			SourceDir:           sourceDirForManifestPacket(packet),
 			SourceAtlasVersion:  version,
 			SourceReleaseStatus: status,
 			RowIDs:              rowIDs,
+			ClosedRowIDs:        closedRowIDs,
 		})
 	}
 	families := make([]string, 0, len(bySourceFamily))

@@ -76,8 +76,11 @@ func TestPacketManifestRetainsSelectableClosedRows(t *testing.T) {
 	manifest := BuildPacketManifest(ledger)
 	for _, packet := range manifest.Packets {
 		if packet.ID == "Apex.Language" {
-			if len(packet.RowIDs) != 1 || packet.RowIDs[0] != "apex-language:NamespaceClassVariablePrecedence" {
-				t.Fatalf("Apex.Language row IDs = %#v", packet.RowIDs)
+			if len(packet.RowIDs) != 0 {
+				t.Fatalf("Apex.Language open row IDs = %#v", packet.RowIDs)
+			}
+			if len(packet.ClosedRowIDs) != 1 || packet.ClosedRowIDs[0] != "apex-language:NamespaceClassVariablePrecedence" {
+				t.Fatalf("Apex.Language closed row IDs = %#v", packet.ClosedRowIDs)
 			}
 			return
 		}
