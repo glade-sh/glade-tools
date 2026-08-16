@@ -737,10 +737,7 @@ func TestCompatSurfaceSupportProfileInputDigests(t *testing.T) {
 }
 
 func TestBuildSupportProfileInputsNormalizesRelativePaths(t *testing.T) {
-	root, err := os.MkdirTemp("/private/tmp", "support-profile-inputs-")
-	if err != nil {
-		t.Fatal(err)
-	}
+	root := t.TempDir()
 	oldWorkingDir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -750,7 +747,6 @@ func TestBuildSupportProfileInputsNormalizesRelativePaths(t *testing.T) {
 	}
 	t.Cleanup(func() {
 		_ = os.Chdir(oldWorkingDir)
-		_ = os.RemoveAll(root)
 	})
 	ledger := filepath.Join(root, "ledger.json")
 	policy := filepath.Join(root, "policy.json")
