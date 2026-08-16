@@ -51,6 +51,11 @@ func ReadLedgerJSON(path string) (SurfaceLedger, error) {
 	if err != nil {
 		return SurfaceLedger{}, err
 	}
+	return ParseLedgerJSON(data)
+}
+
+// ParseLedgerJSON parses and classifies one already-read ledger byte slice.
+func ParseLedgerJSON(data []byte) (SurfaceLedger, error) {
 	var ledger SurfaceLedger
 	if err := json.Unmarshal(data, &ledger); err != nil {
 		return SurfaceLedger{}, err

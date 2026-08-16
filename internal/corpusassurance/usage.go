@@ -191,7 +191,8 @@ func DraftUsageDecisionsWithTemplate(inventoryPath, ledgerPath, manifestPath, pr
 	if len(policy.Rules) == 0 {
 		return UsageDecisionDraft{}, fmt.Errorf("support policy rules are required")
 	}
-	if err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes); err != nil {
+	profileSnapshotInputs, err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes)
+	if err != nil {
 		return UsageDecisionDraft{}, err
 	}
 	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows, policy)
@@ -203,7 +204,9 @@ func DraftUsageDecisionsWithTemplate(inventoryPath, ledgerPath, manifestPath, pr
 		return UsageDecisionDraft{}, err
 	}
 	draft := UsageDecisionDraft{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), PolicySHA256: replayBytesSHA256(policyBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Automatic: automatic, Unresolved: unresolved}
-	if err := verifySealedUsagePostflight([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}}, manifest, filepath.Dir(manifestPath)); err != nil {
+	postflightInputs := []sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}}
+	postflightInputs = append(postflightInputs, profileSnapshotInputs...)
+	if err := verifySealedUsagePostflight(postflightInputs, manifest, filepath.Dir(manifestPath)); err != nil {
 		return UsageDecisionDraft{}, err
 	}
 	if err := WriteNewJSON(outputPath, draft); err != nil {
@@ -312,7 +315,8 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if len(policy.Rules) == 0 {
 		return SealedCorpusUsage{}, fmt.Errorf("support policy rules are required")
 	}
-	if err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes); err != nil {
+	profileSnapshotInputs, err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes)
+	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
 	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows, policy)
@@ -339,7 +343,9 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	}
 	reconciliation.ProfileSHA256, reconciliation.UsageSHA256, reconciliation.DecisionSHA256 = replayBytesSHA256(profileBytes), replayBytesSHA256(firstBytes), replayBytesSHA256(decisionBytes)
 	artifact := SealedCorpusUsage{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), PolicySHA256: replayBytesSHA256(policyBytes), DecisionSHA256: replayBytesSHA256(decisionBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Raw: second, Reconciliation: reconciliation}
-	if err := verifySealedUsagePostflight([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}, {decisionPath, decisionBytes}}, manifest, filepath.Dir(manifestPath)); err != nil {
+	postflightInputs := []sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}, {decisionPath, decisionBytes}}
+	postflightInputs = append(postflightInputs, profileSnapshotInputs...)
+	if err := verifySealedUsagePostflight(postflightInputs, manifest, filepath.Dir(manifestPath)); err != nil {
 		return SealedCorpusUsage{}, err
 	}
 	if err := WriteNewJSON(outputPath, artifact); err != nil {
@@ -441,17 +447,99 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []surfaceledger.Suppo
 	return rows, profile.Inputs.Files, data, nil
 }
 
-func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) error {
-	want := map[string]string{"ledger": replayBytesSHA256(ledgerBytes), "policy": replayBytesSHA256(policyBytes)}
+func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) ([]sealedUsageInput, error) {
+	expectedBytes := map[string][]byte{"ledger": ledgerBytes, "policy": policyBytes}
+	want := map[string]struct{}{"ledger": {}, "policy": {}}
+	snapshotNames := map[string]struct{}{
+		"DOCS_SNAPSHOT.json":     {},
+		"ORG_SNAPSHOT.json":      {},
+		"GLADE_SNAPSHOT.json":    {},
+		"EVIDENCE_SNAPSHOT.json": {},
+	}
+	seenSnapshots := make(map[string]struct{}, len(snapshotNames))
+	seenProfileFiles := make(map[string]struct{}, len(snapshotNames)+3)
+	type sealedArtifact struct {
+		name string
+		info os.FileInfo
+	}
+	seenArtifacts := make([]sealedArtifact, 0, len(snapshotNames)+1)
+	sealedProfileInputs := make([]sealedUsageInput, 0, len(snapshotNames)+3)
+	snapshotBytes := make(map[string][]byte, len(snapshotNames))
+	seenCorpusUsage := false
 	for _, input := range inputs {
-		expected, ok := want[input.Name]
-		if !ok || input.SHA256 != expected {
-			return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+		expected, isCoreInput := expectedBytes[input.Name]
+		isCorpusUsage := input.Name == "corpus-usage"
+		_, isSnapshot := snapshotNames[input.Name]
+		if (!isCoreInput && !isCorpusUsage && !isSnapshot) || !filepath.IsAbs(input.Path) {
+			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
-		delete(want, input.Name)
+		if _, ok := seenProfileFiles[input.Name]; ok {
+			return nil, fmt.Errorf("support profile input %q is duplicated", input.Name)
+		}
+		seenProfileFiles[input.Name] = struct{}{}
+		if isSnapshot {
+			seenSnapshots[input.Name] = struct{}{}
+		}
+		if isCorpusUsage {
+			seenCorpusUsage = true
+		}
+		data, err := os.ReadFile(input.Path)
+		if err != nil {
+			return nil, fmt.Errorf("read support profile input %q: %w", input.Name, err)
+		}
+		if isSnapshot {
+			snapshotBytes[input.Name] = append([]byte(nil), data...)
+		}
+		if input.SHA256 != replayBytesSHA256(data) || (isCoreInput && !bytes.Equal(data, expected)) {
+			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+		}
+		if isCoreInput {
+			delete(want, input.Name)
+		}
+		info, err := os.Stat(input.Path)
+		if err != nil {
+			return nil, fmt.Errorf("stat support profile input %q: %w", input.Name, err)
+		}
+		for _, previous := range seenArtifacts {
+			if os.SameFile(previous.info, info) {
+				return nil, fmt.Errorf("support profile inputs %q and %q alias the same artifact", previous.name, input.Name)
+			}
+		}
+		seenArtifacts = append(seenArtifacts, sealedArtifact{name: input.Name, info: info})
+		sealedProfileInputs = append(sealedProfileInputs, sealedUsageInput{path: input.Path, data: data})
+	}
+	if len(seenSnapshots) != len(snapshotNames) {
+		return nil, fmt.Errorf("support profile surface snapshots are incomplete")
+	}
+	if !seenCorpusUsage {
+		return nil, fmt.Errorf("support profile lacks sealed corpus-usage input")
 	}
 	if len(want) != 0 {
-		return fmt.Errorf("support profile lacks sealed ledger and policy inputs")
+		return nil, fmt.Errorf("support profile lacks sealed ledger and policy inputs")
+	}
+	if err := verifySourceSnapshotBindings(ledgerBytes, snapshotBytes); err != nil {
+		return nil, err
+	}
+	return sealedProfileInputs, nil
+}
+
+func verifySourceSnapshotBindings(ledgerBytes []byte, snapshotBytes map[string][]byte) error {
+	ledger, err := surfaceledger.ParseLedgerJSON(ledgerBytes)
+	if err != nil {
+		return fmt.Errorf("support profile ledger is not valid JSON: %w", err)
+	}
+	if ledger.SourceSnapshotBindings == nil {
+		return fmt.Errorf("support profile ledger lacks source snapshot bindings")
+	}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		want, ok := ledger.SourceSnapshotBindings.Files[name]
+		if !ok || want == "" {
+			return fmt.Errorf("support profile ledger lacks source snapshot binding for %s", name)
+		}
+		data, ok := snapshotBytes[name]
+		if !ok || want != replayBytesSHA256(data) {
+			return fmt.Errorf("support profile snapshot %q is not bound to the supplied ledger", name)
+		}
 	}
 	return nil
 }

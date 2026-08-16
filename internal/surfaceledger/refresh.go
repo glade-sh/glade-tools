@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -80,10 +81,33 @@ func Refresh(options RefreshOptions) (RefreshResult, error) {
 	}
 	AssignPriorities(ledger.Rows)
 	ledger.Summary = Summarize(ledger.Rows)
+	bindings, err := sourceSnapshotBindings(docsRows, orgRows, gladeRows, evidenceRows)
+	if err != nil {
+		return RefreshResult{}, err
+	}
+	ledger.SourceSnapshotBindings = &bindings
 	if err := writeRefreshOutputs(options.OutputDir, docsRows, orgRows, gladeRows, evidenceRows, ledger, options.DiffFrom); err != nil {
 		return RefreshResult{}, err
 	}
 	return RefreshResult{OutputDir: options.OutputDir, Summary: ledger.Summary, Ledger: ledger}, nil
+}
+
+func sourceSnapshotBindings(docsRows, orgRows, gladeRows, evidenceRows []SurfaceLedgerRow) (SourceSnapshotBindings, error) {
+	files := map[string]any{
+		"DOCS_SNAPSHOT.json":     docsRows,
+		"ORG_SNAPSHOT.json":      orgRows,
+		"GLADE_SNAPSHOT.json":    gladeRows,
+		"EVIDENCE_SNAPSHOT.json": evidenceRows,
+	}
+	bindings := SourceSnapshotBindings{Files: make(map[string]string, len(files))}
+	for name, value := range files {
+		data, err := marshalPretty(value)
+		if err != nil {
+			return SourceSnapshotBindings{}, fmt.Errorf("marshal %s: %w", name, err)
+		}
+		bindings.Files[name] = fmt.Sprintf("%x", sha256.Sum256(data))
+	}
+	return bindings, nil
 }
 
 func buildOrgRows(options RefreshOptions) ([]SurfaceLedgerRow, error) {

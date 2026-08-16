@@ -1,6 +1,8 @@
 package surfaceledger
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -31,6 +33,19 @@ func TestRefreshWritesLedgerReportsAndSnapshots(t *testing.T) {
 	}
 	if result.Summary.Total == 0 {
 		t.Fatalf("empty refresh summary")
+	}
+	if result.Ledger.SourceSnapshotBindings == nil || len(result.Ledger.SourceSnapshotBindings.Files) != 4 {
+		t.Fatalf("refresh ledger source bindings = %#v", result.Ledger.SourceSnapshotBindings)
+	}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		data, err := os.ReadFile(filepath.Join(out, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := fmt.Sprintf("%x", sha256.Sum256(data))
+		if got := result.Ledger.SourceSnapshotBindings.Files[name]; got != want {
+			t.Fatalf("source binding %s = %q, want %q", name, got, want)
+		}
 	}
 }
 

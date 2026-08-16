@@ -3,11 +3,15 @@ package toolcli
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
 func TestCompatSurfaceRefreshWritesReports(t *testing.T) {
@@ -672,7 +676,25 @@ func TestCompatSurfaceSupportProfileInputDigests(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if err := os.WriteFile(ledger, []byte(`{"schemaVersion":1,"rows":[{"surfaceId":"apex:System.String","product":"apex","area":"runtime","namespace":"System","typeName":"String","kind":"type","gladeShape":"type-known","gladeBehavior":"supported","evidence":"fixture"}]}`), 0o644); err != nil {
+	var bindings surfaceledger.SourceSnapshotBindings
+	bindings.Files = map[string]string{}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		data, err := os.ReadFile(filepath.Join(snapshots, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		sum := sha256.Sum256(data)
+		bindings.Files[name] = fmt.Sprintf("%x", sum)
+	}
+	ledgerData, err := json.Marshal(surfaceledger.SurfaceLedger{
+		SchemaVersion:          surfaceledger.SchemaVersion,
+		Rows:                   []surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.String", Product: surfaceledger.ProductApex, Area: surfaceledger.AreaRuntime, Namespace: "System", TypeName: "String", Kind: surfaceledger.KindType, GladeShape: surfaceledger.ShapeTypeKnown, GladeBehavior: surfaceledger.BehaviorSupported, Evidence: surfaceledger.EvidenceFixture}},
+		SourceSnapshotBindings: &bindings,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(ledger, ledgerData, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(policy, []byte(`{"rules":[{"namespace":"System","disposition":"local-runtime-required","reason":"system runtime"}]}`), 0o644); err != nil {
@@ -733,6 +755,72 @@ func TestCompatSurfaceSupportProfileInputDigests(t *testing.T) {
 	changed := run()
 	if changed["policy"] == first["policy"] {
 		t.Fatalf("policy digest did not change: %q", changed["policy"])
+	}
+}
+
+func TestBuildSupportProfileInputsNormalizesRelativePaths(t *testing.T) {
+	root := t.TempDir()
+	oldWorkingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(root); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(oldWorkingDir)
+	})
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	corpusUsage := filepath.Join(root, "corpus-usage.json")
+	snapshots := filepath.Join(root, "snapshots")
+	if err := os.MkdirAll(snapshots, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{ledger, policy, corpusUsage} {
+		if err := os.WriteFile(path, []byte(path), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if err := os.WriteFile(filepath.Join(snapshots, name), []byte(name), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	inputs, err := buildSupportProfileInputs("ledger.json", "policy.json", "corpus-usage.json", "snapshots", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inputs.Files) != 7 {
+		t.Fatalf("input count = %d, want 7", len(inputs.Files))
+	}
+	for _, input := range inputs.Files {
+		if !filepath.IsAbs(input.Path) {
+			t.Fatalf("input %q path is not absolute: %q", input.Name, input.Path)
+		}
+	}
+}
+
+func TestVerifySupportProfileInputsBeforeWriteRejectsMutation(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "ledger.json")
+	original := []byte("sealed ledger")
+	if err := os.WriteFile(path, original, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	canonical, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	inputs := &surfaceledger.SupportProfileInputs{Files: []surfaceledger.SupportProfileInput{{Name: "ledger", Path: canonical, SHA256: fmt.Sprintf("%x", sha256.Sum256(original))}}}
+	if err := verifySupportProfileInputsBeforeWrite(inputs); err != nil {
+		t.Fatalf("unchanged input rejected: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("mutated ledger"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifySupportProfileInputsBeforeWrite(inputs); err == nil {
+		t.Fatal("input postflight accepted a mutated artifact")
 	}
 }
 

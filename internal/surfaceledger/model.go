@@ -115,10 +115,18 @@ const (
 const SourceStandardSObjectGeneratedShape = "standard-sobject-generated-shape"
 
 type SurfaceLedger struct {
-	SchemaVersion  int                `json:"schemaVersion"`
-	Rows           []SurfaceLedgerRow `json:"rows"`
-	Summary        LedgerSummary      `json:"summary"`
-	SourceIdentity *SourceIdentity    `json:"sourceIdentity,omitempty"`
+	SchemaVersion          int                     `json:"schemaVersion"`
+	Rows                   []SurfaceLedgerRow      `json:"rows"`
+	Summary                LedgerSummary           `json:"summary"`
+	SourceIdentity         *SourceIdentity         `json:"sourceIdentity,omitempty"`
+	SourceSnapshotBindings *SourceSnapshotBindings `json:"sourceSnapshotBindings,omitempty"`
+}
+
+// SourceSnapshotBindings ties a refreshed ledger to the exact snapshot files
+// that supplied its rows. The refresh command writes these digests from the
+// same bytes it writes as the four snapshot artifacts.
+type SourceSnapshotBindings struct {
+	Files map[string]string `json:"files"`
 }
 
 type LedgerSummary struct {

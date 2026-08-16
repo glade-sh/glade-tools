@@ -1,6 +1,7 @@
 package toolcli
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -1085,14 +1086,23 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 		return errors.New("--output and --html-output must be different paths")
 	}
 
-	ledger, err := surfaceledger.ReadLedgerJSON(ledgerPath)
+	ledgerBytes, err := os.ReadFile(ledgerPath)
 	if err != nil {
 		return err
 	}
-	policy, err := surfaceledger.LoadSupportPolicy(policyPath)
+	ledger, err := surfaceledger.ParseLedgerJSON(ledgerBytes)
 	if err != nil {
 		return err
 	}
+	policyBytes, err := os.ReadFile(policyPath)
+	if err != nil {
+		return err
+	}
+	policy, err := surfaceledger.ParseSupportPolicyJSON(policyBytes)
+	if err != nil {
+		return err
+	}
+	profileInputBytes := map[string][]byte{"ledger": ledgerBytes, "policy": policyBytes}
 
 	var cu *surfaceledger.CorpusUsage
 	if corpusUsagePath != "" {
@@ -1105,10 +1115,11 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 			return fmt.Errorf("parse corpus-usage: %w", err)
 		}
 		cu = &parsed
+		profileInputBytes["corpus-usage"] = data
 	}
 
 	profile := surfaceledger.ComputeSupportProfile(ledger.Rows, policy, cu)
-	inputs, err := buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir)
+	inputs, err := buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir, profileInputBytes)
 	if err != nil {
 		return err
 	}
@@ -1129,11 +1140,17 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 				return err
 			}
 		}
+		if err := verifySupportProfileInputsBeforeWrite(inputs); err != nil {
+			return err
+		}
 		if err := atomicWriteFile(output, jsonBuf.data); err != nil {
 			return err
 		}
 		fmt.Fprintf(w, "surface support-profile: %s\n", output)
 		if htmlOutput != "" {
+			if err := verifySupportProfileInputsBeforeWrite(inputs); err != nil {
+				return err
+			}
 			if err := atomicWriteFile(htmlOutput, htmlBuf.data); err != nil {
 				return err
 			}
@@ -1165,7 +1182,7 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	return nil
 }
 
-func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir string) (*surfaceledger.SupportProfileInputs, error) {
+func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir string, inputBytes map[string][]byte) (*surfaceledger.SupportProfileInputs, error) {
 	requested := []struct {
 		name string
 		path string
@@ -1190,13 +1207,48 @@ func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshot
 
 	inputs := &surfaceledger.SupportProfileInputs{Files: make([]surfaceledger.SupportProfileInput, 0, len(requested))}
 	for _, input := range requested {
-		digest, err := sha256File(input.path)
+		path, err := filepath.Abs(input.path)
 		if err != nil {
 			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
 		}
-		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, Path: input.path, SHA256: digest})
+		path, err = filepath.EvalSymlinks(path)
+		if err != nil {
+			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
+		}
+		data, provided := inputBytes[input.name]
+		if !provided {
+			data, err = os.ReadFile(path)
+			if err != nil {
+				return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
+			}
+		}
+		digest := fmt.Sprintf("%x", sha256.Sum256(data))
+		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, Path: path, SHA256: digest})
 	}
 	return inputs, nil
+}
+
+func verifySupportProfileInputsBeforeWrite(inputs *surfaceledger.SupportProfileInputs) error {
+	if inputs == nil {
+		return fmt.Errorf("support-profile inputs are required before artifact write")
+	}
+	for _, input := range inputs.Files {
+		canonical, err := filepath.EvalSymlinks(input.Path)
+		if err != nil {
+			return fmt.Errorf("support-profile input %s changed before artifact write: %w", input.Name, err)
+		}
+		if filepath.Clean(canonical) != filepath.Clean(input.Path) {
+			return fmt.Errorf("support-profile input %s changed before artifact write: path identity changed", input.Name)
+		}
+		data, err := os.ReadFile(input.Path)
+		if err != nil {
+			return fmt.Errorf("support-profile input %s changed before artifact write: %w", input.Name, err)
+		}
+		if fmt.Sprintf("%x", sha256.Sum256(data)) != input.SHA256 {
+			return fmt.Errorf("support-profile input %s changed before artifact write: digest mismatch", input.Name)
+		}
+	}
+	return nil
 }
 
 func stringsBuilderFromErrors(errors []string) string {
