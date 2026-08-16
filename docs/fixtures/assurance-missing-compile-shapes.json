@@ -16,6 +16,18 @@
       "kind": "shape"
     },
     {
+      "surfaceId": "apex:ConnectApi.OrganizationSettings",
+      "symbol": "ConnectApi.OrganizationSettings",
+      "kind": "shape",
+      "notes": "The compile-only probe references the OrganizationSettings return type used by the private ConnectApi identity fixture."
+    },
+    {
+      "surfaceId": "apex:Auth.CommunitiesUtil",
+      "symbol": "Auth.CommunitiesUtil",
+      "kind": "shape",
+      "notes": "The compile-only probe references the CommunitiesUtil type used by the private local Auth fixture."
+    },
+    {
       "surfaceId": "apex:System.Auth",
       "symbol": "Auth",
       "kind": "shape"
@@ -49,7 +61,7 @@
   "source": [
     {
       "path": "force-app/main/default/classes/AssuranceMissingCompileShapes.cls",
-      "content": "public class AssuranceMissingCompileShapes { public void referencesOnly() { Component.apex.page page; ConnectApi.Organization organization; Auth auth; DataSource dataSource; System.System systemType; VisualEditor.DataRow row; VisualEditor.DynamicPickList pickList; VisualEditor.DynamicPickListRows rows; } }"
+      "content": "public class AssuranceMissingCompileShapes { public void referencesOnly() { Component.apex.page page; ConnectApi.Organization organization; ConnectApi.OrganizationSettings organizationSettings; Auth auth; Auth.CommunitiesUtil communitiesUtil; DataSource dataSource; System.System systemType; VisualEditor.DataRow row; VisualEditor.DynamicPickList pickList; VisualEditor.DynamicPickListRows rows; } }"
     }
   ],
   "salesforceEligible": false,
