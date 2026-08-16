@@ -28,6 +28,7 @@ type CandidateBuildRequest struct {
 // their exact source/ref/artifact identities. Every output is create-only.
 func CreateCandidateBuildReceipt(request CandidateBuildRequest) (receipt candidateBuildReceipt, returnErr error) {
 	var progress *candidateBuildProgress
+	buildFailures := make(map[string]error, 2)
 	stage := "validate-inputs"
 	defer func() {
 		if progress == nil {
@@ -47,8 +48,8 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (receipt candida
 				CandidateOutput: request.CandidateOutput,
 				ToolsOutput:     request.ToolsOutput,
 			}
-			failure.CandidateCommand, failure.CandidateExitCode, failure.CandidateStderr = candidateBuildFailureDetail(candidateBuildErrorFor(returnErr))
-			failure.ToolsCommand, failure.ToolsExitCode, failure.ToolsStderr = candidateBuildFailureDetail(toolsBuildErrorFor(returnErr))
+			failure.CandidateCommand, failure.CandidateExitCode, failure.CandidateStderr = candidateBuildFailureDetail(buildFailures["candidate"])
+			failure.ToolsCommand, failure.ToolsExitCode, failure.ToolsStderr = candidateBuildFailureDetail(buildFailures["tools"])
 			if err := WriteNewJSON(progress.failurePath, failure); err != nil {
 				returnErr = fmt.Errorf("%w (failed to preserve failure receipt: %v)", returnErr, err)
 			}
@@ -149,10 +150,13 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (receipt candida
 	wait.Wait()
 	close(results)
 	var buildErrors []error
+	var failedBuildNames []string
 	for result := range results {
 		if result.err == nil {
 			continue
 		}
+		buildFailures[result.name] = result.err
+		failedBuildNames = append(failedBuildNames, result.name)
 		if result.name == "candidate" {
 			buildErrors = append(buildErrors, &namedCandidateBuildError{name: "candidate", err: result.err})
 		} else {
@@ -160,11 +164,8 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (receipt candida
 		}
 	}
 	if len(buildErrors) != 0 {
-		if len(buildErrors) == 1 {
-			var named *namedCandidateBuildError
-			if errors.As(buildErrors[0], &named) {
-				stage = named.name + "-build"
-			}
+		if len(failedBuildNames) == 1 {
+			stage = failedBuildNames[0] + "-build"
 		}
 		return candidateBuildReceipt{}, errors.Join(buildErrors...)
 	}
@@ -284,22 +285,6 @@ func candidateBuildEvidencePaths(receiptPath string) (string, string) {
 	}
 	logsRoot := filepath.Join(evidenceRoot, "logs")
 	return filepath.Join(logsRoot, "candidate-build.log"), filepath.Join(logsRoot, "candidate-build-failure.json")
-}
-
-func candidateBuildErrorFor(err error) error {
-	var named *namedCandidateBuildError
-	if errors.As(err, &named) && named.name == "candidate" {
-		return named.err
-	}
-	return nil
-}
-
-func toolsBuildErrorFor(err error) error {
-	var named *namedCandidateBuildError
-	if errors.As(err, &named) && named.name == "tools" {
-		return named.err
-	}
-	return nil
 }
 
 func candidateBuildFailureDetail(err error) ([]string, int, string) {

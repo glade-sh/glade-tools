@@ -114,6 +114,44 @@ func TestCreateCandidateBuildReceiptPreservesFailedBuildEvidence(t *testing.T) {
 	}
 }
 
+func TestCreateCandidateBuildReceiptPreservesBothBuildFailures(t *testing.T) {
+	root := t.TempDir()
+	candidateRoot := newInventoryRepository(t, map[string]string{
+		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
+		"cmd/glade/main.go": "package main\nfunc main() {\n",
+	})
+	toolsRoot := newInventoryRepository(t, map[string]string{
+		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",
+		"cmd/glade-tools/main.go": "package main\nfunc main() {\n",
+	})
+	request := CandidateBuildRequest{
+		CandidateRoot:     candidateRoot,
+		ToolsRoot:         toolsRoot,
+		CandidateRef:      "HEAD",
+		ToolsRef:          "HEAD",
+		CandidateOutput:   filepath.Join(root, "bin", "glade"),
+		ToolsOutput:       filepath.Join(root, "bin", "glade-tools"),
+		ReceiptOutput:     filepath.Join(root, "bindings", "CANDIDATE_BUILD_RECEIPT.json"),
+		ReviewOutput:      filepath.Join(root, "bindings", "REVIEW.md"),
+		ToolsFreezeOutput: filepath.Join(root, "bindings", "TOOLS_COMMIT"),
+	}
+	if _, err := CreateCandidateBuildReceipt(request); err == nil {
+		t.Fatal("CreateCandidateBuildReceipt accepted two malformed builds")
+	}
+	_, failurePath := candidateBuildEvidencePaths(request.ReceiptOutput)
+	data, err := os.ReadFile(failurePath)
+	if err != nil {
+		t.Fatalf("failed candidate build receipt: %v", err)
+	}
+	var failure candidateBuildFailure
+	if err := json.Unmarshal(data, &failure); err != nil {
+		t.Fatal(err)
+	}
+	if failure.Stage != "builds" || !strings.Contains(failure.CandidateStderr, "syntax error") || !strings.Contains(failure.ToolsStderr, "syntax error") || len(failure.CandidateCommand) == 0 || len(failure.ToolsCommand) == 0 {
+		t.Fatalf("failed candidate build receipt = %#v", failure)
+	}
+}
+
 func TestCreateCandidateBuildReceiptRejectsUnboundInputs(t *testing.T) {
 	for _, testCase := range []struct {
 		name   string
