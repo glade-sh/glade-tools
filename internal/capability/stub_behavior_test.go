@@ -599,7 +599,7 @@ func TestStubBehaviorSeparatesServiceMethodsFromPassiveDTOs(t *testing.T) {
 	assertStubBehaviorPrefix(t, entries, "ConnectApi.ChatterFeeds.postFeedElement(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "ConnectApi.ManagedContent.publish(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "ConnectApi.RecordAlert.performRecordAlertAction(", StubBehaviorUnsupported)
-	assertStubBehaviorPrefix(t, entries, "ConnectApi.UserProfiles.setPhoto(", StubBehaviorUnsupported)
+	assertStubBehaviorPrefix(t, entries, "ConnectApi.UserProfiles.setPhoto(", StubBehaviorImplemented)
 	assertStubBehaviorPrefix(t, entries, "ConnectApi.NamedCredentials.getOAuthCredentialAuthUrl(", StubBehaviorUnsupported)
 	assertStubBehaviorPrefix(t, entries, "Social.DefaultInboundSocialPostHandler.handleInboundSocialPost(", StubBehaviorStubNoOp)
 	assertStubBehaviorPrefix(t, entries, "Social.DefaultInboundSocialPostHandler.createPersonaParent(", StubBehaviorStubNoOp)
