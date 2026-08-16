@@ -236,6 +236,12 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 		{Name: "ledger", SHA256: replayBytesSHA256([]byte("ledger"))},
 		{Name: "policy", SHA256: replayBytesSHA256([]byte("policy"))},
 	}
+	corpusUsagePath := filepath.Join(root, "corpus-usage.json")
+	corpusUsageData := []byte(`{"usage":[]}`)
+	if err := os.WriteFile(corpusUsagePath, corpusUsageData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	inputs = append(inputs, surfaceledger.SupportProfileInput{Name: "corpus-usage", Path: corpusUsagePath, SHA256: replayBytesSHA256(corpusUsageData)})
 	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
 		path := filepath.Join(root, name)
 		data := []byte(name)
@@ -248,8 +254,8 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 	if err != nil {
 		t.Fatalf("verifyUsageProfileInputs: %v", err)
 	}
-	if len(sealed) != 4 {
-		t.Fatalf("sealed snapshot inputs = %d, want 4", len(sealed))
+	if len(sealed) != 5 {
+		t.Fatalf("sealed profile inputs = %d, want 5", len(sealed))
 	}
 }
 
@@ -268,9 +274,15 @@ func TestVerifyUsageProfileInputsRequiresCompleteUniqueSurfaceSnapshots(t *testi
 		{Name: "policy", SHA256: replayBytesSHA256([]byte("policy"))},
 	}
 	docs := makeInput("DOCS_SNAPSHOT.json")
+	aliasInputs := append(append([]surfaceledger.SupportProfileInput{}, base...), docs)
+	for _, name := range []string{"ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		aliasInputs = append(aliasInputs, surfaceledger.SupportProfileInput{Name: name, Path: docs.Path, SHA256: docs.SHA256})
+	}
 	for name, inputs := range map[string][]surfaceledger.SupportProfileInput{
+		"none":      base,
 		"partial":   append(append([]surfaceledger.SupportProfileInput{}, base...), docs),
 		"duplicate": append(append([]surfaceledger.SupportProfileInput{}, base...), docs, docs),
+		"alias":     aliasInputs,
 	} {
 		if _, err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy")); err == nil {
 			t.Fatalf("verifyUsageProfileInputs accepted %s surface snapshot set", name)
@@ -333,7 +345,16 @@ func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 		t.Fatal(err)
 	}
 	profilePath := filepath.Join(root, "profile.json")
-	if err := WriteNewJSON(profilePath, surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug", Disposition: surfaceledger.DispositionLocalRuntimeRequired}, {SurfaceID: "apex-language:NamespaceClassVariablePrecedence"}}, Inputs: &surfaceledger.SupportProfileInputs{Files: []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: localProofFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: localProofFileSHA256(t, policyPath)}}}}); err != nil {
+	profileInputs := []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: localProofFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: localProofFileSHA256(t, policyPath)}}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		path := filepath.Join(root, name)
+		data := []byte(name)
+		if err := os.WriteFile(path, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		profileInputs = append(profileInputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: localProofFileSHA256(t, path)})
+	}
+	if err := WriteNewJSON(profilePath, surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug", Disposition: surfaceledger.DispositionLocalRuntimeRequired}, {SurfaceID: "apex-language:NamespaceClassVariablePrecedence"}}, Inputs: &surfaceledger.SupportProfileInputs{Files: profileInputs}}); err != nil {
 		t.Fatal(err)
 	}
 	usage, err := ExtractRepositoryUsage([]surfaceledger.SurfaceLedgerRow{{SurfaceID: "apex:System.debug", Product: surfaceledger.ProductApex, Namespace: "System", MemberName: "debug"}}, repository, snapshot)

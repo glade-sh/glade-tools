@@ -153,7 +153,15 @@ func TestCorpusAssuranceUsageDraftExecutes(t *testing.T) {
 	policy := surfaceledger.SupportPolicy{Rules: []surfaceledger.SupportPolicyRule{{Namespace: "System", Disposition: surfaceledger.DispositionLocalRuntimeRequired, Reason: "test"}}}
 	writeCorpusAssuranceJSON(t, policyPath, policy)
 	profilePath := filepath.Join(root, "PROFILE.json")
-	profile := surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug", Disposition: surfaceledger.DispositionLocalRuntimeRequired}}, Inputs: &surfaceledger.SupportProfileInputs{Files: []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: corpusAssuranceFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: corpusAssuranceFileSHA256(t, policyPath)}}}}
+	profileInputs := []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: corpusAssuranceFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: corpusAssuranceFileSHA256(t, policyPath)}}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		path := filepath.Join(root, name)
+		if err := os.WriteFile(path, []byte(name), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		profileInputs = append(profileInputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: corpusAssuranceFileSHA256(t, path)})
+	}
+	profile := surfaceledger.SupportProfile{Rows: []surfaceledger.SupportProfileRow{{SurfaceID: "apex:System.debug", Disposition: surfaceledger.DispositionLocalRuntimeRequired}}, Inputs: &surfaceledger.SupportProfileInputs{Files: profileInputs}}
 	writeCorpusAssuranceJSON(t, profilePath, profile)
 	outputPath := filepath.Join(root, "USAGE_DECISION_DRAFT.json")
 	var stdout, stderr bytes.Buffer

@@ -449,6 +449,7 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []surfaceledger.Suppo
 
 func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) ([]sealedUsageInput, error) {
 	want := map[string]string{"ledger": replayBytesSHA256(ledgerBytes), "policy": replayBytesSHA256(policyBytes)}
+	corpusUsageNames := map[string]struct{}{"corpus-usage": {}}
 	snapshotNames := map[string]struct{}{
 		"DOCS_SNAPSHOT.json":     {},
 		"ORG_SNAPSHOT.json":      {},
@@ -456,6 +457,7 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 		"EVIDENCE_SNAPSHOT.json": {},
 	}
 	seenSnapshots := make(map[string]struct{}, len(snapshotNames))
+	seenArtifacts := make(map[string]string, len(snapshotNames)+len(corpusUsageNames))
 	sealedSnapshots := make([]sealedUsageInput, 0, len(snapshotNames))
 	for _, input := range inputs {
 		expected, ok := want[input.Name]
@@ -466,24 +468,35 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 			delete(want, input.Name)
 			continue
 		}
-		if _, ok := snapshotNames[input.Name]; !ok || !filepath.IsAbs(input.Path) {
+		_, isCorpusUsage := corpusUsageNames[input.Name]
+		_, isSnapshot := snapshotNames[input.Name]
+		if (!isCorpusUsage && !isSnapshot) || !filepath.IsAbs(input.Path) {
 			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
-		if _, ok := seenSnapshots[input.Name]; ok {
-			return nil, fmt.Errorf("support profile input %q is duplicated", input.Name)
+		if isSnapshot {
+			if _, ok := seenSnapshots[input.Name]; ok {
+				return nil, fmt.Errorf("support profile input %q is duplicated", input.Name)
+			}
+			seenSnapshots[input.Name] = struct{}{}
 		}
-		actual, err := sha256FileDirect(input.Path)
-		if err != nil || input.SHA256 != actual {
-			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
-		}
-		seenSnapshots[input.Name] = struct{}{}
 		data, err := os.ReadFile(input.Path)
 		if err != nil {
 			return nil, fmt.Errorf("read support profile input %q: %w", input.Name, err)
 		}
+		if input.SHA256 != replayBytesSHA256(data) {
+			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+		}
+		resolved, err := filepath.EvalSymlinks(input.Path)
+		if err != nil {
+			return nil, fmt.Errorf("resolve support profile input %q: %w", input.Name, err)
+		}
+		if previous, ok := seenArtifacts[resolved]; ok {
+			return nil, fmt.Errorf("support profile inputs %q and %q alias the same artifact", previous, input.Name)
+		}
+		seenArtifacts[resolved] = input.Name
 		sealedSnapshots = append(sealedSnapshots, sealedUsageInput{path: input.Path, data: data})
 	}
-	if len(seenSnapshots) != 0 && len(seenSnapshots) != len(snapshotNames) {
+	if len(seenSnapshots) != len(snapshotNames) {
 		return nil, fmt.Errorf("support profile surface snapshots are incomplete")
 	}
 	if len(want) != 0 {
