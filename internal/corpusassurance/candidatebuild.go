@@ -1,10 +1,13 @@
 package corpusassurance
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+	"time"
 )
 
 // CandidateBuildRequest describes the one exact candidate/tools build whose
@@ -23,7 +26,37 @@ type CandidateBuildRequest struct {
 
 // CreateCandidateBuildReceipt builds both binaries from clean roots and seals
 // their exact source/ref/artifact identities. Every output is create-only.
-func CreateCandidateBuildReceipt(request CandidateBuildRequest) (candidateBuildReceipt, error) {
+func CreateCandidateBuildReceipt(request CandidateBuildRequest) (receipt candidateBuildReceipt, returnErr error) {
+	var progress *candidateBuildProgress
+	stage := "validate-inputs"
+	defer func() {
+		if progress == nil {
+			return
+		}
+		if returnErr != nil {
+			progress.event("candidate-build-failed", "stage="+stage)
+			failure := candidateBuildFailure{
+				SchemaVersion:   1,
+				Status:          "candidate-build-failed",
+				Stage:           stage,
+				Error:           returnErr.Error(),
+				CandidateRoot:   request.CandidateRoot,
+				ToolsRoot:       request.ToolsRoot,
+				CandidateRef:    request.CandidateRef,
+				ToolsRef:        request.ToolsRef,
+				CandidateOutput: request.CandidateOutput,
+				ToolsOutput:     request.ToolsOutput,
+			}
+			failure.CandidateCommand, failure.CandidateExitCode, failure.CandidateStderr = candidateBuildFailureDetail(candidateBuildErrorFor(returnErr))
+			failure.ToolsCommand, failure.ToolsExitCode, failure.ToolsStderr = candidateBuildFailureDetail(toolsBuildErrorFor(returnErr))
+			if err := WriteNewJSON(progress.failurePath, failure); err != nil {
+				returnErr = fmt.Errorf("%w (failed to preserve failure receipt: %v)", returnErr, err)
+			}
+		}
+		if err := progress.close(); returnErr == nil && err != nil {
+			returnErr = err
+		}
+	}()
 	paths := []string{request.CandidateRoot, request.ToolsRoot, request.CandidateOutput, request.ToolsOutput, request.ReceiptOutput, request.ReviewOutput, request.ToolsFreezeOutput}
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
@@ -48,6 +81,12 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (candidateBuildR
 	if request.CandidateRef == "" || request.ToolsRef == "" {
 		return candidateBuildReceipt{}, fmt.Errorf("candidate and tools refs are required")
 	}
+	progress, err := newCandidateBuildProgress(request.ReceiptOutput)
+	if err != nil {
+		return candidateBuildReceipt{}, err
+	}
+	progress.event("candidate-build-start", "candidate-ref="+request.CandidateRef+" tools-ref="+request.ToolsRef)
+	stage = "validate-sources"
 	candidateCommit, err := cleanGitHead(request.CandidateRoot)
 	if err != nil {
 		return candidateBuildReceipt{}, fmt.Errorf("candidate source: %w", err)
@@ -77,12 +116,60 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (candidateBuildR
 			return candidateBuildReceipt{}, err
 		}
 	}
-	if err := runBoundCandidateBuild(candidateBuild, request.CandidateOutput); err != nil {
-		return candidateBuildReceipt{}, err
+	stage = "builds"
+	progress.event("candidate-build-start", "commit="+candidateCommit)
+	progress.event("tools-build-start", "commit="+toolsCommit)
+	type buildResult struct {
+		name string
+		err  error
 	}
-	if err := runBoundCandidateBuild(toolsBuild, request.ToolsOutput); err != nil {
-		return candidateBuildReceipt{}, err
+	results := make(chan buildResult, 2)
+	var wait sync.WaitGroup
+	wait.Add(2)
+	go func() {
+		defer wait.Done()
+		err := runBoundCandidateBuild(candidateBuild, request.CandidateOutput)
+		if err == nil {
+			progress.event("candidate-build-complete", "output="+request.CandidateOutput)
+		} else {
+			progress.event("candidate-build-failed", "error="+progressSafe(err.Error()))
+		}
+		results <- buildResult{name: "candidate", err: err}
+	}()
+	go func() {
+		defer wait.Done()
+		err := runBoundCandidateBuild(toolsBuild, request.ToolsOutput)
+		if err == nil {
+			progress.event("tools-build-complete", "output="+request.ToolsOutput)
+		} else {
+			progress.event("tools-build-failed", "error="+progressSafe(err.Error()))
+		}
+		results <- buildResult{name: "tools", err: err}
+	}()
+	wait.Wait()
+	close(results)
+	var buildErrors []error
+	for result := range results {
+		if result.err == nil {
+			continue
+		}
+		if result.name == "candidate" {
+			buildErrors = append(buildErrors, &namedCandidateBuildError{name: "candidate", err: result.err})
+		} else {
+			buildErrors = append(buildErrors, &namedCandidateBuildError{name: "tools", err: result.err})
+		}
 	}
+	if len(buildErrors) != 0 {
+		if len(buildErrors) == 1 {
+			var named *namedCandidateBuildError
+			if errors.As(buildErrors[0], &named) {
+				stage = named.name + "-build"
+			}
+		}
+		return candidateBuildReceipt{}, errors.Join(buildErrors...)
+	}
+	stage = "validate-builds"
+	progress.event("builds-complete", "")
 	if err := validateAdvertisedBuildRef(request.CandidateRoot, request.CandidateRef, candidateCommit); err != nil {
 		return candidateBuildReceipt{}, fmt.Errorf("candidate source changed during build: %w", err)
 	}
@@ -105,7 +192,7 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (candidateBuildR
 	if err != nil {
 		return candidateBuildReceipt{}, fmt.Errorf("tools artifact: %w", err)
 	}
-	receipt := candidateBuildReceipt{
+	receipt = candidateBuildReceipt{
 		SchemaVersion:      2,
 		Status:             "clean-exact-candidate",
 		SourceCommit:       candidateCommit,
@@ -128,7 +215,106 @@ func CreateCandidateBuildReceipt(request CandidateBuildRequest) (candidateBuildR
 	if err := writeNewText(request.ToolsFreezeOutput, toolsCommit+"\n", 0o400); err != nil {
 		return candidateBuildReceipt{}, err
 	}
+	stage = "complete"
+	progress.event("candidate-build-complete", "receipt="+request.ReceiptOutput)
 	return receipt, nil
+}
+
+type namedCandidateBuildError struct {
+	name string
+	err  error
+}
+
+func (err *namedCandidateBuildError) Error() string { return err.name + " build: " + err.err.Error() }
+func (err *namedCandidateBuildError) Unwrap() error { return err.err }
+
+type candidateBuildFailure struct {
+	SchemaVersion     int      `json:"schemaVersion"`
+	Status            string   `json:"status"`
+	Stage             string   `json:"stage"`
+	Error             string   `json:"error"`
+	CandidateRoot     string   `json:"candidateRoot"`
+	ToolsRoot         string   `json:"toolsRoot"`
+	CandidateRef      string   `json:"candidateRef"`
+	ToolsRef          string   `json:"toolsRef"`
+	CandidateOutput   string   `json:"candidateOutput"`
+	ToolsOutput       string   `json:"toolsOutput"`
+	CandidateCommand  []string `json:"candidateCommand,omitempty"`
+	CandidateExitCode int      `json:"candidateExitCode,omitempty"`
+	CandidateStderr   string   `json:"candidateStderr,omitempty"`
+	ToolsCommand      []string `json:"toolsCommand,omitempty"`
+	ToolsExitCode     int      `json:"toolsExitCode,omitempty"`
+	ToolsStderr       string   `json:"toolsStderr,omitempty"`
+}
+
+type candidateBuildProgress struct {
+	mu          sync.Mutex
+	file        *os.File
+	failurePath string
+}
+
+func newCandidateBuildProgress(receiptPath string) (*candidateBuildProgress, error) {
+	progressPath, failurePath := candidateBuildEvidencePaths(receiptPath)
+	if err := os.MkdirAll(filepath.Dir(progressPath), 0o700); err != nil {
+		return nil, err
+	}
+	file, err := os.OpenFile(progressPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
+	if err != nil {
+		return nil, err
+	}
+	return &candidateBuildProgress{file: file, failurePath: failurePath}, nil
+}
+
+func (progress *candidateBuildProgress) event(event, detail string) {
+	progress.mu.Lock()
+	defer progress.mu.Unlock()
+	_, _ = fmt.Fprintf(progress.file, "%s event=%s %s\n", time.Now().UTC().Format(time.RFC3339Nano), event, detail)
+}
+
+func (progress *candidateBuildProgress) close() error {
+	progress.mu.Lock()
+	defer progress.mu.Unlock()
+	return progress.file.Close()
+}
+
+func candidateBuildEvidencePaths(receiptPath string) (string, string) {
+	evidenceRoot := filepath.Dir(receiptPath)
+	if filepath.Base(evidenceRoot) == "bindings" {
+		evidenceRoot = filepath.Dir(evidenceRoot)
+	}
+	logsRoot := filepath.Join(evidenceRoot, "logs")
+	return filepath.Join(logsRoot, "candidate-build.log"), filepath.Join(logsRoot, "candidate-build-failure.json")
+}
+
+func candidateBuildErrorFor(err error) error {
+	var named *namedCandidateBuildError
+	if errors.As(err, &named) && named.name == "candidate" {
+		return named.err
+	}
+	return nil
+}
+
+func toolsBuildErrorFor(err error) error {
+	var named *namedCandidateBuildError
+	if errors.As(err, &named) && named.name == "tools" {
+		return named.err
+	}
+	return nil
+}
+
+func candidateBuildFailureDetail(err error) ([]string, int, string) {
+	if err == nil {
+		return nil, 0, ""
+	}
+	var commandError *candidateBuildCommandError
+	if errors.As(err, &commandError) {
+		return commandError.Command, commandError.ExitCode, commandError.Stderr
+	}
+	return nil, 0, ""
+}
+
+func progressSafe(value string) string {
+	return strings.NewReplacer("\n", "\\n", "\r", "\\r").Replace(value)
 }
 
 func resolveGitCommit(root, ref string) (string, error) {

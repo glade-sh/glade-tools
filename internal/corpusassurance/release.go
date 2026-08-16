@@ -205,6 +205,22 @@ func fixedReleaseEnvironment() []string {
 	return []string{"HOME=/tmp/glade-assurance-home", "PATH=" + fixedReleasePath(runtime.GOROOT()), "TMPDIR=/tmp", "GOCACHE=/tmp/glade-assurance-go-cache", "GOMODCACHE=/tmp/glade-assurance-go-mod", "GOWORK=off", "GOENV=off", "GOTOOLCHAIN=local"}
 }
 
+func fixedCandidateBuildEnvironment(commit string) []string {
+	if len(commit) > 12 {
+		commit = commit[:12]
+	}
+	environment := fixedReleaseEnvironment()
+	for index, value := range environment {
+		switch {
+		case strings.HasPrefix(value, "GOCACHE="):
+			environment[index] = "GOCACHE=/tmp/glade-assurance-go-cache-" + commit
+		case strings.HasPrefix(value, "GOMODCACHE="):
+			environment[index] = "GOMODCACHE=/tmp/glade-assurance-go-mod-" + commit
+		}
+	}
+	return environment
+}
+
 func fixedReleasePath(goRoot string) string {
 	directories := []string{"/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/usr/sbin", "/bin"}
 	if filepath.IsAbs(goRoot) {
