@@ -191,7 +191,8 @@ func DraftUsageDecisionsWithTemplate(inventoryPath, ledgerPath, manifestPath, pr
 	if len(policy.Rules) == 0 {
 		return UsageDecisionDraft{}, fmt.Errorf("support policy rules are required")
 	}
-	if err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes); err != nil {
+	profileSnapshotInputs, err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes)
+	if err != nil {
 		return UsageDecisionDraft{}, err
 	}
 	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows, policy)
@@ -203,7 +204,9 @@ func DraftUsageDecisionsWithTemplate(inventoryPath, ledgerPath, manifestPath, pr
 		return UsageDecisionDraft{}, err
 	}
 	draft := UsageDecisionDraft{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), PolicySHA256: replayBytesSHA256(policyBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Automatic: automatic, Unresolved: unresolved}
-	if err := verifySealedUsagePostflight([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}}, manifest, filepath.Dir(manifestPath)); err != nil {
+	postflightInputs := []sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}}
+	postflightInputs = append(postflightInputs, profileSnapshotInputs...)
+	if err := verifySealedUsagePostflight(postflightInputs, manifest, filepath.Dir(manifestPath)); err != nil {
 		return UsageDecisionDraft{}, err
 	}
 	if err := WriteNewJSON(outputPath, draft); err != nil {
@@ -312,7 +315,8 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	if len(policy.Rules) == 0 {
 		return SealedCorpusUsage{}, fmt.Errorf("support policy rules are required")
 	}
-	if err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes); err != nil {
+	profileSnapshotInputs, err := verifyUsageProfileInputs(profileInputs, ledgerBytes, policyBytes)
+	if err != nil {
 		return SealedCorpusUsage{}, err
 	}
 	profile, err = usageProfileRowsFromLedger(profile, ledger.Rows, policy)
@@ -339,7 +343,9 @@ func BuildSealedCorpusUsage(inventoryPath, ledgerPath, manifestPath, profilePath
 	}
 	reconciliation.ProfileSHA256, reconciliation.UsageSHA256, reconciliation.DecisionSHA256 = replayBytesSHA256(profileBytes), replayBytesSHA256(firstBytes), replayBytesSHA256(decisionBytes)
 	artifact := SealedCorpusUsage{SchemaVersion: 1, InventorySHA256: replayBytesSHA256(inventoryBytes), RootManifestSHA256: replayBytesSHA256(manifestBytes), LedgerSHA256: replayBytesSHA256(ledgerBytes), ProfileSHA256: replayBytesSHA256(profileBytes), PolicySHA256: replayBytesSHA256(policyBytes), DecisionSHA256: replayBytesSHA256(decisionBytes), RawUsageSHA256: replayBytesSHA256(firstBytes), Raw: second, Reconciliation: reconciliation}
-	if err := verifySealedUsagePostflight([]sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}, {decisionPath, decisionBytes}}, manifest, filepath.Dir(manifestPath)); err != nil {
+	postflightInputs := []sealedUsageInput{{inventoryPath, inventoryBytes}, {ledgerPath, ledgerBytes}, {manifestPath, manifestBytes}, {profilePath, profileBytes}, {policyPath, policyBytes}, {decisionPath, decisionBytes}}
+	postflightInputs = append(postflightInputs, profileSnapshotInputs...)
+	if err := verifySealedUsagePostflight(postflightInputs, manifest, filepath.Dir(manifestPath)); err != nil {
 		return SealedCorpusUsage{}, err
 	}
 	if err := WriteNewJSON(outputPath, artifact); err != nil {
@@ -441,7 +447,7 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []surfaceledger.Suppo
 	return rows, profile.Inputs.Files, data, nil
 }
 
-func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) error {
+func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) ([]sealedUsageInput, error) {
 	want := map[string]string{"ledger": replayBytesSHA256(ledgerBytes), "policy": replayBytesSHA256(policyBytes)}
 	snapshotNames := map[string]struct{}{
 		"DOCS_SNAPSHOT.json":     {},
@@ -449,27 +455,41 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 		"GLADE_SNAPSHOT.json":    {},
 		"EVIDENCE_SNAPSHOT.json": {},
 	}
+	seenSnapshots := make(map[string]struct{}, len(snapshotNames))
+	sealedSnapshots := make([]sealedUsageInput, 0, len(snapshotNames))
 	for _, input := range inputs {
 		expected, ok := want[input.Name]
 		if ok {
 			if input.SHA256 != expected {
-				return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+				return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 			}
 			delete(want, input.Name)
 			continue
 		}
 		if _, ok := snapshotNames[input.Name]; !ok || !filepath.IsAbs(input.Path) {
-			return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+		}
+		if _, ok := seenSnapshots[input.Name]; ok {
+			return nil, fmt.Errorf("support profile input %q is duplicated", input.Name)
 		}
 		actual, err := sha256FileDirect(input.Path)
 		if err != nil || input.SHA256 != actual {
-			return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
+		seenSnapshots[input.Name] = struct{}{}
+		data, err := os.ReadFile(input.Path)
+		if err != nil {
+			return nil, fmt.Errorf("read support profile input %q: %w", input.Name, err)
+		}
+		sealedSnapshots = append(sealedSnapshots, sealedUsageInput{path: input.Path, data: data})
+	}
+	if len(seenSnapshots) != 0 && len(seenSnapshots) != len(snapshotNames) {
+		return nil, fmt.Errorf("support profile surface snapshots are incomplete")
 	}
 	if len(want) != 0 {
-		return fmt.Errorf("support profile lacks sealed ledger and policy inputs")
+		return nil, fmt.Errorf("support profile lacks sealed ledger and policy inputs")
 	}
-	return nil
+	return sealedSnapshots, nil
 }
 
 // usageProfileRowsFromLedger assigns the canonical usage key from the sealed

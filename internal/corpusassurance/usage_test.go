@@ -244,8 +244,63 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 		}
 		inputs = append(inputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: replayBytesSHA256(data)})
 	}
-	if err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy")); err != nil {
+	sealed, err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy"))
+	if err != nil {
 		t.Fatalf("verifyUsageProfileInputs: %v", err)
+	}
+	if len(sealed) != 4 {
+		t.Fatalf("sealed snapshot inputs = %d, want 4", len(sealed))
+	}
+}
+
+func TestVerifyUsageProfileInputsRequiresCompleteUniqueSurfaceSnapshots(t *testing.T) {
+	root := t.TempDir()
+	makeInput := func(name string) surfaceledger.SupportProfileInput {
+		path := filepath.Join(root, name)
+		data := []byte(name)
+		if err := os.WriteFile(path, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: replayBytesSHA256(data)}
+	}
+	base := []surfaceledger.SupportProfileInput{
+		{Name: "ledger", SHA256: replayBytesSHA256([]byte("ledger"))},
+		{Name: "policy", SHA256: replayBytesSHA256([]byte("policy"))},
+	}
+	docs := makeInput("DOCS_SNAPSHOT.json")
+	for name, inputs := range map[string][]surfaceledger.SupportProfileInput{
+		"partial":   append(append([]surfaceledger.SupportProfileInput{}, base...), docs),
+		"duplicate": append(append([]surfaceledger.SupportProfileInput{}, base...), docs, docs),
+	} {
+		if _, err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy")); err == nil {
+			t.Fatalf("verifyUsageProfileInputs accepted %s surface snapshot set", name)
+		}
+	}
+}
+
+func TestVerifiedProfileSnapshotInputRejectsPostflightMutation(t *testing.T) {
+	root := t.TempDir()
+	inputs := []surfaceledger.SupportProfileInput{
+		{Name: "ledger", SHA256: replayBytesSHA256([]byte("ledger"))},
+		{Name: "policy", SHA256: replayBytesSHA256([]byte("policy"))},
+	}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		path := filepath.Join(root, name)
+		data := []byte(name)
+		if err := os.WriteFile(path, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		inputs = append(inputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: replayBytesSHA256(data)})
+	}
+	sealed, err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "DOCS_SNAPSHOT.json"), []byte("changed"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifySealedUsagePostflight(sealed, InventoryManifest{}, root); err == nil {
+		t.Fatal("verifySealedUsagePostflight accepted a changed profile snapshot")
 	}
 }
 
