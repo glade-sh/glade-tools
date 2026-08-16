@@ -1190,11 +1190,15 @@ func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshot
 
 	inputs := &surfaceledger.SupportProfileInputs{Files: make([]surfaceledger.SupportProfileInput, 0, len(requested))}
 	for _, input := range requested {
-		digest, err := sha256File(input.path)
+		path, err := filepath.Abs(input.path)
 		if err != nil {
 			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
 		}
-		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, Path: input.path, SHA256: digest})
+		digest, err := sha256File(path)
+		if err != nil {
+			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
+		}
+		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, Path: path, SHA256: digest})
 	}
 	return inputs, nil
 }

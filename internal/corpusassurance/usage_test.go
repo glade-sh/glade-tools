@@ -257,6 +257,15 @@ func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
 	if len(sealed) != 5 {
 		t.Fatalf("sealed profile inputs = %d, want 5", len(sealed))
 	}
+	duplicateCorpusPath := filepath.Join(root, "corpus-usage-duplicate.json")
+	if err := os.WriteFile(duplicateCorpusPath, corpusUsageData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	duplicateCorpusInputs := append([]surfaceledger.SupportProfileInput{}, inputs...)
+	duplicateCorpusInputs = append(duplicateCorpusInputs, surfaceledger.SupportProfileInput{Name: "corpus-usage", Path: duplicateCorpusPath, SHA256: replayBytesSHA256(corpusUsageData)})
+	if _, err := verifyUsageProfileInputs(duplicateCorpusInputs, []byte("ledger"), []byte("policy")); err == nil {
+		t.Fatal("verifyUsageProfileInputs accepted duplicate corpus-usage inputs")
+	}
 }
 
 func TestVerifyUsageProfileInputsRequiresCompleteUniqueSurfaceSnapshots(t *testing.T) {
@@ -278,11 +287,21 @@ func TestVerifyUsageProfileInputsRequiresCompleteUniqueSurfaceSnapshots(t *testi
 	for _, name := range []string{"ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
 		aliasInputs = append(aliasInputs, surfaceledger.SupportProfileInput{Name: name, Path: docs.Path, SHA256: docs.SHA256})
 	}
+	hardlinkPath := filepath.Join(root, "ORG_SNAPSHOT.hardlink.json")
+	if err := os.Link(docs.Path, hardlinkPath); err != nil {
+		t.Fatal(err)
+	}
+	hardlinkInputs := append(append([]surfaceledger.SupportProfileInput{}, base...), docs)
+	hardlinkInputs = append(hardlinkInputs, surfaceledger.SupportProfileInput{Name: "ORG_SNAPSHOT.json", Path: hardlinkPath, SHA256: docs.SHA256})
+	for _, name := range []string{"GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		hardlinkInputs = append(hardlinkInputs, makeInput(name))
+	}
 	for name, inputs := range map[string][]surfaceledger.SupportProfileInput{
 		"none":      base,
 		"partial":   append(append([]surfaceledger.SupportProfileInput{}, base...), docs),
 		"duplicate": append(append([]surfaceledger.SupportProfileInput{}, base...), docs, docs),
 		"alias":     aliasInputs,
+		"hardlink":  hardlinkInputs,
 	} {
 		if _, err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy")); err == nil {
 			t.Fatalf("verifyUsageProfileInputs accepted %s surface snapshot set", name)

@@ -736,6 +736,53 @@ func TestCompatSurfaceSupportProfileInputDigests(t *testing.T) {
 	}
 }
 
+func TestBuildSupportProfileInputsNormalizesRelativePaths(t *testing.T) {
+	root, err := os.MkdirTemp("/private/tmp", "support-profile-inputs-")
+	if err != nil {
+		t.Fatal(err)
+	}
+	oldWorkingDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(root); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(oldWorkingDir)
+		_ = os.RemoveAll(root)
+	})
+	ledger := filepath.Join(root, "ledger.json")
+	policy := filepath.Join(root, "policy.json")
+	corpusUsage := filepath.Join(root, "corpus-usage.json")
+	snapshots := filepath.Join(root, "snapshots")
+	if err := os.MkdirAll(snapshots, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{ledger, policy, corpusUsage} {
+		if err := os.WriteFile(path, []byte(path), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		if err := os.WriteFile(filepath.Join(snapshots, name), []byte(name), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	inputs, err := buildSupportProfileInputs("ledger.json", "policy.json", "corpus-usage.json", "snapshots")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inputs.Files) != 7 {
+		t.Fatalf("input count = %d, want 7", len(inputs.Files))
+	}
+	for _, input := range inputs.Files {
+		if !filepath.IsAbs(input.Path) {
+			t.Fatalf("input %q path is not absolute: %q", input.Name, input.Path)
+		}
+	}
+}
+
 func TestCompatSurfaceSupportProfileMissingSnapshotFails(t *testing.T) {
 	root := t.TempDir()
 	ledger := filepath.Join(root, "ledger.json")

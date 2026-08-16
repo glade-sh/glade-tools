@@ -449,7 +449,6 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []surfaceledger.Suppo
 
 func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) ([]sealedUsageInput, error) {
 	want := map[string]string{"ledger": replayBytesSHA256(ledgerBytes), "policy": replayBytesSHA256(policyBytes)}
-	corpusUsageNames := map[string]struct{}{"corpus-usage": {}}
 	snapshotNames := map[string]struct{}{
 		"DOCS_SNAPSHOT.json":     {},
 		"ORG_SNAPSHOT.json":      {},
@@ -457,7 +456,12 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 		"EVIDENCE_SNAPSHOT.json": {},
 	}
 	seenSnapshots := make(map[string]struct{}, len(snapshotNames))
-	seenArtifacts := make(map[string]string, len(snapshotNames)+len(corpusUsageNames))
+	seenProfileFiles := make(map[string]struct{}, len(snapshotNames)+1)
+	type sealedArtifact struct {
+		name string
+		info os.FileInfo
+	}
+	seenArtifacts := make([]sealedArtifact, 0, len(snapshotNames)+1)
 	sealedSnapshots := make([]sealedUsageInput, 0, len(snapshotNames))
 	for _, input := range inputs {
 		expected, ok := want[input.Name]
@@ -468,11 +472,15 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 			delete(want, input.Name)
 			continue
 		}
-		_, isCorpusUsage := corpusUsageNames[input.Name]
+		isCorpusUsage := input.Name == "corpus-usage"
 		_, isSnapshot := snapshotNames[input.Name]
 		if (!isCorpusUsage && !isSnapshot) || !filepath.IsAbs(input.Path) {
 			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
+		if _, ok := seenProfileFiles[input.Name]; ok {
+			return nil, fmt.Errorf("support profile input %q is duplicated", input.Name)
+		}
+		seenProfileFiles[input.Name] = struct{}{}
 		if isSnapshot {
 			if _, ok := seenSnapshots[input.Name]; ok {
 				return nil, fmt.Errorf("support profile input %q is duplicated", input.Name)
@@ -486,14 +494,16 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 		if input.SHA256 != replayBytesSHA256(data) {
 			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
-		resolved, err := filepath.EvalSymlinks(input.Path)
+		info, err := os.Stat(input.Path)
 		if err != nil {
-			return nil, fmt.Errorf("resolve support profile input %q: %w", input.Name, err)
+			return nil, fmt.Errorf("stat support profile input %q: %w", input.Name, err)
 		}
-		if previous, ok := seenArtifacts[resolved]; ok {
-			return nil, fmt.Errorf("support profile inputs %q and %q alias the same artifact", previous, input.Name)
+		for _, previous := range seenArtifacts {
+			if os.SameFile(previous.info, info) {
+				return nil, fmt.Errorf("support profile inputs %q and %q alias the same artifact", previous.name, input.Name)
+			}
 		}
-		seenArtifacts[resolved] = input.Name
+		seenArtifacts = append(seenArtifacts, sealedArtifact{name: input.Name, info: info})
 		sealedSnapshots = append(sealedSnapshots, sealedUsageInput{path: input.Path, data: data})
 	}
 	if len(seenSnapshots) != len(snapshotNames) {
