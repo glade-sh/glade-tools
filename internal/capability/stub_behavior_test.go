@@ -1,6 +1,43 @@
 package capability
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/glade-sh/glade/internal/apexast"
+	"github.com/glade-sh/glade/internal/typesys"
+)
+
+func TestUserProfilesSetPhotoStubBehaviorMatchesLocalShapes(t *testing.T) {
+	tests := []struct {
+		name   string
+		params []string
+		want   StubBehaviorStatus
+	}{
+		{name: "binary input", params: []string{"String", "String", "ConnectApi.BinaryInput"}, want: StubBehaviorImplemented},
+		{name: "file version", params: []string{"String", "String", "String", "Integer"}, want: StubBehaviorImplemented},
+		{name: "weak object overload", params: []string{"String", "String", "String", "Object"}, want: StubBehaviorUnsupported},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			params := make([]apexast.Parameter, 0, len(tt.params))
+			for _, paramType := range tt.params {
+				params = append(params, apexast.Parameter{Type: paramType})
+			}
+			symbol := typesys.TypeSymbol{Namespace: "ConnectApi", Name: "UserProfiles"}
+			member := typesys.MemberSymbol{
+				Kind:       apexast.DeclarationMethod,
+				Name:       "setPhoto",
+				Type:       "ConnectApi.Photo",
+				Modifiers:  []string{"static"},
+				Parameters: params,
+			}
+			status, _, ok := localStubBehaviorEvidenceOverride(symbol, member)
+			if !ok || status != tt.want {
+				t.Fatalf("status = %q, ok = %t, want %q/true", status, ok, tt.want)
+			}
+		})
+	}
+}
 
 func TestBuildStubBehaviorReportUsesStdlibEvidence(t *testing.T) {
 	report := BuildStubBehaviorReport()
