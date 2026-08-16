@@ -448,7 +448,8 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []surfaceledger.Suppo
 }
 
 func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) ([]sealedUsageInput, error) {
-	want := map[string]string{"ledger": replayBytesSHA256(ledgerBytes), "policy": replayBytesSHA256(policyBytes)}
+	expectedBytes := map[string][]byte{"ledger": ledgerBytes, "policy": policyBytes}
+	want := map[string]struct{}{"ledger": {}, "policy": {}}
 	snapshotNames := map[string]struct{}{
 		"DOCS_SNAPSHOT.json":     {},
 		"ORG_SNAPSHOT.json":      {},
@@ -456,25 +457,19 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 		"EVIDENCE_SNAPSHOT.json": {},
 	}
 	seenSnapshots := make(map[string]struct{}, len(snapshotNames))
-	seenProfileFiles := make(map[string]struct{}, len(snapshotNames)+1)
+	seenProfileFiles := make(map[string]struct{}, len(snapshotNames)+3)
 	type sealedArtifact struct {
 		name string
 		info os.FileInfo
 	}
 	seenArtifacts := make([]sealedArtifact, 0, len(snapshotNames)+1)
-	sealedSnapshots := make([]sealedUsageInput, 0, len(snapshotNames))
+	sealedProfileInputs := make([]sealedUsageInput, 0, len(snapshotNames)+3)
+	seenCorpusUsage := false
 	for _, input := range inputs {
-		expected, ok := want[input.Name]
-		if ok {
-			if input.SHA256 != expected {
-				return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
-			}
-			delete(want, input.Name)
-			continue
-		}
+		expected, isCoreInput := expectedBytes[input.Name]
 		isCorpusUsage := input.Name == "corpus-usage"
 		_, isSnapshot := snapshotNames[input.Name]
-		if (!isCorpusUsage && !isSnapshot) || !filepath.IsAbs(input.Path) {
+		if (!isCoreInput && !isCorpusUsage && !isSnapshot) || !filepath.IsAbs(input.Path) {
 			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
 		if _, ok := seenProfileFiles[input.Name]; ok {
@@ -482,17 +477,20 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 		}
 		seenProfileFiles[input.Name] = struct{}{}
 		if isSnapshot {
-			if _, ok := seenSnapshots[input.Name]; ok {
-				return nil, fmt.Errorf("support profile input %q is duplicated", input.Name)
-			}
 			seenSnapshots[input.Name] = struct{}{}
+		}
+		if isCorpusUsage {
+			seenCorpusUsage = true
 		}
 		data, err := os.ReadFile(input.Path)
 		if err != nil {
 			return nil, fmt.Errorf("read support profile input %q: %w", input.Name, err)
 		}
-		if input.SHA256 != replayBytesSHA256(data) {
+		if input.SHA256 != replayBytesSHA256(data) || (isCoreInput && !bytes.Equal(data, expected)) {
 			return nil, fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+		}
+		if isCoreInput {
+			delete(want, input.Name)
 		}
 		info, err := os.Stat(input.Path)
 		if err != nil {
@@ -504,15 +502,18 @@ func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledger
 			}
 		}
 		seenArtifacts = append(seenArtifacts, sealedArtifact{name: input.Name, info: info})
-		sealedSnapshots = append(sealedSnapshots, sealedUsageInput{path: input.Path, data: data})
+		sealedProfileInputs = append(sealedProfileInputs, sealedUsageInput{path: input.Path, data: data})
 	}
 	if len(seenSnapshots) != len(snapshotNames) {
 		return nil, fmt.Errorf("support profile surface snapshots are incomplete")
 	}
+	if !seenCorpusUsage {
+		return nil, fmt.Errorf("support profile lacks sealed corpus-usage input")
+	}
 	if len(want) != 0 {
 		return nil, fmt.Errorf("support profile lacks sealed ledger and policy inputs")
 	}
-	return sealedSnapshots, nil
+	return sealedProfileInputs, nil
 }
 
 // usageProfileRowsFromLedger assigns the canonical usage key from the sealed

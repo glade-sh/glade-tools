@@ -153,7 +153,12 @@ func TestCorpusAssuranceUsageDraftExecutes(t *testing.T) {
 	policy := surfaceledger.SupportPolicy{Rules: []surfaceledger.SupportPolicyRule{{Namespace: "System", Disposition: surfaceledger.DispositionLocalRuntimeRequired, Reason: "test"}}}
 	writeCorpusAssuranceJSON(t, policyPath, policy)
 	profilePath := filepath.Join(root, "PROFILE.json")
-	profileInputs := []surfaceledger.SupportProfileInput{{Name: "ledger", SHA256: corpusAssuranceFileSHA256(t, ledgerPath)}, {Name: "policy", SHA256: corpusAssuranceFileSHA256(t, policyPath)}}
+	profileInputs := []surfaceledger.SupportProfileInput{{Name: "ledger", Path: ledgerPath, SHA256: corpusAssuranceFileSHA256(t, ledgerPath)}, {Name: "policy", Path: policyPath, SHA256: corpusAssuranceFileSHA256(t, policyPath)}}
+	corpusUsagePath := filepath.Join(root, "CORPUS_USAGE.json")
+	if err := os.WriteFile(corpusUsagePath, []byte(`{"usage":[]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	profileInputs = append(profileInputs, surfaceledger.SupportProfileInput{Name: "corpus-usage", Path: corpusUsagePath, SHA256: corpusAssuranceFileSHA256(t, corpusUsagePath)})
 	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
 		path := filepath.Join(root, name)
 		if err := os.WriteFile(path, []byte(name), 0o600); err != nil {

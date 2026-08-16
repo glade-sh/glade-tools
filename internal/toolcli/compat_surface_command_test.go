@@ -765,7 +765,7 @@ func TestBuildSupportProfileInputsNormalizesRelativePaths(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	inputs, err := buildSupportProfileInputs("ledger.json", "policy.json", "corpus-usage.json", "snapshots")
+	inputs, err := buildSupportProfileInputs("ledger.json", "policy.json", "corpus-usage.json", "snapshots", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

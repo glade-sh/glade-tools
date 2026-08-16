@@ -1,6 +1,7 @@
 package toolcli
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -1085,14 +1086,23 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 		return errors.New("--output and --html-output must be different paths")
 	}
 
-	ledger, err := surfaceledger.ReadLedgerJSON(ledgerPath)
+	ledgerBytes, err := os.ReadFile(ledgerPath)
 	if err != nil {
 		return err
 	}
-	policy, err := surfaceledger.LoadSupportPolicy(policyPath)
+	ledger, err := surfaceledger.ParseLedgerJSON(ledgerBytes)
 	if err != nil {
 		return err
 	}
+	policyBytes, err := os.ReadFile(policyPath)
+	if err != nil {
+		return err
+	}
+	policy, err := surfaceledger.ParseSupportPolicyJSON(policyBytes)
+	if err != nil {
+		return err
+	}
+	profileInputBytes := map[string][]byte{"ledger": ledgerBytes, "policy": policyBytes}
 
 	var cu *surfaceledger.CorpusUsage
 	if corpusUsagePath != "" {
@@ -1105,10 +1115,11 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 			return fmt.Errorf("parse corpus-usage: %w", err)
 		}
 		cu = &parsed
+		profileInputBytes["corpus-usage"] = data
 	}
 
 	profile := surfaceledger.ComputeSupportProfile(ledger.Rows, policy, cu)
-	inputs, err := buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir)
+	inputs, err := buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir, profileInputBytes)
 	if err != nil {
 		return err
 	}
@@ -1165,7 +1176,7 @@ func runCompatSurfaceSupportProfile(args []string, w io.Writer) error {
 	return nil
 }
 
-func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir string) (*surfaceledger.SupportProfileInputs, error) {
+func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshotDir string, inputBytes map[string][]byte) (*surfaceledger.SupportProfileInputs, error) {
 	requested := []struct {
 		name string
 		path string
@@ -1194,10 +1205,18 @@ func buildSupportProfileInputs(ledgerPath, policyPath, corpusUsagePath, snapshot
 		if err != nil {
 			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
 		}
-		digest, err := sha256File(path)
+		path, err = filepath.EvalSymlinks(path)
 		if err != nil {
 			return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
 		}
+		data, provided := inputBytes[input.name]
+		if !provided {
+			data, err = os.ReadFile(path)
+			if err != nil {
+				return nil, fmt.Errorf("support-profile input %s: %w", input.name, err)
+			}
+		}
+		digest := fmt.Sprintf("%x", sha256.Sum256(data))
 		inputs.Files = append(inputs.Files, surfaceledger.SupportProfileInput{Name: input.name, Path: path, SHA256: digest})
 	}
 	return inputs, nil

@@ -566,6 +566,11 @@ func LoadSupportPolicy(path string) (SupportPolicy, error) {
 	if err != nil {
 		return SupportPolicy{}, err
 	}
+	return ParseSupportPolicyJSON(data)
+}
+
+// ParseSupportPolicyJSON parses one already-read support policy byte slice.
+func ParseSupportPolicyJSON(data []byte) (SupportPolicy, error) {
 	var policy SupportPolicy
 	if err := json.Unmarshal(data, &policy); err != nil {
 		return SupportPolicy{}, err
