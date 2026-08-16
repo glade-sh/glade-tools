@@ -443,12 +443,28 @@ func readUsageProfileRows(path string) ([]UsageProfileRow, []surfaceledger.Suppo
 
 func verifyUsageProfileInputs(inputs []surfaceledger.SupportProfileInput, ledgerBytes, policyBytes []byte) error {
 	want := map[string]string{"ledger": replayBytesSHA256(ledgerBytes), "policy": replayBytesSHA256(policyBytes)}
+	snapshotNames := map[string]struct{}{
+		"DOCS_SNAPSHOT.json":     {},
+		"ORG_SNAPSHOT.json":      {},
+		"GLADE_SNAPSHOT.json":    {},
+		"EVIDENCE_SNAPSHOT.json": {},
+	}
 	for _, input := range inputs {
 		expected, ok := want[input.Name]
-		if !ok || input.SHA256 != expected {
+		if ok {
+			if input.SHA256 != expected {
+				return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+			}
+			delete(want, input.Name)
+			continue
+		}
+		if _, ok := snapshotNames[input.Name]; !ok || !filepath.IsAbs(input.Path) {
 			return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
 		}
-		delete(want, input.Name)
+		actual, err := sha256FileDirect(input.Path)
+		if err != nil || input.SHA256 != actual {
+			return fmt.Errorf("support profile input %q does not bind supplied bytes", input.Name)
+		}
 	}
 	if len(want) != 0 {
 		return fmt.Errorf("support profile lacks sealed ledger and policy inputs")

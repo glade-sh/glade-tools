@@ -230,6 +230,25 @@ func TestReadUsageProfileRowsRejectsMissingSealedInputs(t *testing.T) {
 	}
 }
 
+func TestVerifyUsageProfileInputsBindsSurfaceSnapshots(t *testing.T) {
+	root := t.TempDir()
+	inputs := []surfaceledger.SupportProfileInput{
+		{Name: "ledger", SHA256: replayBytesSHA256([]byte("ledger"))},
+		{Name: "policy", SHA256: replayBytesSHA256([]byte("policy"))},
+	}
+	for _, name := range []string{"DOCS_SNAPSHOT.json", "ORG_SNAPSHOT.json", "GLADE_SNAPSHOT.json", "EVIDENCE_SNAPSHOT.json"} {
+		path := filepath.Join(root, name)
+		data := []byte(name)
+		if err := os.WriteFile(path, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		inputs = append(inputs, surfaceledger.SupportProfileInput{Name: name, Path: path, SHA256: replayBytesSHA256(data)})
+	}
+	if err := verifyUsageProfileInputs(inputs, []byte("ledger"), []byte("policy")); err != nil {
+		t.Fatalf("verifyUsageProfileInputs: %v", err)
+	}
+}
+
 func TestBuildSealedCorpusUsageDerivesEveryRepositoryTwice(t *testing.T) {
 	root := t.TempDir()
 	snapshot := filepath.Join(root, "snapshots", "private-corpus-001")
