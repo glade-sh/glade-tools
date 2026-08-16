@@ -70,6 +70,16 @@ report
 step. New runs use `attempt-init` so the cleanup-authority bootstrap does not
 require copied hashes.
 
+`candidate-build` starts the product and tools builds concurrently. Its exact
+commit binding selects reusable commit-scoped Go build and module caches, so a
+retry for the same candidate pair does not pay the full cold-cache cost again.
+The command writes progress to
+`artifacts/logs/candidate-build.log`. If either build or a later binding step
+fails, it also writes the create-only
+`artifacts/logs/candidate-build-failure.json`, including the failing stage,
+command, exit code, and compiler stderr when available. A failed root remains
+the record of that attempt; the next run still uses a successor root.
+
 ## Artifact categories
 
 - **Controlled inputs:** scope inventory, support policy, reviewed docs

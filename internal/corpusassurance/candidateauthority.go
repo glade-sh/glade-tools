@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -209,11 +210,15 @@ func deriveBuildBinding(sourceRoot, target string) (candidateBuildBinding, error
 	if err != nil || filepath.Clean(top) != filepath.Clean(canonical) {
 		return candidateBuildBinding{}, fmt.Errorf("candidate source root is not the Git root")
 	}
+	commit, err := cleanGitHead(canonical)
+	if err != nil {
+		return candidateBuildBinding{}, err
+	}
 	tree, err := gitOutput(canonical, "rev-parse", "HEAD^{tree}")
 	if err != nil || !commitPattern.MatchString(tree) {
 		return candidateBuildBinding{}, fmt.Errorf("candidate source tree is unavailable")
 	}
-	environment := append(fixedReleaseEnvironment(), "CGO_ENABLED=1")
+	environment := append(fixedCandidateBuildEnvironment(commit), "CGO_ENABLED=1")
 	goPath, err := fixedReleaseGoBinary(environment)
 	if err != nil {
 		return candidateBuildBinding{}, err
@@ -335,7 +340,15 @@ func runBoundCandidateBuild(binding candidateBuildBinding, outputPath string) er
 	command := exec.CommandContext(ctx, binding.Go.Path, arguments...)
 	command.Dir, command.Env, command.Stderr = binding.SourceRoot, append([]string(nil), binding.Environment...), &stderr
 	if err := command.Run(); err != nil || ctx.Err() == context.DeadlineExceeded {
-		return fmt.Errorf("candidate source build failed: %w", err)
+		exitCode := -1
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			exitCode = exitErr.ExitCode()
+		}
+		if ctx.Err() == context.DeadlineExceeded {
+			err = ctx.Err()
+		}
+		return &candidateBuildCommandError{Err: err, Command: append([]string{binding.Go.Path}, arguments...), ExitCode: exitCode, Stderr: stderr.String()}
 	}
 	after, err := sha256File(binding.Go.Path)
 	if err != nil || after != before {
@@ -343,6 +356,23 @@ func runBoundCandidateBuild(binding candidateBuildBinding, outputPath string) er
 	}
 	return nil
 }
+
+type candidateBuildCommandError struct {
+	Err      error
+	Command  []string
+	ExitCode int
+	Stderr   string
+}
+
+func (err *candidateBuildCommandError) Error() string {
+	message := fmt.Sprintf("candidate source build failed: %v", err.Err)
+	if stderr := strings.TrimSpace(err.Stderr); stderr != "" {
+		message += ": " + stderr
+	}
+	return message
+}
+
+func (err *candidateBuildCommandError) Unwrap() error { return err.Err }
 
 func validateCandidateParser(candidate attemptCandidate, workingDirectory string) error {
 	result, stdout, _ := runReplayCommandOutput(workingDirectory, ReplayCommand{Path: candidate.Path, Args: []string{"doctor", "--json"}, Env: append([]string(nil), fixedReplayEnvironment...), Timeout: 30 * time.Second})

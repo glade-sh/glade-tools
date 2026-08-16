@@ -129,6 +129,24 @@ func TestCandidateBuildValidatorBindsExactSource(t *testing.T) {
 	}
 }
 
+func TestCandidateBuildBindingUsesCommitScopedCaches(t *testing.T) {
+	root := newInventoryRepository(t, map[string]string{
+		"go.mod":            "module example.invalid/candidate\n\ngo 1.22\n",
+		"cmd/glade/main.go": "package main\nfunc main() {}\n",
+	})
+	commit := testGitOutput(t, root, "rev-parse", "HEAD")
+	binding, err := deriveCandidateBuildBinding(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	environment := strings.Join(binding.Environment, "\n")
+	for _, name := range []string{"GOCACHE=/tmp/glade-assurance-go-cache-" + commit[:12], "GOMODCACHE=/tmp/glade-assurance-go-mod-" + commit[:12]} {
+		if !strings.Contains(environment, name) {
+			t.Fatalf("candidate build environment = %q, missing %q", environment, name)
+		}
+	}
+}
+
 func TestToolsBuildValidatorBindsExactSource(t *testing.T) {
 	root := newInventoryRepository(t, map[string]string{
 		"go.mod":                  "module example.invalid/tools\n\ngo 1.22\n",

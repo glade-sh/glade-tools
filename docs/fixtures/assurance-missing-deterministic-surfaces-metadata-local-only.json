@@ -1,0 +1,29 @@
+{
+  "name": "assurance-missing-deterministic-surfaces-metadata-local-only",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Metadata.Operations",
+      "symbol": "Metadata.Operations",
+      "kind": "test",
+      "notes": "Source-backed deterministic local-only test probe; no API-67 Salesforce comparison binds Metadata.Operations in this campaign."
+    },
+    {
+      "surfaceId": "apex:Metadata.CustomField",
+      "symbol": "Metadata.CustomField",
+      "kind": "test",
+      "notes": "Source-backed deterministic local-only test probe; Salesforce API 67 rejects Metadata.CustomField."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/AssuranceMissingDeterministicSurfacesMetadataTest.cls",
+      "content": "@isTest private class AssuranceMissingDeterministicSurfacesMetadataTest { @isTest static void rows() { Metadata.Operations operations = new Metadata.Operations(); Metadata.CustomField customField = new Metadata.CustomField(); customField.fullName = 'Invoice__c.Paid__c'; System.assertNotEquals(null, operations); System.assertNotEquals(null, customField); } }"
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Metadata.CustomField is rejected by Salesforce API 67, and this campaign has no explicit API-67 comparison binding for Metadata.Operations; retain deterministic local proof and make no Salesforce compile or runtime claim."
+}

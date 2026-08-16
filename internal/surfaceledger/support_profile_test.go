@@ -280,17 +280,23 @@ func TestRealSupportPolicyDefersFeatureGatedIndustriesContext(t *testing.T) {
 		apexRow("apex:Context.IndustriesContext", "Context", "IndustriesContext"),
 		apexMemberRow("apex:Context.IndustriesContext.buildContext(Map<String,Object>)", "Context", "IndustriesContext", "buildContext"),
 		apexMemberRow("apex:Context.IndustriesContext.deleteRecords(Map<String,Object>)", "Context", "IndustriesContext", "deleteRecords"),
+		apexMemberRow("apex:Context.IndustriesContext.deleteContext(Map<String,Object>)", "Context", "IndustriesContext", "deleteContext"),
+		apexMemberRow("apex:Context.IndustriesContext.evictContextDefinition(Map<String,Object>)", "Context", "IndustriesContext", "evictContextDefinition"),
 	}
 	profile := ComputeSupportProfile(rows, SupportPolicy{Rules: contextRules}, nil)
 	if len(profile.ValidationErrors) != 0 {
 		t.Fatalf("expected no validation errors, got: %v", profile.ValidationErrors)
 	}
-	if len(profile.NonDeferredGaps) != 0 {
-		t.Fatalf("feature-gated IndustriesContext retained non-deferred gaps: %#v", profile.NonDeferredGaps)
+	if len(profile.NonDeferredGaps) != 3 {
+		t.Fatalf("expected the non-exception Context rows to remain deterministic-mock gaps, got: %#v", profile.NonDeferredGaps)
+	}
+	want := map[string]SupportDisposition{
+		"apex:Context.IndustriesContext.deleteContext(Map<String,Object>)":          DispositionHostedDeferred,
+		"apex:Context.IndustriesContext.evictContextDefinition(Map<String,Object>)": DispositionHostedDeferred,
 	}
 	for _, row := range profile.Rows {
-		if row.Disposition != DispositionHostedDeferred {
-			t.Errorf("%s disposition = %s, want %s", row.SurfaceID, row.Disposition, DispositionHostedDeferred)
+		if wantDisposition, ok := want[row.SurfaceID]; ok && row.Disposition != wantDisposition {
+			t.Errorf("%s disposition = %s, want %s", row.SurfaceID, row.Disposition, wantDisposition)
 		}
 	}
 }

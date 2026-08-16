@@ -275,6 +275,16 @@ func localStubBehaviorEvidenceOverride(symbol typesys.TypeSymbol, member typesys
 		return "", "", false
 	}
 	switch typeName {
+	case "ConnectApi.UserProfiles":
+		if name == "setphoto" {
+			switch {
+			case stubBehaviorMemberParamsEqual(member, "String", "String", "ConnectApi.BinaryInput"),
+				stubBehaviorMemberParamsEqual(member, "String", "String", "String", "Integer"):
+				return StubBehaviorImplemented, "local runtime returns an empty typed Photo DTO for supported UserProfiles.setPhoto shapes without live service mutation", true
+			default:
+				return StubBehaviorUnsupported, "local runtime supports only the documented UserProfiles.setPhoto overloads; this shape remains explicitly unsupported", true
+			}
+		}
 	case "Canvas.Test":
 		switch name {
 		case "mockrendercontext":
