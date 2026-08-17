@@ -112,15 +112,15 @@
   ],
   "expected": {
     "error": {
-      "message": "GLADESEMA028",
-      "type": "Error"
+      "message": "local stub surface",
+      "type": "UnsupportedOperationException"
     }
   },
   "mode": "local-runtime",
   "name": "current-base-cache-negative-api67",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "API 67 removed these Cache value-size, availability, and static validateKeys members; the fixture preserves the negative contract locally without claiming hosted execution.",
+  "salesforceExclusionReason": "This fixture does not establish Salesforce availability or removal for these Cache members; Glade does not model the Cache statistics, availability, and key-validation behavior exercised here; it proves only the local rejection contract and grants zero Salesforce parity credit.",
   "source": [
     {
       "content": "Cache.Org.getAvgValueSize(); Cache.Org.getMaxValueSize(); Cache.Org.isAvailable(); Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getAvgValueSize(); orgPartition.getMaxValueSize(); orgPartition.validateKeys(false, new List<String>{'a'}); orgPartition.validateKeys(false, new Set<String>{'a'}); Cache.Partition.validateKeys(false, new List<String>{'a'}); Cache.Partition.validateKeys(false, new Set<String>{'a'}); Cache.Session.getAvgValueSize(); Cache.Session.getMaxValueSize(); Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getAvgValueSize(); sessionPartition.getMaxValueSize(); sessionPartition.validateKeys(false, new List<String>{'a'}); sessionPartition.validateKeys(false, new Set<String>{'a'});",
