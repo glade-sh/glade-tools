@@ -2173,6 +2173,72 @@
       "reason": "Salesforce restricts deepClone to SObject list types; local runtime preserves the explicit rejection contract"
     },
     {
+      "surfacePrefix": "apex:Database.DMLOptions.DuplicateRuleHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured duplicate-rule effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:Database.DMLOptions.LocalizeErrors",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured locale error effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:Database.DMLOptions.assignmentRuleHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured assignment-rule effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:Database.DMLOptions.emailHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured email effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:Database.DMLOptions.localeOptions",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured locale effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:System.DMLOptions.assignmentRuleHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured assignment-rule effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:System.DMLOptions.emailHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured email effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:System.DMLOptions.localeOptions",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured locale effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfacePrefix": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "local telemetry call is a deliberate no-op and grants no Salesforce analytics parity."
+    },
+    {
+      "surfacePrefix": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "local telemetry call is a deliberate no-op and grants no Salesforce analytics parity."
+    },
+    {
+      "surfacePrefix": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "local telemetry call is a deliberate no-op and grants no Salesforce analytics parity."
+    },
+    {
       "surfacePrefix": "apex:System.Messaging.extractInboundEmail(Object,Boolean)",
       "disposition": "hosted-deferred",
       "override": true,
