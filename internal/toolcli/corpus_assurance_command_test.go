@@ -22,14 +22,14 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
-	commands := []string{"candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "org-create", "org-preflight", "salesforce-dispatch", "salesforce-run", "org-cleanup", "salesforce-reconcile", "remote-failure-preserve", "cleanup", "report"}
+	commands := []string{"candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "org-create", "org-preflight", "salesforce-dispatch", "salesforce-run", "org-cleanup", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"}
 	for _, command := range commands {
 		if !strings.Contains(stdout.String(), "glade-tools corpus assurance "+command+" ") {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}
 	}
 	last := -1
-	for _, command := range []string{"candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "salesforce-dispatch", "salesforce-run", "salesforce-reconcile", "remote-failure-preserve", "cleanup", "report"} {
+	for _, command := range []string{"candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "salesforce-dispatch", "salesforce-run", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"} {
 		position := strings.Index(stdout.String(), "glade-tools corpus assurance "+command+" ")
 		if position <= last {
 			t.Fatalf("help order moved %q after position %d:\n%s", command, last, stdout.String())
@@ -104,6 +104,47 @@ func TestCorpusAssuranceReportRequiresRetainedSalesforceReconciliation(t *testin
 
 func TestCorpusAssuranceRemoteFailurePreserve(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "remote-failure-preserve")
+}
+
+func TestCorpusAssuranceReviewIndex(t *testing.T) {
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "review-index")
+	root := t.TempDir()
+	attemptPath := filepath.Join(root, "ATTEMPT.json")
+	attempt := corpusassurance.AssuranceAttempt{
+		SchemaVersion:            1,
+		InventorySHA256:          strings.Repeat("a", 64),
+		CandidateAuthoritySHA256: strings.Repeat("b", 64),
+		Candidate:                corpusassurance.RuntimeArtifact{Commit: strings.Repeat("c", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("d", 64)},
+		Tools:                    corpusassurance.RuntimeArtifact{Commit: strings.Repeat("e", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("f", 64)},
+		RemoteCleanupAuthoritySHA256: map[string]string{
+			"replay-worker":     strings.Repeat("0", 64),
+			"salesforce-worker": strings.Repeat("1", 64),
+		},
+	}
+	writeCorpusAssuranceJSON(t, attemptPath, attempt)
+	artifact := filepath.Join(root, "failure.log")
+	if err := os.WriteFile(artifact, []byte("retained\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(root, "REVIEW_INDEX.json")
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", "review-index", "--attempt", attemptPath, "--artifact", artifact, "--output", output}, &stdout, &stderr); code != 0 {
+		t.Fatalf("review-index code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "review-index: rows=1") {
+		t.Fatalf("review-index output=%q", stdout.String())
+	}
+	if _, err := corpusassurance.LoadReviewIndex(output); err != nil {
+		t.Fatalf("LoadReviewIndex: %v", err)
+	}
+	stdout.Reset()
+	stderr.Reset()
+	if code := Run(context.Background(), []string{"corpus", "assurance", "review-index", "--verify", "--index", output}, &stdout, &stderr); code != 0 {
+		t.Fatalf("review-index verify code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "review-index-verify: rows=1") {
+		t.Fatalf("review-index verify output=%q", stdout.String())
+	}
 }
 
 func assertCorpusAssuranceCommandRejectsMissingFlags(t *testing.T, command string) {
