@@ -1,14 +1,12 @@
 package surfaceledger
 
 import (
-	"bytes"
 	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/glade-sh/glade/internal/vm"
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
@@ -137,8 +135,8 @@ func TestG3InterfaceConstructorFixturesDoNotClaimAbstractConstruction(t *testing
 						t.Fatalf("SandboxPostCopy fixture claims a callback invocation it does not execute: %q", program)
 					}
 				}
-				executeG3AnonymousFixtureProgram(t, fixture)
-			} else if result, err := compat.Run(fixture); err != nil || !result.OK {
+			}
+			if result, err := compat.Run(fixture); err != nil || !result.OK {
 				t.Fatalf("fixture execution = %#v, error = %v", result, err)
 			}
 		})
@@ -164,21 +162,6 @@ func TestG3InterfaceConstructorFixturesDoNotClaimAbstractConstruction(t *testing
 		if !found {
 			t.Fatalf("fixture sources lack concrete interface witness %q", marker)
 		}
-	}
-}
-
-func executeG3AnonymousFixtureProgram(t *testing.T, fixture compat.Fixture) {
-	t.Helper()
-	if fixture.Command.Kind != "exec" || len(fixture.Command.Args) != 1 {
-		t.Fatalf("fixture command = %#v, want one anonymous exec program", fixture.Command)
-	}
-	program, err := vm.CompileAnonymous(fixture.Command.Args[0])
-	if err != nil {
-		t.Fatal(err)
-	}
-	var stdout bytes.Buffer
-	if _, err := vm.New(&stdout).Execute(program); err != nil {
-		t.Fatalf("anonymous fixture execution = %v, stdout = %q", err, stdout.String())
 	}
 }
 
