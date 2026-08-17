@@ -157,11 +157,6 @@
     },
     {
       "kind": "exec",
-      "surfaceId": "apex:System.Set.deepClone()",
-      "symbol": "Set.deepClone()"
-    },
-    {
-      "kind": "exec",
       "surfaceId": "apex:System.Map.containsKey(Object)",
       "symbol": "Map.containsKey"
     },

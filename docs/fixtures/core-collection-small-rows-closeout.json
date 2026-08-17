@@ -8,11 +8,6 @@
   "evidence": [
     {
       "kind": "exec",
-      "surfaceId": "apex:System.Set.deepClone()",
-      "symbol": "Set.deepClone()"
-    },
-    {
-      "kind": "exec",
       "notes": "No-argument deepClone recursively copies SObject elements.",
       "surfaceId": "apex:System.Set.deepClone()",
       "symbol": "Set.deepClone()"

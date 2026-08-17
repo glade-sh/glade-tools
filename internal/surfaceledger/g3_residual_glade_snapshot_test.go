@@ -30,9 +30,16 @@ func TestG3ResidualRowsJoinExactGladeAndFixtureSnapshots(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	evidenceCounts := make(map[string]int, len(evidence))
+	for _, row := range evidence {
+		evidenceCounts[row.SurfaceID]++
+	}
 	evidenceByID := rowsByID(evidence)
 	gladeByID := rowsByID(BuildGladeSnapshot())
 	for _, id := range g3ResidualGladeSnapshotIDs {
+		if evidenceCounts[id] != 1 {
+			t.Errorf("exact fixture evidence count for %s = %d, want 1", id, evidenceCounts[id])
+		}
 		evidenceRow, ok := evidenceByID[id]
 		if !ok {
 			t.Errorf("missing exact fixture evidence row %s", id)
