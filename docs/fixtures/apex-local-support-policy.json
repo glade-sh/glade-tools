@@ -2171,6 +2171,18 @@
       "disposition": "compile-shape-required",
       "override": true,
       "reason": "Salesforce restricts deepClone to SObject list types; local runtime preserves the explicit rejection contract"
+    },
+    {
+      "surfacePrefix": "apex:System.Messaging.extractInboundEmail(Object,Boolean)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "inbound-email parsing and attachment extraction depend on hosted email service behavior"
+    },
+    {
+      "surfacePrefix": "apex:System.SoqlStubProvider.SoqlStubProvider()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "SoqlStubProvider construction is a Salesforce test-harness contract, not a local runtime parity claim"
     }
   ]
 }
