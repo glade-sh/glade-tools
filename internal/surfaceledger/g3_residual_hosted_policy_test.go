@@ -2,6 +2,7 @@ package surfaceledger
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -28,17 +29,17 @@ func TestG3ResidualHostedPolicyOverridesAreExactAndCloseExistingUnsupportedEvide
 
 	seenOverrides := make(map[string]bool, len(g3ResidualHostedPolicyReasons))
 	for _, rule := range policy.Rules {
-		wantReason, target := g3ResidualHostedPolicyReasons[rule.SurfacePrefix]
+		wantReason, target := g3ResidualHostedPolicyReasons[rule.SurfaceID]
 		if !target {
 			continue
 		}
-		if seenOverrides[rule.SurfacePrefix] {
-			t.Fatalf("duplicate exact policy override %q", rule.SurfacePrefix)
+		if seenOverrides[rule.SurfaceID] {
+			t.Fatalf("duplicate exact policy override %q", rule.SurfaceID)
 		}
-		if !rule.Override || rule.Disposition != DispositionHostedDeferred || rule.Reason != wantReason {
-			t.Fatalf("policy override %q = %#v", rule.SurfacePrefix, rule)
+		if rule.SurfacePrefix != "" || !rule.Override || rule.Disposition != DispositionHostedDeferred || rule.Reason != wantReason {
+			t.Fatalf("policy override %q = %#v", rule.SurfaceID, rule)
 		}
-		seenOverrides[rule.SurfacePrefix] = true
+		seenOverrides[rule.SurfaceID] = true
 	}
 	if len(seenOverrides) != len(g3ResidualHostedPolicyReasons) {
 		t.Fatalf("exact hosted-deferred overrides = %#v, want %#v", seenOverrides, g3ResidualHostedPolicyReasons)
@@ -75,7 +76,7 @@ func TestG3ResidualHostedPolicyOverridesAreExactAndCloseExistingUnsupportedEvide
 	}
 	for id := range g3ResidualHostedPolicyReasons {
 		row := profileByID[id]
-		if row.Disposition != DispositionHostedDeferred || row.GapClass != "" || row.MatchRule != "surfacePrefix="+id {
+		if row.Disposition != DispositionHostedDeferred || row.GapClass != "" || row.MatchRule != "surfaceId="+id {
 			t.Fatalf("%s profile = %#v, want exact hosted-deferred closure", id, row)
 		}
 	}
@@ -83,6 +84,31 @@ func TestG3ResidualHostedPolicyOverridesAreExactAndCloseExistingUnsupportedEvide
 		if _, target := g3ResidualHostedPolicyReasons[row.SurfaceID]; target {
 			t.Fatalf("non-deferred gap remains for %s: %#v", row.SurfaceID, row)
 		}
+	}
+	for _, id := range []string{
+		"apex:Database.DMLOptions.DuplicateRuleHeader.allowSave",
+		"apex:Database.DMLOptions.DuplicateRuleHeader.runAsCurrentUser",
+	} {
+		if row := profileByID[id]; row.Disposition != DispositionLocalRuntimeRequired || row.MatchRule != "namespace=Database" {
+			t.Fatalf("child DTO-storage profile %s = %#v, want unchanged Database classification", id, row)
+		}
+	}
+	selected := make(map[string]bool, len(g3ResidualHostedPolicyReasons))
+	for _, row := range profile.Rows {
+		if strings.HasPrefix(row.MatchRule, "surfaceId=") {
+			if _, target := g3ResidualHostedPolicyReasons[row.SurfaceID]; !target {
+				t.Fatalf("unexpected G3 exact policy match: %#v", row)
+			}
+			selected[row.SurfaceID] = true
+		}
+	}
+	for id := range g3ResidualHostedPolicyReasons {
+		if !selected[id] {
+			t.Fatalf("selected G3 exact policy row missing: %s", id)
+		}
+	}
+	if len(selected) != len(g3ResidualHostedPolicyReasons) {
+		t.Fatalf("selected G3 exact policy rows = %#v, want only hosted targets", selected)
 	}
 
 	for id, want := range map[string]SupportDisposition{
