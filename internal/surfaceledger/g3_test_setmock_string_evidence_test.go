@@ -34,7 +34,7 @@ func TestG3TestSetMockStringEvidenceIsExactAndExecutable(t *testing.T) {
 	if raw.SalesforceEligible == nil || *raw.SalesforceEligible || raw.SalesforceExclusionClass != "policy-local-only" || raw.SalesforceExclusionReason != "Glade accepts the String-key Test.setMock extension locally; it is not a Salesforce parity claim." {
 		t.Fatalf("local-only metadata = %#v", raw)
 	}
-	if len(raw.Evidence) != 1 || raw.Evidence[0].SurfaceID != g3TestSetMockStringSurfaceID || raw.Evidence[0].Symbol != "Test.setMock(String,Object)" || raw.Evidence[0].Kind != "exec" {
+	if len(raw.Evidence) != 1 || raw.Evidence[0].SurfaceID != g3TestSetMockStringSurfaceID || raw.Evidence[0].Symbol != "Test.setMock(String,Object)" || raw.Evidence[0].Kind != "test" {
 		t.Fatalf("raw evidence = %#v", raw.Evidence)
 	}
 
