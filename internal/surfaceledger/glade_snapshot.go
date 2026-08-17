@@ -381,6 +381,7 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.Search.suggest(String,String,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.suggest option handling"},
 	{SurfaceID: "apex:System.Search.suggest(String,String,Object,Object)", Kind: KindMethod, Behavior: BehaviorPartial, Notes: "fixture-backed Object overload for deterministic local Search.suggest option and AccessLevel handling"},
 	{SurfaceID: "apex:System.Set.deepClone()", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed exact no-argument local Set deep clone"},
+	{SurfaceID: "apex:System.Test.setMock(String,Object)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed Glade-local String-key Test.setMock extension for HTTP callout mocks"},
 	{SurfaceID: "apex:System.Time.valueOf(String)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for Time.valueOf(String)"},
 	{SurfaceID: "apex:System.TxnSecurity.EventCondition.evaluate(SObject)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local transaction-security event-condition default evaluation"},
 	{SurfaceID: "apex:System.TxnSecurity.PolicyCondition.evaluate(TxnSecurity.Event)", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local transaction-security policy-condition default evaluation"},

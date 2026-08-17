@@ -1,0 +1,35 @@
+{
+  "name": "g3-test-setmock-string-local",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Test.setMock(String,Object)",
+      "symbol": "Test.setMock(String,Object)",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/G3StringKeyHttpMock.cls",
+      "content": "public class G3StringKeyHttpMock implements HttpCalloutMock { public HttpResponse respond(HttpRequest request) { HttpResponse response = new HttpResponse(); response.setStatusCode(218); response.setBody('g3-string-setmock'); return response; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/G3StringKeyHttpMockTest.cls",
+      "content": "@isTest private class G3StringKeyHttpMockTest { @isTest static void stringKeyMockControlsCalloutResponse() { Test.setMock('HttpCalloutMock', new G3StringKeyHttpMock()); HttpRequest request = new HttpRequest(); request.setEndpoint('https://example.test/g3-setmock-string'); request.setMethod('GET'); Http http = new Http(); HttpResponse response = http.send(request); System.assertEquals(218, response.getStatusCode()); System.assertEquals('g3-string-setmock', response.getBody()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Glade accepts the String-key Test.setMock extension locally; it is not a Salesforce parity claim."
+}
