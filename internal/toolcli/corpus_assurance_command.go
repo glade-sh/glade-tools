@@ -564,6 +564,43 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "cleanup", 1, *output)
+	case "review-index":
+		flags := flag.NewFlagSet("corpus assurance review-index", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		attempt, predecessor, output := flags.String("attempt", "", ""), flags.String("predecessor", "", ""), flags.String("output", "", "")
+		indexPath, verify := flags.String("index", "", ""), flags.Bool("verify", false, "")
+		var artifacts assurancePathList
+		flags.Var(&artifacts, "artifact", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if *verify {
+			if err := requiredAssuranceFlags(*indexPath); err != nil {
+				return err
+			}
+			if *attempt != "" || *predecessor != "" || *output != "" || len(artifacts) != 0 {
+				return errors.New("review-index verification accepts only --verify and --index")
+			}
+			index, err := corpusassurance.VerifyReviewIndex(*indexPath)
+			if err != nil {
+				return err
+			}
+			return writeCorpusAssuranceResult(w, "review-index-verify", len(index.Artifacts), *indexPath)
+		}
+		if *indexPath != "" {
+			return errors.New("--index requires --verify")
+		}
+		if err := requiredAssuranceFlags(*attempt, *output); err != nil || len(artifacts) == 0 {
+			if err != nil {
+				return err
+			}
+			return errors.New("at least one review artifact is required")
+		}
+		index, err := corpusassurance.CreateReviewIndex(corpusassurance.ReviewIndexRequest{AttemptPath: *attempt, PredecessorPath: *predecessor, ArtifactPaths: artifacts, OutputPath: *output})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "review-index", len(index.Artifacts), *output)
 	case "remote-failure-preserve":
 		flags := flag.NewFlagSet("corpus assurance remote-failure-preserve", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -654,6 +691,8 @@ Usage:
   glade-tools corpus assurance salesforce-reconcile --oracle-plan <ORACLE_PLAN.json> --shard <SALESFORCE_SHARD.json> --dispatch <SALESFORCE_DISPATCH.json> --preflight <ORG_PREFLIGHT.json> --creation <ORG_CREATION.json> --cleanup <ORG_CLEANUP.json> --packet-output <packet-dir> --output <SALESFORCE_RECONCILIATION.json>
   glade-tools corpus assurance salesforce-reconcile --oracle-plan <ORACLE_PLAN.json> --receipt <SALESFORCE_RECONCILIATION.json> --packet <packet-dir>
   glade-tools corpus assurance remote-failure-preserve --attempt <ATTEMPT.json> --binding <SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json> --phase <phase> --phase-exit <nonzero> --handoff <HANDOFF.md> --output <failure-dir>
+  glade-tools corpus assurance review-index --attempt <ATTEMPT.json> [--predecessor <REVIEW_INDEX.json>] --artifact <retained-evidence> [--artifact <retained-evidence>] --output <REVIEW_INDEX.json>
+  glade-tools corpus assurance review-index --verify --index <REVIEW_INDEX.json>
   glade-tools corpus assurance cleanup --attempt <ATTEMPT.json> --binding <REMOTE_CLEANUP_AUTHORITY.json> --output <REMOTE_CLEANUP.json>
   glade-tools corpus assurance report --inventory-spec <IN_SCOPE.json> --replay-host-manifest <manifest.json> --replay-host-manifest <manifest.json> --replay-shard <REPLAY_SHARD.json> --replay-shard <REPLAY_SHARD.json> [remaining sealed evidence flags] --salesforce-reconciliation <SALESFORCE_RECONCILIATION.json> --salesforce-packet <packet-dir> --packet-output <packet-dir> --output <ASSURANCE.json> --html-output <ASSURANCE.html> --receipt-output <RECEIPT.json>
 `)

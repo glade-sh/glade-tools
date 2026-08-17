@@ -62,7 +62,8 @@ org-create / org-preflight
 salesforce-dispatch / salesforce-run / org-cleanup
 salesforce-reconcile
 remote-failure-preserve, when a remote phase fails
-cleanup, only after reviewed retained evidence
+review-index, after preserving a failed or resumed attempt
+cleanup, only after the review index is verified and retained evidence is reviewed
 report
 ```
 
@@ -80,6 +81,16 @@ fails, it also writes the create-only
 command, exit code, and compiler stderr when available. A failed root remains
 the record of that attempt; the next run still uses a successor root.
 
+`review-index` creates a compact review aid after the attempt evidence is
+present. Pass each retained raw file with `--artifact`; the index binds the
+exact `ATTEMPT.json` bytes, records every absolute source path and hash, and
+lists identical bytes once in its object table. For a successor attempt, pass
+the prior index with `--predecessor` to retain the exact predecessor hash.
+The command never copies, moves, deletes, or relabels raw evidence. Verify the
+source files before review with `review-index --verify --index`. The index is a
+review aid, not parity proof; the failed attempt root remains the authoritative
+record.
+
 ## Artifact categories
 
 - **Controlled inputs:** scope inventory, support policy, reviewed docs
@@ -89,6 +100,9 @@ the record of that attempt; the next run still uses a successor root.
   and decision drafts. They are regenerable and never replace a receipt.
 - **Diagnostics:** named command logs under `artifacts/logs/`. Logs aid
   recovery; they are not parity proof.
+- **Review index:** `REVIEW_INDEX.json` and its retained source paths provide a
+  compact, deduplicated hash map for reviewers. It does not replace the raw
+  failure or Salesforce receipts.
 - **Local proof:** candidate-bound fixtures, local decisions, and
   `LOCAL_PROOF.json`.
 - **Salesforce proof:** the bound authority, oracle plan, bundle, paired
