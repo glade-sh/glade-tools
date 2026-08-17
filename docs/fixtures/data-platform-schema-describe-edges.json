@@ -215,12 +215,6 @@
       "symbol": "Schema.ChildRelationship.isDeprecatedAndHidden"
     },
     {
-      "kind": "unsupported",
-      "notes": "Salesforce API 67 rejected DescribeSObjectResult.getFieldSets() in the exact compile oracle; the fixture covers the supported fieldSets property instead.",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getFieldSets()",
-      "symbol": "Schema.DescribeSObjectResult.getFieldSets"
-    },
-    {
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.getLocalName()",
       "symbol": "Schema.DescribeSObjectResult.getLocalName"
@@ -1184,11 +1178,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.fields",
       "symbol": "Schema.DescribeSObjectResult.fields"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.fieldSets",
-      "symbol": "Schema.DescribeSObjectResult.fieldSets"
     },
     {
       "kind": "test",
