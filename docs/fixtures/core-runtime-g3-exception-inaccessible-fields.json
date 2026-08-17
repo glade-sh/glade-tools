@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-g3-exception-inaccessible-fields",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "G3 records Glade-local exception behavior only; no Salesforce comparison artifact is supplied.",
   "evidence": [
     {"surfaceId": "apex:System.InvalidReadOnlyUserDmlException.getInaccessibleFields()", "symbol": "InvalidReadOnlyUserDmlException.getInaccessibleFields", "kind": "exec"},
     {"surfaceId": "apex:System.LicenseException.getInaccessibleFields()", "symbol": "LicenseException.getInaccessibleFields", "kind": "exec"},

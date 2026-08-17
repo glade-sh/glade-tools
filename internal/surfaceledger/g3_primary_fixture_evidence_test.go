@@ -1,6 +1,8 @@
 package surfaceledger
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -47,6 +49,7 @@ func TestG3PrimaryFixturesKeepExactLocalEvidenceContracts(t *testing.T) {
 	}
 	assertExactSurfaceSet(t, exceptionEvidence, g3ExceptionInaccessibleFieldsIDs)
 	assertFixtureOnlyEvidence(t, exceptionEvidence)
+	assertG3LocalOnlyEligibility(t, exceptionPath)
 	exceptionSource := fixtureSource(exceptionFixture)
 	assertFixtureCommandMatchesSource(t, exceptionFixture, exceptionSource)
 	if strings.Contains(strings.ToLower(exceptionSource), "oracle") || strings.Contains(strings.ToLower(exceptionSource), "salesforce") {
@@ -80,6 +83,7 @@ func TestG3PrimaryFixturesKeepExactLocalEvidenceContracts(t *testing.T) {
 	}
 	assertExactSurfaceSet(t, listEvidence, []string{"apex:System.List.deepClone(Boolean,Boolean,Boolean)"})
 	assertFixtureOnlyEvidence(t, listEvidence)
+	assertG3LocalOnlyEligibility(t, listPath)
 	listSource := fixtureSource(listFixture)
 	assertFixtureCommandMatchesSource(t, listFixture, listSource)
 	if strings.Contains(listSource, "deepClone()") || !strings.Contains(listSource, ".deepClone(true, true, true)") || !strings.Contains(listSource, ".deepClone(false, false, false)") {
@@ -121,5 +125,24 @@ func assertFixtureOnlyEvidence(t *testing.T, rows []SurfaceLedgerRow) {
 		if row.Evidence != EvidenceFixture {
 			t.Fatalf("%s evidence = %s, want fixture-only", row.SurfaceID, row.Evidence)
 		}
+	}
+}
+
+func assertG3LocalOnlyEligibility(t *testing.T, path string) {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var fixture struct {
+		SalesforceEligible        *bool  `json:"salesforceEligible"`
+		SalesforceExclusionClass  string `json:"salesforceExclusionClass"`
+		SalesforceExclusionReason string `json:"salesforceExclusionReason"`
+	}
+	if err := json.Unmarshal(data, &fixture); err != nil {
+		t.Fatal(err)
+	}
+	if fixture.SalesforceEligible == nil || *fixture.SalesforceEligible || fixture.SalesforceExclusionClass != "policy-local-only" || strings.TrimSpace(fixture.SalesforceExclusionReason) == "" {
+		t.Fatalf("local-only eligibility metadata = %#v", fixture)
 	}
 }

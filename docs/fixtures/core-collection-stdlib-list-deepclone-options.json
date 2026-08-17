@@ -1,5 +1,8 @@
 {
   "name": "core-collection-stdlib-list-deepclone-options",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "G3 records Glade-local List.deepClone behavior only; no Salesforce comparison artifact is supplied.",
   "evidence": [
     {
       "surfaceId": "apex:System.List.deepClone(Boolean,Boolean,Boolean)",
