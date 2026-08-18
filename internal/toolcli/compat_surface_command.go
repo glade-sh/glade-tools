@@ -55,13 +55,15 @@ func runCompatSurface(args []string, w io.Writer) error {
 		return runCompatSurfaceCorpusUsage(args[1:], w)
 	case "delta-preflight":
 		return runCompatSurfaceDeltaPreflight(args[1:], w)
+	case "delta-verify":
+		return runCompatSurfaceDeltaVerify(args[1:], w)
 	default:
 		return errors.New(surfaceUsage())
 	}
 }
 
 func surfaceUsage() string {
-	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight [flags]"
+	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight|delta-verify [flags]"
 }
 
 func runCompatSurfaceSources(args []string, w io.Writer) error {
@@ -845,6 +847,148 @@ func runCompatSurfaceDeltaPreflight(args []string, w io.Writer) error {
 	return surfaceledger.WriteDeltaPreflightJSON(w, result)
 }
 
+func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
+	var basePath, baseSHA, currentPath, currentSHA, expectedPath, output string
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--base-ledger":
+			i++
+			var err error
+			basePath, err = argValue(args, i, "--base-ledger")
+			if err != nil {
+				return err
+			}
+		case "--base-sha256":
+			i++
+			var err error
+			baseSHA, err = argValue(args, i, "--base-sha256")
+			if err != nil {
+				return err
+			}
+		case "--current-ledger":
+			i++
+			var err error
+			currentPath, err = argValue(args, i, "--current-ledger")
+			if err != nil {
+				return err
+			}
+		case "--current-sha256":
+			i++
+			var err error
+			currentSHA, err = argValue(args, i, "--current-sha256")
+			if err != nil {
+				return err
+			}
+		case "--expected-ids":
+			i++
+			var err error
+			expectedPath, err = argValue(args, i, "--expected-ids")
+			if err != nil {
+				return err
+			}
+		case "--output":
+			i++
+			var err error
+			output, err = argValue(args, i, "--output")
+			if err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	for flag, value := range map[string]string{
+		"--base-ledger":    basePath,
+		"--base-sha256":    baseSHA,
+		"--current-ledger": currentPath,
+		"--current-sha256": currentSHA,
+		"--expected-ids":   expectedPath,
+		"--output":         output,
+	} {
+		if value == "" {
+			return fmt.Errorf("%s is required", flag)
+		}
+	}
+	if _, err := os.Lstat(output); err == nil {
+		return fmt.Errorf("delta verification output already exists: %s", output)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("inspect delta verification output: %w", err)
+	}
+	baseData, err := os.ReadFile(basePath)
+	if err != nil {
+		return fmt.Errorf("read base ledger: %w", err)
+	}
+	actualBaseSHA := fmt.Sprintf("%x", sha256.Sum256(baseData))
+	if actualBaseSHA != baseSHA {
+		return fmt.Errorf("base ledger SHA-256 mismatch: got %s want %s", actualBaseSHA, baseSHA)
+	}
+	currentData, err := os.ReadFile(currentPath)
+	if err != nil {
+		return fmt.Errorf("read current ledger: %w", err)
+	}
+	actualCurrentSHA := fmt.Sprintf("%x", sha256.Sum256(currentData))
+	if actualCurrentSHA != currentSHA {
+		return fmt.Errorf("current ledger SHA-256 mismatch: got %s want %s", actualCurrentSHA, currentSHA)
+	}
+	expectedData, err := os.ReadFile(expectedPath)
+	if err != nil {
+		return fmt.Errorf("read expected IDs %s: %w", expectedPath, err)
+	}
+	expectedIDs, err := parseSurfaceDeltaIDs(expectedData, "expected", expectedPath)
+	if err != nil {
+		return err
+	}
+	expectedSHA := fmt.Sprintf("%x", sha256.Sum256(expectedData))
+	report, err := surfaceledger.VerifyExactLedgerDeltaJSON(baseData, currentData, expectedIDs)
+	if err != nil {
+		return err
+	}
+	report.Inputs.Base.Path = basePath
+	report.Inputs.Base.SHA256 = actualBaseSHA
+	report.Inputs.Current.Path = currentPath
+	report.Inputs.Current.SHA256 = actualCurrentSHA
+	report.Inputs.Expected.Path = expectedPath
+	report.Inputs.Expected.SHA256 = expectedSHA
+	data, err := json.MarshalIndent(report, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encode delta verification: %w", err)
+	}
+	data = append(data, '\n')
+	if err := writeCreateOnlySurfaceFile(output, data); err != nil {
+		return err
+	}
+	if report.Status != "pass" {
+		return fmt.Errorf("surface delta verification failed: unexpected=%d missingExpected=%d; report=%s", report.Counts.Unexpected, report.Counts.MissingExpected, output)
+	}
+	fmt.Fprintf(w, "surface delta verification: %s\n", output)
+	return nil
+}
+
+func writeCreateOnlySurfaceFile(path string, data []byte) (err error) {
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return fmt.Errorf("create delta verification output directory: %w", err)
+	}
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
+	if err != nil {
+		if os.IsExist(err) {
+			return fmt.Errorf("delta verification output already exists: %s", path)
+		}
+		return fmt.Errorf("create delta verification output: %w", err)
+	}
+	defer func() {
+		if closeErr := file.Close(); err == nil && closeErr != nil {
+			err = closeErr
+		}
+		if err != nil {
+			_ = os.Remove(path)
+		}
+	}()
+	if _, err = file.Write(data); err != nil {
+		return fmt.Errorf("write delta verification output: %w", err)
+	}
+	return nil
+}
+
 // readSurfaceDeltaIDs accepts the compact []string form and the removal
 // fixture form used by API-version tombstones ({"removals":[{"surfaceId":
 // "..."}]}). Accepting both keeps the preflight command useful with existing
@@ -856,48 +1000,57 @@ func readSurfaceDeltaIDs(paths []string, label string) ([]string, error) {
 		if err != nil {
 			return nil, fmt.Errorf("read %s IDs %s: %w", label, path, err)
 		}
-		var stringsValue []string
-		if err := json.Unmarshal(data, &stringsValue); err == nil {
-			ids = append(ids, stringsValue...)
-			continue
+		parsed, err := parseSurfaceDeltaIDs(data, label, path)
+		if err != nil {
+			return nil, err
 		}
-		var rows []surfaceledger.SurfaceLedgerRow
-		if err := json.Unmarshal(data, &rows); err == nil {
-			for _, row := range rows {
-				ids = append(ids, row.SurfaceID)
-			}
-			continue
-		}
-		var envelope struct {
-			IDs        []string `json:"ids"`
-			SurfaceIDs []string `json:"surfaceIds"`
-			Removals   []struct {
-				SurfaceID string `json:"surfaceId"`
-			} `json:"removals"`
-			Tombstones []struct {
-				SurfaceID string `json:"surfaceId"`
-			} `json:"tombstones"`
-			SetChecks struct {
-				API67NegativeTombstones struct {
-					IDs []string `json:"ids"`
-				} `json:"api67NegativeTombstones"`
-			} `json:"setChecks"`
-		}
-		if err := json.Unmarshal(data, &envelope); err != nil {
-			return nil, fmt.Errorf("parse %s IDs %s: %w", label, path, err)
-		}
-		ids = append(ids, envelope.IDs...)
-		ids = append(ids, envelope.SurfaceIDs...)
-		for _, row := range envelope.Removals {
+		ids = append(ids, parsed...)
+	}
+	return ids, nil
+}
+
+func parseSurfaceDeltaIDs(data []byte, label, path string) ([]string, error) {
+	var stringsValue []string
+	if err := json.Unmarshal(data, &stringsValue); err == nil {
+		return stringsValue, nil
+	}
+	var rows []surfaceledger.SurfaceLedgerRow
+	if err := json.Unmarshal(data, &rows); err == nil {
+		ids := make([]string, 0, len(rows))
+		for _, row := range rows {
 			ids = append(ids, row.SurfaceID)
 		}
-		for _, row := range envelope.Tombstones {
-			ids = append(ids, row.SurfaceID)
-		}
-		ids = append(ids, envelope.SetChecks.API67NegativeTombstones.IDs...)
-		if len(envelope.IDs) == 0 && len(envelope.SurfaceIDs) == 0 && len(envelope.Removals) == 0 && len(envelope.Tombstones) == 0 && len(envelope.SetChecks.API67NegativeTombstones.IDs) == 0 {
-			return nil, fmt.Errorf("parse %s IDs %s: expected an ID array or removal/tombstone envelope", label, path)
-		}
+		return ids, nil
+	}
+	var envelope struct {
+		IDs        []string `json:"ids"`
+		SurfaceIDs []string `json:"surfaceIds"`
+		Removals   []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"removals"`
+		Tombstones []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"tombstones"`
+		SetChecks struct {
+			API67NegativeTombstones struct {
+				IDs []string `json:"ids"`
+			} `json:"api67NegativeTombstones"`
+		} `json:"setChecks"`
+	}
+	if err := json.Unmarshal(data, &envelope); err != nil {
+		return nil, fmt.Errorf("parse %s IDs %s: %w", label, path, err)
+	}
+	ids := append([]string{}, envelope.IDs...)
+	ids = append(ids, envelope.SurfaceIDs...)
+	for _, row := range envelope.Removals {
+		ids = append(ids, row.SurfaceID)
+	}
+	for _, row := range envelope.Tombstones {
+		ids = append(ids, row.SurfaceID)
+	}
+	ids = append(ids, envelope.SetChecks.API67NegativeTombstones.IDs...)
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("parse %s IDs %s: expected an ID array or removal/tombstone envelope", label, path)
 	}
 	return ids, nil
 }
