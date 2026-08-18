@@ -851,7 +851,7 @@ func runCompatSurfaceDeltaPreflight(args []string, w io.Writer) error {
 }
 
 func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
-	var basePath, baseSHA, baseSnapshotDir, currentPath, currentSHA, currentSnapshotDir, expectedPath, authorityPath, authoritySHA, attemptPath, attemptSHA, toolsRoot, output string
+	var basePath, baseSHA, baseSnapshotDir, currentPath, currentSHA, currentSnapshotDir, expectedPath, authorityPath, authoritySHA, attemptPath, attemptSHA, candidateRoot, candidatePath, toolsRoot, output string
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--base-ledger":
@@ -931,6 +931,20 @@ func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
 			if err != nil {
 				return err
 			}
+		case "--candidate-root":
+			i++
+			var err error
+			candidateRoot, err = argValue(args, i, "--candidate-root")
+			if err != nil {
+				return err
+			}
+		case "--candidate":
+			i++
+			var err error
+			candidatePath, err = argValue(args, i, "--candidate")
+			if err != nil {
+				return err
+			}
 		case "--tools-root":
 			i++
 			var err error
@@ -961,6 +975,8 @@ func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
 		"--authority-sha256":     authoritySHA,
 		"--attempt":              attemptPath,
 		"--attempt-sha256":       attemptSHA,
+		"--candidate-root":       candidateRoot,
+		"--candidate":            candidatePath,
 		"--tools-root":           toolsRoot,
 		"--output":               output,
 	} {
@@ -1005,10 +1021,6 @@ func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
 	if actualAttemptSHA != attemptSHA {
 		return fmt.Errorf("delta authority attempt SHA-256 mismatch: got %s want %s", actualAttemptSHA, attemptSHA)
 	}
-	authorityToolsCommit, err := verifyDeltaAuthorityAnchor(attemptData, toolsRoot, authorityPath, authorityData)
-	if err != nil {
-		return err
-	}
 	var authority surfaceledger.ExactLedgerDeltaAuthority
 	authorityDecoder := json.NewDecoder(bytes.NewReader(authorityData))
 	authorityDecoder.DisallowUnknownFields()
@@ -1021,6 +1033,18 @@ func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
 	}
 	if authority.SchemaVersion != 1 || authority.Status != "externally-reviewed" {
 		return fmt.Errorf("delta authority manifest is not externally reviewed")
+	}
+	actualCandidate, authorityToolsCommit, runningToolsSHA, err := verifyDeltaAuthorityAnchor(
+		attemptData,
+		candidateRoot,
+		candidatePath,
+		toolsRoot,
+		authorityPath,
+		authorityData,
+		authority.Candidate,
+	)
+	if err != nil {
+		return err
 	}
 	if actualBaseSHA != authority.Base.LedgerSHA256 {
 		return fmt.Errorf("base ledger does not match external authority: got %s want %s", actualBaseSHA, authority.Base.LedgerSHA256)
@@ -1058,7 +1082,10 @@ func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
 	report.Inputs.Expected.SHA256 = expectedSHA
 	report.Inputs.Authority = surfaceledger.ExactLedgerDeltaInput{Path: authorityPath, SHA256: actualAuthoritySHA, Rows: 1}
 	report.Inputs.Attempt = surfaceledger.ExactLedgerDeltaInput{Path: attemptPath, SHA256: actualAttemptSHA, Rows: 1}
+	report.AuthorityCandidate = authority.Candidate
+	report.ActualCandidate = actualCandidate
 	report.AuthorityToolsCommit = authorityToolsCommit
+	report.RunningToolsSHA256 = runningToolsSHA
 	data, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return fmt.Errorf("encode delta verification: %w", err)
@@ -1074,37 +1101,105 @@ func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
 	return nil
 }
 
-func verifyDeltaAuthorityAnchor(attemptData []byte, toolsRoot, authorityPath string, authorityData []byte) (string, error) {
+func verifyDeltaAuthorityAnchor(
+	attemptData []byte,
+	candidateRoot string,
+	candidatePath string,
+	toolsRoot string,
+	authorityPath string,
+	authorityData []byte,
+	authorityCandidate surfaceledger.ExactCandidateAuthority,
+) (surfaceledger.ExactCandidateVerification, string, string, error) {
 	var attempt corpusassurance.AssuranceAttempt
 	decoder := json.NewDecoder(bytes.NewReader(attemptData))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&attempt); err != nil {
-		return "", fmt.Errorf("parse delta authority attempt: %w", err)
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("parse delta authority attempt: %w", err)
 	}
 	var trailing any
 	if err := decoder.Decode(&trailing); err != io.EOF {
-		return "", fmt.Errorf("parse delta authority attempt: trailing JSON")
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("parse delta authority attempt: trailing JSON")
 	}
 	if err := corpusassurance.ValidateAssuranceAttempt(attempt); err != nil {
-		return "", fmt.Errorf("validate delta authority attempt: %w", err)
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("validate delta authority attempt: %w", err)
 	}
-	head, err := deltaAuthorityGit(toolsRoot, "rev-parse", "HEAD").Output()
-	if err != nil || strings.TrimSpace(string(head)) != attempt.Tools.Commit {
-		return "", fmt.Errorf("delta authority tools root does not match sealed attempt")
+	if len(authorityCandidate.Commit) != 40 || len(authorityCandidate.Tree) != 40 || len(authorityCandidate.SHA256) != 64 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority candidate binding is incomplete")
 	}
-	status, err := deltaAuthorityGit(toolsRoot, "status", "--porcelain=v1", "--untracked-files=all").Output()
-	if err != nil || len(status) != 0 {
-		return "", fmt.Errorf("delta authority tools root is not clean")
+	if attempt.Candidate.Commit != authorityCandidate.Commit || attempt.Candidate.SHA256 != authorityCandidate.SHA256 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority attempt candidate does not match external authority")
+	}
+	candidateCommit, candidateTree, err := verifyDeltaAuthorityGitRoot(candidateRoot, "candidate")
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", err
+	}
+	if candidateCommit != authorityCandidate.Commit || candidateTree != authorityCandidate.Tree {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority candidate root does not match external authority")
+	}
+	candidateSHA, err := sha256File(candidatePath)
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("hash delta authority candidate binary: %w", err)
+	}
+	if candidateSHA != authorityCandidate.SHA256 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority candidate binary does not match external authority")
+	}
+	actualCandidate := surfaceledger.ExactCandidateVerification{
+		Root:       candidateRoot,
+		Commit:     candidateCommit,
+		Tree:       candidateTree,
+		BinaryPath: candidatePath,
+		SHA256:     candidateSHA,
+	}
+	runningToolsPath, err := os.Executable()
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("resolve running delta authority tools executable: %w", err)
+	}
+	if resolved, resolveErr := filepath.EvalSymlinks(runningToolsPath); resolveErr == nil {
+		runningToolsPath = resolved
+	}
+	runningToolsSHA, err := sha256File(runningToolsPath)
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("hash running delta authority tools executable: %w", err)
+	}
+	if runningToolsSHA != attempt.Tools.SHA256 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("running delta authority tools executable does not match sealed attempt")
+	}
+	toolsCommit, _, err := verifyDeltaAuthorityGitRoot(toolsRoot, "tools")
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", err
+	}
+	if toolsCommit != attempt.Tools.Commit {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority tools root does not match sealed attempt")
 	}
 	rel, err := filepath.Rel(toolsRoot, authorityPath)
 	if err != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
-		return "", fmt.Errorf("delta authority manifest is outside sealed tools root")
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority manifest is outside sealed tools root")
 	}
 	committed, err := deltaAuthorityGit(toolsRoot, "show", attempt.Tools.Commit+":"+filepath.ToSlash(rel)).Output()
 	if err != nil || !bytes.Equal(committed, authorityData) {
-		return "", fmt.Errorf("delta authority manifest does not match sealed tools commit")
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority manifest does not match sealed tools commit")
 	}
-	return attempt.Tools.Commit, nil
+	return actualCandidate, attempt.Tools.Commit, runningToolsSHA, nil
+}
+
+func verifyDeltaAuthorityGitRoot(root, label string) (string, string, error) {
+	head, err := deltaAuthorityGit(root, "rev-parse", "HEAD").Output()
+	if err != nil {
+		return "", "", fmt.Errorf("delta authority %s root has no commit", label)
+	}
+	branch, err := deltaAuthorityGit(root, "rev-parse", "--abbrev-ref", "HEAD").Output()
+	if err != nil || strings.TrimSpace(string(branch)) != "HEAD" {
+		return "", "", fmt.Errorf("delta authority %s root is not detached", label)
+	}
+	status, err := deltaAuthorityGit(root, "status", "--porcelain=v1", "--untracked-files=all").Output()
+	if err != nil || len(status) != 0 {
+		return "", "", fmt.Errorf("delta authority %s root is not clean", label)
+	}
+	tree, err := deltaAuthorityGit(root, "rev-parse", "HEAD^{tree}").Output()
+	if err != nil {
+		return "", "", fmt.Errorf("delta authority %s root has no tree", label)
+	}
+	return strings.TrimSpace(string(head)), strings.TrimSpace(string(tree)), nil
 }
 
 func deltaAuthorityGit(toolsRoot string, args ...string) *exec.Cmd {

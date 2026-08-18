@@ -42,9 +42,24 @@ type LedgerSnapshotAuthority struct {
 type ExactLedgerDeltaAuthority struct {
 	SchemaVersion     int                     `json:"schemaVersion"`
 	Status            string                  `json:"status"`
+	Candidate         ExactCandidateAuthority `json:"candidate"`
 	Base              LedgerSnapshotAuthority `json:"base"`
 	Current           LedgerSnapshotAuthority `json:"current"`
 	ExpectedIDsSHA256 string                  `json:"expectedIDsSha256"`
+}
+
+type ExactCandidateAuthority struct {
+	Commit string `json:"commit"`
+	Tree   string `json:"tree"`
+	SHA256 string `json:"sha256"`
+}
+
+type ExactCandidateVerification struct {
+	Root       string `json:"root"`
+	Commit     string `json:"commit"`
+	Tree       string `json:"tree"`
+	BinaryPath string `json:"binaryPath"`
+	SHA256     string `json:"sha256"`
 }
 
 type ExactLedgerDeltaCounts struct {
@@ -63,16 +78,19 @@ type ExactLedgerDeltaRow struct {
 }
 
 type ExactLedgerDeltaReport struct {
-	SchemaVersion        int                    `json:"schemaVersion"`
-	Status               string                 `json:"status"`
-	Inputs               ExactLedgerDeltaInputs `json:"inputs"`
-	ExpectedSurfaceIDs   []string               `json:"expectedSurfaceIds"`
-	ChangedSurfaceIDs    []string               `json:"changedSurfaceIds"`
-	UnexpectedSurfaceIDs []string               `json:"unexpectedSurfaceIds"`
-	MissingExpectedIDs   []string               `json:"missingExpectedSurfaceIds"`
-	AuthorityToolsCommit string                 `json:"authorityToolsCommit"`
-	Counts               ExactLedgerDeltaCounts `json:"counts"`
-	Rows                 []ExactLedgerDeltaRow  `json:"rows"`
+	SchemaVersion        int                        `json:"schemaVersion"`
+	Status               string                     `json:"status"`
+	Inputs               ExactLedgerDeltaInputs     `json:"inputs"`
+	ExpectedSurfaceIDs   []string                   `json:"expectedSurfaceIds"`
+	ChangedSurfaceIDs    []string                   `json:"changedSurfaceIds"`
+	UnexpectedSurfaceIDs []string                   `json:"unexpectedSurfaceIds"`
+	MissingExpectedIDs   []string                   `json:"missingExpectedSurfaceIds"`
+	AuthorityCandidate   ExactCandidateAuthority    `json:"authorityCandidate"`
+	ActualCandidate      ExactCandidateVerification `json:"actualCandidate"`
+	AuthorityToolsCommit string                     `json:"authorityToolsCommit"`
+	RunningToolsSHA256   string                     `json:"runningToolsSha256"`
+	Counts               ExactLedgerDeltaCounts     `json:"counts"`
+	Rows                 []ExactLedgerDeltaRow      `json:"rows"`
 }
 
 func VerifyExactLedgerDelta(base, current []SurfaceLedgerRow, expectedIDs []string) (ExactLedgerDeltaReport, error) {
