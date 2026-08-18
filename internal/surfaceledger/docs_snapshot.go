@@ -635,8 +635,13 @@ func inferApexNamespace(sourcePath, name string) string {
 func inferApexIdentityFromSource(sourcePath, name string) (string, string, string, string, bool) {
 	base := sourceStemBase(sourcePath)
 	lower := strings.ToLower(base)
-	if lower == "apex_commercepay_postauthapipaymethodreq_altpaymethod" {
+	switch lower {
+	case "apex_commercepay_postauthapipaymethodreq_altpaymethod":
 		return "commercepayments", "PostAuthApiPaymentMethodRequest", "alternativePaymentMethod", KindProperty, true
+	case "apex_commercepay_postauthresp_setauthexpirationdate":
+		return "commercepayments", "PostAuthorizationResponse", "setAuthorizationExpirationDate", KindMethod, true
+	case "apex_commercepay_postauthresp_setgatewayresultcodedesc":
+		return "commercepayments", "PostAuthorizationResponse", "setGatewayResultCodeDescription", KindMethod, true
 	}
 	for _, prefix := range []struct {
 		key       string
