@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "status": "externally-reviewed",
+  "candidate": {
+    "commit": "9d64b1601d6caa88b65a63a1029413e1496b6bb1",
+    "tree": "26341113b45af32ac23eee6925ff7c48438dd907",
+    "sha256": "6b6c7213c96c20b1735790ba3a4d66f15b1d732cc0965a82bb19172a67868651"
+  },
+  "base": {
+    "ledgerSha256": "099ea5dc4d912b0d9ba01aa6afc93e05713fabc151e2199ed1ecb53c3ac619cc",
+    "snapshotSha256": {
+      "DOCS_SNAPSHOT.json": "b3afa418bb3bd6d5c4bc01ebab75ad4c55898af73844d0236375807c627a00a1",
+      "EVIDENCE_SNAPSHOT.json": "5eda8d286ad3e98d049b0b744854da1052309559d73b77d2a176d18203f496ca",
+      "GLADE_SNAPSHOT.json": "5fd684f9a57d2a1c47172bf4968abf54a260b4f450858e7ed8c62f118ef70396",
+      "ORG_SNAPSHOT.json": "712aa34619a02e6d952af1553e17d51819c610f6ac27e946e45491d02ccfeb3b"
+    },
+    "sourceIdentity": null
+  },
+  "current": {
+    "ledgerSha256": "d79146996e36f64b084b3454d60f3de1f41ba469e264cdfe57eab7dd3c5093ca",
+    "snapshotSha256": {
+      "DOCS_SNAPSHOT.json": "2b5f929588188d9413d64d65a768dcb57d60f56908a188e01d8376846c006a59",
+      "EVIDENCE_SNAPSHOT.json": "2178ccf25a35913f21b5400796dd9439dc6395c69a4833972e290be0712e0538",
+      "GLADE_SNAPSHOT.json": "8ba693e66c3824f1a3c271ce83190760a2d201b9519dd56a5ae269d0f5a430d6",
+      "ORG_SNAPSHOT.json": "712aa34619a02e6d952af1553e17d51819c610f6ac27e946e45491d02ccfeb3b"
+    },
+    "sourceIdentity": null
+  },
+  "expectedIDsSha256": "f29f187b7db2fd7e982ee05ded96d37097dbcbe0d9c2e44daf8c496108f45165"
+}
