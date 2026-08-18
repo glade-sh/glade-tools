@@ -2,12 +2,22 @@ package surfaceledger
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"reflect"
 	"sort"
 )
+
+var exactSnapshotFiles = []string{
+	"DOCS_SNAPSHOT.json",
+	"ORG_SNAPSHOT.json",
+	"GLADE_SNAPSHOT.json",
+	"EVIDENCE_SNAPSHOT.json",
+}
 
 type ExactLedgerDeltaInput struct {
 	Path   string `json:"path,omitempty"`
@@ -16,9 +26,25 @@ type ExactLedgerDeltaInput struct {
 }
 
 type ExactLedgerDeltaInputs struct {
-	Base     ExactLedgerDeltaInput `json:"base"`
-	Current  ExactLedgerDeltaInput `json:"current"`
-	Expected ExactLedgerDeltaInput `json:"expected"`
+	Base      ExactLedgerDeltaInput `json:"base"`
+	Current   ExactLedgerDeltaInput `json:"current"`
+	Expected  ExactLedgerDeltaInput `json:"expected"`
+	Authority ExactLedgerDeltaInput `json:"authority"`
+	Attempt   ExactLedgerDeltaInput `json:"attempt"`
+}
+
+type LedgerSnapshotAuthority struct {
+	LedgerSHA256   string            `json:"ledgerSha256"`
+	SnapshotSHA256 map[string]string `json:"snapshotSha256"`
+	SourceIdentity *SourceIdentity   `json:"sourceIdentity"`
+}
+
+type ExactLedgerDeltaAuthority struct {
+	SchemaVersion     int                     `json:"schemaVersion"`
+	Status            string                  `json:"status"`
+	Base              LedgerSnapshotAuthority `json:"base"`
+	Current           LedgerSnapshotAuthority `json:"current"`
+	ExpectedIDsSHA256 string                  `json:"expectedIDsSha256"`
 }
 
 type ExactLedgerDeltaCounts struct {
@@ -44,6 +70,7 @@ type ExactLedgerDeltaReport struct {
 	ChangedSurfaceIDs    []string               `json:"changedSurfaceIds"`
 	UnexpectedSurfaceIDs []string               `json:"unexpectedSurfaceIds"`
 	MissingExpectedIDs   []string               `json:"missingExpectedSurfaceIds"`
+	AuthorityToolsCommit string                 `json:"authorityToolsCommit"`
 	Counts               ExactLedgerDeltaCounts `json:"counts"`
 	Rows                 []ExactLedgerDeltaRow  `json:"rows"`
 }
@@ -94,6 +121,109 @@ func VerifyExactLedgerDeltaJSON(baseData, currentData []byte, expectedIDs []stri
 	return verifyExactLedgerDelta(baseIDs, currentIDs, expectedIDs, func(id string) bool {
 		return bytes.Equal(baseByID[id], currentByID[id])
 	})
+}
+
+// VerifyLedgerSnapshotClosure proves that ledgerData is the complete ledger
+// produced by its four retained source snapshots. Hashing a caller-projected
+// ledger is insufficient: the projection must fail this rederivation step.
+func VerifyLedgerSnapshotClosure(ledgerData []byte, snapshotDir string, authority LedgerSnapshotAuthority) error {
+	var stored SurfaceLedger
+	if err := json.Unmarshal(ledgerData, &stored); err != nil {
+		return fmt.Errorf("parse ledger for snapshot closure: %w", err)
+	}
+	if stored.SourceSnapshotBindings == nil || len(stored.SourceSnapshotBindings.Files) != len(exactSnapshotFiles) {
+		return fmt.Errorf("snapshot closure requires exactly %d source bindings", len(exactSnapshotFiles))
+	}
+	if len(authority.SnapshotSHA256) != len(exactSnapshotFiles) || !reflect.DeepEqual(stored.SourceSnapshotBindings.Files, authority.SnapshotSHA256) {
+		return fmt.Errorf("snapshot closure does not match external authority")
+	}
+	if !reflect.DeepEqual(stored.SourceIdentity, authority.SourceIdentity) {
+		return fmt.Errorf("snapshot closure source identity does not match external authority")
+	}
+	groups := make(map[string][]SurfaceLedgerRow, len(exactSnapshotFiles))
+	bindings := SourceSnapshotBindings{Files: make(map[string]string, len(exactSnapshotFiles))}
+	for _, name := range exactSnapshotFiles {
+		want, ok := authority.SnapshotSHA256[name]
+		if !ok || want == "" {
+			return fmt.Errorf("snapshot closure missing binding for %s", name)
+		}
+		data, err := os.ReadFile(filepath.Join(snapshotDir, name))
+		if err != nil {
+			return fmt.Errorf("snapshot closure read %s: %w", name, err)
+		}
+		got := fmt.Sprintf("%x", sha256.Sum256(data))
+		if got != want {
+			return fmt.Errorf("snapshot closure hash mismatch for %s: got %s want %s", name, got, want)
+		}
+		rows, err := decodeExactSnapshotRows(data, name)
+		if err != nil {
+			return err
+		}
+		groups[name] = rows
+		bindings.Files[name] = got
+	}
+	rebuilt := Merge(
+		groups["DOCS_SNAPSHOT.json"],
+		groups["ORG_SNAPSHOT.json"],
+		groups["GLADE_SNAPSHOT.json"],
+		groups["EVIDENCE_SNAPSHOT.json"],
+	)
+	if stored.SourceIdentity != nil {
+		ApplySourceIdentity(&rebuilt, *stored.SourceIdentity)
+	}
+	AssignPriorities(rebuilt.Rows)
+	rebuilt.Summary = Summarize(rebuilt.Rows)
+	rebuilt.SourceSnapshotBindings = &bindings
+	rebuiltData, err := json.Marshal(rebuilt)
+	if err != nil {
+		return fmt.Errorf("encode rebuilt snapshot closure: %w", err)
+	}
+	storedCanonical, err := canonicalJSON(ledgerData)
+	if err != nil {
+		return fmt.Errorf("canonicalize stored snapshot closure: %w", err)
+	}
+	rebuiltCanonical, err := canonicalJSON(rebuiltData)
+	if err != nil {
+		return fmt.Errorf("canonicalize rebuilt snapshot closure: %w", err)
+	}
+	if !bytes.Equal(storedCanonical, rebuiltCanonical) {
+		return fmt.Errorf("ledger does not equal complete snapshot closure")
+	}
+	return nil
+}
+
+func decodeExactSnapshotRows(data []byte, name string) ([]SurfaceLedgerRow, error) {
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	var rows []SurfaceLedgerRow
+	if err := decoder.Decode(&rows); err != nil {
+		return nil, fmt.Errorf("snapshot closure parse %s: %w", name, err)
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		if err == nil {
+			return nil, fmt.Errorf("snapshot closure parse %s: trailing JSON value", name)
+		}
+		return nil, fmt.Errorf("snapshot closure parse %s: %w", name, err)
+	}
+	return rows, nil
+}
+
+func canonicalJSON(data []byte) ([]byte, error) {
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.UseNumber()
+	var value any
+	if err := decoder.Decode(&value); err != nil {
+		return nil, err
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		if err == nil {
+			return nil, fmt.Errorf("trailing JSON value")
+		}
+		return nil, err
+	}
+	return json.Marshal(value)
 }
 
 func verifyExactLedgerDelta(baseByID, currentByID map[string]struct{}, expectedIDs []string, rowsEqual func(string) bool) (ExactLedgerDeltaReport, error) {

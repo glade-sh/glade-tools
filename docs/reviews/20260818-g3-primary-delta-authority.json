@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "status": "externally-reviewed",
+  "base": {
+    "ledgerSha256": "b72c42d039db4e921370743ed957f49ce46c4cdbbe4dc5022fee3561a7a29c74",
+    "snapshotSha256": {
+      "DOCS_SNAPSHOT.json": "82693d2cd7bc80aa07724cd2f53f877e6b54feec61357614787cc916bf6b1016",
+      "EVIDENCE_SNAPSHOT.json": "399399959a5810007af2e4d0a1a8b2eafbd86133c61ecf9ff8b1b93c2a83ab5c",
+      "GLADE_SNAPSHOT.json": "63acbd4e57cf1c8cd9acb8b326e1829be42b19b8f21c23c8301b1e794167ae8f",
+      "ORG_SNAPSHOT.json": "712aa34619a02e6d952af1553e17d51819c610f6ac27e946e45491d02ccfeb3b"
+    },
+    "sourceIdentity": null
+  },
+  "current": {
+    "ledgerSha256": "76876c16681d72f56916246e006b4cfd64a4ed9bb224affaae32127b34af7113",
+    "snapshotSha256": {
+      "DOCS_SNAPSHOT.json": "b3afa418bb3bd6d5c4bc01ebab75ad4c55898af73844d0236375807c627a00a1",
+      "EVIDENCE_SNAPSHOT.json": "5eda8d286ad3e98d049b0b744854da1052309559d73b77d2a176d18203f496ca",
+      "GLADE_SNAPSHOT.json": "f4880d482190a9648360a8fe5fee06c28ae3fa3ddab8e32308213748635ba935",
+      "ORG_SNAPSHOT.json": "712aa34619a02e6d952af1553e17d51819c610f6ac27e946e45491d02ccfeb3b"
+    },
+    "sourceIdentity": null
+  },
+  "expectedIDsSha256": "531f4783e59c01a4d431b220110a8e4776fd278a1fb45a866c81b200ae0bf00d"
+}
