@@ -20,6 +20,18 @@
       "notes": "Returns deterministic local data category tree structures from project metadata."
     },
     {
+      "surfaceId": "apex:Schema.DescribeDataCategoryGroupResult",
+      "symbol": "Schema.DescribeDataCategoryGroupResult",
+      "kind": "test",
+      "notes": "The metadata-backed describe call returns and exercises this concrete local result type."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeDataCategoryGroupStructureResult",
+      "symbol": "Schema.DescribeDataCategoryGroupStructureResult",
+      "kind": "test",
+      "notes": "The metadata-backed describe call returns and exercises this concrete local structure type."
+    },
+    {
       "surfaceId": "apex:System.Search.query(String)",
       "symbol": "Search.query / SOSL FIND",
       "kind": "test",

@@ -1,0 +1,36 @@
+{
+  "name": "g4-auth-jwt-local-evidence",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Auth.JWT is a deterministic local token model. This fixture proves local construction, claim access, serialization, and parsing only; it grants zero Salesforce parity credit.",
+  "evidence": [
+    {"surfaceId": "apex:Auth.JWT", "symbol": "Auth.JWT", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.getAdditionalClaims()", "symbol": "Auth.JWT.getAdditionalClaims()", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.getAud()", "symbol": "Auth.JWT.getAud()", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.getIss()", "symbol": "Auth.JWT.getIss()", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.getNbfClockSkew()", "symbol": "Auth.JWT.getNbfClockSkew()", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.getSub()", "symbol": "Auth.JWT.getSub()", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.getValidityLength()", "symbol": "Auth.JWT.getValidityLength()", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.setAdditionalClaims(Map<String,Object>)", "symbol": "Auth.JWT.setAdditionalClaims(Map<String,Object>)", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.setAud(String)", "symbol": "Auth.JWT.setAud(String)", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.setIss(String)", "symbol": "Auth.JWT.setIss(String)", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.setNbfClockSkew(Integer)", "symbol": "Auth.JWT.setNbfClockSkew(Integer)", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.setSub(String)", "symbol": "Auth.JWT.setSub(String)", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.setValidityLength(Integer)", "symbol": "Auth.JWT.setValidityLength(Integer)", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWT.toJSONString()", "symbol": "Auth.JWT.toJSONString()", "kind": "exec"},
+    {"surfaceId": "apex:Auth.JWTUtil.parseJWTFromStringWithoutValidation(String)", "symbol": "Auth.JWTUtil.parseJWTFromStringWithoutValidation(String)", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Auth.JWT jwt = new Auth.JWT(); System.assertEquals(30, jwt.getNbfClockSkew()); System.assertEquals(300, jwt.getValidityLength()); jwt.setIss('issuer'); jwt.setSub('subject'); jwt.setAud('audience'); jwt.setNbfClockSkew(15); jwt.setValidityLength(120); jwt.setAdditionalClaims(new Map<String,Object>{'scope' => 'read'}); System.assertEquals('issuer', jwt.getIss()); System.assertEquals('subject', jwt.getSub()); System.assertEquals('audience', jwt.getAud()); System.assertEquals(15, jwt.getNbfClockSkew()); System.assertEquals(120, jwt.getValidityLength()); System.assertEquals('read', jwt.getAdditionalClaims().get('scope')); String encoded = jwt.toJSONString(); System.assert(encoded.contains('issuer')); Auth.JWT parsed = Auth.JWTUtil.parseJWTFromStringWithoutValidation('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwYXJzZWQtaXNzdWUiLCJzdWIiOiJwYXJzZWQtc3ViaiIsImF1ZCI6InBhcnNlZC1hdWQiLCJzY29wZSI6InJlYWQifQ.c2lnbmF0dXJl'); System.assertEquals('parsed-issue', parsed.getIss()); System.assertEquals('parsed-subj', parsed.getSub()); System.assertEquals('parsed-aud', parsed.getAud()); System.assertEquals('read', parsed.getAdditionalClaims().get('scope'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": ["Auth.JWT jwt = new Auth.JWT(); System.assertEquals(30, jwt.getNbfClockSkew()); System.assertEquals(300, jwt.getValidityLength()); jwt.setIss('issuer'); jwt.setSub('subject'); jwt.setAud('audience'); jwt.setNbfClockSkew(15); jwt.setValidityLength(120); jwt.setAdditionalClaims(new Map<String,Object>{'scope' => 'read'}); System.assertEquals('issuer', jwt.getIss()); System.assertEquals('subject', jwt.getSub()); System.assertEquals('audience', jwt.getAud()); System.assertEquals(15, jwt.getNbfClockSkew()); System.assertEquals(120, jwt.getValidityLength()); System.assertEquals('read', jwt.getAdditionalClaims().get('scope')); String encoded = jwt.toJSONString(); System.assert(encoded.contains('issuer')); Auth.JWT parsed = Auth.JWTUtil.parseJWTFromStringWithoutValidation('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwYXJzZWQtaXNzdWUiLCJzdWIiOiJwYXJzZWQtc3ViaiIsImF1ZCI6InBhcnNlZC1hdWQiLCJzY29wZSI6InJlYWQifQ.c2lnbmF0dXJl'); System.assertEquals('parsed-issue', parsed.getIss()); System.assertEquals('parsed-subj', parsed.getSub()); System.assertEquals('parsed-aud', parsed.getAud()); System.assertEquals('read', parsed.getAdditionalClaims().get('scope'));"]
+  },
+  "expected": {"result": {"debug": null, "ok": true}}
+}

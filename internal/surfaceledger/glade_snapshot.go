@@ -215,7 +215,7 @@ var fixtureBackedStdlibAliases = []fixtureBackedStdlibAlias{
 	{TypeName: "JSONParser", Methods: []string{"getBooleanValue", "getDateValue", "getText"}},
 	{TypeName: "List", Methods: []string{"copyConstructor", "indexOf", "sort"}},
 	{TypeName: "Long", Methods: []string{"valueOf"}},
-	{TypeName: "Map", Methods: []string{"containsKey", "containsValue", "copyConstructor", "deepClone", "keySet", "toString"}},
+	{TypeName: "Map", Methods: []string{"containsKey", "copyConstructor", "deepClone", "keySet", "toString"}},
 	{TypeName: "Object", Methods: []string{"equals", "hashCode", "toString"}},
 	{TypeName: "Pattern", Methods: []string{"pattern", "split"}},
 	{TypeName: "RestRequest", Methods: []string{"getHeader", "getParameter"}},

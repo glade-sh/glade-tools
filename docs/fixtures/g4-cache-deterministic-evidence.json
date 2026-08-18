@@ -1,0 +1,40 @@
+{
+  "name": "g4-cache-deterministic-evidence",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Cache key helpers and CacheBuilder-backed reads are deterministic local cache behavior. This fixture does not claim hosted cache parity and grants zero Salesforce parity credit.",
+  "evidence": [
+    {"surfaceId": "apex:Cache.Org.remove(Type,String)", "symbol": "Cache.Org.remove(Type,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.OrgPartition.createFullyQualifiedKey(String,String,String)", "symbol": "Cache.OrgPartition.createFullyQualifiedKey(String,String,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.OrgPartition.createFullyQualifiedPartition(String,String)", "symbol": "Cache.OrgPartition.createFullyQualifiedPartition(String,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.OrgPartition.validateKey(Boolean,String)", "symbol": "Cache.OrgPartition.validateKey(Boolean,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.OrgPartition.validateKeyValue(Boolean,String,Object)", "symbol": "Cache.OrgPartition.validateKeyValue(Boolean,String,Object)", "kind": "test"},
+    {"surfaceId": "apex:Cache.OrgPartition.validatePartitionName(String)", "symbol": "Cache.OrgPartition.validatePartitionName(String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.Partition.createFullyQualifiedKey(String,String,String)", "symbol": "Cache.Partition.createFullyQualifiedKey(String,String,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.Partition.createFullyQualifiedPartition(String,String)", "symbol": "Cache.Partition.createFullyQualifiedPartition(String,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.Partition.validateKey(Boolean,String)", "symbol": "Cache.Partition.validateKey(Boolean,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.Partition.validateKeyValue(Boolean,String,Object)", "symbol": "Cache.Partition.validateKeyValue(Boolean,String,Object)", "kind": "test"},
+    {"surfaceId": "apex:Cache.Partition.validatePartitionName(String)", "symbol": "Cache.Partition.validatePartitionName(String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.Session.get(Type,String)", "symbol": "Cache.Session.get(Type,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.Session.remove(Type,String)", "symbol": "Cache.Session.remove(Type,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.SessionPartition.createFullyQualifiedKey(String,String,String)", "symbol": "Cache.SessionPartition.createFullyQualifiedKey(String,String,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.SessionPartition.createFullyQualifiedPartition(String,String)", "symbol": "Cache.SessionPartition.createFullyQualifiedPartition(String,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.SessionPartition.validateKey(Boolean,String)", "symbol": "Cache.SessionPartition.validateKey(Boolean,String)", "kind": "test"},
+    {"surfaceId": "apex:Cache.SessionPartition.validateKeyValue(Boolean,String,Object)", "symbol": "Cache.SessionPartition.validateKeyValue(Boolean,String,Object)", "kind": "test"},
+    {"surfaceId": "apex:Cache.SessionPartition.validatePartitionName(String)", "symbol": "Cache.SessionPartition.validatePartitionName(String)", "kind": "test"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/G4CacheBuilder.cls",
+      "content": "global class G4CacheBuilder implements Cache.CacheBuilder { global Object doLoad(String key) { return 'loaded:' + key; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/G4CacheDeterministicEvidenceTest.cls",
+      "content": "@isTest private class G4CacheDeterministicEvidenceTest { @isTest static void rows() { System.assertEquals('local.default.key', Cache.OrgPartition.createFullyQualifiedKey('local', 'default', 'key')); System.assertEquals('local.default', Cache.OrgPartition.createFullyQualifiedPartition('local', 'default')); Cache.OrgPartition.validatePartitionName('default'); Cache.OrgPartition.validateKey(false, 'key'); Cache.OrgPartition.validateKeyValue(false, 'key', 'value'); System.assertEquals('local.default.key', Cache.Partition.createFullyQualifiedKey('local', 'default', 'key')); System.assertEquals('local.default', Cache.Partition.createFullyQualifiedPartition('local', 'default')); Cache.Partition.validatePartitionName('default'); Cache.Partition.validateKey(false, 'key'); Cache.Partition.validateKeyValue(false, 'key', 'value'); System.assertEquals('local.default.key', Cache.SessionPartition.createFullyQualifiedKey('local', 'default', 'key')); System.assertEquals('local.default', Cache.SessionPartition.createFullyQualifiedPartition('local', 'default')); Cache.SessionPartition.validatePartitionName('default'); Cache.SessionPartition.validateKey(false, 'key'); Cache.SessionPartition.validateKeyValue(false, 'key', 'value'); System.assertEquals('loaded:org-key', (String)Cache.Org.get(G4CacheBuilder.class, 'org-key')); System.assertEquals(true, Cache.Org.remove(G4CacheBuilder.class, 'org-key')); System.assertEquals('loaded:session-key', (String)Cache.Session.get(G4CacheBuilder.class, 'session-key')); System.assertEquals(true, Cache.Session.remove(G4CacheBuilder.class, 'session-key')); } }"
+    }
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+}
