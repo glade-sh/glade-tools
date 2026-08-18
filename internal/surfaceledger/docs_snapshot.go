@@ -344,6 +344,16 @@ func apexDocsIdentity(doc apexdocs.Document) apexDocsDocumentIdentity {
 		typeName:  doc.Name,
 		kind:      docsKind(ProductApex, doc.Kind),
 	}
+	titleTypeName := ""
+	if identity.namespace == "ConnectApi" {
+		titleTypeName = connectApiTypeNameFromTitle(doc.Title)
+		if titleTypeName != "" {
+			identity.typeName = titleTypeName
+		}
+		if typeName := connectApiStandaloneMethodParent(doc.SourcePath, doc.Name); typeName != "" {
+			identity.typeName = typeName
+		}
+	}
 	namespace, typeName, memberName, memberKind, ok := inferApexIdentityFromSource(doc.SourcePath, doc.Name)
 	if !ok {
 		return identity
@@ -352,7 +362,9 @@ func apexDocsIdentity(doc apexdocs.Document) apexDocsDocumentIdentity {
 	if len(doc.Members) > 0 {
 		return identity
 	}
-	identity.typeName = typeName
+	if titleTypeName == "" && identity.typeName == doc.Name {
+		identity.typeName = typeName
+	}
 	if memberName == "" {
 		return identity
 	}
@@ -399,10 +411,98 @@ func shouldIncludeDocsSurface(product string, doc apexdocs.Document) bool {
 	if product != ProductApex {
 		return true
 	}
-	if isApexGuideDoc(doc.SourcePath) || isApexNamespaceDoc(doc.SourcePath) || isGeneratedCustomObjectMethodDoc(doc.SourcePath) {
+	if isApexGuideDoc(doc.SourcePath) || isApexNamespaceDoc(doc.SourcePath) || isGeneratedCustomObjectMethodDoc(doc.SourcePath) || isConnectApiSummaryDoc(doc.SourcePath) {
 		return false
 	}
 	return true
+}
+
+func isConnectApiSummaryDoc(sourcePath string) bool {
+	switch strings.ToLower(sourceStemBase(sourcePath)) {
+	case "apex_connectapi_input", "apex_connectapi_input_retired", "apex_connectapi_output", "apex_connectapi_output_retired", "apex_connectapi_release_notes":
+		return true
+	default:
+		return false
+	}
+}
+
+func connectApiTypeNameFromTitle(title string) string {
+	title = cleanIdentityPart(title)
+	name := ""
+	if strings.HasPrefix(title, "ConnectApi.") {
+		name = strings.TrimPrefix(title, "ConnectApi.")
+		if idx := strings.Index(name, " ("); idx >= 0 {
+			name = name[:idx]
+		}
+	} else if strings.HasSuffix(title, " Class") {
+		name = strings.TrimSuffix(title, " Class")
+	} else if strings.HasSuffix(title, " Methods") {
+		name = strings.TrimSuffix(title, " Methods")
+	}
+	name = strings.TrimSpace(name)
+	if !isApexIdentifier(name) {
+		return ""
+	}
+	return name
+}
+
+func connectApiStandaloneMethodParent(sourcePath, name string) string {
+	base := sourceStemBase(sourcePath)
+	lower := strings.ToLower(base)
+	const prefix = "apex_connectapi_output_"
+	if !strings.HasPrefix(lower, prefix) || !strings.Contains(name, "(") {
+		return ""
+	}
+	member := strings.TrimSpace(name[:strings.Index(name, "(")])
+	suffix := "_" + camelToSnake(member)
+	rest := base[len(prefix):]
+	if !strings.HasSuffix(strings.ToLower(rest), suffix) {
+		return ""
+	}
+	rest = rest[:len(rest)-len(suffix)]
+	return snakeToPascal(rest)
+}
+
+func isApexIdentifier(value string) bool {
+	if value == "" {
+		return false
+	}
+	for i, r := range value {
+		if (r >= 'A' && r <= 'Z') || (r >= 'a' && r <= 'z') || r == '_' || (i > 0 && r >= '0' && r <= '9') {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
+func upperFirstASCII(value string) string {
+	if value != "" && value[0] >= 'a' && value[0] <= 'z' {
+		return string(value[0]-('a'-'A')) + value[1:]
+	}
+	return value
+}
+
+func camelToSnake(value string) string {
+	var out strings.Builder
+	for i, r := range value {
+		if r >= 'A' && r <= 'Z' {
+			if i > 0 {
+				out.WriteByte('_')
+			}
+			r += 'a' - 'A'
+		}
+		out.WriteRune(r)
+	}
+	return out.String()
+}
+
+func snakeToPascal(value string) string {
+	var out strings.Builder
+	for _, part := range strings.Split(value, "_") {
+		out.WriteString(upperFirstASCII(part))
+	}
+	return out.String()
 }
 
 func shouldEmitDocsDocumentRow(product string, doc apexdocs.Document) bool {

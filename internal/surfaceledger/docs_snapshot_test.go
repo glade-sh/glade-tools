@@ -316,6 +316,73 @@ func TestBuildDocsSnapshotInfersConnectApiStandaloneMethodIdentity(t *testing.T)
 	}
 }
 
+func TestBuildDocsSnapshotUsesConnectApiDocumentTitlesForClassIdentity(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "apex/apex_connectapi_input_action_info.md", "# ConnectApi.ActionInfoInputRepresentation\n")
+	writeDoc(t, root, "apex/apex_connectapi_input_cart_coupon.md", "# ConnectApi.cartCouponInput\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_cart_inventory_item_reservation_output.md", "# ConnectApi.CartInventoryItemReservationOutputRepresentation (Pilot)\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_einstein_llm_generation_item.md", "# ConnectApi.\u200bEinsteinLLM\u200bGenerationItem\u200bOutput\n")
+	writeDoc(t, root, "apex/apex_ConnectAPI_CreatedFileRepresentation.md", "# ConnectApi.CreatedFile\n")
+	writeDoc(t, root, "apex/apex_ConnectAPI_OMSAnalytics_static_methods.md", "# OMSAnalytics Class\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_batch_result_methods.md", "# BatchResult Methods\n")
+	writeDoc(t, root, "apex/apex_connectapi_input.md", "# ConnectApi Input Classes\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_retired.md", "# Retired ConnectApi Output Classes\n")
+	writeDoc(t, root, "apex/apex_connectapi_release_notes.md", "# ConnectApi Release Notes\n")
+
+	rows, err := BuildDocsSnapshot(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:ConnectApi.ActionInfoInputRepresentation",
+		"apex:ConnectApi.cartCouponInput",
+		"apex:ConnectApi.CartInventoryItemReservationOutputRepresentation",
+		"apex:ConnectApi.EinsteinLLMGenerationItemOutput",
+		"apex:ConnectApi.CreatedFile",
+		"apex:ConnectApi.OMSAnalytics",
+		"apex:ConnectApi.BatchResult",
+	} {
+		if _, ok := byID[id]; !ok {
+			t.Fatalf("missing canonical ConnectApi row %s in %#v", id, rows)
+		}
+	}
+	for _, stale := range []string{
+		"apex:ConnectApi.input_action_info",
+		"apex:ConnectApi.input_cart_coupon",
+		"apex:ConnectApi.output_cart_inventory_item_reservation_output",
+		"apex:ConnectApi.output_einstein_llm_generation_item",
+		"apex:ConnectApi.CreatedFileRepresentation",
+		"apex:ConnectApi.OMSAnalytics_static",
+		"apex:ConnectApi.output_batch_result",
+		"apex:ConnectApi.input",
+		"apex:ConnectApi.output_retired",
+		"apex:ConnectApi.release_notes",
+	} {
+		if _, ok := byID[stale]; ok {
+			t.Fatalf("kept non-surface ConnectApi row %s in %#v", stale, rows)
+		}
+	}
+}
+
+func TestBuildDocsSnapshotUsesConnectApiOutputParentForStandaloneMethods(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "apex/apex_connectapi_output_batch_result_get_error.md", "# getError()\n\n## Signature\n\n`public ConnectApi.ConnectApiException getError()`\n")
+
+	rows, err := BuildDocsSnapshot(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	want := "apex:ConnectApi.BatchResult.getError()"
+	if _, ok := byID[want]; !ok {
+		t.Fatalf("missing canonical ConnectApi output method %s in %#v", want, rows)
+	}
+	if _, ok := byID["apex:ConnectApi.output.getError()"]; ok {
+		t.Fatalf("kept filename-family parent for ConnectApi output method in %#v", rows)
+	}
+}
+
 func TestDocsSourceStemStripsHiddenFormatMarks(t *testing.T) {
 	if got := sourceStem("ui-api/picklistAtrributes\u200bValueType.md"); got != "picklistAtrributesValueType" {
 		t.Fatalf("source stem = %q", got)
