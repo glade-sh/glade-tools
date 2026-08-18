@@ -2131,16 +2131,52 @@
       "reason": "new System platform method requires an explicit local compile-shape decision before runtime support"
     },
     {
-      "surfacePrefix": "apex:System.TouchHandledException.TouchHandledException()",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 and the local runtime reject this zero-argument setter call"
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getFieldSets()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this getter; the fieldSets property is the supported identity"
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getFields()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this getter; the fields property is the supported identity"
+    },
+    {
+      "surfaceId": "apex:System.Crypto.areEqualConstantTime(Blob,Blob)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this Blob signature and the local runtime preserves the explicit rejection"
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.TouchHandledException()",
       "disposition": "compile-shape-required",
       "override": true,
       "reason": "Salesforce API 67 rejects this constructor shape; local compiler must reject it"
     },
     {
-      "surfacePrefix": "apex:System.TouchHandledException.TouchHandledException(String,Exception)",
+      "surfaceId": "apex:System.TouchHandledException.TouchHandledException(String,Exception)",
       "disposition": "compile-shape-required",
       "override": true,
       "reason": "Salesforce API 67 rejects this constructor shape; local compiler must reject it"
+    },
+    {
+      "surfaceId": "apex:workflow.Action.invoke(workflow.Context)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects the workflow ActionDml return contract from Apex"
+    },
+    {
+      "surfaceId": "apex:workflow.ActionDml.invoke()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects the workflow ActionDml return contract from Apex"
     },
     {
       "surfacePrefix": "apex:System.AsyncOptions.getMaximumQueueableStackDepth()",

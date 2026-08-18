@@ -1603,6 +1603,23 @@ func TestGapClassCompileShapeRequiresLocalFixtureEvidence(t *testing.T) {
 	}
 }
 
+func TestGapClassCompileShapeClosesExplicitUnsupportedFixtureWithoutPositiveShape(t *testing.T) {
+	policy := SupportPolicy{Rules: []SupportPolicyRule{{
+		SurfaceID:   "apex:System.NegativeContract.NegativeContract()",
+		Disposition: DispositionCompileShapeRequired,
+		Reason:      "compile-negative contract",
+	}}}
+	row := apexRow("apex:System.NegativeContract.NegativeContract()", "System", "NegativeContract")
+	row.GladeShape = ShapeAbsent
+	row.GladeBehavior = BehaviorUnsupported
+	row.Evidence = EvidenceFixture
+
+	profile := ComputeSupportProfile([]SurfaceLedgerRow{row}, policy, nil)
+	if got := profile.Rows[0].GapClass; got != "" {
+		t.Fatalf("compile-negative fixture gapClass = %q, want closed", got)
+	}
+}
+
 // RED 2: passive rows require both local fixture and Salesforce oracle evidence.
 func TestGapClassPassiveBehaviorRequiresDualEvidence(t *testing.T) {
 	policy := SupportPolicy{

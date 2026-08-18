@@ -96,6 +96,9 @@ func TestG3ResidualHostedPolicyOverridesAreExactAndCloseExistingUnsupportedEvide
 	selected := make(map[string]bool, len(g3ResidualHostedPolicyReasons))
 	for _, row := range profile.Rows {
 		if strings.HasPrefix(row.MatchRule, "surfaceId=") {
+			if row.Disposition != DispositionHostedDeferred {
+				continue
+			}
 			if _, target := g3ResidualHostedPolicyReasons[row.SurfaceID]; !target {
 				t.Fatalf("unexpected G3 exact policy match: %#v", row)
 			}

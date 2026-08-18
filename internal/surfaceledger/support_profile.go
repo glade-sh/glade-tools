@@ -487,6 +487,14 @@ func classifyGap(row SupportProfileRow) string {
 	if row.Disposition == DispositionHostedDeferred {
 		return ""
 	}
+	fixtureEvidence := row.Evidence == EvidenceFixture || row.Evidence == EvidenceFixtureAndOracle
+
+	// A compile-shape obligation may be a positive shape or an explicit
+	// compile-negative contract. Unsupported fixture evidence closes the latter
+	// without pretending that the rejected shape exists locally.
+	if row.Disposition == DispositionCompileShapeRequired && row.Behavior == BehaviorUnsupported && fixtureEvidence {
+		return ""
+	}
 
 	// Every non-deferred disposition requires a non-absent shape.
 	if row.LedgerShape == ShapeAbsent || row.LedgerShape == "" {
@@ -495,7 +503,7 @@ func classifyGap(row SupportProfileRow) string {
 
 	// compile-shape-required closes with present shape and local fixture evidence.
 	if row.Disposition == DispositionCompileShapeRequired {
-		if row.Evidence == EvidenceFixture || row.Evidence == EvidenceFixtureAndOracle {
+		if fixtureEvidence {
 			return ""
 		}
 		return GapMissingEvidence
