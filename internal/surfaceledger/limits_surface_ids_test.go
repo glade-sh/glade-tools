@@ -2,6 +2,7 @@ package surfaceledger
 
 import (
 	"path/filepath"
+	"slices"
 	"testing"
 )
 
@@ -11,7 +12,21 @@ var limitsScheduledJobSurfaceIDs = []string{
 }
 
 func TestLimitsScheduledJobSurfaceIDsAreCanonicalAcrossSnapshotAndFixtures(t *testing.T) {
-	assertLimitsScheduledJobSurfaceIDs(t, "Glade snapshot", BuildGladeSnapshot())
+	rows := BuildGladeSnapshot()
+	assertLimitsScheduledJobSurfaceIDs(t, "Glade snapshot", rows)
+	for _, id := range limitsScheduledJobSurfaceIDs {
+		for _, row := range rows {
+			if row.SurfaceID != id {
+				continue
+			}
+			if row.ReturnType != "Integer" || row.GladeReturnType != "Integer" {
+				t.Errorf("Glade snapshot %s return types = %q/%q, want Integer/Integer", id, row.ReturnType, row.GladeReturnType)
+			}
+			if !slices.Contains(row.Sources, "standard-symbols") || !slices.Contains(row.Sources, "stub-behavior") {
+				t.Errorf("Glade snapshot %s sources = %v, want standard-symbols and stub-behavior", id, row.Sources)
+			}
+		}
+	}
 
 	root := filepath.Join("..", "..")
 	for _, name := range []string{
