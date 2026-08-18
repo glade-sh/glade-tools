@@ -697,6 +697,30 @@ func TestRowsFromDocsInventoryInfersApexFileIdentities(t *testing.T) {
 	}
 }
 
+func TestRowsFromDocsInventoryAliasesReviewedCommercePaymentsPropertyStem(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath: "apex/apex_commercepay_PostAuthApiPayMethodReq_altPayMethod.md",
+		Kind:       "document",
+		Name:       "alternativePaymentMethod",
+		Title:      "alternativePaymentMethod",
+	}}})
+
+	wantID := ApexMemberID("commercepayments", "PostAuthApiPaymentMethodRequest", "alternativePaymentMethod", nil)
+	byID := rowsByID(rows)
+	row, ok := byID[wantID]
+	if !ok {
+		t.Fatalf("missing reviewed Commerce Payments row %s in %#v", wantID, rows)
+	}
+	if row.Kind != KindProperty {
+		t.Fatalf("%s kind = %q, want %q", wantID, row.Kind, KindProperty)
+	}
+	for _, row := range rows {
+		if row.Namespace == "System" {
+			t.Fatalf("reviewed Commerce Payments property emitted System-owned row %#v", row)
+		}
+	}
+}
+
 func TestRowsFromDocsInventorySkipsApexPreviewBulletSignatures(t *testing.T) {
 	rows := RowsFromDocsInventory(apexdocs.Inventory{
 		Documents: []apexdocs.Document{{

@@ -344,7 +344,7 @@ func apexDocsIdentity(doc apexdocs.Document) apexDocsDocumentIdentity {
 		typeName:  doc.Name,
 		kind:      docsKind(ProductApex, doc.Kind),
 	}
-	namespace, typeName, memberName, ok := inferApexIdentityFromSource(doc.SourcePath, doc.Name)
+	namespace, typeName, memberName, memberKind, ok := inferApexIdentityFromSource(doc.SourcePath, doc.Name)
 	if !ok {
 		return identity
 	}
@@ -359,7 +359,7 @@ func apexDocsIdentity(doc apexdocs.Document) apexDocsDocumentIdentity {
 	identity.memberName = memberName
 	identity.signature = doc.Name
 	identity.parameters = parametersFromSignature(doc.Name)
-	identity.kind = KindMethod
+	identity.kind = memberKind
 	return identity
 }
 
@@ -632,9 +632,12 @@ func inferApexNamespace(sourcePath, name string) string {
 	return "System"
 }
 
-func inferApexIdentityFromSource(sourcePath, name string) (string, string, string, bool) {
+func inferApexIdentityFromSource(sourcePath, name string) (string, string, string, string, bool) {
 	base := sourceStemBase(sourcePath)
 	lower := strings.ToLower(base)
+	if lower == "apex_commercepay_postauthapipaymethodreq_altpaymethod" {
+		return "commercepayments", "PostAuthApiPaymentMethodRequest", "alternativePaymentMethod", KindProperty, true
+	}
 	for _, prefix := range []struct {
 		key       string
 		namespace string
@@ -652,11 +655,11 @@ func inferApexIdentityFromSource(sourcePath, name string) (string, string, strin
 		rest := base[len(prefix.key):]
 		typeName, memberName := apexTypeAndMemberFromStem(rest, name)
 		if typeName == "" {
-			return "", "", "", false
+			return "", "", "", "", false
 		}
-		return prefix.namespace, typeName, memberName, true
+		return prefix.namespace, typeName, memberName, KindMethod, true
 	}
-	return "", "", "", false
+	return "", "", "", "", false
 }
 
 func apexTypeAndMemberFromStem(rest, name string) (string, string) {
