@@ -1,13 +1,21 @@
 {
   "apiVersion": "67.0",
   "command": {
-    "kind": "test"
+    "args": [
+      "ApexPages.Action action = new ApexPages.Action('{!list}'); System.assertNotEquals(null, action.invoke()); ApexPages.Action cloned = action.clone(); System.assertEquals(action.getExpression(), cloned.getExpression()); ApexPages.Component component = new ApexPages.Component(); System.assertNotEquals(null, component.clone()); ApexPages.ComponentIteration iteration = new ApexPages.ComponentIteration(); System.assertNotEquals(null, iteration.clone()); ApexPages.IdeaStandardController controller = new ApexPages.IdeaStandardController(); System.assertEquals(true, controller.equals(controller)); System.assertNotEquals(0, controller.hashCode()); System.assert(controller.toString().length() > 0); ApexPages.IdeaStandardSetController setController = new ApexPages.IdeaStandardSetController(); System.assertEquals(true, setController.equals(setController));"
+    ],
+    "kind": "exec"
   },
   "evidence": [
     {
       "kind": "test",
       "surfaceId": "apex:ApexPages.Action.invoke()",
       "symbol": "ApexPages.Action.invoke()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:ApexPages.Action.clone()",
+      "symbol": "ApexPages.Action.clone()"
     },
     {
       "kind": "test",
@@ -62,11 +70,8 @@
   ],
   "expected": {
     "result": {
-      "errors": 0,
-      "failed": 0,
-      "ok": true,
-      "passed": 1,
-      "total": 1
+      "debug": null,
+      "ok": true
     }
   },
   "mode": "local-runtime",
@@ -82,11 +87,11 @@
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "This fixture proves local Visualforce controller and component behavior only; it does not claim hosted Visualforce execution.",
+  "salesforceExclusionReason": "This fixture proves local Visualforce controller and component behavior only and makes zero Salesforce parity claim.",
   "source": [
     {
-      "content": "@isTest private class CurrentBaseApexPagesLocalRuntime001Test { @isTest static void apexPagesLocalRuntime001Witness() { ApexPages.Action action = new ApexPages.Action('{!list}'); System.assertNotEquals(null, action.invoke()); ApexPages.Component component = new ApexPages.Component(); System.assertNotEquals(null, component.clone()); ApexPages.ComponentIteration iteration = new ApexPages.ComponentIteration(); System.assertNotEquals(null, iteration.clone()); ApexPages.IdeaStandardController controller = new ApexPages.IdeaStandardController(); System.assertEquals(true, controller.equals(controller)); System.assertNotEquals(0, controller.hashCode()); System.assert(controller.toString().length() > 0); ApexPages.IdeaStandardSetController setController = new ApexPages.IdeaStandardSetController(); System.assertEquals(true, setController.equals(setController)); } }",
-      "path": "force-app/main/default/classes/CurrentBaseApexPagesLocalRuntime001Test.cls"
+      "content": "ApexPages.Action action = new ApexPages.Action('{!list}'); System.assertNotEquals(null, action.invoke()); ApexPages.Action cloned = action.clone(); System.assertEquals(action.getExpression(), cloned.getExpression()); ApexPages.Component component = new ApexPages.Component(); System.assertNotEquals(null, component.clone()); ApexPages.ComponentIteration iteration = new ApexPages.ComponentIteration(); System.assertNotEquals(null, iteration.clone()); ApexPages.IdeaStandardController controller = new ApexPages.IdeaStandardController(); System.assertEquals(true, controller.equals(controller)); System.assertNotEquals(0, controller.hashCode()); System.assert(controller.toString().length() > 0); ApexPages.IdeaStandardSetController setController = new ApexPages.IdeaStandardSetController(); System.assertEquals(true, setController.equals(setController));",
+      "path": "anonymous.apex"
     }
   ]
 }
