@@ -1,0 +1,25 @@
+{
+  "name": "current-base-apexpages-message-local-runtime-002-api67",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "ApexPages.Message value semantics are proven only by deterministic local runtime execution; this fixture makes zero Salesforce parity claim.",
+  "evidence": [
+    {"surfaceId": "apex:ApexPages.Message.equals(Object)", "symbol": "ApexPages.Message.equals", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.hashCode()", "symbol": "ApexPages.Message.hashCode", "kind": "exec"},
+    {"surfaceId": "apex:ApexPages.Message.toString()", "symbol": "ApexPages.Message.toString", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "ApexPages.Message first = new ApexPages.Message(ApexPages.Severity.WARNING, 'Summary', 'Detail');\nApexPages.Message second = new ApexPages.Message(ApexPages.Severity.WARNING, 'Summary', 'Detail');\nSystem.assertEquals(true, first.equals(second));\nSystem.assertEquals(first.hashCode(), second.hashCode());\nSystem.assertEquals('ApexPages.Message[\"Summary\"]', first.toString());\nSystem.debug('true');\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "ApexPages.Message first = new ApexPages.Message(ApexPages.Severity.WARNING, 'Summary', 'Detail');\nApexPages.Message second = new ApexPages.Message(ApexPages.Severity.WARNING, 'Summary', 'Detail');\nSystem.assertEquals(true, first.equals(second));\nSystem.assertEquals(first.hashCode(), second.hashCode());\nSystem.assertEquals('ApexPages.Message[\"Summary\"]', first.toString());\nSystem.debug('true');\n"
+    ]
+  },
+  "expected": {"result": {"debug": ["true"], "ok": true}}
+}
