@@ -1,0 +1,34 @@
+{
+  "name": "core-runtime-messaging-attachment-retrieval-option-enum",
+  "evidence": [
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.METADATA_ONLY", "symbol": "Messaging.AttachmentRetrievalOption.METADATA_ONLY", "kind": "test", "notes": "Local enum constant is materialized as a deterministic typed value."},
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY", "symbol": "Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY", "kind": "test", "notes": "Local enum constant is materialized as a deterministic typed value."},
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.NONE", "symbol": "Messaging.AttachmentRetrievalOption.NONE", "kind": "test", "notes": "Local enum constant is materialized as a deterministic typed value."},
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.equals(Object)", "symbol": "Messaging.AttachmentRetrievalOption.equals", "kind": "test", "notes": "Local enum equality follows deterministic value identity semantics."},
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.hashCode()", "symbol": "Messaging.AttachmentRetrievalOption.hashCode", "kind": "test", "notes": "Local enum hashCode returns a stable integer for the same materialized value."},
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.ordinal()", "symbol": "Messaging.AttachmentRetrievalOption.ordinal", "kind": "test", "notes": "Local enum ordinals follow declaration order."},
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.valueOf(String)", "symbol": "Messaging.AttachmentRetrievalOption.valueOf", "kind": "test", "notes": "Local enum valueOf resolves each declared name."},
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.values()", "symbol": "Messaging.AttachmentRetrievalOption.values", "kind": "test", "notes": "Local enum values returns all constants in declaration order."}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeMessagingAttachmentRetrievalOptionEnumTest.cls",
+      "content": "@isTest private class CoreRuntimeMessagingAttachmentRetrievalOptionEnumTest { @isTest static void enumMethods() { Messaging.AttachmentRetrievalOption metadataOnly = Messaging.AttachmentRetrievalOption.METADATA_ONLY; Messaging.AttachmentRetrievalOption metadataWithBody = Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY; Messaging.AttachmentRetrievalOption none = Messaging.AttachmentRetrievalOption.NONE; System.assertEquals(Messaging.AttachmentRetrievalOption.METADATA_ONLY, metadataOnly); System.assertEquals(Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY, metadataWithBody); System.assertEquals(Messaging.AttachmentRetrievalOption.NONE, none); System.assertEquals(0, metadataOnly.ordinal()); System.assertEquals(1, metadataWithBody.ordinal()); System.assertEquals(2, none.ordinal()); List<Messaging.AttachmentRetrievalOption> values = Messaging.AttachmentRetrievalOption.values(); System.assertEquals(3, values.size()); System.assertEquals(metadataOnly, values[0]); System.assertEquals(metadataWithBody, values[1]); System.assertEquals(none, values[2]); System.assertEquals(metadataOnly, Messaging.AttachmentRetrievalOption.valueOf('METADATA_ONLY')); System.assertEquals(metadataWithBody, Messaging.AttachmentRetrievalOption.valueOf('METADATA_WITH_BODY')); System.assertEquals(none, Messaging.AttachmentRetrievalOption.valueOf('NONE')); System.assert(metadataOnly.equals(metadataOnly)); System.assert(metadataOnly.equals(Messaging.AttachmentRetrievalOption.valueOf('METADATA_ONLY'))); System.assert(!metadataOnly.equals(metadataWithBody)); System.assert(!metadataOnly.equals(null)); Integer hash = metadataOnly.hashCode(); System.assertNotEquals(null, hash); System.assertEquals(hash, metadataOnly.hashCode()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "AttachmentRetrievalOption enum behavior is covered by deterministic local runtime evidence; this fixture makes no Salesforce parity claim."
+}
