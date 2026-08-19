@@ -1,45 +1,87 @@
 {
   "apiVersion": "67.0",
   "command": {
-    "kind": "test"
+    "args": [
+      "Database.Cursor.DeleteFilter deletedRowsOnly = Database.Cursor.DeleteFilter.DELETED_ROWS_ONLY; Database.Cursor.DeleteFilter noDeletedRows = Database.Cursor.DeleteFilter.NO_DELETED_ROWS; Database.Cursor.DeleteFilter noDeletedSharingRows = Database.Cursor.DeleteFilter.NO_DELETED_SHARING_ROWS; Database.Cursor.DeleteFilter noFilter = Database.Cursor.DeleteFilter.NO_FILTER; System.assertEquals(4, Database.Cursor.DeleteFilter.values().size()); System.assertEquals(deletedRowsOnly, Database.Cursor.DeleteFilter.values()[0]); System.assertEquals(noDeletedRows, Database.Cursor.DeleteFilter.values()[1]); System.assertEquals(noDeletedSharingRows, Database.Cursor.DeleteFilter.values()[2]); System.assertEquals(noFilter, Database.Cursor.DeleteFilter.values()[3]); System.assertEquals(0, deletedRowsOnly.ordinal()); System.assertEquals(1, noDeletedRows.ordinal()); System.assertEquals(2, noDeletedSharingRows.ordinal()); System.assertEquals(3, noFilter.ordinal()); System.assertEquals(deletedRowsOnly, Database.Cursor.DeleteFilter.valueOf('DELETED_ROWS_ONLY')); System.assertEquals(noDeletedRows, Database.Cursor.DeleteFilter.valueOf('NO_DELETED_ROWS')); System.assertEquals(noDeletedSharingRows, Database.Cursor.DeleteFilter.valueOf('NO_DELETED_SHARING_ROWS')); System.assertEquals(noFilter, Database.Cursor.DeleteFilter.valueOf('NO_FILTER')); System.assertEquals(true, deletedRowsOnly.equals(deletedRowsOnly)); System.assertEquals(true, deletedRowsOnly.equals(Database.Cursor.DeleteFilter.valueOf('DELETED_ROWS_ONLY'))); System.assertEquals(false, deletedRowsOnly.equals(noDeletedRows)); System.assertEquals(false, deletedRowsOnly.equals(null)); System.assertEquals(false, deletedRowsOnly.equals('DELETED_ROWS_ONLY')); Integer deletedRowsOnlyHash = deletedRowsOnly.hashCode(); System.assertEquals(deletedRowsOnlyHash, deletedRowsOnly.hashCode()); System.assertNotEquals(null, deletedRowsOnlyHash);"
+    ],
+    "kind": "exec"
   },
   "evidence": [
     {
-      "kind": "test",
-      "notes": "A public Salesforce cursor delete-filter enum exercised against Glade's deterministic local SOQL rows.",
-      "surfaceId": "apex:Database.Cursor.DeleteFilter",
-      "symbol": "Database.Cursor.DeleteFilter"
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.DELETED_ROWS_ONLY",
+      "symbol": "Database.Cursor.DeleteFilter.DELETED_ROWS_ONLY"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.NO_DELETED_ROWS",
+      "symbol": "Database.Cursor.DeleteFilter.NO_DELETED_ROWS"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.NO_DELETED_SHARING_ROWS",
+      "symbol": "Database.Cursor.DeleteFilter.NO_DELETED_SHARING_ROWS"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.NO_FILTER",
+      "symbol": "Database.Cursor.DeleteFilter.NO_FILTER"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.equals(Object)",
+      "symbol": "Database.Cursor.DeleteFilter.equals"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.hashCode()",
+      "symbol": "Database.Cursor.DeleteFilter.hashCode"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.ordinal()",
+      "symbol": "Database.Cursor.DeleteFilter.ordinal"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.valueOf(String)",
+      "symbol": "Database.Cursor.DeleteFilter.valueOf"
+    },
+    {
+      "kind": "exec",
+      "notes": "Local executable witness for the public Salesforce cursor delete-filter enum constants and enum methods.",
+      "surfaceId": "apex:Database.Cursor.DeleteFilter.values()",
+      "symbol": "Database.Cursor.DeleteFilter.values"
     }
   ],
   "expected": {
     "result": {
-      "errors": 0,
-      "failed": 0,
-      "ok": true,
-      "passed": 1,
-      "total": 1
+      "debug": null,
+      "ok": true
     }
   },
   "mode": "local-runtime",
-  "name": "current-base-local-runtime-required-Database.Cursor-001",
-  "notes": "Hosted API 67 witness for Database.Cursor.DeleteFilter with a filename-matching test class.",
+  "name": "current-base-deterministic-mock-required-database-cursor-001",
+  "notes": "Current-base local-runtime witness for Database.Cursor.DeleteFilter; excluded from hosted parity because this is an executable local-only enum behavior proof.",
   "profile": {
-    "laneId": "current-base-local-runtime-required-Database.Cursor-001",
-    "selectedRowCount": 1
+    "laneId": "current-base-deterministic-mock-required-database-cursor-001",
+    "selectedRowCount": 9
   },
-  "salesforceEligible": true,
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture is a local-only executable enum behavior witness and makes zero Salesforce parity claim.",
   "source": [
     {
-      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
-      "path": "force-app/main/default/objects/Account/Account.object-meta.xml"
-    },
-    {
-      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>",
-      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml"
-    },
-    {
-      "content": "@isTest private class CurrentBaseDeterministicMockRequiredDatabaseCursor001Test { @isTest static void cursorDeleteFilterUsesDeterministicLocalRows() { insert new Account(Name = 'Cursor'); Database.Cursor cursor = Database.getCursor('SELECT Id FROM Account'); Database.Cursor.DeleteFilter filter = Database.Cursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assertEquals(Database.Cursor.DeleteFilter.NO_FILTER, filter); } }",
-      "path": "force-app/main/default/classes/CurrentBaseDeterministicMockRequiredDatabaseCursor001Test.cls"
+      "content": "Database.Cursor.DeleteFilter deletedRowsOnly = Database.Cursor.DeleteFilter.DELETED_ROWS_ONLY; Database.Cursor.DeleteFilter noDeletedRows = Database.Cursor.DeleteFilter.NO_DELETED_ROWS; Database.Cursor.DeleteFilter noDeletedSharingRows = Database.Cursor.DeleteFilter.NO_DELETED_SHARING_ROWS; Database.Cursor.DeleteFilter noFilter = Database.Cursor.DeleteFilter.NO_FILTER; System.assertEquals(4, Database.Cursor.DeleteFilter.values().size()); System.assertEquals(deletedRowsOnly, Database.Cursor.DeleteFilter.values()[0]); System.assertEquals(noDeletedRows, Database.Cursor.DeleteFilter.values()[1]); System.assertEquals(noDeletedSharingRows, Database.Cursor.DeleteFilter.values()[2]); System.assertEquals(noFilter, Database.Cursor.DeleteFilter.values()[3]); System.assertEquals(0, deletedRowsOnly.ordinal()); System.assertEquals(1, noDeletedRows.ordinal()); System.assertEquals(2, noDeletedSharingRows.ordinal()); System.assertEquals(3, noFilter.ordinal()); System.assertEquals(deletedRowsOnly, Database.Cursor.DeleteFilter.valueOf('DELETED_ROWS_ONLY')); System.assertEquals(noDeletedRows, Database.Cursor.DeleteFilter.valueOf('NO_DELETED_ROWS')); System.assertEquals(noDeletedSharingRows, Database.Cursor.DeleteFilter.valueOf('NO_DELETED_SHARING_ROWS')); System.assertEquals(noFilter, Database.Cursor.DeleteFilter.valueOf('NO_FILTER')); System.assertEquals(true, deletedRowsOnly.equals(deletedRowsOnly)); System.assertEquals(true, deletedRowsOnly.equals(Database.Cursor.DeleteFilter.valueOf('DELETED_ROWS_ONLY'))); System.assertEquals(false, deletedRowsOnly.equals(noDeletedRows)); System.assertEquals(false, deletedRowsOnly.equals(null)); System.assertEquals(false, deletedRowsOnly.equals('DELETED_ROWS_ONLY')); Integer deletedRowsOnlyHash = deletedRowsOnly.hashCode(); System.assertEquals(deletedRowsOnlyHash, deletedRowsOnly.hashCode()); System.assertNotEquals(null, deletedRowsOnlyHash);",
+      "path": "anonymous.apex"
     }
   ]
 }
