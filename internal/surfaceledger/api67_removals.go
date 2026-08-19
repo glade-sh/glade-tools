@@ -16,6 +16,19 @@ var api67RemovedSurfaceKeys = map[string]struct{}{
 	"apex:system.database.updateasync(list<object>,database.allowcallouts,accesslevel)": {},
 	"apex:system.database.deleteasync(object,database.allowcallouts,accesslevel)":       {},
 	"apex:system.database.deleteasync(list<object>,database.allowcallouts,accesslevel)": {},
+	// Salesforce documents the value-size statistics as available only through
+	// API 49. Cache.Org.isAvailable is absent from the reviewed current docs.
+	"apex:cache.org.getavgvaluesize":              {},
+	"apex:cache.org.getmaxvaluesize":              {},
+	"apex:cache.org.isavailable":                  {},
+	"apex:cache.orgpartition.getavgvaluesize":     {},
+	"apex:cache.orgpartition.getmaxvaluesize":     {},
+	"apex:cache.partition.getavgvaluesize":        {},
+	"apex:cache.partition.getmaxvaluesize":        {},
+	"apex:cache.session.getavgvaluesize":          {},
+	"apex:cache.session.getmaxvaluesize":          {},
+	"apex:cache.sessionpartition.getavgvaluesize": {},
+	"apex:cache.sessionpartition.getmaxvaluesize": {},
 	// API-67 rejects the legacy top-level DeleteFilter alias. The supported
 	// enums are Database.Cursor.DeleteFilter and
 	// Database.PaginationCursor.DeleteFilter.

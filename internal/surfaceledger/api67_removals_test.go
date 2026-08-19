@@ -2,8 +2,65 @@ package surfaceledger
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/glade-sh/glade/tools/internal/apexdocs"
 )
+
+func TestMergeExcludesReviewedLegacyCacheStatisticsAtAPI67(t *testing.T) {
+	inventory, err := apexdocs.ReadInventory(filepath.Join("..", "..", "docs", "fixtures", "salesforce-docs-inventory-summer-26.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	legacyDocs := 0
+	for _, doc := range inventory.Documents {
+		if !strings.EqualFold(doc.Namespace, "cache") {
+			continue
+		}
+		for _, member := range doc.Members {
+			if member.Name != "getAvgValueSize" && member.Name != "getMaxValueSize" {
+				continue
+			}
+			legacyDocs++
+			if !strings.Contains(member.Description, "available only in API versions 49.0 and earlier") {
+				t.Fatalf("%s.%s lacks the reviewed API boundary: %q", doc.Name, member.Name, member.Description)
+			}
+		}
+		if doc.Name == "Org" {
+			for _, member := range doc.Members {
+				if member.Name == "isAvailable" {
+					t.Fatal("Cache.Org.isAvailable unexpectedly exists in the reviewed current docs")
+				}
+			}
+		}
+	}
+	if legacyDocs != 6 {
+		t.Fatalf("reviewed legacy Cache statistic declarations = %d, want 6", legacyDocs)
+	}
+
+	ids := []string{
+		"apex:Cache.Org.getAvgValueSize()",
+		"apex:Cache.Org.getMaxValueSize()",
+		"apex:Cache.Org.isAvailable()",
+		"apex:Cache.OrgPartition.getAvgValueSize()",
+		"apex:Cache.OrgPartition.getMaxValueSize()",
+		"apex:Cache.Partition.getAvgValueSize()",
+		"apex:Cache.Partition.getMaxValueSize()",
+		"apex:Cache.Session.getAvgValueSize()",
+		"apex:Cache.Session.getMaxValueSize()",
+		"apex:Cache.SessionPartition.getAvgValueSize()",
+		"apex:Cache.SessionPartition.getMaxValueSize()",
+	}
+	rows := make([]SurfaceLedgerRow, 0, len(ids))
+	for _, id := range ids {
+		rows = append(rows, SurfaceLedgerRow{SurfaceID: id, Product: ProductApex})
+	}
+	if got := Merge(rows, rows, rows, rows).Rows; len(got) != 0 {
+		t.Fatalf("legacy Cache rows entered the API-67 ledger: %#v", got)
+	}
+}
 
 func TestMergeExcludesAPI67RemovedSiteHelpers(t *testing.T) {
 	rows := Merge(
