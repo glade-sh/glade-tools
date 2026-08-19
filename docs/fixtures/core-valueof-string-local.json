@@ -1,0 +1,18 @@
+{
+  "name": "core-valueof-string-local",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local valueOf(String) behavior and makes zero Salesforce parity claim.",
+  "evidence": [
+    {"surfaceId": "apex:System.Double.valueOf(String)", "symbol": "Double.valueOf(String)", "kind": "exec"},
+    {"surfaceId": "apex:System.Id.valueOf(String)", "symbol": "Id.valueOf(String)", "kind": "exec"},
+    {"surfaceId": "apex:System.Integer.valueOf(String)", "symbol": "Integer.valueOf(String)", "kind": "exec"},
+    {"surfaceId": "apex:System.Long.valueOf(String)", "symbol": "Long.valueOf(String)", "kind": "exec"}
+  ],
+  "source": [{
+    "path": "anonymous.apex",
+    "content": "Integer integerValue = Integer.valueOf('42');\nLong longValue = Long.valueOf('9001');\nDouble doubleValue = Double.valueOf('2.25');\nId recordId = Id.valueOf('001B000001DVM9t');\nSystem.assertEquals(42, integerValue);\nSystem.assertEquals(9001, longValue);\nSystem.assertEquals(2.25, doubleValue);\nSystem.assertEquals('001B000001DVM9t', recordId.toString());\n"
+  }],
+  "command": {"kind": "exec", "args": ["Integer integerValue = Integer.valueOf('42');\nLong longValue = Long.valueOf('9001');\nDouble doubleValue = Double.valueOf('2.25');\nId recordId = Id.valueOf('001B000001DVM9t');\nSystem.assertEquals(42, integerValue);\nSystem.assertEquals(9001, longValue);\nSystem.assertEquals(2.25, doubleValue);\nSystem.assertEquals('001B000001DVM9t', recordId.toString());\n"]},
+  "expected": {"result": {"debug": null, "ok": true}}
+}
