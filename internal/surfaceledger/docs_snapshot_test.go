@@ -236,6 +236,32 @@ func TestRowsFromDocsInventoryIdentifiesServiceConnectorWithoutClosingDocsOnlyRo
 	}
 }
 
+func TestRowsFromDocsInventoryClosesPlan7DocumentationIdentityNoiseByFamily(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{
+		{SourcePath: "apex-guide/apex_cursors_versus_batch.md", Name: "apex_cursors_versus_batch"},
+		{SourcePath: "cli-reference/cli-reference.md", Name: "cli-reference"},
+		{
+			SourcePath: "connect-rest-api/connect-rest-api-chatter-feeds.md",
+			Name:       "connect-rest-api-chatter-feeds",
+			Members:    []apexdocs.Member{{Kind: "member", Name: "Request"}},
+		},
+		{SourcePath: "connect-rest-api/index.md", Name: "index"},
+		{SourcePath: "connect-rest-api/connect-rest-api-about/about.md", Name: "About"},
+		{SourcePath: "service-connector-api-reference/index.md", Name: "index"},
+		{
+			SourcePath: "service-connector-api-reference/connector-api-262/service-connector-interface-acceptcall.md",
+			Name:       "acceptCall",
+		},
+	}})
+
+	if len(rows) != 1 {
+		t.Fatalf("rows = %#v, want only the canonical service connector row", rows)
+	}
+	if got, want := rows[0].SurfaceID, "service-connector-api-reference:service_connector_interface_acceptcall"; got != want {
+		t.Fatalf("surface ID = %q, want %q", got, want)
+	}
+}
+
 func TestMergeClassifiesServiceConnectorExplicitUnsupportedOnlyWithPolicyEvidence(t *testing.T) {
 	id := "service-connector-api-reference:service_connector_methods.invoke"
 	ledger := Merge(

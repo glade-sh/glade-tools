@@ -408,6 +408,18 @@ func isApexRealSignature(signature string) bool {
 }
 
 func shouldIncludeDocsSurface(product string, doc apexdocs.Document) bool {
+	if product == ProductUnknown && strings.EqualFold(sourceStemBase(doc.SourcePath), "apex_cursors_versus_batch") {
+		return false
+	}
+	stem := strings.ToLower(sourceStemBase(doc.SourcePath))
+	switch product {
+	case ProductCLIReference:
+		return stem != "cli-reference"
+	case ProductConnectRESTAPI:
+		return !isConnectRESTAPIRollup(doc.SourcePath)
+	case ProductServiceConnectorAPIRef:
+		return stem != "index"
+	}
 	if product != ProductApex {
 		return true
 	}
@@ -415,6 +427,13 @@ func shouldIncludeDocsSurface(product string, doc apexdocs.Document) bool {
 		return false
 	}
 	return true
+}
+
+func isConnectRESTAPIRollup(sourcePath string) bool {
+	rel := strings.TrimPrefix(strings.ToLower(filepath.ToSlash(sourcePath)), "connect-rest-api/")
+	first, _, _ := strings.Cut(rel, "/")
+	stem := strings.TrimSuffix(first, filepath.Ext(first))
+	return stem == "index" || strings.HasPrefix(stem, "connect-rest-api-")
 }
 
 func isConnectApiSummaryDoc(sourcePath string) bool {
@@ -653,6 +672,12 @@ func docsSurfaceID(product string, doc apexdocs.Document, member apexdocs.Member
 		return AuraID(sourceStem(doc.SourcePath))
 	case ProductLWC:
 		return LWCModuleID(doc.Name)
+	case ProductServiceConnectorAPIRef:
+		stem := strings.ReplaceAll(sourceStemBase(doc.SourcePath), "-", "_")
+		if member.Name == "" {
+			return product + ":" + stem
+		}
+		return product + ":" + stem + "." + member.Name
 	default:
 		if member.Name == "" {
 			return product + ":" + sourceStem(doc.SourcePath)
