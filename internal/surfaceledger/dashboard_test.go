@@ -77,6 +77,43 @@ func TestProgressHTMLRendersBars(t *testing.T) {
 	}
 }
 
+func TestProgressMarkdownHTMLProofDepth(t *testing.T) {
+	ledger := SurfaceLedger{SchemaVersion: SchemaVersion, Rows: []SurfaceLedgerRow{
+		{SurfaceID: "apex:System.FixtureImplemented", Bucket: BucketImplemented, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.FixtureAndOracleImplemented", Bucket: BucketImplemented, Evidence: EvidenceFixtureAndOracle},
+		{SurfaceID: "apex:System.UnbackedImplemented", Bucket: BucketImplemented, Evidence: EvidenceNone},
+		{SurfaceID: "apex:System.FixturePassive", Bucket: BucketPassive, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.FixtureStub", Bucket: BucketStubNoOp, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.FixtureUnsupported", Bucket: BucketExplicitUnsupported, Evidence: EvidenceFixture},
+	}}
+	ledger.Summary = Summarize(ledger.Rows)
+
+	markdown := ProgressMarkdown(ledger)
+	html := ProgressHTML(ledger)
+	for _, want := range []string{
+		"| implemented + fixture | 2 |",
+		"| implemented without fixture | 1 |",
+		"| passive + fixture | 1 |",
+		"| stubNoOp + fixture | 1 |",
+		"| explicitUnsupported + fixture | 1 |",
+	} {
+		if !strings.Contains(markdown, want) {
+			t.Errorf("markdown proof depth missing %q:\n%s", want, markdown)
+		}
+	}
+	for _, want := range []string{
+		`<div class="cell">implemented + fixture</div><div class="cell">2</div>`,
+		`<div class="cell">implemented without fixture</div><div class="cell">1</div>`,
+		`<div class="cell">passive + fixture</div><div class="cell">1</div>`,
+		`<div class="cell">stubNoOp + fixture</div><div class="cell">1</div>`,
+		`<div class="cell">explicitUnsupported + fixture</div><div class="cell">1</div>`,
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("html proof depth missing %q:\n%s", want, html)
+		}
+	}
+}
+
 func TestPacketRowsCoversGenericVerticals(t *testing.T) {
 	ledger := SurfaceLedger{Rows: []SurfaceLedgerRow{
 		{SurfaceID: "rest:/services/data/vXX.X/query", Product: ProductREST, SalesforceSurfaceFamily: "rest-api"},
