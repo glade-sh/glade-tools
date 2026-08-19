@@ -1,0 +1,45 @@
+{
+  "name": "dml-exception-value-local-evidence",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.DmlException.equals(Object)",
+      "symbol": "DmlException.equals",
+      "kind": "exec",
+      "notes": "Local DmlException identity equality is directly executed; distinct instances with equal messages remain unequal."
+    },
+    {
+      "surfaceId": "apex:System.DmlException.hashCode()",
+      "symbol": "DmlException.hashCode",
+      "kind": "exec",
+      "notes": "Local DmlException hash stability for the same instance is directly executed."
+    },
+    {
+      "surfaceId": "apex:System.DmlException.toString()",
+      "symbol": "DmlException.toString",
+      "kind": "exec",
+      "notes": "Local DmlException toString includes the qualified type and message."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "DmlException same = new DmlException('same');\nDmlException other = new DmlException('same');\nSystem.assertEquals(true, same.equals(same));\nSystem.assertEquals(false, same.equals(other));\nSystem.assertEquals(false, same.equals(null));\nSystem.assertEquals(same.hashCode(), same.hashCode());\nSystem.assertEquals('System.DmlException: same', same.toString());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "DmlException same = new DmlException('same');\nDmlException other = new DmlException('same');\nSystem.assertEquals(true, same.equals(same));\nSystem.assertEquals(false, same.equals(other));\nSystem.assertEquals(false, same.equals(null));\nSystem.assertEquals(same.hashCode(), same.hashCode());\nSystem.assertEquals('System.DmlException: same', same.toString());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local DmlException value-method behavior only and makes zero Salesforce parity claim."
+}
