@@ -141,17 +141,30 @@ type progressRow struct {
 }
 
 type proofDepthCounts struct {
-	ImplementedFixture         int
-	ImplementedWithoutFixture  int
-	PassiveFixture             int
-	StubNoOpFixture            int
-	ExplicitUnsupportedFixture int
+	ImplementedFixture          int
+	ImplementedWithoutFixture   int
+	PassiveFixture              int
+	StubNoOpFixture             int
+	ExplicitUnsupportedFixture  int
+	DocumentedMethodsFixture    int
+	GenericVMHelpersNoFixture   int
+	DocumentedBehaviorNoFixture int
 }
 
 func proofDepthFromRows(rows []SurfaceLedgerRow) proofDepthCounts {
 	var out proofDepthCounts
 	for _, row := range rows {
 		fixture := row.Evidence == EvidenceFixture || row.Evidence == EvidenceFixtureAndOracle
+		if row.Bucket == BucketImplemented && row.Kind == KindMethod && row.Docs == SourcePresent {
+			switch {
+			case fixture:
+				out.DocumentedMethodsFixture++
+			case row.Notes == "generic Object method is handled by the VM for runtime values":
+				out.GenericVMHelpersNoFixture++
+			default:
+				out.DocumentedBehaviorNoFixture++
+			}
+		}
 		if row.Bucket == BucketImplemented {
 			if fixture {
 				out.ImplementedFixture++
@@ -238,6 +251,14 @@ func ProgressMarkdown(ledger SurfaceLedger) string {
 	fmt.Fprintf(&b, "| stubNoOp + fixture | %d |\n", proofDepth.StubNoOpFixture)
 	fmt.Fprintf(&b, "| explicitUnsupported + fixture | %d |\n", proofDepth.ExplicitUnsupportedFixture)
 	fmt.Fprintln(&b)
+	fmt.Fprintln(&b, "### Documented Method Depth")
+	fmt.Fprintln(&b)
+	fmt.Fprintln(&b, "| documented method evidence state | count |")
+	fmt.Fprintln(&b, "| --- | ---: |")
+	fmt.Fprintf(&b, "| documented methods + fixture | %d |\n", proofDepth.DocumentedMethodsFixture)
+	fmt.Fprintf(&b, "| generic VM helpers without fixture | %d |\n", proofDepth.GenericVMHelpersNoFixture)
+	fmt.Fprintf(&b, "| documented behavior methods without fixture | %d |\n", proofDepth.DocumentedBehaviorNoFixture)
+	fmt.Fprintln(&b)
 	fmt.Fprintln(&b, "## Unmatched Rows")
 	fmt.Fprintln(&b)
 	fmt.Fprintf(&b, "- Rows not claimed by a vertical packet: %d\n", len(unmatched))
@@ -294,6 +315,13 @@ func ProgressHTML(ledger SurfaceLedger) string {
 	writeHTMLProofDepthRow(&b, "passive + fixture", proofDepth.PassiveFixture)
 	writeHTMLProofDepthRow(&b, "stubNoOp + fixture", proofDepth.StubNoOpFixture)
 	writeHTMLProofDepthRow(&b, "explicitUnsupported + fixture", proofDepth.ExplicitUnsupportedFixture)
+	fmt.Fprintln(&b, "</div>")
+	fmt.Fprintln(&b, "<h3>Documented Method Depth</h3>")
+	fmt.Fprintln(&b, `<div class="table">`)
+	fmt.Fprintln(&b, `<div class="row head"><div class="cell">documented method evidence state</div><div class="cell">count</div></div>`)
+	writeHTMLProofDepthRow(&b, "documented methods + fixture", proofDepth.DocumentedMethodsFixture)
+	writeHTMLProofDepthRow(&b, "generic VM helpers without fixture", proofDepth.GenericVMHelpersNoFixture)
+	writeHTMLProofDepthRow(&b, "documented behavior methods without fixture", proofDepth.DocumentedBehaviorNoFixture)
 	fmt.Fprintln(&b, "</div>")
 	fmt.Fprintln(&b, "</section>")
 	fmt.Fprintln(&b, "<section>")
