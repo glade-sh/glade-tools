@@ -18,6 +18,7 @@ func TestDatabaseCursorDeleteFilterEvidenceHasUniqueExecutableOwner(t *testing.T
 		"apex:Database.Cursor.DeleteFilter.NO_DELETED_SHARING_ROWS": true,
 		"apex:Database.Cursor.DeleteFilter.NO_FILTER":               true,
 		"apex:Database.Cursor.DeleteFilter.equals(Object)":          true,
+		"apex:Database.Cursor.DeleteFilter.hashCode()":              true,
 		"apex:Database.Cursor.DeleteFilter.ordinal()":               true,
 		"apex:Database.Cursor.DeleteFilter.valueOf(String)":         true,
 		"apex:Database.Cursor.DeleteFilter.values()":                true,
@@ -102,6 +103,7 @@ func TestDatabaseCursorDeleteFilterEvidenceHasUniqueExecutableOwner(t *testing.T
 		"deletedRowsOnly.equals(noDeletedRows)",
 		"deletedRowsOnly.equals(null)",
 		"deletedRowsOnly.equals('DELETED_ROWS_ONLY')",
+		"deletedRowsOnly.hashCode()",
 	} {
 		if !strings.Contains(source, witness) {
 			t.Fatalf("source lacks direct %s assertion: %q", witness, source)
