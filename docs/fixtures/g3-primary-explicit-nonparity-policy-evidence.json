@@ -5,12 +5,6 @@
   },
   "evidence": [
     {
-      "surfaceId": "apex:System.Messaging.extractInboundEmail(Object,Boolean)",
-      "symbol": "System.Messaging.extractInboundEmail",
-      "kind": "unsupported",
-      "notes": "Inbound-email parsing and attachment extraction depend on hosted email service behavior; this is classification-only evidence, not a Salesforce runtime parity claim."
-    },
-    {
       "surfaceId": "apex:System.SoqlStubProvider.SoqlStubProvider()",
       "symbol": "System.SoqlStubProvider.SoqlStubProvider",
       "kind": "unsupported",
@@ -19,5 +13,5 @@
   ],
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "This fixture records two explicit local classification decisions only; it provides no hosted Salesforce execution evidence."
+  "salesforceExclusionReason": "This fixture records one explicit local classification decision only; it provides no hosted Salesforce execution evidence."
 }

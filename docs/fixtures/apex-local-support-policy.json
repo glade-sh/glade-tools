@@ -2275,12 +2275,6 @@
       "reason": "local telemetry call is a deliberate no-op and grants no Salesforce analytics parity."
     },
     {
-      "surfacePrefix": "apex:System.Messaging.extractInboundEmail(Object,Boolean)",
-      "disposition": "hosted-deferred",
-      "override": true,
-      "reason": "inbound-email parsing and attachment extraction depend on hosted email service behavior"
-    },
-    {
       "surfacePrefix": "apex:System.SoqlStubProvider.SoqlStubProvider()",
       "disposition": "hosted-deferred",
       "override": true,

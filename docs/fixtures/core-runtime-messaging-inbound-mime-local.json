@@ -1,0 +1,32 @@
+{
+  "name": "core-runtime-messaging-inbound-mime-local",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Messaging.extractInboundEmail(Object,Boolean)",
+      "symbol": "Messaging.extractInboundEmail(Object,Boolean)",
+      "kind": "test",
+      "notes": "Deterministic local RFC822/MIME body and attachment parsing; this is not Salesforce email-service parity."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/MessagingInboundMIMEProofTest.cls",
+      "content": "@isTest private class MessagingInboundMIMEProofTest { @isTest static void parsesMultipartEmail() { String raw = 'From: sender@example.test\\r\\nSubject: multipart\\r\\nContent-Type: multipart/mixed; boundary=outer\\r\\n\\r\\n--outer\\r\\nContent-Type: multipart/alternative; boundary=inner\\r\\n\\r\\n--inner\\r\\nContent-Type: text/plain\\r\\n\\r\\nplain body\\r\\n--inner\\r\\nContent-Type: text/html\\r\\n\\r\\n<p>html body</p>\\r\\n--inner--\\r\\n--outer\\r\\nContent-Type: application/octet-stream\\r\\nContent-Disposition: attachment; filename=data.bin\\r\\nContent-Transfer-Encoding: base64\\r\\n\\r\\nAQI=\\r\\n--outer--\\r\\n'; Messaging.InboundEmail inbound = Messaging.extractInboundEmail(Blob.valueOf(raw), false); System.assertEquals('sender@example.test', inbound.fromAddress); System.assertEquals('multipart', inbound.subject); System.assertEquals('plain body', inbound.plainTextBody); System.assertEquals('<p>html body</p>', inbound.htmlBody); System.assertEquals(1, inbound.binaryAttachments.size()); System.assertEquals('data.bin', inbound.binaryAttachments[0].fileName); System.assertEquals('application/octet-stream', inbound.binaryAttachments[0].mimeTypeSubType); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade's deterministic local RFC822/MIME model and grants no Salesforce email-service parity credit."
+}
