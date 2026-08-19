@@ -11,14 +11,13 @@ import (
 )
 
 func TestDatabaseCursorDeleteFilterEvidenceHasUniqueExecutableOwner(t *testing.T) {
-	const owner = "current-base-deterministic-mock-required-database-cursor-001"
+	const owner = "current-base-database-cursor-deletefilter-local-runtime-001-api67"
 	want := map[string]bool{
 		"apex:Database.Cursor.DeleteFilter.DELETED_ROWS_ONLY":       true,
 		"apex:Database.Cursor.DeleteFilter.NO_DELETED_ROWS":         true,
 		"apex:Database.Cursor.DeleteFilter.NO_DELETED_SHARING_ROWS": true,
 		"apex:Database.Cursor.DeleteFilter.NO_FILTER":               true,
 		"apex:Database.Cursor.DeleteFilter.equals(Object)":          true,
-		"apex:Database.Cursor.DeleteFilter.hashCode()":              true,
 		"apex:Database.Cursor.DeleteFilter.ordinal()":               true,
 		"apex:Database.Cursor.DeleteFilter.valueOf(String)":         true,
 		"apex:Database.Cursor.DeleteFilter.values()":                true,
@@ -46,6 +45,11 @@ func TestDatabaseCursorDeleteFilterEvidenceHasUniqueExecutableOwner(t *testing.T
 	rows, err := BuildEvidenceSnapshot(evidencePaths)
 	if err != nil {
 		t.Fatal(err)
+	}
+	for _, row := range rows {
+		if len(row.Sources) == 1 && row.Sources[0] == "fixture:"+owner && !want[row.SurfaceID] {
+			t.Fatalf("unexpected owner row = %#v", row)
+		}
 	}
 	for id := range want {
 		count := 0
@@ -98,7 +102,6 @@ func TestDatabaseCursorDeleteFilterEvidenceHasUniqueExecutableOwner(t *testing.T
 		"deletedRowsOnly.equals(noDeletedRows)",
 		"deletedRowsOnly.equals(null)",
 		"deletedRowsOnly.equals('DELETED_ROWS_ONLY')",
-		"deletedRowsOnly.hashCode()",
 	} {
 		if !strings.Contains(source, witness) {
 			t.Fatalf("source lacks direct %s assertion: %q", witness, source)
