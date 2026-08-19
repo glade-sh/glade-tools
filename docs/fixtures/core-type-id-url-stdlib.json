@@ -38,6 +38,11 @@
     },
     {
       "kind": "exec",
+      "surfaceId": "apex:System.Id.valueOf(String)",
+      "symbol": "Id.valueOf(String)"
+    },
+    {
+      "kind": "exec",
       "symbol": "Id.to15"
     },
     {

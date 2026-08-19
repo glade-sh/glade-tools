@@ -11,6 +11,11 @@
       "kind": "exec"
     },
     {
+      "surfaceId": "apex:System.Integer.valueOf(String)",
+      "symbol": "Integer.valueOf(String)",
+      "kind": "exec"
+    },
+    {
       "symbol": "Integer.format()",
       "kind": "exec"
     },
@@ -28,6 +33,11 @@
     },
     {
       "symbol": "Long.valueOf",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Long.valueOf(String)",
+      "symbol": "Long.valueOf(String)",
       "kind": "exec"
     },
     {
@@ -76,6 +86,11 @@
     },
     {
       "symbol": "Double.valueOf",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Double.valueOf(String)",
+      "symbol": "Double.valueOf(String)",
       "kind": "exec"
     },
     {
