@@ -183,6 +183,22 @@ Returns all settings.
 public Map<String, CustomSetting__c> getAll()
 `+"```"+`
 `)
+	writeDoc(t, filepath.Join(root, "apex_class_RichMessaging_CurrencyAmount.md"), `# CurrencyAmount Class
+
+## Namespace
+[RichMessaging](./apex_namespace_RichMessaging.md)
+
+## CurrencyAmount Properties
+
+### currency
+The ISO currency code.
+
+#### Signature
+
+`+"```apex"+`
+public String currency {get; set;}
+`+"```"+`
+`)
 
 	inv, err := BuildInventory(root)
 	if err != nil {
@@ -211,6 +227,9 @@ public Map<String, CustomSetting__c> getAll()
 	}
 	if got := members["CustomSettings.getAll"].ReturnType; got != "Map<String,CustomSetting__c>" {
 		t.Fatalf("getAll return type = %q", got)
+	}
+	if got := members["CurrencyAmount.currency"].PropertyType; got != "String" {
+		t.Fatalf("currency property type = %q", got)
 	}
 }
 

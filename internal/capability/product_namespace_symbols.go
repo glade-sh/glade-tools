@@ -52,7 +52,7 @@ func BuildProductNamespaceSymbolSpecs(catalog Catalog, tooling *ToolingCompletio
 	}
 
 	for _, entry := range catalog.Entries {
-		if entry.Area != "Product namespaces" || entry.Namespace == "" || entry.TypeName == "" {
+		if entry.Area != "Product namespaces" || entry.Namespace == "" || entry.TypeName == "" || strings.EqualFold(entry.Kind, "namespace") {
 			continue
 		}
 		spec := addSpec(entry.Namespace + "." + entry.TypeName)

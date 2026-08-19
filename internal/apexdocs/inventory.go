@@ -570,7 +570,10 @@ func collectMembers(lines []string, typeName string) []Member {
 		}
 		if signature := signatureBlock(lines[i+1:]); signature != "" {
 			member.Signature = signature
-			if parsed := parseApexSignature(signature, typeName); parsed.name != "" {
+			if name, propertyType := parseApexPropertySignature(signature); member.Kind == "property" && name != "" {
+				member.Name = name
+				member.PropertyType = propertyType
+			} else if parsed := parseApexSignature(signature, typeName); parsed.name != "" {
 				member.Name = parsed.name
 				member.ReturnType = parsed.returnType
 				member.Parameters = parsed.parameters
@@ -748,6 +751,19 @@ type parsedApexSignature struct {
 	returnType  string
 	parameters  []string
 	constructor bool
+}
+
+func parseApexPropertySignature(signature string) (string, string) {
+	signature = strings.Join(strings.Fields(stripZeroWidth(signature)), " ")
+	open := strings.IndexByte(signature, '{')
+	if open <= 0 {
+		return "", ""
+	}
+	fields := dropApexModifiers(topLevelFields(strings.TrimSpace(signature[:open])))
+	if len(fields) < 2 {
+		return "", ""
+	}
+	return fields[len(fields)-1], NormalizeApexDocType(fields[len(fields)-2])
 }
 
 func parseApexSignature(signature, typeName string) parsedApexSignature {
