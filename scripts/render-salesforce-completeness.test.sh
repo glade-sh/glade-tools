@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+renderer="$root/scripts/render-salesforce-completeness.sh"
+tmp="$(mktemp -d "${TMPDIR:-/tmp}/glade-completeness-test.XXXXXX")"
+trap 'find "$tmp" -depth -delete' EXIT
+
+write_inputs() {
+  printf '%s\n' '{"rows":[{"surfaceId":"a"},{"surfaceId":"b"},{"surfaceId":"c"},{"surfaceId":"d"},{"surfaceId":"e"},{"surfaceId":"f"},{"surfaceId":"hosted"}]}' >"$tmp/ledger.json"
+  printf '%s\n' '{"totalOpenRows":2,"packets":[]}' >"$tmp/packet.json"
+  printf '%s\n' '{"status":"exact-candidate-bound","historicalCredit":false,"candidate":{"path":"/candidate","commit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","clean":true},"tools":{"path":"/tools","commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","clean":true},"moduleReplacement":{"resolvedPath":"/candidate","requiredPath":"/candidate"}}' >"$tmp/binding.json"
+  printf '%s\n' '{"candidate":{"commit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"tools":{"commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}}' >"$tmp/attempt.json"
+  printf '%s\n' '{"candidate":{"commit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"tools":{"commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},"commands":[{"passed":true,"exitCode":0},{"passed":true,"exitCode":0},{"passed":true,"exitCode":0}]}' >"$tmp/release.json"
+  printf '%s\n' '{"repositorySurfaceRows":[{"repositoryId":"one","runtimeParityReady":true,"nonParity":false},{"repositoryId":"two","runtimeParityReady":false,"nonParity":false}],"repositorySummaries":[{"repositoryId":"one","surfaceCount":1,"runtimeParityReady":true,"nonParity":false},{"repositoryId":"two","surfaceCount":1,"runtimeParityReady":false,"nonParity":true}]}' >"$tmp/assurance.json"
+  printf '%s\n' '{"total":7,"byDisposition":{"compile-shape-required":2,"deterministic-mock-required":2,"local-runtime-required":2,"hosted-deferred":1},"rows":[{"surfaceId":"a","disposition":"compile-shape-required","ledgerShape":"signature-known","behavior":"supported","evidence":"fixture"},{"surfaceId":"b","disposition":"compile-shape-required","ledgerShape":"signature-known","behavior":"passive","evidence":"none","gapClass":"missing-evidence"},{"surfaceId":"c","disposition":"deterministic-mock-required","ledgerShape":"signature-known","behavior":"supported","evidence":"fixture-and-oracle"},{"surfaceId":"d","disposition":"deterministic-mock-required","ledgerShape":"signature-known","behavior":"supported","evidence":"fixture"},{"surfaceId":"e","disposition":"local-runtime-required","ledgerShape":"signature-known","behavior":"supported","evidence":"fixture"},{"surfaceId":"f","disposition":"local-runtime-required","ledgerShape":"signature-known","behavior":"supported","evidence":"none","gapClass":"missing-evidence"},{"surfaceId":"hosted","disposition":"hosted-deferred","ledgerShape":"type-known","behavior":"passive","evidence":"none"}]}' >"$tmp/profile.json"
+}
+
+run_renderer() {
+  "$renderer" \
+    --ledger "$tmp/ledger.json" \
+    --profile "$tmp/profile.json" \
+    --packet "$tmp/packet.json" \
+    --binding "$tmp/binding.json" \
+    --corpus "$tmp/assurance.json" \
+    --attempt "$tmp/attempt.json" \
+    --release "$tmp/release.json" \
+    --output "$tmp/status.md"
+}
+
+write_inputs
+run_renderer
+grep -F 'Surface proof completion: **64.3%** (9 / 14 required checkpoints)' "$tmp/status.md"
+grep -F 'Remaining to 100%: **5 required checkpoints**' "$tmp/status.md"
+grep -F 'Inventory accounting: **71.4%** (5 / 7 rows accounted)' "$tmp/status.md"
+grep -F 'Local evidence: **66.7%** (4 / 6 required rows)' "$tmp/status.md"
+grep -F 'Salesforce comparison: **25.0%** (1 / 4 runtime rows)' "$tmp/status.md"
+grep -F 'Private corpus: **50.0%** (1 / 2 repositories complete)' "$tmp/status.md"
+grep -F 'Release validation: **100.0%** (3 / 3 commands passed)' "$tmp/status.md"
+grep -F 'Program status: **NOT DONE**' "$tmp/status.md"
+grep -F '100% means every required surface checkpoint, current private repository, and release command is complete.' "$tmp/status.md"
+
+printf '%s\n' '{"rows":[{"surfaceId":"a"},{"surfaceId":"c"},{"surfaceId":"d"},{"surfaceId":"e"}]}' >"$tmp/ledger.json"
+printf '%s\n' '{"totalOpenRows":0,"packets":[]}' >"$tmp/packet.json"
+printf '%s\n' '{"repositorySurfaceRows":[{"repositoryId":"one","runtimeParityReady":true,"nonParity":false},{"repositoryId":"two","runtimeParityReady":false,"nonParity":true}],"repositorySummaries":[{"repositoryId":"one","surfaceCount":1,"runtimeParityReady":true,"nonParity":false},{"repositoryId":"two","surfaceCount":1,"runtimeParityReady":false,"nonParity":true}]}' >"$tmp/assurance.json"
+printf '%s\n' '{"total":4,"byDisposition":{"compile-shape-required":1,"deterministic-mock-required":1,"local-runtime-required":2,"hosted-deferred":0},"rows":[{"surfaceId":"a","disposition":"compile-shape-required","ledgerShape":"signature-known","behavior":"supported","evidence":"fixture"},{"surfaceId":"c","disposition":"deterministic-mock-required","ledgerShape":"signature-known","behavior":"supported","evidence":"fixture-and-oracle"},{"surfaceId":"d","disposition":"local-runtime-required","ledgerShape":"signature-known","behavior":"supported","evidence":"fixture-and-oracle"},{"surfaceId":"e","disposition":"local-runtime-required","ledgerShape":"signature-known","behavior":"passive","evidence":"fixture-and-oracle"}]}' >"$tmp/profile.json"
+run_renderer
+grep -F 'Surface proof completion: **100.0%** (10 / 10 required checkpoints)' "$tmp/status.md"
+grep -F 'Remaining to 100%: **0 required checkpoints**' "$tmp/status.md"
+grep -F 'Program status: **DONE**' "$tmp/status.md"
+
+printf '%s\n' '{"candidate":{"commit":"cccccccccccccccccccccccccccccccccccccccc"},"tools":{"commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}}' >"$tmp/attempt.json"
+if run_renderer 2>"$tmp/stale.err"; then
+  echo 'renderer accepted a stale corpus attempt' >&2
+  exit 1
+fi
+grep -F 'corpus attempt candidate does not match source binding' "$tmp/stale.err"
+
+echo 'salesforce completeness renderer tests passed'
