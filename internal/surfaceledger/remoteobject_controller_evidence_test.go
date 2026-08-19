@@ -44,7 +44,7 @@ func TestRemoteObjectControllerLocalFixtureIsExecutableAndLocalOnly(t *testing.T
 	if fixture.Command.Kind != "test" || len(fixture.Source) != 1 {
 		t.Fatalf("fixture command/source = %q/%d", fixture.Command.Kind, len(fixture.Source))
 	}
-	for _, witness := range []string{"RemoteObjectController.create", "RemoteObjectController.retrieve", "RemoteObjectController.update", "RemoteObjectController.del", "invalidId"} {
+	for _, witness := range []string{"RemoteObjectController.create", "RemoteObjectController.retrieve", "RemoteObjectController.update", "RemoteObjectController.del", "invalidId", "deleteRows[0].get('id')", "deleteRows[1].get('id')", "deleteRows[1].get('errors')", "'ids' => new List<String>{id, secondId}"} {
 		assertSourceContains(t, fixture.Source[0].Content, witness)
 	}
 	result, err := compat.Run(fixture)
