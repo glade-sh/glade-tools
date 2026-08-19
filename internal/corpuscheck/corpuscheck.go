@@ -226,7 +226,7 @@ func rejectStaleGeneratedReports(outDir string) error {
 }
 
 func runProject(ctx context.Context, glade string, project string) (ProjectResult, []ClassifiedDiagnostic) {
-	cmd := exec.CommandContext(ctx, glade, "check", "--project", project, "--format", "json", "--no-progress")
+	cmd := exec.CommandContext(ctx, glade, "check", "--project", project, "--format", "json", "--no-progress", "--no-cache")
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	out, err := cmd.Output()

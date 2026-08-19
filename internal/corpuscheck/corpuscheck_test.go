@@ -50,6 +50,27 @@ esac
 	}
 }
 
+func TestCheckBypassesCandidateCaches(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "alpha")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte(`#!/bin/sh
+case " $* " in
+  *" --no-cache "*) printf '{"diagnostics":[]}' ;;
+  *) exit 9 ;;
+esac
+`), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out")}); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestCheckClassifiesInvalidJSONAsUnclassified(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("shell fixture uses sh")
