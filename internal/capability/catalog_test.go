@@ -223,6 +223,15 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 	catalog := Catalog{
 		SchemaVersion: CatalogSchemaVersion,
 		Entries: []CatalogEntry{{
+			ID:        "richmessaging/richmessaging#namespace",
+			Area:      "Product namespaces",
+			Namespace: "RichMessaging",
+			TypeName:  "RichMessaging",
+			Symbol:    "RichMessaging.RichMessaging",
+			Kind:      "namespace",
+			Target:    TargetTypedStub,
+			Status:    StatusUnknown,
+		}, {
 			ID:        "cache/orgpartition#class",
 			Area:      "Product namespaces",
 			Namespace: "cache",
@@ -340,6 +349,9 @@ func TestWriteProductNamespaceSymbolsGoNormalizesCatalogAndTooling(t *testing.T)
 	}
 	if strings.Contains(goSource, `Name: "cache.`) || strings.Contains(goSource, `System.String`) || strings.Contains(goSource, `APEX_OBJECT`) {
 		t.Fatalf("generated symbols were not normalized:\n%s", goSource)
+	}
+	if strings.Contains(goSource, `Name: "RichMessaging.RichMessaging"`) {
+		t.Fatalf("namespace index was generated as a type:\n%s", goSource)
 	}
 	if strings.Count(goSource, `Name: "get"`) != 1 {
 		t.Fatalf("weak docs shape shadowed typed Tooling shape:\n%s", goSource)
