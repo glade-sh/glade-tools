@@ -12,22 +12,33 @@
       "symbol": "System.runAs(Object,Object)",
       "kind": "black-box",
       "notes": "Covered by internal/vm/platform_test.go TestExecRunAsPackageVersionScopesTestContext; the documented test fixture runner does not discover Package.Version test classes."
+    },
+    {
+      "surfaceId": "apex:System.System.runAs(User)",
+      "symbol": "System.runAs(User)",
+      "kind": "test",
+      "notes": "Executable local test proves an outer local SOQL bind remains visible inside System.runAs(User); zero Salesforce parity is claimed."
     }
   ],
   "source": [
     {
-      "path": "classes/CoreRuntimeSystemRunAsLocalEvidenceMarker.cls",
-      "content": "public class CoreRuntimeSystemRunAsLocalEvidenceMarker {}"
+      "path": "force-app/main/classes/CoreRuntimeSystemRunAsLocalTest.cls",
+      "content": "@isTest private class CoreRuntimeSystemRunAsLocalTest { @isTest static void preservesOuterQueryBind() { Account seeded = new Account(Name = 'RunAs Local'); insert seeded; String accountName = seeded.Name; User testUser = new User(Id = '005-runas-user'); System.runAs(testUser) { List<Account> rows = [SELECT Id FROM Account WHERE Name = :accountName]; System.assertEquals(1, rows.size()); System.assertEquals(seeded.Id, rows[0].Id); } } }"
     }
   ],
   "command": {
-    "kind": "parse"
+    "kind": "test"
   },
   "expected": {
     "result": {
       "ok": true,
-      "files": 1,
-      "diagnostics": 0
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
     }
-  }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only deterministic local System.runAs(User) scope and grants zero Salesforce parity."
 }

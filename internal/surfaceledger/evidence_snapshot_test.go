@@ -445,7 +445,6 @@ func TestBuildEvidenceSnapshotReadsApexTailShapeEvidence(t *testing.T) {
 		"apex:System.Set.addAll(Set<Object>)",
 		"apex:System.Set.containsAll(Set<Object>)",
 		"apex:System.Set.removeAll(Set<Object>)",
-		"apex:System.System.runAs(User)",
 	} {
 		row, ok := byID[id]
 		if !ok {
