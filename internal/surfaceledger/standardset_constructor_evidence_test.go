@@ -41,6 +41,10 @@ func TestStandardSetControllerConstructorsHaveExecutableLocalEvidence(t *testing
 	if metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(metadata.SalesforceExclusionReason, "zero Salesforce parity") {
 		t.Fatalf("Salesforce policy = %#v", metadata)
 	}
+	source := fixture.Source[0].Content
+	for _, witness := range []string{"first()", "getPageSize()", "getRecord()", "last()", "previous()", "save()", "setpageNumber(2)"} {
+		assertSourceContains(t, source, witness)
+	}
 
 	if result, err := compat.Run(fixture); err != nil || !result.OK {
 		t.Fatalf("fixture execution = %#v, error = %v", result, err)
@@ -104,6 +108,11 @@ func TestStandardSetControllerConstructorsHaveExecutableLocalEvidence(t *testing
 			t.Fatalf("Glade row %s = %#v, want StandardSetController/%v/signature-known/supported/standard-symbols", id, row, wantParameters[id])
 		}
 	}
+	ideaID := "apex:ApexPages.IdeaStandardSetController.IdeaStandardSetController()"
+	ideaRow, ok := gladeByID[ideaID]
+	if !ok || ideaRow.GladeBehavior != BehaviorPassive || ideaRow.Evidence != EvidenceNone {
+		t.Fatalf("unrelated IdeaStandardSetController constructor = %#v, want passive/no-evidence", ideaRow)
+	}
 
 	policy, err := LoadSupportPolicy(filepath.Join(root, "docs", "fixtures", "apex-local-support-policy.json"))
 	if err != nil {
@@ -131,8 +140,8 @@ func TestStandardSetControllerConstructorsHaveExecutableLocalEvidence(t *testing
 		if !found {
 			t.Fatalf("support profile missing %s", id)
 		}
-		if row.Disposition != DispositionLocalRuntimeRequired {
-			t.Fatalf("%s profile = disposition:%s gap:%s, want local-runtime-required", id, row.Disposition, row.GapClass)
+		if row.Disposition != DispositionLocalRuntimeRequired || row.GapClass != GapMissingEvidence {
+			t.Fatalf("%s profile = disposition:%s gap:%s, want local-runtime-required/missing-evidence (zero oracle)", id, row.Disposition, row.GapClass)
 		}
 	}
 }
