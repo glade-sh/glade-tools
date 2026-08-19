@@ -1,0 +1,2540 @@
+{
+  "schemaVersion": 1,
+  "totalFiles": 49,
+  "totalMembers": 224,
+  "namespaces": [
+    {
+      "namespace": "RichMessaging",
+      "documents": 49,
+      "namespaces": 1,
+      "classes": 31,
+      "interfaces": 4,
+      "enums": 13,
+      "members": 224
+    }
+  ],
+  "documents": [
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_AbstractTiming.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "AbstractTiming",
+      "title": "AbstractTiming Class",
+      "headings": [
+        "Namespace"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_Address.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "Address",
+      "title": "Address Class",
+      "headings": [
+        "Namespace",
+        "Address Properties",
+        "addressLines",
+        "addressLinesValue",
+        "subLocality",
+        "subLocalityValue",
+        "locality",
+        "localityValue",
+        "postalCode",
+        "postalCodeValue",
+        "subAdministrativeArea",
+        "subAdministrativeAreaValue",
+        "administrativeArea",
+        "administrativeAreaValue",
+        "country",
+        "countryValue",
+        "countryCode",
+        "countryCodeValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "addressLines",
+          "signature": "public List<String> addressLines {get; set;}",
+          "section": "Address Properties",
+          "description": "The street address lines (street, unit, etc.) of the postal address."
+        },
+        {
+          "kind": "property",
+          "name": "addressLinesValue",
+          "signature": "public List<String> addressLinesValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The street address lines variable of the postal address."
+        },
+        {
+          "kind": "property",
+          "name": "administrativeArea",
+          "signature": "public String administrativeArea {get; set;}",
+          "section": "Address Properties",
+          "description": "The administrative area (state or province) of the address."
+        },
+        {
+          "kind": "property",
+          "name": "administrativeAreaValue",
+          "signature": "public String administrativeAreaValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The administrative area variable of the address."
+        },
+        {
+          "kind": "property",
+          "name": "country",
+          "signature": "public String country {get; set;}",
+          "section": "Address Properties",
+          "description": "The country of the address."
+        },
+        {
+          "kind": "property",
+          "name": "countryCode",
+          "signature": "public String countryCode {get; set;}",
+          "section": "Address Properties",
+          "description": "The ISO country code of the address."
+        },
+        {
+          "kind": "property",
+          "name": "countryCodeValue",
+          "signature": "public String countryCodeValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The country code variable of the address."
+        },
+        {
+          "kind": "property",
+          "name": "countryValue",
+          "signature": "public String countryValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The country variable of the address."
+        },
+        {
+          "kind": "property",
+          "name": "locality",
+          "signature": "public String locality {get; set;}",
+          "section": "Address Properties",
+          "description": "The locality (city) of the postal address."
+        },
+        {
+          "kind": "property",
+          "name": "localityValue",
+          "signature": "public String localityValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The locality variable of the postal address."
+        },
+        {
+          "kind": "property",
+          "name": "postalCode",
+          "signature": "public String postalCode {get; set;}",
+          "section": "Address Properties",
+          "description": "The postal code (zip or postal code) of the address."
+        },
+        {
+          "kind": "property",
+          "name": "postalCodeValue",
+          "signature": "public String postalCodeValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The postal code variable of the address."
+        },
+        {
+          "kind": "property",
+          "name": "subAdministrativeArea",
+          "signature": "public String subAdministrativeArea {get; set;}",
+          "section": "Address Properties",
+          "description": "The sub-administrative area (county or other region) of the address."
+        },
+        {
+          "kind": "property",
+          "name": "subAdministrativeAreaValue",
+          "signature": "public String subAdministrativeAreaValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The sub-administrative area variable of the address."
+        },
+        {
+          "kind": "property",
+          "name": "subLocality",
+          "signature": "public String subLocality {get; set;}",
+          "section": "Address Properties",
+          "description": "The sub-locality information associated with the address (defined at the city level)."
+        },
+        {
+          "kind": "property",
+          "name": "subLocalityValue",
+          "signature": "public String subLocalityValue {get; set;}",
+          "section": "Address Properties",
+          "description": "The sub-locality variable of the address."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_AddressableContact.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "AddressableContact",
+      "title": "AddressableContact Class",
+      "headings": [
+        "Namespace",
+        "AddressableContact Constructors",
+        "AddressableContact(givenName, phoneticGivenName, familyName, phoneticFamilyName, emailAddress, phoneNumber, postalAddress)",
+        "AddressableContact Properties",
+        "emailAddress",
+        "familyName",
+        "givenName",
+        "phoneNumber",
+        "phoneticFamilyName",
+        "phoneticGivenName",
+        "postalAddress"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "AddressableContact",
+          "signature": "AddressableContact(givenName, phoneticGivenName, familyName, phoneticFamilyName, emailAddress, phoneNumber, postalAddress)",
+          "section": "AddressableContact Constructors",
+          "description": "Creates a new instance of the `RichMessaging.AddressableContact` class."
+        },
+        {
+          "kind": "property",
+          "name": "emailAddress",
+          "signature": "public String emailAddress {get; set;}",
+          "section": "AddressableContact Properties",
+          "description": "The contact’s email address."
+        },
+        {
+          "kind": "property",
+          "name": "familyName",
+          "signature": "public String familyName {get; set;}",
+          "section": "AddressableContact Properties",
+          "description": "The contact’s surname."
+        },
+        {
+          "kind": "property",
+          "name": "givenName",
+          "signature": "public String givenName {get; set;}",
+          "section": "AddressableContact Properties",
+          "description": "The contact’s first name."
+        },
+        {
+          "kind": "property",
+          "name": "phoneNumber",
+          "signature": "public String phoneNumber {get; set;}",
+          "section": "AddressableContact Properties",
+          "description": "The contact’s phone number."
+        },
+        {
+          "kind": "property",
+          "name": "phoneticFamilyName",
+          "signature": "public String phoneticFamilyName {get; set;}",
+          "section": "AddressableContact Properties",
+          "description": "The phonetic spelling of the contact’s surname."
+        },
+        {
+          "kind": "property",
+          "name": "phoneticGivenName",
+          "signature": "public String phoneticGivenName {get; set;}",
+          "section": "AddressableContact Properties",
+          "description": "The phonetic spelling of the contact’s first name."
+        },
+        {
+          "kind": "property",
+          "name": "postalAddress",
+          "signature": "public RichMessaging.PostalAddress postalAddress {get; set;}",
+          "section": "AddressableContact Properties",
+          "description": "The contact’s postal address."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_AuthRequestResponse.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "AuthRequestResponse",
+      "title": "AuthRequestResponse Class",
+      "headings": [
+        "Namespace",
+        "AuthRequestResponse Constructors",
+        "AuthRequestResponse(accessToken, contextRecordId, authProviderName)",
+        "AuthRequestResponse Methods",
+        "getAccessToken()",
+        "getAuthProviderName()",
+        "getContextRecordId()"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "AuthRequestResponse",
+          "signature": "public AuthRequestResponse(String accessToken, String contextRecordId, String authProviderName)",
+          "parameters": [
+            "String",
+            "String",
+            "String"
+          ],
+          "section": "AuthRequestResponse Constructors",
+          "description": "Creates a new instance of the `RichMessaging.AuthRequestResponse` class."
+        },
+        {
+          "kind": "method",
+          "name": "getAccessToken",
+          "signature": "public String getAccessToken()",
+          "returnType": "String",
+          "section": "AuthRequestResponse Methods",
+          "description": "Gets the authorization access token."
+        },
+        {
+          "kind": "method",
+          "name": "getAuthProviderName",
+          "signature": "public String getAuthProviderName()",
+          "returnType": "String",
+          "section": "AuthRequestResponse Methods",
+          "description": "Get the authorization provider name."
+        },
+        {
+          "kind": "method",
+          "name": "getContextRecordId",
+          "signature": "public String getContextRecordId()",
+          "returnType": "String",
+          "section": "AuthRequestResponse Methods",
+          "description": "Gets the context record ID."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_AuthRequestResult.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "AuthRequestResult",
+      "title": "AuthRequestResult Class",
+      "headings": [
+        "Namespace",
+        "AuthRequestResult Constructors",
+        "AuthRequestResult(redirectPageReference, resultStatus, expirationDateTime)",
+        "AuthRequestResult Properties",
+        "expirationDateTime",
+        "redirectPageReference",
+        "resultStatus"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "AuthRequestResult",
+          "signature": "public AuthRequestResult(System.PageReference redirectPageReference, RichMessaging.AuthRequestResultStatus resultStatus, Datetime expirationDateTime)",
+          "parameters": [
+            "System.PageReference",
+            "RichMessaging.AuthRequestResultStatus",
+            "Datetime"
+          ],
+          "section": "AuthRequestResult Constructors",
+          "description": "Creates a new instance of the `RichMessaging.AuthRequestResult` class."
+        },
+        {
+          "kind": "property",
+          "name": "expirationDateTime",
+          "signature": "public Datetime expirationDateTime {get; set;}",
+          "section": "AuthRequestResult Properties",
+          "description": "The expiration date and time."
+        },
+        {
+          "kind": "property",
+          "name": "redirectPageReference",
+          "signature": "public System.PageReference redirectPageReference {get; set;}",
+          "section": "AuthRequestResult Properties",
+          "description": "The reference to the redirect page."
+        },
+        {
+          "kind": "property",
+          "name": "resultStatus",
+          "signature": "public RichMessaging.AuthRequestResultStatus resultStatus {get; set;}",
+          "section": "AuthRequestResult Properties",
+          "description": "The result status value."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_CurrencyAmount.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "CurrencyAmount",
+      "title": "CurrencyAmount Class",
+      "headings": [
+        "Namespace",
+        "CurrencyAmount Properties",
+        "amount",
+        "currency"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "amount",
+          "signature": "public Decimal amount {get; set;}",
+          "section": "CurrencyAmount Properties",
+          "description": "The numeric amount value."
+        },
+        {
+          "kind": "property",
+          "name": "currency",
+          "signature": "public String currency {get; set;}",
+          "section": "CurrencyAmount Properties",
+          "description": "The ISO currency code of the amount."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_DeferredTiming.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "DeferredTiming",
+      "title": "DeferredTiming Class",
+      "headings": [
+        "Namespace",
+        "DeferredTiming Constructors",
+        "DeferredTiming(deferredDate)",
+        "DeferredTiming()",
+        "DeferredTiming Properties",
+        "deferredDate",
+        "deferredDateValue",
+        "timingType"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "DeferredTiming",
+          "signature": "public DeferredTiming()",
+          "section": "DeferredTiming Constructors",
+          "description": "Creates a new instance of the `RichMessaging.DeferredTiming` class."
+        },
+        {
+          "kind": "constructor",
+          "name": "DeferredTiming",
+          "signature": "public DeferredTiming(Datetime deferredDate)",
+          "parameters": [
+            "Datetime"
+          ],
+          "section": "DeferredTiming Constructors",
+          "description": "Creates a new instance of the `RichMessaging.DeferredTiming` class."
+        },
+        {
+          "kind": "property",
+          "name": "deferredDate",
+          "signature": "public Datetime deferredDate {get; set;}",
+          "section": "DeferredTiming Properties",
+          "description": "The deferred date. Invocable variable."
+        },
+        {
+          "kind": "property",
+          "name": "deferredDateValue",
+          "signature": "public Datetime deferredDateValue {get; set;}",
+          "section": "DeferredTiming Properties",
+          "description": "The deferred date. Enabled for Lightning components."
+        },
+        {
+          "kind": "property",
+          "name": "timingType",
+          "signature": "public String timingType {get; set;}",
+          "section": "DeferredTiming Properties",
+          "description": "Always returns “DeferredTiming”."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_MessageDefinitionInputParameter.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "MessageDefinitionInputParameter",
+      "title": "MessageDefinitionInputParameter Class",
+      "headings": [
+        "Namespace",
+        "MessageDefinitionInputParameter Properties",
+        "booleanValue",
+        "booleanValues",
+        "dateTimeValue",
+        "dateTimeValues",
+        "dateValue",
+        "dateValues",
+        "name",
+        "numberValue",
+        "numberValues",
+        "recordIdValue",
+        "recordIdValues",
+        "textValue",
+        "textValues"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "booleanValue",
+          "signature": "public Boolean booleanValue {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A boolean input parameter."
+        },
+        {
+          "kind": "property",
+          "name": "booleanValues",
+          "signature": "public List<Boolean> booleanValues {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A list of boolean parameters."
+        },
+        {
+          "kind": "property",
+          "name": "dateTimeValue",
+          "signature": "public Datetime dateTimeValue {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A datetime input parameter."
+        },
+        {
+          "kind": "property",
+          "name": "dateTimeValues",
+          "signature": "public List<Datetime> dateTimeValues {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A list of datetime input parameters."
+        },
+        {
+          "kind": "property",
+          "name": "dateValue",
+          "signature": "public Date dateValue {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A date input parameter."
+        },
+        {
+          "kind": "property",
+          "name": "dateValues",
+          "signature": "public List<Date> dateValues {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A list of date input parameters."
+        },
+        {
+          "kind": "property",
+          "name": "name",
+          "signature": "public String name {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A name input parameter."
+        },
+        {
+          "kind": "property",
+          "name": "numberValue",
+          "signature": "public Double numberValue {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A number input parameter."
+        },
+        {
+          "kind": "property",
+          "name": "numberValues",
+          "signature": "public List<Double> numberValues {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A list of number input parameters."
+        },
+        {
+          "kind": "property",
+          "name": "recordIdValue",
+          "signature": "public String recordIdValue {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A record ID input parameter."
+        },
+        {
+          "kind": "property",
+          "name": "recordIdValues",
+          "signature": "public List<String> recordIdValues {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A list of record ID input parameters."
+        },
+        {
+          "kind": "property",
+          "name": "textValue",
+          "signature": "public String textValue {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A text input parameter."
+        },
+        {
+          "kind": "property",
+          "name": "textValues",
+          "signature": "public List<String> textValues {get; set;}",
+          "section": "MessageDefinitionInputParameter Properties",
+          "description": "A list of text input parameters."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_OrderBeneficiary.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "OrderBeneficiary",
+      "title": "OrderBeneficiary Class",
+      "headings": [
+        "Namespace",
+        "OrderBeneficiary Properties",
+        "legalName",
+        "legalNameValue",
+        "taxIdentifierType",
+        "taxIdentifierTypeValue",
+        "taxIdentifierValue",
+        "taxIdentifierValueValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "legalName",
+          "signature": "public String legalName {get; set;}",
+          "section": "OrderBeneficiary Properties",
+          "description": "The legal name of the beneficiary."
+        },
+        {
+          "kind": "property",
+          "name": "legalNameValue",
+          "signature": "public String legalNameValue {get; set;}",
+          "section": "OrderBeneficiary Properties",
+          "description": "The legal name variable of the beneficiary."
+        },
+        {
+          "kind": "property",
+          "name": "taxIdentifierType",
+          "signature": "public String taxIdentifierType {get; set;}",
+          "section": "OrderBeneficiary Properties",
+          "description": "The type of tax identifier of the beneficiary."
+        },
+        {
+          "kind": "property",
+          "name": "taxIdentifierTypeValue",
+          "signature": "public String taxIdentifierTypeValue {get; set;}",
+          "section": "OrderBeneficiary Properties",
+          "description": "The tax identifier type variable of the beneficiary."
+        },
+        {
+          "kind": "property",
+          "name": "taxIdentifierValue",
+          "signature": "public String taxIdentifierValue {get; set;}",
+          "section": "OrderBeneficiary Properties",
+          "description": "The tax identifier value of the beneficiary."
+        },
+        {
+          "kind": "property",
+          "name": "taxIdentifierValueValue",
+          "signature": "public String taxIdentifierValueValue {get; set;}",
+          "section": "OrderBeneficiary Properties",
+          "description": "The tax identifier value variable of the beneficiary."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_OrderContext.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "OrderContext",
+      "title": "OrderContext Class",
+      "headings": [
+        "Namespace",
+        "OrderContext Properties",
+        "orderType",
+        "orderTypeValue",
+        "paymentCheckoutBehavior",
+        "paymentCheckoutBehaviorValue",
+        "orderExpiration",
+        "orderExpirationValue",
+        "paymentMethodHints",
+        "paymentMethodHintsValue",
+        "orderBeneficiary",
+        "orderBeneficiaryValue",
+        "paymentInitiation",
+        "paymentInitiationValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "orderBeneficiary",
+          "signature": "public RichMessaging.OrderBeneficiary orderBeneficiary {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The beneficiary information of the order."
+        },
+        {
+          "kind": "property",
+          "name": "orderBeneficiaryValue",
+          "signature": "public RichMessaging.OrderBeneficiary orderBeneficiaryValue {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The order beneficiary variable for the order."
+        },
+        {
+          "kind": "property",
+          "name": "orderExpiration",
+          "signature": "public RichMessaging.OrderExpiration orderExpiration {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The expiration information for the order."
+        },
+        {
+          "kind": "property",
+          "name": "orderExpirationValue",
+          "signature": "public RichMessaging.OrderExpiration orderExpirationValue {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The order expiration variable for the order."
+        },
+        {
+          "kind": "property",
+          "name": "orderType",
+          "signature": "public String orderType {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The type of the order."
+        },
+        {
+          "kind": "property",
+          "name": "orderTypeValue",
+          "signature": "public RichMessaging.OrderType orderTypeValue {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The order type variable of the order."
+        },
+        {
+          "kind": "property",
+          "name": "paymentCheckoutBehavior",
+          "signature": "public String paymentCheckoutBehavior {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The checkout behavior for the payment."
+        },
+        {
+          "kind": "property",
+          "name": "paymentCheckoutBehaviorValue",
+          "signature": "public RichMessaging.PaymentCheckoutBehavior paymentCheckoutBehaviorValue {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The payment checkout behavior variable of the order."
+        },
+        {
+          "kind": "property",
+          "name": "paymentInitiation",
+          "signature": "public RichMessaging.PaymentInitiation paymentInitiation {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The payment initiation information for the order."
+        },
+        {
+          "kind": "property",
+          "name": "paymentInitiationValue",
+          "signature": "public RichMessaging.PaymentInitiation paymentInitiationValue {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The payment initiation variable for the order."
+        },
+        {
+          "kind": "property",
+          "name": "paymentMethodHints",
+          "signature": "public List<String> paymentMethodHints {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The list of payment method hints for the order."
+        },
+        {
+          "kind": "property",
+          "name": "paymentMethodHintsValue",
+          "signature": "public List<RichMessaging.PaymentMethodHint> paymentMethodHintsValue {get; set;}",
+          "section": "OrderContext Properties",
+          "description": "The payment method hints variable for the order."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_OrderExpiration.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "OrderExpiration",
+      "title": "OrderExpiration Class",
+      "headings": [
+        "Namespace",
+        "OrderExpiration Properties",
+        "expirationDateTime",
+        "expirationDateTimeValue",
+        "durationFromCreation",
+        "durationFromCreationValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "durationFromCreation",
+          "signature": "public Long durationFromCreation {get; set;}",
+          "section": "OrderExpiration Properties",
+          "description": "The duration after creation when the order expires (in seconds)."
+        },
+        {
+          "kind": "property",
+          "name": "durationFromCreationValue",
+          "signature": "public Long durationFromCreationValue {get; set;}",
+          "section": "OrderExpiration Properties",
+          "description": "The duration from creation variable of the order expiration."
+        },
+        {
+          "kind": "property",
+          "name": "expirationDateTime",
+          "signature": "public Datetime expirationDateTime {get; set;}",
+          "section": "OrderExpiration Properties",
+          "description": "The expiration date and time of the order."
+        },
+        {
+          "kind": "property",
+          "name": "expirationDateTimeValue",
+          "signature": "public Datetime expirationDateTimeValue {get; set;}",
+          "section": "OrderExpiration Properties",
+          "description": "The expiration date and time variable of the order."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_OrderItemCommerceAttributes.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "OrderItemCommerceAttributes",
+      "title": "OrderItemCommerceAttributes Class",
+      "headings": [
+        "Namespace",
+        "OrderItemCommerceAttributes Properties",
+        "retailerId",
+        "retailerIdValue",
+        "category",
+        "categoryValue",
+        "importer",
+        "importerValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "category",
+          "signature": "public String category {get; set;}",
+          "section": "OrderItemCommerceAttributes Properties",
+          "description": "The category of the order item."
+        },
+        {
+          "kind": "property",
+          "name": "categoryValue",
+          "signature": "public RichMessaging.OrderItemCategory categoryValue {get; set;}",
+          "section": "OrderItemCommerceAttributes Properties",
+          "description": "The category variable for the order item."
+        },
+        {
+          "kind": "property",
+          "name": "importer",
+          "signature": "public RichMessaging.OrderItemImporter importer {get; set;}",
+          "section": "OrderItemCommerceAttributes Properties",
+          "description": "The importer information of the order item."
+        },
+        {
+          "kind": "property",
+          "name": "importerValue",
+          "signature": "public RichMessaging.OrderItemImporter importerValue {get; set;}",
+          "section": "OrderItemCommerceAttributes Properties",
+          "description": "The importer variable for the order item."
+        },
+        {
+          "kind": "property",
+          "name": "retailerId",
+          "signature": "public String retailerId {get; set;}",
+          "section": "OrderItemCommerceAttributes Properties",
+          "description": "The retailer ID of the order item."
+        },
+        {
+          "kind": "property",
+          "name": "retailerIdValue",
+          "signature": "public String retailerIdValue {get; set;}",
+          "section": "OrderItemCommerceAttributes Properties",
+          "description": "The retailer ID variable for the order item."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_OrderItemImporter.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "OrderItemImporter",
+      "title": "OrderItemImporter Class",
+      "headings": [
+        "Namespace",
+        "OrderItemImporter Properties",
+        "countryOfOrigin",
+        "countryOfOriginValue",
+        "name",
+        "nameValue",
+        "address",
+        "addressValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "address",
+          "signature": "public RichMessaging.Address address {get; set;}",
+          "section": "OrderItemImporter Properties",
+          "description": "The address of the importer."
+        },
+        {
+          "kind": "property",
+          "name": "addressValue",
+          "signature": "public RichMessaging.Address addressValue {get; set;}",
+          "section": "OrderItemImporter Properties",
+          "description": "The address variable of the importer."
+        },
+        {
+          "kind": "property",
+          "name": "countryOfOrigin",
+          "signature": "public String countryOfOrigin {get; set;}",
+          "section": "OrderItemImporter Properties",
+          "description": "The country of origin for the imported order item."
+        },
+        {
+          "kind": "property",
+          "name": "countryOfOriginValue",
+          "signature": "public String countryOfOriginValue {get; set;}",
+          "section": "OrderItemImporter Properties",
+          "description": "The country of origin variable for the imported order item."
+        },
+        {
+          "kind": "property",
+          "name": "name",
+          "signature": "public String name {get; set;}",
+          "section": "OrderItemImporter Properties",
+          "description": "The name of the importer."
+        },
+        {
+          "kind": "property",
+          "name": "nameValue",
+          "signature": "public String nameValue {get; set;}",
+          "section": "OrderItemImporter Properties",
+          "description": "The name variable of the importer."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentError.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentError",
+      "title": "PaymentError Class",
+      "headings": [
+        "Namespace",
+        "PaymentError Properties",
+        "code",
+        "message"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "code",
+          "signature": "public String code {get; set;}",
+          "section": "PaymentError Properties",
+          "description": "The error code returned by the payment gateway."
+        },
+        {
+          "kind": "property",
+          "name": "message",
+          "signature": "public String message {get; set;}",
+          "section": "PaymentError Properties",
+          "description": "The error message describing the payment failure."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentGatewayProperties.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentGatewayProperties",
+      "title": "PaymentGatewayProperties Class",
+      "headings": [
+        "Namespace",
+        "PaymentGatewayProperties Properties",
+        "returnUrl",
+        "returnUrlValue",
+        "callbackUrl",
+        "callbackUrlValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "callbackUrl",
+          "signature": "public String callbackUrl {get; set;}",
+          "section": "PaymentGatewayProperties Properties",
+          "description": "The callback URL for the gateway payment notifications."
+        },
+        {
+          "kind": "property",
+          "name": "callbackUrlValue",
+          "signature": "public String callbackUrlValue {get; set;}",
+          "section": "PaymentGatewayProperties Properties",
+          "description": "The callback URL variable for the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "returnUrl",
+          "signature": "public String returnUrl {get; set;}",
+          "section": "PaymentGatewayProperties Properties",
+          "description": "The return URL for the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "returnUrlValue",
+          "signature": "public String returnUrlValue {get; set;}",
+          "section": "PaymentGatewayProperties Properties",
+          "description": "The return URL variable for the gateway payment."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentInitiation.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentInitiation",
+      "title": "PaymentInitiation Class",
+      "headings": [
+        "Namespace",
+        "PaymentInitiation Properties",
+        "initiationMode",
+        "initiationModeValue",
+        "pix",
+        "pixValue",
+        "boleto",
+        "boletoValue",
+        "gateway",
+        "gatewayValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "boleto",
+          "signature": "public RichMessaging.PaymentInitiationBoleto boleto {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The Boleto payment initiation details."
+        },
+        {
+          "kind": "property",
+          "name": "boletoValue",
+          "signature": "public RichMessaging.PaymentInitiationBoleto boletoValue {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The Boleto payment initiation variable."
+        },
+        {
+          "kind": "property",
+          "name": "gateway",
+          "signature": "public RichMessaging.PaymentInitiationGateway gateway {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The gateway-based payment initiation details."
+        },
+        {
+          "kind": "property",
+          "name": "gatewayValue",
+          "signature": "public RichMessaging.PaymentInitiationGateway gatewayValue {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The gateway payment initiation variable."
+        },
+        {
+          "kind": "property",
+          "name": "initiationMode",
+          "signature": "public String initiationMode {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The mode used to initiate the payment."
+        },
+        {
+          "kind": "property",
+          "name": "initiationModeValue",
+          "signature": "public RichMessaging.PaymentInitiationMode initiationModeValue {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The initiation mode variable for the payment."
+        },
+        {
+          "kind": "property",
+          "name": "pix",
+          "signature": "public RichMessaging.PaymentInitiationPix pix {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The PIX payment initiation details."
+        },
+        {
+          "kind": "property",
+          "name": "pixValue",
+          "signature": "public RichMessaging.PaymentInitiationPix pixValue {get; set;}",
+          "section": "PaymentInitiation Properties",
+          "description": "The PIX payment initiation variable."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentInitiationBoleto.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentInitiationBoleto",
+      "title": "PaymentInitiationBoleto Class",
+      "headings": [
+        "Namespace",
+        "PaymentInitiationBoleto Properties",
+        "documentNumber",
+        "documentNumberValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "documentNumber",
+          "signature": "public String documentNumber {get; set;}",
+          "section": "PaymentInitiationBoleto Properties",
+          "description": "The Boleto document number."
+        },
+        {
+          "kind": "property",
+          "name": "documentNumberValue",
+          "signature": "public String documentNumberValue {get; set;}",
+          "section": "PaymentInitiationBoleto Properties",
+          "description": "The Boleto document number variable."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentInitiationGateway.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentInitiationGateway",
+      "title": "PaymentInitiationGateway Class",
+      "headings": [
+        "Namespace",
+        "PaymentInitiationGateway Properties",
+        "orderId",
+        "orderIdValue",
+        "currency",
+        "currencyValue",
+        "amount",
+        "amountValue",
+        "gatewayProperties",
+        "gatewayPropertiesValue",
+        "signature",
+        "signatureValue",
+        "metadata",
+        "metadataValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "amount",
+          "signature": "public Double amount {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The amount of the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "amountValue",
+          "signature": "public Double amountValue {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The amount variable of the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "currency",
+          "signature": "public String currency {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The currency of the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "currencyValue",
+          "signature": "public String currencyValue {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The currency variable of the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "gatewayProperties",
+          "signature": "public RichMessaging.PaymentGatewayProperties gatewayProperties {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The gateway-specific properties for the payment."
+        },
+        {
+          "kind": "property",
+          "name": "gatewayPropertiesValue",
+          "signature": "public RichMessaging.PaymentGatewayProperties gatewayPropertiesValue {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The gateway properties variable for the payment."
+        },
+        {
+          "kind": "property",
+          "name": "metadata",
+          "signature": "public Map<String, String> metadata {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "Additional metadata for the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "metadataValue",
+          "signature": "public Map<String, String> metadataValue {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The metadata variable for the gateway payment."
+        },
+        {
+          "kind": "property",
+          "name": "orderId",
+          "signature": "public String orderId {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The order ID associated with the gateway payment initiation."
+        },
+        {
+          "kind": "property",
+          "name": "orderIdValue",
+          "signature": "public String orderIdValue {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The order ID variable for the gateway payment initiation."
+        },
+        {
+          "kind": "property",
+          "name": "signature",
+          "signature": "public String signature {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The cryptographic signature of the gateway payment request."
+        },
+        {
+          "kind": "property",
+          "name": "signatureValue",
+          "signature": "public String signatureValue {get; set;}",
+          "section": "PaymentInitiationGateway Properties",
+          "description": "The signature variable of the gateway payment request."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentInitiationPix.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentInitiationPix",
+      "title": "PaymentInitiationPix Class",
+      "headings": [
+        "Namespace",
+        "PaymentInitiationPix Properties",
+        "keyType",
+        "keyTypeValue",
+        "key",
+        "keyValue",
+        "endToEndId",
+        "endToEndIdValue"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "endToEndId",
+          "signature": "public String endToEndId {get; set;}",
+          "section": "PaymentInitiationPix Properties",
+          "description": "The end-to-end identifier of the PIX transaction."
+        },
+        {
+          "kind": "property",
+          "name": "endToEndIdValue",
+          "signature": "public String endToEndIdValue {get; set;}",
+          "section": "PaymentInitiationPix Properties",
+          "description": "The end-to-end ID variable of the PIX transaction."
+        },
+        {
+          "kind": "property",
+          "name": "key",
+          "signature": "public String key {get; set;}",
+          "section": "PaymentInitiationPix Properties",
+          "description": "The PIX key value."
+        },
+        {
+          "kind": "property",
+          "name": "keyType",
+          "signature": "public String keyType {get; set;}",
+          "section": "PaymentInitiationPix Properties",
+          "description": "The PIX key type."
+        },
+        {
+          "kind": "property",
+          "name": "keyTypeValue",
+          "signature": "public RichMessaging.PaymentInitiationPixKeyType keyTypeValue {get; set;}",
+          "section": "PaymentInitiationPix Properties",
+          "description": "The PIX key type variable."
+        },
+        {
+          "kind": "property",
+          "name": "keyValue",
+          "signature": "public String keyValue {get; set;}",
+          "section": "PaymentInitiationPix Properties",
+          "description": "The PIX key variable."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentLineItem.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentLineItem",
+      "title": "PaymentLineItem Class",
+      "headings": [
+        "Namespace",
+        "Example",
+        "PaymentLineItem Constructors",
+        "PaymentLineItem(label, amount, timing)",
+        "PaymentLineItem(label, amount)",
+        "PaymentLineItem()",
+        "PaymentLineItem Properties",
+        "amount",
+        "amountValue",
+        "automaticReloadPaymentThresholdAmount",
+        "automaticReloadPaymentThresholdAmountValue",
+        "commerce",
+        "commerceValue",
+        "discount",
+        "discountValue",
+        "label",
+        "labelValue",
+        "lineItemType",
+        "quantity",
+        "quantityValue",
+        "saleAmount",
+        "saleAmountValue",
+        "status",
+        "statusValue",
+        "timing",
+        "timingValue",
+        "PaymentLineItem Methods"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PaymentLineItem",
+          "signature": "public PaymentLineItem()",
+          "section": "PaymentLineItem Constructors",
+          "description": "Creates a new instance of the `RichMessaging.PaymentLineItem` class."
+        },
+        {
+          "kind": "constructor",
+          "name": "PaymentLineItem",
+          "signature": "public PaymentLineItem(String label, Double amount)",
+          "parameters": [
+            "String",
+            "Double"
+          ],
+          "section": "PaymentLineItem Constructors",
+          "description": "Creates a new instance of the `RichMessaging.PaymentLineItem` class."
+        },
+        {
+          "kind": "constructor",
+          "name": "PaymentLineItem",
+          "signature": "public PaymentLineItem(String label, Double amount, RichMessaging.AbstractTiming timing)",
+          "parameters": [
+            "String",
+            "Double",
+            "RichMessaging.AbstractTiming"
+          ],
+          "section": "PaymentLineItem Constructors",
+          "description": "Creates a new instance of the `RichMessaging.PaymentLineItem` class."
+        },
+        {
+          "kind": "property",
+          "name": "amount",
+          "signature": "public Double amount {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The amount of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "amountValue",
+          "signature": "public Double amountValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The amount value of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "automaticReloadPaymentThresholdAmount",
+          "signature": "public Double automaticReloadPaymentThresholdAmount {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The automatic reload payment threshold amount of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "automaticReloadPaymentThresholdAmountValue",
+          "signature": "public Double automaticReloadPaymentThresholdAmountValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The automatic reload payment threshold amount value of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "commerce",
+          "signature": "public RichMessaging.OrderItemCommerceAttributes commerce {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The commerce attributes of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "commerceValue",
+          "signature": "public RichMessaging.OrderItemCommerceAttributes commerceValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The commerce attributes variable for the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "discount",
+          "signature": "public RichMessaging.Discount discount {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The discount applied to the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "discountValue",
+          "signature": "public RichMessaging.Discount discountValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The discount variable for the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "label",
+          "signature": "public String label {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The label of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "labelValue",
+          "signature": "public String labelValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The label value of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "lineItemType",
+          "signature": "public String lineItemType {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The line item type of the payment line item. Read-only variable."
+        },
+        {
+          "kind": "property",
+          "name": "quantity",
+          "signature": "public Integer quantity {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The quantity of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "quantityValue",
+          "signature": "public Integer quantityValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The quantity variable for the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "saleAmount",
+          "signature": "public Double saleAmount {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The sale amount of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "saleAmountValue",
+          "signature": "public Double saleAmountValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The sale amount variable for the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "status",
+          "signature": "public String status {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The status of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "statusValue",
+          "signature": "public RichMessaging.PaymentItemStatus statusValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The status value of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "timing",
+          "signature": "public RichMessaging.AbstractTiming timing {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The timing of the payment line item."
+        },
+        {
+          "kind": "property",
+          "name": "timingValue",
+          "signature": "public RichMessaging.AbstractTiming timingValue {get; set;}",
+          "section": "PaymentLineItem Properties",
+          "description": "The timing value of the payment line item."
+        }
+      ],
+      "examples": [
+        {
+          "heading": "Example"
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentMethod.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentMethod",
+      "title": "PaymentMethod Class",
+      "headings": [
+        "Namespace",
+        "PaymentMethod Constructors",
+        "PaymentMethod(network, paymentType, displayName)",
+        "PaymentMethod Properties",
+        "displayName",
+        "network",
+        "paymentType"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PaymentMethod",
+          "signature": "public PaymentMethod(String network, String paymentType, String displayName)",
+          "parameters": [
+            "String",
+            "String",
+            "String"
+          ],
+          "section": "PaymentMethod Constructors",
+          "description": "Creates a new instance of the `RichMessaging.PaymentMethod` class."
+        },
+        {
+          "kind": "property",
+          "name": "displayName",
+          "signature": "public String displayName {get; set;}",
+          "section": "PaymentMethod Properties",
+          "description": "The display name of the payment method."
+        },
+        {
+          "kind": "property",
+          "name": "network",
+          "signature": "public String network {get; set;}",
+          "section": "PaymentMethod Properties",
+          "description": "The network associated with the payment method."
+        },
+        {
+          "kind": "property",
+          "name": "paymentType",
+          "signature": "public String paymentType {get; set;}",
+          "section": "PaymentMethod Properties",
+          "description": "The payment type of the payment method."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PaymentTransaction.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PaymentTransaction",
+      "title": "PaymentTransaction Class",
+      "headings": [
+        "Namespace",
+        "PaymentTransaction Properties",
+        "transactionId",
+        "transactionType",
+        "status",
+        "amount",
+        "gatewayReference",
+        "timestamp",
+        "refunds"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "amount",
+          "signature": "public RichMessaging.CurrencyAmount amount {get; set;}",
+          "section": "PaymentTransaction Properties",
+          "description": "The amount of the transaction."
+        },
+        {
+          "kind": "property",
+          "name": "gatewayReference",
+          "signature": "public String gatewayReference {get; set;}",
+          "section": "PaymentTransaction Properties",
+          "description": "The reference identifier from the payment gateway."
+        },
+        {
+          "kind": "property",
+          "name": "refunds",
+          "signature": "public List<RichMessaging.Refund> refunds {get; set;}",
+          "section": "PaymentTransaction Properties",
+          "description": "The list of refunds associated with the transaction."
+        },
+        {
+          "kind": "property",
+          "name": "status",
+          "signature": "public RichMessaging.PaymentTransactionStatus status {get; set;}",
+          "section": "PaymentTransaction Properties",
+          "description": "The status of the transaction."
+        },
+        {
+          "kind": "property",
+          "name": "timestamp",
+          "signature": "public Datetime timestamp {get; set;}",
+          "section": "PaymentTransaction Properties",
+          "description": "The date and time when the transaction occurred."
+        },
+        {
+          "kind": "property",
+          "name": "transactionId",
+          "signature": "public String transactionId {get; set;}",
+          "section": "PaymentTransaction Properties",
+          "description": "The unique identifier of the transaction."
+        },
+        {
+          "kind": "property",
+          "name": "transactionType",
+          "signature": "public RichMessaging.PaymentTransactionType transactionType {get; set;}",
+          "section": "PaymentTransaction Properties",
+          "description": "The type of the transaction."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_PostalAddress.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "PostalAddress",
+      "title": "PostalAddress Class",
+      "headings": [
+        "Namespace",
+        "PostalAddress Constructors",
+        "PostalAddress(addressLines, subLocality, locality, postalCode, subAdministrativeArea, administrativeArea, country, countryCode)",
+        "PostalAddress Properties",
+        "addressLines",
+        "administrativeArea",
+        "country",
+        "countryCode",
+        "locality",
+        "postalCode",
+        "subAdministrativeArea",
+        "subLocality"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PostalAddress",
+          "signature": "public PostalAddress(List<String> addressLines, String subLocality, String locality, String postalCode, String subAdministrativeArea, String administrativeArea, String country, String countryCode)",
+          "parameters": [
+            "List<String>",
+            "String",
+            "String",
+            "String",
+            "String",
+            "String",
+            "String",
+            "String"
+          ],
+          "section": "PostalAddress Constructors",
+          "description": "Creates a new instance of the `RichMessaging.PostalAddress` class."
+        },
+        {
+          "kind": "property",
+          "name": "addressLines",
+          "signature": "public List<String> addressLines {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The street address."
+        },
+        {
+          "kind": "property",
+          "name": "administrativeArea",
+          "signature": "public String administrativeArea {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The administrative area."
+        },
+        {
+          "kind": "property",
+          "name": "country",
+          "signature": "public String country {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The country."
+        },
+        {
+          "kind": "property",
+          "name": "countryCode",
+          "signature": "public String countryCode {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The country code."
+        },
+        {
+          "kind": "property",
+          "name": "locality",
+          "signature": "public String locality {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The locality of the address."
+        },
+        {
+          "kind": "property",
+          "name": "postalCode",
+          "signature": "public String postalCode {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The postal code."
+        },
+        {
+          "kind": "property",
+          "name": "subAdministrativeArea",
+          "signature": "public String subAdministrativeArea {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The sub-administrative area."
+        },
+        {
+          "kind": "property",
+          "name": "subLocality",
+          "signature": "public String subLocality {get; set;}",
+          "section": "PostalAddress Properties",
+          "description": "The sub-locality of the address."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_ProcessPaymentRequest.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "ProcessPaymentRequest",
+      "title": "ProcessPaymentRequest Class",
+      "headings": [
+        "Namespace",
+        "ProcessPaymentRequest Constructors",
+        "ProcessPaymentRequest(transactionIdentifier, paymentData, billingContact, shippingContact, paymentMethod, shippingMethod, contextRecordId)",
+        "ProcessPaymentRequest Properties",
+        "billingContact",
+        "contextRecordId",
+        "paymentData",
+        "paymentMethod",
+        "shippingContact",
+        "shippingMethod",
+        "transactionIdentifier"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "ProcessPaymentRequest",
+          "signature": "public ProcessPaymentRequest(String transactionIdentifier, String paymentData, RichMessaging.AddressableContact billingContact, RichMessaging.AddressableContact shippingContact, RichMessaging.PaymentMethod paymentMethod, RichMessaging.ShippingMethod shippingMethod, String contextRecordId)",
+          "parameters": [
+            "String",
+            "String",
+            "RichMessaging.AddressableContact",
+            "RichMessaging.AddressableContact",
+            "RichMessaging.PaymentMethod",
+            "RichMessaging.ShippingMethod",
+            "String"
+          ],
+          "section": "ProcessPaymentRequest Constructors",
+          "description": "Creates a new instance of the `RichMessaging.ProcessPaymentRequest` class."
+        },
+        {
+          "kind": "property",
+          "name": "billingContact",
+          "signature": "public RichMessaging.AddressableContact billingContact {get; set;}",
+          "section": "ProcessPaymentRequest Properties",
+          "description": "The billing contact information for the payment request."
+        },
+        {
+          "kind": "property",
+          "name": "contextRecordId",
+          "signature": "public String contextRecordId {get; set;}",
+          "section": "ProcessPaymentRequest Properties",
+          "description": "The context record ID associated with the payment request."
+        },
+        {
+          "kind": "property",
+          "name": "paymentData",
+          "signature": "public String paymentData {get; set;}",
+          "section": "ProcessPaymentRequest Properties",
+          "description": "The encrypted payment data for the payment request."
+        },
+        {
+          "kind": "property",
+          "name": "paymentMethod",
+          "signature": "public RichMessaging.PaymentMethod paymentMethod {get; set;}",
+          "section": "ProcessPaymentRequest Properties",
+          "description": "The payment method for the payment request."
+        },
+        {
+          "kind": "property",
+          "name": "shippingContact",
+          "signature": "public RichMessaging.AddressableContact shippingContact {get; set;}",
+          "section": "ProcessPaymentRequest Properties",
+          "description": "The shipping contact information for the payment request."
+        },
+        {
+          "kind": "property",
+          "name": "shippingMethod",
+          "signature": "public RichMessaging.ShippingMethod shippingMethod {get; set;}",
+          "section": "ProcessPaymentRequest Properties",
+          "description": "The shipping method for the payment request."
+        },
+        {
+          "kind": "property",
+          "name": "transactionIdentifier",
+          "signature": "public String transactionIdentifier {get; set;}",
+          "section": "ProcessPaymentRequest Properties",
+          "description": "The transaction identifier associated with the payment request."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_ProcessPaymentResult.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "ProcessPaymentResult",
+      "title": "ProcessPaymentResult Class",
+      "headings": [
+        "Namespace",
+        "ProcessPaymentResult Constructors",
+        "ProcessPaymentResult(resultStatus, errorMessage)",
+        "ProcessPaymentResult(resultStatus)",
+        "ProcessPaymentResult Properties",
+        "errorMessage",
+        "resultStatus"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "ProcessPaymentResult",
+          "signature": "public ProcessPaymentResult(RichMessaging.ProcessPaymentResultStatus resultStatus)",
+          "parameters": [
+            "RichMessaging.ProcessPaymentResultStatus"
+          ],
+          "section": "ProcessPaymentResult Constructors",
+          "description": "Creates a new instance of the `RichMessaging.ProcessPaymentResult` class."
+        },
+        {
+          "kind": "constructor",
+          "name": "ProcessPaymentResult",
+          "signature": "public ProcessPaymentResult(RichMessaging.ProcessPaymentResultStatus resultStatus, String errorMessage)",
+          "parameters": [
+            "RichMessaging.ProcessPaymentResultStatus",
+            "String"
+          ],
+          "section": "ProcessPaymentResult Constructors",
+          "description": "Creates a new instance of the `RichMessaging.ProcessPaymentResult` class."
+        },
+        {
+          "kind": "property",
+          "name": "errorMessage",
+          "signature": "public String errorMessage {get; set;}",
+          "section": "ProcessPaymentResult Properties",
+          "description": "The error message associated with the payment processing result, if any."
+        },
+        {
+          "kind": "property",
+          "name": "resultStatus",
+          "signature": "public RichMessaging.ProcessPaymentResultStatus resultStatus {get; set;}",
+          "section": "ProcessPaymentResult Properties",
+          "description": "The status of the payment processing result."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_ProcessPaymentStatusRequest.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "ProcessPaymentStatusRequest",
+      "title": "ProcessPaymentStatusRequest Class",
+      "headings": [
+        "Namespace",
+        "ProcessPaymentStatusRequest Properties",
+        "paymentMethod",
+        "orderId",
+        "amount",
+        "transactionType",
+        "transactionStatus",
+        "transactionId",
+        "paymentTransaction",
+        "error"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "amount",
+          "signature": "public RichMessaging.CurrencyAmount amount {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The amount of the payment transaction."
+        },
+        {
+          "kind": "property",
+          "name": "error",
+          "signature": "public RichMessaging.PaymentError error {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The error information for a failed payment transaction."
+        },
+        {
+          "kind": "property",
+          "name": "orderId",
+          "signature": "public String orderId {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The order ID associated with the payment."
+        },
+        {
+          "kind": "property",
+          "name": "paymentMethod",
+          "signature": "public RichMessaging.PaymentMethod paymentMethod {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The payment method used in the transaction."
+        },
+        {
+          "kind": "property",
+          "name": "paymentTransaction",
+          "signature": "public RichMessaging.PaymentTransaction paymentTransaction {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The payment transaction details."
+        },
+        {
+          "kind": "property",
+          "name": "transactionId",
+          "signature": "public String transactionId {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The unique identifier of the payment transaction."
+        },
+        {
+          "kind": "property",
+          "name": "transactionStatus",
+          "signature": "public RichMessaging.PaymentTransactionStatus transactionStatus {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The status of the payment transaction."
+        },
+        {
+          "kind": "property",
+          "name": "transactionType",
+          "signature": "public RichMessaging.PaymentTransactionType transactionType {get; set;}",
+          "section": "ProcessPaymentStatusRequest Properties",
+          "description": "The type of payment transaction."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_ProcessPaymentStatusResult.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "ProcessPaymentStatusResult",
+      "title": "ProcessPaymentStatusResult Class",
+      "headings": [
+        "Namespace",
+        "ProcessPaymentStatusResult Properties",
+        "status",
+        "message"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "message",
+          "signature": "public String message {get; set;}",
+          "section": "ProcessPaymentStatusResult Properties",
+          "description": "An optional message describing the result."
+        },
+        {
+          "kind": "property",
+          "name": "status",
+          "signature": "public RichMessaging.ProcessPaymentResultStatus status {get; set;}",
+          "section": "ProcessPaymentStatusResult Properties",
+          "description": "The processing status of the payment status update."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_RecurringTiming.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "RecurringTiming",
+      "title": "RecurringTiming Class",
+      "headings": [
+        "Namespace",
+        "RecurringTiming Constructors",
+        "RecurringTiming(startDate, endDate, intervalCount, intervalUnit)",
+        "RecurringTiming()",
+        "RecurringTiming Properties",
+        "endDate",
+        "endDateValue",
+        "intervalCount",
+        "intervalCountValue",
+        "intervalUnit",
+        "intervalUnitValue",
+        "startDate",
+        "startDateValue",
+        "timingType"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "RecurringTiming",
+          "signature": "public RecurringTiming()",
+          "section": "RecurringTiming Constructors",
+          "description": "Creates a new instance of the `RichMessaging.RecurringTiming` class."
+        },
+        {
+          "kind": "constructor",
+          "name": "RecurringTiming",
+          "signature": "public RecurringTiming(Date startDate, Date endDate, Integer intervalCount, RichMessaging.TimingIntervalUnit intervalUnit)",
+          "parameters": [
+            "Date",
+            "Date",
+            "Integer",
+            "RichMessaging.TimingIntervalUnit"
+          ],
+          "section": "RecurringTiming Constructors",
+          "description": "Creates a new instance of the `RichMessaging.RecurringTiming` class."
+        },
+        {
+          "kind": "property",
+          "name": "endDate",
+          "signature": "public Date endDate {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The end date. Invocable variable."
+        },
+        {
+          "kind": "property",
+          "name": "endDateValue",
+          "signature": "public Date endDateValue {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The end date. Enabled for Lightning components."
+        },
+        {
+          "kind": "property",
+          "name": "intervalCount",
+          "signature": "public Integer intervalCount {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The number of interval units that make up the total payment interval. Invocable variable."
+        },
+        {
+          "kind": "property",
+          "name": "intervalCountValue",
+          "signature": "public Integer intervalCountValue {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The number of interval units that make up the total payment interval. Enabled for Lightning components."
+        },
+        {
+          "kind": "property",
+          "name": "intervalUnit",
+          "signature": "public String intervalUnit {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The amount of time—in calendar units, such as day, month, or year—that represents a fraction of the total payment interval. Invocable variable."
+        },
+        {
+          "kind": "property",
+          "name": "intervalUnitValue",
+          "signature": "public RichMessaging.TimingIntervalUnit intervalUnitValue {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The amount of time—in calendar units, such as day, month, or year—that represents a fraction of the total payment interval. Enabled for Lightning components."
+        },
+        {
+          "kind": "property",
+          "name": "startDate",
+          "signature": "public Date startDate {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The start date. Invocable variable."
+        },
+        {
+          "kind": "property",
+          "name": "startDateValue",
+          "signature": "public Date startDateValue {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "The start date. Enabled for Lightning components."
+        },
+        {
+          "kind": "property",
+          "name": "timingType",
+          "signature": "public String timingType {get; set;}",
+          "section": "RecurringTiming Properties",
+          "description": "Always returns “RecurringTiming”."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_Refund.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "Refund",
+      "title": "Refund Class",
+      "headings": [
+        "Namespace",
+        "Refund Properties",
+        "refundId",
+        "amount",
+        "status",
+        "reason",
+        "timestamp",
+        "gatewayReference"
+      ],
+      "members": [
+        {
+          "kind": "property",
+          "name": "amount",
+          "signature": "public RichMessaging.CurrencyAmount amount {get; set;}",
+          "section": "Refund Properties",
+          "description": "The amount of the refund."
+        },
+        {
+          "kind": "property",
+          "name": "gatewayReference",
+          "signature": "public String gatewayReference {get; set;}",
+          "section": "Refund Properties",
+          "description": "The reference identifier from the payment gateway for the refund."
+        },
+        {
+          "kind": "property",
+          "name": "reason",
+          "signature": "public String reason {get; set;}",
+          "section": "Refund Properties",
+          "description": "The reason for the refund."
+        },
+        {
+          "kind": "property",
+          "name": "refundId",
+          "signature": "public String refundId {get; set;}",
+          "section": "Refund Properties",
+          "description": "The unique identifier of the refund."
+        },
+        {
+          "kind": "property",
+          "name": "status",
+          "signature": "public RichMessaging.PaymentTransactionStatus status {get; set;}",
+          "section": "Refund Properties",
+          "description": "The status of the refund."
+        },
+        {
+          "kind": "property",
+          "name": "timestamp",
+          "signature": "public Datetime timestamp {get; set;}",
+          "section": "Refund Properties",
+          "description": "The date and time when the refund was processed."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_ShippingMethod.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "ShippingMethod",
+      "title": "ShippingMethod Class",
+      "headings": [
+        "Namespace",
+        "Example",
+        "ShippingMethod Constructors",
+        "ShippingMethod(label, amount, detail, identifier)",
+        "ShippingMethod()",
+        "ShippingMethod Properties",
+        "amount",
+        "amountValue",
+        "detail",
+        "detailValue",
+        "identifier",
+        "identifierValue",
+        "label",
+        "labelValue",
+        "shippingMethodType"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "ShippingMethod",
+          "signature": "public ShippingMethod()",
+          "section": "ShippingMethod Constructors",
+          "description": "Creates a new instance of the `RichMessaging.ShippingMethod` class."
+        },
+        {
+          "kind": "constructor",
+          "name": "ShippingMethod",
+          "signature": "public ShippingMethod(String label, Double amount, String detail, String identifier)",
+          "parameters": [
+            "String",
+            "Double",
+            "String",
+            "String"
+          ],
+          "section": "ShippingMethod Constructors",
+          "description": "Creates a new instance of the `RichMessaging.ShippingMethod` class."
+        },
+        {
+          "kind": "property",
+          "name": "amount",
+          "signature": "public Double amount {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The amount of the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "amountValue",
+          "signature": "public Double amountValue {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The amount value of the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "detail",
+          "signature": "public String detail {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "Details about the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "detailValue",
+          "signature": "public String detailValue {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The detail value of the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "identifier",
+          "signature": "public String identifier {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The identifier of the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "identifierValue",
+          "signature": "public String identifierValue {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The identifier value of the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "label",
+          "signature": "public String label {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The label of the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "labelValue",
+          "signature": "public String labelValue {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The label value of the shipping method."
+        },
+        {
+          "kind": "property",
+          "name": "shippingMethodType",
+          "signature": "public String shippingMethodType {get; set;}",
+          "section": "ShippingMethod Properties",
+          "description": "The shipping method type. Read only."
+        }
+      ],
+      "examples": [
+        {
+          "heading": "Example"
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_class_RichMessaging_TimeSlotOption.md",
+      "kind": "class",
+      "namespace": "RichMessaging",
+      "name": "TimeSlotOption",
+      "title": "TimeSlotOption Class",
+      "headings": [
+        "Namespace",
+        "TimeSlotOption Constructors",
+        "TimeSlotOption(startTime, endTime)",
+        "TimeSlotOption(startTime, duration)",
+        "TimeSlotOption()",
+        "TimeSlotOption Properties",
+        "duration",
+        "durationValue",
+        "endTimeValue",
+        "startTime",
+        "startTimeValue"
+      ],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "TimeSlotOption",
+          "signature": "public TimeSlotOption()",
+          "section": "TimeSlotOption Constructors",
+          "description": "Creates a `TimeSlotOption` object."
+        },
+        {
+          "kind": "constructor",
+          "name": "TimeSlotOption",
+          "signature": "public TimeSlotOption(Datetime startTime, Datetime endTime)",
+          "parameters": [
+            "Datetime",
+            "Datetime"
+          ],
+          "section": "TimeSlotOption Constructors",
+          "description": "Creates a `TimeSlotOption` object with a start and end time."
+        },
+        {
+          "kind": "constructor",
+          "name": "TimeSlotOption",
+          "signature": "public TimeSlotOption(Datetime startTime, Integer duration)",
+          "parameters": [
+            "Datetime",
+            "Integer"
+          ],
+          "section": "TimeSlotOption Constructors",
+          "description": "Creates a `TimeSlotOption` object with a start time and a duration."
+        },
+        {
+          "kind": "property",
+          "name": "duration",
+          "signature": "public Integer duration {get; set;}",
+          "section": "TimeSlotOption Properties",
+          "description": "The duration in seconds."
+        },
+        {
+          "kind": "property",
+          "name": "durationValue",
+          "signature": "public Integer durationValue {get; set;}",
+          "section": "TimeSlotOption Properties",
+          "description": "The duration in seconds. Enabled for Lightning components."
+        },
+        {
+          "kind": "property",
+          "name": "endTimeValue",
+          "signature": "public Datetime endTimeValue {get; set;}",
+          "section": "TimeSlotOption Properties",
+          "description": "The end time. Enabled for Lightning components."
+        },
+        {
+          "kind": "property",
+          "name": "startTime",
+          "signature": "public Datetime startTime {get; set;}",
+          "section": "TimeSlotOption Properties",
+          "description": "The start time."
+        },
+        {
+          "kind": "property",
+          "name": "startTimeValue",
+          "signature": "public Datetime startTimeValue {get; set;}",
+          "section": "TimeSlotOption Properties",
+          "description": "The start time. Enabled for Lightning components."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_AuthRequestResultStatus.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "AuthRequestResultStatus",
+      "title": "AuthRequestResultStatus Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_OrderItemCategory.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "OrderItemCategory",
+      "title": "OrderItemCategory Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_OrderType.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "OrderType",
+      "title": "OrderType Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_PaymentCheckoutBehavior.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "PaymentCheckoutBehavior",
+      "title": "PaymentCheckoutBehavior Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_PaymentInitiationMode.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "PaymentInitiationMode",
+      "title": "PaymentInitiationMode Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_PaymentInitiationPixKeyType.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "PaymentInitiationPixKeyType",
+      "title": "PaymentInitiationPixKeyType Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_PaymentItemStatus.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "PaymentItemStatus",
+      "title": "PaymentItemStatus Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_PaymentMethodHint.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "PaymentMethodHint",
+      "title": "PaymentMethodHint Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_PaymentTransactionStatus.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "PaymentTransactionStatus",
+      "title": "PaymentTransactionStatus Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_PaymentTransactionType.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "PaymentTransactionType",
+      "title": "PaymentTransactionType Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_ProcessPaymentResultStatus.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "ProcessPaymentResultStatus",
+      "title": "ProcessPaymentResultStatus Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_TimingIntervalUnit.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "TimingIntervalUnit",
+      "title": "TimingIntervalUnit Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_enum_RichMessaging_TimingType.md",
+      "kind": "enum",
+      "namespace": "RichMessaging",
+      "name": "TimingType",
+      "title": "TimingType Enum",
+      "headings": [
+        "Enum Values"
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_interface_RichMessaging_AuthRequestHandler.md",
+      "kind": "interface",
+      "namespace": "RichMessaging",
+      "name": "AuthRequestHandler",
+      "title": "AuthRequestHandler Interface",
+      "headings": [
+        "Namespace",
+        "Usage",
+        "AuthRequestHandler Methods",
+        "handleAuthRequest(var1)",
+        "AuthRequestHandler Example Implementation"
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "handleAuthRequest",
+          "signature": "public RichMessaging.AuthRequestResult handleAuthRequest(RichMessaging.AuthRequestResponse var1)",
+          "returnType": "RichMessaging.AuthRequestResult",
+          "parameters": [
+            "RichMessaging.AuthRequestResponse"
+          ],
+          "section": "AuthRequestHandler Methods",
+          "description": "Handles authorization request response."
+        }
+      ],
+      "examples": [
+        {
+          "heading": "AuthRequestHandler Example Implementation",
+          "snippet": "This is an example implementation of the `RichMessaging.AuthRequestHandler` interface."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_interface_RichMessaging_ProcessFormHandler.md",
+      "kind": "interface",
+      "namespace": "RichMessaging",
+      "name": "ProcessFormHandler",
+      "title": "ProcessFormHandler Interface",
+      "headings": [
+        "Namespace",
+        "ProcessFormHandler Methods",
+        "processFormRequest"
+      ],
+      "members": [
+        {
+          "kind": "member",
+          "name": "processFormRequest",
+          "signature": "processFormRequest",
+          "section": "ProcessFormHandler Methods",
+          "description": "Processes the form request and returns the ID of the record created during form processing."
+        }
+      ],
+      "examples": [
+        {
+          "heading": "ProcessFormHandler Example Implementation",
+          "snippet": "The sample `ContactApexFormHandler` Apex class automatically captures the customer's submitted details, creates a Contact record in Salesforce, and returns the Contact record ID."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_interface_RichMessaging_ProcessPaymentHandler.md",
+      "kind": "interface",
+      "namespace": "RichMessaging",
+      "name": "ProcessPaymentHandler",
+      "title": "ProcessPaymentHandler Interface",
+      "headings": [
+        "Namespace",
+        "ProcessPaymentHandler Methods",
+        "processPaymentRequest(var1)",
+        "ProcessPaymentHandler Example Implementation"
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "processPaymentRequest",
+          "signature": "public RichMessaging.ProcessPaymentResult processPaymentRequest(RichMessaging.ProcessPaymentRequest var1)",
+          "returnType": "RichMessaging.ProcessPaymentResult",
+          "parameters": [
+            "RichMessaging.ProcessPaymentRequest"
+          ],
+          "section": "ProcessPaymentHandler Methods",
+          "description": "Processes a payment request."
+        }
+      ],
+      "examples": [
+        {
+          "heading": "ProcessPaymentHandler Example Implementation",
+          "snippet": "This is an example implementation of the `RichMessaging.ProcessPaymentHandler` interface."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_interface_RichMessaging_ProcessPaymentStatusHandler.md",
+      "kind": "interface",
+      "namespace": "RichMessaging",
+      "name": "ProcessPaymentStatusHandler",
+      "title": "ProcessPaymentStatusHandler Interface",
+      "headings": [
+        "Namespace",
+        "ProcessPaymentStatusHandler Methods",
+        "processPaymentStatus(var1)",
+        "ProcessPaymentStatusHandler Example Implementation"
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "processPaymentStatus",
+          "signature": "public RichMessaging.ProcessPaymentStatusResult processPaymentStatus(RichMessaging.ProcessPaymentStatusRequest var1)",
+          "returnType": "RichMessaging.ProcessPaymentStatusResult",
+          "parameters": [
+            "RichMessaging.ProcessPaymentStatusRequest"
+          ],
+          "section": "ProcessPaymentStatusHandler Methods",
+          "description": "Processes a payment status update."
+        }
+      ],
+      "examples": [
+        {
+          "heading": "ProcessPaymentStatusHandler Example Implementation",
+          "snippet": "This is an example implementation of the `RichMessaging.ProcessPaymentStatusHandler` interface."
+        }
+      ]
+    },
+    {
+      "sourcePath": "apex/apex_namespace_RichMessaging.md",
+      "kind": "namespace",
+      "namespace": "RichMessaging",
+      "name": "RichMessaging",
+      "title": "RichMessaging Namespace"
+    }
+  ]
+}
