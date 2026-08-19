@@ -1,0 +1,50 @@
+{
+  "name": "core-runtime-remote-object-controller-local",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.RemoteObjectController.create(String,Map<String,Object>)",
+      "symbol": "System.RemoteObjectController.create(String,Map<String,Object>)",
+      "kind": "test",
+      "notes": "Local CRUD lifecycle proves the documented create return map exposes the created Id; no Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.retrieve(String,List<String>,Map<String,Object>)",
+      "symbol": "System.RemoteObjectController.retrieve(String,List<String>,Map<String,Object>)",
+      "kind": "test",
+      "notes": "Local CRUD lifecycle proves type, size, requested fields, Id and ids criteria; no Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.update(String,List<String>,Map<String,Object>)",
+      "symbol": "System.RemoteObjectController.update(String,List<String>,Map<String,Object>)",
+      "kind": "test",
+      "notes": "Local CRUD lifecycle proves single and partial batch update result shapes; no Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:System.RemoteObjectController.del(String,List<String>)",
+      "symbol": "System.RemoteObjectController.del(String,List<String>)",
+      "kind": "test",
+      "notes": "Local CRUD lifecycle proves ordered batch delete result shapes and post-delete retrieval; no Salesforce parity is claimed."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeRemoteObjectControllerLocalTest.cls",
+      "content": "@isTest private class CoreRuntimeRemoteObjectControllerLocalTest { @isTest static void lifecycle() { Map<String,Object> created = RemoteObjectController.create('Account', new Map<String,Object>{'Name' => 'Remote Acme'}); System.assertNotEquals(null, created.get('id')); Map<String,Object> secondCreated = RemoteObjectController.create('Account', new Map<String,Object>{'Name' => 'Remote Beta'}); System.assertNotEquals(null, secondCreated.get('id')); List<Account> accounts = [SELECT Id, Name FROM Account ORDER BY Name]; System.assertEquals(2, accounts.size()); String id = accounts[0].Id; String secondId = accounts[1].Id; Map<String,Object> retrieved = RemoteObjectController.retrieve('Account', new List<String>{'Id','Name'}, new Map<String,Object>{'ids' => new List<String>{secondId, id}}); List<Account> retrievedRows = (List<Account>) retrieved.get('records'); System.assertEquals(2, retrievedRows.size()); System.assertEquals('Account', retrieved.get('type')); System.assertEquals(2, retrieved.get('size')); System.assertEquals(secondId, retrievedRows[0].Id); System.assertEquals('Remote Beta', retrievedRows[0].Name); Map<String,Object> updated = RemoteObjectController.update('Account', new List<String>{id}, new Map<String,Object>{'Name' => 'Remote Updated'}); System.assertEquals(id, updated.get('id')); Map<String,Object> updatedRetrieved = RemoteObjectController.retrieve('Account', new List<String>{'Id','Name'}, new Map<String,Object>{'Id' => id}); List<Account> updatedRows = (List<Account>) updatedRetrieved.get('records'); System.assertEquals('Remote Updated', updatedRows[0].Name); String invalidId = '001000000000099AAA'; Map<String,Object> batchUpdated = RemoteObjectController.update('Account', new List<String>{id, invalidId}, new Map<String,Object>{'Name' => 'Remote Batch'}); List<Map<String,Object>> batchRows = (List<Map<String,Object>>) batchUpdated.get('results'); System.assertEquals(2, batchRows.size()); System.assertEquals(id, batchRows[0].get('id')); System.assertEquals(0, ((List<Object>) batchRows[0].get('errors')).size()); System.assertEquals(invalidId, batchRows[1].get('id')); System.assert(((List<Object>) batchRows[1].get('errors')).size() > 0); Map<String,Object> batchUpdatedRetrieved = RemoteObjectController.retrieve('Account', new List<String>{'Id','Name'}, new Map<String,Object>{'Id' => id}); System.assertEquals('Remote Batch', ((List<Account>) batchUpdatedRetrieved.get('records'))[0].Name); Map<String,Object> batchDeleted = RemoteObjectController.del('Account', new List<String>{id, secondId}); List<Map<String,Object>> deleteRows = (List<Map<String,Object>>) batchDeleted.get('results'); System.assertEquals(2, deleteRows.size()); System.assertEquals(0, ((List<Object>) deleteRows[0].get('errors')).size()); Map<String,Object> afterDelete = RemoteObjectController.retrieve('Account', new List<String>{'Id'}, new Map<String,Object>{'Id' => id}); System.assertEquals('Account', afterDelete.get('type')); System.assertEquals(0, afterDelete.get('size')); System.assertEquals(0, ((List<Object>) afterDelete.get('records')).size()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "RemoteObjectController local CRUD is a deterministic local runtime contract with zero Salesforce parity; this fixture proves only the local create, retrieve, update, and del return shapes and lifecycle."
+}
