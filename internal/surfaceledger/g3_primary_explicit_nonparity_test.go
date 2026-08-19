@@ -10,7 +10,6 @@ import (
 )
 
 var g3PrimaryExplicitNonparityIDs = []string{
-	"apex:System.Messaging.extractInboundEmail(Object,Boolean)",
 	"apex:System.SoqlStubProvider.SoqlStubProvider()",
 }
 
@@ -75,8 +74,7 @@ func TestG3PrimaryExplicitNonparityEvidenceIsExactAndHostedDeferred(t *testing.T
 		t.Fatal(err)
 	}
 	wantReasons := map[string]string{
-		"apex:System.Messaging.extractInboundEmail(Object,Boolean)": "inbound-email parsing and attachment extraction depend on hosted email service behavior",
-		"apex:System.SoqlStubProvider.SoqlStubProvider()":           "SoqlStubProvider construction is a Salesforce test-harness contract, not a local runtime parity claim",
+		"apex:System.SoqlStubProvider.SoqlStubProvider()": "SoqlStubProvider construction is a Salesforce test-harness contract, not a local runtime parity claim",
 	}
 	seenOverrides := map[string]bool{}
 	for _, rule := range policy.Rules {
