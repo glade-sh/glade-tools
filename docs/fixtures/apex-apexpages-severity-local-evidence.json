@@ -30,24 +30,58 @@
       "symbol": "ApexPages.Severity.FATAL",
       "kind": "test",
       "notes": "Local ApexPages.Severity enum constant FATAL materialized by the VM."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.equals(Object)",
+      "symbol": "ApexPages.Severity.equals",
+      "kind": "exec",
+      "notes": "Local ApexPages.Severity equality boundaries are directly executed."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.hashCode()",
+      "symbol": "ApexPages.Severity.hashCode",
+      "kind": "exec",
+      "notes": "Local ApexPages.Severity hash stability and distinction are directly executed."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.ordinal()",
+      "symbol": "ApexPages.Severity.ordinal",
+      "kind": "exec",
+      "notes": "Local ApexPages.Severity ordinal ordering is directly executed."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.valueOf(String)",
+      "symbol": "ApexPages.Severity.valueOf",
+      "kind": "exec",
+      "notes": "Local ApexPages.Severity valueOf lookup is directly executed."
+    },
+    {
+      "surfaceId": "apex:ApexPages.Severity.values()",
+      "symbol": "ApexPages.Severity.values",
+      "kind": "exec",
+      "notes": "Local ApexPages.Severity values ordering and cardinality are directly executed."
     }
   ],
   "source": [
     {
-      "path": "force-app/main/default/classes/ApexPagesSeverityLocalEvidenceTest.cls",
-      "content": "@isTest private class ApexPagesSeverityLocalEvidenceTest {\n  @isTest static void severityEnumLocalEvidence() {\n    ApexPages.Message errMsg = new ApexPages.Message(ApexPages.Severity.ERROR, 'err');\n    System.assertEquals(ApexPages.Severity.ERROR, errMsg.getSeverity());\n    ApexPages.Message infoMsg = new ApexPages.Message(ApexPages.Severity.INFO, 'info');\n    System.assertEquals(ApexPages.Severity.INFO, infoMsg.getSeverity());\n    ApexPages.Message warnMsg = new ApexPages.Message(ApexPages.Severity.WARNING, 'warn');\n    System.assertEquals(ApexPages.Severity.WARNING, warnMsg.getSeverity());\n    ApexPages.Message confMsg = new ApexPages.Message(ApexPages.Severity.CONFIRM, 'conf');\n    System.assertEquals(ApexPages.Severity.CONFIRM, confMsg.getSeverity());\n    ApexPages.Message fatalMsg = new ApexPages.Message(ApexPages.Severity.FATAL, 'fatal');\n    System.assertEquals(ApexPages.Severity.FATAL, fatalMsg.getSeverity());\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.INFO);\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.WARNING);\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.CONFIRM);\n    System.assert(ApexPages.Severity.ERROR != ApexPages.Severity.FATAL);\n  }\n}"
+      "path": "anonymous.apex",
+      "content": "ApexPages.Severity severity = ApexPages.Severity.ERROR;\nSystem.assertEquals(true, severity.equals(ApexPages.Severity.ERROR));\nSystem.assertEquals(false, severity.equals(ApexPages.Severity.WARNING));\nSystem.assertEquals(false, severity.equals(null));\nSystem.assertEquals(severity.hashCode(), ApexPages.Severity.valueOf('ERROR').hashCode());\nSystem.assertNotEquals(severity.hashCode(), ApexPages.Severity.WARNING.hashCode());\nSystem.assertEquals(1, severity.ordinal());\nApexPages.Severity valueOfError = ApexPages.Severity.valueOf('ERROR');\nSystem.assertEquals(ApexPages.Severity.ERROR, valueOfError);\nList<ApexPages.Severity> severities = ApexPages.Severity.values();\nSystem.assertEquals(5, severities.size());\nSystem.assertEquals(ApexPages.Severity.FATAL, severities[0]);\nSystem.assertEquals(ApexPages.Severity.ERROR, severities[1]);\nSystem.assertEquals(ApexPages.Severity.WARNING, severities[2]);\nSystem.assertEquals(ApexPages.Severity.INFO, severities[3]);\nSystem.assertEquals(ApexPages.Severity.CONFIRM, severities[4]);"
     }
   ],
   "command": {
-    "kind": "test"
+    "kind": "exec",
+    "args": [
+      "ApexPages.Severity severity = ApexPages.Severity.ERROR;\nSystem.assertEquals(true, severity.equals(ApexPages.Severity.ERROR));\nSystem.assertEquals(false, severity.equals(ApexPages.Severity.WARNING));\nSystem.assertEquals(false, severity.equals(null));\nSystem.assertEquals(severity.hashCode(), ApexPages.Severity.valueOf('ERROR').hashCode());\nSystem.assertNotEquals(severity.hashCode(), ApexPages.Severity.WARNING.hashCode());\nSystem.assertEquals(1, severity.ordinal());\nApexPages.Severity valueOfError = ApexPages.Severity.valueOf('ERROR');\nSystem.assertEquals(ApexPages.Severity.ERROR, valueOfError);\nList<ApexPages.Severity> severities = ApexPages.Severity.values();\nSystem.assertEquals(5, severities.size());\nSystem.assertEquals(ApexPages.Severity.FATAL, severities[0]);\nSystem.assertEquals(ApexPages.Severity.ERROR, severities[1]);\nSystem.assertEquals(ApexPages.Severity.WARNING, severities[2]);\nSystem.assertEquals(ApexPages.Severity.INFO, severities[3]);\nSystem.assertEquals(ApexPages.Severity.CONFIRM, severities[4]);"
+    ]
   },
   "expected": {
     "result": {
-      "errors": 0,
-      "failed": 0,
-      "ok": true,
-      "passed": 1,
-      "total": 1
+      "debug": null,
+      "ok": true
     }
-  }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local ApexPages.Severity enum behavior only and makes zero Salesforce parity claim."
 }
