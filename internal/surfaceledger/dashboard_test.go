@@ -80,6 +80,7 @@ func TestProgressHTMLRendersBars(t *testing.T) {
 func TestProgressMarkdownHTMLProofDepth(t *testing.T) {
 	ledger := SurfaceLedger{SchemaVersion: SchemaVersion, Rows: []SurfaceLedgerRow{
 		{SurfaceID: "apex:System.FixtureImplemented", Bucket: BucketImplemented, Evidence: EvidenceFixture},
+		{SurfaceID: "apex:System.FixtureAndOracleImplemented", Bucket: BucketImplemented, Evidence: EvidenceFixtureAndOracle},
 		{SurfaceID: "apex:System.UnbackedImplemented", Bucket: BucketImplemented, Evidence: EvidenceNone},
 		{SurfaceID: "apex:System.FixturePassive", Bucket: BucketPassive, Evidence: EvidenceFixture},
 		{SurfaceID: "apex:System.FixtureStub", Bucket: BucketStubNoOp, Evidence: EvidenceFixture},
@@ -87,27 +88,28 @@ func TestProgressMarkdownHTMLProofDepth(t *testing.T) {
 	}}
 	ledger.Summary = Summarize(ledger.Rows)
 
-	for name, report := range map[string]string{
-		"markdown": ProgressMarkdown(ledger),
-		"html":     ProgressHTML(ledger),
+	markdown := ProgressMarkdown(ledger)
+	html := ProgressHTML(ledger)
+	for _, want := range []string{
+		"| implemented + fixture | 2 |",
+		"| implemented without fixture | 1 |",
+		"| passive + fixture | 1 |",
+		"| stubNoOp + fixture | 1 |",
+		"| explicitUnsupported + fixture | 1 |",
 	} {
-		for _, want := range []string{
-			"Proof Depth",
-			"implemented + fixture",
-			"implemented without fixture",
-			"passive + fixture",
-			"stubNoOp + fixture",
-			"explicitUnsupported + fixture",
-		} {
-			if !strings.Contains(report, want) {
-				t.Errorf("%s proof depth missing %q:\n%s", name, want, report)
-			}
+		if !strings.Contains(markdown, want) {
+			t.Errorf("markdown proof depth missing %q:\n%s", want, markdown)
 		}
-		if name == "markdown" && strings.Count(report, "| 1 |") < 5 {
-			t.Errorf("%s proof depth counts missing:\n%s", name, report)
-		}
-		if name == "html" && !strings.Contains(report, `<div class="cell">implemented + fixture</div><div class="cell">1</div>`) {
-			t.Errorf("%s proof depth counts missing:\n%s", name, report)
+	}
+	for _, want := range []string{
+		`<div class="cell">implemented + fixture</div><div class="cell">2</div>`,
+		`<div class="cell">implemented without fixture</div><div class="cell">1</div>`,
+		`<div class="cell">passive + fixture</div><div class="cell">1</div>`,
+		`<div class="cell">stubNoOp + fixture</div><div class="cell">1</div>`,
+		`<div class="cell">explicitUnsupported + fixture</div><div class="cell">1</div>`,
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("html proof depth missing %q:\n%s", want, html)
 		}
 	}
 }
