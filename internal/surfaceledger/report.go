@@ -140,10 +140,46 @@ type progressRow struct {
 	TopGap              string
 }
 
+type proofDepthCounts struct {
+	ImplementedFixture         int
+	ImplementedWithoutFixture  int
+	PassiveFixture             int
+	StubNoOpFixture            int
+	ExplicitUnsupportedFixture int
+}
+
+func proofDepthFromRows(rows []SurfaceLedgerRow) proofDepthCounts {
+	var out proofDepthCounts
+	for _, row := range rows {
+		fixture := row.Evidence == EvidenceFixture || row.Evidence == EvidenceFixtureAndOracle
+		if row.Bucket == BucketImplemented {
+			if fixture {
+				out.ImplementedFixture++
+			} else {
+				out.ImplementedWithoutFixture++
+			}
+			continue
+		}
+		if !fixture {
+			continue
+		}
+		switch row.Bucket {
+		case BucketPassive:
+			out.PassiveFixture++
+		case BucketStubNoOp:
+			out.StubNoOpFixture++
+		case BucketExplicitUnsupported:
+			out.ExplicitUnsupportedFixture++
+		}
+	}
+	return out
+}
+
 func ProgressMarkdown(ledger SurfaceLedger) string {
 	rows := verticalProgressRows(ledger)
 	productRows := productProgressRows(ledger)
 	unmatched := unmatchedPacketRows(ledger)
+	proofDepth := proofDepthFromRows(ledger.Rows)
 	var b strings.Builder
 	fmt.Fprintln(&b, "# Salesforce Surface Progress")
 	fmt.Fprintln(&b)
@@ -192,6 +228,16 @@ func ProgressMarkdown(ledger SurfaceLedger) string {
 		)
 	}
 	fmt.Fprintln(&b)
+	fmt.Fprintln(&b, "## Proof Depth")
+	fmt.Fprintln(&b)
+	fmt.Fprintln(&b, "| evidence state | count |")
+	fmt.Fprintln(&b, "| --- | ---: |")
+	fmt.Fprintf(&b, "| implemented + fixture | %d |\n", proofDepth.ImplementedFixture)
+	fmt.Fprintf(&b, "| implemented without fixture | %d |\n", proofDepth.ImplementedWithoutFixture)
+	fmt.Fprintf(&b, "| passive + fixture | %d |\n", proofDepth.PassiveFixture)
+	fmt.Fprintf(&b, "| stubNoOp + fixture | %d |\n", proofDepth.StubNoOpFixture)
+	fmt.Fprintf(&b, "| explicitUnsupported + fixture | %d |\n", proofDepth.ExplicitUnsupportedFixture)
+	fmt.Fprintln(&b)
 	fmt.Fprintln(&b, "## Unmatched Rows")
 	fmt.Fprintln(&b)
 	fmt.Fprintf(&b, "- Rows not claimed by a vertical packet: %d\n", len(unmatched))
@@ -211,6 +257,7 @@ func ProgressHTML(ledger SurfaceLedger) string {
 	productRows := productProgressRows(ledger)
 	unmatched := unmatchedPacketRows(ledger)
 	total := progressFromRows("all surfaces", "All Surfaces", "", ledger.Rows)
+	proofDepth := proofDepthFromRows(ledger.Rows)
 	var b strings.Builder
 	fmt.Fprintln(&b, "<!DOCTYPE html>")
 	fmt.Fprintln(&b, `<html lang="en">`)
@@ -238,6 +285,17 @@ func ProgressHTML(ledger SurfaceLedger) string {
 	writeHTMLTile(&b, "unsupported", total.ExplicitUnsupported)
 	writeHTMLTile(&b, "remaining", total.Remaining+total.Failures)
 	fmt.Fprintln(&b, "</div>")
+	fmt.Fprintln(&b, "<section>")
+	fmt.Fprintln(&b, "<h2>Proof Depth</h2>")
+	fmt.Fprintln(&b, `<div class="table">`)
+	fmt.Fprintln(&b, `<div class="row head"><div class="cell">evidence state</div><div class="cell">count</div></div>`)
+	writeHTMLProofDepthRow(&b, "implemented + fixture", proofDepth.ImplementedFixture)
+	writeHTMLProofDepthRow(&b, "implemented without fixture", proofDepth.ImplementedWithoutFixture)
+	writeHTMLProofDepthRow(&b, "passive + fixture", proofDepth.PassiveFixture)
+	writeHTMLProofDepthRow(&b, "stubNoOp + fixture", proofDepth.StubNoOpFixture)
+	writeHTMLProofDepthRow(&b, "explicitUnsupported + fixture", proofDepth.ExplicitUnsupportedFixture)
+	fmt.Fprintln(&b, "</div>")
+	fmt.Fprintln(&b, "</section>")
 	fmt.Fprintln(&b, "<section>")
 	fmt.Fprintln(&b, "<h2>Verticals</h2>")
 	fmt.Fprintln(&b, `<div class="table">`)
@@ -462,6 +520,10 @@ func writeHTMLProductRow(b *strings.Builder, row progressRow) {
 		html.EscapeString(row.TopGap),
 		html.EscapeString(dashIfEmpty(row.TopGap)),
 	)
+}
+
+func writeHTMLProofDepthRow(b *strings.Builder, label string, count int) {
+	fmt.Fprintf(b, `<div class="row"><div class="cell">%s</div><div class="cell">%d</div></div>`+"\n", html.EscapeString(label), count)
 }
 
 func htmlBar(tenths int) string {
