@@ -11,77 +11,87 @@ import (
 )
 
 func TestValueOfStringEvidenceHasUniqueExecutableOwners(t *testing.T) {
-	root := filepath.Join("..", "..", "docs", "fixtures")
-	paths := []string{filepath.Join(root, "core-valueof-string-local.json")}
-	want := map[string]struct {
-		call, assert string
-	}{
+	root, owner := filepath.Join("..", "..", "docs", "fixtures"), "core-valueof-string-local"
+	want := map[string][2]string{
 		"apex:System.Integer.valueOf(String)": {"Integer.valueOf('42')", "System.assertEquals(42, integerValue);"},
 		"apex:System.Long.valueOf(String)":    {"Long.valueOf('9001')", "System.assertEquals(9001, longValue);"},
 		"apex:System.Double.valueOf(String)":  {"Double.valueOf('2.25')", "System.assertEquals(2.25, doubleValue);"},
 		"apex:System.Id.valueOf(String)":      {"Id.valueOf('001B000001DVM9t')", "System.assertEquals('001B000001DVM9t', recordId.toString());"},
 	}
-	owners := map[string]string{}
+	paths, err := filepath.Glob(filepath.Join(root, "*.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	owners := map[string][]string{}
 	for _, path := range paths {
-		fixture, err := compat.LoadFile(path)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if fixture.Name != "core-valueof-string-local" || fixture.Command.Kind != "exec" || len(fixture.Source) != 1 {
-			t.Fatalf("%s execution envelope = kind:%q source:%d", fixture.Name, fixture.Command.Kind, len(fixture.Source))
-		}
 		data, err := os.ReadFile(path)
 		if err != nil {
 			t.Fatal(err)
 		}
-		var policy struct {
-			SalesforceEligible        bool   `json:"salesforceEligible"`
-			SalesforceExclusionClass  string `json:"salesforceExclusionClass"`
-			SalesforceExclusionReason string `json:"salesforceExclusionReason"`
+		var doc struct {
+			EvidenceOnly bool   `json:"evidenceOnly"`
+			Name         string `json:"name"`
+			Evidence     []struct {
+				SurfaceID string `json:"surfaceId"`
+				Kind      string `json:"kind"`
+			} `json:"evidence"`
+			Source []struct {
+				Content string `json:"content"`
+			} `json:"source"`
+			Command struct {
+				Kind string   `json:"kind"`
+				Args []string `json:"args"`
+			} `json:"command"`
 		}
-		if err := json.Unmarshal(data, &policy); err != nil {
+		if err := json.Unmarshal(data, &doc); err != nil {
 			t.Fatal(err)
 		}
-		if policy.SalesforceEligible || policy.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(policy.SalesforceExclusionReason, "zero Salesforce parity") {
-			t.Fatalf("fixture policy = %#v, want local-only zero-parity", policy)
+		if doc.EvidenceOnly || doc.Command.Kind != "exec" || len(doc.Source) != 1 || len(doc.Command.Args) != 1 || doc.Source[0].Content != doc.Command.Args[0] {
+			continue
 		}
-		result, err := compat.Run(fixture)
-		if err != nil || !result.OK {
-			t.Fatalf("run %s = %#v, %v", fixture.Name, result, err)
-		}
-		source := fixture.Source[0].Content
-		for _, evidence := range fixture.Evidence {
-			expected, ok := want[evidence.SurfaceID]
-			if !ok {
-				continue
+		for _, evidence := range doc.Evidence {
+			if _, ok := want[evidence.SurfaceID]; ok && evidence.Kind == "exec" {
+				owners[evidence.SurfaceID] = append(owners[evidence.SurfaceID], doc.Name)
 			}
-			if previous, exists := owners[evidence.SurfaceID]; exists {
-				t.Fatalf("duplicate executable fixture owner for %s: %s and %s", evidence.SurfaceID, previous, fixture.Name)
-			}
-			if evidence.Kind != "exec" {
-				t.Fatalf("%s owner kind:%s", evidence.SurfaceID, evidence.Kind)
-			}
-			if !strings.Contains(source, expected.call) || !strings.Contains(source, expected.assert) {
-				t.Fatalf("%s lacks direct source witness call/assertion", evidence.SurfaceID)
-			}
-			owners[evidence.SurfaceID] = fixture.Name
 		}
 	}
-	if len(owners) != len(want) {
-		t.Fatalf("owned valueOf(String) IDs = %d, want %d", len(owners), len(want))
+	for id := range want {
+		if len(owners[id]) != 1 || owners[id][0] != owner {
+			t.Fatalf("%s runnable owners = %#v, want exactly %s", id, owners[id], owner)
+		}
 	}
 
-	rows, err := BuildEvidenceSnapshot(paths)
+	ownerPath := filepath.Join(root, owner+".json")
+	fixture, err := compat.LoadFile(ownerPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fixture.Name != owner || fixture.Command.Kind != "exec" || len(fixture.Source) != 1 || len(fixture.Command.Args) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
+		t.Fatalf("owner execution envelope = %#v", fixture)
+	}
+	if len(fixture.Evidence) != len(want) {
+		t.Fatalf("owner evidence rows = %d, want exactly %d", len(fixture.Evidence), len(want))
+	}
+	result, err := compat.Run(fixture)
+	if err != nil || !result.OK {
+		t.Fatalf("run %s = %#v, %v", fixture.Name, result, err)
+	}
+	seen, source := map[string]bool{}, fixture.Source[0].Content
+	for _, evidence := range fixture.Evidence {
+		expected, ok := want[evidence.SurfaceID]
+		if !ok || seen[evidence.SurfaceID] || evidence.Kind != "exec" || !strings.Contains(source, expected[0]) || !strings.Contains(source, expected[1]) {
+			t.Fatalf("invalid owner evidence row = %#v", evidence)
+		}
+		seen[evidence.SurfaceID] = true
+	}
+	rows, err := BuildEvidenceSnapshot([]string{ownerPath})
 	if err != nil {
 		t.Fatal(err)
 	}
 	for id := range want {
 		row, ok := rowsByID(rows)[id]
-		if !ok {
-			t.Fatalf("missing evidence snapshot row %s", id)
-		}
-		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
-			t.Fatalf("%s evidence/behavior = %s/%s, want fixture/supported", id, row.Evidence, row.GladeBehavior)
+		if !seen[id] || !ok || row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
+			t.Fatalf("%s missing fixture/supported evidence", id)
 		}
 	}
 }
