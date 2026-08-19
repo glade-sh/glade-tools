@@ -21,30 +21,17 @@ var g3CacheHostedIDs = []string{
 	"apex:Cache.SessionPartition.getMaxValueSize()",
 }
 
-const g3CachePolicyReason = "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
-
-func TestG3CacheRowsRemainRetainedExplicitNonparity(t *testing.T) {
+func TestG3CacheRowsLeaveCurrentLedgerAsReviewedAPIRemovals(t *testing.T) {
 	root := filepath.Join("..", "..")
 	policy, err := LoadSupportPolicy(filepath.Join(root, "docs", "fixtures", "apex-local-support-policy.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	seen := map[string]bool{}
 	for _, rule := range policy.Rules {
-		if !g3CacheContains(g3CacheHostedIDs, rule.SurfaceID) {
-			continue
+		if g3CacheContains(g3CacheHostedIDs, rule.SurfaceID) {
+			t.Fatalf("removed Cache surface retains a current support rule: %s", rule.SurfaceID)
 		}
-		if seen[rule.SurfaceID] {
-			t.Fatalf("duplicate Cache exact policy rule %q", rule.SurfaceID)
-		}
-		if !rule.Override || rule.Disposition != DispositionHostedDeferred || rule.Reason != g3CachePolicyReason {
-			t.Fatalf("Cache policy rule %q = %#v", rule.SurfaceID, rule)
-		}
-		seen[rule.SurfaceID] = true
-	}
-	if len(seen) != len(g3CacheHostedIDs) {
-		t.Fatalf("Cache exact hosted rules = %d, want %d", len(seen), len(g3CacheHostedIDs))
 	}
 
 	fixturePath := filepath.Join(root, "docs", "fixtures", "current-base-cache-negative-api67.json")
@@ -78,18 +65,11 @@ func TestG3CacheRowsRemainRetainedExplicitNonparity(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	profile := ComputeSupportProfile(evidence, policy, nil)
-	byID := make(map[string]SupportProfileRow, len(profile.Rows))
-	for _, row := range profile.Rows {
-		byID[row.SurfaceID] = row
-	}
 	for _, id := range g3CacheHostedIDs {
-		row, ok := byID[id]
-		if !ok {
-			t.Fatalf("retained Cache row disappeared: %s", id)
-		}
-		if row.Disposition != DispositionHostedDeferred || row.MatchRule != "surfaceId="+id {
-			t.Fatalf("Cache profile %s = %#v", id, row)
+		for _, row := range evidence {
+			if surfaceIDKey(row.SurfaceID) == surfaceIDKey(id) {
+				t.Fatalf("removed Cache row entered current evidence: %s", id)
+			}
 		}
 	}
 }
