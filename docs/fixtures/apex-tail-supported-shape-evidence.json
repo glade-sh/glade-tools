@@ -146,12 +146,6 @@
       "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally.",
       "surfaceId": "apex:System.Set.removeAll(Set<Object>)",
       "symbol": "Set.removeAll(Set<Object>)"
-    },
-    {
-      "kind": "shape",
-      "notes": "Local test isolation support exposes the runAs(User) shape.",
-      "surfaceId": "apex:System.System.runAs(User)",
-      "symbol": "System.runAs(User)"
     }
   ],
   "expected": {
