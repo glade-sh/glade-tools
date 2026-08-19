@@ -66,6 +66,19 @@ func TestApprovalTypedProcessEvidenceIsLocalOnly(t *testing.T) {
 	}
 	ledger := Merge(nil, nil, BuildGladeSnapshot(), evidence)
 	profile := ComputeSupportProfile(ledger.Rows, policy, nil)
+	const syntheticHostedID = "apex:Approval.process hosted approval engine routing"
+	foundSynthetic := false
+	for _, row := range profile.Rows {
+		if row.SurfaceID == syntheticHostedID {
+			foundSynthetic = true
+			if row.Disposition != DispositionHostedDeferred || row.GapClass != "" {
+				t.Fatalf("%s profile = disposition:%s gap:%s, want hosted-deferred/no-gap", syntheticHostedID, row.Disposition, row.GapClass)
+			}
+		}
+	}
+	if !foundSynthetic {
+		t.Fatalf("missing synthetic hosted Approval row %s", syntheticHostedID)
+	}
 	for _, id := range want {
 		found := false
 		for _, row := range profile.Rows {

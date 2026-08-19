@@ -1961,6 +1961,12 @@
       "reason": "synthetic hosted PushTopic query restriction inventory"
     },
     {
+      "surfaceId": "apex:Approval.process hosted approval engine routing",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "hosted approval engine routing"
+    },
+    {
       "surfacePrefix": "apex:System.Hosted",
       "disposition": "hosted-deferred",
       "override": true,
