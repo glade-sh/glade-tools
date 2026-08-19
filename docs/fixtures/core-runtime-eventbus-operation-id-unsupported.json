@@ -1,29 +1,46 @@
 {
-  "name": "core-runtime-eventbus-operation-id-unsupported",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Event_Recipes_Demo__e direct = new Event_Recipes_Demo__e(Title__c = 'direct'); Database.SaveResult directResult = EventBus.publish(direct); String directOperationId = EventBus.getOperationId(directResult); System.assertNotEquals(null, directOperationId); System.assertEquals(36, directOperationId.length()); System.assertEquals(null, direct.EventUuid); Event_Recipes_Demo__e prepopulated = (Event_Recipes_Demo__e) Event_Recipes_Demo__e.SObjectType.newSObject(null, true); prepopulated.Title__c = 'prepopulated'; String expectedUuid = prepopulated.EventUuid; Database.SaveResult prepopulatedResult = EventBus.publish(prepopulated); System.assertEquals(expectedUuid, EventBus.getOperationId(prepopulatedResult)); String serialized = JSON.serialize(prepopulatedResult); System.assertEquals(false, serialized.contains('__eventOperationId')); System.assertEquals(false, serialized.contains('__glade_event_operation_id')); System.assertEquals(false, serialized.contains('EventUuid')); Event_Recipes_Demo__e missing = (Event_Recipes_Demo__e) Event_Recipes_Demo__e.SObjectType.newSObject(null, true); Database.SaveResult failure = EventBus.publish(missing); System.assertEquals(null, EventBus.getOperationId(failure));"
+    ]
+  },
   "evidence": [
     {
       "surfaceId": "apex:System.EventBus.getOperationId(Object)",
       "symbol": "EventBus.getOperationId(Object)",
-      "kind": "unsupported",
-      "notes": "Local EventBus publish returns deterministic SaveResult values and does not model Salesforce publish operation ids."
+      "kind": "exec",
+      "notes": "Local executable proof returns a non-null 36-character operation ID for successful direct publish, returns a prepopulated EventUuid exactly, returns null for required-field failure, and keeps operation metadata out of JSON. This is local-only deterministic EventBus behavior; no Salesforce parity is claimed."
+    }
+  ],
+  "name": "core-runtime-eventbus-operation-id-unsupported",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "EventBus operation IDs are modeled as deterministic local runtime contracts and are excluded from hosted Salesforce parity.",
+  "schema": [
+    {
+      "content": "<CustomObject><label>Event Recipes Demo</label><pluralLabel>Event Recipes Demos</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>",
+      "path": "force-app/main/default/objects/Event_Recipes_Demo__e/Event_Recipes_Demo__e.object-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>EventUuid</fullName><label>Event UUID</label><type>Text</type></CustomField>",
+      "path": "force-app/main/default/objects/Event_Recipes_Demo__e/fields/EventUuid.field-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>Title__c</fullName><label>Title</label><type>Text</type><required>true</required></CustomField>",
+      "path": "force-app/main/default/objects/Event_Recipes_Demo__e/fields/Title__c.field-meta.xml"
     }
   ],
   "source": [
     {
-      "path": "anonymous.apex",
-      "content": "EventBus.getOperationId(new Account(Name = 'Acme'));"
+      "content": "Event_Recipes_Demo__e direct = new Event_Recipes_Demo__e(Title__c = 'direct'); Database.SaveResult directResult = EventBus.publish(direct); String directOperationId = EventBus.getOperationId(directResult); System.assertNotEquals(null, directOperationId); System.assertEquals(36, directOperationId.length()); System.assertEquals(null, direct.EventUuid); Event_Recipes_Demo__e prepopulated = (Event_Recipes_Demo__e) Event_Recipes_Demo__e.SObjectType.newSObject(null, true); prepopulated.Title__c = 'prepopulated'; String expectedUuid = prepopulated.EventUuid; Database.SaveResult prepopulatedResult = EventBus.publish(prepopulated); System.assertEquals(expectedUuid, EventBus.getOperationId(prepopulatedResult)); String serialized = JSON.serialize(prepopulatedResult); System.assertEquals(false, serialized.contains('__eventOperationId')); System.assertEquals(false, serialized.contains('__glade_event_operation_id')); System.assertEquals(false, serialized.contains('EventUuid')); Event_Recipes_Demo__e missing = (Event_Recipes_Demo__e) Event_Recipes_Demo__e.SObjectType.newSObject(null, true); Database.SaveResult failure = EventBus.publish(missing); System.assertEquals(null, EventBus.getOperationId(failure));",
+      "path": "anonymous.apex"
     }
   ],
-  "command": {
-    "kind": "exec",
-    "args": [
-      "EventBus.getOperationId(new Account(Name = 'Acme'));"
-    ]
-  },
   "expected": {
-    "error": {
-      "type": "UnsupportedFeature",
-      "message": "unsupported call \"EventBus.getOperationId\""
+    "result": {
+      "debug": null,
+      "ok": true
     }
   }
 }
