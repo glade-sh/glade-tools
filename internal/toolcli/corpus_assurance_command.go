@@ -23,6 +23,36 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		return nil
 	}
 	switch args[0] {
+	case "campaign":
+		flags := flag.NewFlagSet("corpus assurance campaign", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		spec, state := flags.String("spec", "", ""), flags.String("state", "", "")
+		promote := flags.Bool("promote", false, "")
+		output := flags.String("out", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*spec, *state); err != nil {
+			return err
+		}
+		if *promote {
+			if err := requiredAssuranceFlags(*output); err != nil {
+				return err
+			}
+			receipt, err := corpusassurance.PromoteCampaign(*spec, *state, *output)
+			if err != nil {
+				return err
+			}
+			return writeCorpusAssuranceResult(w, "campaign promote", len(receipt.SelectedSurfaceIDs), *output)
+		}
+		if *output != "" {
+			return errors.New("campaign --out requires --promote")
+		}
+		result, err := corpusassurance.RunCampaign(ctx, *spec, *state)
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "campaign", result.Passed, *state)
 	case "candidate-build":
 		flags := flag.NewFlagSet("corpus assurance candidate-build", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -663,6 +693,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 	fmt.Fprint(w, `Run the sealed private-corpus assurance workflow.
 
 Usage:
+  glade-tools corpus assurance campaign --spec <CAMPAIGN.json> --state <CAMPAIGN_STATE.json> [--promote --out <new-root>]
   glade-tools corpus assurance candidate-build --candidate-root <glade-root> --tools-root <glade-tools-root> --candidate-ref <ref> --tools-ref <ref> --candidate-output <glade> --tools-output <glade-tools> --receipt-output <CANDIDATE_BUILD_RECEIPT.json> --review-output <REVIEW.md> --tools-freeze-output <TOOLS_COMMIT>
   glade-tools corpus assurance candidate-authority --candidate-root <glade-root> --tools-root <glade-tools-root> --receipt <candidate-receipt.json> --review <REVIEW.md> --output <CANDIDATE_AUTHORITY.json>
   glade-tools corpus assurance attempt-init --inventory-spec <IN_SCOPE.json> --candidate-authority <CANDIDATE_AUTHORITY.json> --candidate <glade> --candidate-root <glade-root> --tools <glade-tools> --tools-root <glade-tools-root> --replay-host <operator@replay-worker> --replay-parent <absolute-parent> --salesforce-host <operator@salesforce-worker> --salesforce-parent <absolute-parent> --run-id <run-id> --output-dir <attempt-bindings-dir>

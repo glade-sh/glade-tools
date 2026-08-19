@@ -250,219 +250,219 @@
       "caseId": "SF67-COMMERCE-PAYMENT-REQUEST"
     },
     {
-      "surfaceId": "apex:connectapi.input_assigned_resource",
+      "surfaceId": "apex:connectapi.assignedresourcesinput",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_cart_from_quote",
+      "surfaceId": "apex:connectapi.cartfromquoteinput",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_change_order_adjustment_group_summary",
+      "surfaceId": "apex:connectapi.changeorderadjustmentgroupsummaryinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_change_order_delivery_group_summary",
+      "surfaceId": "apex:connectapi.changeorderdeliverygroupsummaryinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_change_order_item_adjustment_line_summary",
+      "surfaceId": "apex:connectapi.changeorderitemadjustmentlinesummaryinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_change_order_item_summary",
+      "surfaceId": "apex:connectapi.changeorderitemsummaryinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_change_order_item_tax_line_item_summary",
+      "surfaceId": "apex:connectapi.changeorderitemtaxlineitemsummaryinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_change_order_summary",
+      "surfaceId": "apex:connectapi.changeordersummaryinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_commerce_note",
+      "surfaceId": "apex:connectapi.commercenoteinput",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_composite_commerce_variation",
+      "surfaceId": "apex:connectapi.compositecommercevariationinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_create_quote_from_cart",
+      "surfaceId": "apex:connectapi.createquotefromcartinput",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_create_quote_from_product",
+      "surfaceId": "apex:connectapi.createquotefromproductinput",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_delivery_routing_engine",
+      "surfaceId": "apex:connectapi.deliveryroutingengineinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_fetch_files",
+      "surfaceId": "apex:connectapi.fetchfilesinput",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_location_list",
+      "surfaceId": "apex:connectapi.locationlistinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_routing_product",
+      "surfaceId": "apex:connectapi.routingproductinputrepresentation",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.input_update_quote",
+      "surfaceId": "apex:connectapi.updatequoteinput",
       "scope": "t2", "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_best_location_per_sku_output",
+      "surfaceId": "apex:connectapi.bestlocationperskuoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_buyer_product_summary",
+      "surfaceId": "apex:connectapi.buyerproductsummaryrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_cart_from_quote_output",
+      "surfaceId": "apex:connectapi.cartfromquoteoutput",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_commerce_note",
+      "surfaceId": "apex:connectapi.commercenote",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_commerce_quote_collection",
+      "surfaceId": "apex:connectapi.commercequotecollection",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_commerce_quote_detail",
+      "surfaceId": "apex:connectapi.commercequotedetail",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_commerce_quote_line_item",
+      "surfaceId": "apex:connectapi.commercequotelineitem",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_commerce_quote_with_product_detail",
+      "surfaceId": "apex:connectapi.commercequotewithproductdetail",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_create_quote_from_cart_output",
+      "surfaceId": "apex:connectapi.createquotefromcartoutput",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_create_quote_from_product_output",
+      "surfaceId": "apex:connectapi.createquotefromproductoutput",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_delivery_routing_engine_output",
+      "surfaceId": "apex:connectapi.deliveryroutingengineoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_einstein_prompt_template_attachment_exclusion_info",
+      "surfaceId": "apex:connectapi.einsteinprompttemplateattachmentexclusioninfo",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_einstein_prompt_template_merge_field_information_contex",
+      "surfaceId": "apex:connectapi.einsteinprompttemplatemergefieldinformationcontext",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_fetch_files",
+      "surfaceId": "apex:connectapi.fetchfilesoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_preview_change_order_summary_output",
+      "surfaceId": "apex:connectapi.previewchangeordersummaryoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_product_variation_attributes_output",
+      "surfaceId": "apex:connectapi.productvariationattributesrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_quote_error_output",
+      "surfaceId": "apex:connectapi.quoteerror",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_route_location_output",
+      "surfaceId": "apex:connectapi.routelocationoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_route_output",
+      "surfaceId": "apex:connectapi.routeoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_route_product_output",
+      "surfaceId": "apex:connectapi.routeproductoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_submit_change_order_summary_output",
+      "surfaceId": "apex:connectapi.submitchangeordersummaryoutputrepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
     },
     {
-      "surfaceId": "apex:connectapi.output_update_quote_output",
+      "surfaceId": "apex:connectapi.updatequoteoutput",
       "scope": "t2",
       "disposition": "deterministic-mock",
       "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"

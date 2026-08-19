@@ -1227,6 +1227,52 @@ func TestSupportProfileSurfacePrefixNoMatch(t *testing.T) {
 	}
 }
 
+func TestSupportProfileSurfaceIDMatchesOnlyTheExactSurface(t *testing.T) {
+	policy, err := ParseSupportPolicyJSON([]byte(`{"rules":[
+		{"namespace":"Database","disposition":"local-runtime-required","reason":"database runtime"},
+		{"surfaceId":"apex:Database.DMLOptions.DuplicateRuleHeader","disposition":"hosted-deferred","override":true,"reason":"hosted duplicate-rule effects"}
+	]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := []SurfaceLedgerRow{
+		apexMemberRow("apex:Database.DMLOptions.DuplicateRuleHeader", "Database", "DMLOptions", "DuplicateRuleHeader"),
+		apexMemberRow("apex:Database.DMLOptions.DuplicateRuleHeader.allowSave", "Database", "DMLOptions.DuplicateRuleHeader", "allowSave"),
+	}
+
+	profile := ComputeSupportProfile(rows, policy, nil)
+	byID := map[string]SupportProfileRow{}
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	if row := byID["apex:Database.DMLOptions.DuplicateRuleHeader"]; row.Disposition != DispositionHostedDeferred || row.MatchRule != "surfaceId=apex:Database.DMLOptions.DuplicateRuleHeader" {
+		t.Fatalf("exact surface profile = %#v, want hosted exact match", row)
+	}
+	if row := byID["apex:Database.DMLOptions.DuplicateRuleHeader.allowSave"]; row.Disposition != DispositionLocalRuntimeRequired || row.MatchRule != "namespace=Database" {
+		t.Fatalf("child surface profile = %#v, want unchanged Database classification", row)
+	}
+	if len(profile.ValidationErrors) != 0 {
+		t.Fatalf("exact selector validation = %v, want none", profile.ValidationErrors)
+	}
+}
+
+func TestSupportProfileDuplicateSurfaceIDValidation(t *testing.T) {
+	policy, err := ParseSupportPolicyJSON([]byte(`{"rules":[
+		{"surfaceId":"apex:System.Exact.run()","disposition":"local-runtime-required","reason":"first"},
+		{"surfaceId":"apex:System.Exact.run()","disposition":"hosted-deferred","reason":"second"}
+	]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	profile := ComputeSupportProfile([]SurfaceLedgerRow{apexMemberRow("apex:System.Exact.run()", "System", "Exact", "run")}, policy, nil)
+	for _, validationError := range profile.ValidationErrors {
+		if validationError == "overlapping surface-id rule: apex:System.Exact.run()" {
+			return
+		}
+	}
+	t.Fatalf("expected overlapping surface-id validation error, got: %v", profile.ValidationErrors)
+}
+
 // RED 6: duplicate surface-prefix rules produce a deterministic validation error.
 func TestSupportProfileDuplicateSurfacePrefix(t *testing.T) {
 	policy := SupportPolicy{
@@ -1554,6 +1600,23 @@ func TestGapClassCompileShapeRequiresLocalFixtureEvidence(t *testing.T) {
 				t.Fatalf("gapClass: want %q got %q for evidence %q", tc.wantGap, got, tc.evidence)
 			}
 		})
+	}
+}
+
+func TestGapClassCompileShapeClosesExplicitUnsupportedFixtureWithoutPositiveShape(t *testing.T) {
+	policy := SupportPolicy{Rules: []SupportPolicyRule{{
+		SurfaceID:   "apex:System.NegativeContract.NegativeContract()",
+		Disposition: DispositionCompileShapeRequired,
+		Reason:      "compile-negative contract",
+	}}}
+	row := apexRow("apex:System.NegativeContract.NegativeContract()", "System", "NegativeContract")
+	row.GladeShape = ShapeAbsent
+	row.GladeBehavior = BehaviorUnsupported
+	row.Evidence = EvidenceFixture
+
+	profile := ComputeSupportProfile([]SurfaceLedgerRow{row}, policy, nil)
+	if got := profile.Rows[0].GapClass; got != "" {
+		t.Fatalf("compile-negative fixture gapClass = %q, want closed", got)
 	}
 }
 

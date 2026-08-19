@@ -161,9 +161,8 @@
     },
     {
       "kind": "test",
-      "notes": "The docs inventory emits a constructor-shaped row for this callback interface; the local witness exercises the interface through a concrete handler implementation.",
-      "surfaceId": "apex:Messaging.NotificationActionHandler.NotificationActionHandler()",
-      "symbol": "Messaging.NotificationActionHandler.NotificationActionHandler()"
+      "surfaceId": "apex:Messaging.NotificationActionHandler",
+      "symbol": "Messaging.NotificationActionHandler"
     }
   ],
   "expected": {

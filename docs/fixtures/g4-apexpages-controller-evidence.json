@@ -1,0 +1,21 @@
+{
+  "name": "g4-apexpages-controller-evidence",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves the local Visualforce controller model, including caller-provided addFields rejection and deterministic page sizing. It grants zero Salesforce parity credit.",
+  "evidence": [
+    {"surfaceId": "apex:ApexPages.StandardController.addFields(List<String>)", "symbol": "ApexPages.StandardController.addFields(List<String>)", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.StandardSetController.addFields(List<String>)", "symbol": "ApexPages.StandardSetController.addFields(List<String>)", "kind": "test"},
+    {"surfaceId": "apex:ApexPages.StandardSetController.setPageSize(Integer)", "symbol": "ApexPages.StandardSetController.setPageSize(Integer)", "kind": "test"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/G4ApexPagesControllerEvidenceTest.cls",
+      "content": "@isTest private class G4ApexPagesControllerEvidenceTest { @isTest static void rows() { ApexPages.StandardSetController setController = new ApexPages.StandardSetController(new List<Account>()); Boolean pageSizeRejected = false; try { setController.setPageSize(1); } catch (VisualforceException expected) { pageSizeRejected = true; } System.assertEquals(true, pageSizeRejected); Boolean setRejected = false; try { setController.addFields(new List<String>{'Name'}); } catch (SObjectException expected) { setRejected = true; } System.assertEquals(true, setRejected); ApexPages.StandardController standard = new ApexPages.StandardController(new Account(Name = 'Standard Controller')); Boolean standardRejected = false; try { standard.addFields(new List<String>{'Name'}); } catch (SObjectException expected) { standardRejected = true; } System.assertEquals(true, standardRejected); } }"
+    }
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"ok": true, "total": 1, "passed": 1, "failed": 0, "errors": 0}}
+}

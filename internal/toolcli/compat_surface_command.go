@@ -1,16 +1,19 @@
 package toolcli
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 
+	"github.com/glade-sh/glade/tools/internal/corpusassurance"
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
@@ -55,13 +58,15 @@ func runCompatSurface(args []string, w io.Writer) error {
 		return runCompatSurfaceCorpusUsage(args[1:], w)
 	case "delta-preflight":
 		return runCompatSurfaceDeltaPreflight(args[1:], w)
+	case "delta-verify":
+		return runCompatSurfaceDeltaVerify(args[1:], w)
 	default:
 		return errors.New(surfaceUsage())
 	}
 }
 
 func surfaceUsage() string {
-	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight [flags]"
+	return "usage: glade-tools surface refresh|sources|docs|org|glade|evidence|ledger|packet|progress|gaps|explain|check|strict-current-base|support-profile|corpus-usage|delta-preflight|delta-verify [flags]"
 }
 
 func runCompatSurfaceSources(args []string, w io.Writer) error {
@@ -845,6 +850,395 @@ func runCompatSurfaceDeltaPreflight(args []string, w io.Writer) error {
 	return surfaceledger.WriteDeltaPreflightJSON(w, result)
 }
 
+func runCompatSurfaceDeltaVerify(args []string, w io.Writer) error {
+	var basePath, baseSHA, baseSnapshotDir, currentPath, currentSHA, currentSnapshotDir, expectedPath, authorityPath, authoritySHA, attemptPath, attemptSHA, candidateRoot, candidatePath, toolsRoot, output string
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--base-ledger":
+			i++
+			var err error
+			basePath, err = argValue(args, i, "--base-ledger")
+			if err != nil {
+				return err
+			}
+		case "--base-sha256":
+			i++
+			var err error
+			baseSHA, err = argValue(args, i, "--base-sha256")
+			if err != nil {
+				return err
+			}
+		case "--base-snapshot-dir":
+			i++
+			var err error
+			baseSnapshotDir, err = argValue(args, i, "--base-snapshot-dir")
+			if err != nil {
+				return err
+			}
+		case "--current-ledger":
+			i++
+			var err error
+			currentPath, err = argValue(args, i, "--current-ledger")
+			if err != nil {
+				return err
+			}
+		case "--current-sha256":
+			i++
+			var err error
+			currentSHA, err = argValue(args, i, "--current-sha256")
+			if err != nil {
+				return err
+			}
+		case "--current-snapshot-dir":
+			i++
+			var err error
+			currentSnapshotDir, err = argValue(args, i, "--current-snapshot-dir")
+			if err != nil {
+				return err
+			}
+		case "--expected-ids":
+			i++
+			var err error
+			expectedPath, err = argValue(args, i, "--expected-ids")
+			if err != nil {
+				return err
+			}
+		case "--authority-manifest":
+			i++
+			var err error
+			authorityPath, err = argValue(args, i, "--authority-manifest")
+			if err != nil {
+				return err
+			}
+		case "--authority-sha256":
+			i++
+			var err error
+			authoritySHA, err = argValue(args, i, "--authority-sha256")
+			if err != nil {
+				return err
+			}
+		case "--attempt":
+			i++
+			var err error
+			attemptPath, err = argValue(args, i, "--attempt")
+			if err != nil {
+				return err
+			}
+		case "--attempt-sha256":
+			i++
+			var err error
+			attemptSHA, err = argValue(args, i, "--attempt-sha256")
+			if err != nil {
+				return err
+			}
+		case "--candidate-root":
+			i++
+			var err error
+			candidateRoot, err = argValue(args, i, "--candidate-root")
+			if err != nil {
+				return err
+			}
+		case "--candidate":
+			i++
+			var err error
+			candidatePath, err = argValue(args, i, "--candidate")
+			if err != nil {
+				return err
+			}
+		case "--tools-root":
+			i++
+			var err error
+			toolsRoot, err = argValue(args, i, "--tools-root")
+			if err != nil {
+				return err
+			}
+		case "--output":
+			i++
+			var err error
+			output, err = argValue(args, i, "--output")
+			if err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unknown flag %q", args[i])
+		}
+	}
+	for flag, value := range map[string]string{
+		"--base-ledger":          basePath,
+		"--base-sha256":          baseSHA,
+		"--base-snapshot-dir":    baseSnapshotDir,
+		"--current-ledger":       currentPath,
+		"--current-sha256":       currentSHA,
+		"--current-snapshot-dir": currentSnapshotDir,
+		"--expected-ids":         expectedPath,
+		"--authority-manifest":   authorityPath,
+		"--authority-sha256":     authoritySHA,
+		"--attempt":              attemptPath,
+		"--attempt-sha256":       attemptSHA,
+		"--candidate-root":       candidateRoot,
+		"--candidate":            candidatePath,
+		"--tools-root":           toolsRoot,
+		"--output":               output,
+	} {
+		if value == "" {
+			return fmt.Errorf("%s is required", flag)
+		}
+	}
+	if _, err := os.Lstat(output); err == nil {
+		return fmt.Errorf("delta verification output already exists: %s", output)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("inspect delta verification output: %w", err)
+	}
+	baseData, err := os.ReadFile(basePath)
+	if err != nil {
+		return fmt.Errorf("read base ledger: %w", err)
+	}
+	actualBaseSHA := fmt.Sprintf("%x", sha256.Sum256(baseData))
+	if actualBaseSHA != baseSHA {
+		return fmt.Errorf("base ledger SHA-256 mismatch: got %s want %s", actualBaseSHA, baseSHA)
+	}
+	currentData, err := os.ReadFile(currentPath)
+	if err != nil {
+		return fmt.Errorf("read current ledger: %w", err)
+	}
+	actualCurrentSHA := fmt.Sprintf("%x", sha256.Sum256(currentData))
+	if actualCurrentSHA != currentSHA {
+		return fmt.Errorf("current ledger SHA-256 mismatch: got %s want %s", actualCurrentSHA, currentSHA)
+	}
+	authorityData, err := os.ReadFile(authorityPath)
+	if err != nil {
+		return fmt.Errorf("read delta authority manifest: %w", err)
+	}
+	actualAuthoritySHA := fmt.Sprintf("%x", sha256.Sum256(authorityData))
+	if actualAuthoritySHA != authoritySHA {
+		return fmt.Errorf("delta authority manifest SHA-256 mismatch: got %s want %s", actualAuthoritySHA, authoritySHA)
+	}
+	attemptData, err := os.ReadFile(attemptPath)
+	if err != nil {
+		return fmt.Errorf("read delta authority attempt: %w", err)
+	}
+	actualAttemptSHA := fmt.Sprintf("%x", sha256.Sum256(attemptData))
+	if actualAttemptSHA != attemptSHA {
+		return fmt.Errorf("delta authority attempt SHA-256 mismatch: got %s want %s", actualAttemptSHA, attemptSHA)
+	}
+	var authority surfaceledger.ExactLedgerDeltaAuthority
+	authorityDecoder := json.NewDecoder(bytes.NewReader(authorityData))
+	authorityDecoder.DisallowUnknownFields()
+	if err := authorityDecoder.Decode(&authority); err != nil {
+		return fmt.Errorf("parse delta authority manifest: %w", err)
+	}
+	var authorityTrailing any
+	if err := authorityDecoder.Decode(&authorityTrailing); err != io.EOF {
+		return fmt.Errorf("parse delta authority manifest: trailing JSON")
+	}
+	if authority.SchemaVersion != 1 || authority.Status != "externally-reviewed" {
+		return fmt.Errorf("delta authority manifest is not externally reviewed")
+	}
+	actualCandidate, authorityToolsCommit, runningToolsSHA, err := verifyDeltaAuthorityAnchor(
+		attemptData,
+		candidateRoot,
+		candidatePath,
+		toolsRoot,
+		authorityPath,
+		authorityData,
+		authority.Candidate,
+	)
+	if err != nil {
+		return err
+	}
+	if actualBaseSHA != authority.Base.LedgerSHA256 {
+		return fmt.Errorf("base ledger does not match external authority: got %s want %s", actualBaseSHA, authority.Base.LedgerSHA256)
+	}
+	if actualCurrentSHA != authority.Current.LedgerSHA256 {
+		return fmt.Errorf("current ledger does not match external authority: got %s want %s", actualCurrentSHA, authority.Current.LedgerSHA256)
+	}
+	if err := surfaceledger.VerifyLedgerSnapshotClosure(baseData, baseSnapshotDir, authority.Base); err != nil {
+		return fmt.Errorf("base ledger snapshot closure: %w", err)
+	}
+	if err := surfaceledger.VerifyLedgerSnapshotClosure(currentData, currentSnapshotDir, authority.Current); err != nil {
+		return fmt.Errorf("current ledger snapshot closure: %w", err)
+	}
+	expectedData, err := os.ReadFile(expectedPath)
+	if err != nil {
+		return fmt.Errorf("read expected IDs %s: %w", expectedPath, err)
+	}
+	expectedIDs, err := parseSurfaceDeltaIDs(expectedData, "expected", expectedPath)
+	if err != nil {
+		return err
+	}
+	expectedSHA := fmt.Sprintf("%x", sha256.Sum256(expectedData))
+	if expectedSHA != authority.ExpectedIDsSHA256 {
+		return fmt.Errorf("expected IDs do not match external authority: got %s want %s", expectedSHA, authority.ExpectedIDsSHA256)
+	}
+	report, err := surfaceledger.VerifyExactLedgerDeltaJSON(baseData, currentData, expectedIDs)
+	if err != nil {
+		return err
+	}
+	report.Inputs.Base.Path = basePath
+	report.Inputs.Base.SHA256 = actualBaseSHA
+	report.Inputs.Current.Path = currentPath
+	report.Inputs.Current.SHA256 = actualCurrentSHA
+	report.Inputs.Expected.Path = expectedPath
+	report.Inputs.Expected.SHA256 = expectedSHA
+	report.Inputs.Authority = surfaceledger.ExactLedgerDeltaInput{Path: authorityPath, SHA256: actualAuthoritySHA, Rows: 1}
+	report.Inputs.Attempt = surfaceledger.ExactLedgerDeltaInput{Path: attemptPath, SHA256: actualAttemptSHA, Rows: 1}
+	report.AuthorityCandidate = authority.Candidate
+	report.ActualCandidate = actualCandidate
+	report.AuthorityToolsCommit = authorityToolsCommit
+	report.RunningToolsSHA256 = runningToolsSHA
+	data, err := json.MarshalIndent(report, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encode delta verification: %w", err)
+	}
+	data = append(data, '\n')
+	if err := writeCreateOnlySurfaceFile(output, data); err != nil {
+		return err
+	}
+	if report.Status != "pass" {
+		return fmt.Errorf("surface delta verification failed: unexpected=%d missingExpected=%d; report=%s", report.Counts.Unexpected, report.Counts.MissingExpected, output)
+	}
+	fmt.Fprintf(w, "surface delta verification: %s\n", output)
+	return nil
+}
+
+func verifyDeltaAuthorityAnchor(
+	attemptData []byte,
+	candidateRoot string,
+	candidatePath string,
+	toolsRoot string,
+	authorityPath string,
+	authorityData []byte,
+	authorityCandidate surfaceledger.ExactCandidateAuthority,
+) (surfaceledger.ExactCandidateVerification, string, string, error) {
+	var attempt corpusassurance.AssuranceAttempt
+	decoder := json.NewDecoder(bytes.NewReader(attemptData))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&attempt); err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("parse delta authority attempt: %w", err)
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("parse delta authority attempt: trailing JSON")
+	}
+	if err := corpusassurance.ValidateAssuranceAttempt(attempt); err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("validate delta authority attempt: %w", err)
+	}
+	if len(authorityCandidate.Commit) != 40 || len(authorityCandidate.Tree) != 40 || len(authorityCandidate.SHA256) != 64 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority candidate binding is incomplete")
+	}
+	if attempt.Candidate.Commit != authorityCandidate.Commit || attempt.Candidate.SHA256 != authorityCandidate.SHA256 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority attempt candidate does not match external authority")
+	}
+	candidateCommit, candidateTree, err := verifyDeltaAuthorityGitRoot(candidateRoot, "candidate")
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", err
+	}
+	if candidateCommit != authorityCandidate.Commit || candidateTree != authorityCandidate.Tree {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority candidate root does not match external authority")
+	}
+	candidateSHA, err := sha256File(candidatePath)
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("hash delta authority candidate binary: %w", err)
+	}
+	if candidateSHA != authorityCandidate.SHA256 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority candidate binary does not match external authority")
+	}
+	actualCandidate := surfaceledger.ExactCandidateVerification{
+		Root:       candidateRoot,
+		Commit:     candidateCommit,
+		Tree:       candidateTree,
+		BinaryPath: candidatePath,
+		SHA256:     candidateSHA,
+	}
+	runningToolsPath, err := os.Executable()
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("resolve running delta authority tools executable: %w", err)
+	}
+	if resolved, resolveErr := filepath.EvalSymlinks(runningToolsPath); resolveErr == nil {
+		runningToolsPath = resolved
+	}
+	runningToolsSHA, err := sha256File(runningToolsPath)
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("hash running delta authority tools executable: %w", err)
+	}
+	if runningToolsSHA != attempt.Tools.SHA256 {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("running delta authority tools executable does not match sealed attempt")
+	}
+	toolsCommit, _, err := verifyDeltaAuthorityGitRoot(toolsRoot, "tools")
+	if err != nil {
+		return surfaceledger.ExactCandidateVerification{}, "", "", err
+	}
+	if toolsCommit != attempt.Tools.Commit {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority tools root does not match sealed attempt")
+	}
+	rel, err := filepath.Rel(toolsRoot, authorityPath)
+	if err != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority manifest is outside sealed tools root")
+	}
+	committed, err := deltaAuthorityGit(toolsRoot, "show", attempt.Tools.Commit+":"+filepath.ToSlash(rel)).Output()
+	if err != nil || !bytes.Equal(committed, authorityData) {
+		return surfaceledger.ExactCandidateVerification{}, "", "", fmt.Errorf("delta authority manifest does not match sealed tools commit")
+	}
+	return actualCandidate, attempt.Tools.Commit, runningToolsSHA, nil
+}
+
+func verifyDeltaAuthorityGitRoot(root, label string) (string, string, error) {
+	head, err := deltaAuthorityGit(root, "rev-parse", "HEAD").Output()
+	if err != nil {
+		return "", "", fmt.Errorf("delta authority %s root has no commit", label)
+	}
+	branch, err := deltaAuthorityGit(root, "rev-parse", "--abbrev-ref", "HEAD").Output()
+	if err != nil || strings.TrimSpace(string(branch)) != "HEAD" {
+		return "", "", fmt.Errorf("delta authority %s root is not detached", label)
+	}
+	status, err := deltaAuthorityGit(root, "status", "--porcelain=v1", "--untracked-files=all").Output()
+	if err != nil || len(status) != 0 {
+		return "", "", fmt.Errorf("delta authority %s root is not clean", label)
+	}
+	tree, err := deltaAuthorityGit(root, "rev-parse", "HEAD^{tree}").Output()
+	if err != nil {
+		return "", "", fmt.Errorf("delta authority %s root has no tree", label)
+	}
+	return strings.TrimSpace(string(head)), strings.TrimSpace(string(tree)), nil
+}
+
+func deltaAuthorityGit(toolsRoot string, args ...string) *exec.Cmd {
+	commandArgs := append([]string{"-C", toolsRoot}, args...)
+	cmd := exec.Command("git", commandArgs...)
+	cmd.Env = []string{
+		"PATH=" + os.Getenv("PATH"),
+		"HOME=" + os.Getenv("HOME"),
+		"LC_ALL=C",
+		"GIT_NO_REPLACE_OBJECTS=1",
+	}
+	return cmd
+}
+
+func writeCreateOnlySurfaceFile(path string, data []byte) (err error) {
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return fmt.Errorf("create delta verification output directory: %w", err)
+	}
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
+	if err != nil {
+		if os.IsExist(err) {
+			return fmt.Errorf("delta verification output already exists: %s", path)
+		}
+		return fmt.Errorf("create delta verification output: %w", err)
+	}
+	defer func() {
+		if closeErr := file.Close(); err == nil && closeErr != nil {
+			err = closeErr
+		}
+		if err != nil {
+			_ = os.Remove(path)
+		}
+	}()
+	if _, err = file.Write(data); err != nil {
+		return fmt.Errorf("write delta verification output: %w", err)
+	}
+	return nil
+}
+
 // readSurfaceDeltaIDs accepts the compact []string form and the removal
 // fixture form used by API-version tombstones ({"removals":[{"surfaceId":
 // "..."}]}). Accepting both keeps the preflight command useful with existing
@@ -856,48 +1250,57 @@ func readSurfaceDeltaIDs(paths []string, label string) ([]string, error) {
 		if err != nil {
 			return nil, fmt.Errorf("read %s IDs %s: %w", label, path, err)
 		}
-		var stringsValue []string
-		if err := json.Unmarshal(data, &stringsValue); err == nil {
-			ids = append(ids, stringsValue...)
-			continue
+		parsed, err := parseSurfaceDeltaIDs(data, label, path)
+		if err != nil {
+			return nil, err
 		}
-		var rows []surfaceledger.SurfaceLedgerRow
-		if err := json.Unmarshal(data, &rows); err == nil {
-			for _, row := range rows {
-				ids = append(ids, row.SurfaceID)
-			}
-			continue
-		}
-		var envelope struct {
-			IDs        []string `json:"ids"`
-			SurfaceIDs []string `json:"surfaceIds"`
-			Removals   []struct {
-				SurfaceID string `json:"surfaceId"`
-			} `json:"removals"`
-			Tombstones []struct {
-				SurfaceID string `json:"surfaceId"`
-			} `json:"tombstones"`
-			SetChecks struct {
-				API67NegativeTombstones struct {
-					IDs []string `json:"ids"`
-				} `json:"api67NegativeTombstones"`
-			} `json:"setChecks"`
-		}
-		if err := json.Unmarshal(data, &envelope); err != nil {
-			return nil, fmt.Errorf("parse %s IDs %s: %w", label, path, err)
-		}
-		ids = append(ids, envelope.IDs...)
-		ids = append(ids, envelope.SurfaceIDs...)
-		for _, row := range envelope.Removals {
+		ids = append(ids, parsed...)
+	}
+	return ids, nil
+}
+
+func parseSurfaceDeltaIDs(data []byte, label, path string) ([]string, error) {
+	var stringsValue []string
+	if err := json.Unmarshal(data, &stringsValue); err == nil {
+		return stringsValue, nil
+	}
+	var rows []surfaceledger.SurfaceLedgerRow
+	if err := json.Unmarshal(data, &rows); err == nil {
+		ids := make([]string, 0, len(rows))
+		for _, row := range rows {
 			ids = append(ids, row.SurfaceID)
 		}
-		for _, row := range envelope.Tombstones {
-			ids = append(ids, row.SurfaceID)
-		}
-		ids = append(ids, envelope.SetChecks.API67NegativeTombstones.IDs...)
-		if len(envelope.IDs) == 0 && len(envelope.SurfaceIDs) == 0 && len(envelope.Removals) == 0 && len(envelope.Tombstones) == 0 && len(envelope.SetChecks.API67NegativeTombstones.IDs) == 0 {
-			return nil, fmt.Errorf("parse %s IDs %s: expected an ID array or removal/tombstone envelope", label, path)
-		}
+		return ids, nil
+	}
+	var envelope struct {
+		IDs        []string `json:"ids"`
+		SurfaceIDs []string `json:"surfaceIds"`
+		Removals   []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"removals"`
+		Tombstones []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"tombstones"`
+		SetChecks struct {
+			API67NegativeTombstones struct {
+				IDs []string `json:"ids"`
+			} `json:"api67NegativeTombstones"`
+		} `json:"setChecks"`
+	}
+	if err := json.Unmarshal(data, &envelope); err != nil {
+		return nil, fmt.Errorf("parse %s IDs %s: %w", label, path, err)
+	}
+	ids := append([]string{}, envelope.IDs...)
+	ids = append(ids, envelope.SurfaceIDs...)
+	for _, row := range envelope.Removals {
+		ids = append(ids, row.SurfaceID)
+	}
+	for _, row := range envelope.Tombstones {
+		ids = append(ids, row.SurfaceID)
+	}
+	ids = append(ids, envelope.SetChecks.API67NegativeTombstones.IDs...)
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("parse %s IDs %s: expected an ID array or removal/tombstone envelope", label, path)
 	}
 	return ids, nil
 }

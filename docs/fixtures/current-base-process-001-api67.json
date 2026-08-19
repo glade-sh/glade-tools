@@ -99,12 +99,6 @@
     },
     {
       "kind": "test",
-      "notes": "The local witness instantiates a concrete implementation of the interface; the interface itself is not directly constructible.",
-      "surfaceId": "apex:Process.Plugin.Plugin()",
-      "symbol": "Process.Plugin"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.Description",
       "symbol": "Process.PluginDescribeResult.InputParameter.Description"
     },

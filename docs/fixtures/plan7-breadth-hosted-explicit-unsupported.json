@@ -1,0 +1,563 @@
+{
+  "name": "plan7-breadth-hosted-explicit-unsupported",
+  "command": {
+    "kind": "policy-evidence"
+  },
+  "evidence": [
+    {
+      "surfaceId": "data-reference:AiGenActionItemInfo",
+      "symbol": "data-reference:AiGenActionItemInfo",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsEnvDeployment",
+      "symbol": "data-reference:DevopsEnvDeployment",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsEnvDeploymentMbr",
+      "symbol": "data-reference:DevopsEnvDeploymentMbr",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsPipeline",
+      "symbol": "data-reference:DevopsPipeline",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsPipelineEnvironment",
+      "symbol": "data-reference:DevopsPipelineEnvironment",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsPipelineStage",
+      "symbol": "data-reference:DevopsPipelineStage",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsPipelineStageTrigger",
+      "symbol": "data-reference:DevopsPipelineStageTrigger",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsPipelineTestProvider",
+      "symbol": "data-reference:DevopsPipelineTestProvider",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsPipelnStgProm",
+      "symbol": "data-reference:DevopsPipelnStgProm",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsPipelnStgPromWkItem",
+      "symbol": "data-reference:DevopsPipelnStgPromWkItem",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsProject",
+      "symbol": "data-reference:DevopsProject",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsProjectPipeline",
+      "symbol": "data-reference:DevopsProjectPipeline",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsQualityGate",
+      "symbol": "data-reference:DevopsQualityGate",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsQualityGateResult",
+      "symbol": "data-reference:DevopsQualityGateResult",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsQualityGateRule",
+      "symbol": "data-reference:DevopsQualityGateRule",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsQualityGateRuleResult",
+      "symbol": "data-reference:DevopsQualityGateRuleResult",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTest",
+      "symbol": "data-reference:DevopsTest",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestExecution",
+      "symbol": "data-reference:DevopsTestExecution",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestProvider",
+      "symbol": "data-reference:DevopsTestProvider",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestProviderSyncLog",
+      "symbol": "data-reference:DevopsTestProviderSyncLog",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestSuite",
+      "symbol": "data-reference:DevopsTestSuite",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestSuiteExecution",
+      "symbol": "data-reference:DevopsTestSuiteExecution",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestSuiteGroupExec",
+      "symbol": "data-reference:DevopsTestSuiteGroupExec",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestSuiteStage",
+      "symbol": "data-reference:DevopsTestSuiteStage",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsTestSuiteTest",
+      "symbol": "data-reference:DevopsTestSuiteTest",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:DevopsWkItmTstSteGrpExec",
+      "symbol": "data-reference:DevopsWkItmTstSteGrpExec",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:FulfmtRoutgCriteria",
+      "symbol": "data-reference:FulfmtRoutgCriteria",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:FulfmtRoutgCriteriaActnVar",
+      "symbol": "data-reference:FulfmtRoutgCriteriaActnVar",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:FulfmtRoutgCriteriaCond",
+      "symbol": "data-reference:FulfmtRoutgCriteriaCond",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:FulfmtRoutgCriteriaGrp",
+      "symbol": "data-reference:FulfmtRoutgCriteriaGrp",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:FulfmtRoutgCriteriaGrpVer",
+      "symbol": "data-reference:FulfmtRoutgCriteriaGrpVer",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:OppSalesMethodology",
+      "symbol": "data-reference:OppSalesMethodology",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:OppSalesMethodologyItem",
+      "symbol": "data-reference:OppSalesMethodologyItem",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:PrivacyRtntStoreDelStatus",
+      "symbol": "data-reference:PrivacyRtntStoreDelStatus",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SalesMethodologyDef",
+      "symbol": "data-reference:SalesMethodologyDef",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SalesMethodologyDefItem",
+      "symbol": "data-reference:SalesMethodologyDefItem",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcCustomerForPartner",
+      "symbol": "data-reference:SfdcCustomerForPartner",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerOffer",
+      "symbol": "data-reference:SfdcPartnerOffer",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerOfferItem",
+      "symbol": "data-reference:SfdcPartnerOfferItem",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerOrder",
+      "symbol": "data-reference:SfdcPartnerOrder",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerOrderBillingTrxn",
+      "symbol": "data-reference:SfdcPartnerOrderBillingTrxn",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerOrderItem",
+      "symbol": "data-reference:SfdcPartnerOrderItem",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerPackage",
+      "symbol": "data-reference:SfdcPartnerPackage",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerPackageVersion",
+      "symbol": "data-reference:SfdcPartnerPackageVersion",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerPayout",
+      "symbol": "data-reference:SfdcPartnerPayout",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerPermSetLicense",
+      "symbol": "data-reference:SfdcPartnerPermSetLicense",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerProductLicense",
+      "symbol": "data-reference:SfdcPartnerProductLicense",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerProvisionProduct",
+      "symbol": "data-reference:SfdcPartnerProvisionProduct",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerTenant",
+      "symbol": "data-reference:SfdcPartnerTenant",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerTenantPackage",
+      "symbol": "data-reference:SfdcPartnerTenantPackage",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerTermSet",
+      "symbol": "data-reference:SfdcPartnerTermSet",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerTermSetProduct",
+      "symbol": "data-reference:SfdcPartnerTermSetProduct",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerTntPermSetLic",
+      "symbol": "data-reference:SfdcPartnerTntPermSetLic",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SfdcPartnerTntPkgLicense",
+      "symbol": "data-reference:SfdcPartnerTntPkgLicense",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SourceCodeRepoProvider",
+      "symbol": "data-reference:SourceCodeRepoProvider",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SourceCodeRepository",
+      "symbol": "data-reference:SourceCodeRepository",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:SourceCodeRepositoryBranch",
+      "symbol": "data-reference:SourceCodeRepositoryBranch",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:TenantSecurityAnomaly",
+      "symbol": "data-reference:TenantSecurityAnomaly",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:TenantSecurityMetricDetail",
+      "symbol": "data-reference:TenantSecurityMetricDetail",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:TenantSecurityPolicyChangeLog",
+      "symbol": "data-reference:TenantSecurityPolicyChangeLog",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:TenantSecurityTenantChangeLog",
+      "symbol": "data-reference:TenantSecurityTenantChangeLog",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:VideoCallTranscript",
+      "symbol": "data-reference:VideoCallTranscript",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:VoiceCallRecordingStructure",
+      "symbol": "data-reference:VoiceCallRecordingStructure",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:WorkItem",
+      "symbol": "data-reference:WorkItem",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:WorkItemComponent",
+      "symbol": "data-reference:WorkItemComponent",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "data-reference:WorkItemEvent",
+      "symbol": "data-reference:WorkItemEvent",
+      "kind": "unsupported",
+      "notes": "This documented standard object is not present in Glade current generated standard-object schema; this is a local explicit-unsupported classification, not a Salesforce parity claim."
+    },
+    {
+      "surfaceId": "lwc:`lightning/commerceCartApi`",
+      "symbol": "lwc:`lightning/commerceCartApi`",
+      "kind": "unsupported",
+      "notes": "This Lightning web component module requires Salesforce browser and commerce services outside local Apex execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "lwc:`lightning/commerceRegisterGuestBuyerApi`",
+      "symbol": "lwc:`lightning/commerceRegisterGuestBuyerApi`",
+      "kind": "unsupported",
+      "notes": "This Lightning web component module requires Salesforce browser and commerce services outside local Apex execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "lwc:`lightning/commerceRepricingApi`",
+      "symbol": "lwc:`lightning/commerceRepricingApi`",
+      "kind": "unsupported",
+      "notes": "This Lightning web component module requires Salesforce browser and commerce services outside local Apex execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "metadata-api:meta_aiplannervoicedef",
+      "symbol": "metadata-api:meta_aiplannervoicedef",
+      "kind": "unsupported",
+      "notes": "This Metadata API surface requires hosted Salesforce metadata services outside local execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "metadata-api:meta_dashboardcomponenttranslation",
+      "symbol": "metadata-api:meta_dashboardcomponenttranslation",
+      "kind": "unsupported",
+      "notes": "This Metadata API surface requires hosted Salesforce metadata services outside local execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "metadata-api:meta_dashboardtranslation",
+      "symbol": "metadata-api:meta_dashboardtranslation",
+      "kind": "unsupported",
+      "notes": "This Metadata API surface requires hosted Salesforce metadata services outside local execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "metadata-api:meta_reporttranslation",
+      "symbol": "metadata-api:meta_reporttranslation",
+      "kind": "unsupported",
+      "notes": "This Metadata API surface requires hosted Salesforce metadata services outside local execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_salesmeetingbookedevent",
+      "symbol": "platform-events:sforce_api_objects_salesmeetingbookedevent",
+      "kind": "unsupported",
+      "notes": "This platform event type requires Salesforce event infrastructure outside local execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_universalanomalyevent",
+      "symbol": "platform-events:sforce_api_objects_universalanomalyevent",
+      "kind": "unsupported",
+      "notes": "This platform event type requires Salesforce event infrastructure outside local execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "platform-events:sforce_api_objects_universalanomalyeventstore",
+      "symbol": "platform-events:sforce_api_objects_universalanomalyeventstore",
+      "kind": "unsupported",
+      "notes": "This platform event type requires Salesforce event infrastructure outside local execution; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.apexTestClasses",
+      "symbol": "tooling:Retrieve.apexTestClasses",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.message",
+      "symbol": "tooling:Retrieve.message",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.nextRecordsUrl",
+      "symbol": "tooling:Retrieve.nextRecordsUrl",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.size",
+      "symbol": "tooling:Retrieve.size",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Retrieve.testSetSignature",
+      "symbol": "tooling:Retrieve.testSetSignature",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.apexLogId",
+      "symbol": "tooling:Run.apexLogId",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.codeCoverage",
+      "symbol": "tooling:Run.codeCoverage",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.codeCoverageWarnings",
+      "symbol": "tooling:Run.codeCoverageWarnings",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.failures",
+      "symbol": "tooling:Run.failures",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.flowCoverage",
+      "symbol": "tooling:Run.flowCoverage",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.flowCoverageWarnings",
+      "symbol": "tooling:Run.flowCoverageWarnings",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.numFailures",
+      "symbol": "tooling:Run.numFailures",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.numTestsRun",
+      "symbol": "tooling:Run.numTestsRun",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.root",
+      "symbol": "tooling:Run.root",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.successes",
+      "symbol": "tooling:Run.successes",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    },
+    {
+      "surfaceId": "tooling:Run.totaltime",
+      "symbol": "tooling:Run.totaltime",
+      "kind": "unsupported",
+      "notes": "This Tooling API response field requires hosted Salesforce Tooling API behavior outside the local server contract; this is classification-only evidence."
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture records explicit local unsupported classifications for five non-Apex hosted, admin, browser, and event families. It contains no Salesforce execution and grants zero parity credit."
+}

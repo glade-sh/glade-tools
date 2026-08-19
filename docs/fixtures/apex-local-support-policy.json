@@ -2131,16 +2131,52 @@
       "reason": "new System platform method requires an explicit local compile-shape decision before runtime support"
     },
     {
-      "surfacePrefix": "apex:System.TouchHandledException.TouchHandledException()",
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 and the local runtime reject this zero-argument setter call"
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getFieldSets()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this getter; the fieldSets property is the supported identity"
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getFields()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this getter; the fields property is the supported identity"
+    },
+    {
+      "surfaceId": "apex:System.Crypto.areEqualConstantTime(Blob,Blob)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects this Blob signature and the local runtime preserves the explicit rejection"
+    },
+    {
+      "surfaceId": "apex:System.TouchHandledException.TouchHandledException()",
       "disposition": "compile-shape-required",
       "override": true,
       "reason": "Salesforce API 67 rejects this constructor shape; local compiler must reject it"
     },
     {
-      "surfacePrefix": "apex:System.TouchHandledException.TouchHandledException(String,Exception)",
+      "surfaceId": "apex:System.TouchHandledException.TouchHandledException(String,Exception)",
       "disposition": "compile-shape-required",
       "override": true,
       "reason": "Salesforce API 67 rejects this constructor shape; local compiler must reject it"
+    },
+    {
+      "surfaceId": "apex:workflow.Action.invoke(workflow.Context)",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects the workflow ActionDml return contract from Apex"
+    },
+    {
+      "surfaceId": "apex:workflow.ActionDml.invoke()",
+      "disposition": "compile-shape-required",
+      "override": true,
+      "reason": "Salesforce API 67 rejects the workflow ActionDml return contract from Apex"
     },
     {
       "surfacePrefix": "apex:System.AsyncOptions.getMaximumQueueableStackDepth()",
@@ -2171,6 +2207,150 @@
       "disposition": "compile-shape-required",
       "override": true,
       "reason": "Salesforce restricts deepClone to SObject list types; local runtime preserves the explicit rejection contract"
+    },
+    {
+      "surfaceId": "apex:Cache.Org.getAvgValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.Org.getMaxValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.Org.isAvailable()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.OrgPartition.getAvgValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.OrgPartition.getMaxValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.Partition.getAvgValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.Partition.getMaxValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.Session.getAvgValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.Session.getMaxValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.SessionPartition.getAvgValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Cache.SessionPartition.getMaxValueSize()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "org-backed Cache capacity and availability behavior is not modeled locally; retain the Salesforce shape with zero parity credit"
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.DuplicateRuleHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured duplicate-rule effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.LocalizeErrors",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured locale error effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.assignmentRuleHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured assignment-rule effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.emailHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured email effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.localeOptions",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured locale effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:System.DMLOptions.assignmentRuleHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured assignment-rule effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:System.DMLOptions.emailHeader",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured email effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:System.DMLOptions.localeOptions",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "DTO/property shape exists, but configured locale effects depend on hosted org DML and are locally rejected."
+    },
+    {
+      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "local telemetry call is a deliberate no-op and grants no Salesforce analytics parity."
+    },
+    {
+      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,Id)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "local telemetry call is a deliberate no-op and grants no Salesforce analytics parity."
+    },
+    {
+      "surfaceId": "apex:IsvPartners.AppAnalytics.logCustomInteraction(Object,UUID)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "local telemetry call is a deliberate no-op and grants no Salesforce analytics parity."
+    },
+    {
+      "surfacePrefix": "apex:System.Messaging.extractInboundEmail(Object,Boolean)",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "inbound-email parsing and attachment extraction depend on hosted email service behavior"
+    },
+    {
+      "surfacePrefix": "apex:System.SoqlStubProvider.SoqlStubProvider()",
+      "disposition": "hosted-deferred",
+      "override": true,
+      "reason": "SoqlStubProvider construction is a Salesforce test-harness contract, not a local runtime parity claim"
     }
   ]
 }

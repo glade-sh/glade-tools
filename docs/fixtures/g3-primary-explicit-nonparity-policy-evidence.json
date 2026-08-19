@@ -1,0 +1,23 @@
+{
+  "name": "g3-primary-explicit-nonparity-policy-evidence",
+  "command": {
+    "kind": "policy-evidence"
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Messaging.extractInboundEmail(Object,Boolean)",
+      "symbol": "System.Messaging.extractInboundEmail",
+      "kind": "unsupported",
+      "notes": "Inbound-email parsing and attachment extraction depend on hosted email service behavior; this is classification-only evidence, not a Salesforce runtime parity claim."
+    },
+    {
+      "surfaceId": "apex:System.SoqlStubProvider.SoqlStubProvider()",
+      "symbol": "System.SoqlStubProvider.SoqlStubProvider",
+      "kind": "unsupported",
+      "notes": "SoqlStubProvider construction is a Salesforce test-harness contract; this is classification-only evidence, not a Salesforce runtime parity claim."
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture records two explicit local classification decisions only; it provides no hosted Salesforce execution evidence."
+}

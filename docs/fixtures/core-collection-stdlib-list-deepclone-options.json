@@ -1,23 +1,36 @@
 {
   "name": "core-collection-stdlib-list-deepclone-options",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "G3 records Glade-local List.deepClone behavior only; no Salesforce comparison artifact is supplied.",
   "evidence": [
     {
-      "surfaceId": "apex:System.List.deepClone()",
+      "surfaceId": "apex:System.List.deepClone(Boolean,Boolean,Boolean)",
       "symbol": "List.deepClone",
       "kind": "exec",
-      "notes": "List.deepClone accepts preserve-option booleans and clones SObject elements."
+      "notes": "List.deepClone executes the three preserve-option Boolean form against SObject elements."
     }
   ],
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Account original = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nList<Account> accounts = new List<Account>{original};\nList<Account> cloned = accounts.deepClone(true);\nAccount clonedAccount = cloned.get(0);\nclonedAccount.Name = 'Clone';\nSystem.assertEquals('Acme', accounts.get(0).Name);\nSystem.assertEquals('Clone', cloned.get(0).Name);\nSystem.assertEquals(original.Id, cloned.get(0).Id);"
+      "content": "Account original = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nList<Account> accounts = new List<Account>{original};\nList<Account> preserved = accounts.deepClone(true, true, true);\nList<Account> cleared = accounts.deepClone(false, false, false);\nAccount preservedAccount = preserved.get(0);\npreservedAccount.Name = 'Clone';\nSystem.assertEquals(original.Id, preserved.get(0).Id);\nSystem.assertEquals(null, cleared.get(0).Id);\nSystem.assertEquals('Acme', original.Name);\nSystem.assertEquals('Clone', preserved.get(0).Name);"
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type></CustomField>"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Account original = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nList<Account> accounts = new List<Account>{original};\nList<Account> cloned = accounts.deepClone(true);\nAccount clonedAccount = cloned.get(0);\nclonedAccount.Name = 'Clone';\nSystem.assertEquals('Acme', accounts.get(0).Name);\nSystem.assertEquals('Clone', cloned.get(0).Name);\nSystem.assertEquals(original.Id, cloned.get(0).Id);"
+      "Account original = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nList<Account> accounts = new List<Account>{original};\nList<Account> preserved = accounts.deepClone(true, true, true);\nList<Account> cleared = accounts.deepClone(false, false, false);\nAccount preservedAccount = preserved.get(0);\npreservedAccount.Name = 'Clone';\nSystem.assertEquals(original.Id, preserved.get(0).Id);\nSystem.assertEquals(null, cleared.get(0).Id);\nSystem.assertEquals('Acme', original.Name);\nSystem.assertEquals('Clone', preserved.get(0).Name);"
     ]
   },
   "expected": {

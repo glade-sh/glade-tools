@@ -20,7 +20,7 @@ const (
 )
 
 // SupportPolicyRule encodes one classification rule: a namespace,
-// type-family pattern, or surface-prefix selector; a disposition;
+// type-family pattern, surface-prefix, or exact surface-id selector; a disposition;
 // a reason; and optional member exceptions that elevate specific
 // members to a different disposition. When Override is true, the
 // rule is an explicit narrower override that wins over broader
@@ -29,6 +29,7 @@ type SupportPolicyRule struct {
 	Namespace        string                         `json:"namespace,omitempty"`
 	TypeFamily       string                         `json:"typeFamily,omitempty"`
 	SurfacePrefix    string                         `json:"surfacePrefix,omitempty"`
+	SurfaceID        string                         `json:"surfaceId,omitempty"`
 	Disposition      SupportDisposition             `json:"disposition"`
 	Reason           string                         `json:"reason"`
 	Override         bool                           `json:"override,omitempty"`
@@ -105,6 +106,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	seenNS := map[string]int{}
 	seenTF := map[string]int{}
 	seenSP := map[string]int{}
+	seenSI := map[string]int{}
 	for i, rule := range policy.Rules {
 		if rule.Namespace != "" {
 			if prev, ok := seenNS[rule.Namespace]; ok {
@@ -126,6 +128,12 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 			}
 			seenSP[rule.SurfacePrefix] = i
 		}
+		if rule.SurfaceID != "" {
+			if prev, ok := seenSI[rule.SurfaceID]; ok {
+				_ = prev
+			}
+			seenSI[rule.SurfaceID] = i
+		}
 	}
 
 	// Detect overlapping rules (same namespace or type-family in multiple rules).
@@ -133,6 +141,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	nsCount := map[string]int{}
 	tfCount := map[string]int{}
 	spCount := map[string]int{}
+	siCount := map[string]int{}
 	for _, rule := range policy.Rules {
 		if rule.Namespace != "" {
 			nsCount[rule.Namespace]++
@@ -142,6 +151,9 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 		}
 		if rule.SurfacePrefix != "" {
 			spCount[rule.SurfacePrefix]++
+		}
+		if rule.SurfaceID != "" {
+			siCount[rule.SurfaceID]++
 		}
 	}
 
@@ -162,6 +174,12 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 		if count > 1 {
 			validationErrors = append(validationErrors, fmt.Sprintf("overlapping surface-prefix rule: %s", sp))
 			overlapDetected[sp] = true
+		}
+	}
+	for si, count := range siCount {
+		if count > 1 {
+			validationErrors = append(validationErrors, fmt.Sprintf("overlapping surface-id rule: %s", si))
+			overlapDetected[si] = true
 		}
 	}
 
@@ -242,7 +260,7 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	// Detect stale member exceptions.
 	for _, rule := range policy.Rules {
 		for _, exc := range rule.MemberExceptions {
-			key := ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName, exc.Kind)
+			key := ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, rule.SurfaceID, exc.TypeName, exc.MemberName, exc.Kind)
 			if !exceptionMatched[key] {
 				validationErrors = append(validationErrors,
 					fmt.Sprintf("stale member exception: %s.%s (namespace=%s typeFamily=%s)",
@@ -325,6 +343,9 @@ func ruleMatchesRow(rule SupportPolicyRule, row SurfaceLedgerRow, policy Support
 	if rule.SurfacePrefix != "" && strings.HasPrefix(row.SurfaceID, rule.SurfacePrefix) {
 		return true
 	}
+	if rule.SurfaceID != "" && row.SurfaceID == rule.SurfaceID {
+		return true
+	}
 	return false
 }
 
@@ -358,7 +379,7 @@ func classifyRow(row SurfaceLedgerRow, policy SupportPolicy, exceptionMatched ma
 			excKindMatch := exc.Kind == "" || strings.EqualFold(row.Kind, exc.Kind)
 
 			if excTypeMatch && excMemberMatch && excKindMatch {
-				exceptionMatched[ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, exc.TypeName, exc.MemberName, exc.Kind)] = true
+				exceptionMatched[ruleMatchKey(rule.Namespace, rule.TypeFamily, rule.SurfacePrefix, rule.SurfaceID, exc.TypeName, exc.MemberName, exc.Kind)] = true
 				specificity := 0
 				if exc.TypeName != "" {
 					specificity++
@@ -466,6 +487,14 @@ func classifyGap(row SupportProfileRow) string {
 	if row.Disposition == DispositionHostedDeferred {
 		return ""
 	}
+	fixtureEvidence := row.Evidence == EvidenceFixture || row.Evidence == EvidenceFixtureAndOracle
+
+	// A compile-shape obligation may be a positive shape or an explicit
+	// compile-negative contract. Unsupported fixture evidence closes the latter
+	// without pretending that the rejected shape exists locally.
+	if row.Disposition == DispositionCompileShapeRequired && row.Behavior == BehaviorUnsupported && fixtureEvidence {
+		return ""
+	}
 
 	// Every non-deferred disposition requires a non-absent shape.
 	if row.LedgerShape == ShapeAbsent || row.LedgerShape == "" {
@@ -474,7 +503,7 @@ func classifyGap(row SupportProfileRow) string {
 
 	// compile-shape-required closes with present shape and local fixture evidence.
 	if row.Disposition == DispositionCompileShapeRequired {
-		if row.Evidence == EvidenceFixture || row.Evidence == EvidenceFixtureAndOracle {
+		if fixtureEvidence {
 			return ""
 		}
 		return GapMissingEvidence
@@ -538,6 +567,9 @@ func ruleMatchLabel(rule SupportPolicyRule, isException bool) string {
 		if rule.SurfacePrefix != "" {
 			return "surfacePrefix=" + rule.SurfacePrefix + " (member exception)"
 		}
+		if rule.SurfaceID != "" {
+			return "surfaceId=" + rule.SurfaceID + " (member exception)"
+		}
 		return "typeFamily=" + rule.TypeFamily + " (member exception)"
 	}
 	if rule.Namespace != "" {
@@ -546,16 +578,22 @@ func ruleMatchLabel(rule SupportPolicyRule, isException bool) string {
 	if rule.SurfacePrefix != "" {
 		return "surfacePrefix=" + rule.SurfacePrefix
 	}
+	if rule.SurfaceID != "" {
+		return "surfaceId=" + rule.SurfaceID
+	}
 	return "typeFamily=" + rule.TypeFamily
 }
 
-func ruleMatchKey(namespace, typeFamily, surfacePrefix, typeName, memberName, kind string) string {
+func ruleMatchKey(namespace, typeFamily, surfacePrefix, surfaceID, typeName, memberName, kind string) string {
 	scope := namespace
 	if scope == "" {
 		scope = typeFamily
 	}
 	if scope == "" {
 		scope = surfacePrefix
+	}
+	if scope == "" {
+		scope = surfaceID
 	}
 	return scope + ":" + typeName + "." + memberName + ":" + kind
 }

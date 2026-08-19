@@ -344,7 +344,17 @@ func apexDocsIdentity(doc apexdocs.Document) apexDocsDocumentIdentity {
 		typeName:  doc.Name,
 		kind:      docsKind(ProductApex, doc.Kind),
 	}
-	namespace, typeName, memberName, ok := inferApexIdentityFromSource(doc.SourcePath, doc.Name)
+	titleTypeName := ""
+	if identity.namespace == "ConnectApi" {
+		titleTypeName = connectApiTypeNameFromTitle(doc.Title)
+		if titleTypeName != "" {
+			identity.typeName = titleTypeName
+		}
+		if typeName := connectApiStandaloneMethodParent(doc.SourcePath, doc.Name); typeName != "" {
+			identity.typeName = typeName
+		}
+	}
+	namespace, typeName, memberName, memberKind, ok := inferApexIdentityFromSource(doc.SourcePath, doc.Name)
 	if !ok {
 		return identity
 	}
@@ -352,14 +362,16 @@ func apexDocsIdentity(doc apexdocs.Document) apexDocsDocumentIdentity {
 	if len(doc.Members) > 0 {
 		return identity
 	}
-	identity.typeName = typeName
+	if titleTypeName == "" && identity.typeName == doc.Name {
+		identity.typeName = typeName
+	}
 	if memberName == "" {
 		return identity
 	}
 	identity.memberName = memberName
 	identity.signature = doc.Name
 	identity.parameters = parametersFromSignature(doc.Name)
-	identity.kind = KindMethod
+	identity.kind = memberKind
 	return identity
 }
 
@@ -396,13 +408,120 @@ func isApexRealSignature(signature string) bool {
 }
 
 func shouldIncludeDocsSurface(product string, doc apexdocs.Document) bool {
+	if product == ProductUnknown && strings.EqualFold(sourceStemBase(doc.SourcePath), "apex_cursors_versus_batch") {
+		return false
+	}
+	stem := strings.ToLower(sourceStemBase(doc.SourcePath))
+	switch product {
+	case ProductCLIReference:
+		return stem != "cli-reference"
+	case ProductConnectRESTAPI:
+		return !isConnectRESTAPIRollup(doc.SourcePath)
+	case ProductServiceConnectorAPIRef:
+		return stem != "index"
+	}
 	if product != ProductApex {
 		return true
 	}
-	if isApexGuideDoc(doc.SourcePath) || isApexNamespaceDoc(doc.SourcePath) || isGeneratedCustomObjectMethodDoc(doc.SourcePath) {
+	if isApexGuideDoc(doc.SourcePath) || isApexNamespaceDoc(doc.SourcePath) || isGeneratedCustomObjectMethodDoc(doc.SourcePath) || isConnectApiSummaryDoc(doc.SourcePath) {
 		return false
 	}
 	return true
+}
+
+func isConnectRESTAPIRollup(sourcePath string) bool {
+	rel := strings.TrimPrefix(strings.ToLower(filepath.ToSlash(sourcePath)), "connect-rest-api/")
+	first, _, _ := strings.Cut(rel, "/")
+	stem := strings.TrimSuffix(first, filepath.Ext(first))
+	return stem == "index" || strings.HasPrefix(stem, "connect-rest-api-")
+}
+
+func isConnectApiSummaryDoc(sourcePath string) bool {
+	switch strings.ToLower(sourceStemBase(sourcePath)) {
+	case "apex_connectapi_input", "apex_connectapi_input_retired", "apex_connectapi_output", "apex_connectapi_output_retired", "apex_connectapi_release_notes":
+		return true
+	default:
+		return false
+	}
+}
+
+func connectApiTypeNameFromTitle(title string) string {
+	title = cleanIdentityPart(title)
+	name := ""
+	if strings.HasPrefix(title, "ConnectApi.") {
+		name = strings.TrimPrefix(title, "ConnectApi.")
+		if idx := strings.Index(name, " ("); idx >= 0 {
+			name = name[:idx]
+		}
+	} else if strings.HasSuffix(title, " Class") {
+		name = strings.TrimSuffix(title, " Class")
+	} else if strings.HasSuffix(title, " Methods") {
+		name = strings.TrimSuffix(title, " Methods")
+	}
+	name = strings.TrimSpace(name)
+	if !isApexIdentifier(name) {
+		return ""
+	}
+	return name
+}
+
+func connectApiStandaloneMethodParent(sourcePath, name string) string {
+	base := sourceStemBase(sourcePath)
+	lower := strings.ToLower(base)
+	const prefix = "apex_connectapi_output_"
+	if !strings.HasPrefix(lower, prefix) || !strings.Contains(name, "(") {
+		return ""
+	}
+	member := strings.TrimSpace(name[:strings.Index(name, "(")])
+	suffix := "_" + camelToSnake(member)
+	rest := base[len(prefix):]
+	if !strings.HasSuffix(strings.ToLower(rest), suffix) {
+		return ""
+	}
+	rest = rest[:len(rest)-len(suffix)]
+	return snakeToPascal(rest)
+}
+
+func isApexIdentifier(value string) bool {
+	if value == "" {
+		return false
+	}
+	for i, r := range value {
+		if (r >= 'A' && r <= 'Z') || (r >= 'a' && r <= 'z') || r == '_' || (i > 0 && r >= '0' && r <= '9') {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
+func upperFirstASCII(value string) string {
+	if value != "" && value[0] >= 'a' && value[0] <= 'z' {
+		return string(value[0]-('a'-'A')) + value[1:]
+	}
+	return value
+}
+
+func camelToSnake(value string) string {
+	var out strings.Builder
+	for i, r := range value {
+		if r >= 'A' && r <= 'Z' {
+			if i > 0 {
+				out.WriteByte('_')
+			}
+			r += 'a' - 'A'
+		}
+		out.WriteRune(r)
+	}
+	return out.String()
+}
+
+func snakeToPascal(value string) string {
+	var out strings.Builder
+	for _, part := range strings.Split(value, "_") {
+		out.WriteString(upperFirstASCII(part))
+	}
+	return out.String()
 }
 
 func shouldEmitDocsDocumentRow(product string, doc apexdocs.Document) bool {
@@ -553,6 +672,12 @@ func docsSurfaceID(product string, doc apexdocs.Document, member apexdocs.Member
 		return AuraID(sourceStem(doc.SourcePath))
 	case ProductLWC:
 		return LWCModuleID(doc.Name)
+	case ProductServiceConnectorAPIRef:
+		stem := strings.ReplaceAll(sourceStemBase(doc.SourcePath), "-", "_")
+		if member.Name == "" {
+			return product + ":" + stem
+		}
+		return product + ":" + stem + "." + member.Name
 	default:
 		if member.Name == "" {
 			return product + ":" + sourceStem(doc.SourcePath)
@@ -632,9 +757,17 @@ func inferApexNamespace(sourcePath, name string) string {
 	return "System"
 }
 
-func inferApexIdentityFromSource(sourcePath, name string) (string, string, string, bool) {
+func inferApexIdentityFromSource(sourcePath, name string) (string, string, string, string, bool) {
 	base := sourceStemBase(sourcePath)
 	lower := strings.ToLower(base)
+	switch lower {
+	case "apex_commercepay_postauthapipaymethodreq_altpaymethod":
+		return "commercepayments", "PostAuthApiPaymentMethodRequest", "alternativePaymentMethod", KindProperty, true
+	case "apex_commercepay_postauthresp_setauthexpirationdate":
+		return "commercepayments", "PostAuthorizationResponse", "setAuthorizationExpirationDate", KindMethod, true
+	case "apex_commercepay_postauthresp_setgatewayresultcodedesc":
+		return "commercepayments", "PostAuthorizationResponse", "setGatewayResultCodeDescription", KindMethod, true
+	}
 	for _, prefix := range []struct {
 		key       string
 		namespace string
@@ -652,11 +785,11 @@ func inferApexIdentityFromSource(sourcePath, name string) (string, string, strin
 		rest := base[len(prefix.key):]
 		typeName, memberName := apexTypeAndMemberFromStem(rest, name)
 		if typeName == "" {
-			return "", "", "", false
+			return "", "", "", "", false
 		}
-		return prefix.namespace, typeName, memberName, true
+		return prefix.namespace, typeName, memberName, KindMethod, true
 	}
-	return "", "", "", false
+	return "", "", "", "", false
 }
 
 func apexTypeAndMemberFromStem(rest, name string) (string, string) {

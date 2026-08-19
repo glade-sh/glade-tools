@@ -103,7 +103,7 @@ func TestSalesforceReleaseFixtures(t *testing.T) {
 	if len(delta.Changed) != 0 {
 		t.Errorf("changed: %d, want 0", len(delta.Changed))
 	}
-	if len(delta.Unchanged) != 8094 {
-		t.Errorf("unchanged: %d, want 8094", len(delta.Unchanged))
+	if len(delta.Unchanged) != 8087 {
+		t.Errorf("unchanged: %d, want 8087", len(delta.Unchanged))
 	}
 }

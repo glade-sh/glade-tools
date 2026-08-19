@@ -159,19 +159,7 @@
     },
     {
       "kind": "test",
-      "notes": "The witness instantiates a concrete implementation of the callback interface.",
-      "surfaceId": "apex:eventbus.EventPublishFailureCallback.EventPublishFailureCallback()",
-      "symbol": "eventbus.EventPublishFailureCallback"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:eventbus.EventPublishSuccessCallback",
-      "symbol": "eventbus.EventPublishSuccessCallback"
-    },
-    {
-      "kind": "test",
-      "notes": "The witness instantiates a concrete implementation of the callback interface.",
-      "surfaceId": "apex:eventbus.EventPublishSuccessCallback.EventPublishSuccessCallback()",
       "symbol": "eventbus.EventPublishSuccessCallback"
     },
     {
@@ -213,7 +201,7 @@
   "salesforceExclusionReason": "EventBus callback result objects are exercised as deterministic local runtime contracts; no hosted event publication is claimed.",
   "source": [
     {
-      "content": "@isTest private class CurrentBaseEventBus001Test { @isTest static void headerAndCallbackContracts() { eventbus.ChangeEventHeader header = new eventbus.ChangeEventHeader(); header.setChangedFields(new List<String>{'Name'}); header.setChangeOrigin('com.salesforce.api'); header.setChangeType('UPDATE'); header.setCommitNumber(42L); header.setCommitTimestamp(123L); header.setCommitUser('005000000000001AAA'); header.setDiffFields(new List<String>{'Description'}); header.setEntityName('Account'); header.setNulledFields(new List<String>()); header.setRecordIds(new List<String>{'001000000000001AAA'}); header.setSequenceNumber(7); header.setTransactionKey('txn'); System.assertEquals('Name', header.getChangedFields()[0]); System.assertEquals('com.salesforce.api', header.getChangeOrigin()); System.assertEquals('UPDATE', header.getChangeType()); System.assertEquals(42L, header.getCommitNumber()); System.assertEquals(123L, header.getCommitTimestamp()); System.assertEquals('005000000000001AAA', header.getCommitUser()); System.assertEquals('Description', header.getDiffFields()[0]); System.assertEquals('Account', header.getEntityName()); System.assertEquals(0, header.getNulledFields().size()); System.assertEquals('001000000000001AAA', header.getRecordIds()[0]); System.assertEquals(7, header.getSequenceNumber()); System.assertEquals('txn', header.getTransactionKey()); System.assertEquals(true, header.equals(header)); System.assertNotEquals(null, header.hashCode()); System.assertNotEquals(null, header.toString()); eventbus.EventPublishSuccessCallback success = new eventbus.EventPublishSuccessCallback(); eventbus.EventPublishFailureCallback failure = new eventbus.EventPublishFailureCallback(); success.onSuccess(new eventbus.SuccessResult()); failure.onFailure(new eventbus.FailureResult()); System.assertNotEquals(null, success); System.assertNotEquals(null, failure); eventbus.FailureResult result = new eventbus.FailureResult(); System.assertNotEquals(null, result.getEventUuids()); } }",
+      "content": "@isTest private class CurrentBaseEventBus001Test { private class SuccessCallback implements eventbus.EventPublishSuccessCallback { public void onSuccess(eventbus.SuccessResult result) {} } private class FailureCallback implements eventbus.EventPublishFailureCallback { public void onFailure(eventbus.FailureResult result) {} } @isTest static void headerAndCallbackContracts() { eventbus.ChangeEventHeader header = new eventbus.ChangeEventHeader(); header.setChangedFields(new List<String>{'Name'}); header.setChangeOrigin('com.salesforce.api'); header.setChangeType('UPDATE'); header.setCommitNumber(42L); header.setCommitTimestamp(123L); header.setCommitUser('005000000000001AAA'); header.setDiffFields(new List<String>{'Description'}); header.setEntityName('Account'); header.setNulledFields(new List<String>()); header.setRecordIds(new List<String>{'001000000000001AAA'}); header.setSequenceNumber(7); header.setTransactionKey('txn'); System.assertEquals('Name', header.getChangedFields()[0]); System.assertEquals('com.salesforce.api', header.getChangeOrigin()); System.assertEquals('UPDATE', header.getChangeType()); System.assertEquals(42L, header.getCommitNumber()); System.assertEquals(123L, header.getCommitTimestamp()); System.assertEquals('005000000000001AAA', header.getCommitUser()); System.assertEquals('Description', header.getDiffFields()[0]); System.assertEquals('Account', header.getEntityName()); System.assertEquals(0, header.getNulledFields().size()); System.assertEquals('001000000000001AAA', header.getRecordIds()[0]); System.assertEquals(7, header.getSequenceNumber()); System.assertEquals('txn', header.getTransactionKey()); System.assertEquals(true, header.equals(header)); System.assertNotEquals(null, header.hashCode()); System.assertNotEquals(null, header.toString()); eventbus.EventPublishSuccessCallback success = new SuccessCallback(); eventbus.EventPublishFailureCallback failure = new FailureCallback(); success.onSuccess(new eventbus.SuccessResult()); failure.onFailure(new eventbus.FailureResult()); System.assertNotEquals(null, success); System.assertNotEquals(null, failure); eventbus.FailureResult result = new eventbus.FailureResult(); System.assertNotEquals(null, result.getEventUuids()); } }",
       "path": "force-app/main/default/classes/CurrentBaseEventBus001Test.cls"
     }
   ]

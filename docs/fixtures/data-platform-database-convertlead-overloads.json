@@ -14,6 +14,12 @@
       "notes": "Single LeadConvert with AccessLevel runs through local lead conversion."
     },
     {
+      "surfaceId": "apex:System.Database.convertLead(leadToConvert,accessLevel)",
+      "symbol": "Database.convertLead(leadToConvert,accessLevel)",
+      "kind": "test",
+      "notes": "Salesforce documentation argument-name spelling for the executed Database.LeadConvert,AccessLevel overload."
+    },
+    {
       "surfaceId": "apex:System.Database.convertLead(Database.LeadConvert,Boolean)",
       "symbol": "Database.convertLead(Database.LeadConvert,Boolean)",
       "kind": "test",
@@ -42,6 +48,12 @@
       "symbol": "Database.convertLead(List<Database.LeadConvert>,AccessLevel)",
       "kind": "test",
       "notes": "List LeadConvert overload with AccessLevel returns ordered LeadConvertResult rows."
+    },
+    {
+      "surfaceId": "apex:System.Database.convertLead(leadsToConvert,accessLevel)",
+      "symbol": "Database.convertLead(leadsToConvert,accessLevel)",
+      "kind": "test",
+      "notes": "Salesforce documentation argument-name spelling for the executed List<Database.LeadConvert>,AccessLevel overload."
     },
     {
       "surfaceId": "apex:System.Database.convertLead(List<Database.LeadConvert>,Boolean)",

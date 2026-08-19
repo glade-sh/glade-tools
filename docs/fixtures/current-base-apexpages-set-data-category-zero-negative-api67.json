@@ -15,15 +15,15 @@
   ],
   "expected": {
     "error": {
-      "message": "GLADESEMA023",
+      "message": "expects group and category Strings",
       "type": "Error"
     }
   },
-  "mode": "compile-shape-negative",
+  "mode": "local-runtime",
   "name": "current-base-apexpages-set-data-category-zero-negative-api67",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "The current Salesforce signature requires category-group and category arguments; the zero-argument surface row is an inventory shape mismatch and is retained as an explicit local compiler negative.",
+  "salesforceExclusionReason": "The current Salesforce signature requires group and category arguments. Glade currently accepts the zero-argument shape during analysis but rejects it in VM dispatch; this local runtime-negative fixture makes no Salesforce parity claim.",
   "source": [
     {
       "content": "Knowledge__kav article = new Knowledge__kav(Title = 'Shape'); ApexPages.KnowledgeArticleVersionStandardController controller = new ApexPages.KnowledgeArticleVersionStandardController(article); controller.setDataCategory();",

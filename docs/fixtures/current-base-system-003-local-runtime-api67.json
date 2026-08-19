@@ -74,12 +74,12 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.Limits.getLimitScheduledJobs",
+      "surfaceId": "apex:System.Limits.getLimitScheduledJobs()",
       "symbol": "System.Limits.getLimitScheduledJobs"
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.Limits.getScheduledJobs",
+      "surfaceId": "apex:System.Limits.getScheduledJobs()",
       "symbol": "System.Limits.getScheduledJobs"
     },
     {

@@ -236,6 +236,32 @@ func TestRowsFromDocsInventoryIdentifiesServiceConnectorWithoutClosingDocsOnlyRo
 	}
 }
 
+func TestRowsFromDocsInventoryClosesPlan7DocumentationIdentityNoiseByFamily(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{
+		{SourcePath: "apex-guide/apex_cursors_versus_batch.md", Name: "apex_cursors_versus_batch"},
+		{SourcePath: "cli-reference/cli-reference.md", Name: "cli-reference"},
+		{
+			SourcePath: "connect-rest-api/connect-rest-api-chatter-feeds.md",
+			Name:       "connect-rest-api-chatter-feeds",
+			Members:    []apexdocs.Member{{Kind: "member", Name: "Request"}},
+		},
+		{SourcePath: "connect-rest-api/index.md", Name: "index"},
+		{SourcePath: "connect-rest-api/connect-rest-api-about/about.md", Name: "About"},
+		{SourcePath: "service-connector-api-reference/index.md", Name: "index"},
+		{
+			SourcePath: "service-connector-api-reference/connector-api-262/service-connector-interface-acceptcall.md",
+			Name:       "acceptCall",
+		},
+	}})
+
+	if len(rows) != 1 {
+		t.Fatalf("rows = %#v, want only the canonical service connector row", rows)
+	}
+	if got, want := rows[0].SurfaceID, "service-connector-api-reference:service_connector_interface_acceptcall"; got != want {
+		t.Fatalf("surface ID = %q, want %q", got, want)
+	}
+}
+
 func TestMergeClassifiesServiceConnectorExplicitUnsupportedOnlyWithPolicyEvidence(t *testing.T) {
 	id := "service-connector-api-reference:service_connector_methods.invoke"
 	ledger := Merge(
@@ -313,6 +339,73 @@ func TestBuildDocsSnapshotInfersConnectApiStandaloneMethodIdentity(t *testing.T)
 	}
 	if _, ok := byID["apex:ConnectApi.productsExpand(scope,"]; ok {
 		t.Fatalf("kept malformed title-as-type docs row in %#v", rows)
+	}
+}
+
+func TestBuildDocsSnapshotUsesConnectApiDocumentTitlesForClassIdentity(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "apex/apex_connectapi_input_action_info.md", "# ConnectApi.ActionInfoInputRepresentation\n")
+	writeDoc(t, root, "apex/apex_connectapi_input_cart_coupon.md", "# ConnectApi.cartCouponInput\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_cart_inventory_item_reservation_output.md", "# ConnectApi.CartInventoryItemReservationOutputRepresentation (Pilot)\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_einstein_llm_generation_item.md", "# ConnectApi.\u200bEinsteinLLM\u200bGenerationItem\u200bOutput\n")
+	writeDoc(t, root, "apex/apex_ConnectAPI_CreatedFileRepresentation.md", "# ConnectApi.CreatedFile\n")
+	writeDoc(t, root, "apex/apex_ConnectAPI_OMSAnalytics_static_methods.md", "# OMSAnalytics Class\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_batch_result_methods.md", "# BatchResult Methods\n")
+	writeDoc(t, root, "apex/apex_connectapi_input.md", "# ConnectApi Input Classes\n")
+	writeDoc(t, root, "apex/apex_connectapi_output_retired.md", "# Retired ConnectApi Output Classes\n")
+	writeDoc(t, root, "apex/apex_connectapi_release_notes.md", "# ConnectApi Release Notes\n")
+
+	rows, err := BuildDocsSnapshot(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	for _, id := range []string{
+		"apex:ConnectApi.ActionInfoInputRepresentation",
+		"apex:ConnectApi.cartCouponInput",
+		"apex:ConnectApi.CartInventoryItemReservationOutputRepresentation",
+		"apex:ConnectApi.EinsteinLLMGenerationItemOutput",
+		"apex:ConnectApi.CreatedFile",
+		"apex:ConnectApi.OMSAnalytics",
+		"apex:ConnectApi.BatchResult",
+	} {
+		if _, ok := byID[id]; !ok {
+			t.Fatalf("missing canonical ConnectApi row %s in %#v", id, rows)
+		}
+	}
+	for _, stale := range []string{
+		"apex:ConnectApi.input_action_info",
+		"apex:ConnectApi.input_cart_coupon",
+		"apex:ConnectApi.output_cart_inventory_item_reservation_output",
+		"apex:ConnectApi.output_einstein_llm_generation_item",
+		"apex:ConnectApi.CreatedFileRepresentation",
+		"apex:ConnectApi.OMSAnalytics_static",
+		"apex:ConnectApi.output_batch_result",
+		"apex:ConnectApi.input",
+		"apex:ConnectApi.output_retired",
+		"apex:ConnectApi.release_notes",
+	} {
+		if _, ok := byID[stale]; ok {
+			t.Fatalf("kept non-surface ConnectApi row %s in %#v", stale, rows)
+		}
+	}
+}
+
+func TestBuildDocsSnapshotUsesConnectApiOutputParentForStandaloneMethods(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "apex/apex_connectapi_output_batch_result_get_error.md", "# getError()\n\n## Signature\n\n`public ConnectApi.ConnectApiException getError()`\n")
+
+	rows, err := BuildDocsSnapshot(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
+	want := "apex:ConnectApi.BatchResult.getError()"
+	if _, ok := byID[want]; !ok {
+		t.Fatalf("missing canonical ConnectApi output method %s in %#v", want, rows)
+	}
+	if _, ok := byID["apex:ConnectApi.output.getError()"]; ok {
+		t.Fatalf("kept filename-family parent for ConnectApi output method in %#v", rows)
 	}
 }
 
@@ -693,6 +786,30 @@ func TestRowsFromDocsInventoryInfersApexFileIdentities(t *testing.T) {
 	} {
 		if _, ok := byID[id]; ok {
 			t.Fatalf("kept false docs row %s in %#v", id, rows)
+		}
+	}
+}
+
+func TestRowsFromDocsInventoryAliasesReviewedCommercePaymentsPropertyStem(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath: "apex/apex_commercepay_PostAuthApiPayMethodReq_altPayMethod.md",
+		Kind:       "document",
+		Name:       "alternativePaymentMethod",
+		Title:      "alternativePaymentMethod",
+	}}})
+
+	wantID := ApexMemberID("commercepayments", "PostAuthApiPaymentMethodRequest", "alternativePaymentMethod", nil)
+	byID := rowsByID(rows)
+	row, ok := byID[wantID]
+	if !ok {
+		t.Fatalf("missing reviewed Commerce Payments row %s in %#v", wantID, rows)
+	}
+	if row.Kind != KindProperty {
+		t.Fatalf("%s kind = %q, want %q", wantID, row.Kind, KindProperty)
+	}
+	for _, row := range rows {
+		if row.Namespace == "System" {
+			t.Fatalf("reviewed Commerce Payments property emitted System-owned row %#v", row)
 		}
 	}
 }

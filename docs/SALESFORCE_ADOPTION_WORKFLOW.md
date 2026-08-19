@@ -71,6 +71,38 @@ report
 step. New runs use `attempt-init` so the cleanup-authority bootstrap does not
 require copied hashes.
 
+## Resumable family development
+
+Use `campaign` for fixture-family development before promotion. It is a thin
+local runner, not a second assurance authority:
+
+```text
+glade-tools corpus assurance campaign \
+  --spec /absolute/path/CAMPAIGN.json \
+  --state /absolute/path/CAMPAIGN_STATE.json
+
+glade-tools corpus assurance campaign \
+  --spec /absolute/path/CAMPAIGN.json \
+  --state /absolute/path/CAMPAIGN_STATE.json \
+  --promote --out /absolute/path/new-promotion-root
+```
+
+The spec freezes unique SurfaceIDs plus required SHA-256 bindings named
+`candidate` and `tools`; add every controlled input to the same binding list.
+Each phase declares an absolute working directory, direct argv, exact
+environment, create-only log, outputs, and earlier dependencies. The runner
+preflights the complete graph before executing, hashes executables and passed
+outputs, retains every retry, resumes without rerunning unchanged phases, and
+refuses concurrent state access. A stale lock must be removed only after
+confirming that its recorded process has exited; the next run retains an
+abandoned running attempt as interrupted. If raw corpus usage, a sealed support
+profile, and a usage draft are present, their dependency order is mandatory.
+
+Promotion copies only the exact spec, state, and compact promotion receipt into
+a new directory. Candidate build, inventory preparation, full surface refresh,
+release validation, and independent review still run once through the existing
+sealed workflow below. Do not run them per fixture family.
+
 `candidate-build` starts the product and tools builds concurrently. Its exact
 commit binding selects reusable commit-scoped Go build and module caches, so a
 retry for the same candidate pair does not pay the full cold-cache cost again.
