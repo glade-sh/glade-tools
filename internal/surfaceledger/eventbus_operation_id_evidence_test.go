@@ -9,8 +9,8 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
-func TestEventBusGetOperationIDFixtureIsExecutableAndLocalOnly(t *testing.T) {
-	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-eventbus-operation-id-unsupported.json")
+func TestEventBusGetOperationIDLocalFixtureIsExecutableAndLocalOnly(t *testing.T) {
+	path := filepath.Join("..", "..", "docs", "fixtures", "core-runtime-eventbus-operation-id-local.json")
 	fixture, err := compat.LoadFile(path)
 	if err != nil {
 		t.Fatal(err)

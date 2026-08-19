@@ -13,7 +13,7 @@
       "notes": "Local executable proof returns a non-null 36-character operation ID for successful direct publish, returns a prepopulated EventUuid exactly, returns null for required-field failure, and keeps operation metadata out of JSON. This is local-only deterministic EventBus behavior; no Salesforce parity is claimed."
     }
   ],
-  "name": "core-runtime-eventbus-operation-id-unsupported",
+  "name": "core-runtime-eventbus-operation-id-local",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
   "salesforceExclusionReason": "EventBus operation IDs are modeled as deterministic local runtime contracts and are excluded from hosted Salesforce parity.",
