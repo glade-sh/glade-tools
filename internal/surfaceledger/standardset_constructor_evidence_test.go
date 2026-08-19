@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -30,8 +31,8 @@ func TestStandardSetControllerConstructorsHaveExecutableLocalEvidence(t *testing
 		t.Fatal(err)
 	}
 	var metadata struct {
-		SalesforceEligible       *bool  `json:"salesforceEligible"`
-		SalesforceExclusionClass string `json:"salesforceExclusionClass"`
+		SalesforceEligible        *bool  `json:"salesforceEligible"`
+		SalesforceExclusionClass  string `json:"salesforceExclusionClass"`
 		SalesforceExclusionReason string `json:"salesforceExclusionReason"`
 	}
 	if err := json.Unmarshal(data, &metadata); err != nil {
@@ -89,11 +90,34 @@ func TestStandardSetControllerConstructorsHaveExecutableLocalEvidence(t *testing
 		}
 	}
 
+	gladeByID := rowsByID(BuildGladeSnapshot())
+	wantParameters := map[string][]string{
+		standardSetControllerConstructorEvidenceIDs[0]: {"Database.QueryLocator"},
+		standardSetControllerConstructorEvidenceIDs[1]: {"List<Object>"},
+	}
+	for _, id := range standardSetControllerConstructorEvidenceIDs {
+		row, ok := gladeByID[id]
+		if !ok {
+			t.Fatalf("Glade snapshot missing %s", id)
+		}
+		if row.MemberName != "StandardSetController" || !reflect.DeepEqual(row.Parameters, wantParameters[id]) || row.GladeShape != ShapeSignatureKnown || row.GladeBehavior != BehaviorSupported || !containsString(row.Sources, "standard-symbols") {
+			t.Fatalf("Glade row %s = %#v, want StandardSetController/%v/signature-known/supported/standard-symbols", id, row, wantParameters[id])
+		}
+	}
+
 	policy, err := LoadSupportPolicy(filepath.Join(root, "docs", "fixtures", "apex-local-support-policy.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	profile := ComputeSupportProfile(Merge(nil, nil, BuildGladeSnapshot(), evidence).Rows, policy, nil)
+	ledger := Merge(nil, nil, BuildGladeSnapshot(), evidence)
+	mergedByID := rowsByID(ledger.Rows)
+	for _, id := range standardSetControllerConstructorEvidenceIDs {
+		row, ok := mergedByID[id]
+		if !ok || row.Evidence != EvidenceFixture || row.GapClass != "" {
+			t.Fatalf("merged row %s = %#v, want fixture evidence/no gap", id, row)
+		}
+	}
+	profile := ComputeSupportProfile(ledger.Rows, policy, nil)
 	for _, id := range standardSetControllerConstructorEvidenceIDs {
 		var row SupportProfileRow
 		found := false
@@ -107,8 +131,8 @@ func TestStandardSetControllerConstructorsHaveExecutableLocalEvidence(t *testing
 		if !found {
 			t.Fatalf("support profile missing %s", id)
 		}
-		if row.Disposition != DispositionLocalRuntimeRequired || row.GapClass != GapMissingEvidence {
-			t.Fatalf("%s profile = disposition:%s gap:%s, want local-runtime-required/missing-evidence", id, row.Disposition, row.GapClass)
+		if row.Disposition != DispositionLocalRuntimeRequired {
+			t.Fatalf("%s profile = disposition:%s gap:%s, want local-runtime-required", id, row.Disposition, row.GapClass)
 		}
 	}
 }

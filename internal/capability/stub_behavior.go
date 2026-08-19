@@ -574,6 +574,9 @@ func genericStubBehaviorMemberStatus(symbol typesys.TypeSymbol, member typesys.M
 	if genericEnumConstantBehaviorMember(symbol, member) {
 		return StubBehaviorImplemented, "enum constant is materialized by the VM as a deterministic typed enum value", true
 	}
+	if member.Kind == apexast.DeclarationConstructor && strings.EqualFold(stubBehaviorTypeName(symbol), "ApexPages.StandardSetController") && apexPagesStandardSetControllerMethod(strings.ToLower(member.Name)) {
+		return StubBehaviorImplemented, "local runtime dispatches StandardSetController constructors", true
+	}
 	if member.Kind != apexast.DeclarationMethod && member.Kind != apexast.DeclarationConstructor {
 		return "", "", false
 	}
@@ -1681,7 +1684,7 @@ func apexPagesBehaviorMethod(typeName, methodName string) bool {
 
 func apexPagesStandardSetControllerMethod(methodName string) bool {
 	switch methodName {
-	case "getrecords", "getselected", "setselected", "getpagesize", "setpagesize",
+	case "standardsetcontroller", "getrecords", "getselected", "setselected", "getpagesize", "setpagesize",
 		"getpagenumber", "first", "last", "next", "previous", "gethasnext",
 		"gethasprevious", "getcompleteresult", "getresultsize", "setfilterid",
 		"getfilterid", "getlistviewoptions", "getrecord", "setpagenumber",
