@@ -22,42 +22,39 @@ func TestValueOfStringEvidenceHasUniqueExecutableOwners(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	owners := map[string][]string{}
+	evidencePaths := make([]string, 0, len(paths))
 	for _, path := range paths {
 		data, err := os.ReadFile(path)
 		if err != nil {
 			t.Fatal(err)
 		}
-		var doc struct {
-			EvidenceOnly bool   `json:"evidenceOnly"`
-			Name         string `json:"name"`
-			Evidence     []struct {
-				SurfaceID string `json:"surfaceId"`
-				Kind      string `json:"kind"`
-			} `json:"evidence"`
-			Source []struct {
-				Content string `json:"content"`
-			} `json:"source"`
-			Command struct {
-				Kind string   `json:"kind"`
-				Args []string `json:"args"`
-			} `json:"command"`
+		var header struct {
+			EvidenceOnly bool `json:"evidenceOnly"`
 		}
-		if err := json.Unmarshal(data, &doc); err != nil {
+		if err := json.Unmarshal(data, &header); err != nil {
 			t.Fatal(err)
 		}
-		if doc.EvidenceOnly || doc.Command.Kind != "exec" || len(doc.Source) != 1 || len(doc.Command.Args) != 1 || doc.Source[0].Content != doc.Command.Args[0] {
-			continue
-		}
-		for _, evidence := range doc.Evidence {
-			if _, ok := want[evidence.SurfaceID]; ok && evidence.Kind == "exec" {
-				owners[evidence.SurfaceID] = append(owners[evidence.SurfaceID], doc.Name)
-			}
+		if !header.EvidenceOnly {
+			evidencePaths = append(evidencePaths, path)
 		}
 	}
+	rows, err := BuildEvidenceSnapshot(evidencePaths)
+	if err != nil {
+		t.Fatal(err)
+	}
 	for id := range want {
-		if len(owners[id]) != 1 || owners[id][0] != owner {
-			t.Fatalf("%s runnable owners = %#v, want exactly %s", id, owners[id], owner)
+		count := 0
+		for _, row := range rows {
+			if row.SurfaceID != id {
+				continue
+			}
+			count++
+			if len(row.Sources) != 1 || row.Sources[0] != "fixture:"+owner || row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
+				t.Fatalf("%s owner row = %#v, want one fixture:%s supported row", id, row, owner)
+			}
+		}
+		if count != 1 {
+			t.Fatalf("%s fixture rows = %d, want exactly one", id, count)
 		}
 	}
 
@@ -72,9 +69,20 @@ func TestValueOfStringEvidenceHasUniqueExecutableOwners(t *testing.T) {
 	if len(fixture.Evidence) != len(want) {
 		t.Fatalf("owner evidence rows = %d, want exactly %d", len(fixture.Evidence), len(want))
 	}
-	result, err := compat.Run(fixture)
-	if err != nil || !result.OK {
-		t.Fatalf("run %s = %#v, %v", fixture.Name, result, err)
+	data, err := os.ReadFile(ownerPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var policy struct {
+		Eligible *bool  `json:"salesforceEligible"`
+		Class    string `json:"salesforceExclusionClass"`
+		Reason   string `json:"salesforceExclusionReason"`
+	}
+	if err := json.Unmarshal(data, &policy); err != nil {
+		t.Fatal(err)
+	}
+	if policy.Eligible == nil || *policy.Eligible || policy.Class != "policy-local-only" || !strings.Contains(policy.Reason, "zero Salesforce parity") {
+		t.Fatalf("fixture policy = %#v, want false/local-only/zero-parity", policy)
 	}
 	seen, source := map[string]bool{}, fixture.Source[0].Content
 	for _, evidence := range fixture.Evidence {
@@ -84,14 +92,11 @@ func TestValueOfStringEvidenceHasUniqueExecutableOwners(t *testing.T) {
 		}
 		seen[evidence.SurfaceID] = true
 	}
-	rows, err := BuildEvidenceSnapshot([]string{ownerPath})
-	if err != nil {
-		t.Fatal(err)
+	if len(seen) != len(want) {
+		t.Fatalf("owner IDs = %d, want exactly %d", len(seen), len(want))
 	}
-	for id := range want {
-		row, ok := rowsByID(rows)[id]
-		if !seen[id] || !ok || row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
-			t.Fatalf("%s missing fixture/supported evidence", id)
-		}
+	result, err := compat.Run(fixture)
+	if err != nil || !result.OK {
+		t.Fatalf("run %s = %#v, %v", fixture.Name, result, err)
 	}
 }
