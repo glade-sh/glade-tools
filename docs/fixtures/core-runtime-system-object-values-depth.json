@@ -1,0 +1,71 @@
+{
+  "name": "core-runtime-system-object-values-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade-local Object, Request, and Savepoint value behavior only; zero Salesforce parity is claimed.",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Object",
+      "symbol": "Object",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Object.equals(Object)",
+      "symbol": "Object.equals",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Object.hashCode()",
+      "symbol": "Object.hashCode",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Object.toString()",
+      "symbol": "Object.toString",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Request",
+      "symbol": "Request",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Request.clone()",
+      "symbol": "Request.clone",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Savepoint.equals(Object)",
+      "symbol": "Savepoint.equals",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Savepoint.hashCode()",
+      "symbol": "Savepoint.hashCode",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Savepoint.toString()",
+      "symbol": "Savepoint.toString",
+      "kind": "test"
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/SystemObjectValuesDepthTest.cls",
+      "content": "@isTest private class SystemObjectValuesDepthTest { @isTest static void provesObjectRequestAndSavepointValues() { Request request = Request.getCurrent(); Request clonedRequest = (Request)request.clone(); System.assertNotEquals(request, clonedRequest); System.assertEquals(request.getRequestId(), clonedRequest.getRequestId()); System.assertEquals(request.getQuiddity(), clonedRequest.getQuiddity()); Object objectValue = (Object)request; System.assert(objectValue.equals(objectValue)); System.assert(!objectValue.equals(clonedRequest)); System.assert(!objectValue.equals(null)); System.assertEquals(objectValue.hashCode(), objectValue.hashCode()); System.assertNotEquals(null, objectValue.toString()); Savepoint first = Database.setSavepoint(); Savepoint second = Database.setSavepoint(); System.assert(first.equals(first)); System.assert(!first.equals(second)); System.assert(!first.equals(null)); System.assertEquals(first.hashCode(), first.hashCode()); System.assertNotEquals(null, first.toString()); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  }
+}
