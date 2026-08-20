@@ -78,6 +78,71 @@
       "notes": "Two-argument queryWithBinds resolves named binds from a local map and runs supported SOQL.",
       "surfaceId": "apex:System.Database.queryWithBinds(String,Map,Object)",
       "symbol": "Database.queryWithBinds"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger",
+      "symbol": "Trigger"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.isAfter",
+      "symbol": "Trigger.isAfter"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.isBefore",
+      "symbol": "Trigger.isBefore"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.isDelete",
+      "symbol": "Trigger.isDelete"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.isExecuting",
+      "symbol": "Trigger.isExecuting"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.isInsert",
+      "symbol": "Trigger.isInsert"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.isUndelete",
+      "symbol": "Trigger.isUndelete"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.isUpdate",
+      "symbol": "Trigger.isUpdate"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.newMap",
+      "symbol": "Trigger.newMap"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.old",
+      "symbol": "Trigger.old"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.oldMap",
+      "symbol": "Trigger.oldMap"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.operationType",
+      "symbol": "Trigger.operationType"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Trigger.size",
+      "symbol": "Trigger.size"
     }
   ],
   "expected": {
@@ -175,7 +240,7 @@
       "path": "force-app/main/classes/AccountAddError.trigger"
     },
     {
-      "content": "trigger AccountBeforeUpdateContext on Account (before update) { System.assert(Trigger.isExecuting); System.assert(Trigger.isBefore); System.assert(Trigger.isUpdate); System.assertEquals(1, Trigger.size); Account newer = Trigger.new.get(0); if (newer.get('Name') == 'After') { Account older = Trigger.oldMap.get(newer.Id); System.assertEquals('Before', older.Name); System.assertEquals('After', newer.Name); Account byMap = Trigger.newMap.get(newer.Id); byMap.Rating = 'Warm'; newer.Name = 'After!'; } }",
+      "content": "trigger AccountBeforeUpdateContext on Account (before update) { System.assert(Trigger.isExecuting); System.assert(Trigger.isBefore); System.assert(Trigger.isUpdate); System.assertEquals(TriggerOperation.BEFORE_UPDATE, Trigger.operationType); System.assertEquals(1, Trigger.size); Account newer = Trigger.new.get(0); if (newer.get('Name') == 'After') { Account older = Trigger.oldMap.get(newer.Id); System.assertEquals('Before', older.Name); System.assertEquals('After', newer.Name); Account byMap = Trigger.newMap.get(newer.Id); byMap.Rating = 'Warm'; newer.Name = 'After!'; } }",
       "path": "force-app/main/classes/AccountBeforeUpdateContext.trigger"
     },
     {
@@ -231,7 +296,7 @@
       "path": "force-app/main/classes/AccountMergeBeforeDeleteBlock.trigger"
     },
     {
-      "content": "trigger AccountAfterUndeleteContext on Account (after undelete) { System.assert(Trigger.isExecuting); System.assert(Trigger.isAfter); System.assert(Trigger.isUndelete); System.assertEquals(1, Trigger.size); System.assertEquals(null, Trigger.old); System.assertEquals(null, Trigger.oldMap); Account newer = Trigger.new.get(0); System.assert(Trigger.newMap.containsKey(newer.Id)); }",
+      "content": "trigger AccountAfterUndeleteContext on Account (after undelete) { System.assert(Trigger.isExecuting); System.assert(Trigger.isAfter); System.assert(Trigger.isUndelete); System.assertEquals(TriggerOperation.AFTER_UNDELETE, Trigger.operationType); System.assertEquals(1, Trigger.size); System.assertEquals(null, Trigger.old); System.assertEquals(null, Trigger.oldMap); Account newer = Trigger.new.get(0); System.assert(Trigger.newMap.containsKey(newer.Id)); }",
       "path": "force-app/main/classes/AccountAfterUndeleteContext.trigger"
     },
     {
