@@ -5,7 +5,13 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "System.Metadata is the documented namespace-qualified alias for the deterministic Metadata base DTO; the local constructor yields a Metadata object.",
+      "notes": "System.Metadata is a Glade local compatibility alias that API 67 clean-org rejects; this type witness grants zero Salesforce parity credit.",
+      "surfaceId": "apex:System.Metadata",
+      "symbol": "System.Metadata"
+    },
+    {
+      "kind": "test",
+      "notes": "The Glade local compatibility alias constructor yields a Metadata object; API 67 clean-org rejects the alias and no Salesforce parity is claimed.",
       "surfaceId": "apex:System.Metadata.Metadata()",
       "symbol": "System.Metadata.Metadata"
     },
