@@ -8,7 +8,17 @@
       "notes": "InboundEmailHandler is a user Apex callback interface; local tests dispatch handleInboundEmail on the user implementation and return an InboundEmailResult DTO.",
       "surfaceId": "apex:Messaging.InboundEmailHandler.handleInboundEmail(Messaging.InboundEmail,Messaging.InboundEnvelope)",
       "symbol": "Messaging.InboundEmailHandler.handleInboundEmail"
-    }
+    },
+    {"surfaceId":"apex:Messaging.InboundEmailResult","symbol":"Messaging.InboundEmailResult","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEmailResult.InboundEmailResult()","symbol":"Messaging.InboundEmailResult.InboundEmailResult()","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEmailResult.clone()","symbol":"Messaging.InboundEmailResult.clone()","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEmailResult.message","symbol":"Messaging.InboundEmailResult.message","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEmailResult.success","symbol":"Messaging.InboundEmailResult.success","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEnvelope","symbol":"Messaging.InboundEnvelope","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEnvelope.InboundEnvelope()","symbol":"Messaging.InboundEnvelope.InboundEnvelope()","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEnvelope.clone()","symbol":"Messaging.InboundEnvelope.clone()","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEnvelope.fromAddress","symbol":"Messaging.InboundEnvelope.fromAddress","kind":"test"},
+    {"surfaceId":"apex:Messaging.InboundEnvelope.toAddress","symbol":"Messaging.InboundEnvelope.toAddress","kind":"test"}
   ],
   "expected": {
     "result": {
@@ -28,7 +38,7 @@
     },
     {
       "path": "force-app/main/classes/CoreRuntimeMessagingInboundHandlerEvidenceTest.cls",
-      "content": "@isTest private class CoreRuntimeMessagingInboundHandlerEvidenceTest { @isTest static void rows() { Messaging.InboundEmail email = new Messaging.InboundEmail(); email.subject = 'Trail'; Messaging.InboundEnvelope envelope = new Messaging.InboundEnvelope(); envelope.fromAddress = 'sender@example.test'; Messaging.InboundEmailResult result = new CoreRuntimeMessagingInboundHandlerEvidenceHandler().handleInboundEmail(email, envelope); System.assertEquals(true, result.success); System.assertEquals('Trail from sender@example.test', result.message); } }"
+      "content": "@isTest private class CoreRuntimeMessagingInboundHandlerEvidenceTest { @isTest static void rows() { Messaging.InboundEmail email = new Messaging.InboundEmail(); email.subject = 'Trail'; Messaging.InboundEnvelope envelope = new Messaging.InboundEnvelope(); envelope.fromAddress = 'sender@example.test'; envelope.toAddress = 'handler@example.test'; Messaging.InboundEnvelope clonedEnvelope = (Messaging.InboundEnvelope)envelope.clone(); System.assertNotEquals(envelope, clonedEnvelope); System.assertEquals('sender@example.test', clonedEnvelope.fromAddress); System.assertEquals('handler@example.test', clonedEnvelope.toAddress); Messaging.InboundEmailResult result = new CoreRuntimeMessagingInboundHandlerEvidenceHandler().handleInboundEmail(email, envelope); Messaging.InboundEmailResult clonedResult = (Messaging.InboundEmailResult)result.clone(); System.assertNotEquals(result, clonedResult); System.assertEquals(true, result.success); System.assertEquals('Trail from sender@example.test', result.message); System.assertEquals(true, clonedResult.success); System.assertEquals('Trail from sender@example.test', clonedResult.message); } }"
     }
   ],
   "notes": "Hosted API 67 witness for a top-level Messaging.InboundEmailHandler implementation."
