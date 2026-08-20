@@ -1,0 +1,311 @@
+{
+  "name": "core-runtime-g3-exception-object-method-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "G3 records Glade-local Object method behavior only; zero Salesforce parity is claimed.",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.equals(Object)",
+      "symbol": "InvalidReadOnlyUserDmlException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.hashCode()",
+      "symbol": "InvalidReadOnlyUserDmlException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.toString()",
+      "symbol": "InvalidReadOnlyUserDmlException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.equals(Object)",
+      "symbol": "LicenseException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.hashCode()",
+      "symbol": "LicenseException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LicenseException.toString()",
+      "symbol": "LicenseException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.equals(Object)",
+      "symbol": "LimitException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.hashCode()",
+      "symbol": "LimitException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.LimitException.toString()",
+      "symbol": "LimitException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.equals(Object)",
+      "symbol": "ListException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.hashCode()",
+      "symbol": "ListException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ListException.toString()",
+      "symbol": "ListException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.equals(Object)",
+      "symbol": "NoSuchElementException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.hashCode()",
+      "symbol": "NoSuchElementException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NoSuchElementException.toString()",
+      "symbol": "NoSuchElementException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NullPointerException.equals(Object)",
+      "symbol": "NullPointerException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NullPointerException.hashCode()",
+      "symbol": "NullPointerException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.NullPointerException.toString()",
+      "symbol": "NullPointerException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.equals(Object)",
+      "symbol": "PlatformCacheException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.hashCode()",
+      "symbol": "PlatformCacheException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PlatformCacheException.toString()",
+      "symbol": "PlatformCacheException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.equals(Object)",
+      "symbol": "PolyglotException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.hashCode()",
+      "symbol": "PolyglotException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.PolyglotException.toString()",
+      "symbol": "PolyglotException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ProcedureException.equals(Object)",
+      "symbol": "ProcedureException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ProcedureException.hashCode()",
+      "symbol": "ProcedureException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.ProcedureException.toString()",
+      "symbol": "ProcedureException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.equals(Object)",
+      "symbol": "RequiredFeatureMissingException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.hashCode()",
+      "symbol": "RequiredFeatureMissingException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.toString()",
+      "symbol": "RequiredFeatureMissingException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.equals(Object)",
+      "symbol": "SObjectException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.hashCode()",
+      "symbol": "SObjectException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.toString()",
+      "symbol": "SObjectException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.equals(Object)",
+      "symbol": "SearchException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.hashCode()",
+      "symbol": "SearchException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.toString()",
+      "symbol": "SearchException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.equals(Object)",
+      "symbol": "SecurityException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.hashCode()",
+      "symbol": "SecurityException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SecurityException.toString()",
+      "symbol": "SecurityException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.equals(Object)",
+      "symbol": "SerializationException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.hashCode()",
+      "symbol": "SerializationException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SerializationException.toString()",
+      "symbol": "SerializationException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.equals(Object)",
+      "symbol": "StringException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.hashCode()",
+      "symbol": "StringException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.StringException.toString()",
+      "symbol": "StringException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.equals(Object)",
+      "symbol": "TransientCursorException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.hashCode()",
+      "symbol": "TransientCursorException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TransientCursorException.toString()",
+      "symbol": "TransientCursorException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.equals(Object)",
+      "symbol": "TypeException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.hashCode()",
+      "symbol": "TypeException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.TypeException.toString()",
+      "symbol": "TypeException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.equals(Object)",
+      "symbol": "UnexpectedException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.hashCode()",
+      "symbol": "UnexpectedException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.UnexpectedException.toString()",
+      "symbol": "UnexpectedException.toString",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.equals(Object)",
+      "symbol": "XmlException.equals",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.hashCode()",
+      "symbol": "XmlException.hashCode",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.XmlException.toString()",
+      "symbol": "XmlException.toString",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "{\n  InvalidReadOnlyUserDmlException value = new InvalidReadOnlyUserDmlException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.InvalidReadOnlyUserDmlException'));\n}\n{\n  LicenseException value = new LicenseException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.LicenseException'));\n}\n{\n  LimitException value = new LimitException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.LimitException'));\n}\n{\n  ListException value = new ListException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.ListException'));\n}\n{\n  NoSuchElementException value = new NoSuchElementException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.NoSuchElementException'));\n}\n{\n  NullPointerException value = new NullPointerException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.NullPointerException'));\n}\n{\n  PlatformCacheException value = new PlatformCacheException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.PlatformCacheException'));\n}\n{\n  PolyglotException value = new PolyglotException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.PolyglotException'));\n}\n{\n  ProcedureException value = new ProcedureException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.ProcedureException'));\n}\n{\n  RequiredFeatureMissingException value = new RequiredFeatureMissingException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.RequiredFeatureMissingException'));\n}\n{\n  SObjectException value = new SObjectException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SObjectException'));\n}\n{\n  SearchException value = new SearchException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SearchException'));\n}\n{\n  SecurityException value = new SecurityException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SecurityException'));\n}\n{\n  SerializationException value = new SerializationException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SerializationException'));\n}\n{\n  StringException value = new StringException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.StringException'));\n}\n{\n  TransientCursorException value = new TransientCursorException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.TransientCursorException'));\n}\n{\n  TypeException value = new TypeException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.TypeException'));\n}\n{\n  UnexpectedException value = new UnexpectedException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.UnexpectedException'));\n}\n{\n  XmlException value = new XmlException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.XmlException'));\n}"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "{\n  InvalidReadOnlyUserDmlException value = new InvalidReadOnlyUserDmlException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.InvalidReadOnlyUserDmlException'));\n}\n{\n  LicenseException value = new LicenseException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.LicenseException'));\n}\n{\n  LimitException value = new LimitException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.LimitException'));\n}\n{\n  ListException value = new ListException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.ListException'));\n}\n{\n  NoSuchElementException value = new NoSuchElementException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.NoSuchElementException'));\n}\n{\n  NullPointerException value = new NullPointerException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.NullPointerException'));\n}\n{\n  PlatformCacheException value = new PlatformCacheException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.PlatformCacheException'));\n}\n{\n  PolyglotException value = new PolyglotException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.PolyglotException'));\n}\n{\n  ProcedureException value = new ProcedureException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.ProcedureException'));\n}\n{\n  RequiredFeatureMissingException value = new RequiredFeatureMissingException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.RequiredFeatureMissingException'));\n}\n{\n  SObjectException value = new SObjectException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SObjectException'));\n}\n{\n  SearchException value = new SearchException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SearchException'));\n}\n{\n  SecurityException value = new SecurityException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SecurityException'));\n}\n{\n  SerializationException value = new SerializationException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.SerializationException'));\n}\n{\n  StringException value = new StringException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.StringException'));\n}\n{\n  TransientCursorException value = new TransientCursorException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.TransientCursorException'));\n}\n{\n  TypeException value = new TypeException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.TypeException'));\n}\n{\n  UnexpectedException value = new UnexpectedException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.UnexpectedException'));\n}\n{\n  XmlException value = new XmlException('object-depth');\n  System.assertEquals(true, value.equals(value));\n  System.assertEquals(false, value.equals(null));\n  System.assertEquals(value.hashCode(), value.hashCode());\n  System.assertNotEquals(null, value.hashCode());\n  System.assertNotEquals(null, value.toString());\n  System.assert(value.toString().contains('System.XmlException'));\n}"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
