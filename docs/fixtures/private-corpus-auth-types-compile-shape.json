@@ -1,0 +1,69 @@
+{
+  "name": "private-corpus-auth-types-compile-shape",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "evidence": [
+    {
+      "surfaceId": "apex:Auth.UserData",
+      "symbol": "Auth.UserData",
+      "kind": "check",
+      "notes": "Private registration-handler code constructs and consumes Auth.UserData."
+    },
+    {
+      "surfaceId": "apex:Auth.VerificationMethod",
+      "symbol": "Auth.VerificationMethod",
+      "kind": "check",
+      "notes": "Private self-registration code passes Auth.VerificationMethod values."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration",
+      "symbol": "Auth.AuthConfiguration",
+      "kind": "check",
+      "notes": "Private community-login code constructs Auth.AuthConfiguration."
+    },
+    {
+      "surfaceId": "apex:Auth.VerificationResult",
+      "symbol": "Auth.VerificationResult",
+      "kind": "check",
+      "notes": "Private verification code constructs and consumes Auth.VerificationResult."
+    },
+    {
+      "surfaceId": "apex:Auth.SessionManagement",
+      "symbol": "Auth.SessionManagement",
+      "kind": "check",
+      "notes": "Private session code calls Auth.SessionManagement."
+    },
+    {
+      "surfaceId": "apex:Auth.RegistrationHandler",
+      "symbol": "Auth.RegistrationHandler",
+      "kind": "check",
+      "notes": "Private community registration classes implement Auth.RegistrationHandler."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthToken",
+      "symbol": "Auth.AuthToken",
+      "kind": "check",
+      "notes": "Private social-connection code calls Auth.AuthToken."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/PrivateCorpusAuthShape.cls",
+      "content": "global class PrivateCorpusAuthShape implements Auth.RegistrationHandler { global User createUser(Id portalId, Auth.UserData data) { return null; } global void updateUser(Id userId, Id portalId, Auth.UserData data) {} public static void compileShape() { Auth.UserData data = new Auth.UserData('id', 'first', 'last', 'full', 'email@example.invalid', 'link', 'username', 'provider', 'en_US', 'site', new Map<String,String>()); Auth.VerificationMethod method = Auth.VerificationMethod.EMAIL; Auth.AuthConfiguration configuration = new Auth.AuthConfiguration('https://community.example.invalid', '/start'); Auth.VerificationResult verification = new Auth.VerificationResult(new PageReference('/start'), true, 'ok'); Map<String,String> session = Auth.SessionManagement.getCurrentSession(); Boolean revoked = Auth.AuthToken.revokeAccess('provider-id', 'provider', 'user-id', 'remote-id'); System.assert(data != null || method != null || configuration != null || verification != null || session != null || revoked != null); } }"
+    }
+  ],
+  "command": {
+    "kind": "check"
+  },
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This compile-only fixture proves the exact Auth shapes used by the private corpus and grants zero Salesforce parity credit."
+}
