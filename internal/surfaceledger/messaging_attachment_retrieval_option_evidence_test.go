@@ -10,6 +10,7 @@ import (
 )
 
 var messagingAttachmentRetrievalOptionSurfaceIDs = []string{
+	"apex:Messaging.AttachmentRetrievalOption",
 	"apex:Messaging.AttachmentRetrievalOption.METADATA_ONLY",
 	"apex:Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY",
 	"apex:Messaging.AttachmentRetrievalOption.NONE",

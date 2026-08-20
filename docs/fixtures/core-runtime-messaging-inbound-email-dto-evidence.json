@@ -10,12 +10,14 @@
     {"surfaceId": "apex:Messaging.InboundEmail.AuthenticationResultField.AuthenticationResultField()", "symbol": "Messaging.InboundEmail.AuthenticationResultField()", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.AuthenticationResultField.name", "symbol": "Messaging.InboundEmail.AuthenticationResultField.name", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.AuthenticationResultField.value", "symbol": "Messaging.InboundEmail.AuthenticationResultField.value", "kind": "test"},
+    {"surfaceId": "apex:Messaging.InboundEmail.Header", "symbol": "Messaging.InboundEmail.Header", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.authenticationResults", "symbol": "Messaging.InboundEmail.authenticationResults", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.BinaryAttachment.BinaryAttachment()", "symbol": "Messaging.InboundEmail.BinaryAttachment()", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.BinaryAttachment.body", "symbol": "Messaging.InboundEmail.BinaryAttachment.body", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.BinaryAttachment.fileName", "symbol": "Messaging.InboundEmail.BinaryAttachment.fileName", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.BinaryAttachment.headers", "symbol": "Messaging.InboundEmail.BinaryAttachment.headers", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.BinaryAttachment.mimeTypeSubType", "symbol": "Messaging.InboundEmail.BinaryAttachment.mimeTypeSubType", "kind": "test"},
+    {"surfaceId": "apex:Messaging.InboundEmail.TextAttachment", "symbol": "Messaging.InboundEmail.TextAttachment", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.TextAttachment.TextAttachment()", "symbol": "Messaging.InboundEmail.TextAttachment()", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.TextAttachment.body", "symbol": "Messaging.InboundEmail.TextAttachment.body", "kind": "test"},
     {"surfaceId": "apex:Messaging.InboundEmail.TextAttachment.bodyIsTruncated", "symbol": "Messaging.InboundEmail.TextAttachment.bodyIsTruncated", "kind": "test"},
@@ -61,5 +63,8 @@
       "failed": 0,
       "errors": 0
     }
-  }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Inbound email DTO state is covered by deterministic local execution; this fixture makes no Salesforce parity claim."
 }
