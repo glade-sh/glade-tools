@@ -1,0 +1,66 @@
+{
+  "name": "core-runtime-database-result-dto-local-evidence",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade-local Database result DTO property aliases and Object methods. It does not establish Salesforce property-alias availability and grants zero Salesforce parity credit.",
+  "evidence": [
+    {"surfaceId": "apex:Database.DeleteResult.equals(Object)", "symbol": "Database.DeleteResult.equals", "kind": "test"},
+    {"surfaceId": "apex:Database.DeleteResult.errors", "symbol": "Database.DeleteResult.errors", "kind": "test"},
+    {"surfaceId": "apex:Database.DeleteResult.hashCode()", "symbol": "Database.DeleteResult.hashCode", "kind": "test"},
+    {"surfaceId": "apex:Database.DeleteResult.id", "symbol": "Database.DeleteResult.id", "kind": "test"},
+    {"surfaceId": "apex:Database.DeleteResult.success", "symbol": "Database.DeleteResult.success", "kind": "test"},
+    {"surfaceId": "apex:Database.DeleteResult.toString()", "symbol": "Database.DeleteResult.toString", "kind": "test"},
+    {"surfaceId": "apex:Database.EmptyRecycleBinResult", "symbol": "Database.EmptyRecycleBinResult", "kind": "test"},
+    {"surfaceId": "apex:Database.EmptyRecycleBinResult.equals(Object)", "symbol": "Database.EmptyRecycleBinResult.equals", "kind": "test"},
+    {"surfaceId": "apex:Database.EmptyRecycleBinResult.errors", "symbol": "Database.EmptyRecycleBinResult.errors", "kind": "test"},
+    {"surfaceId": "apex:Database.EmptyRecycleBinResult.hashCode()", "symbol": "Database.EmptyRecycleBinResult.hashCode", "kind": "test"},
+    {"surfaceId": "apex:Database.EmptyRecycleBinResult.id", "symbol": "Database.EmptyRecycleBinResult.id", "kind": "test"},
+    {"surfaceId": "apex:Database.EmptyRecycleBinResult.success", "symbol": "Database.EmptyRecycleBinResult.success", "kind": "test"},
+    {"surfaceId": "apex:Database.EmptyRecycleBinResult.toString()", "symbol": "Database.EmptyRecycleBinResult.toString", "kind": "test"},
+    {"surfaceId": "apex:Database.MergeResult.equals(Object)", "symbol": "Database.MergeResult.equals", "kind": "test"},
+    {"surfaceId": "apex:Database.MergeResult.hashCode()", "symbol": "Database.MergeResult.hashCode", "kind": "test"},
+    {"surfaceId": "apex:Database.MergeResult.id", "symbol": "Database.MergeResult.id", "kind": "test"},
+    {"surfaceId": "apex:Database.MergeResult.mergedrecordids", "symbol": "Database.MergeResult.mergedrecordids", "kind": "test"},
+    {"surfaceId": "apex:Database.MergeResult.success", "symbol": "Database.MergeResult.success", "kind": "test"},
+    {"surfaceId": "apex:Database.MergeResult.toString()", "symbol": "Database.MergeResult.toString", "kind": "test"},
+    {"surfaceId": "apex:Database.MergeResult.updatedrelatedids", "symbol": "Database.MergeResult.updatedrelatedids", "kind": "test"},
+    {"surfaceId": "apex:Database.SaveResult.equals(Object)", "symbol": "Database.SaveResult.equals", "kind": "test"},
+    {"surfaceId": "apex:Database.SaveResult.errors", "symbol": "Database.SaveResult.errors", "kind": "test"},
+    {"surfaceId": "apex:Database.SaveResult.hashCode()", "symbol": "Database.SaveResult.hashCode", "kind": "test"},
+    {"surfaceId": "apex:Database.SaveResult.id", "symbol": "Database.SaveResult.id", "kind": "test"},
+    {"surfaceId": "apex:Database.SaveResult.success", "symbol": "Database.SaveResult.success", "kind": "test"},
+    {"surfaceId": "apex:Database.SaveResult.toString()", "symbol": "Database.SaveResult.toString", "kind": "test"},
+    {"surfaceId": "apex:Database.UndeleteResult", "symbol": "Database.UndeleteResult", "kind": "test"},
+    {"surfaceId": "apex:Database.UndeleteResult.equals(Object)", "symbol": "Database.UndeleteResult.equals", "kind": "test"},
+    {"surfaceId": "apex:Database.UndeleteResult.errors", "symbol": "Database.UndeleteResult.errors", "kind": "test"},
+    {"surfaceId": "apex:Database.UndeleteResult.hashCode()", "symbol": "Database.UndeleteResult.hashCode", "kind": "test"},
+    {"surfaceId": "apex:Database.UndeleteResult.id", "symbol": "Database.UndeleteResult.id", "kind": "test"},
+    {"surfaceId": "apex:Database.UndeleteResult.success", "symbol": "Database.UndeleteResult.success", "kind": "test"},
+    {"surfaceId": "apex:Database.UndeleteResult.toString()", "symbol": "Database.UndeleteResult.toString", "kind": "test"},
+    {"surfaceId": "apex:Database.UpsertResult.created", "symbol": "Database.UpsertResult.created", "kind": "test"},
+    {"surfaceId": "apex:Database.UpsertResult.equals(Object)", "symbol": "Database.UpsertResult.equals", "kind": "test"},
+    {"surfaceId": "apex:Database.UpsertResult.errors", "symbol": "Database.UpsertResult.errors", "kind": "test"},
+    {"surfaceId": "apex:Database.UpsertResult.hashCode()", "symbol": "Database.UpsertResult.hashCode", "kind": "test"},
+    {"surfaceId": "apex:Database.UpsertResult.id", "symbol": "Database.UpsertResult.id", "kind": "test"},
+    {"surfaceId": "apex:Database.UpsertResult.success", "symbol": "Database.UpsertResult.success", "kind": "test"},
+    {"surfaceId": "apex:Database.UpsertResult.toString()", "symbol": "Database.UpsertResult.toString", "kind": "test"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/classes/DatabaseResultDTOLocalEvidenceTest.cls",
+      "content": "@isTest private class DatabaseResultDTOLocalEvidenceTest { @isTest static void resultPropertiesAndObjectMethodsExecute() { Account base = new Account(Name = 'Base'); Database.SaveResult saved = Database.insert(base, false); System.assertEquals(saved.isSuccess(), saved.success); System.assertEquals(saved.getId(), saved.id); System.assertEquals(saved.getErrors(), saved.errors); System.assert(saved.equals(saved)); System.assertNotEquals(null, saved.hashCode()); System.assertNotEquals(null, saved.toString()); Account upsertRow = new Account(Name = 'Upsert'); Database.UpsertResult upserted = Database.upsert(upsertRow, false); System.assertEquals(upserted.isCreated(), upserted.created); System.assertEquals(upserted.isSuccess(), upserted.success); System.assertEquals(upserted.getId(), upserted.id); System.assertEquals(upserted.getErrors(), upserted.errors); System.assert(upserted.equals(upserted)); System.assertNotEquals(null, upserted.hashCode()); System.assertNotEquals(null, upserted.toString()); Account master = new Account(Name = 'Master'); insert master; Account duplicate = new Account(Name = 'Duplicate'); insert duplicate; Database.MergeResult merged = Database.merge(master, duplicate, false); System.assertEquals(merged.isSuccess(), merged.success); System.assertEquals(merged.getId(), merged.id); System.assertEquals(merged.getMergedRecordIds(), merged.mergedrecordids); System.assertEquals(merged.getUpdatedRelatedIds(), merged.updatedrelatedids); System.assert(merged.equals(merged)); System.assertNotEquals(null, merged.hashCode()); System.assertNotEquals(null, merged.toString()); Account recycle = new Account(Name = 'Recycle'); insert recycle; Database.DeleteResult deleted = Database.delete(recycle, false); System.assertEquals(deleted.isSuccess(), deleted.success); System.assertEquals(deleted.getId(), deleted.id); System.assertEquals(deleted.getErrors(), deleted.errors); System.assert(deleted.equals(deleted)); System.assertNotEquals(null, deleted.hashCode()); System.assertNotEquals(null, deleted.toString()); Database.UndeleteResult restored = Database.undelete(recycle, false); System.assertEquals(restored.isSuccess(), restored.success); System.assertEquals(restored.getId(), restored.id); System.assertEquals(restored.getErrors(), restored.errors); System.assert(restored.equals(restored)); System.assertNotEquals(null, restored.hashCode()); System.assertNotEquals(null, restored.toString()); Database.delete(recycle, false); Database.EmptyRecycleBinResult emptied = Database.emptyRecycleBin(recycle); System.assertEquals(emptied.isSuccess(), emptied.success); System.assertEquals(emptied.getId(), emptied.id); System.assertEquals(emptied.getErrors(), emptied.errors); System.assert(emptied.equals(emptied)); System.assertNotEquals(null, emptied.hashCode()); System.assertNotEquals(null, emptied.toString()); } }"
+    }
+  ],
+  "command": {"kind": "test"},
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}}
+}
