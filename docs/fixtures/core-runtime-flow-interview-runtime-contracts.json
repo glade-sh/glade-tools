@@ -17,7 +17,7 @@
     },
     {
       "kind": "test",
-      "notes": "start marks the local interview DTO as started without executing declarative Flow.",
+      "notes": "start rejects a missing Flow definition with a catchable exception; declarative Flow execution is not claimed.",
       "surfaceId": "apex:Flow.Interview.start()",
       "symbol": "Flow.Interview.start"
     },
@@ -40,10 +40,10 @@
   "name": "core-runtime-flow-interview-runtime-contracts",
   "salesforceEligible": false,
   "salesforceExclusionClass": "org-configuration-required",
-  "salesforceExclusionReason": "The fixture intentionally names LocalFlow without deploying a Flow definition; Salesforce requires a real Flow metadata target, while this fixture proves Glade's local interview DTO contract.",
+  "salesforceExclusionReason": "The fixture intentionally names LocalFlow without deploying a Flow definition; it proves Glade's local interview DTO and missing-definition rejection, not hosted Flow execution.",
   "source": [
     {
-      "content": "@isTest private class FlowInterviewRuntimeContractsTest { @isTest static void localInterviewDtoKeepsInputs() { Map<String,Object> inputs = new Map<String,Object>{ 'answer' => 42, 'name' => 'Trail' }; Flow.Interview interview = Flow.Interview.createInterview('LocalFlow', inputs); interview.start(); System.assertEquals(42, interview.getVariableValue('answer')); System.assertEquals(null, interview.getVariableValue('missing')); Flow.Interview namespaced = Flow.Interview.createInterview('pkg', 'LocalFlow', inputs); System.assertEquals('Trail', namespaced.getVariableValue('name')); } }",
+      "content": "@isTest private class FlowInterviewRuntimeContractsTest { @isTest static void localInterviewDtoKeepsInputs() { Map<String,Object> inputs = new Map<String,Object>{ 'answer' => 42, 'name' => 'Trail' }; Flow.Interview interview = Flow.Interview.createInterview('LocalFlow', inputs); Boolean caught = false; try { interview.start(); } catch (FlowException e) { caught = true; System.assert(e.getMessage().contains('LocalFlow')); } System.assert(caught); System.assertEquals(42, interview.getVariableValue('answer')); System.assertEquals(null, interview.getVariableValue('missing')); Flow.Interview namespaced = Flow.Interview.createInterview('pkg', 'LocalFlow', inputs); System.assertEquals('Trail', namespaced.getVariableValue('name')); } }",
       "path": "force-app/main/classes/FlowInterviewRuntimeContractsTest.cls"
     }
   ]
