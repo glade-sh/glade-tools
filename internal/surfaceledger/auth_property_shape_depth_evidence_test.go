@@ -43,7 +43,6 @@ var authPropertyShapeDepthIDs = []string{
 	"apex:Auth.OAuthRefreshResult.accessToken",
 	"apex:Auth.OAuthRefreshResult.error",
 	"apex:Auth.OAuthRefreshResult.refreshToken",
-	"apex:Auth.RegistrationHandler.User",
 	"apex:Auth.TokenValidationResult.customErrorMsg",
 	"apex:Auth.TokenValidationResult.data",
 	"apex:Auth.TokenValidationResult.isValid",
