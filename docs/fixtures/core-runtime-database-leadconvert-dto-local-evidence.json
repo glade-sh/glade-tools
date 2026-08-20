@@ -1,0 +1,32 @@
+{
+  "name": "core-runtime-database-leadconvert-dto-local-evidence",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade-local Database.LeadConvert DTO property aliases and Object methods. It does not execute lead conversion and grants zero Salesforce parity credit.",
+  "evidence": [
+    {"surfaceId": "apex:Database.LeadConvert.accountrecord", "symbol": "Database.LeadConvert.accountrecord", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.bypassaccountdedupecheck", "symbol": "Database.LeadConvert.bypassaccountdedupecheck", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.bypasscontactdedupecheck", "symbol": "Database.LeadConvert.bypasscontactdedupecheck", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.contactrecord", "symbol": "Database.LeadConvert.contactrecord", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.convertedstatus", "symbol": "Database.LeadConvert.convertedstatus", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.donotcreateopportunity", "symbol": "Database.LeadConvert.donotcreateopportunity", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.equals(Object)", "symbol": "Database.LeadConvert.equals", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.hashCode()", "symbol": "Database.LeadConvert.hashCode", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.opportunityrecord", "symbol": "Database.LeadConvert.opportunityrecord", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.relatedpersonaccountrecord", "symbol": "Database.LeadConvert.relatedpersonaccountrecord", "kind": "exec"},
+    {"surfaceId": "apex:Database.LeadConvert.toString()", "symbol": "Database.LeadConvert.toString", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.LeadConvert convert = new Database.LeadConvert(); convert.accountrecord = new Account(Name = 'Account'); convert.bypassaccountdedupecheck = true; convert.bypasscontactdedupecheck = false; convert.contactrecord = new Contact(LastName = 'Contact'); convert.convertedstatus = 'Qualified'; convert.donotcreateopportunity = true; convert.opportunityrecord = new Opportunity(Name = 'Opportunity'); convert.relatedpersonaccountrecord = new Account(Name = 'Person'); System.assertEquals(convert.getAccountRecord(), convert.accountrecord); System.assertEquals(convert.getBypassAccountDedupeCheck(), convert.bypassaccountdedupecheck); System.assertEquals(convert.getBypassContactDedupeCheck(), convert.bypasscontactdedupecheck); System.assertEquals(convert.getContactRecord(), convert.contactrecord); System.assertEquals(convert.getConvertedStatus(), convert.convertedstatus); System.assertEquals(convert.isDoNotCreateOpportunity(), convert.donotcreateopportunity); System.assertEquals(convert.getOpportunityRecord(), convert.opportunityrecord); System.assertEquals(convert.getRelatedPersonAccountRecord(), convert.relatedpersonaccountrecord); System.assert(convert.equals(convert)); System.assert(!convert.equals(null)); System.assertEquals(convert.hashCode(), convert.hashCode()); System.assertNotEquals(null, convert.toString());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": ["Database.LeadConvert convert = new Database.LeadConvert(); convert.accountrecord = new Account(Name = 'Account'); convert.bypassaccountdedupecheck = true; convert.bypasscontactdedupecheck = false; convert.contactrecord = new Contact(LastName = 'Contact'); convert.convertedstatus = 'Qualified'; convert.donotcreateopportunity = true; convert.opportunityrecord = new Opportunity(Name = 'Opportunity'); convert.relatedpersonaccountrecord = new Account(Name = 'Person'); System.assertEquals(convert.getAccountRecord(), convert.accountrecord); System.assertEquals(convert.getBypassAccountDedupeCheck(), convert.bypassaccountdedupecheck); System.assertEquals(convert.getBypassContactDedupeCheck(), convert.bypasscontactdedupecheck); System.assertEquals(convert.getContactRecord(), convert.contactrecord); System.assertEquals(convert.getConvertedStatus(), convert.convertedstatus); System.assertEquals(convert.isDoNotCreateOpportunity(), convert.donotcreateopportunity); System.assertEquals(convert.getOpportunityRecord(), convert.opportunityrecord); System.assertEquals(convert.getRelatedPersonAccountRecord(), convert.relatedpersonaccountrecord); System.assert(convert.equals(convert)); System.assert(!convert.equals(null)); System.assertEquals(convert.hashCode(), convert.hashCode()); System.assertNotEquals(null, convert.toString());"]
+  },
+  "expected": {"result": {"debug": null, "ok": true}}
+}
