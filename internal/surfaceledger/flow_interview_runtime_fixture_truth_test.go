@@ -19,7 +19,8 @@ func TestFlowInterviewRuntimeFixtureProvesMissingFlowBoundary(t *testing.T) {
 	}
 	source := fixture.Source[0].Content
 	for _, witness := range []string{
-		"try { interview.start(); } catch (Exception e)",
+		"try { interview.start(); } catch (FlowException e)",
+		"System.assert(e.getMessage().contains('LocalFlow'))",
 		"System.assert(caught)",
 		"System.assertEquals(42, interview.getVariableValue('answer'))",
 	} {
@@ -27,10 +28,17 @@ func TestFlowInterviewRuntimeFixtureProvesMissingFlowBoundary(t *testing.T) {
 			t.Errorf("fixture source lacks %q", witness)
 		}
 	}
+	foundStart := false
 	for _, row := range fixture.Evidence {
 		if row.SurfaceID == "apex:Flow.Interview.start()" && !strings.Contains(row.Notes, "rejects a missing Flow definition") {
 			t.Fatalf("start evidence note overclaims runtime: %q", row.Notes)
 		}
+		if row.SurfaceID == "apex:Flow.Interview.start()" {
+			foundStart = true
+		}
+	}
+	if !foundStart {
+		t.Fatal("fixture lacks Flow.Interview.start() evidence row")
 	}
 	result, err := compat.Run(fixture)
 	if err != nil || !result.OK {
