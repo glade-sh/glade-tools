@@ -51,6 +51,12 @@ if [[ -n "$private_status" ]]; then
           .checks.successfulCommands, .checks.totalProjects,
           .observedTests.passed, .observedTests.total]
          | all(type == "number" and isfinite and floor == . and . >= 0))
+    and ((.validSourceSupport // null) == null or
+         ([.validSourceSupport.completeProjects, .validSourceSupport.totalProjects, .validSourceSupport.remainingProjects]
+          | all(type == "number" and isfinite and floor == . and . >= 0)))
+    and ((.accounting // null) == null or
+         ([.accounting.accountedProjects, .accounting.totalProjects, .accounting.unclassifiedProjects]
+          | all(type == "number" and isfinite and floor == . and . >= 0)))
   ' "$private_status" >/dev/null || { echo "private corpus status is invalid" >&2; exit 1; }
 fi
 if [[ -n "$release" ]]; then
@@ -125,7 +131,7 @@ inventory_percent="$(percent "$accounted" "$ledger_total")"
 local_percent="$(percent "$local_required_complete" "$required_rows")"
 parity_percent="$(percent "$parity_complete" "$runtime_required")"
 
-corpus_line='Private corpus: **STALE / MISSING** — run the current candidate before claiming completion.'
+corpus_line='Formal corpus assurance: **STALE / MISSING** — run the current candidate before claiming completion.'
 corpus_done=0
 if [[ -n "$corpus" ]]; then
   corpus_total="$(jq -r '.repositorySummaries | length' "$corpus")"
@@ -140,7 +146,7 @@ if [[ -n "$corpus" ]]; then
         )
     ] | length
   ' "$corpus")"
-  corpus_line="Private corpus: **$(percent "$corpus_complete" "$corpus_total")%** ($(commify "$corpus_complete") / $(commify "$corpus_total") repositories complete)"
+  corpus_line="Formal corpus assurance: **$(percent "$corpus_complete" "$corpus_total")%** ($(commify "$corpus_complete") / $(commify "$corpus_total") repositories complete)"
   [[ "$corpus_total" -gt 0 && "$corpus_complete" -eq "$corpus_total" ]] && corpus_done=1
 fi
 
@@ -157,6 +163,22 @@ EOF
     "$(percent "$private_complete" "$private_total")" "$(commify "$private_complete")" "$(commify "$private_total")" "$(commify "$private_remaining")" \
     "$(percent "$private_checks" "$private_check_total")" "$(commify "$private_checks")" "$(commify "$private_check_total")" \
     "$(percent "$private_tests_passed" "$private_tests_total")" "$(commify "$private_tests_passed")" "$(commify "$private_tests_total")")
+  if jq -e '.validSourceSupport != null' "$private_status" >/dev/null; then
+    read -r valid_complete valid_total valid_remaining <<EOF
+$(jq -r '[.validSourceSupport.completeProjects, .validSourceSupport.totalProjects, .validSourceSupport.remainingProjects] | @tsv' "$private_status")
+EOF
+    [[ "$valid_total" -gt 0 && "$valid_complete" -le "$valid_total" && "$valid_remaining" -eq $((valid_total - valid_complete)) ]] || { echo "valid-source private support counts do not reconcile" >&2; exit 1; }
+    private_project_lines+=$(printf '\n- Salesforce-valid private support: **%s%%** (%s / %s complete; %s remaining)' \
+      "$(percent "$valid_complete" "$valid_total")" "$(commify "$valid_complete")" "$(commify "$valid_total")" "$(commify "$valid_remaining")")
+  fi
+  if jq -e '.accounting != null' "$private_status" >/dev/null; then
+    read -r classified classified_total unclassified <<EOF
+$(jq -r '[.accounting.accountedProjects, .accounting.totalProjects, .accounting.unclassifiedProjects] | @tsv' "$private_status")
+EOF
+    [[ "$classified_total" -gt 0 && "$classified" -le "$classified_total" && "$unclassified" -eq $((classified_total - classified)) ]] || { echo "private project accounting counts do not reconcile" >&2; exit 1; }
+    private_project_lines+=$(printf '\n- Private project accounting: **%s%%** (%s / %s classified; %s unclassified)' \
+      "$(percent "$classified" "$classified_total")" "$(commify "$classified")" "$(commify "$classified_total")" "$(commify "$unclassified")")
+  fi
   [[ "$private_complete" -eq "$private_total" ]] || private_project_done=0
 fi
 
