@@ -14,15 +14,27 @@ import (
 const exceptionObjectMethodsFixture = "core-runtime-g3-exception-object-method-depth.json"
 
 var exceptionObjectMethodsTypes = []string{
+	"AsyncException",
+	"Exception",
+	"ExternalObjectException",
+	"FatalCursorException",
+	"FinalException",
+	"FlowException",
+	"FormulaEvaluationException",
+	"FormulaValidationException",
+	"HandledException",
 	"InvalidReadOnlyUserDmlException",
+	"JSONException",
 	"LicenseException",
 	"LimitException",
 	"ListException",
+	"MathException",
 	"NoSuchElementException",
 	"NullPointerException",
 	"PlatformCacheException",
 	"PolyglotException",
 	"ProcedureException",
+	"QueryException",
 	"RequiredFeatureMissingException",
 	"SObjectException",
 	"SearchException",
@@ -33,6 +45,14 @@ var exceptionObjectMethodsTypes = []string{
 	"TypeException",
 	"UnexpectedException",
 	"XmlException",
+}
+
+var exceptionObjectMethodsSkippedIDs = map[string]bool{
+	"apex:System.AsyncException.equals(Object)":          true,
+	"apex:System.AsyncException.hashCode()":              true,
+	"apex:System.Exception.toString()":                   true,
+	"apex:System.ExternalObjectException.equals(Object)": true,
+	"apex:System.ExternalObjectException.hashCode()":     true,
 }
 
 func TestExceptionObjectMethodsHaveExactLocalFixtureOwnership(t *testing.T) {
@@ -49,13 +69,18 @@ func TestExceptionObjectMethodsHaveExactLocalFixtureOwnership(t *testing.T) {
 		t.Fatalf("fixture execution envelope = %#v", fixture)
 	}
 
-	wantIDs := make([]string, 0, len(exceptionObjectMethodsTypes)*3)
+	wantIDs := make([]string, 0, len(exceptionObjectMethodsTypes)*3-len(exceptionObjectMethodsSkippedIDs))
 	for _, typeName := range exceptionObjectMethodsTypes {
-		wantIDs = append(wantIDs,
-			"apex:System."+typeName+".equals(Object)",
-			"apex:System."+typeName+".hashCode()",
-			"apex:System."+typeName+".toString()",
-		)
+		ids := []string{
+			"apex:System." + typeName + ".equals(Object)",
+			"apex:System." + typeName + ".hashCode()",
+			"apex:System." + typeName + ".toString()",
+		}
+		for _, id := range ids {
+			if !exceptionObjectMethodsSkippedIDs[id] {
+				wantIDs = append(wantIDs, id)
+			}
+		}
 	}
 	if len(fixture.Evidence) != len(wantIDs) {
 		t.Fatalf("raw evidence rows = %d, want %d", len(fixture.Evidence), len(wantIDs))
@@ -89,6 +114,19 @@ func TestExceptionObjectMethodsHaveExactLocalFixtureOwnership(t *testing.T) {
 
 	source := fixture.Source[0].Content
 	for _, typeName := range exceptionObjectMethodsTypes {
+		if typeName == "Exception" {
+			block := `{
+  Exception value = new AsyncException('object-depth');
+  System.assertEquals(true, value.equals(value));
+  System.assertEquals(false, value.equals(null));
+  System.assertEquals(value.hashCode(), value.hashCode());
+  System.assertNotEquals(null, value.hashCode());
+}`
+			if !strings.Contains(source, block) {
+				t.Fatal("source lacks concrete-subclass Object-method witness block for abstract Exception")
+			}
+			continue
+		}
 		block := fmt.Sprintf(`{
   %[1]s value = new %[1]s('object-depth');
   System.assertEquals(true, value.equals(value));
