@@ -1,0 +1,30 @@
+{
+  "command": {
+    "args": ["applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl('/home');"],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "Glade resolves the signature but explicitly rejects the unmodeled employee login URL lookup.",
+      "surfaceId": "apex:applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl(String)",
+      "symbol": "applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl(String)"
+    }
+  ],
+  "expected": {
+    "error": {
+      "message": "unsupported call \"applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl\"",
+      "type": "UnsupportedFeature"
+    }
+  },
+  "name": "core-runtime-applauncher-employee-login-url-unsupported",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "applauncher is a Salesforce-internal namespace rejected by the compile oracle; this fixture records only Glade's exact local rejection and claims zero Salesforce parity.",
+  "source": [
+    {
+      "content": "applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl('/home');",
+      "path": "anonymous.apex"
+    }
+  ]
+}
