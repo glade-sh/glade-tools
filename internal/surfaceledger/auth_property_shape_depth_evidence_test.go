@@ -13,7 +13,8 @@ import (
 const authPropertyShapeDepthFixture = "core-runtime-g3-auth-property-shape-depth.json"
 
 // Frozen from accepted depth02 SOURCE_PROFILE_PRIVATE_USAGE plus SURFACE_LEDGER:
-// namespace Auth, compile-shape-required, evidence none, ledger kind property.
+// namespace Auth, compile-shape-required, evidence none, ledger kind property,
+// excluding the undocumented Glade-only Auth.RegistrationHandler.User symbol.
 var authPropertyShapeDepthIDs = []string{
 	"apex:Auth.AuthProviderCallbackState.body",
 	"apex:Auth.AuthProviderCallbackState.headers",
@@ -85,6 +86,9 @@ func TestAuthPropertyShapeDepthHasExactLocalFixtureOwnership(t *testing.T) {
 		t.Fatalf("raw evidence rows = %d, want %d", len(fixture.Evidence), len(authPropertyShapeDepthIDs))
 	}
 	for _, item := range fixture.Evidence {
+		if item.SurfaceID == "apex:Auth.RegistrationHandler.User" {
+			t.Fatal("undocumented Auth.RegistrationHandler.User is not evidence-eligible")
+		}
 		if item.Kind != "shape" {
 			t.Fatalf("raw evidence %s kind = %q, want shape", item.SurfaceID, item.Kind)
 		}
