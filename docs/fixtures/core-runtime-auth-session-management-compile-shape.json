@@ -1,0 +1,36 @@
+{
+  "name": "core-runtime-auth-session-management-compile-shape",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "evidence": [
+    {"surfaceId":"apex:Auth.SessionManagement.finishLoginDiscovery(Auth.LoginDiscoveryMethod,Id)","symbol":"Auth.SessionManagement.finishLoginDiscovery","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.finishLoginFlow()","symbol":"Auth.SessionManagement.finishLoginFlow","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.finishLoginFlow(String)","symbol":"Auth.SessionManagement.finishLoginFlow","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.generateVerificationUrl(Auth.VerificationPolicy,String,String)","symbol":"Auth.SessionManagement.generateVerificationUrl","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.getLightningLoginEligibility(Id)","symbol":"Auth.SessionManagement.getLightningLoginEligibility","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.getQrCode()","symbol":"Auth.SessionManagement.getQrCode","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.getRequiredSessionLevelForProfile(String)","symbol":"Auth.SessionManagement.getRequiredSessionLevelForProfile","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.ignoreForConcurrentSessionLimit(Object)","symbol":"Auth.SessionManagement.ignoreForConcurrentSessionLimit","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.inOrgNetworkRange(String)","symbol":"Auth.SessionManagement.inOrgNetworkRange","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.isIpAllowedForProfile(String,String)","symbol":"Auth.SessionManagement.isIpAllowedForProfile","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.setSessionLevel(Auth.SessionLevel)","symbol":"Auth.SessionManagement.setSessionLevel","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.validateTotpTokenForKey(String,String)","symbol":"Auth.SessionManagement.validateTotpTokenForKey","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.validateTotpTokenForKey(String,String,String)","symbol":"Auth.SessionManagement.validateTotpTokenForKey","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.validateTotpTokenForUser(String)","symbol":"Auth.SessionManagement.validateTotpTokenForUser","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.validateTotpTokenForUser(String,String)","symbol":"Auth.SessionManagement.validateTotpTokenForUser","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."},
+    {"surfaceId":"apex:Auth.SessionManagement.verifyDeviceFlow(String,String)","symbol":"Auth.SessionManagement.verifyDeviceFlow","kind":"shape","notes":"Reviewed local compile-shape boundary; execution remains unsupported."}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/AuthSessionManagementShape.cls",
+      "content": "public class AuthSessionManagementShape { public static void compileShape() { Auth.SessionManagement.finishLoginDiscovery(null, null); Auth.SessionManagement.finishLoginFlow(); Auth.SessionManagement.finishLoginFlow('start'); Auth.SessionManagement.generateVerificationUrl(null, 'description', '/destination'); Auth.SessionManagement.getLightningLoginEligibility(null); Auth.SessionManagement.getQrCode(); Auth.SessionManagement.getRequiredSessionLevelForProfile('profile'); Auth.SessionManagement.ignoreForConcurrentSessionLimit(null); Auth.SessionManagement.inOrgNetworkRange('10.0.0.1'); Auth.SessionManagement.isIpAllowedForProfile('10.0.0.1', 'profile'); Auth.SessionManagement.setSessionLevel(null); Auth.SessionManagement.validateTotpTokenForKey('key', 'token'); Auth.SessionManagement.validateTotpTokenForKey('key', 'token', 'user'); Auth.SessionManagement.validateTotpTokenForUser('user'); Auth.SessionManagement.validateTotpTokenForUser('user', 'token'); Auth.SessionManagement.verifyDeviceFlow('user-code', 'start'); } }"
+    }
+  ],
+  "command": {
+    "kind": "check"
+  },
+  "expected": {"result": {"diagnostics": 0, "files": 1, "ok": true, "types": 1}},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This compile-only fixture records a reviewed Auth.SessionManagement compile-shape boundary; execution remains unsupported and this grants zero Salesforce parity credit."
+}
