@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-connectapi-type-shape-depth",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "evidence": [
+    {"surfaceId":"apex:ConnectApi.ChatterUsers","symbol":"ConnectApi.ChatterUsers","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ConnectApiException","symbol":"ConnectApi.ConnectApiException","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.CredentialAuthenticationProtocol","symbol":"ConnectApi.CredentialAuthenticationProtocol","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.CredentialPrincipalType","symbol":"ConnectApi.CredentialPrincipalType","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ExternalCredential","symbol":"ConnectApi.ExternalCredential","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ExternalCredentialInput","symbol":"ConnectApi.ExternalCredentialInput","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ExternalCredentialPrincipal","symbol":"ConnectApi.ExternalCredentialPrincipal","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ExternalCredentialPrincipalInput","symbol":"ConnectApi.ExternalCredentialPrincipalInput","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ManagedContent","symbol":"ConnectApi.ManagedContent","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ManagedContentNodeValue","symbol":"ConnectApi.ManagedContentNodeValue","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ManagedContentVersion","symbol":"ConnectApi.ManagedContentVersion","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.ManagedContentVersionCollection","symbol":"ConnectApi.ManagedContentVersionCollection","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.NamedCredential","symbol":"ConnectApi.NamedCredential","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.NamedCredentialCalloutOptions","symbol":"ConnectApi.NamedCredentialCalloutOptions","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.NamedCredentialCalloutOptionsInput","symbol":"ConnectApi.NamedCredentialCalloutOptionsInput","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.NamedCredentialInput","symbol":"ConnectApi.NamedCredentialInput","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.NamedCredentialType","symbol":"ConnectApi.NamedCredentialType","kind":"shape"},
+    {"surfaceId":"apex:ConnectApi.NamedCredentials","symbol":"ConnectApi.NamedCredentials","kind":"shape"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/ConnectAPITypeShapeDepth.cls",
+      "content": "public class ConnectAPITypeShapeDepth { ConnectApi.ChatterUsers chatterUsers; ConnectApi.ConnectApiException connectApiException; ConnectApi.CredentialAuthenticationProtocol credentialAuthenticationProtocol; ConnectApi.CredentialPrincipalType credentialPrincipalType; ConnectApi.ExternalCredential externalCredential; ConnectApi.ExternalCredentialInput externalCredentialInput; ConnectApi.ExternalCredentialPrincipal externalCredentialPrincipal; ConnectApi.ExternalCredentialPrincipalInput externalCredentialPrincipalInput; ConnectApi.ManagedContent managedContent; ConnectApi.ManagedContentNodeValue managedContentNodeValue; ConnectApi.ManagedContentVersion managedContentVersion; ConnectApi.ManagedContentVersionCollection managedContentVersionCollection; ConnectApi.NamedCredential namedCredential; ConnectApi.NamedCredentialCalloutOptions namedCredentialCalloutOptions; ConnectApi.NamedCredentialCalloutOptionsInput namedCredentialCalloutOptionsInput; ConnectApi.NamedCredentialInput namedCredentialInput; ConnectApi.NamedCredentialType namedCredentialType; ConnectApi.NamedCredentials namedCredentials; }"
+    }
+  ],
+  "command": {"kind":"check"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local ConnectApi type compile shape only. It does not invoke hosted ConnectApi or named-credential services and grants zero Salesforce parity credit."
+}
