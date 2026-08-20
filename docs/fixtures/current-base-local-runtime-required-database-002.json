@@ -16,6 +16,21 @@
     },
     {
       "kind": "test",
+      "surfaceId": "apex:Database.Error.equals(Object)",
+      "symbol": "Database.Error.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.Error.hashCode()",
+      "symbol": "Database.Error.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.Error.toString()",
+      "symbol": "Database.Error.toString"
+    },
+    {
+      "kind": "test",
       "surfaceId": "apex:Database.Errors",
       "symbol": "Database.Errors"
     },
@@ -46,6 +61,21 @@
     },
     {
       "kind": "test",
+      "surfaceId": "apex:Database.GetDeletedResult.equals(Object)",
+      "symbol": "Database.GetDeletedResult.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.GetDeletedResult.hashCode()",
+      "symbol": "Database.GetDeletedResult.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.GetDeletedResult.toString()",
+      "symbol": "Database.GetDeletedResult.toString"
+    },
+    {
+      "kind": "test",
       "surfaceId": "apex:Database.GetUpdatedResult",
       "symbol": "Database.GetUpdatedResult"
     },
@@ -63,6 +93,21 @@
       "kind": "test",
       "surfaceId": "apex:Database.GetUpdatedResult.latestdatecovered",
       "symbol": "Database.GetUpdatedResult.latestdatecovered"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.GetUpdatedResult.equals(Object)",
+      "symbol": "Database.GetUpdatedResult.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.GetUpdatedResult.hashCode()",
+      "symbol": "Database.GetUpdatedResult.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.GetUpdatedResult.toString()",
+      "symbol": "Database.GetUpdatedResult.toString"
     },
     {
       "kind": "test",
@@ -138,6 +183,21 @@
       "kind": "test",
       "surfaceId": "apex:Database.MergeRequest",
       "symbol": "Database.MergeRequest"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.MergeRequest.equals(Object)",
+      "symbol": "Database.MergeRequest.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.MergeRequest.hashCode()",
+      "symbol": "Database.MergeRequest.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Database.MergeRequest.toString()",
+      "symbol": "Database.MergeRequest.toString"
     }
   ],
   "expected": {
@@ -154,14 +214,14 @@
   "notes": "Current-base lane current-base-local-runtime-required-Database-002: deterministic local error, sync-window DTO, lead-conversion result, locale, and namespace-shape contracts for the missing surface rows.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-002",
-    "selectedRowCount": 27
+    "selectedRowCount": 39
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
   "salesforceExclusionReason": "The fixture exercises locally constructible Database result DTOs and null-only shape presence; it is not a valid Salesforce compile/probe oracle.",
   "source": [
     {
-      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabase002Test { @isTest static void missingDatabaseTwoContracts() { Database.Error error = new Database.Error(); error.message = 'bad'; error.statuscode = System.StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION; System.assertEquals('bad', error.message); System.assertEquals('FIELD_CUSTOM_VALIDATION_EXCEPTION', String.valueOf(error.statuscode)); Object errorsType = (Database.Errors)null; System.assertEquals(null, errorsType); Database.GetDeletedResult deleted = new Database.GetDeletedResult(); deleted.deletedrecords = new List<Database.DeletedRecord>{new Database.DeletedRecord()}; deleted.earliestdateavailable = Date.today().addDays(-1); deleted.latestdatecovered = Date.today(); System.assertEquals(1, deleted.deletedrecords.size()); System.assertEquals(Date.today(), deleted.latestdatecovered); Database.GetUpdatedResult updated = new Database.GetUpdatedResult(); updated.ids = new List<Id>{'001000000000001AAA'}; updated.latestdatecovered = Date.today(); System.assertEquals(1, updated.ids.size()); System.assertEquals(Date.today(), updated.latestdatecovered); Database.LeadConvertResult leadResult = new Database.LeadConvertResult(); leadResult.accountid = '001000000000001AAA'; leadResult.contactid = '003000000000001AAA'; leadResult.leadid = '00Q000000000001AAA'; leadResult.opportunityid = '006000000000001AAA'; leadResult.relatedpersonaccountid = '001000000000002AAA'; leadResult.success = true; leadResult.errors = new List<Database.Error>(); System.assertEquals('001000000000001AAA', leadResult.accountid); System.assertEquals('003000000000001AAA', leadResult.contactid); System.assertEquals('00Q000000000001AAA', leadResult.leadid); System.assertEquals('006000000000001AAA', leadResult.opportunityid); System.assertEquals('001000000000002AAA', leadResult.relatedpersonaccountid); System.assertEquals(true, leadResult.success); System.assertEquals(0, leadResult.errors.size()); System.assert(leadResult.equals(leadResult)); System.assertEquals(leadResult.hashCode(), leadResult.hashCode()); System.assertNotEquals(null, leadResult.toString()); Database.LocaleOptions locale = new Database.LocaleOptions(); System.assertNotEquals(null, locale); Database.MergeRequest mergeRequest = new Database.MergeRequest(); System.assertNotEquals(null, mergeRequest); } }",
+      "content": "@isTest private class CurrentBaseLocalRuntimeRequiredDatabase002Test { @isTest static void missingDatabaseTwoContracts() { Database.Error error = new Database.Error(); error.message = 'bad'; error.statuscode = System.StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION; System.assertEquals('bad', error.message); System.assertEquals('FIELD_CUSTOM_VALIDATION_EXCEPTION', String.valueOf(error.statuscode)); System.assert(error.equals(error)); System.assertEquals(false, error.equals(null)); System.assertEquals(error.hashCode(), error.hashCode()); System.assertNotEquals(null, error.toString()); Object errorsType = (Database.Errors)null; System.assertEquals(null, errorsType); Database.GetDeletedResult deleted = new Database.GetDeletedResult(); deleted.deletedrecords = new List<Database.DeletedRecord>{new Database.DeletedRecord()}; deleted.earliestdateavailable = Date.today().addDays(-1); deleted.latestdatecovered = Date.today(); System.assertEquals(1, deleted.deletedrecords.size()); System.assertEquals(Date.today(), deleted.latestdatecovered); System.assert(deleted.equals(deleted)); System.assertEquals(false, deleted.equals(null)); System.assertEquals(deleted.hashCode(), deleted.hashCode()); System.assertNotEquals(null, deleted.toString()); Database.GetUpdatedResult updated = new Database.GetUpdatedResult(); updated.ids = new List<Id>{'001000000000001AAA'}; updated.latestdatecovered = Date.today(); System.assertEquals(1, updated.ids.size()); System.assertEquals(Date.today(), updated.latestdatecovered); System.assert(updated.equals(updated)); System.assertEquals(false, updated.equals(null)); System.assertEquals(updated.hashCode(), updated.hashCode()); System.assertNotEquals(null, updated.toString()); Database.LeadConvertResult leadResult = new Database.LeadConvertResult(); leadResult.accountid = '001000000000001AAA'; leadResult.contactid = '003000000000001AAA'; leadResult.leadid = '00Q000000000001AAA'; leadResult.opportunityid = '006000000000001AAA'; leadResult.relatedpersonaccountid = '001000000000002AAA'; leadResult.success = true; leadResult.errors = new List<Database.Error>(); System.assertEquals('001000000000001AAA', leadResult.accountid); System.assertEquals('003000000000001AAA', leadResult.contactid); System.assertEquals('00Q000000000001AAA', leadResult.leadid); System.assertEquals('006000000000001AAA', leadResult.opportunityid); System.assertEquals('001000000000002AAA', leadResult.relatedpersonaccountid); System.assertEquals(true, leadResult.success); System.assertEquals(0, leadResult.errors.size()); System.assert(leadResult.equals(leadResult)); System.assertEquals(leadResult.hashCode(), leadResult.hashCode()); System.assertNotEquals(null, leadResult.toString()); Database.LocaleOptions locale = new Database.LocaleOptions(); System.assertNotEquals(null, locale); Database.MergeRequest mergeRequest = new Database.MergeRequest(); System.assertNotEquals(null, mergeRequest); System.assert(mergeRequest.equals(mergeRequest)); System.assertEquals(false, mergeRequest.equals(null)); System.assertEquals(mergeRequest.hashCode(), mergeRequest.hashCode()); System.assertNotEquals(null, mergeRequest.toString()); } }",
       "path": "force-app/main/classes/CurrentBaseLocalRuntimeRequiredDatabase002Test.cls"
     }
   ]
