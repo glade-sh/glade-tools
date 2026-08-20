@@ -23,7 +23,7 @@ func TestSOSLReturningWhereFixtureCoversInPredicate(t *testing.T) {
 			source = file.Content
 		}
 	}
-	for _, want := range []string{"WHERE Name IN (\\'Beta\\')", "System.assertEquals(beta.Id, soslInRows[0].Id)"} {
+	for _, want := range []string{"new List<Id>{beta.Id, alpha.Id}", "WHERE Name IN (\\'Beta\\')", "System.assertEquals(beta.Id, soslInRows[0].Id)"} {
 		if !strings.Contains(source, want) {
 			t.Fatalf("fixture source missing %q", want)
 		}

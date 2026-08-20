@@ -391,7 +391,7 @@
       "path": "force-app/main/classes/QueryRuntimeSOQLSOSLGuideBehaviorTest.cls"
     },
     {
-      "content": "@isTest private class QueryRuntimeSOSLReturningWhereInTest { @isTest static void filtersReturningRowsWithInPredicate() { Account beta = new Account(Name = 'Beta'); insert beta; Test.setFixedSearchResults(new List<Id>{beta.Id}); List<Account> soslInRows = (List<Account>)Search.query('FIND {Account*} IN ALL FIELDS RETURNING Account(Id, Name WHERE Name IN (\\'Beta\\'))')[0]; System.assertEquals(1, soslInRows.size()); System.assertEquals(beta.Id, soslInRows[0].Id); } }",
+      "content": "@isTest private class QueryRuntimeSOSLReturningWhereInTest { @isTest static void filtersReturningRowsWithInPredicate() { Account beta = new Account(Name = 'Beta'); Account alpha = new Account(Name = 'Alpha'); insert new List<Account>{beta, alpha}; Test.setFixedSearchResults(new List<Id>{beta.Id, alpha.Id}); List<Account> soslInRows = (List<Account>)Search.query('FIND {Account*} IN ALL FIELDS RETURNING Account(Id, Name WHERE Name IN (\\'Beta\\'))')[0]; System.assertEquals(1, soslInRows.size()); System.assertEquals(beta.Id, soslInRows[0].Id); } }",
       "path": "force-app/main/classes/QueryRuntimeSOSLReturningWhereInTest.cls"
     }
   ]
