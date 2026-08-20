@@ -14,12 +14,22 @@
     {"surfaceId": "apex:Messaging.Email.setSaveAsActivity(Boolean)", "symbol": "Messaging.Email.setSaveAsActivity", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.setSenderDisplayName(String)", "symbol": "Messaging.Email.setSenderDisplayName", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.setSubject(String)", "symbol": "Messaging.Email.setSubject", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.setUseSignature(Boolean)", "symbol": "Messaging.Email.setUseSignature", "kind": "test"}
+    {"surfaceId": "apex:Messaging.Email.setUseSignature(Boolean)", "symbol": "Messaging.Email.setUseSignature", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.bccsender", "symbol": "Messaging.Email.bccsender", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.emailpriority", "symbol": "Messaging.Email.emailpriority", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.equals(Object)", "symbol": "Messaging.Email.equals", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.hashCode()", "symbol": "Messaging.Email.hashCode", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.replyto", "symbol": "Messaging.Email.replyto", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.saveasactivity", "symbol": "Messaging.Email.saveasactivity", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.senderdisplayname", "symbol": "Messaging.Email.senderdisplayname", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.subject", "symbol": "Messaging.Email.subject", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.toString()", "symbol": "Messaging.Email.toString", "kind": "test"},
+    {"surfaceId": "apex:Messaging.Email.usesignature", "symbol": "Messaging.Email.usesignature", "kind": "test"}
   ],
   "source": [
     {
       "path": "force-app/main/classes/CoreRuntimeMessagingEmailBaseAccessorsEvidenceTest.cls",
-      "content": "@isTest private class CoreRuntimeMessagingEmailBaseAccessorsEvidenceTest { @isTest static void rows() { Messaging.Email email = new Messaging.SingleEmailMessage(); email.setBccSender(true); email.setEmailPriority('High'); email.setReplyTo('reply@example.test'); email.setSaveAsActivity(false); email.setSenderDisplayName('Trail Sender'); email.setSubject('Trail Subject'); email.setUseSignature(false); System.assertEquals(true, email.getBccSender()); System.assertEquals('High', email.getEmailPriority()); System.assertEquals('reply@example.test', email.getReplyTo()); System.assertEquals(false, email.getSaveAsActivity()); System.assertEquals('Trail Sender', email.getSenderDisplayName()); System.assertEquals('Trail Subject', email.getSubject()); System.assertEquals(false, email.getUseSignature()); } }"
+      "content": "@isTest private class CoreRuntimeMessagingEmailBaseAccessorsEvidenceTest { @isTest static void rows() { Messaging.Email email = new Messaging.SingleEmailMessage(); email.setBccSender(true); email.setEmailPriority('High'); email.setReplyTo('reply@example.test'); email.setSaveAsActivity(false); email.setSenderDisplayName('Trail Sender'); email.setSubject('Trail Subject'); email.setUseSignature(false); System.assertEquals(true, email.getBccSender()); System.assertEquals('High', email.getEmailPriority()); System.assertEquals('reply@example.test', email.getReplyTo()); System.assertEquals(false, email.getSaveAsActivity()); System.assertEquals('Trail Sender', email.getSenderDisplayName()); System.assertEquals('Trail Subject', email.getSubject()); System.assertEquals(false, email.getUseSignature()); email.bccSender = true; email.emailPriority = 'High'; email.replyTo = 'reply@example.test'; email.saveAsActivity = false; email.senderDisplayName = 'Trail Sender'; email.subject = 'Trail Subject'; email.useSignature = false; System.assertEquals(true, email.bccSender); System.assertEquals('High', email.emailPriority); System.assertEquals('reply@example.test', email.replyTo); System.assertEquals(false, email.saveAsActivity); System.assertEquals('Trail Sender', email.senderDisplayName); System.assertEquals('Trail Subject', email.subject); System.assertEquals(false, email.useSignature); Messaging.Email otherEmail = new Messaging.SingleEmailMessage(); System.assertEquals(true, email.equals(email)); System.assertEquals(false, email.equals(otherEmail)); System.assertEquals(false, email.equals(null)); System.assertNotEquals(null, email.hashCode()); System.assertEquals(email.hashCode(), email.hashCode()); System.assertNotEquals(null, email.toString()); } }"
     }
   ],
   "command": {
