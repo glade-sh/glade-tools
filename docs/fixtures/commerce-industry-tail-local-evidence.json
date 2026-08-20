@@ -20,6 +20,12 @@
     },
     {
       "kind": "exec",
+      "notes": "Private corpus code invokes the local deterministic duplicate-service class; this fixture directly executes its findDuplicates entry point.",
+      "surfaceId": "apex:Datacloud.FindDuplicates",
+      "symbol": "Datacloud.FindDuplicates"
+    },
+    {
+      "kind": "exec",
       "notes": "Local runtime returns deterministic defaults for this service or container helper surface.",
       "surfaceId": "apex:Datacloud.FindDuplicates.findDuplicates(List<Object>)",
       "symbol": "Datacloud.FindDuplicates.findDuplicates(List<Object>)"

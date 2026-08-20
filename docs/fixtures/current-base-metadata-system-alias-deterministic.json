@@ -5,6 +5,12 @@
   "evidence": [
     {
       "kind": "test",
+      "notes": "The private corpus declares values through the System.Metadata base DTO alias; this executable fixture constructs and checks that exact local type.",
+      "surfaceId": "apex:System.Metadata",
+      "symbol": "System.Metadata"
+    },
+    {
+      "kind": "test",
       "notes": "System.Metadata is the documented namespace-qualified alias for the deterministic Metadata base DTO; the local constructor yields a Metadata object.",
       "surfaceId": "apex:System.Metadata.Metadata()",
       "symbol": "System.Metadata.Metadata"
