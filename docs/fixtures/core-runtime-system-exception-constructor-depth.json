@@ -1,0 +1,76 @@
+{
+  "name": "core-runtime-system-exception-constructor-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade-local exception construction only; zero Salesforce parity is claimed.",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.AsyncException.AsyncException(String)",
+      "symbol": "AsyncException.AsyncException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DmlException.DmlException(Exception)",
+      "symbol": "DmlException.DmlException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DmlException.DmlException(String)",
+      "symbol": "DmlException.DmlException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.DmlException.DmlException(String,Exception)",
+      "symbol": "DmlException.DmlException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Exception",
+      "symbol": "Exception",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.QueryException.QueryException(Exception)",
+      "symbol": "QueryException.QueryException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.QueryException.QueryException(String)",
+      "symbol": "QueryException.QueryException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.QueryException.QueryException(String,Exception)",
+      "symbol": "QueryException.QueryException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException",
+      "symbol": "SearchException",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SearchException.SearchException(String)",
+      "symbol": "SearchException.SearchException",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Exception cause = new AsyncException('cause');\nSystem.assertEquals('cause', cause.getMessage());\nDmlException dmlFromCause = new DmlException(cause);\nDmlException dmlFromMessage = new DmlException('dml');\nDmlException dmlFromBoth = new DmlException('dml-both', cause);\nSystem.assertEquals(cause, dmlFromCause.getCause());\nSystem.assertEquals('dml', dmlFromMessage.getMessage());\nSystem.assertEquals('dml-both', dmlFromBoth.getMessage());\nSystem.assertEquals(cause, dmlFromBoth.getCause());\nQueryException queryFromCause = new QueryException(cause);\nQueryException queryFromMessage = new QueryException('query');\nQueryException queryFromBoth = new QueryException('query-both', cause);\nSystem.assertEquals(cause, queryFromCause.getCause());\nSystem.assertEquals('query', queryFromMessage.getMessage());\nSystem.assertEquals('query-both', queryFromBoth.getMessage());\nSystem.assertEquals(cause, queryFromBoth.getCause());\nSearchException search = new SearchException('search');\nSystem.assertEquals('search', search.getMessage());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Exception cause = new AsyncException('cause');\nSystem.assertEquals('cause', cause.getMessage());\nDmlException dmlFromCause = new DmlException(cause);\nDmlException dmlFromMessage = new DmlException('dml');\nDmlException dmlFromBoth = new DmlException('dml-both', cause);\nSystem.assertEquals(cause, dmlFromCause.getCause());\nSystem.assertEquals('dml', dmlFromMessage.getMessage());\nSystem.assertEquals('dml-both', dmlFromBoth.getMessage());\nSystem.assertEquals(cause, dmlFromBoth.getCause());\nQueryException queryFromCause = new QueryException(cause);\nQueryException queryFromMessage = new QueryException('query');\nQueryException queryFromBoth = new QueryException('query-both', cause);\nSystem.assertEquals(cause, queryFromCause.getCause());\nSystem.assertEquals('query', queryFromMessage.getMessage());\nSystem.assertEquals('query-both', queryFromBoth.getMessage());\nSystem.assertEquals(cause, queryFromBoth.getCause());\nSearchException search = new SearchException('search');\nSystem.assertEquals('search', search.getMessage());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
