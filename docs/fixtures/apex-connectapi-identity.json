@@ -5,6 +5,30 @@
   "evidence": [
     {
       "kind": "test",
+      "notes": "Private corpus code references the Communities service type; this fixture compiles and executes its existing local identity mock without claiming hosted community behavior.",
+      "surfaceId": "apex:ConnectApi.Communities",
+      "symbol": "ConnectApi.Communities"
+    },
+    {
+      "kind": "shape",
+      "notes": "Private corpus code declares ConnectApi.TimeZone values; this fixture directly compiles the passive DTO type.",
+      "surfaceId": "apex:ConnectApi.TimeZone",
+      "symbol": "ConnectApi.TimeZone"
+    },
+    {
+      "kind": "test",
+      "notes": "Private corpus code references the UserProfiles service type; this fixture compiles and executes its existing local identity mock without claiming hosted profile behavior.",
+      "surfaceId": "apex:ConnectApi.UserProfiles",
+      "symbol": "ConnectApi.UserProfiles"
+    },
+    {
+      "kind": "shape",
+      "notes": "Private corpus code declares ConnectApi.UserSettings values; this fixture directly compiles the passive DTO type.",
+      "surfaceId": "apex:ConnectApi.UserSettings",
+      "symbol": "ConnectApi.UserSettings"
+    },
+    {
+      "kind": "test",
       "surfaceId": "apex:ConnectApi.Organization.getSettings()",
       "symbol": "Organization.getSettings"
     },
@@ -89,7 +113,7 @@
   "salesforceExclusionReason": "ConnectApi identity, community, named-credential, and recommendation calls are data-siloed or org-configuration dependent in a scratch org; Salesforce explicitly requires SeeAllData or real org setup. Retain compile/local DTO proof and defer hosted runtime.",
   "source": [
     {
-      "content": "@isTest private class ConnectApiIdentityTest { @isTest static void testOrgSettings() { System.assertNotEquals(null, ConnectApi.Organization.getSettings()); } @isTest static void testCommunities() { System.assertNotEquals(null, ConnectApi.Communities.getCommunity('internal')); System.assertNotEquals(null, ConnectApi.Communities.getCommunities()); } @isTest static void testNamedCredentials() { ConnectApi.ExternalCredentialInput eci = new ConnectApi.ExternalCredentialInput(); ConnectApi.ExternalCredential ec = ConnectApi.NamedCredentials.createExternalCredential(eci); System.assertNotEquals(null, ec); ConnectApi.NamedCredentialInput nci = new ConnectApi.NamedCredentialInput(); ConnectApi.NamedCredential nc = ConnectApi.NamedCredentials.createNamedCredential(nci); System.assertNotEquals(null, nc); System.assertNotEquals(null, ConnectApi.NamedCredentials.getNamedCredentials()); System.assertNotEquals(null, ConnectApi.NamedCredentials.getExternalCredential('e1')); } @isTest static void testUserProfiles() { ConnectApi.UserProfile p = ConnectApi.UserProfiles.getUserProfile('i', '005-user'); System.assertNotEquals(null, p); System.assertNotEquals(null, ConnectApi.UserProfiles.getPhoto('i', '005-user')); ConnectApi.UserProfiles.setPhoto('i', '005-user', 'fileId', 1); ConnectApi.UserProfiles.deletePhoto('i', '005-user'); } @isTest static void testNBA() { System.assertNotEquals(null, ConnectApi.NextBestAction.executeStrategy('s1',1,'',false)); ConnectApi.RecommendationReactionInput ri = new ConnectApi.RecommendationReactionInput(); System.assertNotEquals(null, ConnectApi.NextBestAction.setRecommendationReaction(ri)); } @isTest static void testOrch() { System.assertNotEquals(null, ConnectApi.Orchestration.getOrchestrationInstanceCollection('o1')); } }",
+      "content": "@isTest private class ConnectApiIdentityTest { @isTest static void testOrgSettings() { System.assertNotEquals(null, ConnectApi.Organization.getSettings()); ConnectApi.UserSettings settings = null; ConnectApi.TimeZone timeZone = null; System.assertEquals(null, settings); System.assertEquals(null, timeZone); } @isTest static void testCommunities() { System.assertNotEquals(null, ConnectApi.Communities.getCommunity('internal')); System.assertNotEquals(null, ConnectApi.Communities.getCommunities()); } @isTest static void testNamedCredentials() { ConnectApi.ExternalCredentialInput eci = new ConnectApi.ExternalCredentialInput(); ConnectApi.ExternalCredential ec = ConnectApi.NamedCredentials.createExternalCredential(eci); System.assertNotEquals(null, ec); ConnectApi.NamedCredentialInput nci = new ConnectApi.NamedCredentialInput(); ConnectApi.NamedCredential nc = ConnectApi.NamedCredentials.createNamedCredential(nci); System.assertNotEquals(null, nc); System.assertNotEquals(null, ConnectApi.NamedCredentials.getNamedCredentials()); System.assertNotEquals(null, ConnectApi.NamedCredentials.getExternalCredential('e1')); } @isTest static void testUserProfiles() { ConnectApi.UserProfile p = ConnectApi.UserProfiles.getUserProfile('i', '005-user'); System.assertNotEquals(null, p); System.assertNotEquals(null, ConnectApi.UserProfiles.getPhoto('i', '005-user')); ConnectApi.UserProfiles.setPhoto('i', '005-user', 'fileId', 1); ConnectApi.UserProfiles.deletePhoto('i', '005-user'); } @isTest static void testNBA() { System.assertNotEquals(null, ConnectApi.NextBestAction.executeStrategy('s1',1,'',false)); ConnectApi.RecommendationReactionInput ri = new ConnectApi.RecommendationReactionInput(); System.assertNotEquals(null, ConnectApi.NextBestAction.setRecommendationReaction(ri)); } @isTest static void testOrch() { System.assertNotEquals(null, ConnectApi.Orchestration.getOrchestrationInstanceCollection('o1')); } }",
       "path": "force-app/main/classes/ConnectApiIdentityTest.cls"
     }
   ]
