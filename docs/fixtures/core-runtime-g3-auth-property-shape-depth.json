@@ -1,0 +1,342 @@
+{
+  "name": "core-runtime-g3-auth-property-shape-depth",
+  "mode": "compile-shape",
+  "proofObligation": "compile-shape-required",
+  "command": {
+    "kind": "check",
+    "args": [
+      "public class AuthPropertyShapeDepth {\n  public void readProperties() {\n    Auth.AuthProviderCallbackState authProviderCallbackState = null;\n    Auth.AuthProviderTokenResponse authProviderTokenResponse = null;\n    Auth.GeneratedUserData generatedUserData = null;\n    Auth.HeadlessUserDiscoveryResponse headlessUserDiscoveryResponse = null;\n    Auth.JsonValueOutput jsonValueOutput = null;\n    Auth.OAuthRefreshResult oAuthRefreshResult = null;\n    Auth.RegistrationHandler registrationHandler = null;\n    Auth.TokenValidationResult tokenValidationResult = null;\n    Auth.UserData userData = null;\n    Auth.VerificationResult verificationResult = null;\n    Object authProviderCallbackState_body = authProviderCallbackState.body;\n    Object authProviderCallbackState_headers = authProviderCallbackState.headers;\n    Object authProviderCallbackState_queryParameters = authProviderCallbackState.queryParameters;\n    Object authProviderTokenResponse_idToken = authProviderTokenResponse.idToken;\n    Object authProviderTokenResponse_oauthSecretOrRefreshToken = authProviderTokenResponse.oauthSecretOrRefreshToken;\n    Object authProviderTokenResponse_oauthToken = authProviderTokenResponse.oauthToken;\n    Object authProviderTokenResponse_provider = authProviderTokenResponse.provider;\n    Object authProviderTokenResponse_state = authProviderTokenResponse.state;\n    Object generatedUserData_alias = generatedUserData.alias;\n    Object generatedUserData_email = generatedUserData.email;\n    Object generatedUserData_emailEncodingKey = generatedUserData.emailEncodingKey;\n    Object generatedUserData_firstName = generatedUserData.firstName;\n    Object generatedUserData_languageLocaleKey = generatedUserData.languageLocaleKey;\n    Object generatedUserData_lastName = generatedUserData.lastName;\n    Object generatedUserData_localesIdKey = generatedUserData.localesIdKey;\n    Object generatedUserData_timeZoneSidKey = generatedUserData.timeZoneSidKey;\n    Object generatedUserData_username = generatedUserData.username;\n    Object headlessUserDiscoveryResponse_customErrorMessage = headlessUserDiscoveryResponse.customErrorMessage;\n    Object headlessUserDiscoveryResponse_userIds = headlessUserDiscoveryResponse.userIds;\n    Object jsonValueOutput_booleanValue = jsonValueOutput.booleanValue;\n    Object jsonValueOutput_doubleValue = jsonValueOutput.doubleValue;\n    Object jsonValueOutput_integerValue = jsonValueOutput.integerValue;\n    Object jsonValueOutput_jsonArrayValue = jsonValueOutput.jsonArrayValue;\n    Object jsonValueOutput_jsonStringValue = jsonValueOutput.jsonStringValue;\n    Object jsonValueOutput_stringValue = jsonValueOutput.stringValue;\n    Object oAuthRefreshResult_accessToken = oAuthRefreshResult.accessToken;\n    Object oAuthRefreshResult_error = oAuthRefreshResult.error;\n    Object oAuthRefreshResult_refreshToken = oAuthRefreshResult.refreshToken;\n    Object registrationHandler_User = registrationHandler.User;\n    Object tokenValidationResult_customErrorMsg = tokenValidationResult.customErrorMsg;\n    Object tokenValidationResult_data = tokenValidationResult.data;\n    Object tokenValidationResult_isValid = tokenValidationResult.isValid;\n    Object tokenValidationResult_token = tokenValidationResult.token;\n    Object tokenValidationResult_tokenType = tokenValidationResult.tokenType;\n    Object tokenValidationResult_userData = tokenValidationResult.userData;\n    Object userData_attributeMap = userData.attributeMap;\n    Object userData_email = userData.email;\n    Object userData_firstName = userData.firstName;\n    Object userData_fullName = userData.fullName;\n    Object userData_idToken = userData.idToken;\n    Object userData_idTokenJSONString = userData.idTokenJSONString;\n    Object userData_identifier = userData.identifier;\n    Object userData_lastName = userData.lastName;\n    Object userData_link = userData.link;\n    Object userData_locale = userData.locale;\n    Object userData_provider = userData.provider;\n    Object userData_siteLoginUrl = userData.siteLoginUrl;\n    Object userData_userInfoJSONString = userData.userInfoJSONString;\n    Object userData_username = userData.username;\n    Object verificationResult_message = verificationResult.message;\n    Object verificationResult_redirect = verificationResult.redirect;\n    Object verificationResult_success = verificationResult.success;\n  }\n}"
+    ]
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Auth.AuthProviderCallbackState.body",
+      "symbol": "Auth.AuthProviderCallbackState.body",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderCallbackState.headers",
+      "symbol": "Auth.AuthProviderCallbackState.headers",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderCallbackState.queryParameters",
+      "symbol": "Auth.AuthProviderCallbackState.queryParameters",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.idToken",
+      "symbol": "Auth.AuthProviderTokenResponse.idToken",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.oauthSecretOrRefreshToken",
+      "symbol": "Auth.AuthProviderTokenResponse.oauthSecretOrRefreshToken",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.oauthToken",
+      "symbol": "Auth.AuthProviderTokenResponse.oauthToken",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.provider",
+      "symbol": "Auth.AuthProviderTokenResponse.provider",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse.state",
+      "symbol": "Auth.AuthProviderTokenResponse.state",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.alias",
+      "symbol": "Auth.GeneratedUserData.alias",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.email",
+      "symbol": "Auth.GeneratedUserData.email",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.emailEncodingKey",
+      "symbol": "Auth.GeneratedUserData.emailEncodingKey",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.firstName",
+      "symbol": "Auth.GeneratedUserData.firstName",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.languageLocaleKey",
+      "symbol": "Auth.GeneratedUserData.languageLocaleKey",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.lastName",
+      "symbol": "Auth.GeneratedUserData.lastName",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.localesIdKey",
+      "symbol": "Auth.GeneratedUserData.localesIdKey",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.timeZoneSidKey",
+      "symbol": "Auth.GeneratedUserData.timeZoneSidKey",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData.username",
+      "symbol": "Auth.GeneratedUserData.username",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.HeadlessUserDiscoveryResponse.customErrorMessage",
+      "symbol": "Auth.HeadlessUserDiscoveryResponse.customErrorMessage",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.HeadlessUserDiscoveryResponse.userIds",
+      "symbol": "Auth.HeadlessUserDiscoveryResponse.userIds",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.booleanValue",
+      "symbol": "Auth.JsonValueOutput.booleanValue",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.doubleValue",
+      "symbol": "Auth.JsonValueOutput.doubleValue",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.integerValue",
+      "symbol": "Auth.JsonValueOutput.integerValue",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.jsonArrayValue",
+      "symbol": "Auth.JsonValueOutput.jsonArrayValue",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.jsonStringValue",
+      "symbol": "Auth.JsonValueOutput.jsonStringValue",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput.stringValue",
+      "symbol": "Auth.JsonValueOutput.stringValue",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.OAuthRefreshResult.accessToken",
+      "symbol": "Auth.OAuthRefreshResult.accessToken",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.OAuthRefreshResult.error",
+      "symbol": "Auth.OAuthRefreshResult.error",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.OAuthRefreshResult.refreshToken",
+      "symbol": "Auth.OAuthRefreshResult.refreshToken",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.RegistrationHandler.User",
+      "symbol": "Auth.RegistrationHandler.User",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.TokenValidationResult.customErrorMsg",
+      "symbol": "Auth.TokenValidationResult.customErrorMsg",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.TokenValidationResult.data",
+      "symbol": "Auth.TokenValidationResult.data",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.TokenValidationResult.isValid",
+      "symbol": "Auth.TokenValidationResult.isValid",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.TokenValidationResult.token",
+      "symbol": "Auth.TokenValidationResult.token",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.TokenValidationResult.tokenType",
+      "symbol": "Auth.TokenValidationResult.tokenType",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.TokenValidationResult.userData",
+      "symbol": "Auth.TokenValidationResult.userData",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.attributeMap",
+      "symbol": "Auth.UserData.attributeMap",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.email",
+      "symbol": "Auth.UserData.email",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.firstName",
+      "symbol": "Auth.UserData.firstName",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.fullName",
+      "symbol": "Auth.UserData.fullName",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.idToken",
+      "symbol": "Auth.UserData.idToken",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.idTokenJSONString",
+      "symbol": "Auth.UserData.idTokenJSONString",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.identifier",
+      "symbol": "Auth.UserData.identifier",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.lastName",
+      "symbol": "Auth.UserData.lastName",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.link",
+      "symbol": "Auth.UserData.link",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.locale",
+      "symbol": "Auth.UserData.locale",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.provider",
+      "symbol": "Auth.UserData.provider",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.siteLoginUrl",
+      "symbol": "Auth.UserData.siteLoginUrl",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.userInfoJSONString",
+      "symbol": "Auth.UserData.userInfoJSONString",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserData.username",
+      "symbol": "Auth.UserData.username",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.VerificationResult.message",
+      "symbol": "Auth.VerificationResult.message",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.VerificationResult.redirect",
+      "symbol": "Auth.VerificationResult.redirect",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.VerificationResult.success",
+      "symbol": "Auth.VerificationResult.success",
+      "kind": "shape",
+      "notes": "Compile-only property read; no runtime behavior or Salesforce parity is claimed."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/AuthPropertyShapeDepth.cls",
+      "content": "public class AuthPropertyShapeDepth {\n  public void readProperties() {\n    Auth.AuthProviderCallbackState authProviderCallbackState = null;\n    Auth.AuthProviderTokenResponse authProviderTokenResponse = null;\n    Auth.GeneratedUserData generatedUserData = null;\n    Auth.HeadlessUserDiscoveryResponse headlessUserDiscoveryResponse = null;\n    Auth.JsonValueOutput jsonValueOutput = null;\n    Auth.OAuthRefreshResult oAuthRefreshResult = null;\n    Auth.RegistrationHandler registrationHandler = null;\n    Auth.TokenValidationResult tokenValidationResult = null;\n    Auth.UserData userData = null;\n    Auth.VerificationResult verificationResult = null;\n    Object authProviderCallbackState_body = authProviderCallbackState.body;\n    Object authProviderCallbackState_headers = authProviderCallbackState.headers;\n    Object authProviderCallbackState_queryParameters = authProviderCallbackState.queryParameters;\n    Object authProviderTokenResponse_idToken = authProviderTokenResponse.idToken;\n    Object authProviderTokenResponse_oauthSecretOrRefreshToken = authProviderTokenResponse.oauthSecretOrRefreshToken;\n    Object authProviderTokenResponse_oauthToken = authProviderTokenResponse.oauthToken;\n    Object authProviderTokenResponse_provider = authProviderTokenResponse.provider;\n    Object authProviderTokenResponse_state = authProviderTokenResponse.state;\n    Object generatedUserData_alias = generatedUserData.alias;\n    Object generatedUserData_email = generatedUserData.email;\n    Object generatedUserData_emailEncodingKey = generatedUserData.emailEncodingKey;\n    Object generatedUserData_firstName = generatedUserData.firstName;\n    Object generatedUserData_languageLocaleKey = generatedUserData.languageLocaleKey;\n    Object generatedUserData_lastName = generatedUserData.lastName;\n    Object generatedUserData_localesIdKey = generatedUserData.localesIdKey;\n    Object generatedUserData_timeZoneSidKey = generatedUserData.timeZoneSidKey;\n    Object generatedUserData_username = generatedUserData.username;\n    Object headlessUserDiscoveryResponse_customErrorMessage = headlessUserDiscoveryResponse.customErrorMessage;\n    Object headlessUserDiscoveryResponse_userIds = headlessUserDiscoveryResponse.userIds;\n    Object jsonValueOutput_booleanValue = jsonValueOutput.booleanValue;\n    Object jsonValueOutput_doubleValue = jsonValueOutput.doubleValue;\n    Object jsonValueOutput_integerValue = jsonValueOutput.integerValue;\n    Object jsonValueOutput_jsonArrayValue = jsonValueOutput.jsonArrayValue;\n    Object jsonValueOutput_jsonStringValue = jsonValueOutput.jsonStringValue;\n    Object jsonValueOutput_stringValue = jsonValueOutput.stringValue;\n    Object oAuthRefreshResult_accessToken = oAuthRefreshResult.accessToken;\n    Object oAuthRefreshResult_error = oAuthRefreshResult.error;\n    Object oAuthRefreshResult_refreshToken = oAuthRefreshResult.refreshToken;\n    Object registrationHandler_User = registrationHandler.User;\n    Object tokenValidationResult_customErrorMsg = tokenValidationResult.customErrorMsg;\n    Object tokenValidationResult_data = tokenValidationResult.data;\n    Object tokenValidationResult_isValid = tokenValidationResult.isValid;\n    Object tokenValidationResult_token = tokenValidationResult.token;\n    Object tokenValidationResult_tokenType = tokenValidationResult.tokenType;\n    Object tokenValidationResult_userData = tokenValidationResult.userData;\n    Object userData_attributeMap = userData.attributeMap;\n    Object userData_email = userData.email;\n    Object userData_firstName = userData.firstName;\n    Object userData_fullName = userData.fullName;\n    Object userData_idToken = userData.idToken;\n    Object userData_idTokenJSONString = userData.idTokenJSONString;\n    Object userData_identifier = userData.identifier;\n    Object userData_lastName = userData.lastName;\n    Object userData_link = userData.link;\n    Object userData_locale = userData.locale;\n    Object userData_provider = userData.provider;\n    Object userData_siteLoginUrl = userData.siteLoginUrl;\n    Object userData_userInfoJSONString = userData.userInfoJSONString;\n    Object userData_username = userData.username;\n    Object verificationResult_message = verificationResult.message;\n    Object verificationResult_redirect = verificationResult.redirect;\n    Object verificationResult_success = verificationResult.success;\n  }\n}"
+    }
+  ],
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This compile-only fixture proves exact local Auth property shapes and grants zero Salesforce parity credit."
+}
