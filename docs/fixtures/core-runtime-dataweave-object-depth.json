@@ -1,0 +1,29 @@
+{
+  "name": "core-runtime-dataweave-object-depth",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "evidence": [
+    {"surfaceId":"apex:dataweave.Result","symbol":"dataweave.Result","kind":"exec"},
+    {"surfaceId":"apex:dataweave.Result.clone()","symbol":"dataweave.Result.clone()","kind":"exec"},
+    {"surfaceId":"apex:dataweave.Result.getValue()","symbol":"dataweave.Result.getValue()","kind":"exec"},
+    {"surfaceId":"apex:dataweave.Result.getValueAsString()","symbol":"dataweave.Result.getValueAsString()","kind":"exec"},
+    {"surfaceId":"apex:dataweave.Result.toString()","symbol":"dataweave.Result.toString()","kind":"exec"},
+    {"surfaceId":"apex:dataweave.Script","symbol":"dataweave.Script","kind":"exec"},
+    {"surfaceId":"apex:dataweave.Script.clone()","symbol":"dataweave.Script.clone()","kind":"exec"},
+    {"surfaceId":"apex:dataweave.Script.toString()","symbol":"dataweave.Script.toString()","kind":"exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "dataweave.Script script = dataweave.Script.createScript('helloWorld');\nObject scriptClone = script.clone();\nString scriptText = script.toString();\nSystem.assertNotEquals(null, scriptClone);\nSystem.assertNotEquals(script, scriptClone);\nSystem.assertNotEquals(null, scriptText);\ndataweave.Result result = script.execute();\nObject value = result.getValue();\nString valueText = result.getValueAsString();\nObject resultClone = result.clone();\nString resultText = result.toString();\nSystem.assertEquals('Hello World', value);\nSystem.assertEquals('\"Hello World\"', valueText);\nSystem.assertNotEquals(null, resultClone);\nSystem.assertNotEquals(result, resultClone);\nSystem.assertNotEquals(null, resultText);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": ["dataweave.Script script = dataweave.Script.createScript('helloWorld');\nObject scriptClone = script.clone();\nString scriptText = script.toString();\nSystem.assertNotEquals(null, scriptClone);\nSystem.assertNotEquals(script, scriptClone);\nSystem.assertNotEquals(null, scriptText);\ndataweave.Result result = script.execute();\nObject value = result.getValue();\nString valueText = result.getValueAsString();\nObject resultClone = result.clone();\nString resultText = result.toString();\nSystem.assertEquals('Hello World', value);\nSystem.assertEquals('\"Hello World\"', valueText);\nSystem.assertNotEquals(null, resultClone);\nSystem.assertNotEquals(result, resultClone);\nSystem.assertNotEquals(null, resultText);"]
+  },
+  "expected": {"result":{"debug":null,"ok":true}},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local DataWeave script/result object behavior only. It does not execute Salesforce-hosted DataWeave resources and grants zero Salesforce parity credit."
+}
