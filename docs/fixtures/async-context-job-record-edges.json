@@ -5,6 +5,18 @@
   "evidence": [
     {
       "kind": "test",
+      "notes": "Private projects implement Queueable; this executable fixture directly implements and drains the local async lifecycle.",
+      "surfaceId": "apex:System.Queueable",
+      "symbol": "Queueable"
+    },
+    {
+      "kind": "test",
+      "notes": "The queued execute method directly receives and uses the local QueueableContext value.",
+      "surfaceId": "apex:System.QueueableContext",
+      "symbol": "QueueableContext"
+    },
+    {
+      "kind": "test",
       "notes": "Queued class execute runs during Test.stopTest and writes a row from the QueueableContext.",
       "surfaceId": "apex:System.Queueable.execute(QueueableContext)",
       "symbol": "Queueable.execute(QueueableContext)"
@@ -55,7 +67,7 @@
   "name": "async-context-job-record-edges",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "API 67 clean-org rejects the fixture's async job execution and CronTrigger query shape; retained as local evidence and excluded from hosted parity.",
+  "salesforceExclusionReason": "API 67 clean-org rejects the fixture's async job execution and CronTrigger query shape; retained as local evidence with zero Salesforce parity.",
   "source": [
     {
       "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
