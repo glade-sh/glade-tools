@@ -1,0 +1,32 @@
+{
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "Private projects consume Datacloud.FindDuplicatesResult values; this fixture directly constructs and checks the local deterministic DTO type.",
+      "surfaceId": "apex:Datacloud.FindDuplicatesResult",
+      "symbol": "Datacloud.FindDuplicatesResult"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "name": "private-corpus-datacloud-find-duplicates-result-type",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only Glade's local deterministic FindDuplicatesResult DTO type; it does not invoke Salesforce duplicate services and grants zero Salesforce parity.",
+  "source": [
+    {
+      "content": "@isTest private class PrivateCorpusFindDuplicatesResultTypeTest { @isTest static void findDuplicatesResultTypeIsAvailable() { Datacloud.FindDuplicatesResult result = new Datacloud.FindDuplicatesResult(); System.assertNotEquals(null, result); result.success = true; System.assertEquals(true, result.success); } }",
+      "path": "force-app/main/classes/PrivateCorpusFindDuplicatesResultTypeTest.cls"
+    }
+  ]
+}
