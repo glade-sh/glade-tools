@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 --ledger <SURFACE_LEDGER.json> --profile <SOURCE_PROFILE.json> --packet <SURFACE_PACKET_MANIFEST.json> --binding <SOURCE_BINDING.json> [--corpus <ASSURANCE.json> --attempt <ATTEMPT.json>] [--release <RELEASE_VALIDATION.json>] --output <STATUS.md>" >&2
+  echo "usage: $0 --ledger <SURFACE_LEDGER.json> --profile <SOURCE_PROFILE.json> --packet <SURFACE_PACKET_MANIFEST.json> --binding <SOURCE_BINDING.json> [--corpus <ASSURANCE.json> --attempt <ATTEMPT.json>] [--private-corpus-status <PRIVATE_CORPUS_STATUS.json>] [--release <RELEASE_VALIDATION.json>] --output <STATUS.md>" >&2
   exit 2
 }
 
@@ -12,6 +12,7 @@ packet=""
 binding=""
 corpus=""
 attempt=""
+private_status=""
 release=""
 output=""
 while (($#)); do
@@ -22,6 +23,7 @@ while (($#)); do
     --binding) binding="${2:-}"; shift 2 ;;
     --corpus) corpus="${2:-}"; shift 2 ;;
     --attempt) attempt="${2:-}"; shift 2 ;;
+    --private-corpus-status) private_status="${2:-}"; shift 2 ;;
     --release) release="${2:-}"; shift 2 ;;
     --output) output="${2:-}"; shift 2 ;;
     -h|--help) usage ;;
@@ -40,6 +42,16 @@ if [[ -n "$corpus" || -n "$attempt" ]]; then
   [[ -n "$corpus" && -n "$attempt" ]] || { echo "corpus assurance and attempt must be supplied together" >&2; exit 1; }
   [[ -f "$corpus" && -f "$attempt" ]] || { echo "corpus assurance input is unavailable" >&2; exit 1; }
   jq -e . "$corpus" "$attempt" >/dev/null
+fi
+if [[ -n "$private_status" ]]; then
+  [[ -f "$private_status" ]] || { echo "private corpus status input is unavailable" >&2; exit 1; }
+  jq -e '
+    .status == "current-candidate-diagnostic"
+    and ([.completion.completeProjects, .completion.totalProjects, .completion.remainingProjects,
+          .checks.successfulCommands, .checks.totalProjects,
+          .observedTests.passed, .observedTests.total]
+         | all(type == "number" and isfinite and floor == . and . >= 0))
+  ' "$private_status" >/dev/null || { echo "private corpus status is invalid" >&2; exit 1; }
 fi
 if [[ -n "$release" ]]; then
   [[ -f "$release" ]] || { echo "release validation input is unavailable" >&2; exit 1; }
@@ -62,6 +74,10 @@ tools_commit="$(jq -r '.tools.commit' "$binding")"
 if [[ -n "$attempt" ]]; then
   [[ "$(jq -r '.candidate.commit' "$attempt")" == "$candidate_commit" ]] || { echo "corpus attempt candidate does not match source binding" >&2; exit 1; }
   [[ "$(jq -r '.tools.commit' "$attempt")" == "$tools_commit" ]] || { echo "corpus attempt tools do not match source binding" >&2; exit 1; }
+fi
+if [[ -n "$private_status" ]]; then
+  [[ "$(jq -r '.candidate.gladeCommit' "$private_status")" == "$candidate_commit" ]] || { echo "private corpus status candidate does not match source binding" >&2; exit 1; }
+  [[ "$(jq -r '.candidate.toolsCommit' "$private_status")" == "$tools_commit" ]] || { echo "private corpus status tools do not match source binding" >&2; exit 1; }
 fi
 if [[ -n "$release" ]]; then
   [[ "$(jq -r '.candidate.commit' "$release")" == "$candidate_commit" ]] || { echo "release candidate does not match source binding" >&2; exit 1; }
@@ -128,6 +144,22 @@ if [[ -n "$corpus" ]]; then
   [[ "$corpus_total" -gt 0 && "$corpus_complete" -eq "$corpus_total" ]] && corpus_done=1
 fi
 
+private_project_lines='Private project completion: **STALE / MISSING** — run cold checks and full local tests on the current candidate.'
+private_project_done=1
+if [[ -n "$private_status" ]]; then
+  read -r private_complete private_total private_remaining private_checks private_check_total private_tests_passed private_tests_total <<EOF
+$(jq -r '[.completion.completeProjects, .completion.totalProjects, .completion.remainingProjects, .checks.successfulCommands, .checks.totalProjects, .observedTests.passed, .observedTests.total] | @tsv' "$private_status")
+EOF
+  [[ "$private_total" -gt 0 && "$private_complete" -ge 0 && "$private_complete" -le "$private_total" && "$private_remaining" -eq $((private_total - private_complete)) ]] || { echo "private corpus completion counts do not reconcile" >&2; exit 1; }
+  [[ "$private_check_total" -eq "$private_total" && "$private_checks" -ge 0 && "$private_checks" -le "$private_check_total" ]] || { echo "private corpus check counts do not reconcile" >&2; exit 1; }
+  [[ "$private_tests_total" -ge 0 && "$private_tests_passed" -ge 0 && "$private_tests_passed" -le "$private_tests_total" ]] || { echo "private corpus test counts do not reconcile" >&2; exit 1; }
+  private_project_lines=$(printf 'Private project completion: **%s%%** (%s / %s complete; %s remaining)\n- Private project check readiness: **%s%%** (%s / %s checks passed)\n- Eligible private test pass rate: **%s%%** (%s / %s; diagnostic subset)' \
+    "$(percent "$private_complete" "$private_total")" "$(commify "$private_complete")" "$(commify "$private_total")" "$(commify "$private_remaining")" \
+    "$(percent "$private_checks" "$private_check_total")" "$(commify "$private_checks")" "$(commify "$private_check_total")" \
+    "$(percent "$private_tests_passed" "$private_tests_total")" "$(commify "$private_tests_passed")" "$(commify "$private_tests_total")")
+  [[ "$private_complete" -eq "$private_total" ]] || private_project_done=0
+fi
+
 release_line='Release validation: **STALE / MISSING** — run the fixed release commands for this candidate.'
 release_done=0
 if [[ -n "$release" ]]; then
@@ -138,7 +170,7 @@ if [[ -n "$release" ]]; then
 fi
 
 program_status='NOT DONE'
-if [[ "$accounted" -eq "$ledger_total" && "$completed_checkpoints" -eq "$required_checkpoints" && "$corpus_done" -eq 1 && "$release_done" -eq 1 ]]; then
+if [[ "$accounted" -eq "$ledger_total" && "$completed_checkpoints" -eq "$required_checkpoints" && "$corpus_done" -eq 1 && "$private_project_done" -eq 1 && "$release_done" -eq 1 ]]; then
   program_status='DONE'
 fi
 
@@ -159,6 +191,7 @@ trap '[[ ! -e "$tmp_output" ]] || unlink "$tmp_output"' EXIT
   printf -- '- Local evidence: **%s%%** (%s / %s required rows)\n' "$local_percent" "$(commify "$local_required_complete")" "$(commify "$required_rows")"
   printf -- '- Salesforce comparison: **%s%%** (%s / %s runtime rows)\n' "$parity_percent" "$(commify "$parity_complete")" "$(commify "$runtime_required")"
   printf -- '- %s\n' "$corpus_line"
+  printf -- '- %s\n' "$private_project_lines"
   printf -- '- %s\n\n' "$release_line"
   printf '## Required surface checkpoints\n\n'
   printf '| checkpoint | complete | required |\n| --- | ---: | ---: |\n'
