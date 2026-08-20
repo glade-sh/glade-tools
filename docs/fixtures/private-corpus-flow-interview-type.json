@@ -1,0 +1,32 @@
+{
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "Private projects declare Flow.Interview values; this local fixture proves the type and deterministic construction shape only.",
+      "surfaceId": "apex:Flow.Interview",
+      "symbol": "Flow.Interview"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "name": "private-corpus-flow-interview-type",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only Glade's local Flow.Interview type and deterministic value construction; it does not execute hosted Flow metadata and grants zero Salesforce parity.",
+  "source": [
+    {
+      "content": "@isTest private class PrivateCorpusFlowInterviewTypeTest { @isTest static void flowInterviewTypeIsAvailable() { Flow.Interview interview = Flow.Interview.createInterview('LocalFlow', new Map<String,Object>{ 'answer' => 42 }); System.assertNotEquals(null, interview); } }",
+      "path": "force-app/main/classes/PrivateCorpusFlowInterviewTypeTest.cls"
+    }
+  ]
+}
