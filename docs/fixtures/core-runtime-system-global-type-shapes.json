@@ -1,0 +1,30 @@
+{
+  "name": "core-runtime-system-global-type-shapes",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "evidence": [
+    {"surfaceId":"apex:System.ActivationPlatformStatusEnum","symbol":"System.ActivationPlatformStatusEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.AuthConfig","symbol":"System.AuthConfig","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.AuthProvider","symbol":"System.AuthProvider","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.Communities","symbol":"System.Communities","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.CompressionFormatEnum","symbol":"System.CompressionFormatEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.ConnectedApplication","symbol":"System.ConnectedApplication","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.ContactPointPrefEnum","symbol":"System.ContactPointPrefEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.ContactPointTypeRepresentationEnum","symbol":"System.ContactPointTypeRepresentationEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.ContentDocumentLink","symbol":"System.ContentDocumentLink","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.CronJobDetail","symbol":"System.CronJobDetail","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.CronTrigger","symbol":"System.CronTrigger","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.Custom","symbol":"System.Custom","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
+    {"surfaceId":"apex:System.CustomizationType","symbol":"System.CustomizationType","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeSystemGlobalTypeShapes.cls",
+      "content": "public class CoreRuntimeSystemGlobalTypeShapes { ActivationPlatformStatusEnum activationPlatformStatusEnum; AuthConfig authConfig; AuthProvider authProvider; Communities communities; CompressionFormatEnum compressionFormatEnum; ConnectedApplication connectedApplication; ContactPointPrefEnum contactPointPrefEnum; ContactPointTypeRepresentationEnum contactPointTypeRepresentationEnum; ContentDocumentLink contentDocumentLink; CronJobDetail cronJobDetail; CronTrigger cronTrigger; Custom custom; CustomizationType customizationType; }"
+    }
+  ],
+  "command": {"kind":"check"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local compile shape for reviewed System/global declarations; it makes no Salesforce identity claim and grants zero parity credit."
+}
