@@ -1,0 +1,29 @@
+{
+  "name": "core-runtime-push-upgrade-customization-repository-shape-depth",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "evidence": [
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository","symbol":"PushUpgradeCustomizationRepository","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.PushUpgradeCustomizationRepository()","symbol":"PushUpgradeCustomizationRepository.PushUpgradeCustomizationRepository()","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.clone()","symbol":"PushUpgradeCustomizationRepository.clone()","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.create(String,String,Boolean)","symbol":"PushUpgradeCustomizationRepository.create(String,String,Boolean)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.deleteById(String)","symbol":"PushUpgradeCustomizationRepository.deleteById(String)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.deleteByIndex(String,String)","symbol":"PushUpgradeCustomizationRepository.deleteByIndex(String,String)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForId(String)","symbol":"PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForId(String)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForIndex(String,String)","symbol":"PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForIndex(String,String)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.getCustomUpgradeTypeForId(String)","symbol":"PushUpgradeCustomizationRepository.getCustomUpgradeTypeForId(String)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.getCustomUpgradeTypeForIndex(String,String)","symbol":"PushUpgradeCustomizationRepository.getCustomUpgradeTypeForIndex(String,String)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForId(String,Boolean)","symbol":"PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForId(String,Boolean)","kind":"shape"},
+    {"surfaceId":"apex:PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForIndex(String,String,Boolean)","symbol":"PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForIndex(String,String,Boolean)","kind":"shape"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/PushUpgradeCustomizationRepositoryShapeDepth.cls",
+      "content": "public class PushUpgradeCustomizationRepositoryShapeDepth { public void compileShape() { String packageId = 'package'; String subscriberOrgId = 'subscriber'; String recordId = 'record'; Boolean allowed = true; PushUpgradeCustomizationRepository repository = new PushUpgradeCustomizationRepository(); Object cloned = repository.clone(); String created = PushUpgradeCustomizationRepository.create(packageId, subscriberOrgId, allowed); PushUpgradeCustomizationRepository.deleteById(recordId); PushUpgradeCustomizationRepository.deleteByIndex(packageId, subscriberOrgId); Boolean allowedById = PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForId(recordId); Boolean allowedByIndex = PushUpgradeCustomizationRepository.getCustomUpgradeAllowedForIndex(packageId, subscriberOrgId); CustomizationType typeById = PushUpgradeCustomizationRepository.getCustomUpgradeTypeForId(recordId); CustomizationType typeByIndex = PushUpgradeCustomizationRepository.getCustomUpgradeTypeForIndex(packageId, subscriberOrgId); PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForId(recordId, allowed); PushUpgradeCustomizationRepository.setCustomUpgradeAllowedForIndex(packageId, subscriberOrgId, allowed); } }"
+    }
+  ],
+  "command": {"kind":"check"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local PushUpgradeCustomizationRepository compile shape only. It does not access the hosted subscriber package upgrade service and grants zero Salesforce parity credit."
+}
