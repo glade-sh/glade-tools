@@ -1389,6 +1389,48 @@ func TestSupportProfileSystemFamilyAliasJoinsCorpusUsage(t *testing.T) {
 	}
 }
 
+func TestSupportProfileCorpusUsagePrefersCanonicalRowOverSystemAlias(t *testing.T) {
+	policy := SupportPolicy{Rules: []SupportPolicyRule{
+		{Namespace: "System", Disposition: DispositionCompileShapeRequired, Reason: "fallback"},
+		{Namespace: "Metadata", Disposition: DispositionDeterministicMockRequired, Reason: "metadata"},
+	}}
+	rows := []SurfaceLedgerRow{
+		{SurfaceID: "apex:Metadata.Metadata", Product: ProductApex, Namespace: "Metadata", TypeName: "Metadata", Kind: KindType, GladeShape: ShapeTypeKnown},
+		{SurfaceID: "apex:System.Metadata", Product: ProductApex, Namespace: "System", TypeName: "Metadata", Kind: KindType, GladeShape: ShapeTypeKnown},
+		{SurfaceID: "apex:Answers", Product: ProductApex, Namespace: "Answers", TypeName: "Answers", Kind: KindType, GladeShape: ShapeTypeKnown},
+		{SurfaceID: "apex:ConnectApi.ConnectApi", Product: ProductApex, Namespace: "ConnectApi", TypeName: "ConnectApi", Kind: KindType, GladeShape: ShapeTypeKnown},
+		{SurfaceID: "apex:System.ConnectApi", Product: ProductApex, Namespace: "System", TypeName: "ConnectApi", Kind: KindType, GladeShape: ShapeTypeKnown},
+	}
+	usage := &CorpusUsage{Usage: []CorpusUsageEntry{
+		{UsageKey: "Metadata", PrivProdRefs: 529, PrivTestRefs: 150},
+		{UsageKey: "Metadata.Metadata", PrivProdRefs: 5, PrivTestRefs: 9},
+		{UsageKey: "Answers", PrivProdRefs: 47, PrivTestRefs: 67},
+		{UsageKey: "ConnectApi", PrivProdRefs: 10},
+	}}
+	profile := ComputeSupportProfile(rows, policy, usage)
+	byID := make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		byID[row.SurfaceID] = row
+	}
+	canonical := byID["apex:Metadata.Metadata"]
+	if canonical.UsageKey != "Metadata.Metadata" || canonical.CorpusPassingRefs != 14 {
+		t.Fatalf("canonical Metadata usage = key %q refs %d, want Metadata.Metadata/14", canonical.UsageKey, canonical.CorpusPassingRefs)
+	}
+	alias := byID["apex:System.Metadata"]
+	if alias.UsageKey != "System.Metadata" || alias.CorpusPassingRefs != 0 {
+		t.Fatalf("System.Metadata alias usage = key %q refs %d, want System.Metadata/0", alias.UsageKey, alias.CorpusPassingRefs)
+	}
+	if row := byID["apex:Answers"]; row.UsageKey != "Answers" || row.CorpusPassingRefs != 114 {
+		t.Fatalf("aggregate-only Answers usage = key %q refs %d, want Answers/114", row.UsageKey, row.CorpusPassingRefs)
+	}
+	if row := byID["apex:ConnectApi.ConnectApi"]; row.UsageKey != "ConnectApi" || row.CorpusPassingRefs != 10 {
+		t.Fatalf("canonical ConnectApi usage = key %q refs %d, want ConnectApi/10", row.UsageKey, row.CorpusPassingRefs)
+	}
+	if row := byID["apex:System.ConnectApi"]; row.UsageKey != "System.ConnectApi" || row.CorpusPassingRefs != 0 {
+		t.Fatalf("System.ConnectApi alias usage = key %q refs %d, want System.ConnectApi/0", row.UsageKey, row.CorpusPassingRefs)
+	}
+}
+
 // SF-CB14 RED 1: a surfacePrefix rule with a matched member exception is not reported stale.
 func TestSupportProfileSurfacePrefixMemberExceptionNotStale(t *testing.T) {
 	policy := SupportPolicy{
