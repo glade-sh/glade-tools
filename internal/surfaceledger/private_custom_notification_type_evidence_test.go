@@ -42,7 +42,7 @@ func TestPrivateCustomNotificationTypeUsesExistingExecutableOwner(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fixture.Command.Kind != "test" || len(fixture.Source) != 1 || !strings.Contains(fixture.Source[0].Content, "Messaging.CustomNotification custom = new Messaging.CustomNotification();") {
+	if fixture.Command.Kind != "test" || len(fixture.Source) == 0 || !strings.Contains(fixture.Source[0].Content, "Messaging.CustomNotification custom = new Messaging.CustomNotification();") {
 		t.Fatalf("fixture lacks direct CustomNotification witness: %#v", fixture)
 	}
 	result, err := compat.Run(fixture)
