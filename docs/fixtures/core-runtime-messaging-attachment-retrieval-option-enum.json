@@ -1,6 +1,7 @@
 {
   "name": "core-runtime-messaging-attachment-retrieval-option-enum",
   "evidence": [
+    {"surfaceId": "apex:Messaging.AttachmentRetrievalOption", "symbol": "Messaging.AttachmentRetrievalOption", "kind": "test", "notes": "Local enum values directly materialize the typed AttachmentRetrievalOption surface."},
     {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.METADATA_ONLY", "symbol": "Messaging.AttachmentRetrievalOption.METADATA_ONLY", "kind": "test", "notes": "Local enum constant is materialized as a deterministic typed value."},
     {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY", "symbol": "Messaging.AttachmentRetrievalOption.METADATA_WITH_BODY", "kind": "test", "notes": "Local enum constant is materialized as a deterministic typed value."},
     {"surfaceId": "apex:Messaging.AttachmentRetrievalOption.NONE", "symbol": "Messaging.AttachmentRetrievalOption.NONE", "kind": "test", "notes": "Local enum constant is materialized as a deterministic typed value."},

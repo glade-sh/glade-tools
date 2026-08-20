@@ -1,0 +1,29 @@
+{
+  "name": "core-runtime-messaging-email-to-salesforce-handler-evidence",
+  "evidence": [
+    {"surfaceId": "apex:Messaging.EmailToSalesforceHandler", "symbol": "Messaging.EmailToSalesforceHandler", "kind": "test", "notes": "The local runtime directly constructs a typed EmailToSalesforceHandler value."},
+    {"surfaceId": "apex:Messaging.EmailToSalesforceHandler.EmailToSalesforceHandler()", "symbol": "Messaging.EmailToSalesforceHandler()", "kind": "test", "notes": "The local runtime directly executes the zero-argument constructor."},
+    {"surfaceId": "apex:Messaging.EmailToSalesforceHandler.clone()", "symbol": "Messaging.EmailToSalesforceHandler.clone()", "kind": "test", "notes": "The local runtime clones the handler into a distinct typed value."}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/CoreRuntimeMessagingEmailToSalesforceHandlerEvidenceTest.cls",
+      "content": "@isTest private class CoreRuntimeMessagingEmailToSalesforceHandlerEvidenceTest { @isTest static void rows() { Messaging.EmailToSalesforceHandler handler = new Messaging.EmailToSalesforceHandler(); Messaging.EmailToSalesforceHandler cloned = (Messaging.EmailToSalesforceHandler)handler.clone(); System.assertNotEquals(handler, cloned); } }"
+    }
+  ],
+  "command": {
+    "kind": "test"
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "EmailToSalesforceHandler construction and cloning are covered by deterministic local execution; this fixture makes no Salesforce parity claim."
+}
