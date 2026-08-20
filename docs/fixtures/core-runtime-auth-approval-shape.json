@@ -1,5 +1,9 @@
 {
   "name": "core-runtime-auth-approval-shape",
+  "mode": "compile-shape",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This compile-only fixture proves exact local AuthConfiguration method and constructor shapes and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:Auth.AuthConfiguration.getAuthProviderSsoUrl(String,String,String)",
@@ -15,6 +19,156 @@
       "surfaceId": "apex:Auth.AuthProviderPluginClass.handleCallback(Map<String,String>,Auth.AuthProviderCallbackState)",
       "symbol": "Auth.AuthProviderPluginClass.handleCallback(Map<String,String>,Auth.AuthProviderCallbackState)",
       "kind": "check"
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.AuthConfiguration(String,String)",
+      "symbol": "Auth.AuthConfiguration.AuthConfiguration(String,String)",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration constructor shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getAllowInternalUserLoginEnabled()",
+      "symbol": "Auth.AuthConfiguration.getAllowInternalUserLoginEnabled()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getAuthConfig()",
+      "symbol": "Auth.AuthConfiguration.getAuthConfig()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getAuthConfigProviders()",
+      "symbol": "Auth.AuthConfiguration.getAuthConfigProviders()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getAuthProviderSsoDomainUrl(String,String,String)",
+      "symbol": "Auth.AuthConfiguration.getAuthProviderSsoDomainUrl(String,String,String)",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getAuthProviders()",
+      "symbol": "Auth.AuthConfiguration.getAuthProviders()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getBackgroundColor()",
+      "symbol": "Auth.AuthConfiguration.getBackgroundColor()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getCertificateLoginEnabled(String)",
+      "symbol": "Auth.AuthConfiguration.getCertificateLoginEnabled(String)",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getCertificateLoginUrl(String,String)",
+      "symbol": "Auth.AuthConfiguration.getCertificateLoginUrl(String,String)",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getDefaultProfileForRegistration()",
+      "symbol": "Auth.AuthConfiguration.getDefaultProfileForRegistration()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getFooterText()",
+      "symbol": "Auth.AuthConfiguration.getFooterText()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getForgotPasswordUrl()",
+      "symbol": "Auth.AuthConfiguration.getForgotPasswordUrl()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getHeadlessForgotPasswordEnabled()",
+      "symbol": "Auth.AuthConfiguration.getHeadlessForgotPasswordEnabled()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getHeadlessFrgtPswEnabled()",
+      "symbol": "Auth.AuthConfiguration.getHeadlessFrgtPswEnabled()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getHeadlessPasswordlessLoginEnabled()",
+      "symbol": "Auth.AuthConfiguration.getHeadlessPasswordlessLoginEnabled()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getHeadlessRegistrationEnabled()",
+      "symbol": "Auth.AuthConfiguration.getHeadlessRegistrationEnabled()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getLoginRightFrameUrl()",
+      "symbol": "Auth.AuthConfiguration.getLoginRightFrameUrl()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getLogoUrl()",
+      "symbol": "Auth.AuthConfiguration.getLogoUrl()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getSamlProviders()",
+      "symbol": "Auth.AuthConfiguration.getSamlProviders()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getSamlSsoUrl(String,String,String)",
+      "symbol": "Auth.AuthConfiguration.getSamlSsoUrl(String,String,String)",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getSelfRegistrationEnabled()",
+      "symbol": "Auth.AuthConfiguration.getSelfRegistrationEnabled()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getSelfRegistrationUrl()",
+      "symbol": "Auth.AuthConfiguration.getSelfRegistrationUrl()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getStartUrl()",
+      "symbol": "Auth.AuthConfiguration.getStartUrl()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.getUsernamePasswordEnabled()",
+      "symbol": "Auth.AuthConfiguration.getUsernamePasswordEnabled()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthConfiguration.isCommunityUsingSiteAsContainer()",
+      "symbol": "Auth.AuthConfiguration.isCommunityUsingSiteAsContainer()",
+      "kind": "shape",
+      "notes": "Compile-only AuthConfiguration method shape; no runtime behavior or Salesforce parity is claimed."
     }
   ],
   "source": [
@@ -24,11 +178,12 @@
     },
     {
       "path": "force-app/main/classes/AuthApprovalShapeProbe.cls",
-      "content": "public class AuthApprovalShapeProbe { public void compileShape() { Auth.AuthConfiguration cfg = new Auth.AuthConfiguration('https://community.example.invalid', '/start'); Boolean internalLogin = cfg.getAllowInternalUserLoginEnabled(); List<Auth.AuthConfig> providers = cfg.getAuthConfigProviders(); String sso = cfg.getAuthProviderSsoUrl('provider', '/start', 'site'); String domain = cfg.getAuthProviderSsoDomainUrl('provider', '/start', 'site'); Boolean certEnabled = cfg.getCertificateLoginEnabled('site'); String certUrl = cfg.getCertificateLoginUrl('site', '/start'); String profile = cfg.getDefaultProfileForRegistration(); Boolean headless = cfg.getHeadlessPasswordlessLoginEnabled() || cfg.getHeadlessRegistrationEnabled() || cfg.getHeadlessForgotPasswordEnabled() || cfg.getHeadlessFrgtPswEnabled(); String logo = cfg.getLogoUrl(); String right = cfg.getRightFrameUrl(); List<Auth.AuthConfig> saml = cfg.getSamlProviders(); String samlUrl = cfg.getSamlSsoUrl('provider', '/start', 'site'); Boolean selfReg = cfg.getSelfRegistrationEnabled(); String selfUrl = cfg.getSelfRegistrationUrl(); Boolean userPass = cfg.getUsernamePasswordEnabled(); Auth.AuthProviderCallbackState callback = new Auth.AuthProviderCallbackState(new Map<String,String>{'h' => 'v'}, 'body', new Map<String,String>{'q' => 'v'}); String body = callback.body; Map<String,String> headers = callback.headers; Map<String,String> query = callback.queryParameters; Auth.AuthProviderTokenResponse token = new Auth.AuthProviderTokenResponse('provider', 'oauth', 'refresh', 'state'); token.idToken = 'id'; Auth.GeneratedUserData generated = new Auth.GeneratedUserData('first', 'last', 'email@example.invalid', 'user', 'alias', 'en_US', 'America/Los_Angeles', 'UTF-8', 'en_US'); Auth.HeadlessUserDiscoveryResponse discovery = new Auth.HeadlessUserDiscoveryResponse(new Set<Id>(), 'message'); Auth.TokenValidationResult validation = new Auth.TokenValidationResult(false); Auth.VerificationAction action = null; Auth.VerificationPolicy policy = null; Auth.InvocationContext invocation = new Auth.InvocationContext(); Auth.IntegratingAppType appType = null; Auth.OAuth2TokenExchangeType exchangeType = null; Auth.OauthTokenType tokenType = null; Approval.ProcessSubmitRequest submit = new Approval.ProcessSubmitRequest(); submit.setComments('comment'); Approval.ProcessWorkitemRequest work = new Approval.ProcessWorkitemRequest(); work.setAction('Approve'); System.assert(internalLogin == false || userPass == true || headless == false || certEnabled == false || selfReg == false || sso != null || domain != null || certUrl != null || profile != null || logo != null || right != null || samlUrl != null || selfUrl != null || providers != null || saml != null || body != null || headers != null || query != null || token.provider != null || generated.email != null || discovery.customErrorMessage != null || validation.isValid == false || action != null || policy != null || invocation != null || appType != null || exchangeType != null || tokenType != null || submit != null || work != null); } }"
+      "content": "public class AuthApprovalShapeProbe { public void compileShape() { Auth.AuthConfiguration cfg = new Auth.AuthConfiguration('https://community.example.invalid', '/start'); Boolean internalLogin = cfg.getAllowInternalUserLoginEnabled(); Object authConfig = cfg.getAuthConfig(); List<Auth.AuthConfig> providers = cfg.getAuthConfigProviders(); Object authProviders = cfg.getAuthProviders(); Object background = cfg.getBackgroundColor(); String sso = Auth.AuthConfiguration.getAuthProviderSsoUrl('provider', '/start', 'site'); String domain = Auth.AuthConfiguration.getAuthProviderSsoDomainUrl('provider', '/start', 'site'); Boolean certEnabled = cfg.getCertificateLoginEnabled('site'); String certUrl = Auth.AuthConfiguration.getCertificateLoginUrl('site', '/start'); String profile = cfg.getDefaultProfileForRegistration(); Object footer = cfg.getFooterText(); Object forgot = cfg.getForgotPasswordUrl(); Boolean headless = cfg.getHeadlessPasswordlessLoginEnabled() || cfg.getHeadlessRegistrationEnabled() || cfg.getHeadlessForgotPasswordEnabled() || cfg.getHeadlessFrgtPswEnabled(); Object loginRight = cfg.getLoginRightFrameUrl(); String logo = cfg.getLogoUrl(); List<Auth.AuthConfig> saml = cfg.getSamlProviders(); String samlUrl = Auth.AuthConfiguration.getSamlSsoUrl('provider', '/start', 'site'); Boolean selfReg = cfg.getSelfRegistrationEnabled(); String selfUrl = cfg.getSelfRegistrationUrl(); Object start = cfg.getStartUrl(); Boolean userPass = cfg.getUsernamePasswordEnabled(); Boolean siteContainer = cfg.isCommunityUsingSiteAsContainer(); Auth.AuthProviderCallbackState callback = new Auth.AuthProviderCallbackState(new Map<String,String>{'h' => 'v'}, 'body', new Map<String,String>{'q' => 'v'}); String body = callback.body; Map<String,String> headers = callback.headers; Map<String,String> query = callback.queryParameters; Auth.AuthProviderTokenResponse token = new Auth.AuthProviderTokenResponse('provider', 'oauth', 'refresh', 'state'); token.idToken = 'id'; Auth.GeneratedUserData generated = new Auth.GeneratedUserData('first', 'last', 'email@example.invalid', 'user', 'alias', 'en_US', 'America/Los_Angeles', 'UTF-8', 'en_US'); Auth.HeadlessUserDiscoveryResponse discovery = new Auth.HeadlessUserDiscoveryResponse(new Set<Id>(), 'message'); Auth.TokenValidationResult validation = new Auth.TokenValidationResult(false); Auth.VerificationAction action = null; Auth.VerificationPolicy policy = null; Auth.InvocationContext invocation = new Auth.InvocationContext(); Auth.IntegratingAppType appType = null; Auth.OAuth2TokenExchangeType exchangeType = null; Auth.OauthTokenType tokenType = null; Approval.ProcessSubmitRequest submit = new Approval.ProcessSubmitRequest(); submit.setComments('comment'); Approval.ProcessWorkitemRequest work = new Approval.ProcessWorkitemRequest(); work.setAction('Approve'); System.assert(internalLogin == false || userPass == true || headless == false || certEnabled == false || selfReg == false || sso != null || domain != null || certUrl != null || profile != null || logo != null || samlUrl != null || selfUrl != null || providers != null || saml != null || body != null || headers != null || query != null || token.provider != null || generated.email != null || discovery.customErrorMessage != null || validation.isValid == false || action != null || policy != null || invocation != null || appType != null || exchangeType != null || tokenType != null || submit != null || work != null); } }"
     }
   ],
   "command": {
-    "kind": "check"
+    "kind": "check",
+    "args": ["public class AuthApprovalShapeProbe { public void compileShape() { Auth.AuthConfiguration cfg = new Auth.AuthConfiguration('https://community.example.invalid', '/start'); Boolean internalLogin = cfg.getAllowInternalUserLoginEnabled(); Object authConfig = cfg.getAuthConfig(); List<Auth.AuthConfig> providers = cfg.getAuthConfigProviders(); Object authProviders = cfg.getAuthProviders(); Object background = cfg.getBackgroundColor(); String sso = Auth.AuthConfiguration.getAuthProviderSsoUrl('provider', '/start', 'site'); String domain = Auth.AuthConfiguration.getAuthProviderSsoDomainUrl('provider', '/start', 'site'); Boolean certEnabled = cfg.getCertificateLoginEnabled('site'); String certUrl = Auth.AuthConfiguration.getCertificateLoginUrl('site', '/start'); String profile = cfg.getDefaultProfileForRegistration(); Object footer = cfg.getFooterText(); Object forgot = cfg.getForgotPasswordUrl(); Boolean headless = cfg.getHeadlessPasswordlessLoginEnabled() || cfg.getHeadlessRegistrationEnabled() || cfg.getHeadlessForgotPasswordEnabled() || cfg.getHeadlessFrgtPswEnabled(); Object loginRight = cfg.getLoginRightFrameUrl(); String logo = cfg.getLogoUrl(); List<Auth.AuthConfig> saml = cfg.getSamlProviders(); String samlUrl = Auth.AuthConfiguration.getSamlSsoUrl('provider', '/start', 'site'); Boolean selfReg = cfg.getSelfRegistrationEnabled(); String selfUrl = cfg.getSelfRegistrationUrl(); Object start = cfg.getStartUrl(); Boolean userPass = cfg.getUsernamePasswordEnabled(); Boolean siteContainer = cfg.isCommunityUsingSiteAsContainer(); Auth.AuthProviderCallbackState callback = new Auth.AuthProviderCallbackState(new Map<String,String>{'h' => 'v'}, 'body', new Map<String,String>{'q' => 'v'}); String body = callback.body; Map<String,String> headers = callback.headers; Map<String,String> query = callback.queryParameters; Auth.AuthProviderTokenResponse token = new Auth.AuthProviderTokenResponse('provider', 'oauth', 'refresh', 'state'); token.idToken = 'id'; Auth.GeneratedUserData generated = new Auth.GeneratedUserData('first', 'last', 'email@example.invalid', 'user', 'alias', 'en_US', 'America/Los_Angeles', 'UTF-8', 'en_US'); Auth.HeadlessUserDiscoveryResponse discovery = new Auth.HeadlessUserDiscoveryResponse(new Set<Id>(), 'message'); Auth.TokenValidationResult validation = new Auth.TokenValidationResult(false); Auth.VerificationAction action = null; Auth.VerificationPolicy policy = null; Auth.InvocationContext invocation = new Auth.InvocationContext(); Auth.IntegratingAppType appType = null; Auth.OAuth2TokenExchangeType exchangeType = null; Auth.OauthTokenType tokenType = null; Approval.ProcessSubmitRequest submit = new Approval.ProcessSubmitRequest(); submit.setComments('comment'); Approval.ProcessWorkitemRequest work = new Approval.ProcessWorkitemRequest(); work.setAction('Approve'); System.assert(internalLogin == false || userPass == true || headless == false || certEnabled == false || selfReg == false || sso != null || domain != null || certUrl != null || profile != null || logo != null || samlUrl != null || selfUrl != null || providers != null || saml != null || body != null || headers != null || query != null || token.provider != null || generated.email != null || discovery.customErrorMessage != null || validation.isValid == false || action != null || policy != null || invocation != null || appType != null || exchangeType != null || tokenType != null || submit != null || work != null); } }"]
   },
   "expected": {
     "result": {
