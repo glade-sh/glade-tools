@@ -5,7 +5,7 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "Local Canvas lifecycle handlers return an empty excluded context type set by default.",
+      "notes": "A concrete local Canvas lifecycle subclass returns an empty excluded context type set, proving typed override dispatch without claiming a platform default.",
       "surfaceId": "apex:Canvas.CanvasLifecycleHandler.excludeContextTypes()",
       "symbol": "Canvas.CanvasLifecycleHandler.excludeContextTypes()"
     },
@@ -32,7 +32,23 @@
       "notes": "The local test harness dispatches the lifecycle handler with the supplied RenderContext.",
       "surfaceId": "apex:Canvas.Test.testCanvasLifecycle(Canvas.CanvasLifecycleHandler,Canvas.RenderContext)",
       "symbol": "Canvas.Test.testCanvasLifecycle(Canvas.CanvasLifecycleHandler,Canvas.RenderContext)"
-    }
+    },
+    {"kind":"test","surfaceId":"apex:Canvas.ApplicationContext.getCanvasUrl()","symbol":"Canvas.ApplicationContext.getCanvasUrl()"},
+    {"kind":"test","surfaceId":"apex:Canvas.ApplicationContext.getDeveloperName()","symbol":"Canvas.ApplicationContext.getDeveloperName()"},
+    {"kind":"test","surfaceId":"apex:Canvas.ApplicationContext.getName()","symbol":"Canvas.ApplicationContext.getName()"},
+    {"kind":"test","surfaceId":"apex:Canvas.ApplicationContext.getNamespace()","symbol":"Canvas.ApplicationContext.getNamespace()"},
+    {"kind":"test","surfaceId":"apex:Canvas.ApplicationContext.getVersion()","symbol":"Canvas.ApplicationContext.getVersion()"},
+    {"kind":"test","surfaceId":"apex:Canvas.ApplicationContext.setCanvasUrlPath(String)","symbol":"Canvas.ApplicationContext.setCanvasUrlPath(String)"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.addEntityField(String)","symbol":"Canvas.EnvironmentContext.addEntityField(String)"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.addEntityFields(Set<String>)","symbol":"Canvas.EnvironmentContext.addEntityFields(Set<String>)"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.getDisplayLocation()","symbol":"Canvas.EnvironmentContext.getDisplayLocation()"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.getEntityFields()","symbol":"Canvas.EnvironmentContext.getEntityFields()"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.getLocationUrl()","symbol":"Canvas.EnvironmentContext.getLocationUrl()"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.getParametersAsJSON()","symbol":"Canvas.EnvironmentContext.getParametersAsJSON()"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.getSublocation()","symbol":"Canvas.EnvironmentContext.getSublocation()"},
+    {"kind":"test","surfaceId":"apex:Canvas.EnvironmentContext.setParametersAsJSON(String)","symbol":"Canvas.EnvironmentContext.setParametersAsJSON(String)"},
+    {"kind":"test","surfaceId":"apex:Canvas.RenderContext.getApplicationContext()","symbol":"Canvas.RenderContext.getApplicationContext()"},
+    {"kind":"test","surfaceId":"apex:Canvas.RenderContext.getEnvironmentContext()","symbol":"Canvas.RenderContext.getEnvironmentContext()"}
   ],
   "expected": {
     "result": {
@@ -49,7 +65,7 @@
   "salesforceExclusionReason": "API 67 clean-org rejects construction of the Canvas lifecycle handler; retained as a Glade-local contract and excluded from hosted parity.",
   "source": [
     {
-      "content": "@isTest private class CoreRuntimeCanvasLocalEvidenceTest { @isTest static void exercisesLocalCanvasLifecycle() { Map<String,String> app = new Map<String,String>(); app.put('canvasUrl', 'https://canvas.example'); app.put('name', 'Local Canvas'); Map<String,String> env = new Map<String,String>(); env.put('displayLocation', 'Visualforce'); env.put('locationUrl', '/apex/Host'); Canvas.RenderContext ctx = Canvas.Test.mockRenderContext(app, env); System.assertEquals('https://canvas.example', ctx.getApplicationContext().getCanvasUrl()); System.assertEquals('Local Canvas', ctx.getApplicationContext().getName()); System.assertEquals('Visualforce', ctx.getEnvironmentContext().getDisplayLocation()); System.assertEquals('/apex/Host', ctx.getEnvironmentContext().getLocationUrl()); Canvas.CanvasLifecycleHandler handler = new Canvas.CanvasLifecycleHandler(); System.assertEquals(0, handler.excludeContextTypes().size()); handler.onRender(ctx); Canvas.Test.testCanvasLifecycle(handler, ctx); Canvas.CanvasRenderException ex = new Canvas.CanvasRenderException('render failed'); System.assertEquals('Canvas.CanvasRenderException', ex.getTypeName()); } }",
+      "content": "@isTest private class CoreRuntimeCanvasLocalEvidenceTest { private class LocalHandler extends Canvas.CanvasLifecycleHandler { public Set<Canvas.ContextTypeEnum> excludeContextTypes() { return new Set<Canvas.ContextTypeEnum>(); } public void onRender(Canvas.RenderContext context) {} } @isTest static void exercisesLocalCanvasLifecycle() { Map<String,String> app = new Map<String,String>(); app.put('canvasUrl', 'https://canvas.example'); app.put('developerName', 'LocalCanvas'); app.put('name', 'Local Canvas'); app.put('namespace', 'local'); app.put('version', '1'); Map<String,String> env = new Map<String,String>(); env.put('displayLocation', 'Visualforce'); env.put('locationUrl', '/apex/Host'); env.put('subLocation', 'detail'); Canvas.RenderContext ctx = Canvas.Test.mockRenderContext(app, env); Canvas.ApplicationContext application = ctx.getApplicationContext(); System.assertEquals('https://canvas.example', application.getCanvasUrl()); System.assertEquals('LocalCanvas', application.getDeveloperName()); System.assertEquals('Local Canvas', application.getName()); System.assertEquals('local', application.getNamespace()); System.assertEquals('1', application.getVersion()); application.setCanvasUrlPath('/apex/Changed'); System.assertEquals('/apex/Changed', application.getCanvasUrl()); Canvas.EnvironmentContext environment = ctx.getEnvironmentContext(); System.assertEquals('Visualforce', environment.getDisplayLocation()); System.assertEquals('/apex/Host', environment.getLocationUrl()); System.assertEquals('detail', environment.getSublocation()); environment.addEntityField('Account.Name'); environment.addEntityFields(new Set<String>{'Account.Id', 'Account.Type'}); List<String> entityFields = environment.getEntityFields(); System.assertEquals(3, entityFields.size()); System.assert(entityFields.contains('Account.Name')); System.assert(entityFields.contains('Account.Id')); System.assert(entityFields.contains('Account.Type')); environment.setParametersAsJSON('{\"mode\":\"local\"}'); System.assertEquals('{\"mode\":\"local\"}', environment.getParametersAsJSON()); Canvas.CanvasLifecycleHandler handler = new LocalHandler(); System.assertEquals(0, handler.excludeContextTypes().size()); handler.onRender(ctx); Canvas.Test.testCanvasLifecycle(handler, ctx); Canvas.CanvasRenderException ex = new Canvas.CanvasRenderException('render failed'); System.assertEquals('Canvas.CanvasRenderException', ex.getTypeName()); } }",
       "path": "force-app/main/classes/CoreRuntimeCanvasLocalEvidenceTest.cls"
     }
   ]
