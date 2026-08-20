@@ -1,0 +1,30 @@
+{
+  "command": {
+    "args": ["applauncher.AppMenu.setAppVisibility('001000000000001', true);"],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "Glade resolves the signature but explicitly rejects the unmodeled App Menu visibility mutation.",
+      "surfaceId": "apex:applauncher.AppMenu.setAppVisibility(Id,Boolean)",
+      "symbol": "applauncher.AppMenu.setAppVisibility(Id,Boolean)"
+    }
+  ],
+  "expected": {
+    "error": {
+      "message": "unsupported call \"applauncher.AppMenu.setAppVisibility\"",
+      "type": "UnsupportedFeature"
+    }
+  },
+  "name": "core-runtime-applauncher-app-menu-visibility-unsupported",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "applauncher is a Salesforce-internal namespace rejected by the compile oracle; this fixture records only Glade's exact local rejection and claims zero Salesforce parity.",
+  "source": [
+    {
+      "content": "applauncher.AppMenu.setAppVisibility('001000000000001', true);",
+      "path": "anonymous.apex"
+    }
+  ]
+}

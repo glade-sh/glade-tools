@@ -1,0 +1,30 @@
+{
+  "command": {
+    "args": ["applauncher.AccountSettingsController.getExtraFields('Extra_Fields');"],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "Glade resolves the signature but explicitly rejects the unmodeled Account Settings field-set lookup.",
+      "surfaceId": "apex:applauncher.AccountSettingsController.getExtraFields(String)",
+      "symbol": "applauncher.AccountSettingsController.getExtraFields(String)"
+    }
+  ],
+  "expected": {
+    "error": {
+      "message": "unsupported call \"applauncher.AccountSettingsController.getExtraFields\"",
+      "type": "UnsupportedFeature"
+    }
+  },
+  "name": "core-runtime-applauncher-account-settings-extra-fields-unsupported",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "applauncher is a Salesforce-internal namespace rejected by the compile oracle; this fixture records only Glade's exact local rejection and claims zero Salesforce parity.",
+  "source": [
+    {
+      "content": "applauncher.AccountSettingsController.getExtraFields('Extra_Fields');",
+      "path": "anonymous.apex"
+    }
+  ]
+}
