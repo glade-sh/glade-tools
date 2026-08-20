@@ -202,15 +202,35 @@ func ComputeSupportProfile(rows []SurfaceLedgerRow, policy SupportPolicy, corpus
 	var surfaceKey map[string]string
 	var usageIdx map[string]*CorpusUsageEntry
 	if corpusUsage != nil {
-		surfaceKey = make(map[string]string, len(apexRows))
-		for _, ar := range apexRows {
-			namespace := supportPolicyNamespace(ar, policy)
-			typeName := supportPolicyTypeName(ar, namespace)
-			surfaceKey[ar.SurfaceID] = usageKeyForSurface(namespace, typeName, ar.MemberName)
-		}
 		usageIdx = make(map[string]*CorpusUsageEntry, len(corpusUsage.Usage))
 		for i := range corpusUsage.Usage {
 			usageIdx[corpusUsage.Usage[i].UsageKey] = &corpusUsage.Usage[i]
+		}
+		surfaceKey = make(map[string]string, len(apexRows))
+		canonicalKey := make(map[string]string, len(apexRows))
+		directKey := make(map[string]string, len(apexRows))
+		hasCanonicalRow := make(map[string]bool)
+		for _, ar := range apexRows {
+			namespace := supportPolicyNamespace(ar, policy)
+			key := usageKeyForSurface(namespace, supportPolicyTypeName(ar, namespace), ar.MemberName)
+			surfaceKey[ar.SurfaceID] = key
+			canonicalKey[ar.SurfaceID] = key
+			direct := usageKeyForSurface(ar.Namespace, supportPolicyTypeName(ar, ar.Namespace), ar.MemberName)
+			directKey[ar.SurfaceID] = direct
+			if direct == key {
+				hasCanonicalRow[key] = true
+			}
+			if ar.Kind == KindType && ar.TypeName != "" {
+				exact := usageKeyForSurface(namespace, ar.TypeName, ar.MemberName)
+				if _, ok := usageIdx[exact]; ok {
+					surfaceKey[ar.SurfaceID] = exact
+				}
+			}
+		}
+		for id, canonical := range canonicalKey {
+			if directKey[id] != canonical && hasCanonicalRow[canonical] {
+				surfaceKey[id] = directKey[id]
+			}
 		}
 	}
 
