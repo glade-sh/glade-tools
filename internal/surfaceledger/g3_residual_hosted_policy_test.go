@@ -93,10 +93,15 @@ func TestG3ResidualHostedPolicyOverridesAreExactAndCloseExistingUnsupportedEvide
 	}
 	selected := make(map[string]bool, len(g3ResidualHostedPolicyReasons))
 	for _, row := range profile.Rows {
-		if strings.HasPrefix(row.MatchRule, "surfaceId=") && row.Disposition == DispositionHostedDeferred {
-			if _, target := g3ResidualHostedPolicyReasons[row.SurfaceID]; target {
-				selected[row.SurfaceID] = true
-			}
+		if !strings.HasPrefix(row.MatchRule, "surfaceId=") || row.Disposition != DispositionHostedDeferred {
+			continue
+		}
+		if _, target := g3ResidualHostedPolicyReasons[row.SurfaceID]; target {
+			selected[row.SurfaceID] = true
+			continue
+		}
+		if row.SurfaceID != "apex:Approval.process hosted approval engine routing" {
+			t.Fatalf("unexpected exact hosted-deferred policy match: %#v", row)
 		}
 	}
 	for id := range g3ResidualHostedPolicyReasons {
