@@ -320,15 +320,21 @@
       "notes": "Focused Squad B fixture evidence for existing local Apex runtime behavior.",
       "surfaceId": "apex:Cache.Visibility",
       "symbol": "Cache.Visibility"
-    }
+    },
+    {"kind":"test","surfaceId":"apex:Cache.Visibility.NAMESPACE","symbol":"Cache.Visibility.NAMESPACE","notes":"The local enum materializes the namespace-scoped visibility value."},
+    {"kind":"test","surfaceId":"apex:Cache.Visibility.equals(Object)","symbol":"Cache.Visibility.equals(Object)","notes":"The local enum executes deterministic equality semantics."},
+    {"kind":"test","surfaceId":"apex:Cache.Visibility.hashCode()","symbol":"Cache.Visibility.hashCode()","notes":"The local enum returns a stable hash for a materialized value."},
+    {"kind":"test","surfaceId":"apex:Cache.Visibility.ordinal()","symbol":"Cache.Visibility.ordinal()","notes":"The local enum exposes declaration-order ordinals."},
+    {"kind":"test","surfaceId":"apex:Cache.Visibility.valueOf(String)","symbol":"Cache.Visibility.valueOf(String)","notes":"The local enum resolves its namespace-scoped value by name."},
+    {"kind":"test","surfaceId":"apex:Cache.Visibility.values()","symbol":"Cache.Visibility.values()","notes":"The local enum returns both declared values in order."}
   ],
   "expected": {
     "result": {
       "errors": 0,
       "failed": 0,
       "ok": true,
-      "passed": 1,
-      "total": 1
+      "passed": 2,
+      "total": 2
     }
   },
   "name": "core-runtime-cache-partition-evidence",
@@ -339,6 +345,10 @@
     {
       "content": "@isTest private class SquadBCacheEvidenceTest { @isTest static void cacheRows() {\nCache.OrgPartition orgCache = Cache.Org.getPartition('local');\nSystem.assertEquals(null, orgCache.get('missing'));\norgCache.put('name', 'Acme');\norgCache.put('namespaceVisible', 'Scoped', Cache.Visibility.NAMESPACE);\norgCache.put('visible', 'Trail', 300, Cache.Visibility.ALL, false);\nSystem.assert(orgCache.contains('name'));\nSystem.assertEquals('Acme', (String) orgCache.get('name'));\nSystem.assertEquals('Scoped', (String) orgCache.get('namespaceVisible'));\nSystem.assertEquals('Trail', (String) orgCache.get('visible'));\nSet<String> orgKeys = orgCache.getKeys();\nSystem.assertEquals(3, orgKeys.size());\nSystem.assert(orgKeys.contains('name'));\nSystem.assert(orgKeys.contains('namespaceVisible'));\nSystem.assert(orgKeys.contains('visible'));\nSystem.assertEquals(3, orgCache.getNumKeys());\nSystem.assertEquals(true, orgCache.remove('name'));\nSystem.assert(!orgCache.contains('name'));\nSystem.assertEquals(2, orgCache.getNumKeys());\nSystem.assert(Cache.Org.getCapacity() > 0);\nSystem.assertEquals('local.default', Cache.Org.getName());\nSystem.assertEquals(0, Cache.Org.getAvgGetSize());\nSystem.assertEquals(0, Cache.Org.getAvgGetTime());\nSystem.assertEquals(0, Cache.Org.getMaxGetSize());\nSystem.assertEquals(0, Cache.Org.getMaxGetTime());\nSystem.assertEquals(0, Cache.Org.getMissRate());\nCache.Org.put('defaulted', 'org-default');\nCache.Org.put('visible-default', 'org-visible', Cache.Visibility.ALL);\nSystem.assert(Cache.Org.contains('defaulted'));\nSystem.assertEquals('org-default', (String) Cache.Org.get('defaulted'));\nSystem.assertEquals('org-visible', (String) Cache.Org.get('visible-default'));\nSystem.assert(Cache.Org.getKeys().contains('defaulted'));\nSystem.assertEquals('org-default', (String) Cache.Org.getPartition('default').get('defaulted'));\nSystem.assertEquals(true, Cache.Org.remove('defaulted'));\nSystem.assertEquals(true, Cache.Org.remove('visible-default'));\nCache.SessionPartition sessionCache = Cache.Session.getPartition('local');\nCache.Partition generalSession = sessionCache;\nCache.Partition generalOrg = orgCache;\nsessionCache.put('count', 7, 300);\ngeneralSession.put('general', 'session');\ngeneralSession.put('generalVisible', 'session-visible', Cache.Visibility.ALL);\ngeneralOrg.put('general', 'org');\nSystem.assertEquals(7, (Integer) sessionCache.get('count'));\nSystem.assertEquals('session', (String) generalSession.get('general'));\nSystem.assertEquals('org', (String) generalOrg.get('general'));\nSystem.assert(generalSession.contains('general'));\nSystem.assert(generalSession.getKeys().contains('general'));\nSystem.assert(generalSession.getNumKeys() >= 3);\nSystem.assert(generalSession.isAvailable());\nSystem.assert(generalSession.getCapacity() > 0);\nSystem.assertEquals(0, generalSession.getAvgGetSize());\nSystem.assertEquals(0, generalSession.getAvgGetTime());\nSystem.assertEquals(0, generalSession.getMaxGetSize());\nSystem.assertEquals(0, generalSession.getMaxGetTime());\nSystem.assertEquals(0, generalSession.getMissRate());\nSystem.assertNotEquals(null, generalSession.getName());\nCache.Session.put('session-defaulted', 'session-default');\nCache.Session.put('session-visible', 'session-visible', Cache.Visibility.ALL);\nSystem.assert(Cache.Session.contains('session-defaulted'));\nSystem.assertEquals('session-default', (String) Cache.Session.get('session-defaulted'));\nSystem.assertEquals('session-visible', (String) Cache.Session.get('session-visible'));\nSystem.assert(Cache.Session.getKeys().contains('session-defaulted'));\nSystem.assert(Cache.Session.getNumKeys() >= 2);\nSystem.assert(Cache.Session.isAvailable());\nSystem.assert(Cache.Session.getCapacity() > 0);\nSystem.assertNotEquals(null, Cache.Session.getName());\nSystem.assertEquals(0, Cache.Session.getAvgGetSize());\nSystem.assertEquals(0, Cache.Session.getAvgGetTime());\nSystem.assertEquals(0, Cache.Session.getMaxGetSize());\nSystem.assertEquals(0, Cache.Session.getMaxGetTime());\nSystem.assertEquals(0, Cache.Session.getMissRate());\nSystem.assertEquals(true, Cache.Session.remove('session-defaulted'));\nSystem.assertEquals(true, Cache.Session.remove('session-visible'));\n} }",
       "path": "force-app/main/classes/SquadBCacheEvidenceTest.cls"
+    },
+    {
+      "content": "@isTest private class CoreRuntimeCacheVisibilityDepthTest { @isTest static void rows() { Cache.Visibility namespaceVisibility = Cache.Visibility.NAMESPACE; System.assertEquals(1, namespaceVisibility.ordinal()); List<Cache.Visibility> visibilityValues = Cache.Visibility.values(); System.assertEquals(2, visibilityValues.size()); System.assertEquals(Cache.Visibility.ALL, visibilityValues[0]); System.assertEquals(namespaceVisibility, visibilityValues[1]); System.assertEquals(namespaceVisibility, Cache.Visibility.valueOf('NAMESPACE')); System.assert(namespaceVisibility.equals(namespaceVisibility)); System.assert(!namespaceVisibility.equals(Cache.Visibility.ALL)); System.assert(!namespaceVisibility.equals(null)); Integer visibilityHash = namespaceVisibility.hashCode(); System.assertNotEquals(null, visibilityHash); System.assertEquals(visibilityHash, namespaceVisibility.hashCode()); } }",
+      "path": "force-app/main/classes/CoreRuntimeCacheVisibilityDepthTest.cls"
     }
   ]
 }
