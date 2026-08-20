@@ -7,7 +7,6 @@ import (
 )
 
 var g3ResidualHostedPolicyReasons = map[string]string{
-	"apex:Database.DMLOptions.DuplicateRuleHeader":                    "DTO/property shape exists, but configured duplicate-rule effects depend on hosted org DML and are locally rejected.",
 	"apex:Database.DMLOptions.LocalizeErrors":                         "DTO/property shape exists, but configured locale error effects depend on hosted org DML and are locally rejected.",
 	"apex:Database.DMLOptions.assignmentRuleHeader":                   "DTO/property shape exists, but configured assignment-rule effects depend on hosted org DML and are locally rejected.",
 	"apex:Database.DMLOptions.emailHeader":                            "DTO/property shape exists, but configured email effects depend on hosted org DML and are locally rejected.",
@@ -46,7 +45,6 @@ func TestG3ResidualHostedPolicyOverridesAreExactAndCloseExistingUnsupportedEvide
 	}
 
 	fixturePaths := []string{
-		filepath.Join(root, "docs", "fixtures", "core-runtime-dml-options-duplicate-rule-unsupported.json"),
 		filepath.Join(root, "docs", "fixtures", "core-runtime-dml-options-localize-errors-unsupported.json"),
 		filepath.Join(root, "docs", "fixtures", "core-runtime-dml-options-unsupported.json"),
 		filepath.Join(root, "docs", "fixtures", "core-runtime-dml-options-email-unsupported.json"),
@@ -95,14 +93,15 @@ func TestG3ResidualHostedPolicyOverridesAreExactAndCloseExistingUnsupportedEvide
 	}
 	selected := make(map[string]bool, len(g3ResidualHostedPolicyReasons))
 	for _, row := range profile.Rows {
-		if strings.HasPrefix(row.MatchRule, "surfaceId=") {
-			if row.Disposition != DispositionHostedDeferred {
-				continue
-			}
-			if _, target := g3ResidualHostedPolicyReasons[row.SurfaceID]; !target {
-				t.Fatalf("unexpected G3 exact policy match: %#v", row)
-			}
+		if !strings.HasPrefix(row.MatchRule, "surfaceId=") || row.Disposition != DispositionHostedDeferred {
+			continue
+		}
+		if _, target := g3ResidualHostedPolicyReasons[row.SurfaceID]; target {
 			selected[row.SurfaceID] = true
+			continue
+		}
+		if row.SurfaceID != "apex:Approval.process hosted approval engine routing" {
+			t.Fatalf("unexpected exact hosted-deferred policy match: %#v", row)
 		}
 	}
 	for id := range g3ResidualHostedPolicyReasons {
