@@ -1,0 +1,30 @@
+{
+  "name": "core-runtime-txnsecurity-event-shape-depth",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "evidence": [
+    {"surfaceId":"apex:TxnSecurity.Event","symbol":"TxnSecurity.Event","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.Event(String,String,String,String,String,String,Datetime,Map<String,String>)","symbol":"TxnSecurity.Event.Event(String,String,String,String,String,String,Datetime,Map<String,String>)","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.action","symbol":"TxnSecurity.Event.action","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.clone()","symbol":"TxnSecurity.Event.clone()","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.data","symbol":"TxnSecurity.Event.data","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.entityId","symbol":"TxnSecurity.Event.entityId","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.entityName","symbol":"TxnSecurity.Event.entityName","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.organizationId","symbol":"TxnSecurity.Event.organizationId","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.resourceType","symbol":"TxnSecurity.Event.resourceType","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.timeStamp","symbol":"TxnSecurity.Event.timeStamp","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.Event.userId","symbol":"TxnSecurity.Event.userId","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.EventCondition","symbol":"TxnSecurity.EventCondition","kind":"shape"},
+    {"surfaceId":"apex:TxnSecurity.PolicyCondition","symbol":"TxnSecurity.PolicyCondition","kind":"shape"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/TxnSecurityEventShapeDepth.cls",
+      "content": "public class TxnSecurityEventShapeDepth { public void compileShape() { Object sink; TxnSecurity.Event eventValue = new TxnSecurity.Event('org', 'user', 'entity', 'action', 'resource', 'record', Datetime.now(), new Map<String,String>()); sink = eventValue.action; sink = eventValue.data; sink = eventValue.entityId; sink = eventValue.entityName; sink = eventValue.organizationId; sink = eventValue.resourceType; sink = eventValue.timeStamp; sink = eventValue.userId; sink = eventValue.clone(); TxnSecurity.EventCondition eventCondition; TxnSecurity.PolicyCondition policyCondition; } }"
+    }
+  ],
+  "command": {"kind":"check"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local TxnSecurity event value compile shape only. It does not execute hosted transaction-security policy evaluation and grants zero Salesforce parity credit."
+}
