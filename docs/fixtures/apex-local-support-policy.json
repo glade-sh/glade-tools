@@ -2209,12 +2209,6 @@
       "reason": "Salesforce restricts deepClone to SObject list types; local runtime preserves the explicit rejection contract"
     },
     {
-      "surfaceId": "apex:Database.DMLOptions.DuplicateRuleHeader",
-      "disposition": "hosted-deferred",
-      "override": true,
-      "reason": "DTO/property shape exists, but configured duplicate-rule effects depend on hosted org DML and are locally rejected."
-    },
-    {
       "surfaceId": "apex:Database.DMLOptions.LocalizeErrors",
       "disposition": "hosted-deferred",
       "override": true,

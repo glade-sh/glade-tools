@@ -1,0 +1,54 @@
+{
+  "name": "core-runtime-dml-options-duplicate-rule-local",
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.DMLOptions.DuplicateRuleHeader",
+      "symbol": "Database.DMLOptions.DuplicateRuleHeader",
+      "kind": "exec",
+      "notes": "Configured DuplicateRuleHeader is accepted by local DML as an explicit no-op; Salesforce duplicate matching is not modeled."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.DuplicateRuleHeader.allowSave",
+      "symbol": "Database.DMLOptions.DuplicateRuleHeader.allowSave",
+      "kind": "exec",
+      "notes": "allowSave remains readable and writable while local DML deliberately ignores hosted duplicate-rule behavior."
+    },
+    {
+      "surfaceId": "apex:Database.DMLOptions.DuplicateRuleHeader.runAsCurrentUser",
+      "symbol": "Database.DMLOptions.DuplicateRuleHeader.runAsCurrentUser",
+      "kind": "exec",
+      "notes": "runAsCurrentUser remains readable and writable while local DML deliberately ignores hosted duplicate-rule behavior."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.DMLOptions opts = new Database.DMLOptions();\nopts.DuplicateRuleHeader.AllowSave = true;\nopts.DuplicateRuleHeader.RunAsCurrentUser = true;\nSystem.assertEquals(true, opts.DuplicateRuleHeader.AllowSave);\nSystem.assertEquals(true, opts.DuplicateRuleHeader.RunAsCurrentUser);\nDatabase.SaveResult result = Database.insert(new Account(Name = 'Accepted'), opts);\nSystem.assert(result.isSuccess());\nSystem.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Accepted']);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.DMLOptions opts = new Database.DMLOptions();\nopts.DuplicateRuleHeader.AllowSave = true;\nopts.DuplicateRuleHeader.RunAsCurrentUser = true;\nSystem.assertEquals(true, opts.DuplicateRuleHeader.AllowSave);\nSystem.assertEquals(true, opts.DuplicateRuleHeader.RunAsCurrentUser);\nDatabase.SaveResult result = Database.insert(new Account(Name = 'Accepted'), opts);\nSystem.assert(result.isSuccess());\nSystem.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Accepted']);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This proves only Glade's deliberate local no-op for DuplicateRuleHeader. It grants zero Salesforce duplicate-rule parity credit."
+}
