@@ -1,6 +1,7 @@
 {
   "name": "core-package-version-compile-shape",
   "evidence": [
+    {"surfaceId": "apex:Package.Version", "symbol": "Package.Version", "kind": "shape"},
     {"surfaceId": "apex:Package.Version.equals(Object)", "symbol": "Package.Version.equals(Object)", "kind": "check"},
     {"surfaceId": "apex:Package.Version.hashCode()", "symbol": "Package.Version.hashCode()", "kind": "check"},
     {"surfaceId": "apex:Package.Version.isGreaterThan(Package.Version)", "symbol": "Package.Version.isGreaterThan(Package.Version)", "kind": "check"},
