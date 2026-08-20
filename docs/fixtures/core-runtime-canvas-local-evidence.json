@@ -5,7 +5,7 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "Local Canvas lifecycle handlers return an empty excluded context type set by default.",
+      "notes": "A concrete local Canvas lifecycle subclass returns an empty excluded context type set, proving typed override dispatch without claiming a platform default.",
       "surfaceId": "apex:Canvas.CanvasLifecycleHandler.excludeContextTypes()",
       "symbol": "Canvas.CanvasLifecycleHandler.excludeContextTypes()"
     },
