@@ -1,11 +1,29 @@
 {
   "command": {
     "args": [
-      "Apex.Stack stack = new Apex.Stack();\nSystem.assert(stack.empty());\nSystem.assertEquals('one', stack.push('one'));\nstack.push('two');\nSystem.assert(!stack.empty());\nSystem.assertEquals('two', stack.peek());\nSystem.assertEquals('two', stack.pop());\nSystem.assertEquals('one', stack.pop());\nSystem.assert(stack.empty());\ntry {\n  stack.pop();\n  System.assert(false);\n} catch (Apex.EmptyStackException e) {\n  System.assertEquals('Apex.EmptyStackException', e.getTypeName());\n}"
+      "Apex.Stack stack = new Apex.Stack();\nSystem.assert(stack.empty());\nSystem.assertEquals('one', stack.push('one'));\nstack.push('two');\nApex.Stack cloned = (Apex.Stack)stack.clone();\nSystem.assertNotEquals(stack, cloned);\nSystem.assertEquals('two', cloned.peek());\nSystem.assert(!stack.empty());\nSystem.assertEquals('two', stack.peek());\nSystem.assertEquals('two', stack.pop());\nSystem.assertEquals('one', stack.pop());\nSystem.assert(stack.empty());\ntry {\n  stack.pop();\n  System.assert(false);\n} catch (Apex.EmptyStackException e) {\n  System.assertEquals('Apex.EmptyStackException', e.getTypeName());\n}"
     ],
     "kind": "exec"
   },
   "evidence": [
+    {
+      "kind": "exec",
+      "notes": "The local runtime constructs a typed Apex.Stack value.",
+      "surfaceId": "apex:Apex.Stack",
+      "symbol": "Apex.Stack"
+    },
+    {
+      "kind": "exec",
+      "notes": "The local runtime initializes an empty Apex.Stack value.",
+      "surfaceId": "apex:Apex.Stack.Stack()",
+      "symbol": "Apex.Stack.Stack"
+    },
+    {
+      "kind": "exec",
+      "notes": "The local runtime clones Apex.Stack state into a distinct typed value.",
+      "surfaceId": "apex:Apex.Stack.clone()",
+      "symbol": "Apex.Stack.clone"
+    },
     {
       "kind": "exec",
       "notes": "The local runtime implements Apex.Stack empty state tracking.",
@@ -49,7 +67,7 @@
   "salesforceExclusionReason": "API 67 clean-org rejected the local Apex.Stack assertion shape; retained as local runtime evidence and excluded from hosted parity.",
   "source": [
     {
-      "content": "Apex.Stack stack = new Apex.Stack();\nSystem.assert(stack.empty());\nSystem.assertEquals('one', stack.push('one'));\nstack.push('two');\nSystem.assert(!stack.empty());\nSystem.assertEquals('two', stack.peek());\nSystem.assertEquals('two', stack.pop());\nSystem.assertEquals('one', stack.pop());\nSystem.assert(stack.empty());\ntry {\n  stack.pop();\n  System.assert(false);\n} catch (Apex.EmptyStackException e) {\n  System.assertEquals('Apex.EmptyStackException', e.getTypeName());\n}",
+      "content": "Apex.Stack stack = new Apex.Stack();\nSystem.assert(stack.empty());\nSystem.assertEquals('one', stack.push('one'));\nstack.push('two');\nApex.Stack cloned = (Apex.Stack)stack.clone();\nSystem.assertNotEquals(stack, cloned);\nSystem.assertEquals('two', cloned.peek());\nSystem.assert(!stack.empty());\nSystem.assertEquals('two', stack.peek());\nSystem.assertEquals('two', stack.pop());\nSystem.assertEquals('one', stack.pop());\nSystem.assert(stack.empty());\ntry {\n  stack.pop();\n  System.assert(false);\n} catch (Apex.EmptyStackException e) {\n  System.assertEquals('Apex.EmptyStackException', e.getTypeName());\n}",
       "path": "scripts/core-runtime-apex-stack-local-evidence.apex"
     }
   ]

@@ -1,0 +1,37 @@
+{
+  "name": "core-runtime-site-value-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade-local Site construction and clone behavior only; zero Salesforce parity is claimed.",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Site.Site()",
+      "symbol": "Site.Site",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.Site.clone()",
+      "symbol": "Site.clone",
+      "kind": "exec",
+      "notes": "The local runtime returns a typed non-null Site clone; no distinct-identity claim is made."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Site site = new Site();\nSite clonedSite = (Site)site.clone();\nSystem.assertNotEquals(null, clonedSite);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Site site = new Site();\nSite clonedSite = (Site)site.clone();\nSystem.assertNotEquals(null, clonedSite);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

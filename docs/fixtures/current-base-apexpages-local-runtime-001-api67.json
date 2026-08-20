@@ -8,6 +8,11 @@
   },
   "evidence": [
     {
+      "kind": "exec",
+      "surfaceId": "apex:ApexPages.Action.Action(String)",
+      "symbol": "ApexPages.Action.Action(String)"
+    },
+    {
       "kind": "test",
       "surfaceId": "apex:ApexPages.Action.invoke()",
       "symbol": "ApexPages.Action.invoke()"
