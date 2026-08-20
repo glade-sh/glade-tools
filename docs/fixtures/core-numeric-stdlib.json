@@ -63,10 +63,6 @@
       "kind": "exec"
     },
     {
-      "symbol": "Decimal.format()",
-      "kind": "exec"
-    },
-    {
       "symbol": "Decimal.setScale",
       "kind": "exec"
     },

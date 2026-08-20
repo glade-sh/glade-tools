@@ -1,0 +1,30 @@
+{
+  "name": "core-numeric-decimal-format-value-semantics",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Decimal.format()",
+      "symbol": "Decimal.format()",
+      "kind": "exec",
+      "notes": "Decimal.format groups thousands and formats the numeric value without retaining insignificant trailing zeroes."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.assertEquals('999', Decimal.valueOf('999.0').format()); System.assertEquals('1', Decimal.valueOf('1.00').format()); System.assertEquals('10,000.5', Decimal.valueOf('10000.50').format());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.assertEquals('999', Decimal.valueOf('999.0').format()); System.assertEquals('1', Decimal.valueOf('1.00').format()); System.assertEquals('10,000.5', Decimal.valueOf('10000.50').format());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "salesforceEligible": true
+}
