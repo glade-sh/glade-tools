@@ -1,0 +1,251 @@
+{
+  "name": "core-runtime-g3-auth-type-shape-depth",
+  "mode": "compile-shape",
+  "command": {
+    "kind": "check",
+    "args": [
+      "public class AuthTypeShapeDepth {\n  public void referencesOnly() {\n    Auth.AuthConfig authConfig;\n    Auth.AuthProviderCallbackState authProviderCallbackState;\n    Auth.AuthProviderPlugin authProviderPlugin;\n    Auth.AuthProviderPluginClass authProviderPluginClass;\n    Auth.AuthProviderTokenResponse authProviderTokenResponse;\n    Auth.ConfigurableSelfRegHandler configurableSelfRegHandler;\n    Auth.ConfirmUserRegistrationHandler confirmUserRegistrationHandler;\n    Auth.ConnectedAppPlugin connectedAppPlugin;\n    Auth.CustomOneTimePasswordDeliveryHandler customOneTimePasswordDeliveryHandler;\n    Auth.CustomOneTimePasswordDeliveryResult customOneTimePasswordDeliveryResult;\n    Auth.ExternalClientAppOauthHandler externalClientAppOauthHandler;\n    Auth.GeneratedUserData generatedUserData;\n    Auth.HeadlessSelfRegistrationHandler headlessSelfRegistrationHandler;\n    Auth.HeadlessUserDiscoveryHandler headlessUserDiscoveryHandler;\n    Auth.HeadlessUserDiscoveryResponse headlessUserDiscoveryResponse;\n    Auth.HttpCalloutMockUtil httpCalloutMockUtil;\n    Auth.IntegratingAppType integratingAppType;\n    Auth.InvocationContext invocationContext;\n    Auth.JWS jWS;\n    Auth.JWTBearerTokenExchange jWTBearerTokenExchange;\n    Auth.JWTUtil jWTUtil;\n    Auth.JsonValueOutput jsonValueOutput;\n    Auth.LightningLoginEligibility lightningLoginEligibility;\n    Auth.LoginDiscoveryHandler loginDiscoveryHandler;\n    Auth.LoginDiscoveryMethod loginDiscoveryMethod;\n    Auth.MyDomainLoginDiscoveryHandler myDomainLoginDiscoveryHandler;\n    Auth.OAuth2TokenExchangeType oAuth2TokenExchangeType;\n    Auth.OAuthRefreshResult oAuthRefreshResult;\n    Auth.Oauth2TokenExchangeHandler oauth2TokenExchangeHandler;\n    Auth.OauthToken oauthToken;\n    Auth.OauthTokenType oauthTokenType;\n    Auth.SamlJitHandler samlJitHandler;\n    Auth.SessionLevel sessionLevel;\n    Auth.TokenValidationResult tokenValidationResult;\n    Auth.UserOrgInfo userOrgInfo;\n    Auth.VerificationAction verificationAction;\n    Auth.VerificationPolicy verificationPolicy;\n  }\n}"
+    ]
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:Auth.AuthConfig",
+      "symbol": "Auth.AuthConfig",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderCallbackState",
+      "symbol": "Auth.AuthProviderCallbackState",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderPlugin",
+      "symbol": "Auth.AuthProviderPlugin",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderPluginClass",
+      "symbol": "Auth.AuthProviderPluginClass",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.AuthProviderTokenResponse",
+      "symbol": "Auth.AuthProviderTokenResponse",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.ConfigurableSelfRegHandler",
+      "symbol": "Auth.ConfigurableSelfRegHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.ConfirmUserRegistrationHandler",
+      "symbol": "Auth.ConfirmUserRegistrationHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.ConnectedAppPlugin",
+      "symbol": "Auth.ConnectedAppPlugin",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.CustomOneTimePasswordDeliveryHandler",
+      "symbol": "Auth.CustomOneTimePasswordDeliveryHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.CustomOneTimePasswordDeliveryResult",
+      "symbol": "Auth.CustomOneTimePasswordDeliveryResult",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.ExternalClientAppOauthHandler",
+      "symbol": "Auth.ExternalClientAppOauthHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.GeneratedUserData",
+      "symbol": "Auth.GeneratedUserData",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.HeadlessSelfRegistrationHandler",
+      "symbol": "Auth.HeadlessSelfRegistrationHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.HeadlessUserDiscoveryHandler",
+      "symbol": "Auth.HeadlessUserDiscoveryHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.HeadlessUserDiscoveryResponse",
+      "symbol": "Auth.HeadlessUserDiscoveryResponse",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.HttpCalloutMockUtil",
+      "symbol": "Auth.HttpCalloutMockUtil",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.IntegratingAppType",
+      "symbol": "Auth.IntegratingAppType",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.InvocationContext",
+      "symbol": "Auth.InvocationContext",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JWS",
+      "symbol": "Auth.JWS",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JWTBearerTokenExchange",
+      "symbol": "Auth.JWTBearerTokenExchange",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JWTUtil",
+      "symbol": "Auth.JWTUtil",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.JsonValueOutput",
+      "symbol": "Auth.JsonValueOutput",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.LightningLoginEligibility",
+      "symbol": "Auth.LightningLoginEligibility",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.LoginDiscoveryHandler",
+      "symbol": "Auth.LoginDiscoveryHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.LoginDiscoveryMethod",
+      "symbol": "Auth.LoginDiscoveryMethod",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.MyDomainLoginDiscoveryHandler",
+      "symbol": "Auth.MyDomainLoginDiscoveryHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.OAuth2TokenExchangeType",
+      "symbol": "Auth.OAuth2TokenExchangeType",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.OAuthRefreshResult",
+      "symbol": "Auth.OAuthRefreshResult",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.Oauth2TokenExchangeHandler",
+      "symbol": "Auth.Oauth2TokenExchangeHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.OauthToken",
+      "symbol": "Auth.OauthToken",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.OauthTokenType",
+      "symbol": "Auth.OauthTokenType",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.SamlJitHandler",
+      "symbol": "Auth.SamlJitHandler",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.SessionLevel",
+      "symbol": "Auth.SessionLevel",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.TokenValidationResult",
+      "symbol": "Auth.TokenValidationResult",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.UserOrgInfo",
+      "symbol": "Auth.UserOrgInfo",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.VerificationAction",
+      "symbol": "Auth.VerificationAction",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    },
+    {
+      "surfaceId": "apex:Auth.VerificationPolicy",
+      "symbol": "Auth.VerificationPolicy",
+      "kind": "shape",
+      "notes": "Compile-only type declaration; no runtime behavior or Salesforce parity is claimed."
+    }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/AuthTypeShapeDepth.cls",
+      "content": "public class AuthTypeShapeDepth {\n  public void referencesOnly() {\n    Auth.AuthConfig authConfig;\n    Auth.AuthProviderCallbackState authProviderCallbackState;\n    Auth.AuthProviderPlugin authProviderPlugin;\n    Auth.AuthProviderPluginClass authProviderPluginClass;\n    Auth.AuthProviderTokenResponse authProviderTokenResponse;\n    Auth.ConfigurableSelfRegHandler configurableSelfRegHandler;\n    Auth.ConfirmUserRegistrationHandler confirmUserRegistrationHandler;\n    Auth.ConnectedAppPlugin connectedAppPlugin;\n    Auth.CustomOneTimePasswordDeliveryHandler customOneTimePasswordDeliveryHandler;\n    Auth.CustomOneTimePasswordDeliveryResult customOneTimePasswordDeliveryResult;\n    Auth.ExternalClientAppOauthHandler externalClientAppOauthHandler;\n    Auth.GeneratedUserData generatedUserData;\n    Auth.HeadlessSelfRegistrationHandler headlessSelfRegistrationHandler;\n    Auth.HeadlessUserDiscoveryHandler headlessUserDiscoveryHandler;\n    Auth.HeadlessUserDiscoveryResponse headlessUserDiscoveryResponse;\n    Auth.HttpCalloutMockUtil httpCalloutMockUtil;\n    Auth.IntegratingAppType integratingAppType;\n    Auth.InvocationContext invocationContext;\n    Auth.JWS jWS;\n    Auth.JWTBearerTokenExchange jWTBearerTokenExchange;\n    Auth.JWTUtil jWTUtil;\n    Auth.JsonValueOutput jsonValueOutput;\n    Auth.LightningLoginEligibility lightningLoginEligibility;\n    Auth.LoginDiscoveryHandler loginDiscoveryHandler;\n    Auth.LoginDiscoveryMethod loginDiscoveryMethod;\n    Auth.MyDomainLoginDiscoveryHandler myDomainLoginDiscoveryHandler;\n    Auth.OAuth2TokenExchangeType oAuth2TokenExchangeType;\n    Auth.OAuthRefreshResult oAuthRefreshResult;\n    Auth.Oauth2TokenExchangeHandler oauth2TokenExchangeHandler;\n    Auth.OauthToken oauthToken;\n    Auth.OauthTokenType oauthTokenType;\n    Auth.SamlJitHandler samlJitHandler;\n    Auth.SessionLevel sessionLevel;\n    Auth.TokenValidationResult tokenValidationResult;\n    Auth.UserOrgInfo userOrgInfo;\n    Auth.VerificationAction verificationAction;\n    Auth.VerificationPolicy verificationPolicy;\n  }\n}"
+    }
+  ],
+  "expected": {
+    "result": {
+      "diagnostics": 0,
+      "files": 1,
+      "ok": true,
+      "types": 1
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This compile-only fixture proves exact local Auth type shapes and grants zero Salesforce parity credit."
+}
