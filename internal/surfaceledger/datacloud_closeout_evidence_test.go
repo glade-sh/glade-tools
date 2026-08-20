@@ -70,6 +70,8 @@ func TestDatacloudCloseoutHasExactExecutableOwnership(t *testing.T) {
 		"System.assertEquals(0, fdr.getDuplicateResults().size());",
 		"System.assertEquals(0, fdr.getErrors().size());",
 		"System.assertEquals(true, fdr.isSuccess());",
+		"fdr.success = false;",
+		"System.assertEquals(false, fdr.isSuccess());",
 	} {
 		if !strings.Contains(fixture.Source[0].Content, witness) {
 			t.Fatalf("Datacloud source missing %q", witness)
