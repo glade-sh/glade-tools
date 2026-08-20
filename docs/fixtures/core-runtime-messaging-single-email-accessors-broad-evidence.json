@@ -282,6 +282,121 @@
       "kind": "test",
       "surfaceId": "apex:Messaging.SingleEmailMessage.isUserMail()",
       "symbol": "Messaging.SingleEmailMessage.isUserMail"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.bccaddresses",
+      "symbol": "Messaging.SingleEmailMessage.bccaddresses"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.ccaddresses",
+      "symbol": "Messaging.SingleEmailMessage.ccaddresses"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.charset",
+      "symbol": "Messaging.SingleEmailMessage.charset"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.entityattachments",
+      "symbol": "Messaging.SingleEmailMessage.entityattachments"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.equals(Object)",
+      "symbol": "Messaging.SingleEmailMessage.equals"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.fileattachments",
+      "symbol": "Messaging.SingleEmailMessage.fileattachments"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.hashCode()",
+      "symbol": "Messaging.SingleEmailMessage.hashCode"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.htmlbody",
+      "symbol": "Messaging.SingleEmailMessage.htmlbody"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.inreplyto",
+      "symbol": "Messaging.SingleEmailMessage.inreplyto"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.oneclickpost",
+      "symbol": "Messaging.SingleEmailMessage.oneclickpost"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.optoutpolicy",
+      "symbol": "Messaging.SingleEmailMessage.optoutpolicy"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.orgwideemailaddressid",
+      "symbol": "Messaging.SingleEmailMessage.orgwideemailaddressid"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.plaintextbody",
+      "symbol": "Messaging.SingleEmailMessage.plaintextbody"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.references",
+      "symbol": "Messaging.SingleEmailMessage.references"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.targetobjectid",
+      "symbol": "Messaging.SingleEmailMessage.targetobjectid"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.templateid",
+      "symbol": "Messaging.SingleEmailMessage.templateid"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.toString()",
+      "symbol": "Messaging.SingleEmailMessage.toString"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.toaddresses",
+      "symbol": "Messaging.SingleEmailMessage.toaddresses"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.treatbodiesastemplate",
+      "symbol": "Messaging.SingleEmailMessage.treatbodiesastemplate"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.treattargetobjectasrecipient",
+      "symbol": "Messaging.SingleEmailMessage.treattargetobjectasrecipient"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.unsubscribecomment",
+      "symbol": "Messaging.SingleEmailMessage.unsubscribecomment"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.unsubscribeurls",
+      "symbol": "Messaging.SingleEmailMessage.unsubscribeurls"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.whatid",
+      "symbol": "Messaging.SingleEmailMessage.whatid"
     }
   ],
   "expected": {
@@ -299,7 +414,7 @@
   "salesforceExclusionReason": "The fixture uses synthetic org-wide address, target, template, WhatId, and attachment IDs; Salesforce correctly requires real org records and permissions. Keep the accessor DTO proof local and exclude this data-dependent hosted run.",
   "source": [
     {
-      "content": "@isTest private class CoreRuntimeMessagingSingleEmailAccessorsBroadEvidenceTest { @isTest static void rows() { Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage(); msg.setToAddresses(new List<String>{'to@example.test'}); msg.setCcAddresses(new List<String>{'cc@example.test'}); msg.setBccAddresses(new List<String>{'bcc@example.test'}); msg.setSubject('Subject'); msg.setPlainTextBody('Plain'); msg.setHtmlBody('<p>Plain</p>'); msg.setReplyTo('reply@example.test'); msg.setSenderDisplayName('Sender'); msg.setCharset('UTF-8'); msg.setInReplyTo('<child@example.test>'); msg.setReferences('<root@example.test>'); msg.setOrgWideEmailAddressId('0D2000000000001'); msg.setTargetObjectId('003000000000001'); msg.setTemplateId('00X000000000001'); msg.setWhatId('001000000000001'); msg.setEntityAttachments(new List<String>{'015000000000001'}); msg.setOptOutPolicy('FILTER'); msg.setEmailPriority('High'); msg.setUnsubscribeComment('No thanks'); msg.setUnsubscribeUrls(new List<String>{'https://example.test/unsub'}); msg.setSaveAsActivity(false); msg.setTreatBodiesAsTemplate(true); msg.setTreatTargetObjectAsRecipient(false); msg.setUseSignature(true); msg.setBccSender(true); msg.setOneClickPost(true); System.assertEquals('to@example.test', msg.getToAddresses()[0]); System.assertEquals('cc@example.test', msg.getCcAddresses()[0]); System.assertEquals('bcc@example.test', msg.getBccAddresses()[0]); System.assertEquals('Subject', msg.getSubject()); System.assertEquals('Plain', msg.getPlainTextBody()); System.assertEquals('<p>Plain</p>', msg.getHtmlBody()); System.assertEquals('reply@example.test', msg.getReplyTo()); System.assertEquals('Sender', msg.getSenderDisplayName()); System.assertEquals('UTF-8', msg.getCharset()); System.assertEquals('<child@example.test>', msg.getInReplyTo()); System.assertEquals('<root@example.test>', msg.getReferences()); System.assertEquals('0D2000000000001', msg.getOrgWideEmailAddressId()); System.assertEquals('003000000000001', msg.getTargetObjectId()); System.assertEquals('00X000000000001', msg.getTemplateId()); System.assertEquals(null, msg.getTemplateName()); System.assertEquals('001000000000001', msg.getWhatId()); System.assertEquals('015000000000001', msg.getEntityAttachments()[0]); System.assertEquals('FILTER', msg.getOptOutPolicy()); System.assertEquals('High', msg.getEmailPriority()); System.assertEquals('No thanks', msg.getUnsubscribeComment()); System.assertEquals('https://example.test/unsub', msg.getUnsubscribeUrls()[0]); System.assertEquals(false, msg.getSaveAsActivity()); System.assertEquals(true, msg.isTreatBodiesAsTemplate()); System.assertEquals(false, msg.isTreatTargetObjectAsRecipient()); System.assertEquals(true, msg.getUseSignature()); System.assertEquals(true, msg.getBccSender()); System.assertEquals(true, msg.getOneClickPost()); System.assertEquals(false, msg.isUserMail()); } }",
+      "content": "@isTest private class CoreRuntimeMessagingSingleEmailAccessorsBroadEvidenceTest { @isTest static void rows() { Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage(); msg.setToAddresses(new List<String>{'to@example.test'}); msg.setCcAddresses(new List<String>{'cc@example.test'}); msg.setBccAddresses(new List<String>{'bcc@example.test'}); msg.setSubject('Subject'); msg.setPlainTextBody('Plain'); msg.setHtmlBody('<p>Plain</p>'); msg.setReplyTo('reply@example.test'); msg.setSenderDisplayName('Sender'); msg.setCharset('UTF-8'); msg.setInReplyTo('<child@example.test>'); msg.setReferences('<root@example.test>'); msg.setOrgWideEmailAddressId('0D2000000000001'); msg.setTargetObjectId('003000000000001'); msg.setTemplateId('00X000000000001'); msg.setWhatId('001000000000001'); msg.setEntityAttachments(new List<String>{'015000000000001'}); msg.setOptOutPolicy('FILTER'); msg.setEmailPriority('High'); msg.setUnsubscribeComment('No thanks'); msg.setUnsubscribeUrls(new List<String>{'https://example.test/unsub'}); msg.setSaveAsActivity(false); msg.setTreatBodiesAsTemplate(true); msg.setTreatTargetObjectAsRecipient(false); msg.setUseSignature(true); msg.setBccSender(true); msg.setOneClickPost(true); System.assertEquals('to@example.test', msg.getToAddresses()[0]); System.assertEquals('cc@example.test', msg.getCcAddresses()[0]); System.assertEquals('bcc@example.test', msg.getBccAddresses()[0]); System.assertEquals('Subject', msg.getSubject()); System.assertEquals('Plain', msg.getPlainTextBody()); System.assertEquals('<p>Plain</p>', msg.getHtmlBody()); System.assertEquals('reply@example.test', msg.getReplyTo()); System.assertEquals('Sender', msg.getSenderDisplayName()); System.assertEquals('UTF-8', msg.getCharset()); System.assertEquals('<child@example.test>', msg.getInReplyTo()); System.assertEquals('<root@example.test>', msg.getReferences()); System.assertEquals('0D2000000000001', msg.getOrgWideEmailAddressId()); System.assertEquals('003000000000001', msg.getTargetObjectId()); System.assertEquals('00X000000000001', msg.getTemplateId()); System.assertEquals(null, msg.getTemplateName()); System.assertEquals('001000000000001', msg.getWhatId()); System.assertEquals('015000000000001', msg.getEntityAttachments()[0]); System.assertEquals('FILTER', msg.getOptOutPolicy()); System.assertEquals('High', msg.getEmailPriority()); System.assertEquals('No thanks', msg.getUnsubscribeComment()); System.assertEquals('https://example.test/unsub', msg.getUnsubscribeUrls()[0]); System.assertEquals(false, msg.getSaveAsActivity()); System.assertEquals(true, msg.isTreatBodiesAsTemplate()); System.assertEquals(false, msg.isTreatTargetObjectAsRecipient()); System.assertEquals(true, msg.getUseSignature()); System.assertEquals(true, msg.getBccSender()); System.assertEquals(true, msg.getOneClickPost()); System.assertEquals(false, msg.isUserMail()); msg.bccAddresses = new List<String>{'bcc@example.test'}; msg.ccAddresses = new List<String>{'cc@example.test'}; msg.charset = 'UTF-8'; msg.entityAttachments = new List<String>{'015000000000001'}; msg.fileAttachments = new List<Messaging.EmailFileAttachment>{new Messaging.EmailFileAttachment()}; msg.htmlBody = '<p>Plain</p>'; msg.inReplyTo = '<child@example.test>'; msg.oneClickPost = true; msg.optOutPolicy = 'FILTER'; msg.orgWideEmailAddressId = (Id)'0D2000000000001'; msg.plainTextBody = 'Plain'; msg.references = '<root@example.test>'; msg.targetObjectId = (Id)'003000000000001'; msg.templateId = (Id)'00X000000000001'; msg.toAddresses = new List<String>{'to@example.test'}; msg.treatBodiesAsTemplate = true; msg.treatTargetObjectAsRecipient = false; msg.unsubscribeComment = 'No thanks'; msg.unsubscribeUrls = new List<String>{'https://example.test/unsub'}; msg.whatId = (Id)'001000000000001'; System.assertEquals('bcc@example.test', msg.bccAddresses[0]); System.assertEquals('cc@example.test', msg.ccAddresses[0]); System.assertEquals('UTF-8', msg.charset); System.assertEquals('015000000000001', msg.entityAttachments[0]); System.assertEquals(1, msg.fileAttachments.size()); System.assertEquals('<p>Plain</p>', msg.htmlBody); System.assertEquals('<child@example.test>', msg.inReplyTo); System.assertEquals(true, msg.oneClickPost); System.assertEquals('FILTER', msg.optOutPolicy); System.assertEquals((Id)'0D2000000000001', msg.orgWideEmailAddressId); System.assertEquals('Plain', msg.plainTextBody); System.assertEquals('<root@example.test>', msg.references); System.assertEquals((Id)'003000000000001', msg.targetObjectId); System.assertEquals((Id)'00X000000000001', msg.templateId); System.assertEquals('to@example.test', msg.toAddresses[0]); System.assertEquals(true, msg.treatBodiesAsTemplate); System.assertEquals(false, msg.treatTargetObjectAsRecipient); System.assertEquals('No thanks', msg.unsubscribeComment); System.assertEquals('https://example.test/unsub', msg.unsubscribeUrls[0]); System.assertEquals((Id)'001000000000001', msg.whatId); Messaging.SingleEmailMessage otherMessage = new Messaging.SingleEmailMessage(); System.assertEquals(true, msg.equals(msg)); System.assertEquals(false, msg.equals(otherMessage)); System.assertEquals(false, msg.equals(null)); System.assertNotEquals(null, msg.hashCode()); System.assertEquals(msg.hashCode(), msg.hashCode()); System.assertNotEquals(null, msg.toString()); } }",
       "path": "force-app/main/classes/CoreRuntimeMessagingSingleEmailAccessorsBroadEvidenceTest.cls"
     }
   ]
