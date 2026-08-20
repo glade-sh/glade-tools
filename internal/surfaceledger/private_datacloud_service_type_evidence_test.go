@@ -10,15 +10,11 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
-func TestPrivateMetadataAndDatacloudTypesUseExistingExecutableOwners(t *testing.T) {
+func TestPrivateDatacloudServiceTypeUsesExistingExecutableOwner(t *testing.T) {
 	targets := map[string]struct {
 		owner   string
 		witness string
 	}{
-		"apex:System.Metadata": {
-			owner:   "current-base-metadata-system-alias-deterministic",
-			witness: "System.Metadata metadata = new System.Metadata();",
-		},
 		"apex:Datacloud.FindDuplicates": {
 			owner:   "commerce-industry-tail-local-evidence",
 			witness: "Datacloud.FindDuplicates.findDuplicates(",
