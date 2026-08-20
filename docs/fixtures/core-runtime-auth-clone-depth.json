@@ -1,0 +1,23 @@
+{
+  "name": "core-runtime-auth-clone-depth",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "evidence": [
+    {"surfaceId":"apex:Auth.JWS.clone()","symbol":"Auth.JWS.clone","kind":"exec","notes":"Executable local clone behavior; no Salesforce parity is claimed."},
+    {"surfaceId":"apex:Auth.JWTBearerTokenExchange.clone()","symbol":"Auth.JWTBearerTokenExchange.clone","kind":"exec","notes":"Executable local clone behavior; no Salesforce parity is claimed."},
+    {"surfaceId":"apex:Auth.VerificationResult.clone()","symbol":"Auth.VerificationResult.clone","kind":"exec","notes":"Executable local clone behavior with field preservation; no Salesforce parity is claimed."}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/AuthCloneDepth.cls",
+      "content": "Auth.JWT jwt = new Auth.JWT(); Auth.JWS jws = new Auth.JWS(jwt, 'certificate'); Auth.JWS clonedJws = (Auth.JWS)jws.clone(); Auth.JWTBearerTokenExchange exchange = new Auth.JWTBearerTokenExchange(); Auth.JWTBearerTokenExchange clonedExchange = (Auth.JWTBearerTokenExchange)exchange.clone(); Auth.VerificationResult verification = new Auth.VerificationResult(new PageReference('/verified'), true, 'ok'); Auth.VerificationResult clonedVerification = (Auth.VerificationResult)verification.clone(); System.assert(clonedJws != jws); System.assert(clonedExchange != exchange); System.assert(clonedVerification != verification); System.assertEquals('/verified', clonedVerification.redirect.getUrl()); System.assertEquals(true, clonedVerification.success); System.assertEquals('ok', clonedVerification.message);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": ["Auth.JWT jwt = new Auth.JWT(); Auth.JWS jws = new Auth.JWS(jwt, 'certificate'); Auth.JWS clonedJws = (Auth.JWS)jws.clone(); Auth.JWTBearerTokenExchange exchange = new Auth.JWTBearerTokenExchange(); Auth.JWTBearerTokenExchange clonedExchange = (Auth.JWTBearerTokenExchange)exchange.clone(); Auth.VerificationResult verification = new Auth.VerificationResult(new PageReference('/verified'), true, 'ok'); Auth.VerificationResult clonedVerification = (Auth.VerificationResult)verification.clone(); System.assert(clonedJws != jws); System.assert(clonedExchange != exchange); System.assert(clonedVerification != verification); System.assertEquals('/verified', clonedVerification.redirect.getUrl()); System.assertEquals(true, clonedVerification.success); System.assertEquals('ok', clonedVerification.message);"]
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This executable local clone fixture proves deterministic local behavior only and grants zero Salesforce parity credit."
+}
