@@ -1,0 +1,29 @@
+{
+  "name": "core-runtime-g3-auth-hidden-negative-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This compile-negative fixture proves exact local rejection of API 67-hidden Auth members and grants zero Salesforce parity credit.",
+  "evidence": [
+    {"surfaceId": "apex:Auth.AuthProviderPluginClass.getCustomMetadataType()", "symbol": "Auth.AuthProviderPluginClass.getCustomMetadataType()", "kind": "unsupported", "notes": "Compile-negative API 67 hidden member rejection; no runtime behavior or Salesforce parity is claimed."},
+    {"surfaceId": "apex:Auth.AuthProviderPluginClass.getUserInfo(Map<String,String>,Auth.AuthProviderTokenResponse)", "symbol": "Auth.AuthProviderPluginClass.getUserInfo(Map<String,String>,Auth.AuthProviderTokenResponse)", "kind": "unsupported", "notes": "Compile-negative API 67 hidden member rejection; no runtime behavior or Salesforce parity is claimed."},
+    {"surfaceId": "apex:Auth.AuthProviderPluginClass.initiate(Map<String,String>,String)", "symbol": "Auth.AuthProviderPluginClass.initiate(Map<String,String>,String)", "kind": "unsupported", "notes": "Compile-negative API 67 hidden member rejection; no runtime behavior or Salesforce parity is claimed."},
+    {"surfaceId": "apex:Auth.ConnectedAppPlugin.customAttributes(Id,Id,Map<String,String>)", "symbol": "Auth.ConnectedAppPlugin.customAttributes(Id,Id,Map<String,String>)", "kind": "unsupported", "notes": "Compile-negative API 67 hidden member rejection; no runtime behavior or Salesforce parity is claimed."}
+  ],
+  "source": [
+    {"path": "force-app/main/default/classes/AuthHiddenCustomMetadataProbe.cls", "content": "public class AuthHiddenCustomMetadataProbe { public void execute() { Auth.AuthProviderPluginClass value = null; Object result = value.getCustomMetadataType(); } }"},
+    {"path": "force-app/main/default/classes/AuthHiddenUserInfoProbe.cls", "content": "public class AuthHiddenUserInfoProbe { public void execute() { Auth.AuthProviderPluginClass value = null; Object result = value.getUserInfo(null, null); } }"},
+    {"path": "force-app/main/default/classes/AuthHiddenInitiateProbe.cls", "content": "public class AuthHiddenInitiateProbe { public void execute() { Auth.AuthProviderPluginClass value = null; Object result = value.initiate(null, null); } }"},
+    {"path": "force-app/main/default/classes/AuthHiddenCustomAttributesProbe.cls", "content": "public class AuthHiddenCustomAttributesProbe { public void execute() { Auth.ConnectedAppPlugin value = null; Object result = value.customAttributes(null, null, null); } }"}
+  ],
+  "command": {
+    "kind": "check"
+  },
+  "expected": {
+    "result": {
+      "diagnostics": 4,
+      "files": 4,
+      "ok": false,
+      "types": 4
+    }
+  }
+}
