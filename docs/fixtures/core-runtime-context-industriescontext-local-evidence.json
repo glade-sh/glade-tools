@@ -2,6 +2,24 @@
   "name": "core-runtime-context-industriescontext-local-evidence",
   "evidence": [
     {
+      "surfaceId": "apex:Context.IndustriesContext",
+      "symbol": "Context.IndustriesContext",
+      "kind": "test",
+      "notes": "Direct local construction proves the concrete generated Context type."
+    },
+    {
+      "surfaceId": "apex:Context.IndustriesContext.IndustriesContext()",
+      "symbol": "Context.IndustriesContext.IndustriesContext()",
+      "kind": "test",
+      "notes": "Direct local zero-argument construction proves the generated constructor."
+    },
+    {
+      "surfaceId": "apex:Context.IndustriesContext.clone()",
+      "symbol": "Context.IndustriesContext.clone()",
+      "kind": "test",
+      "notes": "The local generated DTO clone is directly called and returns its exact type; no identity or hosted context parity is claimed."
+    },
+    {
       "surfaceId": "apex:Context.IndustriesContext.addRecordsToContext(Map<String,Object>)",
       "symbol": "Context.IndustriesContext.addRecordsToContext(Map<String,Object>)",
       "kind": "test",
@@ -68,10 +86,13 @@
       "notes": "Generated local Context.IndustriesContext shape returns deterministic map passthrough/no-op behavior."
     }
   ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only deterministic local generated-DTO behavior and grants zero Salesforce parity for hosted Industries Context services.",
   "source": [
     {
       "path": "force-app/main/classes/CoreRuntimeContextIndustriesContextLocalEvidenceTest.cls",
-      "content": "@isTest private class CoreRuntimeContextIndustriesContextLocalEvidenceTest { @isTest static void mapPassthroughMethodsReturnDeterministicMaps() { Context.IndustriesContext ctx = new Context.IndustriesContext(); Map<String,Object> input = new Map<String,Object>{'recordId' => '001000000000001'}; System.assertNotEquals(null, ctx.addRecordsToContext(input)); System.assertNotEquals(null, ctx.buildContext(input)); System.assertNotEquals(null, ctx.filteringContext(input)); System.assertNotEquals(null, ctx.getContext(input)); System.assertNotEquals(null, ctx.getContextTranslation(input)); System.assertNotEquals(null, ctx.leanerQueryTags(input)); System.assertNotEquals(null, ctx.persistContext(input)); System.assertNotEquals(null, ctx.queryContextRecordsAndChildren(input)); System.assertNotEquals(null, ctx.queryRecordStatus(input)); System.assertNotEquals(null, ctx.queryTags(input)); System.assertNotEquals(null, ctx.updateContextAttributes(input)); } }"
+      "content": "@isTest private class CoreRuntimeContextIndustriesContextLocalEvidenceTest { @isTest static void mapPassthroughMethodsReturnDeterministicMaps() { Context.IndustriesContext ctx = new Context.IndustriesContext(); Context.IndustriesContext cloned = (Context.IndustriesContext)ctx.clone(); System.assertNotEquals(null, cloned); Map<String,Object> input = new Map<String,Object>{'recordId' => '001000000000001'}; System.assertNotEquals(null, ctx.addRecordsToContext(input)); System.assertNotEquals(null, ctx.buildContext(input)); System.assertNotEquals(null, ctx.filteringContext(input)); System.assertNotEquals(null, ctx.getContext(input)); System.assertNotEquals(null, ctx.getContextTranslation(input)); System.assertNotEquals(null, ctx.leanerQueryTags(input)); System.assertNotEquals(null, ctx.persistContext(input)); System.assertNotEquals(null, ctx.queryContextRecordsAndChildren(input)); System.assertNotEquals(null, ctx.queryRecordStatus(input)); System.assertNotEquals(null, ctx.queryTags(input)); System.assertNotEquals(null, ctx.updateContextAttributes(input)); } }"
     }
   ],
   "command": {
