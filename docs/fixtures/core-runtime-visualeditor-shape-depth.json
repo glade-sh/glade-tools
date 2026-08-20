@@ -1,0 +1,30 @@
+{
+  "name": "core-runtime-visualeditor-shape-depth",
+  "apiVersion": "67.0",
+  "mode": "compile-shape",
+  "evidence": [
+    {"surfaceId":"apex:VisualEditor.DataRow.clone()","symbol":"VisualEditor.DataRow.clone()","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DesignTimePageContext","symbol":"VisualEditor.DesignTimePageContext","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DesignTimePageContext.DesignTimePageContext()","symbol":"VisualEditor.DesignTimePageContext.DesignTimePageContext()","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DesignTimePageContext.clone()","symbol":"VisualEditor.DesignTimePageContext.clone()","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DesignTimePageContext.entityName","symbol":"VisualEditor.DesignTimePageContext.entityName","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DesignTimePageContext.pageType","symbol":"VisualEditor.DesignTimePageContext.pageType","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DynamicPickList.clone()","symbol":"VisualEditor.DynamicPickList.clone()","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DynamicPickList.getDefaultValue()","symbol":"VisualEditor.DynamicPickList.getDefaultValue()","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DynamicPickList.getLabel(Object)","symbol":"VisualEditor.DynamicPickList.getLabel(Object)","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DynamicPickList.getValues()","symbol":"VisualEditor.DynamicPickList.getValues()","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DynamicPickList.getValuesForSemanticSearch(String)","symbol":"VisualEditor.DynamicPickList.getValuesForSemanticSearch(String)","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DynamicPickList.isValid(Object)","symbol":"VisualEditor.DynamicPickList.isValid(Object)","kind":"shape"},
+    {"surfaceId":"apex:VisualEditor.DynamicPickListRows.clone()","symbol":"VisualEditor.DynamicPickListRows.clone()","kind":"shape"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/VisualEditorShapeDepth.cls",
+      "content": "public class VisualEditorShapeDepth { public void compileShape() { Object sink; VisualEditor.DataRow dataRow = new VisualEditor.DataRow('label', 'value'); sink = dataRow.clone(); VisualEditor.DesignTimePageContext context = new VisualEditor.DesignTimePageContext(); String entityName = context.entityName; String pageType = context.pageType; sink = context.clone(); VisualEditor.DynamicPickList pickList = null; sink = pickList.clone(); Object attributeValue = null; String semanticSearchQuery = null; VisualEditor.DataRow defaultValue = pickList.getDefaultValue(); String label = pickList.getLabel(attributeValue); VisualEditor.DynamicPickListRows values = pickList.getValues(); VisualEditor.DynamicPickListRows semanticValues = pickList.getValuesForSemanticSearch(semanticSearchQuery); Boolean valid = pickList.isValid(attributeValue); VisualEditor.DynamicPickListRows rows = new VisualEditor.DynamicPickListRows(); sink = rows.clone(); } }"
+    }
+  ],
+  "command": {"kind":"check"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves local VisualEditor DTO and abstract picklist compile shape only. It does not render hosted design-time UI and grants zero Salesforce parity credit."
+}
