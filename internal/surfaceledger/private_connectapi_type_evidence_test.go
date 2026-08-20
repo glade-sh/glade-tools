@@ -35,7 +35,8 @@ func TestPrivateConnectApiTypesUseExistingIdentityFixture(t *testing.T) {
 			t.Fatalf("duplicate fixture row for %s", row.SurfaceID)
 		}
 		ids[row.SurfaceID] = true
-		if len(row.Sources) != 1 || row.Sources[0] != "fixture:"+owner || row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported {
+		shapeOnly := row.SurfaceID == "apex:ConnectApi.TimeZone" || row.SurfaceID == "apex:ConnectApi.UserSettings"
+		if len(row.Sources) != 1 || row.Sources[0] != "fixture:"+owner || row.Evidence != EvidenceFixture || (shapeOnly && (row.GladeShape == ShapeAbsent || row.GladeBehavior != BehaviorNone)) || (!shapeOnly && row.GladeBehavior != BehaviorSupported) {
 			t.Fatalf("%s evidence row = %#v", row.SurfaceID, row)
 		}
 	}

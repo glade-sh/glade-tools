@@ -10,7 +10,7 @@
       "symbol": "ConnectApi.Communities"
     },
     {
-      "kind": "test",
+      "kind": "shape",
       "notes": "Private corpus code declares ConnectApi.TimeZone values; this fixture directly compiles the passive DTO type.",
       "surfaceId": "apex:ConnectApi.TimeZone",
       "symbol": "ConnectApi.TimeZone"
@@ -22,7 +22,7 @@
       "symbol": "ConnectApi.UserProfiles"
     },
     {
-      "kind": "test",
+      "kind": "shape",
       "notes": "Private corpus code declares ConnectApi.UserSettings values; this fixture directly compiles the passive DTO type.",
       "surfaceId": "apex:ConnectApi.UserSettings",
       "symbol": "ConnectApi.UserSettings"
