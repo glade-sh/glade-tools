@@ -224,7 +224,19 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 		}
 		entry.OwnedSurfaceIDs = sortedSet(owned)
 		if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
-			continue
+			filtered := make(map[string]bool)
+			for surfaceID := range owned {
+				single := entry
+				single.OwnedSurfaceIDs = []string{surfaceID}
+				if validateLocalProofFixtureIdentity(single, fixture) == nil {
+					filtered[surfaceID] = true
+				}
+			}
+			if len(filtered) == 0 {
+				continue
+			}
+			owned = filtered
+			entry.OwnedSurfaceIDs = sortedSet(owned)
 		}
 		if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
 			continue

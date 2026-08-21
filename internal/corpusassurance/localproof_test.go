@@ -175,6 +175,22 @@ func TestDiscoverLocalProofFixturesDoesNotMixDispositions(t *testing.T) {
 	}
 }
 
+func TestDiscoverLocalProofFixturesKeepsIndependentlyWitnessedSurfaces(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "partial.json")
+	data := `{"name":"partial","evidence":[{"surfaceId":"apex:Witnessed.run()","symbol":"Witnessed.run","kind":"exec"},{"surfaceId":"apex:Unwitnessed.stop()","symbol":"Unwitnessed.stop","kind":"exec"}],"command":{"kind":"exec","args":["new Witnessed().run();"]},"salesforceEligible":false,"salesforceExclusionClass":"policy-local-only","salesforceExclusionReason":"test"}`
+	if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	candidates, err := discoverLocalProofFixtures(root, map[string]string{"apex:Witnessed.run()": localRuntimeRequired, "apex:Unwitnessed.stop()": localRuntimeRequired})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(candidates) != 1 || !reflect.DeepEqual(candidates[0].entry.OwnedSurfaceIDs, []string{"apex:Witnessed.run()"}) {
+		t.Fatalf("partial candidate = %#v", candidates)
+	}
+}
+
 func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T) {
 	if !localProofEvidenceKindMatches(localRuntimeRequired, "test", "test") {
 		t.Fatal("local runtime test fixture was rejected")
