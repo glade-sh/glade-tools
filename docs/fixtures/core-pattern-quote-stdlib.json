@@ -6,21 +6,6 @@
       "symbol": "Pattern.quote",
       "kind": "exec",
       "notes": "Local Pattern.quote returns regex escaping so common metacharacters match literally with local Pattern/Matcher."
-    },
-    {
-      "symbol": "Pattern.matches",
-      "kind": "exec",
-      "notes": "Quoted literal matches the original metacharacter string as a whole input."
-    },
-    {
-      "symbol": "Pattern.compile",
-      "kind": "exec",
-      "notes": "Quoted literal can be compiled by the local regexp2-backed Pattern implementation."
-    },
-    {
-      "symbol": "Matcher.find",
-      "kind": "exec",
-      "notes": "Quoted literal finds the metacharacter string inside a larger input."
     }
   ],
   "source": [

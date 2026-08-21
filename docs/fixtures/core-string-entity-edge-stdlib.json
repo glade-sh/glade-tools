@@ -8,7 +8,8 @@
     },
     {
       "symbol": "String.escapeHtml4",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.String.escapeHtml4"
     },
     {
       "surfaceId": "apex:System.String.unescapeHtml3()",
@@ -17,15 +18,18 @@
     },
     {
       "symbol": "String.unescapeHtml4",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.String.unescapeHtml4"
     },
     {
       "symbol": "String.escapeXml",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.String.escapeXml"
     },
     {
       "symbol": "String.unescapeXml",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.String.unescapeXml"
     },
     {
       "surfaceId": "apex:System.String.replace(String,String)",
@@ -49,7 +53,8 @@
     },
     {
       "symbol": "String.escapeSingleQuotes",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.String.escapeSingleQuotes"
     }
   ],
   "source": [
