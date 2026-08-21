@@ -1,0 +1,41 @@
+{
+  "name": "core-process-sparkplug-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.describePlugin(String)",
+      "symbol": "Process.SparkPlugApi.describePlugin",
+      "kind": "exec",
+      "notes": "The local SparkPlug runtime returns the deterministic missing-plugin exception shape."
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.describePlugins()",
+      "symbol": "Process.SparkPlugApi.describePlugins",
+      "kind": "exec",
+      "notes": "The local SparkPlug runtime returns a typed discovery result."
+    },
+    {
+      "surfaceId": "apex:Process.SparkPlugApi.invokePluginWithJson(String,String)",
+      "symbol": "Process.SparkPlugApi.invokePluginWithJson",
+      "kind": "exec",
+      "notes": "The local SparkPlug runtime returns the deterministic missing-plugin exception shape."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "try { Process.SparkPlugApi.describePlugin('MissingPlugin'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\nSystem.assertNotEquals(null, Process.SparkPlugApi.describePlugins());\ntry { Process.SparkPlugApi.invokePluginWithJson('MissingPlugin', '{}'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\n"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "try { Process.SparkPlugApi.describePlugin('MissingPlugin'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\nSystem.assertNotEquals(null, Process.SparkPlugApi.describePlugins());\ntry { Process.SparkPlugApi.invokePluginWithJson('MissingPlugin', '{}'); System.assert(false); } catch (Exception e) { System.assertEquals('System.NoDataFoundException', e.getTypeName()); }\n"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
