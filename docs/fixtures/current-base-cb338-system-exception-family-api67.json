@@ -228,5 +228,6 @@
       ],
       "ok": true
     }
-  }
+  },
+  "salesforceEligible": true
 }
