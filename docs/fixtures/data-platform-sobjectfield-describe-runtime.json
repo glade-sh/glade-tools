@@ -1,0 +1,29 @@
+{
+  "name": "data-platform-sobjectfield-describe-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:Schema.SObjectField.getDescribe()",
+      "symbol": "Schema.SObjectField.getDescribe()",
+      "kind": "exec",
+      "notes": "A standard field token returns its matching describe result."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.SObjectField field = Account.Name; Schema.DescribeFieldResult description = field.getDescribe(); System.assertEquals('Name', description.getName());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.SObjectField field = Account.Name; Schema.DescribeFieldResult description = field.getDescribe(); System.assertEquals('Name', description.getName());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
