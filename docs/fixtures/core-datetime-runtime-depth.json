@@ -1,5 +1,6 @@
 {
   "name": "core-datetime-runtime-depth",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId":"apex:System.Datetime.addDays","symbol":"Datetime.addDays","kind":"exec"},
     {"surfaceId":"apex:System.Datetime.addMonths","symbol":"Datetime.addMonths","kind":"exec"},

@@ -1,5 +1,8 @@
 {
   "name": "data-schema-filtered-lookup-info-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises Glade's deterministic standard lookup-filter metadata only; it makes no hosted Salesforce parity claim.",
   "evidence": [
     {
       "surfaceId": "apex:Schema.FilteredLookupInfo.controllingfields",

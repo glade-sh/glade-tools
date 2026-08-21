@@ -1,5 +1,8 @@
 {
   "name": "data-schema-field-metadata-aliases-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises deterministic local polymorphic-reference metadata only; it makes no hosted Salesforce parity claim.",
   "evidence": [
     {"surfaceId":"apex:Schema.DescribeFieldResult.calculatedformula","symbol":"Schema.DescribeFieldResult.calculatedformula","kind":"exec"},
     {"surfaceId":"apex:Schema.DescribeFieldResult.defaultedoncreate","symbol":"Schema.DescribeFieldResult.defaultedoncreate","kind":"exec"},

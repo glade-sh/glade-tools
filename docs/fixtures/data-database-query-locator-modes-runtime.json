@@ -1,5 +1,6 @@
 {
   "name": "data-database-query-locator-modes-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId":"apex:System.Database.query(String,AccessLevel)","symbol":"Database.query","kind":"exec","notes":"Typed String query with AccessLevel returns seeded Account rows."},
     {"surfaceId":"apex:System.Database.queryWithBinds(String,Map<String,Object>,AccessLevel)","symbol":"Database.queryWithBinds","kind":"exec","notes":"Typed String and Map<String,Object> binds with AccessLevel return matching Account rows."},

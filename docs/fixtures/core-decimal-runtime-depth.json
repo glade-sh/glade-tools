@@ -1,5 +1,6 @@
 {
   "name": "core-decimal-runtime-depth",
+  "salesforceEligible": true,
   "evidence": [
     {"kind":"exec","surfaceId":"apex:System.Decimal.abs","symbol":"Decimal.abs"},
     {"kind":"exec","surfaceId":"apex:System.Decimal.divide(Decimal,Integer,RoundingMode)","symbol":"Decimal.divide"},
