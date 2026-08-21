@@ -1,0 +1,29 @@
+{
+  "name": "core-integer-valueof-object-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Integer.valueOf(Object)",
+      "symbol": "Integer.valueOf(Object)",
+      "kind": "exec",
+      "notes": "An Object-typed decimal string resolves through Integer.valueOf(Object) and returns the expected integer."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Object boxed = '42'; System.assertEquals(42, Integer.valueOf(boxed));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Object boxed = '42'; System.assertEquals(42, Integer.valueOf(boxed));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
