@@ -173,12 +173,6 @@
       "notes": "insertBefore places a local Dom.XmlNode before the reference child and returns the inserted child."
     },
     {
-      "surfaceId": "apex:dom.XmlNode.insertBefore(Object,Object)",
-      "symbol": "Dom.XmlNode.insertBefore(Object,Object)",
-      "kind": "test",
-      "notes": "Tooling docs also expose the same Dom.XmlNode row with lower-case namespace spelling."
-    },
-    {
       "surfaceId": "apex:Dom.XmlNode.removeAttribute(String,String)",
       "symbol": "Dom.XmlNode.removeAttribute(String,String)",
       "kind": "test",
@@ -189,12 +183,6 @@
       "symbol": "Dom.XmlNode.removeChild(Dom.XmlNode)",
       "kind": "test",
       "notes": "Focused Squad B fixture evidence for existing local Apex runtime behavior."
-    },
-    {
-      "surfaceId": "apex:dom.XmlNode.removeChild(Object)",
-      "symbol": "Dom.XmlNode.removeChild(Object)",
-      "kind": "test",
-      "notes": "Tooling docs also expose the same Dom.XmlNode row with lower-case namespace spelling."
     },
     {
       "surfaceId": "apex:Dom.XmlNode.setAttribute(String,String)",

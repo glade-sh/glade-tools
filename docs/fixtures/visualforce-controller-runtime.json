@@ -29,11 +29,6 @@
       "kind": "test"
     },
     {
-      "surfaceId": "apex:ApexPages.StandardController.reset()",
-      "symbol": "ApexPages.StandardController.reset",
-      "kind": "test"
-    },
-    {
       "surfaceId": "apex:ApexPages.StandardSetController.getHasNext()",
       "symbol": "ApexPages.StandardSetController.getHasNext",
       "kind": "test"

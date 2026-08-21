@@ -16,38 +16,13 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController",
-      "symbol": "ApexPages.KnowledgeArticleVersionStandardController"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.equals(Object)",
       "symbol": "ApexPages.KnowledgeArticleVersionStandardController.equals(Object)"
     },
     {
       "kind": "test",
-      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.hashCode()",
-      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.hashCode()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.toString()",
-      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.toString()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:ApexPages.StandardSetController.equals(Object)",
       "symbol": "ApexPages.StandardSetController.equals(Object)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:ApexPages.StandardSetController.hashCode()",
-      "symbol": "ApexPages.StandardSetController.hashCode()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:ApexPages.StandardSetController.toString()",
-      "symbol": "ApexPages.StandardSetController.toString()"
     },
     {
       "kind": "test",
@@ -66,13 +41,13 @@
   },
   "mode": "local-runtime",
   "name": "current-base-apexpages-local-runtime-002-api67",
-  "notes": "Current-base lane current-base-local-runtime-required-ApexPages-002: ten uncovered rows.",
+  "notes": "Current-base lane current-base-local-runtime-required-ApexPages-002: five retained rows after Wave17 ApexPages controller ownership transfer.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-local-runtime-required-ApexPages-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 10,
+    "selectedRowCount": 5,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "salesforceEligible": false,

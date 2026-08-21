@@ -1,0 +1,36 @@
+{
+  "name": "integration-metadata-core-dtos-wave17-runtime",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Metadata.AsyncResult, Metadata.ConsoleComponent, and Metadata.CustomField are deterministic Glade-local DTO contracts; Salesforce API 67 does not provide hosted parity for these rows.",
+  "evidence": [
+    {"surfaceId":"apex:Metadata.AsyncResult","symbol":"Metadata.AsyncResult","kind":"exec"},
+    {"surfaceId":"apex:Metadata.AsyncResult.AsyncResult()","symbol":"Metadata.AsyncResult.AsyncResult","kind":"exec"},
+    {"surfaceId":"apex:Metadata.AsyncResult.done","symbol":"Metadata.AsyncResult.done","kind":"exec"},
+    {"surfaceId":"apex:Metadata.AsyncResult.id","symbol":"Metadata.AsyncResult.id","kind":"exec"},
+    {"surfaceId":"apex:Metadata.AsyncResult.message","symbol":"Metadata.AsyncResult.message","kind":"exec"},
+    {"surfaceId":"apex:Metadata.AsyncResult.state","symbol":"Metadata.AsyncResult.state","kind":"exec"},
+    {"surfaceId":"apex:Metadata.AsyncResult.statusCode","symbol":"Metadata.AsyncResult.statusCode","kind":"exec"},
+    {"surfaceId":"apex:Metadata.ConsoleComponent","symbol":"Metadata.ConsoleComponent","kind":"exec"},
+    {"surfaceId":"apex:Metadata.ConsoleComponent.ConsoleComponent()","symbol":"Metadata.ConsoleComponent.ConsoleComponent","kind":"exec"},
+    {"surfaceId":"apex:Metadata.ConsoleComponent.clone()","symbol":"Metadata.ConsoleComponent.clone","kind":"exec"},
+    {"surfaceId":"apex:Metadata.ConsoleComponent.height","symbol":"Metadata.ConsoleComponent.height","kind":"exec"},
+    {"surfaceId":"apex:Metadata.ConsoleComponent.location","symbol":"Metadata.ConsoleComponent.location","kind":"exec"},
+    {"surfaceId":"apex:Metadata.ConsoleComponent.visualforcePage","symbol":"Metadata.ConsoleComponent.visualforcePage","kind":"exec"},
+    {"surfaceId":"apex:Metadata.ConsoleComponent.width","symbol":"Metadata.ConsoleComponent.width","kind":"exec"},
+    {"surfaceId":"apex:Metadata.CustomField.CustomField()","symbol":"Metadata.CustomField.CustomField","kind":"exec"},
+    {"surfaceId":"apex:Metadata.CustomField.description","symbol":"Metadata.CustomField.description","kind":"exec"},
+    {"surfaceId":"apex:Metadata.CustomField.fullName","symbol":"Metadata.CustomField.fullName","kind":"exec"},
+    {"surfaceId":"apex:Metadata.CustomField.label","symbol":"Metadata.CustomField.label","kind":"exec"},
+    {"surfaceId":"apex:Metadata.CustomField.required","symbol":"Metadata.CustomField.required","kind":"exec"},
+    {"surfaceId":"apex:Metadata.CustomField.type","symbol":"Metadata.CustomField.type","kind":"exec"},
+    {"surfaceId":"apex:Metadata.CustomField.unique","symbol":"Metadata.CustomField.unique","kind":"exec"}
+  ],
+  "source": [
+    {"path":"anonymous.apex","content":"Metadata.AsyncResult asyncResult = new Metadata.AsyncResult(); asyncResult.done = true; asyncResult.id = '0Af000000000001AAA'; asyncResult.message = 'Completed'; asyncResult.state = 'Succeeded'; asyncResult.statusCode = Metadata.StatusCode.APEX_FAILED; System.assertEquals(true, asyncResult.done); System.assertEquals('0Af000000000001AAA', asyncResult.id); System.assertEquals('Completed', asyncResult.message); System.assertEquals('Succeeded', asyncResult.state); System.assertEquals('APEX_FAILED', String.valueOf(asyncResult.statusCode)); Metadata.ConsoleComponent console = new Metadata.ConsoleComponent(); console.height = 200; console.location = 'UtilityBar'; console.visualforcePage = 'Page.Home'; console.width = 640; Metadata.ConsoleComponent clone = (Metadata.ConsoleComponent)console.clone(); System.assertEquals(200, clone.height); System.assertEquals('UtilityBar', clone.location); System.assertEquals('Page.Home', clone.visualforcePage); System.assertEquals(640, clone.width); System.assertNotEquals(console, clone); Metadata.CustomField custom = new Metadata.CustomField(); custom.description = 'Invoice paid'; custom.fullName = 'Invoice__c.Paid__c'; custom.label = 'Paid'; custom.required = true; custom.type = 'Checkbox'; custom.unique = true; System.assertEquals('Invoice paid', custom.description); System.assertEquals('Invoice__c.Paid__c', custom.fullName); System.assertEquals('Paid', custom.label); System.assertEquals(true, custom.required); System.assertEquals('Checkbox', custom.type); System.assertEquals(true, custom.unique);"}
+  ],
+  "command":{"kind":"exec","args":["Metadata.AsyncResult asyncResult = new Metadata.AsyncResult(); asyncResult.done = true; asyncResult.id = '0Af000000000001AAA'; asyncResult.message = 'Completed'; asyncResult.state = 'Succeeded'; asyncResult.statusCode = Metadata.StatusCode.APEX_FAILED; System.assertEquals(true, asyncResult.done); System.assertEquals('0Af000000000001AAA', asyncResult.id); System.assertEquals('Completed', asyncResult.message); System.assertEquals('Succeeded', asyncResult.state); System.assertEquals('APEX_FAILED', String.valueOf(asyncResult.statusCode)); Metadata.ConsoleComponent console = new Metadata.ConsoleComponent(); console.height = 200; console.location = 'UtilityBar'; console.visualforcePage = 'Page.Home'; console.width = 640; Metadata.ConsoleComponent clone = (Metadata.ConsoleComponent)console.clone(); System.assertEquals(200, clone.height); System.assertEquals('UtilityBar', clone.location); System.assertEquals('Page.Home', clone.visualforcePage); System.assertEquals(640, clone.width); System.assertNotEquals(console, clone); Metadata.CustomField custom = new Metadata.CustomField(); custom.description = 'Invoice paid'; custom.fullName = 'Invoice__c.Paid__c'; custom.label = 'Paid'; custom.required = true; custom.type = 'Checkbox'; custom.unique = true; System.assertEquals('Invoice paid', custom.description); System.assertEquals('Invoice__c.Paid__c', custom.fullName); System.assertEquals('Paid', custom.label); System.assertEquals(true, custom.required); System.assertEquals('Checkbox', custom.type); System.assertEquals(true, custom.unique);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

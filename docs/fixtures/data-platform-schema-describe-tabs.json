@@ -30,46 +30,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.getTabs()",
-      "symbol": "Schema.DescribeTabSetResult.getTabs"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.getLabel()",
-      "symbol": "Schema.DescribeTabSetResult.getLabel"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.getName()",
-      "symbol": "Schema.DescribeTabSetResult.getName"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.getDescription()",
-      "symbol": "Schema.DescribeTabSetResult.getDescription"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.getLogoUrl()",
-      "symbol": "Schema.DescribeTabSetResult.getLogoUrl"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.getNamespace()",
-      "symbol": "Schema.DescribeTabSetResult.getNamespace"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.getTabSetId()",
-      "symbol": "Schema.DescribeTabSetResult.getTabSetId"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.isSelected()",
-      "symbol": "Schema.DescribeTabSetResult.isSelected"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeTabResult",
       "symbol": "Schema.DescribeTabResult"
     },
@@ -135,91 +95,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.getContentType()",
-      "symbol": "Schema.DescribeIconResult.getContentType"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.getTheme()",
-      "symbol": "Schema.DescribeIconResult.getTheme"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.getUrl()",
-      "symbol": "Schema.DescribeIconResult.getUrl"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.getHeight()",
-      "symbol": "Schema.DescribeIconResult.getHeight"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.getWidth()",
-      "symbol": "Schema.DescribeIconResult.getWidth"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult",
-      "symbol": "Schema.DescribeColorResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.getColor()",
-      "symbol": "Schema.DescribeColorResult.getColor"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.getContext()",
-      "symbol": "Schema.DescribeColorResult.getContext"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.getTheme()",
-      "symbol": "Schema.DescribeColorResult.getTheme"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.description",
-      "symbol": "Schema.DescribeTabSetResult.description"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.label",
-      "symbol": "Schema.DescribeTabSetResult.label"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.logourl",
-      "symbol": "Schema.DescribeTabSetResult.logourl"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.name",
-      "symbol": "Schema.DescribeTabSetResult.name"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.namespace",
-      "symbol": "Schema.DescribeTabSetResult.namespace"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.selected",
-      "symbol": "Schema.DescribeTabSetResult.selected"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.tabs",
-      "symbol": "Schema.DescribeTabSetResult.tabs"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.tabsetid",
-      "symbol": "Schema.DescribeTabSetResult.tabsetid"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeTabResult.colors",
       "symbol": "Schema.DescribeTabResult.colors"
     },
@@ -275,61 +150,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.color",
-      "symbol": "Schema.DescribeColorResult.color"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.context",
-      "symbol": "Schema.DescribeColorResult.context"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.theme",
-      "symbol": "Schema.DescribeColorResult.theme"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.contenttype",
-      "symbol": "Schema.DescribeIconResult.contenttype"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.height",
-      "symbol": "Schema.DescribeIconResult.height"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.theme",
-      "symbol": "Schema.DescribeIconResult.theme"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.url",
-      "symbol": "Schema.DescribeIconResult.url"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.width",
-      "symbol": "Schema.DescribeIconResult.width"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.equals(Object)",
-      "symbol": "Schema.DescribeTabSetResult.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.hashCode()",
-      "symbol": "Schema.DescribeTabSetResult.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabSetResult.toString()",
-      "symbol": "Schema.DescribeTabSetResult.toString"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeTabResult.equals(Object)",
       "symbol": "Schema.DescribeTabResult.equals"
     },
@@ -342,36 +162,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeTabResult.toString()",
       "symbol": "Schema.DescribeTabResult.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.equals(Object)",
-      "symbol": "Schema.DescribeColorResult.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.hashCode()",
-      "symbol": "Schema.DescribeColorResult.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeColorResult.toString()",
-      "symbol": "Schema.DescribeColorResult.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.equals(Object)",
-      "symbol": "Schema.DescribeIconResult.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.hashCode()",
-      "symbol": "Schema.DescribeIconResult.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeIconResult.toString()",
-      "symbol": "Schema.DescribeIconResult.toString"
     }
   ],
   "expected": {

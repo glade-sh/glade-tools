@@ -6,8 +6,6 @@
   "salesforceExclusionClass": "policy-local-only",
   "salesforceExclusionReason": "This fixture proves the local Visualforce controller model, including caller-provided addFields rejection and deterministic page sizing. It grants zero Salesforce parity credit.",
   "evidence": [
-    {"surfaceId": "apex:ApexPages.StandardController.addFields(List<String>)", "symbol": "ApexPages.StandardController.addFields(List<String>)", "kind": "test"},
-    {"surfaceId": "apex:ApexPages.StandardSetController.addFields(List<String>)", "symbol": "ApexPages.StandardSetController.addFields(List<String>)", "kind": "test"},
     {"surfaceId": "apex:ApexPages.StandardSetController.setPageSize(Integer)", "symbol": "ApexPages.StandardSetController.setPageSize(Integer)", "kind": "test"}
   ],
   "source": [

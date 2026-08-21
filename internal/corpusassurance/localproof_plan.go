@@ -309,7 +309,9 @@ func fixtureEvidenceKind(fixture compat.Fixture, surfaceID string) string {
 func localProofCommandMatchesDisposition(disposition, command, surfaceID string) bool {
 	switch disposition {
 	case localRuntimeRequired:
-		return command == "exec" || (command == "test" && strings.HasPrefix(surfaceID, "apex:System.Test."))
+		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:System.Test.") ||
+			surfaceID == "apex:System.StaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.StaticResourceCalloutMock.") ||
+			surfaceID == "apex:System.MultiStaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.MultiStaticResourceCalloutMock.")))
 	case deterministicMockRequired:
 		return command == "exec" || command == "test"
 	case compileShapeRequired:

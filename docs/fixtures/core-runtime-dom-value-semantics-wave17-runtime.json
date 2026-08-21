@@ -1,0 +1,58 @@
+{
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "name": "core-runtime-dom-value-semantics-wave17-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 does not permit constructing dom.XmlNode; this packet records local-runtime DOM mutation and enum value/order semantics.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Dom.Document first = new Dom.Document();\nfirst.load('<root><a>one</a><b>two</b></root>');\nDom.XmlNode firstRoot = first.getRootElement();\nDom.XmlNode b = firstRoot.getChildElement('b', null);\nDom.Document second = new Dom.Document();\nsecond.load('<inserted>three</inserted>');\nDom.XmlNode inserted = second.getRootElement();\nObject insertedObject = inserted;\nObject referenceObject = b;\nSystem.assertEquals(inserted, firstRoot.insertBefore(insertedObject, referenceObject));\nSystem.assertEquals('inserted', firstRoot.getChildElements()[1].getName());\nSystem.assertEquals('three', firstRoot.getChildElements()[1].getText());\nSystem.assertEquals(true, firstRoot.removeChild(insertedObject));\nSystem.assertEquals('b', firstRoot.getChildElements()[1].getName());\nSystem.assertEquals(true, firstRoot.removeChild(b));\nSystem.assertEquals(1, firstRoot.getChildElements().size());\nList<Dom.XmlNodeType> types = Dom.XmlNodeType.values();\nSystem.assertEquals(3, types.size());\nSystem.assertEquals('ELEMENT', String.valueOf(types[0]));\nSystem.assertEquals('TEXT', String.valueOf(types[1]));\nSystem.assertEquals('COMMENT', String.valueOf(types[2]));\nSystem.assertEquals(0, types[0].ordinal());\nSystem.assertEquals(1, types[1].ordinal());\nSystem.assertEquals(2, types[2].ordinal());\nSystem.assertEquals(Dom.XmlNodeType.COMMENT, Dom.XmlNodeType.valueOf('COMMENT'));\nSystem.assertEquals(Dom.XmlNodeType.ELEMENT, Dom.XmlNodeType.valueOf('ELEMENT'));\nfirst = null; firstRoot = null; b = null; second = null; inserted = null; insertedObject = null; referenceObject = null; types = null;"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Dom.Document first = new Dom.Document();\nfirst.load('<root><a>one</a><b>two</b></root>');\nDom.XmlNode firstRoot = first.getRootElement();\nDom.XmlNode b = firstRoot.getChildElement('b', null);\nDom.Document second = new Dom.Document();\nsecond.load('<inserted>three</inserted>');\nDom.XmlNode inserted = second.getRootElement();\nObject insertedObject = inserted;\nObject referenceObject = b;\nSystem.assertEquals(inserted, firstRoot.insertBefore(insertedObject, referenceObject));\nSystem.assertEquals('inserted', firstRoot.getChildElements()[1].getName());\nSystem.assertEquals('three', firstRoot.getChildElements()[1].getText());\nSystem.assertEquals(true, firstRoot.removeChild(insertedObject));\nSystem.assertEquals('b', firstRoot.getChildElements()[1].getName());\nSystem.assertEquals(true, firstRoot.removeChild(b));\nSystem.assertEquals(1, firstRoot.getChildElements().size());\nList<Dom.XmlNodeType> types = Dom.XmlNodeType.values();\nSystem.assertEquals(3, types.size());\nSystem.assertEquals('ELEMENT', String.valueOf(types[0]));\nSystem.assertEquals('TEXT', String.valueOf(types[1]));\nSystem.assertEquals('COMMENT', String.valueOf(types[2]));\nSystem.assertEquals(0, types[0].ordinal());\nSystem.assertEquals(1, types[1].ordinal());\nSystem.assertEquals(2, types[2].ordinal());\nSystem.assertEquals(Dom.XmlNodeType.COMMENT, Dom.XmlNodeType.valueOf('COMMENT'));\nSystem.assertEquals(Dom.XmlNodeType.ELEMENT, Dom.XmlNodeType.valueOf('ELEMENT'));\nfirst = null; firstRoot = null; b = null; second = null; inserted = null; insertedObject = null; referenceObject = null; types = null;"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:dom.XmlNode.insertBefore(Object,Object)",
+      "symbol": "Dom.XmlNode.insertBefore(Object,Object)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution inserts a node parsed from a distinct document before a distinct reference node and asserts the child order and text postconditions."
+    },
+    {
+      "surfaceId": "apex:dom.XmlNode.removeChild(Object)",
+      "symbol": "Dom.XmlNode.removeChild(Object)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution removes the inserted node and the parsed reference node, asserting the returned booleans and final child count."
+    },
+    {
+      "surfaceId": "apex:dom.XmlNodeType.ordinal()",
+      "symbol": "Dom.XmlNodeType.ordinal()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the ordinal positions of every XmlNodeType value."
+    },
+    {
+      "surfaceId": "apex:dom.XmlNodeType.valueOf(String)",
+      "symbol": "Dom.XmlNodeType.valueOf(String)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves named XmlNodeType values and asserts the exact enum constants."
+    },
+    {
+      "surfaceId": "apex:dom.XmlNodeType.values()",
+      "symbol": "Dom.XmlNodeType.values()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the complete XmlNodeType count and ELEMENT, TEXT, COMMENT order."
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "apiVersion": "67.0",
+  "project": {
+    "sourceApiVersion": "67.0"
+  },
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe();\nMap<String, Schema.RecordTypeInfo> recordTypes = accountDescribe.getRecordTypeInfosByDeveloperName();\nSchema.RecordTypeInfo business = recordTypes.get('Business');\nSchema.RecordTypeInfo master = recordTypes.get('Master');\nSystem.assertNotEquals(null, business);\nSystem.assertNotEquals(null, master);\nSystem.assertEquals('Business Account', business.getName());\nSystem.assertEquals(business.getName(), business.name);\nSystem.assert(business.equals(business));\nSystem.assert(!business.equals(master));\nSystem.assert(business.hashCode() != master.hashCode());\nSystem.assert(business.toString().contains('Business'));\nSystem.assert(business.isActive());\nSystem.assert(business.active);\nSystem.assert(business.isAvailable());\nSystem.assert(business.available);\nSystem.assert(!business.isDefaultRecordTypeMapping());\nSystem.assert(!business.defaultRecordTypeMapping);\nSystem.assert(!business.isMaster());\nSystem.assert(!business.master);\nSystem.assertEquals('Master', master.name);\nSystem.assert(master.isMaster());\nSystem.assert(master.master);"
+    ]
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.active",
+      "symbol": "Schema.RecordTypeInfo.active",
+      "notes": "Direct anonymous execution asserts the active Business record type."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.available",
+      "symbol": "Schema.RecordTypeInfo.available",
+      "notes": "Direct anonymous execution asserts the available Business record type."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.defaultrecordtypemapping",
+      "symbol": "Schema.RecordTypeInfo.defaultRecordTypeMapping",
+      "notes": "Direct anonymous execution asserts the non-default Business mapping."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.equals(Object)",
+      "symbol": "Schema.RecordTypeInfo.equals(Object)",
+      "notes": "Direct anonymous execution distinguishes Business and Master metadata identities."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.hashCode()",
+      "symbol": "Schema.RecordTypeInfo.hashCode()",
+      "notes": "Direct anonymous execution observes distinct Business and Master hashes."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.master",
+      "symbol": "Schema.RecordTypeInfo.master",
+      "notes": "Direct anonymous execution distinguishes the Master record type."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.name",
+      "symbol": "Schema.RecordTypeInfo.name",
+      "notes": "Direct anonymous execution asserts the Business label from record-type metadata."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Schema.RecordTypeInfo.toString()",
+      "symbol": "Schema.RecordTypeInfo.toString()",
+      "notes": "Direct anonymous execution observes Business record-type identity text."
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "data-platform-schema-record-type-info-wave17-runtime",
+  "notes": "Wave17 local-only RecordTypeInfo behavior. Deterministic Business and Master metadata provide substantive identity, availability, default-mapping, and master assertions; weak self-only rows are unclaimed.",
+  "profile": {
+    "laneId": "wave17-data-platform-schema-record-type-info",
+    "selectedRowCount": 8
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves sealed local anonymous execution against deterministic local record-type metadata; it makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "sfdx-project.json",
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"67.0\"}"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Account Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/recordTypes/Business.recordType-meta.xml",
+      "content": "<RecordType><fullName>Business</fullName><label>Business Account</label><active>true</active></RecordType>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/recordTypes/Household.recordType-meta.xml",
+      "content": "<RecordType><fullName>Household</fullName><label>Household Account</label><active>true</active></RecordType>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/recordTypes/Master.recordType-meta.xml",
+      "content": "<RecordType><fullName>Master</fullName><label>Master</label><active>true</active></RecordType>"
+    },
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe();\nMap<String, Schema.RecordTypeInfo> recordTypes = accountDescribe.getRecordTypeInfosByDeveloperName();\nSchema.RecordTypeInfo business = recordTypes.get('Business');\nSchema.RecordTypeInfo master = recordTypes.get('Master');\nSystem.assertNotEquals(null, business);\nSystem.assertNotEquals(null, master);\nSystem.assertEquals('Business Account', business.getName());\nSystem.assertEquals(business.getName(), business.name);\nSystem.assert(business.equals(business));\nSystem.assert(!business.equals(master));\nSystem.assert(business.hashCode() != master.hashCode());\nSystem.assert(business.toString().contains('Business'));\nSystem.assert(business.isActive());\nSystem.assert(business.active);\nSystem.assert(business.isAvailable());\nSystem.assert(business.available);\nSystem.assert(!business.isDefaultRecordTypeMapping());\nSystem.assert(!business.defaultRecordTypeMapping);\nSystem.assert(!business.isMaster());\nSystem.assert(!business.master);\nSystem.assertEquals('Master', master.name);\nSystem.assert(master.isMaster());\nSystem.assert(master.master);"
+    }
+  ]
+}

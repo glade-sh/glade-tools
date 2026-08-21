@@ -58,9 +58,17 @@ var g4ProofClassFixtureRows = map[string][]string{
 		"apex:System.Database.convertLead(leadsToConvert,accessLevel)",
 	},
 	"g4-apexpages-controller-evidence.json": {
-		"apex:ApexPages.StandardController.addFields(List<String>)",
-		"apex:ApexPages.StandardSetController.addFields(List<String>)",
 		"apex:ApexPages.StandardSetController.setPageSize(Integer)",
+	},
+	"core-runtime-apexpages-controller-wave17-runtime.json": {
+		"apex:ApexPages.KnowledgeArticleVersionStandardController",
+		"apex:ApexPages.KnowledgeArticleVersionStandardController.hashCode()",
+		"apex:ApexPages.KnowledgeArticleVersionStandardController.toString()",
+		"apex:ApexPages.StandardController.addFields(List<String>)",
+		"apex:ApexPages.StandardController.reset()",
+		"apex:ApexPages.StandardSetController.addFields(List<String>)",
+		"apex:ApexPages.StandardSetController.hashCode()",
+		"apex:ApexPages.StandardSetController.toString()",
 	},
 }
 
