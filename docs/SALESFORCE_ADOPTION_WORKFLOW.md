@@ -69,6 +69,30 @@ disk, issues, and the optional mode-0600
 is idle. Raw Salesforce output, SSH stderr, tokens, auth URLs, cookies, and
 environment variables are never copied into the status file.
 
+## Live status page
+
+Render the current candidate inputs to Markdown, publishable JSON, and a
+static HTML page:
+
+```bash
+scripts/render-salesforce-completeness.sh \
+  --ledger /absolute/inputs/SURFACE_LEDGER.json \
+  --profile /absolute/inputs/SOURCE_PROFILE.json \
+  --packet /absolute/inputs/SURFACE_PACKET_MANIFEST.json \
+  --binding /absolute/inputs/SOURCE_BINDING.json \
+  --worker-health /absolute/status/WORKER_HEALTH.json \
+  --output /absolute/status/STATUS.md \
+  --json-output /absolute/status/STATUS.json
+python3 scripts/render-salesforce-dashboard.py \
+  --status /absolute/status/STATUS.json \
+  --output /absolute/status/STATUS.html
+```
+
+Open `STATUS.html`; it refreshes every 30 seconds. The publishable projection
+omits SSH targets, usernames, org IDs, and other private worker identity. If no
+current-candidate Salesforce index exists, Salesforce comparison is shown as
+`not-started` with every runtime-required row open.
+
 ## Canonical attempt layout
 
 ```text

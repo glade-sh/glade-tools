@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 --ledger <SURFACE_LEDGER.json> --profile <SOURCE_PROFILE.json> --packet <SURFACE_PACKET_MANIFEST.json> --binding <SOURCE_BINDING.json> [--corpus <ASSURANCE.json> --attempt <ATTEMPT.json>] [--private-corpus-status <PRIVATE_CORPUS_STATUS.json>] [--release <RELEASE_VALIDATION.json>] --output <STATUS.md>" >&2
+  echo "usage: $0 --ledger <SURFACE_LEDGER.json> --profile <SOURCE_PROFILE.json> --packet <SURFACE_PACKET_MANIFEST.json> --binding <SOURCE_BINDING.json> [--corpus <ASSURANCE.json> --attempt <ATTEMPT.json>] [--private-corpus-status <PRIVATE_CORPUS_STATUS.json>] [--release <RELEASE_VALIDATION.json>] [--worker-health <WORKER_HEALTH.json>] --output <STATUS.md> [--json-output <STATUS.json>]" >&2
   exit 2
 }
 
@@ -14,7 +14,9 @@ corpus=""
 attempt=""
 private_status=""
 release=""
+worker_health=""
 output=""
+json_output=""
 while (($#)); do
   case "$1" in
     --ledger) ledger="${2:-}"; shift 2 ;;
@@ -25,7 +27,9 @@ while (($#)); do
     --attempt) attempt="${2:-}"; shift 2 ;;
     --private-corpus-status) private_status="${2:-}"; shift 2 ;;
     --release) release="${2:-}"; shift 2 ;;
+    --worker-health) worker_health="${2:-}"; shift 2 ;;
     --output) output="${2:-}"; shift 2 ;;
+    --json-output) json_output="${2:-}"; shift 2 ;;
     -h|--help) usage ;;
     *) usage ;;
   esac
@@ -62,6 +66,30 @@ fi
 if [[ -n "$release" ]]; then
   [[ -f "$release" ]] || { echo "release validation input is unavailable" >&2; exit 1; }
   jq -e . "$release" >/dev/null
+fi
+if [[ -n "$worker_health" ]]; then
+  [[ -f "$worker_health" ]] || { echo "worker health input is unavailable" >&2; exit 1; }
+  jq -e '
+    . as $document
+    | .alias as $alias
+    | .expectedOrgId as $orgId
+    | (
+      .schemaVersion == 1
+      and (.generatedAt | type == "string" and length > 0)
+      and (.alias | type == "string" and length > 0)
+      and (.expectedOrgId | type == "string" and length > 0)
+      and (.workers | type == "array")
+      and all(.workers[];
+        (.name | type == "string" and length > 0)
+        and (.host | type == "string" and length > 0)
+        and (.healthy | type == "boolean")
+        and (.reachable | type == "boolean")
+        and (.issues | type == "array")
+        and .devHub.alias == $alias
+        and ((.devHub.connected != true) or .devHub.orgId == $orgId))
+      and ([$document | .. | objects | keys[]] | all(. != "accessToken" and . != "sfdxAuthUrl" and . != "cookie" and . != "environment"))
+    )
+  ' "$worker_health" >/dev/null || { echo "worker health input is invalid" >&2; exit 1; }
 fi
 
 jq -e '
@@ -198,7 +226,8 @@ fi
 
 mkdir -p "$(dirname "$output")"
 tmp_output="$(mktemp "${output}.tmp.XXXXXX")"
-trap '[[ ! -e "$tmp_output" ]] || unlink "$tmp_output"' EXIT
+tmp_json=""
+trap '[[ ! -e "$tmp_output" ]] || unlink "$tmp_output"; [[ -z "$tmp_json" || ! -e "$tmp_json" ]] || unlink "$tmp_json"' EXIT
 {
   printf '# Salesforce Completeness Status\n\n'
   printf 'Program status: **%s**\n\n' "$program_status"
@@ -224,5 +253,91 @@ trap '[[ ! -e "$tmp_output" ]] || unlink "$tmp_output"' EXIT
   printf 'Hosted-deferred rows: **%s**. Open packet rows: **%s**.\n' "$(commify "$hosted_total")" "$(commify "$open_rows")"
 } >"$tmp_output"
 mv "$tmp_output" "$output"
+
+if [[ -n "$json_output" ]]; then
+  machines='[]'
+  unhealthy_names=''
+  if [[ -n "$worker_health" ]]; then
+    machines="$(jq -c '[.workers | to_entries[] | .key as $index | .value | {
+      name: ("worker-" + (($index + 1) | tostring)),
+      healthy,
+      reachable,
+      devHub: {
+        connected: .devHub.connected,
+        alias: .devHub.alias,
+        activeScratchOrgsRemaining: .devHub.activeScratchOrgsRemaining,
+        dailyScratchOrgsRemaining: .devHub.dailyScratchOrgsRemaining
+      },
+      diskFreeBytes,
+      run,
+      issues
+    }]' "$worker_health")"
+    unhealthy_names="$(jq -r '[.workers | to_entries[] | select(.value.healthy != true) | "worker-" + ((.key + 1) | tostring)] | join(", ")' "$worker_health")"
+  fi
+  action_summary='Start current-candidate Salesforce comparison'
+  action_reason="No current Salesforce index exists for the ${runtime_required} runtime-required surfaces."
+  action_command='Freeze the exact candidate and initialize the all-runtime Salesforce index.'
+  action_clears='A candidate-bound Salesforce index exists with one row per runtime-required surface.'
+  if [[ -n "$unhealthy_names" ]]; then
+    action_summary='Restore worker health'
+    action_reason="Unhealthy workers: $unhealthy_names."
+    action_command='Repair connectivity or Dev Hub login, then regenerate WORKER_HEALTH.json.'
+    action_clears='Every requested worker is reachable, connected to the expected Dev Hub, and above the disk threshold.'
+  elif [[ "$local_required_complete" -ne "$required_rows" ]]; then
+    action_summary='Close remaining local evidence gaps'
+    action_reason="$((required_rows - local_required_complete)) locally required surface rows remain incomplete."
+    action_command='Land the next exact local-evidence packet and regenerate the support profile.'
+    action_clears='Local evidence equals the reviewed locally required denominator.'
+  fi
+
+  mkdir -p "$(dirname "$json_output")"
+  tmp_json="$(mktemp "${json_output}.tmp.XXXXXX")"
+  jq -n \
+    --arg generatedAt "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+    --arg programStatus 'NOT DONE' \
+    --arg glade "$candidate_commit" \
+    --arg tools "$tools_commit" \
+    --argjson completionPercent "$surface_percent" \
+    --argjson completionComplete "$completed_checkpoints" \
+    --argjson completionRequired "$required_checkpoints" \
+    --argjson completionRemaining "$remaining_checkpoints" \
+    --argjson inventoryComplete "$accounted" \
+    --argjson inventoryRequired "$ledger_total" \
+    --argjson localComplete "$local_required_complete" \
+    --argjson localRequired "$required_rows" \
+    --argjson runtimeRequired "$runtime_required" \
+    --argjson hostedDeferred "$hosted_total" \
+    --argjson packetOpen "$open_rows" \
+    --argjson machines "$machines" \
+    --arg actionSummary "$action_summary" \
+    --arg actionReason "$action_reason" \
+    --arg actionCommand "$action_command" \
+    --arg actionClears "$action_clears" \
+    '{
+      schemaVersion: 1,
+      generatedAt: $generatedAt,
+      programStatus: $programStatus,
+      completion: {percent: $completionPercent, complete: $completionComplete, required: $completionRequired, remaining: $completionRemaining},
+      candidate: {glade: $glade, tools: $tools},
+      tiers: {
+        inventory: {complete: $inventoryComplete, required: $inventoryRequired},
+        localEvidence: {complete: $localComplete, required: $localRequired},
+        salesforceComparison: {complete: 0, required: $runtimeRequired},
+        hostedDeferred: $hostedDeferred,
+        openPacketRows: $packetOpen
+      },
+      salesforce: {
+        state: "not-started",
+        outcomes: {adjudicated: 0, matched: 0, explicitNonParity: 0, productMismatch: 0, inconclusive: 0, open: $runtimeRequired}
+      },
+      pipeline: {phase: "not-started", status: "idle", startedAt: null, updatedAt: null},
+      machines: $machines,
+      action: {owner: "agent", summary: $actionSummary, reason: $actionReason, action: $actionCommand, clearsWhen: $actionClears},
+      cleanup: {state: "not-reported"},
+      delivery: {state: "not-reported"}
+    }' >"$tmp_json"
+  mv "$tmp_json" "$json_output"
+  tmp_json=""
+fi
 
 echo "salesforce completeness status: $output" >&2
