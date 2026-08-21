@@ -8,10 +8,10 @@
     "sha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5"
   },
   "salesforce": {
-    "orgAlias": "glade-sf-wave32-casper3",
+    "orgAlias": "glade-sf-wave32-worker-a3",
     "orgId": "00D000000000001EAA",
     "apiVersion": "67.0",
-    "packet": "evidence/current-base/recovery-dispatch-20260807/wave32/packet-casper-v3/salesforce/results.json",
+    "packet": "evidence/current-base/recovery-dispatch-20260807/wave32/packet-worker-a-v3/salesforce/results.json",
     "packetSha256": "f63692452a8369ab22cf5357dea45002ed666d61d777fdba3d01f66696f8d696"
   },
   "local": {

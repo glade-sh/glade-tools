@@ -35,7 +35,7 @@ scripts/corpus-assurance/dev-hub-auth.sh init-host \
 ```
 
 Add the printed public recipients to `recipients.txt`. With
-`glade-dev-hub` connected on the Mac, Matt's only credential command is:
+`glade-dev-hub` connected on the operator workstation, the only credential command is:
 
 ```bash
 scripts/corpus-assurance/dev-hub-auth.sh put \
@@ -48,17 +48,16 @@ scripts/corpus-assurance/dev-hub-auth.sh put \
 Workers authenticate noninteractively with `login` and confirm the live alias
 with `verify`. Worker commands that invoke `sf` over SSH must set
 `SF_USE_GENERIC_UNIX_KEYCHAIN=true`, matching the helper's headless login.
-Back up only an encrypted Git bundle at
-`/Volumes/Photos/glade-bak/glade-proof-auth.bundle`; the bundle must not
-contain a host identity.
+Back up only an encrypted Git bundle to an operator-owned private location;
+the bundle must not contain a host identity.
 
 Generate the secret-filtered worker status in one bounded parallel probe:
 
 ```bash
 python3 scripts/corpus-assurance/worker-health.py \
-  --host casper=matt@casper.local \
-  --host razor=matt@razor.local \
-  --disk casper=/Volumes/Photos \
+  --host worker-a=ssh-user@worker-a.example.internal \
+  --host worker-b=ssh-user@worker-b.example.internal \
+  --disk worker-a=/proof-data \
   --alias glade-dev-hub \
   --expected-org-id 00D000000000001 \
   --output /absolute/status/WORKER_HEALTH.json

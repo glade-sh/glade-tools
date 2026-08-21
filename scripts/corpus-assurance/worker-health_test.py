@@ -13,6 +13,16 @@ SCRIPT = ROOT / "scripts" / "corpus-assurance" / "worker-health.py"
 
 
 class WorkerHealthTest(unittest.TestCase):
+    def test_public_orchestration_docs_use_neutral_hosts(self) -> None:
+        paths = (
+            ROOT / "docs" / "SALESFORCE_ADOPTION_WORKFLOW.md",
+            ROOT / "docs" / "superpowers" / "plans" / "2026-08-20-salesforce-surface-proof-completion.md",
+        )
+        for path in paths:
+            text = path.read_text(encoding="utf-8")
+            for private_shape in ("/Users/", "/Volumes/", "smb://", "@localhost", ".local"):
+                self.assertNotIn(private_shape, text, f"{path} contains {private_shape}")
+
     def test_normalizes_every_worker_and_drops_secrets(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_name:
             tmp = Path(tmp_name)
@@ -97,11 +107,11 @@ class WorkerHealthTest(unittest.TestCase):
             ]
             command = [sys.executable, str(SCRIPT)]
             for name in hosts:
-                command.extend(("--host", f"{name}=matt@{name}"))
+                command.extend(("--host", f"{name}=ssh-user@{name}"))
             command.extend(
                 (
                     "--disk",
-                    "healthy=/Volumes/Photos",
+                    "healthy=/proof-data",
                     "--alias",
                     "glade-dev-hub",
                     "--expected-org-id",
@@ -124,7 +134,7 @@ class WorkerHealthTest(unittest.TestCase):
             healthy = rows["healthy"]
             self.assertTrue(healthy["healthy"])
             self.assertTrue(healthy["reachable"])
-            self.assertEqual(healthy["host"], "matt@healthy")
+            self.assertEqual(healthy["host"], "ssh-user@healthy")
             self.assertEqual(
                 healthy["devHub"],
                 {
@@ -155,7 +165,7 @@ class WorkerHealthTest(unittest.TestCase):
             for forbidden in ("DO_NOT_COPY", "force://", "accessToken", "sfdxAuthUrl", "cookie", "environment"):
                 self.assertNotIn(forbidden, serialized)
             logged_ssh = ssh_log.read_text(encoding="utf-8")
-            self.assertIn("/Volumes/Photos", logged_ssh)
+            self.assertIn("/proof-data", logged_ssh)
             self.assertIn("/usr/local/bin/sf", logged_ssh)
 
 

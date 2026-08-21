@@ -26,7 +26,7 @@ This plan starts from the merged repositories and must be rebased onto current `
 - Eligible private tests: 22,067 / 22,068; the sole failure is a reviewed private-source test defect
 - Local fixture evidence: 10,213 / 10,213 required rows
 
-The current status snapshot is `$HOME/Dev/glade-evidence/salesforce-adoption/STATUS.md`. It is not a live authority. Its claim that all three machines are connected is stale: the Mac's `glade-dev-hub` is connected, while Casper and Razor currently return `NamedOrgNotFoundError`.
+The current status snapshot is `$HOME/Dev/glade-evidence/salesforce-adoption/STATUS.md`. It is not a live authority. Its claim that all three machines are connected is stale: the operator workstation's `glade-dev-hub` is connected, while both remote workers currently return `NamedOrgNotFoundError`.
 
 ### Exact five local residuals
 
@@ -201,9 +201,9 @@ Each machine's private identity stays at `~/.config/glade-proof-auth/identity.tx
 
 - [ ] **Step 7: Document the one operator action**
 
-Use `$HOME/Dev/glade-proof-auth`, backed by a private bare Git remote on Casper. The SMB backup contains only an encrypted Git bundle at `/Volumes/Photos/glade-bak/glade-proof-auth.bundle`.
+Use `$HOME/Dev/glade-proof-auth`, backed by a private bare Git remote. The backup contains only an encrypted Git bundle in an operator-owned private location.
 
-Matt's one credential command is:
+The operator's one credential command is:
 
 ```bash
 scripts/corpus-assurance/dev-hub-auth.sh put \
@@ -226,7 +226,7 @@ git add scripts/assert-branch-author.sh scripts/assert-branch-author.test.sh \
 git commit -m "Add durable Dev Hub operator login"
 ```
 
-**Acceptance:** Matt adds a connected Dev Hub once; Mac, Casper, and Razor authenticate noninteractively without plaintext secrets or shared private keys.
+**Acceptance:** the operator adds a connected Dev Hub once; the local coordinator and both remote workers authenticate noninteractively without plaintext secrets or shared private keys.
 
 ---
 
@@ -252,8 +252,8 @@ Use Python `unittest` and fake SSH. Require one normalized row per machine:
 
 ```json
 {
-  "name": "casper",
-  "host": "matt@casper.local",
+  "name": "worker-a",
+  "host": "ssh-user@worker-a.example.internal",
   "reachable": true,
   "devHub": {
     "connected": true,
@@ -680,8 +680,8 @@ git commit -m "Classify exact hosted AppLauncher methods"
 
 - `$HOME/Dev/glade-proof-auth/recipients.txt`
 - `$HOME/Dev/glade-proof-auth/devhubs/glade-dev-hub.sfdx-auth-url.age`
-- `~/.config/glade-proof-auth/identity.txt` on Mac, Casper, and Razor
-- `/Volumes/Photos/glade-bak/glade-proof-auth.bundle`
+- `~/.config/glade-proof-auth/identity.txt` on the local coordinator and both remote workers
+- an encrypted `glade-proof-auth.bundle` in an operator-owned private backup location
 
 - [ ] **Step 1: Install the only new operator dependency**
 
@@ -693,11 +693,11 @@ Run `dev-hub-auth.sh init-host` locally on each machine. Add only the three publ
 
 - [ ] **Step 3: Perform Matt's single credential action**
 
-On the Mac, while `glade-dev-hub` is connected, run the `put` command from Task 1. Verify the resulting Git diff contains only ciphertext and recipient changes. Push it.
+On the local coordinator, while `glade-dev-hub` is connected, run the `put` command from Task 1. Verify the resulting Git diff contains only ciphertext and recipient changes. Push it.
 
 - [ ] **Step 4: Authenticate workers noninteractively**
 
-On Casper and Razor:
+On both remote workers:
 
 ```bash
 git -C ~/Dev/glade-proof-auth pull --ff-only
@@ -714,7 +714,7 @@ Generate `WORKER_HEALTH.json`. Require all three connected rows to report the sa
 
 - [ ] **Step 6: Write the encrypted backup**
 
-Create a Git bundle of the encrypted auth store at `/Volumes/Photos/glade-bak/glade-proof-auth.bundle`. Verify it with `git bundle verify`. The bundle contains no private age identity.
+Create a Git bundle of the encrypted auth store in an operator-owned private backup location. Verify it with `git bundle verify`. The bundle contains no private age identity.
 
 **Acceptance:** adding or rotating a manually supplied Dev Hub is one Mac command; both workers self-login from the encrypted store; the dashboard reports one shared Org ID and current quota.
 
@@ -772,16 +772,16 @@ Use fixed Go 1.26/CGO/`-trimpath` settings. Independently byte-rebuild both bina
 
 Run `surface-wave-plan` with no predecessor index and the default 32-fixture cap. Its deterministic order puts executable local-runtime fixtures before deterministic mocks, then sorts by namespace and fixture name. Produce two shards of at most 16 fixtures.
 
-- [ ] **Step 5: Execute on Casper and Razor in parallel**
+- [ ] **Step 5: Execute on worker A and worker B in parallel**
 
-Casper owns shard 0. Razor owns shard 1. For each worker:
+Worker A owns shard 0. Worker B owns shard 1. For each worker:
 
 ```text
 org-create -> org-preflight -> salesforce-dispatch
 -> salesforce-run -> org-cleanup
 ```
 
-The Mac coordinates only. It does not run a third shard. Health and heartbeat appear on the dashboard throughout.
+The local workstation coordinates only. It does not run a third shard. Health and heartbeat appear on the dashboard throughout.
 
 - [ ] **Step 6: Reconcile before interpreting results**
 
@@ -847,7 +847,7 @@ Salesforce matched: <matched>/<runtime total> (<percent>)
 Explicit non-parity: <count>
 Open / mismatch / inconclusive: <counts>
 Today: <waves>, <fixtures>, <rows>, <org creates>
-Machines: Mac/Casper/Razor health
+Machines: local/worker-a/worker-b health
 PR/CI: <active item or none>
 User action: <none or exact command>
 Next: <wave or root-cause PR>
@@ -924,7 +924,7 @@ Stop if the worktree is dirty, the tip is unmerged, or the target path is ambigu
 
 - [ ] **Step 4: Keep only useful evidence locally**
 
-Retain the active attempt, the last accepted attempt, and unresolved failure packets locally. After a successor is accepted and its review index verifies, archive older roots as a compressed tar with a SHA-256 manifest to `smb://casper.local/Photos/glade-bak`, verify the archive on the share, then move the local source root to Trash. Never archive source checkouts or caches as proof.
+Retain the active attempt, the last accepted attempt, and unresolved failure packets locally. After a successor is accepted and its review index verifies, archive older roots as a compressed tar with a SHA-256 manifest to the operator-owned private backup, verify the archive there, then move the local source root to Trash. Never archive source checkouts or caches as proof.
 
 - [ ] **Step 5: Bound caches and free-space risk**
 
@@ -1002,7 +1002,7 @@ Open one final status PR. Merge after CI and independent review. Do not imply th
 
 - [ ] **Step 6: Seal, back up, and clean**
 
-Write the final checksum manifest, verify exact file-set equality, copy the sealed evidence archive and encrypted auth-store bundle to `smb://casper.local/Photos/glade-bak`, verify both on the share, remove all campaign scratch orgs, then clean merged branches/worktrees and superseded local attempt roots under Task 11 rules.
+Write the final checksum manifest, verify exact file-set equality, copy the sealed evidence archive and encrypted auth-store bundle to the operator-owned private backup, verify both there, remove all campaign scratch orgs, then clean merged branches/worktrees and superseded local attempt roots under Task 11 rules.
 
 **Acceptance:** the public status says exactly how 100% was reached, the proof is reproducible from one candidate and retained packets, Salesforce match and explicit non-parity remain distinct, and no active campaign resources remain.
 
@@ -1013,7 +1013,7 @@ Write the final checksum manifest, verify exact file-set equality, copy the seal
 | Milestone | Required visible signal | Exit gate |
 | --- | --- | --- |
 | M0 — Plan | Current baseline shown | 69.1%, 18,427 / 26,651; five exact local residuals; Salesforce current-candidate 0 / 8,219 |
-| M1 — Operations | Dashboard live | Mac, Casper, Razor health visible; one exact operator action; PR/CI and disk visible |
+| M1 — Operations | Dashboard live | Local and remote worker health visible; one exact operator action; PR/CI and disk visible |
 | M2 — Local 100% | Compile, runtime shape, local behavior, and local evidence each show 100% | Tasks 5 and 6 merged; regenerated profile has zero local gap |
 | M3 — Full scope | Salesforce denominator frozen | Scope equals every deterministic-mock plus local-runtime row; full local proof passes |
 | M4 — Discovery | First 32-fixture wave reconciled | Either counted wave 1 or exact mismatch/inconclusive owners shown |
@@ -1031,7 +1031,7 @@ The renderer computes all percentages from bound artifacts. Milestone prose neve
 5. Open Tools PR 3 for all-runtime scope and local-proof reuse.
 6. Open Tools PR 6 for the three exact AppLauncher hosted exceptions.
 7. Open Tools PR 4 for generic scope binding, wave planning, and the cumulative index.
-8. Matt runs the single encrypted Dev Hub `put` command; automation logs in Casper and Razor.
+8. The operator runs the single encrypted Dev Hub `put` command; automation logs in both remote workers.
 9. Freeze one merged candidate pair and run discovery wave 1.
 10. Continue counted waves, stopping only for a dashboard-owned mismatch, inconclusive receipt, quota limit, or exact user action.
 
