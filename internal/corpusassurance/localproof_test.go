@@ -308,6 +308,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-type-id-url-stdlib.json", 31},
 		{"core-string-stdlib.json", 28},
 		{"core-string-completion-stdlib.json", 31},
+		{"core-process-sparkplug-runtime.json", 3},
 		{"core-pattern-matcher-stdlib.json", 25},
 		{"integration-rest-context-stdlib.json", 23},
 		{"async-batchable-impl-and-chunk-iterator.json", 6},
