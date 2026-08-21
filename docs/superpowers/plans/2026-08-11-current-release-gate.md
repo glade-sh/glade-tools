@@ -20,10 +20,10 @@
 ### Task 2: Renew current proof
 
 - [ ] Issue a fresh candidate and attempt bound to the committed toolchain and frozen `IN_SCOPE.json`.
-- [ ] Run local and Casper exact-candidate replay, then the sealed release validation.
+- [ ] Run local and worker A exact-candidate replay, then the sealed release validation.
 
 ### Task 3: Salesforce and closeout
 
-- [ ] Run two fresh Razor Oracle shards and cleanup receipts.
+- [ ] Run two fresh worker B Oracle shards and cleanup receipts.
 - [ ] Reconcile fail-closed, generate `ASSURANCE.json`, `RECEIPT.json`, and the self-contained HTML explorer.
 - [ ] Obtain one final adversarial review, push one ready review-only PR, and leave hosts/processes/orgs clean.
