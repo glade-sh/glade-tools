@@ -1,0 +1,32 @@
+{
+  "name": "data-schema-field-behavior-runtime",
+  "evidence": [
+    {"surfaceId":"apex:Schema.DescribeFieldResult.equals(Object)","symbol":"Schema.DescribeFieldResult.equals(Object)","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.hashCode()","symbol":"Schema.DescribeFieldResult.hashCode()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.toString()","symbol":"Schema.DescribeFieldResult.toString()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.getSObjectField()","symbol":"Schema.DescribeFieldResult.getSObjectField()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.isAggregatable()","symbol":"Schema.DescribeFieldResult.isAggregatable()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.isFilterable()","symbol":"Schema.DescribeFieldResult.isFilterable()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.isGroupable()","symbol":"Schema.DescribeFieldResult.isGroupable()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.isIdLookup()","symbol":"Schema.DescribeFieldResult.isIdLookup()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.isRestrictedPicklist()","symbol":"Schema.DescribeFieldResult.isRestrictedPicklist()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.idlookup","symbol":"Schema.DescribeFieldResult.idLookup","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.encrypted","symbol":"Schema.DescribeFieldResult.encrypted","kind":"exec"}
+  ],
+  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"org-configuration-required",
+  "salesforceExclusionReason":"This fixture proves local metadata-backed field behavior and does not claim hosted org configuration.",
+  "source":[
+    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"},
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Account Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/External_Id__c.field-meta.xml","content":"<CustomField><fullName>External_Id__c</fullName><label>External Id</label><type>Text</type><length>80</length><externalId>true</externalId><unique>true</unique></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/Notes__c.field-meta.xml","content":"<CustomField><fullName>Notes__c</fullName><label>Notes</label><type>LongTextArea</type><length>1024</length><visibleLines>3</visibleLines></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/Rating.field-meta.xml","content":"<CustomField><fullName>Rating</fullName><label>Rating</label><type>Picklist</type><valueSet><restricted>true</restricted><valueSetDefinition><value><fullName>Hot</fullName><label>Hot</label></value><value><fullName>Cold</fullName><label>Cold</label></value></valueSetDefinition></valueSet></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/Secret__c.field-meta.xml","content":"<CustomField><fullName>Secret__c</fullName><label>Secret</label><type>EncryptedText</type><length>64</length></CustomField>"},
+    {"path":"anonymous.apex","content":"Schema.DescribeFieldResult name = Account.Name.getDescribe(); Schema.DescribeFieldResult notes = Account.Notes__c.getDescribe(); System.assert(name.equals(name)); System.assert(!name.equals(notes)); System.assert(name.hashCode() != notes.hashCode()); System.assert(name.toString().contains('Name')); System.assertEquals(Account.Name, name.getSObjectField()); System.assert(!notes.isAggregatable()); System.assert(!notes.isFilterable()); System.assert(!notes.isGroupable()); Schema.DescribeFieldResult external = Account.External_Id__c.getDescribe(); System.assert(external.isIdLookup()); System.assert(external.idLookup); Schema.DescribeFieldResult rating = Account.Rating.getDescribe(); System.assert(rating.isRestrictedPicklist()); Schema.DescribeFieldResult secret = Account.Secret__c.getDescribe(); System.assert(secret.encrypted);"}
+  ],
+  "command":{"kind":"exec","args":["Schema.DescribeFieldResult name = Account.Name.getDescribe(); Schema.DescribeFieldResult notes = Account.Notes__c.getDescribe(); System.assert(name.equals(name)); System.assert(!name.equals(notes)); System.assert(name.hashCode() != notes.hashCode()); System.assert(name.toString().contains('Name')); System.assertEquals(Account.Name, name.getSObjectField()); System.assert(!notes.isAggregatable()); System.assert(!notes.isFilterable()); System.assert(!notes.isGroupable()); Schema.DescribeFieldResult external = Account.External_Id__c.getDescribe(); System.assert(external.isIdLookup()); System.assert(external.idLookup); Schema.DescribeFieldResult rating = Account.Rating.getDescribe(); System.assert(rating.isRestrictedPicklist()); Schema.DescribeFieldResult secret = Account.Secret__c.getDescribe(); System.assert(secret.encrypted);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

@@ -1,0 +1,37 @@
+{
+  "name": "data-platform-schema-describe-tab-result-runtime-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves Glade's local metadata-backed DescribeTabResult model and does not claim hosted Salesforce tab metadata parity.",
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.colors","symbol":"DescribeTabResult.colors"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.custom","symbol":"DescribeTabResult.custom"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.equals(Object)","symbol":"DescribeTabResult.equals"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getColors()","symbol":"DescribeTabResult.getColors"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getIcons()","symbol":"DescribeTabResult.getIcons"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getLabel()","symbol":"DescribeTabResult.getLabel"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getMiniIconUrl()","symbol":"DescribeTabResult.getMiniIconUrl"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getMobileUrl()","symbol":"DescribeTabResult.getMobileUrl"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getName()","symbol":"DescribeTabResult.getName"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getSobjectName()","symbol":"DescribeTabResult.getSObjectName"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getTabEnumOrId()","symbol":"DescribeTabResult.getTabEnumOrId"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.getUrl()","symbol":"DescribeTabResult.getUrl"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.hashCode()","symbol":"DescribeTabResult.hashCode"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.icons","symbol":"DescribeTabResult.icons"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.isCustom()","symbol":"DescribeTabResult.isCustom"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.label","symbol":"DescribeTabResult.label"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.miniiconurl","symbol":"DescribeTabResult.miniiconurl"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.mobileurl","symbol":"DescribeTabResult.mobileurl"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.name","symbol":"DescribeTabResult.name"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.sobjectname","symbol":"DescribeTabResult.sobjectname"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.tabenumorid","symbol":"DescribeTabResult.tabenumorid"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.toString()","symbol":"DescribeTabResult.toString"},
+    {"kind":"exec","surfaceId":"apex:Schema.DescribeTabResult.url","symbol":"DescribeTabResult.url"}
+  ],
+  "schema": [
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject xmlns=\"http://soap.sforce.com/2006/04/metadata\"><label>Account</label><pluralLabel>Accounts</pluralLabel><nameField><label>Account Name</label><type>Text</type></nameField><deploymentStatus>Deployed</deploymentStatus><sharingModel>ReadWrite</sharingModel></CustomObject>"}
+  ],
+  "source": [{"path":"anonymous.apex","content":"List<Schema.DescribeTabSetResult> tabSets = Schema.describeTabs(); System.assert(tabSets.size() > 0); Schema.DescribeTabSetResult tabSet = tabSets[0]; List<Schema.DescribeTabResult> tabs = tabSet.getTabs(); Schema.DescribeTabResult tab = null; for (Schema.DescribeTabResult candidate : tabs) { if (candidate.getName() == 'Accounts') { tab = candidate; } } System.assertNotEquals(null, tab); System.assertEquals('Accounts', tab.getName()); System.assertEquals('Accounts', tab.getLabel()); System.assertEquals('Account', tab.getSObjectName()); System.assertEquals(false, tab.isCustom()); System.assertEquals(tab.isCustom(), tab.custom); System.assertEquals(tab.getUrl(), tab.getMobileUrl()); System.assertEquals('/lightning/o/Accounts/list', tab.getUrl()); System.assertEquals('Accounts', tab.getTabEnumOrId()); System.assert(tab.getColors().size() > 0); System.assertEquals(tab.getColors().size(), tab.colors.size()); System.assert(tab.getIcons().size() > 0); System.assertEquals(tab.getIcons().size(), tab.icons.size()); System.assertEquals(tab.getLabel(), tab.label); System.assertEquals(tab.getMiniIconUrl(), tab.miniiconurl); System.assertEquals(tab.getMobileUrl(), tab.mobileurl); System.assertEquals(tab.getName(), tab.name); System.assertEquals(tab.getSObjectName(), tab.sobjectname); System.assertEquals(tab.getTabEnumOrId(), tab.tabenumorid); System.assertEquals(tab.getUrl(), tab.url); System.assert(tab.equals(tab)); System.assert(!tab.equals(null)); System.assertNotEquals(0, tab.hashCode()); System.assert(tab.toString().contains('Accounts'));"}],
+  "command": {"kind":"exec","args":["List<Schema.DescribeTabSetResult> tabSets = Schema.describeTabs(); System.assert(tabSets.size() > 0); Schema.DescribeTabSetResult tabSet = tabSets[0]; List<Schema.DescribeTabResult> tabs = tabSet.getTabs(); Schema.DescribeTabResult tab = null; for (Schema.DescribeTabResult candidate : tabs) { if (candidate.getName() == 'Accounts') { tab = candidate; } } System.assertNotEquals(null, tab); System.assertEquals('Accounts', tab.getName()); System.assertEquals('Accounts', tab.getLabel()); System.assertEquals('Account', tab.getSObjectName()); System.assertEquals(false, tab.isCustom()); System.assertEquals(tab.isCustom(), tab.custom); System.assertEquals(tab.getUrl(), tab.getMobileUrl()); System.assertEquals('/lightning/o/Accounts/list', tab.getUrl()); System.assertEquals('Accounts', tab.getTabEnumOrId()); System.assert(tab.getColors().size() > 0); System.assertEquals(tab.getColors().size(), tab.colors.size()); System.assert(tab.getIcons().size() > 0); System.assertEquals(tab.getIcons().size(), tab.icons.size()); System.assertEquals(tab.getLabel(), tab.label); System.assertEquals(tab.getMiniIconUrl(), tab.miniiconurl); System.assertEquals(tab.getMobileUrl(), tab.mobileurl); System.assertEquals(tab.getName(), tab.name); System.assertEquals(tab.getSObjectName(), tab.sobjectname); System.assertEquals(tab.getTabEnumOrId(), tab.tabenumorid); System.assertEquals(tab.getUrl(), tab.url); System.assert(tab.equals(tab)); System.assert(!tab.equals(null)); System.assertNotEquals(0, tab.hashCode()); System.assert(tab.toString().contains('Accounts'));"]},
+  "expected": {"result":{"debug":null,"ok":true}}
+}

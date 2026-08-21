@@ -1,0 +1,24 @@
+{
+  "name": "core-runtime-string-transform-depth",
+  "evidence": [
+    {"surfaceId":"apex:System.String.center(Integer,String)","symbol":"String.center","kind":"exec","notes":"Nondefault centered padding is asserted exactly."},
+    {"surfaceId":"apex:System.String.leftPad(Integer,String)","symbol":"String.leftPad","kind":"exec","notes":"Nondefault left padding is asserted exactly."},
+    {"surfaceId":"apex:System.String.rightPad(Integer,String)","symbol":"String.rightPad","kind":"exec","notes":"Nondefault right padding is asserted exactly."},
+    {"surfaceId":"apex:System.String.length()","symbol":"String.length","kind":"exec","notes":"Length of a nonempty Unicode string is asserted."},
+    {"surfaceId":"apex:System.String.substring(Integer)","symbol":"String.substring","kind":"exec","notes":"Nondefault substring start is asserted exactly."},
+    {"surfaceId":"apex:System.String.substring(Integer,Integer)","symbol":"String.substring","kind":"exec","notes":"Nondefault bounded substring is asserted exactly."},
+    {"surfaceId":"apex:System.String.startsWith(String)","symbol":"String.startsWith","kind":"exec","notes":"Both matching and nonmatching prefixes are asserted."},
+    {"surfaceId":"apex:System.String.stripHtmlTags()","symbol":"String.stripHtmlTags","kind":"exec","notes":"Nested markup is removed and text content is asserted exactly."},
+    {"surfaceId":"apex:System.String.trim()","symbol":"String.trim","kind":"exec","notes":"Leading and trailing whitespace is removed and asserted exactly."},
+    {"surfaceId":"apex:System.String.toLowerCase()","symbol":"String.toLowerCase","kind":"exec","notes":"Mixed-case conversion is asserted exactly."},
+    {"surfaceId":"apex:System.String.toUpperCase()","symbol":"String.toUpperCase","kind":"exec","notes":"Mixed-case conversion is asserted exactly."},
+    {"surfaceId":"apex:System.String.repeat(String,Integer)","symbol":"String.repeat","kind":"exec","notes":"Nondefault separator repetition is asserted exactly."}
+  ],
+  "command": {"kind":"exec","args":["String centered='ab'; System.assertEquals('--ab--',centered.center(6,'-')); String padded='7'; System.assertEquals('0007',padded.leftPad(4,'0')); System.assertEquals('7000',padded.rightPad(4,'0')); String unicode='AΩ'; System.assertEquals(2,unicode.length()); String sliced='abcdef'; System.assertEquals('cdef',sliced.substring(2)); System.assertEquals('bcd',sliced.substring(1,4)); String prefix='Salesforce'; System.assert(prefix.startsWith('Sale')); System.assert(!prefix.startsWith('Force')); System.assertEquals('A B', '<p>A <b>B</b></p>'.stripHtmlTags()); System.assertEquals('Ab', '  Ab  '.trim()); System.assertEquals('mixed case', 'MiXeD CaSe'.toLowerCase()); System.assertEquals('MIXED CASE', 'MiXeD CaSe'.toUpperCase()); System.assertEquals('ha-ha-ha', 'ha'.repeat('-',3));"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "mode":"local-runtime",
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture proves deterministic local String transform behavior with exact nondefault assertions and makes no hosted Salesforce parity claim.",
+  "source":[{"path":"anonymous.apex","content":"String centered='ab'; System.assertEquals('--ab--',centered.center(6,'-')); String padded='7'; System.assertEquals('0007',padded.leftPad(4,'0')); System.assertEquals('7000',padded.rightPad(4,'0')); String unicode='AΩ'; System.assertEquals(2,unicode.length()); String sliced='abcdef'; System.assertEquals('cdef',sliced.substring(2)); System.assertEquals('bcd',sliced.substring(1,4)); String prefix='Salesforce'; System.assert(prefix.startsWith('Sale')); System.assert(!prefix.startsWith('Force')); System.assertEquals('A B', '<p>A <b>B</b></p>'.stripHtmlTags()); System.assertEquals('Ab', '  Ab  '.trim()); System.assertEquals('mixed case', 'MiXeD CaSe'.toLowerCase()); System.assertEquals('MIXED CASE', 'MiXeD CaSe'.toUpperCase()); System.assertEquals('ha-ha-ha', 'ha'.repeat('-',3));"}]
+}

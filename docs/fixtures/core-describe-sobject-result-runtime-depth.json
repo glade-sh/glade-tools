@@ -1,0 +1,26 @@
+{
+  "name": "core-describe-sobject-result-runtime-depth",
+  "evidence": [
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.equals(Object)", "symbol": "DescribeSObjectResult.equals", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.getLabel()", "symbol": "DescribeSObjectResult.getLabel", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.getName()", "symbol": "DescribeSObjectResult.getName", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.getSobjectType()", "symbol": "DescribeSObjectResult.getSobjectType", "kind": "exec"},
+    {"surfaceId": "apex:Schema.DescribeSObjectResult.hashCode()", "symbol": "DescribeSObjectResult.hashCode", "kind": "exec"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe();\nSchema.DescribeSObjectResult sameDescribe = Account.SObjectType.getDescribe();\nSystem.assertEquals('Account', describe.getName());\nSystem.assertEquals('Account', describe.getLabel());\nSystem.assertEquals(Account.SObjectType, describe.getSobjectType());\nSystem.assert(describe.equals(sameDescribe));\nSystem.assertEquals(describe.hashCode(), sameDescribe.hashCode());\nSystem.assertEquals(null, describe.getDefaultImplementation());\nSystem.assertEquals(false, describe.getHasSubtypes());\nSystem.assertEquals(null, describe.getImplementedBy());\nSystem.assertEquals(null, describe.getImplementsInterfaces());\nSystem.assertEquals(false, describe.getIsInterface());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": ["Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe();\nSchema.DescribeSObjectResult sameDescribe = Account.SObjectType.getDescribe();\nSystem.assertEquals('Account', describe.getName());\nSystem.assertEquals('Account', describe.getLabel());\nSystem.assertEquals(Account.SObjectType, describe.getSobjectType());\nSystem.assert(describe.equals(sameDescribe));\nSystem.assertEquals(describe.hashCode(), sameDescribe.hashCode());\nSystem.assertEquals(null, describe.getDefaultImplementation());\nSystem.assertEquals(false, describe.getHasSubtypes());\nSystem.assertEquals(null, describe.getImplementedBy());\nSystem.assertEquals(null, describe.getImplementsInterfaces());\nSystem.assertEquals(false, describe.getIsInterface());"]
+  },
+  "expected": {"result": {"debug": null, "ok": true}},
+  "salesforceEligible": true
+}
