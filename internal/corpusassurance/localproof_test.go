@@ -200,9 +200,10 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 		name     string
 		filename string
 		count    int
+		prefixes []string
 	}{
-		{"SoapType", "current-base-cb198-schema-soaptype-positive-api67.json", 1308},
-		{"StatusCode", "current-base-cb191-system-rebind-positive-api67.json", 628},
+		{"SoapType", "current-base-cb198-schema-soaptype-positive-api67.json", 1308, []string{"apex:Schema.SoapType"}},
+		{"System enums", "current-base-cb191-system-rebind-positive-api67.json", 733, []string{"apex:System.AccessType", "apex:System.JSONToken", "apex:System.LoggingLevel", "apex:System.Quiddity", "apex:System.StatusCode", "apex:System.TriggerOperation", "apex:System.XmlTag"}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			path := filepath.Join(root, test.filename)
@@ -220,9 +221,12 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 			required := make(map[string]string, len(fixture.Evidence))
 			owned := make([]string, 0, len(fixture.Evidence))
 			for _, evidence := range fixture.Evidence {
-				if strings.HasPrefix(evidence.SurfaceID, "apex:System.StatusCode") || test.name == "SoapType" {
-					required[evidence.SurfaceID] = localRuntimeRequired
-					owned = append(owned, evidence.SurfaceID)
+				for _, prefix := range test.prefixes {
+					if strings.HasPrefix(evidence.SurfaceID, prefix) {
+						required[evidence.SurfaceID] = localRuntimeRequired
+						owned = append(owned, evidence.SurfaceID)
+						break
+					}
 				}
 			}
 			entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, OwnedSurfaceIDs: owned, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
