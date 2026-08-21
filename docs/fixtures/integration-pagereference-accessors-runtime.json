@@ -1,0 +1,41 @@
+{
+  "name": "integration-pagereference-accessors-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.PageReference.getUrl()",
+      "symbol": "PageReference.getUrl",
+      "kind": "exec",
+      "notes": "A page reference returns its configured URL."
+    },
+    {
+      "surfaceId": "apex:System.PageReference.getParameters()",
+      "symbol": "PageReference.getParameters",
+      "kind": "exec",
+      "notes": "A page reference exposes a mutable parameter map."
+    },
+    {
+      "surfaceId": "apex:System.PageReference.getHeaders()",
+      "symbol": "PageReference.getHeaders",
+      "kind": "exec",
+      "notes": "A page reference exposes a mutable header map."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "PageReference page = new PageReference('/apex/Trail'); System.assertEquals('/apex/Trail', page.getUrl()); page.getParameters().put('id', '001000000000001AAA'); page.getHeaders().put('X-Test', 'yes'); System.assertEquals('001000000000001AAA', page.getParameters().get('id')); System.assertEquals('yes', page.getHeaders().get('X-Test'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "PageReference page = new PageReference('/apex/Trail'); System.assertEquals('/apex/Trail', page.getUrl()); page.getParameters().put('id', '001000000000001AAA'); page.getHeaders().put('X-Test', 'yes'); System.assertEquals('001000000000001AAA', page.getParameters().get('id')); System.assertEquals('yes', page.getHeaders().get('X-Test'));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
