@@ -1,0 +1,41 @@
+{
+  "name": "core-messaging-mass-email-fields-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:Messaging.MassEmailMessage.targetobjectids",
+      "symbol": "Messaging.MassEmailMessage.targetobjectids",
+      "kind": "exec",
+      "notes": "A mass email retains its target object ids through direct field access."
+    },
+    {
+      "surfaceId": "apex:Messaging.MassEmailMessage.templateid",
+      "symbol": "Messaging.MassEmailMessage.templateid",
+      "kind": "exec",
+      "notes": "A mass email retains its template id through direct field access."
+    },
+    {
+      "surfaceId": "apex:Messaging.MassEmailMessage.whatids",
+      "symbol": "Messaging.MassEmailMessage.whatids",
+      "kind": "exec",
+      "notes": "A mass email retains its related record ids through direct field access."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Messaging.MassEmailMessage mass = new Messaging.MassEmailMessage(); mass.targetobjectids = new List<Id>{(Id)'003000000000001AAA'}; mass.templateid = (Id)'00X000000000001AAA'; mass.whatids = new List<Id>{(Id)'001000000000001AAA'}; System.assertEquals((Id)'003000000000001AAA', mass.targetobjectids[0]); System.assertEquals((Id)'00X000000000001AAA', mass.templateid); System.assertEquals((Id)'001000000000001AAA', mass.whatids[0]);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Messaging.MassEmailMessage mass = new Messaging.MassEmailMessage(); mass.targetobjectids = new List<Id>{(Id)'003000000000001AAA'}; mass.templateid = (Id)'00X000000000001AAA'; mass.whatids = new List<Id>{(Id)'001000000000001AAA'}; System.assertEquals((Id)'003000000000001AAA', mass.targetobjectids[0]); System.assertEquals((Id)'00X000000000001AAA', mass.templateid); System.assertEquals((Id)'001000000000001AAA', mass.whatids[0]);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
