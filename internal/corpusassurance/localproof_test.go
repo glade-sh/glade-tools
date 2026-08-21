@@ -306,6 +306,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-datetime-stdlib.json", 45},
 		{"core-collection-stdlib.json", 40},
 		{"core-type-id-url-stdlib.json", 31},
+		{"core-string-stdlib.json", 28},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
@@ -325,9 +326,13 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, candidate := range candidates {
-				if candidate.entry.ID == fixture.Name && len(candidate.entry.OwnedSurfaceIDs) == test.count {
+				if candidate.entry.ID != fixture.Name {
+					continue
+				}
+				if len(candidate.entry.OwnedSurfaceIDs) == test.count {
 					return
 				}
+				t.Fatalf("fixture owns %d rows, want %d", len(candidate.entry.OwnedSurfaceIDs), test.count)
 			}
 			t.Fatalf("fixture is not candidate-runnable for all %d rows", test.count)
 		})
