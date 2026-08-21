@@ -1,0 +1,26 @@
+{
+  "name":"data-database-result-field-state-runtime",
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"DML result field state is exercised against deterministic local Account records; this fixture makes no hosted Salesforce parity claim.",
+  "evidence":[
+    {"surfaceId":"apex:Database.SaveResult.errors","symbol":"Database.SaveResult.errors","kind":"exec","notes":"Failed insert of an Account missing required Name exposes a populated errors property."},
+    {"surfaceId":"apex:Database.SaveResult.id","symbol":"Database.SaveResult.id","kind":"exec","notes":"Successful insert exposes the persisted Account Id property."},
+    {"surfaceId":"apex:Database.SaveResult.success","symbol":"Database.SaveResult.success","kind":"exec","notes":"Successful insert exposes success=true."},
+    {"surfaceId":"apex:Database.DeleteResult.errors","symbol":"Database.DeleteResult.errors","kind":"exec","notes":"Failed delete of a record without an Id exposes a populated errors property."},
+    {"surfaceId":"apex:Database.DeleteResult.id","symbol":"Database.DeleteResult.id","kind":"exec","notes":"Successful delete exposes the deleted Account Id property."},
+    {"surfaceId":"apex:Database.DeleteResult.success","symbol":"Database.DeleteResult.success","kind":"exec","notes":"Successful delete exposes success=true."},
+    {"surfaceId":"apex:Database.UndeleteResult.errors","symbol":"Database.UndeleteResult.errors","kind":"exec","notes":"Failed undelete of an active record exposes a populated errors property."},
+    {"surfaceId":"apex:Database.UndeleteResult.id","symbol":"Database.UndeleteResult.id","kind":"exec","notes":"Successful undelete exposes the restored Account Id property."},
+    {"surfaceId":"apex:Database.UndeleteResult.success","symbol":"Database.UndeleteResult.success","kind":"exec","notes":"Successful undelete exposes success=true."}
+  ],
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
+  ],
+  "source":[
+    {"path":"anonymous.apex","content":"Database.SaveResult badSave = Database.insert(new Account(), false); System.assertEquals(false, badSave.success); System.assert(badSave.errors != null); System.assert(badSave.errors.size() > 0); Account saved = new Account(Name = 'Result Saved'); Database.SaveResult saveResult = Database.insert(saved, false); System.assertEquals(true, saveResult.success); System.assertEquals(saved.Id, saveResult.id); Account removed = new Account(Name = 'Result Removed'); insert removed; Database.DeleteResult badDelete = Database.delete(new Account(Name = 'No Id'), false); System.assertEquals(false, badDelete.success); System.assert(badDelete.errors != null); System.assert(badDelete.errors.size() > 0); Database.DeleteResult deleteResult = Database.delete(removed, false); System.assertEquals(true, deleteResult.success); System.assertEquals(removed.Id, deleteResult.id); Account active = new Account(Name = 'Active Undelete'); insert active; Database.UndeleteResult badUndelete = Database.undelete(active, false); System.assertEquals(false, badUndelete.success); System.assert(badUndelete.errors != null); System.assert(badUndelete.errors.size() > 0); Database.UndeleteResult undeleteResult = Database.undelete(removed, false); System.assertEquals(true, undeleteResult.success); System.assertEquals(removed.Id, undeleteResult.id); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :removed.Id]);"}
+  ],
+  "command":{"kind":"exec","args":["Database.SaveResult badSave = Database.insert(new Account(), false); System.assertEquals(false, badSave.success); System.assert(badSave.errors != null); System.assert(badSave.errors.size() > 0); Account saved = new Account(Name = 'Result Saved'); Database.SaveResult saveResult = Database.insert(saved, false); System.assertEquals(true, saveResult.success); System.assertEquals(saved.Id, saveResult.id); Account removed = new Account(Name = 'Result Removed'); insert removed; Database.DeleteResult badDelete = Database.delete(new Account(Name = 'No Id'), false); System.assertEquals(false, badDelete.success); System.assert(badDelete.errors != null); System.assert(badDelete.errors.size() > 0); Database.DeleteResult deleteResult = Database.delete(removed, false); System.assertEquals(true, deleteResult.success); System.assertEquals(removed.Id, deleteResult.id); Account active = new Account(Name = 'Active Undelete'); insert active; Database.UndeleteResult badUndelete = Database.undelete(active, false); System.assertEquals(false, badUndelete.success); System.assert(badUndelete.errors != null); System.assert(badUndelete.errors.size() > 0); Database.UndeleteResult undeleteResult = Database.undelete(removed, false); System.assertEquals(true, undeleteResult.success); System.assertEquals(removed.Id, undeleteResult.id); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Id = :removed.Id]);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}
