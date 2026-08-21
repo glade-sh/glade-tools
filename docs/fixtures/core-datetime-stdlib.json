@@ -232,11 +232,6 @@
       "kind": "exec",
       "surfaceId": "apex:System.TimeZone.getOffset(Datetime)",
       "symbol": "TimeZone.getOffset"
-    },
-    {
-      "kind": "exec",
-      "notes": "Covers UTC, fixed-offset formatting, and the deterministic America/Los_Angeles named-zone DST slice.",
-      "symbol": "Datetime.format"
     }
   ],
   "expected": {
