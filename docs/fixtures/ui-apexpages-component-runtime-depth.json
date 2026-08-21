@@ -1,0 +1,25 @@
+{
+  "name": "ui-apexpages-component-runtime-depth",
+  "evidence": [
+    {"surfaceId":"apex:ApexPages.Action.getExpression()","symbol":"ApexPages.Action.getExpression()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component","symbol":"ApexPages.Component","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.Component()","symbol":"ApexPages.Component.Component()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.childComponents","symbol":"ApexPages.Component.childComponents","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.componentIterations","symbol":"ApexPages.Component.componentIterations","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.expressions","symbol":"ApexPages.Component.expressions","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.facets","symbol":"ApexPages.Component.facets","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.id","symbol":"ApexPages.Component.id","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.parent","symbol":"ApexPages.Component.parent","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.Component.rendered","symbol":"ApexPages.Component.rendered","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.ComponentIteration","symbol":"ApexPages.ComponentIteration","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.ComponentIteration.ComponentIteration()","symbol":"ApexPages.ComponentIteration.ComponentIteration()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.ComponentIteration.childComponents","symbol":"ApexPages.ComponentIteration.childComponents","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.ComponentIteration.iterationValue","symbol":"ApexPages.ComponentIteration.iterationValue","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.ComponentIteration.parent","symbol":"ApexPages.ComponentIteration.parent","kind":"exec"}
+  ],
+  "source":[
+    {"path":"anonymous.apex","content":"ApexPages.Action action = new ApexPages.Action('list'); System.assertEquals('list', action.getExpression()); ApexPages.Component root = new ApexPages.Component(); System.assertNotEquals(null, root); root.childComponents = new List<ApexPages.Component>{new ApexPages.Component()}; root.componentIterations = new List<ApexPages.ComponentIteration>{new ApexPages.ComponentIteration()}; root.id = 'root'; root.expressions = 'expr'; root.facets = 'facet'; root.rendered = false; System.assertEquals(1, root.childComponents.size()); System.assertEquals(1, root.componentIterations.size()); System.assertEquals('root', root.id); System.assertEquals('expr', root.expressions); System.assertEquals('facet', root.facets); System.assertEquals(false, root.rendered); ApexPages.Component child = new ApexPages.Component(); child.id = 'child'; child.parent = root; System.assertEquals('child', child.id); System.assertEquals(root, child.parent); ApexPages.ComponentIteration iteration = new ApexPages.ComponentIteration(); iteration.childComponents = new List<ApexPages.Component>{new ApexPages.Component()}; iteration.iterationValue = 'row'; iteration.parent = root; System.assertEquals(1, iteration.childComponents.size()); System.assertEquals('row', iteration.iterationValue); System.assertEquals(root, iteration.parent);"} 
+  ],
+  "command":{"kind":"exec","args":["ApexPages.Action action = new ApexPages.Action('list'); System.assertEquals('list', action.getExpression()); ApexPages.Component root = new ApexPages.Component(); System.assertNotEquals(null, root); root.childComponents = new List<ApexPages.Component>{new ApexPages.Component()}; root.componentIterations = new List<ApexPages.ComponentIteration>{new ApexPages.ComponentIteration()}; root.id = 'root'; root.expressions = 'expr'; root.facets = 'facet'; root.rendered = false; System.assertEquals(1, root.childComponents.size()); System.assertEquals(1, root.componentIterations.size()); System.assertEquals('root', root.id); System.assertEquals('expr', root.expressions); System.assertEquals('facet', root.facets); System.assertEquals(false, root.rendered); ApexPages.Component child = new ApexPages.Component(); child.id = 'child'; child.parent = root; System.assertEquals('child', child.id); System.assertEquals(root, child.parent); ApexPages.ComponentIteration iteration = new ApexPages.ComponentIteration(); iteration.childComponents = new List<ApexPages.Component>{new ApexPages.Component()}; iteration.iterationValue = 'row'; iteration.parent = root; System.assertEquals(1, iteration.childComponents.size()); System.assertEquals('row', iteration.iterationValue); System.assertEquals(root, iteration.parent);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

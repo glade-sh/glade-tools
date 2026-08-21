@@ -1,0 +1,77 @@
+{
+  "name": "data-database-insert-update-list-runtime",
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.insert(List<Object>)",
+      "symbol": "Database.insert(List<Object>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.insert(List<Object>,AccessLevel)",
+      "symbol": "Database.insert(List<Object>,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.insert(List<Object>,Boolean)",
+      "symbol": "Database.insert(List<Object>,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.insert(List<Object>,Boolean,AccessLevel)",
+      "symbol": "Database.insert(List<Object>,Boolean,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.update(List<Object>)",
+      "symbol": "Database.update(List<Object>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.update(List<Object>,AccessLevel)",
+      "symbol": "Database.update(List<Object>,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.update(List<Object>,Boolean)",
+      "symbol": "Database.update(List<Object>,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.update(List<Object>,Boolean,AccessLevel)",
+      "symbol": "Database.update(List<Object>,Boolean,AccessLevel)"
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Object> i1=new List<Object>{new Account(Name='I1A'),new Account(Name='I1B')}; List<Database.SaveResult> r1=Database.insert(i1); System.assertEquals(2,r1.size()); System.assert(r1[0].isSuccess()); System.assert(r1[1].isSuccess()); System.assertNotEquals(null,r1[0].getId()); System.assertNotEquals(null,r1[1].getId()); List<Object> i2=new List<Object>{new Account(Name='I2A'),new Account(Name='I2B')}; List<Database.SaveResult> r2=Database.insert(i2,AccessLevel.SYSTEM_MODE); System.assertEquals(2,r2.size()); System.assert(r2[0].isSuccess()); System.assert(r2[1].isSuccess()); List<Object> i3=new List<Object>{new Account(Name='I3A'),new Account(Name='I3B')}; List<Database.SaveResult> r3=Database.insert(i3,false); System.assertEquals(2,r3.size()); System.assert(r3[0].isSuccess()); System.assert(r3[1].isSuccess()); List<Object> i4=new List<Object>{new Account(Name='I4A'),new Account(Name='I4B')}; List<Database.SaveResult> r4=Database.insert(i4,false,AccessLevel.USER_MODE); System.assertEquals(2,r4.size()); System.assert(r4[0].isSuccess()); System.assert(r4[1].isSuccess()); Account u1=new Account(Name='U1'); Account u2=new Account(Name='U2'); List<Object> updates=new List<Object>{u1,u2}; List<Database.SaveResult> seed=Database.insert(updates); System.assertEquals(2,seed.size()); u1.Name='U1A'; u2.Name='U2A'; List<Database.SaveResult> r5=Database.update(updates); System.assertEquals(2,r5.size()); System.assert(r5[0].isSuccess()); Account q5a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q5b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1A',q5a.Name); System.assertEquals('U2A',q5b.Name); u1.Name='U1B'; u2.Name='U2B'; List<Database.SaveResult> r6=Database.update(updates,AccessLevel.SYSTEM_MODE); System.assertEquals(2,r6.size()); System.assert(r6[1].isSuccess()); Account q6a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q6b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1B',q6a.Name); System.assertEquals('U2B',q6b.Name); u1.Name='U1C'; u2.Name='U2C'; List<Database.SaveResult> r7=Database.update(updates,false); System.assertEquals(2,r7.size()); System.assert(r7[0].isSuccess()); Account q7a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q7b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1C',q7a.Name); System.assertEquals('U2C',q7b.Name); u1.Name='U1D'; u2.Name='U2D'; List<Database.SaveResult> r8=Database.update(updates,false,AccessLevel.USER_MODE); System.assertEquals(2,r8.size()); System.assert(r8[1].isSuccess()); Account q8a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q8b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1D',q8a.Name); System.assertEquals('U2D',q8b.Name);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "List<Object> insert and update overloads are exercised against deterministic local DML; this fixture makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "List<Object> i1=new List<Object>{new Account(Name='I1A'),new Account(Name='I1B')}; List<Database.SaveResult> r1=Database.insert(i1); System.assertEquals(2,r1.size()); System.assert(r1[0].isSuccess()); System.assert(r1[1].isSuccess()); System.assertNotEquals(null,r1[0].getId()); System.assertNotEquals(null,r1[1].getId()); List<Object> i2=new List<Object>{new Account(Name='I2A'),new Account(Name='I2B')}; List<Database.SaveResult> r2=Database.insert(i2,AccessLevel.SYSTEM_MODE); System.assertEquals(2,r2.size()); System.assert(r2[0].isSuccess()); System.assert(r2[1].isSuccess()); List<Object> i3=new List<Object>{new Account(Name='I3A'),new Account(Name='I3B')}; List<Database.SaveResult> r3=Database.insert(i3,false); System.assertEquals(2,r3.size()); System.assert(r3[0].isSuccess()); System.assert(r3[1].isSuccess()); List<Object> i4=new List<Object>{new Account(Name='I4A'),new Account(Name='I4B')}; List<Database.SaveResult> r4=Database.insert(i4,false,AccessLevel.USER_MODE); System.assertEquals(2,r4.size()); System.assert(r4[0].isSuccess()); System.assert(r4[1].isSuccess()); Account u1=new Account(Name='U1'); Account u2=new Account(Name='U2'); List<Object> updates=new List<Object>{u1,u2}; List<Database.SaveResult> seed=Database.insert(updates); System.assertEquals(2,seed.size()); u1.Name='U1A'; u2.Name='U2A'; List<Database.SaveResult> r5=Database.update(updates); System.assertEquals(2,r5.size()); System.assert(r5[0].isSuccess()); Account q5a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q5b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1A',q5a.Name); System.assertEquals('U2A',q5b.Name); u1.Name='U1B'; u2.Name='U2B'; List<Database.SaveResult> r6=Database.update(updates,AccessLevel.SYSTEM_MODE); System.assertEquals(2,r6.size()); System.assert(r6[1].isSuccess()); Account q6a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q6b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1B',q6a.Name); System.assertEquals('U2B',q6b.Name); u1.Name='U1C'; u2.Name='U2C'; List<Database.SaveResult> r7=Database.update(updates,false); System.assertEquals(2,r7.size()); System.assert(r7[0].isSuccess()); Account q7a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q7b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1C',q7a.Name); System.assertEquals('U2C',q7b.Name); u1.Name='U1D'; u2.Name='U2D'; List<Database.SaveResult> r8=Database.update(updates,false,AccessLevel.USER_MODE); System.assertEquals(2,r8.size()); System.assert(r8[1].isSuccess()); Account q8a=[SELECT Name FROM Account WHERE Id=:u1.Id]; Account q8b=[SELECT Name FROM Account WHERE Id=:u2.Id]; System.assertEquals('U1D',q8a.Name); System.assertEquals('U2D',q8b.Name);"
+    }
+  ]
+}
