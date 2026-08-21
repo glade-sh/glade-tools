@@ -1,0 +1,29 @@
+{
+  "name": "core-string-abbreviate-offset-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.String.abbreviate(Integer,Integer)",
+      "symbol": "String.abbreviate(Integer,Integer)",
+      "kind": "exec",
+      "notes": "The offset overload preserves the requested middle window and adds ellipses at both ends."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "String value = 'abcdefghijklmnopqrstuvwxyz'; System.assertEquals('...mnopq...', value.abbreviate(12, 11));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "String value = 'abcdefghijklmnopqrstuvwxyz'; System.assertEquals('...mnopq...', value.abbreviate(12, 11));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
