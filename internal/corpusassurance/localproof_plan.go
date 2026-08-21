@@ -83,8 +83,6 @@ func BuildLocalProofPlan(request LocalProofPlanRequest) (LocalProofFixtureManife
 		dispositions[row.SurfaceID] = row.Disposition
 	}
 	localRequired := make(map[string]string)
-	localProfileRows := make([]LocalProofProfileRow, 0, len(required))
-	localUsageRows := make([]LocalProofUsageEntry, 0, len(required))
 	for _, surfaceID := range required {
 		disposition := dispositions[surfaceID]
 		if disposition == "" {
@@ -94,22 +92,33 @@ func BuildLocalProofPlan(request LocalProofPlanRequest) (LocalProofFixtureManife
 			continue
 		}
 		localRequired[surfaceID] = disposition
-		localProfileRows = append(localProfileRows, LocalProofProfileRow{SurfaceID: surfaceID})
-		localUsageRows = append(localUsageRows, LocalProofUsageEntry{SurfaceID: surfaceID})
 	}
-	sort.Slice(localProfileRows, func(i, j int) bool { return localProfileRows[i].SurfaceID < localProfileRows[j].SurfaceID })
-	sort.Slice(localUsageRows, func(i, j int) bool { return localUsageRows[i].SurfaceID < localUsageRows[j].SurfaceID })
-
-	entries, err := discoverLocalProofFixtures(request.FixtureRoot, localRequired)
+	manifest, missing, err := analyzeLocalProofFixtures(request.FixtureRoot, localRequired)
 	if err != nil {
 		return LocalProofFixtureManifest{}, err
 	}
-	manifest := selectLocalProofFixtures(entries)
-	var errSalesforce error
-	manifest.SalesforceFixtures, errSalesforce = selectSalesforceFixtures(manifest.Fixtures)
-	if errSalesforce != nil {
-		return LocalProofFixtureManifest{}, errSalesforce
+	manifest.SalesforceFixtures, err = selectSalesforceFixtures(manifest.Fixtures)
+	if err != nil {
+		return LocalProofFixtureManifest{}, err
 	}
+	if len(missing) != 0 {
+		return LocalProofFixtureManifest{}, fmt.Errorf("missing local-proof fixtures: %s", strings.Join(missing, ", "))
+	}
+	if err := writeLocalProofPlan(localRequired, manifest, request.ProfilePath, request.UsagePath, request.LocalDecisionPath, request.ManifestPath); err != nil {
+		return LocalProofFixtureManifest{}, err
+	}
+	if replayBytesSHA256(sourceBytes) != sealed.ProfileSHA256 {
+		return LocalProofFixtureManifest{}, fmt.Errorf("sealed local-proof lineage changed during planning")
+	}
+	return manifest, nil
+}
+
+func analyzeLocalProofFixtures(root string, required map[string]string) (LocalProofFixtureManifest, []string, error) {
+	entries, err := discoverLocalProofFixtures(root, required)
+	if err != nil {
+		return LocalProofFixtureManifest{}, nil, err
+	}
+	manifest := selectLocalProofFixtures(entries)
 	owned := make(map[string]bool)
 	for _, fixture := range manifest.Fixtures {
 		for _, surfaceID := range fixture.OwnedSurfaceIDs {
@@ -117,50 +126,52 @@ func BuildLocalProofPlan(request LocalProofPlanRequest) (LocalProofFixtureManife
 		}
 	}
 	missing := make([]string, 0)
-	for surfaceID := range localRequired {
+	for surfaceID := range required {
 		if !owned[surfaceID] {
 			missing = append(missing, surfaceID)
 		}
 	}
-	if len(missing) != 0 {
-		sort.Strings(missing)
-		return LocalProofFixtureManifest{}, fmt.Errorf("missing local-proof fixtures: %s", strings.Join(missing, ", "))
-	}
+	sort.Strings(missing)
+	return manifest, missing, nil
+}
 
-	profile := LocalProofProfile{SchemaVersion: 1, Rows: localProfileRows}
-	usage := LocalProofUsage{SchemaVersion: 1, Usage: localUsageRows}
-	if err := WriteNewJSON(request.ProfilePath, profile); err != nil {
-		return LocalProofFixtureManifest{}, err
+func writeLocalProofPlan(required map[string]string, manifest LocalProofFixtureManifest, profilePath, usagePath, decisionPath, manifestPath string) error {
+	ids := make([]string, 0, len(required))
+	for surfaceID := range required {
+		ids = append(ids, surfaceID)
 	}
-	if err := WriteNewJSON(request.UsagePath, usage); err != nil {
-		return LocalProofFixtureManifest{}, err
+	sort.Strings(ids)
+	profile := LocalProofProfile{SchemaVersion: 1, Rows: make([]LocalProofProfileRow, 0, len(ids))}
+	usage := LocalProofUsage{SchemaVersion: 1, Usage: make([]LocalProofUsageEntry, 0, len(ids))}
+	decision := LocalProofDecision{SchemaVersion: 1}
+	for _, surfaceID := range ids {
+		profile.Rows = append(profile.Rows, LocalProofProfileRow{SurfaceID: surfaceID})
+		usage.Usage = append(usage.Usage, LocalProofUsageEntry{SurfaceID: surfaceID})
+		decision.Decisions = append(decision.Decisions, LocalProofDecisionRow{SurfaceID: surfaceID, RequireLocalProof: true})
 	}
-	if err := WriteNewJSON(request.ManifestPath, manifest); err != nil {
-		return LocalProofFixtureManifest{}, err
+	if err := WriteNewJSON(profilePath, profile); err != nil {
+		return err
 	}
-	profileSHA, err := proofInputSHA256(request.ProfilePath)
+	if err := WriteNewJSON(usagePath, usage); err != nil {
+		return err
+	}
+	if err := WriteNewJSON(manifestPath, manifest); err != nil {
+		return err
+	}
+	var err error
+	decision.ProfileSHA256, err = proofInputSHA256(profilePath)
 	if err != nil {
-		return LocalProofFixtureManifest{}, err
+		return err
 	}
-	usageSHA, err := proofInputSHA256(request.UsagePath)
+	decision.UsageSHA256, err = proofInputSHA256(usagePath)
 	if err != nil {
-		return LocalProofFixtureManifest{}, err
+		return err
 	}
-	manifestSHA, err := proofInputSHA256(request.ManifestPath)
+	decision.FixtureManifestSHA256, err = proofInputSHA256(manifestPath)
 	if err != nil {
-		return LocalProofFixtureManifest{}, err
+		return err
 	}
-	decision := LocalProofDecision{SchemaVersion: 1, ProfileSHA256: profileSHA, UsageSHA256: usageSHA, FixtureManifestSHA256: manifestSHA}
-	for _, row := range localProfileRows {
-		decision.Decisions = append(decision.Decisions, LocalProofDecisionRow{SurfaceID: row.SurfaceID, RequireLocalProof: true})
-	}
-	if err := WriteNewJSON(request.LocalDecisionPath, decision); err != nil {
-		return LocalProofFixtureManifest{}, err
-	}
-	if replayBytesSHA256(sourceBytes) != sealed.ProfileSHA256 {
-		return LocalProofFixtureManifest{}, fmt.Errorf("sealed local-proof lineage changed during planning")
-	}
-	return manifest, nil
+	return WriteNewJSON(decisionPath, decision)
 }
 
 func discoverLocalProofFixtures(root string, required map[string]string) ([]localProofFixtureCandidate, error) {
@@ -280,7 +291,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 	case localRuntimeRequired:
 		return command == "exec" || (command == "test" && strings.HasPrefix(surfaceID, "apex:System.Test."))
 	case deterministicMockRequired:
-		return command == "test"
+		return command == "exec" || command == "test"
 	case compileShapeRequired:
 		return command == "check"
 	default:

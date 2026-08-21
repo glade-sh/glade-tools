@@ -103,7 +103,10 @@ func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
 		symbol      string
 	}{
 		{localRuntimeRequired, "exec", "exec", "Runtime.run"},
+		{localRuntimeRequired, "exec", "test", "Runtime.run"},
 		{deterministicMockRequired, "test", "test", "Runtime.run"},
+		{deterministicMockRequired, "exec", "exec", "Runtime.run"},
+		{deterministicMockRequired, "exec", "test", "Runtime.run"},
 		{compileShapeRequired, "check", "shape", "Runtime.run"},
 	} {
 		t.Run(test.disposition, func(t *testing.T) {
@@ -117,6 +120,15 @@ func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
 				t.Fatalf("validateLocalProofFixtureIdentity() error = %v", err)
 			}
 		})
+	}
+}
+
+func TestLocalProofPlannerAcceptsExecutableDeterministicEvidence(t *testing.T) {
+	if !localProofCommandMatchesDisposition(deterministicMockRequired, "exec", "apex:Auth.JWT.JWT()") {
+		t.Fatal("planner rejected an executable deterministic behavior observation")
+	}
+	if !localProofOperationMatches(deterministicMockRequired, "exec") {
+		t.Fatal("proof validator rejected an executable deterministic behavior observation")
 	}
 }
 

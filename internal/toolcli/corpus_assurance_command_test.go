@@ -22,14 +22,14 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
-	commands := []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "surface-scope", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "org-create", "org-preflight", "salesforce-dispatch", "salesforce-run", "org-cleanup", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"}
+	commands := []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "surface-scope", "surface-local-proof-plan", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "org-create", "org-preflight", "salesforce-dispatch", "salesforce-run", "org-cleanup", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"}
 	for _, command := range commands {
 		if !strings.Contains(stdout.String(), "glade-tools corpus assurance "+command+" ") {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}
 	}
 	last := -1
-	for _, command := range []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "surface-scope", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "salesforce-dispatch", "salesforce-run", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"} {
+	for _, command := range []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "surface-scope", "surface-local-proof-plan", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "salesforce-dispatch", "salesforce-run", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"} {
 		position := strings.Index(stdout.String(), "glade-tools corpus assurance "+command+" ")
 		if position <= last {
 			t.Fatalf("help order moved %q after position %d:\n%s", command, last, stdout.String())
@@ -83,6 +83,7 @@ func TestCorpusAssuranceCandidate(t *testing.T) {
 
 func TestCorpusAssuranceSurfaceScope(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "surface-scope")
+	assertCorpusAssuranceCommandRejectsMissingFlags(t, "surface-local-proof-plan")
 }
 
 func TestCorpusAssuranceAttempt(t *testing.T) {
