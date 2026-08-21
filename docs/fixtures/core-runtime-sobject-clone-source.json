@@ -17,13 +17,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Account source = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nSystem.assertEquals(false, source.isClone());\nSystem.assertEquals(null, source.getCloneSourceId());\nAccount cloneNoId = source.clone(false, true, false, false);\nSystem.assertEquals(true, cloneNoId.isClone());\nSystem.assertEquals(source.get('Id'), cloneNoId.getCloneSourceId());\nSystem.assertEquals(null, cloneNoId.get('Id'));\nAccount cloneWithId = source.clone(true, true, false, false);\nSystem.assertEquals(true, cloneWithId.isClone());\nSystem.assertEquals(source.get('Id'), cloneWithId.get('Id'));\nSystem.assertEquals(source.get('Id'), cloneWithId.getCloneSourceId());\n"
+      "content": "SObject source = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nSystem.assertEquals(false, source.isClone());\nSystem.assertEquals(null, source.getCloneSourceId());\nSObject cloneNoId = source.clone(false, true, false, false);\nSystem.assertEquals(true, cloneNoId.isClone());\nSystem.assertEquals(source.get('Id'), cloneNoId.getCloneSourceId());\nSystem.assertEquals(null, cloneNoId.get('Id'));\nSObject cloneWithId = source.clone(true, true, false, false);\nSystem.assertEquals(true, cloneWithId.isClone());\nSystem.assertEquals(source.get('Id'), cloneWithId.get('Id'));\nSystem.assertEquals(source.get('Id'), cloneWithId.getCloneSourceId());\n"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Account source = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nSystem.assertEquals(false, source.isClone());\nSystem.assertEquals(null, source.getCloneSourceId());\nAccount cloneNoId = source.clone(false, true, false, false);\nSystem.assertEquals(true, cloneNoId.isClone());\nSystem.assertEquals(source.get('Id'), cloneNoId.getCloneSourceId());\nSystem.assertEquals(null, cloneNoId.get('Id'));\nAccount cloneWithId = source.clone(true, true, false, false);\nSystem.assertEquals(true, cloneWithId.isClone());\nSystem.assertEquals(source.get('Id'), cloneWithId.get('Id'));\nSystem.assertEquals(source.get('Id'), cloneWithId.getCloneSourceId());\n"
+      "SObject source = new Account(Id = '001B000001DVM9tIAH', Name = 'Acme');\nSystem.assertEquals(false, source.isClone());\nSystem.assertEquals(null, source.getCloneSourceId());\nSObject cloneNoId = source.clone(false, true, false, false);\nSystem.assertEquals(true, cloneNoId.isClone());\nSystem.assertEquals(source.get('Id'), cloneNoId.getCloneSourceId());\nSystem.assertEquals(null, cloneNoId.get('Id'));\nSObject cloneWithId = source.clone(true, true, false, false);\nSystem.assertEquals(true, cloneWithId.isClone());\nSystem.assertEquals(source.get('Id'), cloneWithId.get('Id'));\nSystem.assertEquals(source.get('Id'), cloneWithId.getCloneSourceId());\n"
     ]
   },
   "expected": {
