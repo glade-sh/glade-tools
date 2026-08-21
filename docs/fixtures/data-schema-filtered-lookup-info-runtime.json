@@ -1,0 +1,90 @@
+{
+  "name": "data-schema-filtered-lookup-info-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises Glade's deterministic standard lookup-filter metadata only; it makes no hosted Salesforce parity claim.",
+  "evidence": [
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.controllingfields",
+      "symbol": "Schema.FilteredLookupInfo.controllingFields",
+      "kind": "exec",
+      "notes": "The lookup filter exposes its controlling fields property."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.dependent",
+      "symbol": "Schema.FilteredLookupInfo.dependent",
+      "kind": "exec",
+      "notes": "The lookup filter exposes its dependent property."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.optionalfilter",
+      "symbol": "Schema.FilteredLookupInfo.optionalFilter",
+      "kind": "exec",
+      "notes": "The lookup filter exposes its optionalFilter property."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.getControllingFields()",
+      "symbol": "Schema.FilteredLookupInfo.getControllingFields()",
+      "kind": "exec",
+      "notes": "The lookup filter returns its controlling fields."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.isDependent()",
+      "symbol": "Schema.FilteredLookupInfo.isDependent()",
+      "kind": "exec",
+      "notes": "The lookup filter reports that it is dependent."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.isOptionalFilter()",
+      "symbol": "Schema.FilteredLookupInfo.isOptionalFilter()",
+      "kind": "exec",
+      "notes": "The lookup filter reports that it is optional."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.equals(Object)",
+      "symbol": "Schema.FilteredLookupInfo.equals(Object)",
+      "kind": "exec",
+      "notes": "The populated lookup filter supports object equality."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.hashCode()",
+      "symbol": "Schema.FilteredLookupInfo.hashCode()",
+      "kind": "exec",
+      "notes": "The populated lookup filter supports hashing."
+    },
+    {
+      "surfaceId": "apex:Schema.FilteredLookupInfo.toString()",
+      "symbol": "Schema.FilteredLookupInfo.toString()",
+      "kind": "exec",
+      "notes": "The populated lookup filter has a descriptive string form."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.DescribeFieldResult lookupField = Contact.AccountId.getDescribe(); Schema.FilteredLookupInfo info = lookupField.getFilteredLookupInfo(); System.assertNotEquals(null, info); System.assertEquals(1, info.getControllingFields().size()); System.assertEquals('Account.Name', info.getControllingFields()[0]); System.assertEquals(info.getControllingFields(), info.controllingFields); System.assert(info.isDependent()); System.assertEquals(info.isDependent(), info.dependent); System.assert(info.isOptionalFilter()); System.assertEquals(info.isOptionalFilter(), info.optionalFilter); System.assert(info.equals(info)); System.assert(!info.equals(null)); System.assertNotEquals(0, info.hashCode()); System.assert(info.toString().contains('FilteredLookupInfo'));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.DescribeFieldResult lookupField = Contact.AccountId.getDescribe(); Schema.FilteredLookupInfo info = lookupField.getFilteredLookupInfo(); System.assertNotEquals(null, info); System.assertEquals(1, info.getControllingFields().size()); System.assertEquals('Account.Name', info.getControllingFields()[0]); System.assertEquals(info.getControllingFields(), info.controllingFields); System.assert(info.isDependent()); System.assertEquals(info.isDependent(), info.dependent); System.assert(info.isOptionalFilter()); System.assertEquals(info.isOptionalFilter(), info.optionalFilter); System.assert(info.equals(info)); System.assert(!info.equals(null)); System.assertNotEquals(0, info.hashCode()); System.assert(info.toString().contains('FilteredLookupInfo'));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Contact/Contact.object-meta.xml",
+      "content": "<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/fields/AccountId.field-meta.xml",
+      "content": "<CustomField><fullName>AccountId</fullName><label>Account</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Account</relationshipName><childRelationshipName>Contacts</childRelationshipName><deleteConstraint>Cascade</deleteConstraint><lookupFilter><active>true</active><filterItems><field>Account.Name</field><operation>equals</operation><value>Acme</value></filterItems><isOptional>true</isOptional></lookupFilter></CustomField>"
+    }
+  ]
+}

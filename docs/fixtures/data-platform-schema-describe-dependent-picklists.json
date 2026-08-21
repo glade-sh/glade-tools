@@ -17,6 +17,11 @@
       "kind": "exec"
     },
     {
+      "symbol": "Schema.DescribeFieldResult.controller",
+      "surfaceId": "apex:Schema.DescribeFieldResult.controller",
+      "kind": "exec"
+    },
+    {
       "symbol": "Schema.DescribeFieldResult.isDependentPicklist",
       "surfaceId": "apex:Schema.DescribeFieldResult.isDependentPicklist()",
       "kind": "exec"
