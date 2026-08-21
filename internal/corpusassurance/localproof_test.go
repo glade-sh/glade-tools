@@ -321,6 +321,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-messaging-sendemail-error-fields-runtime.json", 2},
 		{"core-messaging-mass-email-fields-runtime.json", 3},
 		{"integration-pagereference-accessors-runtime.json", 3},
+		{"core-http-types-runtime.json", 2},
 		{"core-pattern-matcher-stdlib.json", 25},
 		{"integration-rest-context-stdlib.json", 23},
 		{"async-batchable-impl-and-chunk-iterator.json", 6},
