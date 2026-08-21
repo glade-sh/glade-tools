@@ -6,11 +6,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:System.Id.Id()",
-      "symbol": "System.Id.Id()"
-    },
-    {
-      "kind": "test",
       "notes": "Retained as an exact current-base row; Glade local semantic analysis rejects this method as unsupported, so the executable witness records Id construction only.",
       "surfaceId": "apex:System.Id.to18",
       "symbol": "System.Id.to18"
@@ -34,21 +29,6 @@
       "kind": "test",
       "surfaceId": "apex:System.InstallHandler.onInstall(InstallContext)",
       "symbol": "System.InstallHandler.onInstall(InstallContext)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.Integer.Integer()",
-      "symbol": "System.Integer.Integer()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.Integer.MAX_VALUE",
-      "symbol": "System.Integer.MAX_VALUE"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.Integer.MIN_VALUE",
-      "symbol": "System.Integer.MIN_VALUE"
     },
     {
       "kind": "test",
@@ -91,13 +71,13 @@
   },
   "mode": "local-runtime",
   "name": "current-base-system-002-local-runtime-api67",
-  "notes": "Current-base lane current-base-local-runtime-required-System-002: 14 retained rows after the Wave 15 exception ownership transfer. Assertions cover scalar and exception contracts plus the deterministic local install harness.",
+  "notes": "Current-base lane current-base-local-runtime-required-System-002: 10 retained rows after the Wave 16 primitive-value ownership transfer. Assertions cover scalar and exception contracts plus the deterministic local install harness.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-local-runtime-required-System-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 14,
+    "selectedRowCount": 10,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "salesforceEligible": false,

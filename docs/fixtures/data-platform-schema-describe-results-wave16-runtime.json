@@ -1,0 +1,407 @@
+{
+  "name": "data-platform-schema-describe-results-wave16-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.datatranslationenabled",
+      "symbol": "Schema.DescribeFieldResult.dataTranslationEnabled",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.dependentpicklist",
+      "symbol": "Schema.DescribeFieldResult.dependentPicklist",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.getDataTranslationEnabled()",
+      "symbol": "Schema.DescribeFieldResult.getDataTranslationEnabled",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.getMask()",
+      "symbol": "Schema.DescribeFieldResult.getMask",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.getMaskType()",
+      "symbol": "Schema.DescribeFieldResult.getMaskType",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isAiPredictionField()",
+      "symbol": "Schema.DescribeFieldResult.isAiPredictionField",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isCascadeDelete()",
+      "symbol": "Schema.DescribeFieldResult.isCascadeDelete",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isDeprecatedAndHidden()",
+      "symbol": "Schema.DescribeFieldResult.isDeprecatedAndHidden",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isDisplayLocationInDecimal()",
+      "symbol": "Schema.DescribeFieldResult.isDisplayLocationInDecimal",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isExternalID()",
+      "symbol": "Schema.DescribeFieldResult.isExternalId",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isFormulaTreatNullNumberAsZero()",
+      "symbol": "Schema.DescribeFieldResult.isFormulaTreatNullNumberAsZero",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isHighScaleNumber()",
+      "symbol": "Schema.DescribeFieldResult.isHighScaleNumber",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isQueryByDistance()",
+      "symbol": "Schema.DescribeFieldResult.isQueryByDistance",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isRestrictedDelete()",
+      "symbol": "Schema.DescribeFieldResult.isRestrictedDelete",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isSearchPrefilterable()",
+      "symbol": "Schema.DescribeFieldResult.isSearchPrefilterable",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.isWriteRequiresMasterRead()",
+      "symbol": "Schema.DescribeFieldResult.isWriteRequiresMasterRead",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.mask",
+      "symbol": "Schema.DescribeFieldResult.mask",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.masktype",
+      "symbol": "Schema.DescribeFieldResult.maskType",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.querybydistance",
+      "symbol": "Schema.DescribeFieldResult.queryByDistance",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.referencetargetfield",
+      "symbol": "Schema.DescribeFieldResult.referenceTargetField",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.relationshiporder",
+      "symbol": "Schema.DescribeFieldResult.relationshipOrder",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.restricteddelete",
+      "symbol": "Schema.DescribeFieldResult.restrictedDelete",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.searchprefilterable",
+      "symbol": "Schema.DescribeFieldResult.searchPrefilterable",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeFieldResult.writerequiresmasterread",
+      "symbol": "Schema.DescribeFieldResult.writeRequiresMasterRead",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.associateentitytype",
+      "symbol": "Schema.DescribeSObjectResult.associateEntityType",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.associateparententity",
+      "symbol": "Schema.DescribeSObjectResult.associateParentEntity",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.childrelationships",
+      "symbol": "Schema.DescribeSObjectResult.childRelationships",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.datatranslationenabled",
+      "symbol": "Schema.DescribeSObjectResult.dataTranslationEnabled",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.defaultimplementation",
+      "symbol": "Schema.DescribeSObjectResult.defaultImplementation",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getAssociateEntityType",
+      "symbol": "Schema.DescribeSObjectResult.getAssociateEntityType",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getAssociateEntityType()",
+      "symbol": "Schema.DescribeSObjectResult.getAssociateEntityType",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getAssociateParentEntity()",
+      "symbol": "Schema.DescribeSObjectResult.getAssociateParentEntity",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getDataTranslationEnabled()",
+      "symbol": "Schema.DescribeSObjectResult.getDataTranslationEnabled",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getDefaultImplementation()",
+      "symbol": "Schema.DescribeSObjectResult.getDefaultImplementation",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getHasSubtypes()",
+      "symbol": "Schema.DescribeSObjectResult.getHasSubtypes",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getImplementedBy()",
+      "symbol": "Schema.DescribeSObjectResult.getImplementedBy",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getImplementsInterfaces()",
+      "symbol": "Schema.DescribeSObjectResult.getImplementsInterfaces",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getIsInterface()",
+      "symbol": "Schema.DescribeSObjectResult.getIsInterface",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.getIsSubtype()",
+      "symbol": "Schema.DescribeSObjectResult.getIsSubtype",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.hassubtypes",
+      "symbol": "Schema.DescribeSObjectResult.hasSubtypes",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.implementedby",
+      "symbol": "Schema.DescribeSObjectResult.implementedBy",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.implementsinterfaces",
+      "symbol": "Schema.DescribeSObjectResult.implementsInterfaces",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.isFeedEnabled()",
+      "symbol": "Schema.DescribeSObjectResult.isFeedEnabled",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.isMergeable()",
+      "symbol": "Schema.DescribeSObjectResult.isMergeable",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.isMruEnabled()",
+      "symbol": "Schema.DescribeSObjectResult.isMruEnabled",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.isinterface",
+      "symbol": "Schema.DescribeSObjectResult.isInterface",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.issubtype",
+      "symbol": "Schema.DescribeSObjectResult.isSubtype",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfos",
+      "symbol": "Schema.DescribeSObjectResult.recordTypeInfos",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfosbydevelopername",
+      "symbol": "Schema.DescribeSObjectResult.recordTypeInfosByDeveloperName",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfosbyid",
+      "symbol": "Schema.DescribeSObjectResult.recordTypeInfosById",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfosbyname",
+      "symbol": "Schema.DescribeSObjectResult.recordTypeInfosByName",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.searchable",
+      "symbol": "Schema.DescribeSObjectResult.searchable",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.sobjectdescribeoption",
+      "symbol": "Schema.DescribeSObjectResult.sObjectDescribeOption",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.toString()",
+      "symbol": "Schema.DescribeSObjectResult.toString",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.undeletable",
+      "symbol": "Schema.DescribeSObjectResult.undeletable",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    },
+    {
+      "surfaceId": "apex:Schema.DescribeSObjectResult.updateable",
+      "symbol": "Schema.DescribeSObjectResult.updateable",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the exact Schema describe candidate."
+    }
+  ],
+  "project": {
+    "sourceApiVersion": "64.0",
+    "packageDirectories": [
+      {
+        "path": "force-app",
+        "default": true
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/recordTypes/Business.recordType-meta.xml",
+      "content": "<RecordType><fullName>Business</fullName><label>Business Account</label><active>true</active></RecordType>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/recordTypes/Master.recordType-meta.xml",
+      "content": "<RecordType><fullName>Master</fullName><label>Master</label><active>true</active></RecordType>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/External_Id__c.field-meta.xml",
+      "content": "<CustomField><fullName>External_Id__c</fullName><label>External Id</label><type>Text</type><length>80</length><externalId>true</externalId><unique>true</unique></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Rating.field-meta.xml",
+      "content": "<CustomField><fullName>Rating</fullName><label>Rating</label><type>Picklist</type><valueSet><restricted>true</restricted><valueSetDefinition><value><fullName>Hot</fullName><label>Hot</label></value><value><fullName>Cold</fullName><label>Cold</label></value></valueSetDefinition></valueSet></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/SubRating__c.field-meta.xml",
+      "content": "<CustomField><fullName>SubRating__c</fullName><label>Sub Rating</label><type>Picklist</type><valueSet><controllingField>Rating</controllingField><valueSetDefinition><value><fullName>Hot Sub</fullName><label>Hot Sub</label></value><value><fullName>Cold Sub</fullName><label>Cold Sub</label></value></valueSetDefinition></valueSet></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/Contact.object-meta.xml",
+      "content": "<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/fields/LastName.field-meta.xml",
+      "content": "<CustomField><fullName>LastName</fullName><label>Last Name</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/fields/AccountId.field-meta.xml",
+      "content": "<CustomField><fullName>AccountId</fullName><label>Account</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Account</relationshipName><childRelationshipName>Contacts</childRelationshipName><deleteConstraint>Cascade</deleteConstraint></CustomField>"
+    },
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.DescribeSObjectResult s = Account.SObjectType.getDescribe(); Schema.DescribeFieldResult e = Account.External_Id__c.getDescribe(); Schema.DescribeFieldResult d = Account.SubRating__c.getDescribe(); Schema.DescribeFieldResult r = Contact.AccountId.getDescribe(); System.assertEquals(e.getDataTranslationEnabled(), e.dataTranslationEnabled); System.assertEquals(d.isDependentPicklist(), d.dependentPicklist); System.assertEquals(e.getMask(), e.mask); System.assertEquals(e.getMaskType(), e.maskType); System.assertEquals(e.isAiPredictionField(), e.aiPredictionField); System.assertEquals(r.isCascadeDelete(), r.cascadeDelete); System.assertEquals(e.isDeprecatedAndHidden(), e.deprecatedAndHidden); System.assertEquals(e.isDisplayLocationInDecimal(), e.displayLocationInDecimal); System.assertEquals(e.isExternalId(), e.externalId); System.assertEquals(e.isFormulaTreatNullNumberAsZero(), e.formulaTreatNullNumberAsZero); System.assertEquals(e.isHighScaleNumber(), e.highScaleNumber); System.assertEquals(e.isQueryByDistance(), e.queryByDistance); System.assertEquals(r.isRestrictedDelete(), r.restrictedDelete); System.assertEquals(e.isSearchPrefilterable(), e.searchPrefilterable); System.assertEquals(e.isWriteRequiresMasterRead(), e.writeRequiresMasterRead); System.assertEquals(e.mask, e.getMask()); System.assertEquals(e.maskType, e.getMaskType()); System.assertEquals(e.queryByDistance, e.isQueryByDistance()); System.assertEquals(r.referenceTargetField, r.getReferenceTargetField()); System.assertEquals(r.relationshipOrder, r.getRelationshipOrder()); System.assertEquals(r.restrictedDelete, r.isRestrictedDelete()); System.assertEquals(e.searchPrefilterable, e.isSearchPrefilterable()); System.assertEquals(e.writeRequiresMasterRead, e.isWriteRequiresMasterRead()); System.assertEquals(s.getAssociateEntityType(), s.associateEntityType); System.assertEquals(s.getAssociateParentEntity(), s.associateParentEntity); System.assert(s.toString().length() > 0); System.assertEquals(s.getDataTranslationEnabled(), s.dataTranslationEnabled); System.assertEquals(s.getDefaultImplementation(), s.defaultImplementation); System.assertEquals(s.getHasSubtypes(), s.hasSubtypes); System.assertEquals(s.getImplementedBy(), s.implementedBy); System.assertEquals(s.getImplementsInterfaces(), s.implementsInterfaces); System.assertEquals(s.getIsInterface(), s.isInterface); System.assertEquals(s.getIsSubtype(), s.isSubtype); System.assertEquals(s.isFeedEnabled(), s.feedEnabled); System.assertEquals(s.isMergeable(), s.mergeable); System.assertEquals(s.isMruEnabled(), s.mruEnabled); System.assertEquals(s.getChildRelationships(), s.childRelationships); System.assert(s.recordTypeInfos.size() > 0); System.assert(s.recordTypeInfosByDeveloperName.size() > 0); System.assert(s.recordTypeInfosById.size() > 0); System.assertEquals(s.isSearchable(), s.searchable); System.assertEquals(s.getSObjectDescribeOption(), s.sObjectDescribeOption); System.assert(s.recordTypeInfosByName.size() > 0); System.assertEquals(s.isUndeletable(), s.undeletable); System.assertEquals(s.isUpdateable(), s.updateable);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.DescribeSObjectResult s = Account.SObjectType.getDescribe(); Schema.DescribeFieldResult e = Account.External_Id__c.getDescribe(); Schema.DescribeFieldResult d = Account.SubRating__c.getDescribe(); Schema.DescribeFieldResult r = Contact.AccountId.getDescribe(); System.assertEquals(e.getDataTranslationEnabled(), e.dataTranslationEnabled); System.assertEquals(d.isDependentPicklist(), d.dependentPicklist); System.assertEquals(e.getMask(), e.mask); System.assertEquals(e.getMaskType(), e.maskType); System.assertEquals(e.isAiPredictionField(), e.aiPredictionField); System.assertEquals(r.isCascadeDelete(), r.cascadeDelete); System.assertEquals(e.isDeprecatedAndHidden(), e.deprecatedAndHidden); System.assertEquals(e.isDisplayLocationInDecimal(), e.displayLocationInDecimal); System.assertEquals(e.isExternalId(), e.externalId); System.assertEquals(e.isFormulaTreatNullNumberAsZero(), e.formulaTreatNullNumberAsZero); System.assertEquals(e.isHighScaleNumber(), e.highScaleNumber); System.assertEquals(e.isQueryByDistance(), e.queryByDistance); System.assertEquals(r.isRestrictedDelete(), r.restrictedDelete); System.assertEquals(e.isSearchPrefilterable(), e.searchPrefilterable); System.assertEquals(e.isWriteRequiresMasterRead(), e.writeRequiresMasterRead); System.assertEquals(e.mask, e.getMask()); System.assertEquals(e.maskType, e.getMaskType()); System.assertEquals(e.queryByDistance, e.isQueryByDistance()); System.assertEquals(r.referenceTargetField, r.getReferenceTargetField()); System.assertEquals(r.relationshipOrder, r.getRelationshipOrder()); System.assertEquals(r.restrictedDelete, r.isRestrictedDelete()); System.assertEquals(e.searchPrefilterable, e.isSearchPrefilterable()); System.assertEquals(e.writeRequiresMasterRead, e.isWriteRequiresMasterRead()); System.assertEquals(s.getAssociateEntityType(), s.associateEntityType); System.assertEquals(s.getAssociateParentEntity(), s.associateParentEntity); System.assert(s.toString().length() > 0); System.assertEquals(s.getDataTranslationEnabled(), s.dataTranslationEnabled); System.assertEquals(s.getDefaultImplementation(), s.defaultImplementation); System.assertEquals(s.getHasSubtypes(), s.hasSubtypes); System.assertEquals(s.getImplementedBy(), s.implementedBy); System.assertEquals(s.getImplementsInterfaces(), s.implementsInterfaces); System.assertEquals(s.getIsInterface(), s.isInterface); System.assertEquals(s.getIsSubtype(), s.isSubtype); System.assertEquals(s.isFeedEnabled(), s.feedEnabled); System.assertEquals(s.isMergeable(), s.mergeable); System.assertEquals(s.isMruEnabled(), s.mruEnabled); System.assertEquals(s.getChildRelationships(), s.childRelationships); System.assert(s.recordTypeInfos.size() > 0); System.assert(s.recordTypeInfosByDeveloperName.size() > 0); System.assert(s.recordTypeInfosById.size() > 0); System.assertEquals(s.isSearchable(), s.searchable); System.assertEquals(s.getSObjectDescribeOption(), s.sObjectDescribeOption); System.assert(s.recordTypeInfosByName.size() > 0); System.assertEquals(s.isUndeletable(), s.undeletable); System.assertEquals(s.isUpdateable(), s.updateable);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture asserts deterministic local Schema describe metadata only; it makes no hosted Salesforce parity claim."
+}

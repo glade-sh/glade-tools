@@ -18,28 +18,6 @@
       "kind": "exec"
     },
     {
-      "surfaceId": "apex:System.Limits.getAsyncCalls()",
-      "symbol": "Limits.getAsyncCalls",
-      "kind": "exec"
-    },
-    {
-      "surfaceId": "apex:System.Limits.getAsyncCalls",
-      "symbol": "Limits.getAsyncCalls",
-      "kind": "exec",
-      "notes": "Exact docs-side method identity for the same local async-call limit counter."
-    },
-    {
-      "surfaceId": "apex:System.Limits.getLimitAsyncCalls()",
-      "symbol": "Limits.getLimitAsyncCalls",
-      "kind": "exec"
-    },
-    {
-      "surfaceId": "apex:System.Limits.getLimitAsyncCalls",
-      "symbol": "Limits.getLimitAsyncCalls",
-      "kind": "exec",
-      "notes": "Exact docs-side method identity for the same local async-call limit ceiling."
-    },
-    {
       "surfaceId": "apex:System.Limits.get*",
       "symbol": "Limits.get*",
       "kind": "exec",

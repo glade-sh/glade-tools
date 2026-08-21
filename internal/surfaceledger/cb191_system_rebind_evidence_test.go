@@ -100,6 +100,22 @@ func TestCB191SystemRebindRowsHaveExactDualEvidence(t *testing.T) {
 			}
 		}
 	}
+	addressTransferred := map[string]bool{
+		"apex:System.Address.Address()":       true,
+		"apex:System.Address.city":            true,
+		"apex:System.Address.country":         true,
+		"apex:System.Address.countrycode":     true,
+		"apex:System.Address.geocodeaccuracy": true,
+	}
+	addressRows, err := BuildEvidenceSnapshot([]string{filepath.Join(root, "docs", "fixtures", "core-runtime-value-objects-wave16-runtime.json")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, row := range addressRows {
+		if addressTransferred[row.SurfaceID] {
+			fixtureEvidence = append(fixtureEvidence, row)
+		}
+	}
 	gladeSnapshot := BuildGladeSnapshot()
 	gladeByID := rowsBySurfaceKey(gladeSnapshot)
 	for _, row := range fixtureEvidence {

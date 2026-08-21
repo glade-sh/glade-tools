@@ -14,26 +14,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException()",
-      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException(Exception)",
-      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException(String)",
-      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.InvalidReplayIdException.InvalidReplayIdException(String,Exception)",
-      "symbol": "eventbus.InvalidReplayIdException.InvalidReplayIdException"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:eventbus.InvalidReplayIdException.clone()",
       "symbol": "eventbus.InvalidReplayIdException.clone"
     },
@@ -41,26 +21,6 @@
       "kind": "test",
       "surfaceId": "apex:eventbus.RetryableException",
       "symbol": "eventbus.RetryableException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.RetryableException.RetryableException()",
-      "symbol": "eventbus.RetryableException.RetryableException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.RetryableException.RetryableException(Exception)",
-      "symbol": "eventbus.RetryableException.RetryableException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.RetryableException.RetryableException(String)",
-      "symbol": "eventbus.RetryableException.RetryableException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.RetryableException.RetryableException(String,Exception)",
-      "symbol": "eventbus.RetryableException.RetryableException"
     },
     {
       "kind": "test",
@@ -163,11 +123,11 @@
   },
   "mode": "compile-shape",
   "name": "current-base-eventbus-002-api67",
-  "notes": "Covers the 29 missing rows from current-base-local-runtime-required-eventbus-002 with compile-shape evidence. The bounded runtime probe exposed an existing unsupported call for TriggerContext.setResumeCheckpoint; no product code is changed and this fixture makes no runtime-completeness claim for that method.",
+  "notes": "Covers the 21 retained rows from current-base-local-runtime-required-eventbus-002 with compile-shape evidence. The bounded runtime probe exposed an existing unsupported call for TriggerContext.setResumeCheckpoint; no product code is changed and this fixture makes no runtime-completeness claim for that method.",
   "profile": {
     "laneId": "current-base-local-runtime-required-eventbus-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 29,
+    "selectedRowCount": 21,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "proofObligation": "compile-shape-required",

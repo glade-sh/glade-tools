@@ -32,8 +32,6 @@
     {"surfaceId": "apex:System.Test.setMock(Type,Object)", "symbol": "System.Test.setMock", "kind": "test-class"},
     {"surfaceId": "apex:System.Test.startTest()", "symbol": "System.Test.startTest", "kind": "test-class"},
     {"surfaceId": "apex:System.Test.stopTest()", "symbol": "System.Test.stopTest", "kind": "test-class"},
-    {"surfaceId": "apex:System.Limits.getDmlRows", "symbol": "System.Limits.getDmlRows", "kind": "test-class"},
-    {"surfaceId": "apex:System.Limits.getDmlStatements", "symbol": "System.Limits.getDmlStatements", "kind": "test-class"},
     {"surfaceId": "apex:System.Limits.getQueries()", "symbol": "System.Limits.getQueries", "kind": "test-class"},
     {"surfaceId": "apex:System.Limits.getQueryRows()", "symbol": "System.Limits.getQueryRows", "kind": "test-class"},
     {"surfaceId": "apex:System.Assert.areEqual(Object,Object)", "symbol": "System.Assert.areEqual", "kind": "test-class"}

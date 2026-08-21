@@ -110,6 +110,7 @@ type cb192ComparisonEnvelope struct {
 func TestCB192SystemTestLimitsRowsHaveExactDualEvidence(t *testing.T) {
 	root := filepath.Join("..", "..")
 	fixturePath := filepath.Join(root, "docs", "fixtures", "current-base-cb192-system-test-limits-positive-api67.json")
+	wave16LimitsPath := filepath.Join(root, "docs", "fixtures", "core-runtime-limits-tail-wave16-runtime.json")
 	comparisonPath := filepath.Join(root, "docs", "fixtures", "salesforce-cb192-system-test-limits-comparisons.json")
 
 	var fixtureMeta cb192FixtureEnvelope
@@ -136,6 +137,15 @@ func TestCB192SystemTestLimitsRowsHaveExactDualEvidence(t *testing.T) {
 	fixtureEvidence, err := BuildEvidenceSnapshot([]string{fixturePath})
 	if err != nil {
 		t.Fatal(err)
+	}
+	wave16Evidence, err := BuildEvidenceSnapshot([]string{wave16LimitsPath})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, row := range wave16Evidence {
+		if row.SurfaceID == "apex:System.Limits.getDmlRows" || row.SurfaceID == "apex:System.Limits.getDmlStatements" {
+			fixtureEvidence = append(fixtureEvidence, row)
+		}
 	}
 	if got := cb192ExactSurfaceIDs(fixtureEvidence); !slices.Equal(got, sortedCB192SurfaceIDs()) {
 		t.Fatalf("fixture surface IDs = %#v, want %#v", got, sortedCB192SurfaceIDs())

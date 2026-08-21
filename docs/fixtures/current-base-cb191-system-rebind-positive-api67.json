@@ -98,33 +98,8 @@
     },
     {
       "kind": "exec",
-      "surfaceId": "apex:System.Address.Address()",
-      "symbol": "apex:System.Address.Address()"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.Address.city",
-      "symbol": "apex:System.Address.city"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.Address.country",
-      "symbol": "apex:System.Address.country"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.Address.countrycode",
-      "symbol": "apex:System.Address.countrycode"
-    },
-    {
-      "kind": "exec",
       "surfaceId": "apex:System.Address.equals(Object)",
       "symbol": "apex:System.Address.equals(Object)"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.Address.geocodeaccuracy",
-      "symbol": "apex:System.Address.geocodeaccuracy"
     },
     {
       "kind": "exec",
@@ -150,6 +125,11 @@
       "kind": "exec",
       "surfaceId": "apex:System.Address.getGeocodeAccuracy()",
       "symbol": "apex:System.Address.getGeocodeAccuracy()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Address.hashCode()",
+      "symbol": "apex:System.Address.hashCode()"
     },
     {
       "kind": "exec",
@@ -180,11 +160,6 @@
       "kind": "exec",
       "surfaceId": "apex:System.Address.getStreet()",
       "symbol": "apex:System.Address.getStreet()"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.Address.hashCode()",
-      "symbol": "apex:System.Address.hashCode()"
     },
     {
       "kind": "exec",

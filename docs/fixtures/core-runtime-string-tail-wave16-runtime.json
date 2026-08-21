@@ -1,0 +1,57 @@
+{
+  "name": "core-runtime-string-tail-wave16-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.String.codePointAt",
+      "symbol": "String.codePointAt",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the non-BMP code point at a UTF-16 index."
+    },
+    {
+      "surfaceId": "apex:System.String.equals(Object)",
+      "symbol": "String.equals",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts both equal and unequal String values."
+    },
+    {
+      "surfaceId": "apex:System.String.getChars",
+      "symbol": "String.getChars",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the UTF-16 code units returned by getChars."
+    },
+    {
+      "surfaceId": "apex:System.String.split",
+      "symbol": "String.split",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts split cardinality and a nondefault element."
+    },
+    {
+      "surfaceId": "apex:System.String.toString()",
+      "symbol": "String.toString",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts the String toString value."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "String unicode = String.fromCharArray(new List<Integer>{55357, 56832}); System.assertEquals(128512, unicode.codePointAt(0)); List<Integer> chars = unicode.getChars(); System.assertEquals(2, chars.size()); System.assertEquals(55357, chars[0]); System.assertEquals(56832, chars[1]); System.assertEquals(true, 'abc'.equals('abc')); System.assertEquals(false, 'abc'.equals('abd')); System.assertEquals('abc', 'abc'.toString()); List<String> parts = 'a,b'.split(','); System.assertEquals(2, parts.size()); System.assertEquals('b', parts[1]);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "String unicode = String.fromCharArray(new List<Integer>{55357, 56832}); System.assertEquals(128512, unicode.codePointAt(0)); List<Integer> chars = unicode.getChars(); System.assertEquals(2, chars.size()); System.assertEquals(55357, chars[0]); System.assertEquals(56832, chars[1]); System.assertEquals(true, 'abc'.equals('abc')); System.assertEquals(false, 'abc'.equals('abd')); System.assertEquals('abc', 'abc'.toString()); List<String> parts = 'a,b'.split(','); System.assertEquals(2, parts.size()); System.assertEquals('b', parts[1]);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture directly executes locally supported String tail methods and is not a Salesforce compile/probe oracle."
+}
