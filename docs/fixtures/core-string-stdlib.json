@@ -92,6 +92,7 @@
       "kind": "exec"
     },
     {
+      "surfaceId": "apex:System.String.remove(String)",
       "symbol": "String.remove",
       "kind": "exec"
     },
