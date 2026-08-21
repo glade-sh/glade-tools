@@ -499,6 +499,29 @@ System.assertEquals(2, groups[0].getCategoryCount());
 	}
 }
 
+func TestRunExecFixtureLoadsProjectMetadata(t *testing.T) {
+	fixture := Fixture{
+		Name: "exec-project-metadata",
+		Project: ProjectConfig{
+			SourceAPIVersion:   "64.0",
+			PackageDirectories: []PackageDirectory{{Path: "force-app", Default: true}},
+		},
+		Source: []SourceFile{{
+			Path:    "force-app/main/default/objects/Account/fieldSets/Summary.fieldSet-meta.xml",
+			Content: `<FieldSet xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>Summary</fullName><label>Summary Fields</label><displayedFields><field>Name</field><isRequired>true</isRequired></displayedFields></FieldSet>`,
+		}},
+		Command:  Invocation{Kind: "exec", Args: []string{`System.assertEquals('Summary Fields', Account.SObjectType.getDescribe().fieldSets.get('Summary').getLabel());`}},
+		Expected: ExpectedBehavior{Result: json.RawMessage(`{"debug":null,"ok":true}`)},
+	}
+	result, err := Run(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.OK {
+		t.Fatalf("result = %#v", result)
+	}
+}
+
 func TestRunExecFixtureWithLimitMode(t *testing.T) {
 	fixture := Fixture{
 		Name:    "exec-strict-smoke",

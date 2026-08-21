@@ -1,0 +1,42 @@
+{
+  "name": "core-runtime-messaging-single-email-accessors-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "This anonymous exec uses synthetic org-wide address, target, template, and WhatId values plus local-only configuration; it proves accessor field behavior locally and never sends email.",
+  "evidence": [
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.bccaddresses","symbol":"msg.bccAddresses","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.ccaddresses","symbol":"msg.ccAddresses","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.htmlbody","symbol":"msg.htmlBody","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.inreplyto","symbol":"msg.inReplyTo","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.oneclickpost","symbol":"msg.oneClickPost","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.optoutpolicy","symbol":"msg.optOutPolicy","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.orgwideemailaddressid","symbol":"msg.orgWideEmailAddressId","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.plaintextbody","symbol":"msg.plainTextBody","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.targetobjectid","symbol":"msg.targetObjectId","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.templateid","symbol":"msg.templateId","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.toaddresses","symbol":"msg.toAddresses","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.treatbodiesastemplate","symbol":"msg.treatBodiesAsTemplate","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.treattargetobjectasrecipient","symbol":"msg.treatTargetObjectAsRecipient","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.unsubscribecomment","symbol":"msg.unsubscribeComment","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.unsubscribeurls","symbol":"msg.unsubscribeUrls","kind":"exec"},
+    {"surfaceId":"apex:Messaging.SingleEmailMessage.whatid","symbol":"msg.whatId","kind":"exec"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage(); msg.bccAddresses = new List<String>{'bcc-runtime@example.test'}; msg.ccAddresses = new List<String>{'cc-runtime@example.test'}; msg.htmlBody = '<p>Runtime body</p>'; msg.inReplyTo = '<runtime-child@example.test>'; msg.oneClickPost = true; msg.optOutPolicy = 'FILTER'; msg.orgWideEmailAddressId = (Id)'0D2000000000001'; msg.plainTextBody = 'Runtime plain body'; msg.targetObjectId = (Id)'003000000000001'; msg.templateId = (Id)'00X000000000001'; msg.toAddresses = new List<String>{'to-runtime@example.test'}; msg.treatBodiesAsTemplate = true; msg.treatTargetObjectAsRecipient = true; msg.unsubscribeComment = 'Runtime unsubscribe comment'; msg.unsubscribeUrls = new List<String>{'https://runtime.example.test/unsubscribe'}; msg.whatId = (Id)'001000000000001'; System.assertEquals('bcc-runtime@example.test', msg.bccAddresses[0]); System.assertEquals('cc-runtime@example.test', msg.ccAddresses[0]); System.assertEquals('<p>Runtime body</p>', msg.htmlBody); System.assertEquals('<runtime-child@example.test>', msg.inReplyTo); System.assertEquals(true, msg.oneClickPost); System.assertEquals('FILTER', msg.optOutPolicy); System.assertEquals((Id)'0D2000000000001', msg.orgWideEmailAddressId); System.assertEquals('Runtime plain body', msg.plainTextBody); System.assertEquals((Id)'003000000000001', msg.targetObjectId); System.assertEquals((Id)'00X000000000001', msg.templateId); System.assertEquals('to-runtime@example.test', msg.toAddresses[0]); System.assertEquals(true, msg.treatBodiesAsTemplate); System.assertEquals(true, msg.treatTargetObjectAsRecipient); System.assertEquals('Runtime unsubscribe comment', msg.unsubscribeComment); System.assertEquals('https://runtime.example.test/unsubscribe', msg.unsubscribeUrls[0]); System.assertEquals((Id)'001000000000001', msg.whatId);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage(); msg.bccAddresses = new List<String>{'bcc-runtime@example.test'}; msg.ccAddresses = new List<String>{'cc-runtime@example.test'}; msg.htmlBody = '<p>Runtime body</p>'; msg.inReplyTo = '<runtime-child@example.test>'; msg.oneClickPost = true; msg.optOutPolicy = 'FILTER'; msg.orgWideEmailAddressId = (Id)'0D2000000000001'; msg.plainTextBody = 'Runtime plain body'; msg.targetObjectId = (Id)'003000000000001'; msg.templateId = (Id)'00X000000000001'; msg.toAddresses = new List<String>{'to-runtime@example.test'}; msg.treatBodiesAsTemplate = true; msg.treatTargetObjectAsRecipient = true; msg.unsubscribeComment = 'Runtime unsubscribe comment'; msg.unsubscribeUrls = new List<String>{'https://runtime.example.test/unsubscribe'}; msg.whatId = (Id)'001000000000001'; System.assertEquals('bcc-runtime@example.test', msg.bccAddresses[0]); System.assertEquals('cc-runtime@example.test', msg.ccAddresses[0]); System.assertEquals('<p>Runtime body</p>', msg.htmlBody); System.assertEquals('<runtime-child@example.test>', msg.inReplyTo); System.assertEquals(true, msg.oneClickPost); System.assertEquals('FILTER', msg.optOutPolicy); System.assertEquals((Id)'0D2000000000001', msg.orgWideEmailAddressId); System.assertEquals('Runtime plain body', msg.plainTextBody); System.assertEquals((Id)'003000000000001', msg.targetObjectId); System.assertEquals((Id)'00X000000000001', msg.templateId); System.assertEquals('to-runtime@example.test', msg.toAddresses[0]); System.assertEquals(true, msg.treatBodiesAsTemplate); System.assertEquals(true, msg.treatTargetObjectAsRecipient); System.assertEquals('Runtime unsubscribe comment', msg.unsubscribeComment); System.assertEquals('https://runtime.example.test/unsubscribe', msg.unsubscribeUrls[0]); System.assertEquals((Id)'001000000000001', msg.whatId);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

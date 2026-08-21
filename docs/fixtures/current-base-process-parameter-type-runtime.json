@@ -1,0 +1,38 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Process.ParameterType booleanType = Process.ParameterType.BOOLEAN; Process.ParameterType dateType = Process.ParameterType.DATE; Process.ParameterType datetimeType = Process.ParameterType.DATETIME; Process.ParameterType decimalType = Process.ParameterType.DECIMAL; Process.ParameterType doubleType = Process.ParameterType.DOUBLE; Process.ParameterType floatType = Process.ParameterType.FLOAT; Process.ParameterType integerType = Process.ParameterType.INTEGER; Process.ParameterType longType = Process.ParameterType.LONG; Process.ParameterType timeType = Process.ParameterType.TIME; List<Process.ParameterType> values = Process.ParameterType.values(); System.assert(values.size() > 0); System.assertEquals(booleanType, Process.ParameterType.valueOf('BOOLEAN')); System.assertEquals(dateType, Process.ParameterType.valueOf('DATE')); System.assertEquals(datetimeType, Process.ParameterType.valueOf('DATETIME')); System.assertEquals(decimalType, Process.ParameterType.valueOf('DECIMAL')); System.assertEquals(doubleType, Process.ParameterType.valueOf('DOUBLE')); System.assertEquals(floatType, Process.ParameterType.valueOf('FLOAT')); System.assertEquals(integerType, Process.ParameterType.valueOf('INTEGER')); System.assertEquals(longType, Process.ParameterType.valueOf('LONG')); System.assertEquals(timeType, Process.ParameterType.valueOf('TIME')); System.assert(booleanType.equals(Process.ParameterType.valueOf('BOOLEAN'))); System.assert(!booleanType.equals(dateType)); System.assert(booleanType.ordinal() >= 0); System.assertNotEquals(null, booleanType.hashCode());"
+    ]
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.BOOLEAN","symbol":"Process.ParameterType.BOOLEAN"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.DATE","symbol":"Process.ParameterType.DATE"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.DATETIME","symbol":"Process.ParameterType.DATETIME"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.DECIMAL","symbol":"Process.ParameterType.DECIMAL"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.DOUBLE","symbol":"Process.ParameterType.DOUBLE"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.FLOAT","symbol":"Process.ParameterType.FLOAT"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.INTEGER","symbol":"Process.ParameterType.INTEGER"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.LONG","symbol":"Process.ParameterType.LONG"},
+    {"kind":"exec","surfaceId":"apex:Process.ParameterType.TIME","symbol":"Process.ParameterType.TIME"}
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-process-parameter-type-runtime",
+  "notes": "Exercises the nine missing Process.ParameterType enum constants through anonymous local execution; enum methods are exercised without expanding evidence ownership.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises deterministic local Process.ParameterType enum behavior only; it makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Process.ParameterType booleanType = Process.ParameterType.BOOLEAN; Process.ParameterType dateType = Process.ParameterType.DATE; Process.ParameterType datetimeType = Process.ParameterType.DATETIME; Process.ParameterType decimalType = Process.ParameterType.DECIMAL; Process.ParameterType doubleType = Process.ParameterType.DOUBLE; Process.ParameterType floatType = Process.ParameterType.FLOAT; Process.ParameterType integerType = Process.ParameterType.INTEGER; Process.ParameterType longType = Process.ParameterType.LONG; Process.ParameterType timeType = Process.ParameterType.TIME; List<Process.ParameterType> values = Process.ParameterType.values(); System.assert(values.size() > 0); System.assertEquals(booleanType, Process.ParameterType.valueOf('BOOLEAN')); System.assertEquals(dateType, Process.ParameterType.valueOf('DATE')); System.assertEquals(datetimeType, Process.ParameterType.valueOf('DATETIME')); System.assertEquals(decimalType, Process.ParameterType.valueOf('DECIMAL')); System.assertEquals(doubleType, Process.ParameterType.valueOf('DOUBLE')); System.assertEquals(floatType, Process.ParameterType.valueOf('FLOAT')); System.assertEquals(integerType, Process.ParameterType.valueOf('INTEGER')); System.assertEquals(longType, Process.ParameterType.valueOf('LONG')); System.assertEquals(timeType, Process.ParameterType.valueOf('TIME')); System.assert(booleanType.equals(Process.ParameterType.valueOf('BOOLEAN'))); System.assert(!booleanType.equals(dateType)); System.assert(booleanType.ordinal() >= 0); System.assertNotEquals(null, booleanType.hashCode());"
+    }
+  ]
+}

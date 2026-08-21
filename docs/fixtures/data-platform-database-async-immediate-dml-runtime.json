@@ -1,0 +1,127 @@
+{
+  "name": "data-platform-database-async-immediate-dml-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Database.insertImmediate",
+      "symbol": "Database.insertImmediate",
+      "kind": "exec",
+      "notes": "Immediate insert family is directly executed through local Account DML."
+    },
+    {
+      "surfaceId": "apex:System.Database.insertImmediate(Object)",
+      "symbol": "Database.insertImmediate",
+      "kind": "exec",
+      "notes": "Single-record immediate insert returns a successful local result and persists the Account."
+    },
+    {
+      "surfaceId": "apex:System.Database.insertImmediate(List<Object>)",
+      "symbol": "Database.insertImmediate",
+      "kind": "exec",
+      "notes": "List immediate insert returns two ordered successful local results and persists both Accounts."
+    },
+    {
+      "surfaceId": "apex:System.Database.updateImmediate",
+      "symbol": "Database.updateImmediate",
+      "kind": "exec",
+      "notes": "Immediate update family is directly executed through local Account DML."
+    },
+    {
+      "surfaceId": "apex:System.Database.updateImmediate(Object)",
+      "symbol": "Database.updateImmediate",
+      "kind": "exec",
+      "notes": "Single-record immediate update returns a successful local result and fresh persisted state."
+    },
+    {
+      "surfaceId": "apex:System.Database.updateImmediate(List<Object>)",
+      "symbol": "Database.updateImmediate",
+      "kind": "exec",
+      "notes": "List immediate update returns two ordered successful local results and fresh persisted state."
+    },
+    {
+      "surfaceId": "apex:System.Database.deleteImmediate",
+      "symbol": "Database.deleteImmediate",
+      "kind": "exec",
+      "notes": "Immediate delete family is directly executed through local Account DML."
+    },
+    {
+      "surfaceId": "apex:System.Database.deleteImmediate(Object)",
+      "symbol": "Database.deleteImmediate",
+      "kind": "exec",
+      "notes": "Single-record immediate delete returns a successful local result and marks the Account deleted."
+    },
+    {
+      "surfaceId": "apex:System.Database.deleteImmediate(List<Object>)",
+      "symbol": "Database.deleteImmediate",
+      "kind": "exec",
+      "notes": "List immediate delete returns two ordered successful local results and marks both Accounts deleted."
+    },
+    {
+      "surfaceId": "apex:System.Database.getAsyncSaveResult",
+      "symbol": "Database.getAsyncSaveResult",
+      "kind": "exec",
+      "notes": "Async save-result lookup family is directly executed against a materialized local result."
+    },
+    {
+      "surfaceId": "apex:System.Database.getAsyncSaveResult(Object)",
+      "symbol": "Database.getAsyncSaveResult",
+      "kind": "exec",
+      "notes": "Object async save-result lookup returns a successful local SaveResult with the inserted Id."
+    },
+    {
+      "surfaceId": "apex:System.Database.getAsyncSaveResult(Database.SaveResult)",
+      "symbol": "Database.getAsyncSaveResult",
+      "kind": "exec",
+      "notes": "Typed Database.SaveResult async lookup returns a successful local SaveResult."
+    },
+    {
+      "surfaceId": "apex:System.Database.getAsyncDeleteResult",
+      "symbol": "Database.getAsyncDeleteResult",
+      "kind": "exec",
+      "notes": "Async delete-result lookup family is directly executed against a materialized local result."
+    },
+    {
+      "surfaceId": "apex:System.Database.getAsyncDeleteResult(Object)",
+      "symbol": "Database.getAsyncDeleteResult",
+      "kind": "exec",
+      "notes": "Object async delete-result lookup returns a successful local DeleteResult."
+    },
+    {
+      "surfaceId": "apex:System.Database.getAsyncDeleteResult(Database.DeleteResult)",
+      "symbol": "Database.getAsyncDeleteResult",
+      "kind": "exec",
+      "notes": "Typed Database.DeleteResult async lookup returns a successful local DeleteResult."
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Account asyncAccount = new Account(Name = 'Async'); Object asyncResult = Database.insertAsync(asyncAccount); Object saved = Database.getAsyncSaveResult(asyncResult); Database.SaveResult savedTyped = Database.getAsyncSaveResult((Database.SaveResult)asyncResult); System.assert(saved.isSuccess()); System.assert(savedTyped.isSuccess()); System.assertEquals(asyncAccount.Id, saved.getId()); Object bareInsert = Database.insertImmediate(new Account(Name = 'Immediate Bare')); System.assert(bareInsert.isSuccess()); Account bareA = new Account(Name = 'Immediate Bare A'); Account bareB = new Account(Name = 'Immediate Bare B'); List<Object> bareInsertList = Database.insertImmediate(new List<Account>{bareA, bareB}); System.assertEquals(2, bareInsertList.size()); System.assert(bareInsertList[0].isSuccess()); System.assert(bareInsertList[1].isSuccess()); Account bareUpdated = new Account(Id = bareInsert.getId(), Name = 'Immediate Bare Updated'); Object bareUpdate = Database.updateImmediate(bareUpdated); System.assert(bareUpdate.isSuccess()); bareA.Name = 'Immediate Bare A Updated'; bareB.Name = 'Immediate Bare B Updated'; List<Object> bareUpdateList = Database.updateImmediate(new List<Account>{bareA, bareB}); System.assertEquals(2, bareUpdateList.size()); System.assert(bareUpdateList[0].isSuccess()); System.assert(bareUpdateList[1].isSuccess()); Account deleteAsyncTarget = new Account(Name = 'Async Delete'); insert deleteAsyncTarget; Object deleteResult = Database.deleteAsync(deleteAsyncTarget); Object deleted = Database.getAsyncDeleteResult(deleteResult); Database.DeleteResult deletedTyped = Database.getAsyncDeleteResult((Database.DeleteResult)deleteResult); System.assert(deleted.isSuccess()); System.assert(deletedTyped.isSuccess()); Object bareDelete = Database.deleteImmediate(new Account(Id = bareInsert.getId())); System.assert(bareDelete.isSuccess()); List<Object> bareDeleteList = Database.deleteImmediate(new List<Account>{new Account(Id = bareA.Id), new Account(Id = bareB.Id)}); System.assertEquals(2, bareDeleteList.size()); System.assert(bareDeleteList[0].isSuccess()); System.assert(bareDeleteList[1].isSuccess()); List<Account> rows = [SELECT Id, Name, IsDeleted FROM Account WHERE Id IN :new Set<Id>{bareInsert.getId(), bareA.Id, bareB.Id, deleteAsyncTarget.Id} ALL ROWS]; System.assertEquals(4, rows.size()); Map<Id, Account> byId = new Map<Id, Account>(rows); System.assertEquals('Immediate Bare Updated', byId.get(bareInsert.getId()).Name); System.assertEquals('Immediate Bare A Updated', byId.get(bareA.Id).Name); System.assertEquals('Immediate Bare B Updated', byId.get(bareB.Id).Name); System.assert(byId.get(bareInsert.getId()).IsDeleted); System.assert(byId.get(bareA.Id).IsDeleted); System.assert(byId.get(bareB.Id).IsDeleted); System.assert(byId.get(deleteAsyncTarget.Id).IsDeleted);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 requires virtual sObjects for Database async/immediate external-object APIs; this fixture intentionally exercises local deterministic aliases on Account.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Account asyncAccount = new Account(Name = 'Async'); Object asyncResult = Database.insertAsync(asyncAccount); Object saved = Database.getAsyncSaveResult(asyncResult); Database.SaveResult savedTyped = Database.getAsyncSaveResult((Database.SaveResult)asyncResult); System.assert(saved.isSuccess()); System.assert(savedTyped.isSuccess()); System.assertEquals(asyncAccount.Id, saved.getId()); Object bareInsert = Database.insertImmediate(new Account(Name = 'Immediate Bare')); System.assert(bareInsert.isSuccess()); Account bareA = new Account(Name = 'Immediate Bare A'); Account bareB = new Account(Name = 'Immediate Bare B'); List<Object> bareInsertList = Database.insertImmediate(new List<Account>{bareA, bareB}); System.assertEquals(2, bareInsertList.size()); System.assert(bareInsertList[0].isSuccess()); System.assert(bareInsertList[1].isSuccess()); Account bareUpdated = new Account(Id = bareInsert.getId(), Name = 'Immediate Bare Updated'); Object bareUpdate = Database.updateImmediate(bareUpdated); System.assert(bareUpdate.isSuccess()); bareA.Name = 'Immediate Bare A Updated'; bareB.Name = 'Immediate Bare B Updated'; List<Object> bareUpdateList = Database.updateImmediate(new List<Account>{bareA, bareB}); System.assertEquals(2, bareUpdateList.size()); System.assert(bareUpdateList[0].isSuccess()); System.assert(bareUpdateList[1].isSuccess()); Account deleteAsyncTarget = new Account(Name = 'Async Delete'); insert deleteAsyncTarget; Object deleteResult = Database.deleteAsync(deleteAsyncTarget); Object deleted = Database.getAsyncDeleteResult(deleteResult); Database.DeleteResult deletedTyped = Database.getAsyncDeleteResult((Database.DeleteResult)deleteResult); System.assert(deleted.isSuccess()); System.assert(deletedTyped.isSuccess()); Object bareDelete = Database.deleteImmediate(new Account(Id = bareInsert.getId())); System.assert(bareDelete.isSuccess()); List<Object> bareDeleteList = Database.deleteImmediate(new List<Account>{new Account(Id = bareA.Id), new Account(Id = bareB.Id)}); System.assertEquals(2, bareDeleteList.size()); System.assert(bareDeleteList[0].isSuccess()); System.assert(bareDeleteList[1].isSuccess()); List<Account> rows = [SELECT Id, Name, IsDeleted FROM Account WHERE Id IN :new Set<Id>{bareInsert.getId(), bareA.Id, bareB.Id, deleteAsyncTarget.Id} ALL ROWS]; System.assertEquals(4, rows.size()); Map<Id, Account> byId = new Map<Id, Account>(rows); System.assertEquals('Immediate Bare Updated', byId.get(bareInsert.getId()).Name); System.assertEquals('Immediate Bare A Updated', byId.get(bareA.Id).Name); System.assertEquals('Immediate Bare B Updated', byId.get(bareB.Id).Name); System.assert(byId.get(bareInsert.getId()).IsDeleted); System.assert(byId.get(bareA.Id).IsDeleted); System.assert(byId.get(bareB.Id).IsDeleted); System.assert(byId.get(deleteAsyncTarget.Id).IsDeleted);"
+    }
+  ]
+}
