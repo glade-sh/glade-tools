@@ -143,7 +143,8 @@ func Validate(fixture Fixture) error {
 		return fmt.Errorf("fixture %q: command.kind is required", fixture.Name)
 	}
 	if len(fixture.Source) == 0 && len(fixture.Schema) == 0 && metadataRegistryEmpty(fixture.Metadata) && len(fixture.SeedData) == 0 && len(fixture.ServerRequests) == 0 {
-		if !policyEvidenceOnlyFixture(fixture) {
+		anonymousExec := fixture.Command.Kind == "exec" && len(fixture.Command.Args) > 0 && strings.TrimSpace(fixture.Command.Args[0]) != ""
+		if !anonymousExec && !policyEvidenceOnlyFixture(fixture) {
 			return fmt.Errorf("fixture %q: at least one source, schema, seed data, or server request entry is required", fixture.Name)
 		}
 	}

@@ -200,7 +200,7 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 			continue
 		}
 		entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, SHA256: replayBytesSHA256(data), Operation: fixture.Command.Kind, SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
-		owned := make(map[string]bool)
+		ownedByDisposition := make(map[string]map[string]bool)
 		for surfaceID, disposition := range required {
 			if !localProofCommandMatchesDisposition(disposition, fixture.Command.Kind, surfaceID) || !fixtureOwnsSurface(fixture, surfaceID) {
 				continue
@@ -208,8 +208,16 @@ func discoverLocalProofFixtures(root string, required map[string]string) ([]loca
 			if !localProofEvidenceKindMatches(disposition, fixture.Command.Kind, fixtureEvidenceKind(fixture, surfaceID)) {
 				continue
 			}
-			entry.Disposition = disposition
-			owned[surfaceID] = true
+			if ownedByDisposition[disposition] == nil {
+				ownedByDisposition[disposition] = make(map[string]bool)
+			}
+			ownedByDisposition[disposition][surfaceID] = true
+		}
+		owned := map[string]bool{}
+		for disposition, surfaces := range ownedByDisposition {
+			if len(surfaces) > len(owned) || (len(surfaces) == len(owned) && disposition < entry.Disposition) {
+				entry.Disposition, owned = disposition, surfaces
+			}
 		}
 		if len(owned) == 0 {
 			continue

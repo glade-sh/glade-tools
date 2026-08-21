@@ -147,6 +147,34 @@ func TestLocalProofRejectsDeclarationOnlyRuntimeExecution(t *testing.T) {
 	}
 }
 
+func TestLocalProofAcceptsAnonymousDeterministicWitness(t *testing.T) {
+	entry := LocalProofFixture{ID: "anonymous", Name: "anonymous", Path: filepath.Join(t.TempDir(), "fixture.json"), OwnedSurfaceIDs: []string{"apex:Metadata.StatusCode.INTERNAL_ERROR"}, Disposition: deterministicMockRequired, Operation: "exec"}
+	fixture := compat.Fixture{
+		Name:     entry.Name,
+		Command:  compat.Invocation{Kind: "exec", Args: []string{"System.assertNotEquals(null, Metadata.StatusCode.INTERNAL_ERROR);"}},
+		Evidence: []compat.FixtureEvidence{{SurfaceID: "apex:Metadata.StatusCode.INTERNAL_ERROR", Kind: "exec", Symbol: "Metadata.StatusCode.INTERNAL_ERROR"}},
+	}
+	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+		t.Fatalf("anonymous deterministic witness was rejected: %v", err)
+	}
+}
+
+func TestDiscoverLocalProofFixturesDoesNotMixDispositions(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "mixed.json")
+	data := `{"name":"mixed","evidence":[{"surfaceId":"apex:Runtime.one()","symbol":"Runtime.one","kind":"exec"},{"surfaceId":"apex:Mock.one()","symbol":"Mock.one","kind":"exec"},{"surfaceId":"apex:Mock.two()","symbol":"Mock.two","kind":"exec"}],"command":{"kind":"exec","args":["Runtime.one(); Mock.one(); Mock.two();"]},"salesforceEligible":false,"salesforceExclusionClass":"policy-local-only","salesforceExclusionReason":"test"}`
+	if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	candidates, err := discoverLocalProofFixtures(root, map[string]string{"apex:Runtime.one()": localRuntimeRequired, "apex:Mock.one()": deterministicMockRequired, "apex:Mock.two()": deterministicMockRequired})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(candidates) != 1 || candidates[0].entry.Disposition != deterministicMockRequired || !reflect.DeepEqual(candidates[0].entry.OwnedSurfaceIDs, []string{"apex:Mock.one()", "apex:Mock.two()"}) {
+		t.Fatalf("mixed candidate = %#v", candidates)
+	}
+}
+
 func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T) {
 	if !localProofEvidenceKindMatches(localRuntimeRequired, "test", "test") {
 		t.Fatal("local runtime test fixture was rejected")
