@@ -201,7 +201,7 @@ func validateLocalProofFixtureSalesforceMetadata(entry LocalProofFixture, metada
 
 func validateLocalProofSurfaceWitnesses(entry LocalProofFixture, fixture compat.Fixture) error {
 	var source strings.Builder
-	if entry.Disposition == localRuntimeRequired && fixture.Command.Kind == "exec" {
+	if fixture.Command.Kind == "exec" {
 		source.WriteString(strings.Join(fixture.Command.Args, "\n"))
 	} else {
 		for _, file := range append(append([]compat.SourceFile(nil), fixture.Source...), sourceFilesFromSchema(fixture.Schema)...) {

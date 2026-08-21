@@ -343,6 +343,21 @@ func TestValidateRejectsEvidenceOnlyRunnableFixture(t *testing.T) {
 	}
 }
 
+func TestValidateAnonymousExecWithoutProjectFiles(t *testing.T) {
+	fixture := Fixture{
+		Name:    "anonymous-exec",
+		Command: Invocation{Kind: "exec", Args: []string{"System.assert(true);"}},
+		Evidence: []FixtureEvidence{{
+			Symbol:    "System.assert",
+			SurfaceID: "apex:System.assert",
+			Kind:      "exec",
+		}},
+	}
+	if err := Validate(fixture); err != nil {
+		t.Fatalf("anonymous exec fixture was rejected: %v", err)
+	}
+}
+
 func TestRunParseFixture(t *testing.T) {
 	fixture := Fixture{
 		Name:    "parser-smoke",
