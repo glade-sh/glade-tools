@@ -233,9 +233,11 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 		filename string
 		count    int
 		prefixes []string
+		excludes []string
 	}{
-		{"SoapType", "current-base-cb198-schema-soaptype-positive-api67.json", 1308, []string{"apex:Schema.SoapType"}},
-		{"System enums", "current-base-cb191-system-rebind-positive-api67.json", 733, []string{"apex:System.AccessType", "apex:System.JSONToken", "apex:System.LoggingLevel", "apex:System.Quiddity", "apex:System.StatusCode", "apex:System.TriggerOperation", "apex:System.XmlTag"}},
+		{"SoapType", "current-base-cb198-schema-soaptype-positive-api67.json", 1308, []string{"apex:Schema.SoapType"}, nil},
+		{"System enums", "current-base-cb191-system-rebind-positive-api67.json", 733, []string{"apex:System.AccessType", "apex:System.JSONToken", "apex:System.LoggingLevel", "apex:System.Quiddity", "apex:System.StatusCode", "apex:System.TriggerOperation", "apex:System.XmlTag"}, nil},
+		{"UserInfo accessors", "current-base-cb191-system-rebind-positive-api67.json", 35, []string{"apex:System.UserInfo"}, []string{"UserInfo()", "clone()", "hasPackageLicense", "isCurrentUserLicensed"}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			path := filepath.Join(root, test.filename)
@@ -255,6 +257,13 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 			for _, evidence := range fixture.Evidence {
 				for _, prefix := range test.prefixes {
 					if strings.HasPrefix(evidence.SurfaceID, prefix) {
+						excluded := false
+						for _, fragment := range test.excludes {
+							excluded = excluded || strings.Contains(evidence.SurfaceID, fragment)
+						}
+						if excluded {
+							break
+						}
 						required[evidence.SurfaceID] = localRuntimeRequired
 						owned = append(owned, evidence.SurfaceID)
 						break
