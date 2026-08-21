@@ -313,6 +313,9 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-schema-describe-dependent-picklists.json", 4},
 		{"core-runtime-sobject-clone-source.json", 2},
 		{"core-runtime-businesshours-license-local-evidence.json", 7},
+		{"core-type-exception-url-followup.json", 6},
+		{"core-string-entity-edge-stdlib.json", 11},
+		{"core-pattern-quote-stdlib.json", 1},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
