@@ -1,0 +1,18 @@
+{
+  "name": "ui-apexpages-current-page-parameters-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves local ApexPages current-page state and does not claim hosted Visualforce execution.",
+  "evidence": [
+    {"surfaceId": "apex:System.ApexPages.currentPage()", "symbol": "ApexPages.currentPage", "kind": "exec", "notes": "Returns the page installed by the local Test.setCurrentPage harness."}
+  ],
+  "source": [{
+    "path": "anonymous.apex",
+    "content": "ApexPages.currentPage().getParameters().put('mode', 'review');\nApexPages.currentPage().getParameters().put('count', '42');\nPageReference current = ApexPages.currentPage();\nSystem.assert(current != null);\nSystem.assertEquals('review', current.getParameters().get('mode'));\nSystem.assertEquals('42', current.getParameters().get('count'));"
+  }],
+  "command": {
+    "kind": "exec",
+    "args": ["ApexPages.currentPage().getParameters().put('mode', 'review');\nApexPages.currentPage().getParameters().put('count', '42');\nPageReference current = ApexPages.currentPage();\nSystem.assert(current != null);\nSystem.assertEquals('review', current.getParameters().get('mode'));\nSystem.assertEquals('42', current.getParameters().get('count'));"
+  ]},
+  "expected": {"result": {"debug": null, "ok": true}}
+}

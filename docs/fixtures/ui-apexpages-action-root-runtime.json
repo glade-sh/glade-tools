@@ -1,0 +1,13 @@
+{
+  "name":"ui-apexpages-action-root-runtime",
+  "evidence":[
+    {"surfaceId":"apex:ApexPages.Action","symbol":"ApexPages.Action","kind":"exec","notes":"Root Action value is constructed with a nondefault Visualforce expression and cloned into an independent runtime value."}
+  ],
+  "command":{"kind":"exec","args":["ApexPages.Action action=new ApexPages.Action('{!rootAction}'); System.assertNotEquals(null,action); ApexPages.Action cloned=(ApexPages.Action)action.clone(); System.assertNotEquals(null,cloned); System.assertEquals('{!rootAction}',action.getExpression()); System.assertEquals(action.getExpression(),cloned.getExpression());"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "mode":"local-runtime",
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture proves only deterministic local ApexPages.Action value and clone behavior and makes zero Salesforce Visualforce parity claim.",
+  "source":[{"path":"anonymous.apex","content":"ApexPages.Action action=new ApexPages.Action('{!rootAction}'); System.assertNotEquals(null,action); ApexPages.Action cloned=(ApexPages.Action)action.clone(); System.assertNotEquals(null,cloned); System.assertEquals('{!rootAction}',action.getExpression()); System.assertEquals(action.getExpression(),cloned.getExpression());"}]
+}
