@@ -398,6 +398,9 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"ui-apexpages-knowledge-article-controller-record-runtime.json", 2},
 		{"ui-apexpages-current-page-parameters-runtime.json", 1},
 		{"ui-apexpages-action-root-runtime.json", 1},
+		{"data-database-unit-of-work-runtime.json", 12},
+		{"core-runtime-date-valueof-depth.json", 1},
+		{"data-database-dmloptions-state-runtime-depth.json", 9},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
