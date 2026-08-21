@@ -18,6 +18,38 @@ The readiness sets are independent: `compile-ready`, `test-ready`,
 `runtime-parity-ready`, and `non-parity`. Local evidence never earns
 runtime-parity credit.
 
+## Shared Dev Hub login
+
+Keep only public `age` recipients and encrypted Salesforce auth URLs in the
+private `$HOME/Dev/glade-proof-auth` Git repository. Each host keeps its own
+mode-0600 private identity at
+`$HOME/.config/glade-proof-auth/identity.txt`. Never copy identities, passwords,
+CSV credential exports, or plaintext auth URLs into Git, SMB storage, logs, or
+evidence roots.
+
+Initialize each host once:
+
+```bash
+scripts/corpus-assurance/dev-hub-auth.sh init-host \
+  --identity "$HOME/.config/glade-proof-auth/identity.txt"
+```
+
+Add the printed public recipients to `recipients.txt`. With
+`glade-dev-hub` connected on the Mac, Matt's only credential command is:
+
+```bash
+scripts/corpus-assurance/dev-hub-auth.sh put \
+  --store "$HOME/Dev/glade-proof-auth" \
+  --alias glade-dev-hub \
+  --source-alias glade-dev-hub \
+  --sf-bin /usr/local/bin/sf
+```
+
+Workers authenticate noninteractively with `login` and confirm the live alias
+with `verify`. Back up only an encrypted Git bundle at
+`/Volumes/Photos/glade-bak/glade-proof-auth.bundle`; the bundle must not
+contain a host identity.
+
 ## Canonical attempt layout
 
 ```text
