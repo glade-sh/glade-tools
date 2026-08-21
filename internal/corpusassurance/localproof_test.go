@@ -323,6 +323,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"integration-pagereference-accessors-runtime.json", 3},
 		{"core-http-types-runtime.json", 2},
 		{"core-dml-exception-accessors-runtime.json", 8},
+		{"core-database-upsert-mode-runtime.json", 8},
 		{"core-pattern-matcher-stdlib.json", 25},
 		{"integration-rest-context-stdlib.json", 23},
 		{"async-batchable-impl-and-chunk-iterator.json", 6},
