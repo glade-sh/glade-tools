@@ -132,10 +132,6 @@
     },
     {
       "kind": "exec",
-      "symbol": "List.sort"
-    },
-    {
-      "kind": "exec",
       "surfaceId": "apex:System.Set.clear()",
       "symbol": "Set.clear"
     },
@@ -182,60 +178,15 @@
     },
     {
       "kind": "exec",
-      "symbol": "Map.deepClone"
-    },
-    {
-      "kind": "exec",
-      "symbol": "List.copyConstructor"
-    },
-    {
-      "kind": "exec",
-      "symbol": "Set.copyConstructor"
-    },
-    {
-      "kind": "exec",
-      "symbol": "Map.copyConstructor"
-    },
-    {
-      "kind": "exec",
-      "symbol": "Map.toString"
-    },
-    {
-      "kind": "exec",
       "notes": "Null element membership covered.",
       "surfaceId": "apex:System.List.contains(Object)",
       "symbol": "List.contains"
     },
     {
       "kind": "exec",
-      "notes": "Null element search covered.",
-      "symbol": "List.indexOf"
-    },
-    {
-      "kind": "exec",
       "notes": "Null element membership covered.",
       "surfaceId": "apex:System.Set.contains(Object)",
       "symbol": "Set.contains"
-    },
-    {
-      "kind": "exec",
-      "notes": "Null element removal covered.",
-      "symbol": "Set.remove"
-    },
-    {
-      "kind": "exec",
-      "notes": "Null key membership covered.",
-      "symbol": "Map.containsKey"
-    },
-    {
-      "kind": "exec",
-      "notes": "Null key view covered.",
-      "symbol": "Map.keySet"
-    },
-    {
-      "kind": "exec",
-      "notes": "Map<Id,SObject> constructor from List<SObject> covered.",
-      "symbol": "Map.copyConstructor"
     },
     {
       "kind": "exec",
