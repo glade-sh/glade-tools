@@ -191,49 +191,62 @@ func TestDiscoverLocalProofFixturesKeepsIndependentlyWitnessedSurfaces(t *testin
 	}
 }
 
-func TestSoapTypeFixtureIsFullyCandidateRunnable(t *testing.T) {
+func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(root, "current-base-cb198-schema-soaptype-positive-api67.json")
-	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := compat.Validate(fixture); err != nil {
-		t.Fatal(err)
-	}
-	required := make(map[string]string, len(fixture.Evidence))
-	owned := make([]string, 0, len(fixture.Evidence))
-	for _, evidence := range fixture.Evidence {
-		required[evidence.SurfaceID] = localRuntimeRequired
-		owned = append(owned, evidence.SurfaceID)
-	}
-	entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, OwnedSurfaceIDs: owned, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
-	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
-		t.Fatalf("SoapType identity: %v", err)
-	}
-	if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
-		t.Fatalf("SoapType metadata: %v", err)
-	}
-	candidates, err := discoverLocalProofFixtures(root, required)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, candidate := range candidates {
-		if candidate.entry.ID == fixture.Name {
-			if len(candidate.entry.OwnedSurfaceIDs) != 1308 || candidate.entry.SalesforceEligible == nil || !*candidate.entry.SalesforceEligible {
-				t.Fatalf("SoapType candidate = %#v", candidate.entry)
+	for _, test := range []struct {
+		name     string
+		filename string
+		count    int
+	}{
+		{"SoapType", "current-base-cb198-schema-soaptype-positive-api67.json", 1308},
+		{"StatusCode", "current-base-cb191-system-rebind-positive-api67.json", 628},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			path := filepath.Join(root, test.filename)
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
 			}
-			return
-		}
+			fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := compat.Validate(fixture); err != nil {
+				t.Fatal(err)
+			}
+			required := make(map[string]string, len(fixture.Evidence))
+			owned := make([]string, 0, len(fixture.Evidence))
+			for _, evidence := range fixture.Evidence {
+				if strings.HasPrefix(evidence.SurfaceID, "apex:System.StatusCode") || test.name == "SoapType" {
+					required[evidence.SurfaceID] = localRuntimeRequired
+					owned = append(owned, evidence.SurfaceID)
+				}
+			}
+			entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, OwnedSurfaceIDs: owned, Disposition: localRuntimeRequired, Operation: "exec", SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
+			if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+				t.Fatalf("identity: %v", err)
+			}
+			if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
+				t.Fatalf("metadata: %v", err)
+			}
+			candidates, err := discoverLocalProofFixtures(root, required)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, candidate := range candidates {
+				if candidate.entry.ID == fixture.Name {
+					if len(candidate.entry.OwnedSurfaceIDs) != test.count || candidate.entry.SalesforceEligible == nil || !*candidate.entry.SalesforceEligible {
+						t.Fatalf("candidate = %#v", candidate.entry)
+					}
+					return
+				}
+			}
+			t.Fatal("fixture is not candidate-runnable")
+		})
 	}
-	t.Fatal("SoapType fixture is not candidate-runnable")
 }
 
 func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T) {
