@@ -1,0 +1,21 @@
+{
+  "name":"data-database-cursor-object-runtime-depth",
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"Cursor clone and fetch state are exercised against deterministic local Account rows; this fixture makes no hosted Salesforce parity claim.",
+  "evidence":[
+    {"surfaceId":"apex:Database.Cursor","symbol":"Database.Cursor","kind":"exec","notes":"Typed cursor holds a query over three persisted Account rows."},
+    {"surfaceId":"apex:Database.Cursor.clone()","symbol":"Database.Cursor.clone","kind":"exec","notes":"Cloned cursor retains nondefault persisted row count and can fetch independently."},
+    {"surfaceId":"apex:Database.Cursor.fetch(Integer,Integer)","symbol":"Database.Cursor.fetch","kind":"exec","notes":"Cursor fetch with a nonzero row window returns persisted Account rows with expected names."},
+    {"surfaceId":"apex:Database.Cursor.getNumRecords()","symbol":"Database.Cursor.getNumRecords","kind":"exec","notes":"Cursor reports exact persisted result size before and after cloning."}
+  ],
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
+  ],
+  "source":[
+    {"path":"anonymous.apex","content":"insert new List<Account>{new Account(Name = 'Cursor A'), new Account(Name = 'Cursor B'), new Account(Name = 'Cursor C')}; Database.Cursor cursor = Database.getCursor('SELECT Id, Name FROM Account ORDER BY Name'); System.assertEquals(3, cursor.getNumRecords()); List<SObject> first = cursor.fetch(0, 2); System.assertEquals(2, first.size()); System.assertEquals('Cursor A', ((Account)first[0]).Name); System.assertEquals('Cursor B', ((Account)first[1]).Name); Database.Cursor copied = (Database.Cursor)cursor.clone(); System.assertEquals(3, copied.getNumRecords()); List<SObject> copiedRows = copied.fetch(1, 1); System.assertEquals(1, copiedRows.size()); System.assertEquals('Cursor B', ((Account)copiedRows[0]).Name); System.assertEquals(3, [SELECT COUNT() FROM Account WHERE Name LIKE 'Cursor %']);"}
+  ],
+  "command":{"kind":"exec","args":["insert new List<Account>{new Account(Name = 'Cursor A'), new Account(Name = 'Cursor B'), new Account(Name = 'Cursor C')}; Database.Cursor cursor = Database.getCursor('SELECT Id, Name FROM Account ORDER BY Name'); System.assertEquals(3, cursor.getNumRecords()); List<SObject> first = cursor.fetch(0, 2); System.assertEquals(2, first.size()); System.assertEquals('Cursor A', ((Account)first[0]).Name); System.assertEquals('Cursor B', ((Account)first[1]).Name); Database.Cursor copied = (Database.Cursor)cursor.clone(); System.assertEquals(3, copied.getNumRecords()); List<SObject> copiedRows = copied.fetch(1, 1); System.assertEquals(1, copiedRows.size()); System.assertEquals('Cursor B', ((Account)copiedRows[0]).Name); System.assertEquals(3, [SELECT COUNT() FROM Account WHERE Name LIKE 'Cursor %']);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

@@ -1,0 +1,19 @@
+{
+  "name":"ui-apexpages-standard-controller-lifecycle-runtime",
+  "evidence":[
+    {"surfaceId":"apex:ApexPages.StandardController.StandardController(Object)","symbol":"ApexPages.StandardController.StandardController(Object)","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.StandardController.getRecord()","symbol":"ApexPages.StandardController.getRecord()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.StandardController.getId()","symbol":"ApexPages.StandardController.getId()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.StandardController.save()","symbol":"ApexPages.StandardController.save()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.StandardController.delete()","symbol":"ApexPages.StandardController.delete()","kind":"exec"}
+  ],
+  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "source":[
+    {"path":"anonymous.apex","content":"Account draft = new Account(Name = 'Lifecycle Draft'); ApexPages.StandardController saveController = new ApexPages.StandardController(draft); System.assertEquals('Lifecycle Draft', ((Account)saveController.getRecord()).Name); System.assertEquals(null, saveController.getId()); PageReference saved = saveController.save(); System.assertNotEquals(null, draft.Id); System.assertEquals(draft.Id, saveController.getId()); System.assertNotEquals(null, saved); Account victim = new Account(Name = 'Lifecycle Victim'); insert victim; ApexPages.StandardController deleteController = new ApexPages.StandardController(victim); System.assertEquals(victim.Id, deleteController.getId()); PageReference deleted = deleteController.delete(); System.assertNotEquals(null, deleted); List<Account> remaining = [SELECT Id FROM Account WHERE Id = :victim.Id]; System.assertEquals(0, remaining.size());"}
+  ],
+  "command":{"kind":"exec","args":["Account draft = new Account(Name = 'Lifecycle Draft'); ApexPages.StandardController saveController = new ApexPages.StandardController(draft); System.assertEquals('Lifecycle Draft', ((Account)saveController.getRecord()).Name); System.assertEquals(null, saveController.getId()); PageReference saved = saveController.save(); System.assertNotEquals(null, draft.Id); System.assertEquals(draft.Id, saveController.getId()); System.assertNotEquals(null, saved); Account victim = new Account(Name = 'Lifecycle Victim'); insert victim; ApexPages.StandardController deleteController = new ApexPages.StandardController(victim); System.assertEquals(victim.Id, deleteController.getId()); PageReference deleted = deleteController.delete(); System.assertNotEquals(null, deleted); List<Account> remaining = [SELECT Id FROM Account WHERE Id = :victim.Id]; System.assertEquals(0, remaining.size());"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"The assertions exercise deterministic local StandardController identity and DML state; this fixture makes no hosted Salesforce parity claim."
+}

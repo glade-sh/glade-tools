@@ -1,0 +1,21 @@
+{
+  "name":"data-schema-sobject-identity-runtime",
+  "evidence":[
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.label","symbol":"Schema.DescribeSObjectResult.label","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.labelplural","symbol":"Schema.DescribeSObjectResult.labelplural","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.localname","symbol":"Schema.DescribeSObjectResult.localname","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.keyprefix","symbol":"Schema.DescribeSObjectResult.keyprefix","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.sobjecttype","symbol":"Schema.DescribeSObjectResult.sobjecttype","kind":"exec"}
+  ],
+  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"org-configuration-required",
+  "salesforceExclusionReason":"This fixture proves local metadata-backed object identity and does not claim hosted org configuration.",
+  "source":[
+    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"},
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"anonymous.apex","content":"Schema.DescribeSObjectResult d = Account.SObjectType.getDescribe(); System.assertEquals('Account', d.label); System.assertEquals('Accounts', d.labelplural); System.assertEquals('Account', d.localname); System.assertEquals('001', d.keyprefix); System.assertEquals(Account.SObjectType, d.sobjecttype);"}
+  ],
+  "command":{"kind":"exec","args":["Schema.DescribeSObjectResult d = Account.SObjectType.getDescribe(); System.assertEquals('Account', d.label); System.assertEquals('Accounts', d.labelplural); System.assertEquals('Account', d.localname); System.assertEquals('001', d.keyprefix); System.assertEquals(Account.SObjectType, d.sobjecttype);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

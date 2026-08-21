@@ -1,0 +1,48 @@
+{
+  "name": "ui-apexpages-knowledge-article-controller-record-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.KnowledgeArticleVersionStandardController(Object)",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController(Object)",
+      "kind": "exec",
+      "notes": "The controller accepts a real Knowledge__kav record with a nondefault Title."
+    },
+    {
+      "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.getRecord()",
+      "symbol": "ApexPages.KnowledgeArticleVersionStandardController.getRecord()",
+      "kind": "exec",
+      "notes": "getRecord returns the same metadata-backed Knowledge__kav record and preserves its Title."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Knowledge__kav article = new Knowledge__kav(Title = 'Local article'); ApexPages.KnowledgeArticleVersionStandardController controller = new ApexPages.KnowledgeArticleVersionStandardController(article); SObject roundTrip = controller.getRecord(); System.assertEquals(article, roundTrip); System.assertEquals('Local article', ((Knowledge__kav)roundTrip).Title);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Knowledge__kav article = new Knowledge__kav(Title = 'Local article'); ApexPages.KnowledgeArticleVersionStandardController controller = new ApexPages.KnowledgeArticleVersionStandardController(article); SObject roundTrip = controller.getRecord(); System.assertEquals(article, roundTrip); System.assertEquals('Local article', ((Knowledge__kav)roundTrip).Title);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "This local fixture proves controller record round-trip against synthetic Knowledge__kav metadata and makes no hosted Knowledge runtime claim.",
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Knowledge__kav/Knowledge__kav.object-meta.xml",
+      "content": "<CustomObject><label>Knowledge Article Version</label><pluralLabel>Knowledge Article Versions</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Knowledge__kav/fields/Title.field-meta.xml",
+      "content": "<CustomField><fullName>Title</fullName><label>Title</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ]
+}
