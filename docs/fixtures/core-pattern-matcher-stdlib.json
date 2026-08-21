@@ -4,7 +4,8 @@
     {
       "symbol": "Pattern.compile",
       "kind": "exec",
-      "notes": "Public Pattern docs; local implementation uses the regexp2-backed Java regex subset."
+      "notes": "Public Pattern docs; local implementation uses the regexp2-backed Java regex subset.",
+      "surfaceId": "apex:System.Pattern.compile"
     },
     {
       "surfaceId": "apex:System.Pattern.matches(String,String)",
@@ -14,7 +15,8 @@
     },
     {
       "symbol": "Pattern.pattern",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Pattern.pattern"
     },
     {
       "surfaceId": "apex:System.Pattern.matcher(String)",
@@ -23,23 +25,28 @@
     },
     {
       "symbol": "Matcher.find",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Matcher.find"
     },
     {
       "symbol": "Matcher.matches",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Matcher.matches"
     },
     {
       "symbol": "Matcher.lookingAt",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Matcher.lookingAt"
     },
     {
       "symbol": "Matcher.group",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Matcher.group"
     },
     {
       "symbol": "Matcher.groupCount",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Matcher.groupCount"
     },
     {
       "surfaceId": "apex:System.Matcher.start()",
@@ -53,11 +60,13 @@
     },
     {
       "symbol": "Matcher.replaceAll",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Matcher.replaceAll"
     },
     {
       "symbol": "Matcher.replaceFirst",
-      "kind": "exec"
+      "kind": "exec",
+      "surfaceId": "apex:System.Matcher.replaceFirst"
     },
     {
       "surfaceId": "apex:System.Pattern.split(String)",
@@ -74,27 +83,32 @@
     {
       "symbol": "Matcher.hasAnchoringBounds",
       "kind": "exec",
-      "notes": "Local bounds flag defaults to true; exact region-anchor interaction remains partial."
+      "notes": "Local bounds flag defaults to true; exact region-anchor interaction remains partial.",
+      "surfaceId": "apex:System.Matcher.hasAnchoringBounds"
     },
     {
       "symbol": "Matcher.hasTransparentBounds",
       "kind": "exec",
-      "notes": "Local bounds flag defaults to false; exact transparent-bound matching remains partial."
+      "notes": "Local bounds flag defaults to false; exact transparent-bound matching remains partial.",
+      "surfaceId": "apex:System.Matcher.hasTransparentBounds"
     },
     {
       "symbol": "Matcher.useAnchoringBounds",
       "kind": "exec",
-      "notes": "Stores local bounds flag; exact region-anchor interaction remains partial."
+      "notes": "Stores local bounds flag; exact region-anchor interaction remains partial.",
+      "surfaceId": "apex:System.Matcher.useAnchoringBounds"
     },
     {
       "symbol": "Matcher.useTransparentBounds",
       "kind": "exec",
-      "notes": "Stores local bounds flag; exact transparent-bound matching remains partial."
+      "notes": "Stores local bounds flag; exact transparent-bound matching remains partial.",
+      "surfaceId": "apex:System.Matcher.useTransparentBounds"
     },
     {
       "symbol": "Matcher.region",
       "kind": "exec",
-      "notes": "Bounds matching to a deterministic local Apex UTF-16 code-unit indexed region."
+      "notes": "Bounds matching to a deterministic local Apex UTF-16 code-unit indexed region.",
+      "surfaceId": "apex:System.Matcher.region"
     },
     {
       "surfaceId": "apex:System.Matcher.regionStart()",
@@ -111,17 +125,20 @@
     {
       "symbol": "Matcher.usePattern",
       "kind": "exec",
-      "notes": "Swaps the Matcher to another compiled local Pattern."
+      "notes": "Swaps the Matcher to another compiled local Pattern.",
+      "surfaceId": "apex:System.Matcher.usePattern"
     },
     {
-      "symbol": "Matcher.appendReplacement",
-      "kind": "unit",
-      "notes": "Explicit unsupported diagnostic covered by unit tests; Java StringBuffer append semantics are not modeled."
+      "surfaceId": "apex:System.Pattern.matches",
+      "symbol": "Pattern.matches",
+      "kind": "exec",
+      "notes": "Whole-input match backed by the regexp2 Java regex subset."
     },
     {
-      "symbol": "Matcher.appendTail",
-      "kind": "unit",
-      "notes": "Explicit unsupported diagnostic covered by unit tests; Java StringBuffer append semantics are not modeled."
+      "surfaceId": "apex:System.Pattern.split",
+      "symbol": "Pattern.split",
+      "kind": "exec",
+      "notes": "regexp2-backed split with default, positive, and negative limit behavior."
     }
   ],
   "source": [
