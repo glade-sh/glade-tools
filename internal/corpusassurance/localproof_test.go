@@ -294,37 +294,44 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 	}
 }
 
-func TestDatetimeFixtureIsFullyCandidateRunnable(t *testing.T) {
+func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(root, "core-datetime-stdlib.json")
-	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	fixture, _, err := decodeLocalProofFixtureWithMetadata(data)
-	if err != nil {
-		t.Fatal(err)
-	}
-	required := make(map[string]string)
-	for _, evidence := range fixture.Evidence {
-		required[evidence.SurfaceID] = localRuntimeRequired
-	}
-	candidates, err := discoverLocalProofFixtures(root, required)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, candidate := range candidates {
-		if candidate.entry.ID == fixture.Name {
-			if len(candidate.entry.OwnedSurfaceIDs) != 45 {
-				t.Fatalf("Datetime candidate owns %d rows", len(candidate.entry.OwnedSurfaceIDs))
+	for _, test := range []struct {
+		filename string
+		count    int
+	}{
+		{"core-datetime-stdlib.json", 45},
+		{"core-collection-stdlib.json", 40},
+		{"core-type-id-url-stdlib.json", 31},
+	} {
+		t.Run(test.filename, func(t *testing.T) {
+			data, err := os.ReadFile(filepath.Join(root, test.filename))
+			if err != nil {
+				t.Fatal(err)
 			}
-			return
-		}
+			fixture, _, err := decodeLocalProofFixtureWithMetadata(data)
+			if err != nil {
+				t.Fatal(err)
+			}
+			required := make(map[string]string)
+			for _, evidence := range fixture.Evidence {
+				required[evidence.SurfaceID] = localRuntimeRequired
+			}
+			candidates, err := discoverLocalProofFixtures(root, required)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, candidate := range candidates {
+				if candidate.entry.ID == fixture.Name && len(candidate.entry.OwnedSurfaceIDs) == test.count {
+					return
+				}
+			}
+			t.Fatalf("fixture is not candidate-runnable for all %d rows", test.count)
+		})
 	}
-	t.Fatal("Datetime fixture is not candidate-runnable")
 }
 
 func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T) {

@@ -34,28 +34,78 @@
     },
     {
       "kind": "exec",
+      "surfaceId": "apex:System.Id.valueOf(String,Boolean)",
       "symbol": "Id.valueOf"
     },
     {
       "kind": "exec",
+      "surfaceId": "apex:System.Id.to15",
       "symbol": "Id.to15"
     },
     {
       "kind": "exec",
-      "symbol": "Object.equals"
+      "surfaceId": "apex:System.Id.to15()",
+      "symbol": "Id.to15"
     },
     {
       "kind": "exec",
-      "symbol": "Object.hashCode"
+      "surfaceId": "apex:System.Id.getSObjectType",
+      "symbol": "Id.getSObjectType"
     },
     {
       "kind": "exec",
-      "symbol": "Object.toString"
+      "surfaceId": "apex:System.Id.getSObjectType()",
+      "symbol": "Id.getSObjectType"
     },
     {
       "kind": "exec",
       "surfaceId": "apex:System.String.hashCode()",
       "symbol": "String.hashCode"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Object.equals",
+      "symbol": "Object.equals"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Object.equals(Object)",
+      "symbol": "Object.equals"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Object.hashCode",
+      "symbol": "Object.hashCode"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Object.hashCode()",
+      "symbol": "Object.hashCode"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Object.toString",
+      "symbol": "Object.toString"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Object.toString()",
+      "symbol": "Object.toString"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.URL.Url(String)",
+      "symbol": "URL.URL(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.URL.Url(Url,String)",
+      "symbol": "URL.URL(URL,String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.URL.getOrgDomainUrl()",
+      "symbol": "URL.getOrgDomainUrl"
     },
     {
       "kind": "exec",
@@ -111,26 +161,6 @@
       "kind": "exec",
       "surfaceId": "apex:System.Type.forName(namespace,name)",
       "symbol": "Type.forName(namespace,name)"
-    },
-    {
-      "kind": "exec",
-      "notes": "Fixture exercises non-null token creation for a common standard prefix; VM unit tests pin local schema describe resolution.",
-      "symbol": "Id.getSObjectType"
-    },
-    {
-      "kind": "exec",
-      "notes": "Fixture covers single-string, protocol/host/file, protocol/host/port/file, and context/spec constructors.",
-      "symbol": "URL"
-    },
-    {
-      "kind": "exec",
-      "notes": "Covers null, blank, and unknown one-argument lookup returning null; null namespace falls back to local lookup.",
-      "symbol": "Type.forName(null/unknown)"
-    },
-    {
-      "kind": "exec",
-      "notes": "Fixture pins local Object behavior for collection value equality, hash, and string form.",
-      "symbol": "Object.equals/hashCode/toString collections"
     }
   ],
   "expected": {
