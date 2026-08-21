@@ -1,0 +1,21 @@
+{
+  "name": "core-decimal-runtime-depth",
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:System.Decimal.abs","symbol":"Decimal.abs"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.divide(Decimal,Integer,RoundingMode)","symbol":"Decimal.divide"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.doubleValue","symbol":"Decimal.doubleValue"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.equals(Object)","symbol":"Decimal.equals"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.hashCode()","symbol":"Decimal.hashCode"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.intValue","symbol":"Decimal.intValue"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.longValue","symbol":"Decimal.longValue"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.pow","symbol":"Decimal.pow"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.round","symbol":"Decimal.round"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.setScale","symbol":"Decimal.setScale"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.toString()","symbol":"Decimal.toString"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.valueOf","symbol":"Decimal.valueOf"},
+    {"kind":"exec","surfaceId":"apex:System.Decimal.valueOf(String)","symbol":"Decimal.valueOf(String)"}
+  ],
+  "source": [{"path":"anonymous.apex","content":"Decimal value = Decimal.valueOf('-12.3456'); System.assertEquals(true, value.equals(value)); System.assertNotEquals(null, value.hashCode()); System.assertEquals('12.3456', value.abs().toString()); System.assertEquals(12, value.abs().intValue()); System.assertEquals(12, value.abs().longValue()); System.assertEquals(-12.3456, value.doubleValue()); System.assertEquals('-12.3456', value.toString()); System.assertEquals(true, value.equals(Decimal.valueOf('-12.3456'))); System.assertEquals(1.25, Decimal.valueOf('5').divide(Decimal.valueOf('4'), 2, RoundingMode.HALF_UP)); System.assertEquals('1.953125', Decimal.valueOf('1.25').pow(3).toString()); System.assertEquals(13, Decimal.valueOf('12.6').round()); System.assertEquals('12.35', Decimal.valueOf('12.3456').setScale(2).toString()); System.assertEquals(42, Decimal.valueOf(42).intValue()); System.assertEquals('42.125', Decimal.valueOf('42.125').toString());"}],
+  "command": {"kind":"exec","args":["Decimal value = Decimal.valueOf('-12.3456'); System.assertEquals(true, value.equals(value)); System.assertNotEquals(null, value.hashCode()); System.assertEquals('12.3456', value.abs().toString()); System.assertEquals(12, value.abs().intValue()); System.assertEquals(12, value.abs().longValue()); System.assertEquals(-12.3456, value.doubleValue()); System.assertEquals('-12.3456', value.toString()); System.assertEquals(true, value.equals(Decimal.valueOf('-12.3456'))); System.assertEquals(1.25, Decimal.valueOf('5').divide(Decimal.valueOf('4'), 2, RoundingMode.HALF_UP)); System.assertEquals('1.953125', Decimal.valueOf('1.25').pow(3).toString()); System.assertEquals(13, Decimal.valueOf('12.6').round()); System.assertEquals('12.35', Decimal.valueOf('12.3456').setScale(2).toString()); System.assertEquals(42, Decimal.valueOf(42).intValue()); System.assertEquals('42.125', Decimal.valueOf('42.125').toString());"]},
+  "expected": {"result":{"debug":null,"ok":true}}
+}
