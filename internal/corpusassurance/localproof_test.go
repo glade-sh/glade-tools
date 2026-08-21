@@ -311,6 +311,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-process-sparkplug-runtime.json", 3},
 		{"core-json-raw-runtime.json", 2},
 		{"core-runtime-dml-options-duplicate-rule-local.json", 3},
+		{"async-finalizer-unsupported.json", 2},
 		{"core-pattern-matcher-stdlib.json", 25},
 		{"integration-rest-context-stdlib.json", 23},
 		{"async-batchable-impl-and-chunk-iterator.json", 6},
