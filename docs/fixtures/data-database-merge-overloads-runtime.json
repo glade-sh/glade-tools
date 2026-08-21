@@ -1,0 +1,117 @@
+{
+  "name": "data-database-merge-overloads-runtime",
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge",
+      "symbol": "Database.merge"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,Id)",
+      "symbol": "Database.merge(Object,Id)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,Id,AccessLevel)",
+      "symbol": "Database.merge(Object,Id,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,Id,Boolean)",
+      "symbol": "Database.merge(Object,Id,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Id>)",
+      "symbol": "Database.merge(Object,List<Id>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Id>,AccessLevel)",
+      "symbol": "Database.merge(Object,List<Id>,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Id>,Boolean)",
+      "symbol": "Database.merge(Object,List<Id>,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Id>,Boolean,AccessLevel)",
+      "symbol": "Database.merge(Object,List<Id>,Boolean,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Object>)",
+      "symbol": "Database.merge(Object,List<Object>)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Object>,AccessLevel)",
+      "symbol": "Database.merge(Object,List<Object>,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Object>,Boolean)",
+      "symbol": "Database.merge(Object,List<Object>,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,List<Object>,Boolean,AccessLevel)",
+      "symbol": "Database.merge(Object,List<Object>,Boolean,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,Object)",
+      "symbol": "Database.merge(Object,Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,Object,AccessLevel)",
+      "symbol": "Database.merge(Object,Object,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,Object,Boolean)",
+      "symbol": "Database.merge(Object,Object,Boolean)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.merge(Object,Object,Boolean,AccessLevel)",
+      "symbol": "Database.merge(Object,Object,Boolean,AccessLevel)"
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Account> rows = new List<Account>{new Account(Name='1'),new Account(Name='2'),new Account(Name='3'),new Account(Name='4'),new Account(Name='5'),new Account(Name='6'),new Account(Name='7'),new Account(Name='8'),new Account(Name='9'),new Account(Name='10'),new Account(Name='11'),new Account(Name='12'),new Account(Name='13'),new Account(Name='14'),new Account(Name='15'),new Account(Name='16'),new Account(Name='17'),new Account(Name='18'),new Account(Name='19'),new Account(Name='20'),new Account(Name='21'),new Account(Name='22'),new Account(Name='23'),new Account(Name='24'),new Account(Name='25'),new Account(Name='26'),new Account(Name='27'),new Account(Name='28'),new Account(Name='29'),new Account(Name='30'),new Account(Name='31'),new Account(Name='32')}; insert rows; SObject p1=rows[0]; Id d1=rows[1].Id; Database.MergeResult r1=Database.merge(p1,d1); System.assert(r1.isSuccess()); System.assertEquals(p1.Id,r1.getId()); SObject p2=rows[2]; Id d2=rows[3].Id; Database.MergeResult r2=Database.merge(p2,d2,AccessLevel.SYSTEM_MODE); System.assert(r2.isSuccess()); SObject p3=rows[4]; Id d3=rows[5].Id; Database.MergeResult r3=Database.merge(p3,d3,false); System.assert(r3.isSuccess()); SObject p4=rows[6]; Id d4=rows[7].Id; Database.MergeResult r4=Database.merge(p4,d4,false,AccessLevel.USER_MODE); System.assert(r4.isSuccess()); SObject p5=rows[8]; List<Id> d5=new List<Id>{rows[9].Id}; List<Database.MergeResult> r5=Database.merge(p5,d5); System.assertEquals(1,r5.size()); System.assert(r5[0].isSuccess()); SObject p6=rows[10]; List<Id> d6=new List<Id>{rows[11].Id}; List<Database.MergeResult> r6=Database.merge(p6,d6,AccessLevel.SYSTEM_MODE); System.assertEquals(1,r6.size()); System.assert(r6[0].isSuccess()); SObject p7=rows[12]; List<Id> d7=new List<Id>{rows[13].Id}; List<Database.MergeResult> r7=Database.merge(p7,d7,false); System.assertEquals(1,r7.size()); System.assert(r7[0].isSuccess()); SObject p8=rows[14]; List<Id> d8=new List<Id>{rows[15].Id}; List<Database.MergeResult> r8=Database.merge(p8,d8,false,AccessLevel.USER_MODE); System.assertEquals(1,r8.size()); System.assert(r8[0].isSuccess()); SObject p9=rows[16]; List<SObject> d9=new List<SObject>{rows[17]}; List<Database.MergeResult> r9=Database.merge(p9,d9); System.assertEquals(1,r9.size()); System.assert(r9[0].isSuccess()); SObject p10=rows[18]; List<SObject> d10=new List<SObject>{rows[19]}; List<Database.MergeResult> r10=Database.merge(p10,d10,AccessLevel.SYSTEM_MODE); System.assertEquals(1,r10.size()); System.assert(r10[0].isSuccess()); SObject p11=rows[20]; List<SObject> d11=new List<SObject>{rows[21]}; List<Database.MergeResult> r11=Database.merge(p11,d11,false); System.assertEquals(1,r11.size()); System.assert(r11[0].isSuccess()); SObject p12=rows[22]; List<SObject> d12=new List<SObject>{rows[23]}; List<Database.MergeResult> r12=Database.merge(p12,d12,false,AccessLevel.USER_MODE); System.assertEquals(1,r12.size()); System.assert(r12[0].isSuccess()); SObject p13=rows[24]; SObject d13=rows[25]; Database.MergeResult r13=Database.merge(p13,d13); System.assert(r13.isSuccess()); SObject p14=rows[26]; SObject d14=rows[27]; Database.MergeResult r14=Database.merge(p14,d14,AccessLevel.SYSTEM_MODE); System.assert(r14.isSuccess()); SObject p15=rows[28]; SObject d15=rows[29]; Database.MergeResult r15=Database.merge(p15,d15,false); System.assert(r15.isSuccess()); SObject p16=rows[30]; SObject d16=rows[31]; Database.MergeResult r16=Database.merge(p16,d16,false,AccessLevel.USER_MODE); System.assert(r16.isSuccess());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Database.merge overloads are exercised against the deterministic local DML runtime; this fixture makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "List<Account> rows = new List<Account>{new Account(Name='1'),new Account(Name='2'),new Account(Name='3'),new Account(Name='4'),new Account(Name='5'),new Account(Name='6'),new Account(Name='7'),new Account(Name='8'),new Account(Name='9'),new Account(Name='10'),new Account(Name='11'),new Account(Name='12'),new Account(Name='13'),new Account(Name='14'),new Account(Name='15'),new Account(Name='16'),new Account(Name='17'),new Account(Name='18'),new Account(Name='19'),new Account(Name='20'),new Account(Name='21'),new Account(Name='22'),new Account(Name='23'),new Account(Name='24'),new Account(Name='25'),new Account(Name='26'),new Account(Name='27'),new Account(Name='28'),new Account(Name='29'),new Account(Name='30'),new Account(Name='31'),new Account(Name='32')}; insert rows; SObject p1=rows[0]; Id d1=rows[1].Id; Database.MergeResult r1=Database.merge(p1,d1); System.assert(r1.isSuccess()); System.assertEquals(p1.Id,r1.getId()); SObject p2=rows[2]; Id d2=rows[3].Id; Database.MergeResult r2=Database.merge(p2,d2,AccessLevel.SYSTEM_MODE); System.assert(r2.isSuccess()); SObject p3=rows[4]; Id d3=rows[5].Id; Database.MergeResult r3=Database.merge(p3,d3,false); System.assert(r3.isSuccess()); SObject p4=rows[6]; Id d4=rows[7].Id; Database.MergeResult r4=Database.merge(p4,d4,false,AccessLevel.USER_MODE); System.assert(r4.isSuccess()); SObject p5=rows[8]; List<Id> d5=new List<Id>{rows[9].Id}; List<Database.MergeResult> r5=Database.merge(p5,d5); System.assertEquals(1,r5.size()); System.assert(r5[0].isSuccess()); SObject p6=rows[10]; List<Id> d6=new List<Id>{rows[11].Id}; List<Database.MergeResult> r6=Database.merge(p6,d6,AccessLevel.SYSTEM_MODE); System.assertEquals(1,r6.size()); System.assert(r6[0].isSuccess()); SObject p7=rows[12]; List<Id> d7=new List<Id>{rows[13].Id}; List<Database.MergeResult> r7=Database.merge(p7,d7,false); System.assertEquals(1,r7.size()); System.assert(r7[0].isSuccess()); SObject p8=rows[14]; List<Id> d8=new List<Id>{rows[15].Id}; List<Database.MergeResult> r8=Database.merge(p8,d8,false,AccessLevel.USER_MODE); System.assertEquals(1,r8.size()); System.assert(r8[0].isSuccess()); SObject p9=rows[16]; List<SObject> d9=new List<SObject>{rows[17]}; List<Database.MergeResult> r9=Database.merge(p9,d9); System.assertEquals(1,r9.size()); System.assert(r9[0].isSuccess()); SObject p10=rows[18]; List<SObject> d10=new List<SObject>{rows[19]}; List<Database.MergeResult> r10=Database.merge(p10,d10,AccessLevel.SYSTEM_MODE); System.assertEquals(1,r10.size()); System.assert(r10[0].isSuccess()); SObject p11=rows[20]; List<SObject> d11=new List<SObject>{rows[21]}; List<Database.MergeResult> r11=Database.merge(p11,d11,false); System.assertEquals(1,r11.size()); System.assert(r11[0].isSuccess()); SObject p12=rows[22]; List<SObject> d12=new List<SObject>{rows[23]}; List<Database.MergeResult> r12=Database.merge(p12,d12,false,AccessLevel.USER_MODE); System.assertEquals(1,r12.size()); System.assert(r12[0].isSuccess()); SObject p13=rows[24]; SObject d13=rows[25]; Database.MergeResult r13=Database.merge(p13,d13); System.assert(r13.isSuccess()); SObject p14=rows[26]; SObject d14=rows[27]; Database.MergeResult r14=Database.merge(p14,d14,AccessLevel.SYSTEM_MODE); System.assert(r14.isSuccess()); SObject p15=rows[28]; SObject d15=rows[29]; Database.MergeResult r15=Database.merge(p15,d15,false); System.assert(r15.isSuccess()); SObject p16=rows[30]; SObject d16=rows[31]; Database.MergeResult r16=Database.merge(p16,d16,false,AccessLevel.USER_MODE); System.assert(r16.isSuccess());"
+    }
+  ]
+}
