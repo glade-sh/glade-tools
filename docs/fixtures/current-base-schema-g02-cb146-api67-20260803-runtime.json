@@ -1,0 +1,25 @@
+{
+  "name":"current-base-schema-g02-cb146-api67-20260803-runtime",
+  "apiVersion":"67.0",
+  "mode":"local-runtime",
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture exercises metadata-backed Schema describe locally with synthetic custom fields; it makes no hosted Salesforce parity claim.",
+  "evidence":[
+    {"surfaceId":"apex:Schema.DescribeFieldResult.aipredictionfield","symbol":"Schema.DescribeFieldResult.aiPredictionField","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.cascadedelete","symbol":"Schema.DescribeFieldResult.cascadeDelete","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.displaylocationindecimal","symbol":"Schema.DescribeFieldResult.displayLocationInDecimal","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.formulatreatnullnumberaszero","symbol":"Schema.DescribeFieldResult.formulaTreatNullNumberAsZero","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.highscalenumber","symbol":"Schema.DescribeFieldResult.highScaleNumber","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.htmlformatted","symbol":"Schema.DescribeFieldResult.htmlFormatted","kind":"exec"}
+  ],
+  "project":{"sourceApiVersion":"67.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "source":[
+    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"67.0\"}"},
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/CB146E2_Text__c.field-meta.xml","content":"<CustomField><fullName>CB146E2_Text__c</fullName><label>CB1462 Text</label><inlineHelpText>CB1462 text help</inlineHelpText><type>Text</type><length>80</length></CustomField>"},
+    {"path":"anonymous.apex","content":"Schema.DescribeFieldResult text = Account.CB146E2_Text__c.getDescribe(); System.assertEquals('CB1462 Text', text.label); System.assertEquals(80, text.length); System.assertEquals(true, text.filterable); System.assertEquals(false, text.aiPredictionField); System.assertEquals(false, text.cascadeDelete); System.assertEquals(false, text.displayLocationInDecimal); System.assertEquals(false, text.formulaTreatNullNumberAsZero); System.assertEquals(false, text.highScaleNumber); System.assertEquals(false, text.htmlFormatted);"}
+  ],
+  "command":{"kind":"exec","args":["Schema.DescribeFieldResult text = Account.CB146E2_Text__c.getDescribe(); System.assertEquals('CB1462 Text', text.label); System.assertEquals(80, text.length); System.assertEquals(true, text.filterable); System.assertEquals(false, text.aiPredictionField); System.assertEquals(false, text.cascadeDelete); System.assertEquals(false, text.displayLocationInDecimal); System.assertEquals(false, text.formulaTreatNullNumberAsZero); System.assertEquals(false, text.highScaleNumber); System.assertEquals(false, text.htmlFormatted);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

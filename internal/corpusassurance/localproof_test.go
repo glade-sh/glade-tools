@@ -404,6 +404,12 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-database-result-field-state-runtime.json", 9},
 		{"ui-apexpages-standard-controller-actions-runtime.json", 4},
 		{"data-schema-sobject-field-permissions-runtime.json", 3},
+		{"current-base-cb207-metadata-layout-deterministic-api67-runtime.json", 28},
+		{"current-base-cb208-metadata-layout-deterministic-api67-runtime.json", 25},
+		{"current-base-cb209-metadata-layout-item-section-deterministic-api67-runtime.json", 24},
+		{"current-base-cb210-metadata-feed-deterministic-api67-runtime.json", 40},
+		{"current-base-cb339-system-b03-api67-runtime.json", 39},
+		{"current-base-schema-g02-cb146-api67-20260803-runtime.json", 6},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
