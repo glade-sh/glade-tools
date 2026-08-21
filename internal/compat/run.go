@@ -14,6 +14,7 @@ import (
 	"github.com/glade-sh/glade/internal/apexast"
 	"github.com/glade-sh/glade/internal/apextest"
 	"github.com/glade-sh/glade/internal/project"
+	"github.com/glade-sh/glade/internal/resource"
 	"github.com/glade-sh/glade/internal/schema"
 	"github.com/glade-sh/glade/internal/sema"
 	"github.com/glade-sh/glade/internal/server"
@@ -275,6 +276,10 @@ func orgFromFixture(fixture Fixture) (storage.OrgState, error) {
 	if err != nil {
 		return storage.OrgState{}, err
 	}
+	loadedMetadata, err := resource.LoadProject(proj)
+	if err != nil {
+		return storage.OrgState{}, err
+	}
 	org := storage.NewOrgState()
 	org.APIVersion = proj.SourceAPIVersion
 	org.Namespace = proj.Namespace
@@ -287,6 +292,7 @@ func orgFromFixture(fixture Fixture) (storage.OrgState, error) {
 	}
 	assignFixtureObjectPrefixes(&org)
 	storage.EnsureDeterministicPlatformData(&org)
+	org.Metadata = loadedMetadata
 	if !metadataRegistryEmpty(fixture.Metadata) {
 		org.Metadata = fixture.Metadata
 	}

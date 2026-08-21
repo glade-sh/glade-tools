@@ -410,6 +410,12 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"current-base-cb210-metadata-feed-deterministic-api67-runtime.json", 40},
 		{"current-base-cb339-system-b03-api67-runtime.json", 39},
 		{"current-base-schema-g02-cb146-api67-20260803-runtime.json", 6},
+		{"core-runtime-messaging-single-email-accessors-runtime.json", 16},
+		{"core-system-runtime-evidence-closeout-runtime.json", 29},
+		{"current-base-process-parameter-type-runtime.json", 9},
+		{"current-base-process-plugin-parameter-type-runtime.json", 7},
+		{"data-platform-database-async-immediate-dml-runtime.json", 15},
+		{"data-platform-schema-describe-fieldsets-runtime.json", 28},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))

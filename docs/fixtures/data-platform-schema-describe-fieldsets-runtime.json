@@ -1,0 +1,73 @@
+{
+  "name": "data-platform-schema-describe-fieldsets-runtime",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "project": {
+    "sourceApiVersion": "64.0",
+    "packageDirectories": [
+      {
+        "path": "force-app",
+        "default": true
+      }
+    ]
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises deterministic local field-set metadata and describe runtime behavior only; it makes no hosted Salesforce parity claim.",
+  "evidence": [
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.fieldSets","symbol":"Schema.DescribeSObjectResult.fieldSets","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMap.get(String)","symbol":"fieldSets.get","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMap.getMap()","symbol":"fieldSets.getMap","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.getFields()","symbol":"Schema.FieldSet.getFields","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.getLabel()","symbol":"Schema.FieldSet.getLabel","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.getDescription()","symbol":"Schema.FieldSet.getDescription","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.getName()","symbol":"Schema.FieldSet.getName","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.getSObjectType()","symbol":"Schema.FieldSet.getSObjectType","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.getFieldPath()","symbol":"Schema.FieldSetMember.getFieldPath","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.getLabel()","symbol":"Schema.FieldSetMember.getLabel","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.getRequired()","symbol":"Schema.FieldSetMember.getRequired","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.getDBRequired()","symbol":"Schema.FieldSetMember.getDBRequired","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.getType()","symbol":"Schema.FieldSetMember.getType","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.getSObjectField()","symbol":"Schema.FieldSetMember.getSObjectField","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.description","symbol":"Schema.FieldSet.description","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.fields","symbol":"Schema.FieldSet.fields","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.label","symbol":"Schema.FieldSet.label","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.name","symbol":"Schema.FieldSet.name","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.sobjecttype","symbol":"summary.sObjectType","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.dbrequired","symbol":"ratingMember.dbRequired","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.fieldpath","symbol":"ratingMember.fieldPath","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.label","symbol":"Schema.FieldSetMember.label","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.required","symbol":"Schema.FieldSetMember.required","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.sobjectfield","symbol":"ratingMember.sObjectField","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.type","symbol":"Schema.FieldSetMember.type","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.equals(Object)","symbol":"Schema.FieldSetMember.equals","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.hashCode()","symbol":"Schema.FieldSetMember.hashCode","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMember.toString()","symbol":"Schema.FieldSetMember.toString","kind":"exec"}
+  ],
+  "source": [
+    {
+      "path": "sfdx-project.json",
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fieldSets/Summary.fieldSet-meta.xml",
+      "content": "<FieldSet xmlns=\"http://soap.sforce.com/2006/04/metadata\"><fullName>Summary</fullName><label>Summary Fields</label><description>Fields shown on summary pages.</description><displayedFields><field>Name</field><isRequired>true</isRequired></displayedFields><displayedFields><field>Rating</field><isRequired>false</isRequired></displayedFields></FieldSet>"
+    },
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe(); System.assert(describe.fieldSets != null); Map<String, Schema.FieldSet> mapped = describe.fieldSets.getMap(); System.assert(mapped.containsKey('Summary')); Schema.FieldSet summary = describe.fieldSets.get('Summary'); System.assert(summary != null); System.assertEquals('Summary', summary.getName()); System.assertEquals(summary.getName(), summary.name); System.assertEquals('Summary Fields', summary.getLabel()); System.assertEquals(summary.getLabel(), summary.label); System.assertEquals('Fields shown on summary pages.', summary.getDescription()); System.assertEquals(summary.getDescription(), summary.description); System.assertEquals(Account.SObjectType, summary.getSObjectType()); System.assertEquals(summary.getSObjectType(), summary.sObjectType); List<Schema.FieldSetMember> members = summary.getFields(); System.assertEquals(members.size(), summary.fields.size()); System.assertEquals(2, members.size()); Schema.FieldSetMember nameMember = members.get(0); System.assert(nameMember.equals(nameMember)); System.assert(nameMember.hashCode() != 0); System.assert(nameMember.toString().contains('Name')); System.assertEquals('Name', nameMember.getFieldPath()); System.assertEquals(nameMember.getFieldPath(), nameMember.fieldPath); System.assertEquals('Account Name', nameMember.getLabel()); System.assertEquals(nameMember.getLabel(), nameMember.label); System.assert(nameMember.getRequired()); System.assertEquals(nameMember.getRequired(), nameMember.required); System.assert(nameMember.getDBRequired()); System.assertEquals(nameMember.getDBRequired(), nameMember.dbRequired); System.assertEquals(Schema.DisplayType.STRING, nameMember.getType()); System.assertEquals(nameMember.getType(), nameMember.type); System.assertEquals('Name', nameMember.getSObjectField().getDescribe().getLocalName()); System.assertEquals(nameMember.getSObjectField(), nameMember.sObjectField); Schema.FieldSetMember ratingMember = members.get(1); System.assertEquals('Rating', ratingMember.getFieldPath()); System.assertEquals(ratingMember.getFieldPath(), ratingMember.fieldPath); System.assert(ratingMember.getLabel().endsWith('Rating')); System.assertEquals(ratingMember.getLabel(), ratingMember.label); System.assert(!ratingMember.getRequired()); System.assertEquals(ratingMember.getRequired(), ratingMember.required); System.assert(!ratingMember.getDBRequired()); System.assertEquals(ratingMember.getDBRequired(), ratingMember.dbRequired); System.assertEquals(Schema.DisplayType.PICKLIST, ratingMember.getType()); System.assertEquals(ratingMember.getType(), ratingMember.type); System.assert(ratingMember.getSObjectField().getDescribe().getLocalName().endsWith('Rating')); System.assertEquals(ratingMember.getSObjectField(), ratingMember.sObjectField);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe(); System.assert(describe.fieldSets != null); Map<String, Schema.FieldSet> mapped = describe.fieldSets.getMap(); System.assert(mapped.containsKey('Summary')); Schema.FieldSet summary = describe.fieldSets.get('Summary'); System.assert(summary != null); System.assertEquals('Summary', summary.getName()); System.assertEquals(summary.getName(), summary.name); System.assertEquals('Summary Fields', summary.getLabel()); System.assertEquals(summary.getLabel(), summary.label); System.assertEquals('Fields shown on summary pages.', summary.getDescription()); System.assertEquals(summary.getDescription(), summary.description); System.assertEquals(Account.SObjectType, summary.getSObjectType()); System.assertEquals(summary.getSObjectType(), summary.sObjectType); List<Schema.FieldSetMember> members = summary.getFields(); System.assertEquals(members.size(), summary.fields.size()); System.assertEquals(2, members.size()); Schema.FieldSetMember nameMember = members.get(0); System.assert(nameMember.equals(nameMember)); System.assert(nameMember.hashCode() != 0); System.assert(nameMember.toString().contains('Name')); System.assertEquals('Name', nameMember.getFieldPath()); System.assertEquals(nameMember.getFieldPath(), nameMember.fieldPath); System.assertEquals('Account Name', nameMember.getLabel()); System.assertEquals(nameMember.getLabel(), nameMember.label); System.assert(nameMember.getRequired()); System.assertEquals(nameMember.getRequired(), nameMember.required); System.assert(nameMember.getDBRequired()); System.assertEquals(nameMember.getDBRequired(), nameMember.dbRequired); System.assertEquals(Schema.DisplayType.STRING, nameMember.getType()); System.assertEquals(nameMember.getType(), nameMember.type); System.assertEquals('Name', nameMember.getSObjectField().getDescribe().getLocalName()); System.assertEquals(nameMember.getSObjectField(), nameMember.sObjectField); Schema.FieldSetMember ratingMember = members.get(1); System.assertEquals('Rating', ratingMember.getFieldPath()); System.assertEquals(ratingMember.getFieldPath(), ratingMember.fieldPath); System.assert(ratingMember.getLabel().endsWith('Rating')); System.assertEquals(ratingMember.getLabel(), ratingMember.label); System.assert(!ratingMember.getRequired()); System.assertEquals(ratingMember.getRequired(), ratingMember.required); System.assert(!ratingMember.getDBRequired()); System.assertEquals(ratingMember.getDBRequired(), ratingMember.dbRequired); System.assertEquals(Schema.DisplayType.PICKLIST, ratingMember.getType()); System.assertEquals(ratingMember.getType(), ratingMember.type); System.assert(ratingMember.getSObjectField().getDescribe().getLocalName().endsWith('Rating')); System.assertEquals(ratingMember.getSObjectField(), ratingMember.sObjectField);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

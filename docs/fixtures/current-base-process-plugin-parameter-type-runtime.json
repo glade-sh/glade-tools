@@ -1,0 +1,64 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Process.PluginDescribeResult.ParameterType dateType = Process.PluginDescribeResult.ParameterType.DATE; Process.PluginDescribeResult.ParameterType datetimeType = Process.PluginDescribeResult.ParameterType.DATETIME; Process.PluginDescribeResult.ParameterType doubleType = Process.PluginDescribeResult.ParameterType.DOUBLE; Process.PluginDescribeResult.ParameterType floatType = Process.PluginDescribeResult.ParameterType.FLOAT; Process.PluginDescribeResult.ParameterType integerType = Process.PluginDescribeResult.ParameterType.INTEGER; Process.PluginDescribeResult.ParameterType longType = Process.PluginDescribeResult.ParameterType.LONG; Process.PluginDescribeResult.ParameterType timeType = Process.PluginDescribeResult.ParameterType.TIME; List<Process.PluginDescribeResult.ParameterType> values = Process.PluginDescribeResult.ParameterType.values(); System.assert(values.size() > 0); System.assertEquals(dateType, Process.PluginDescribeResult.ParameterType.valueOf('DATE')); System.assertEquals(datetimeType, Process.PluginDescribeResult.ParameterType.valueOf('DATETIME')); System.assertEquals(doubleType, Process.PluginDescribeResult.ParameterType.valueOf('DOUBLE')); System.assertEquals(floatType, Process.PluginDescribeResult.ParameterType.valueOf('FLOAT')); System.assertEquals(integerType, Process.PluginDescribeResult.ParameterType.valueOf('INTEGER')); System.assertEquals(longType, Process.PluginDescribeResult.ParameterType.valueOf('LONG')); System.assertEquals(timeType, Process.PluginDescribeResult.ParameterType.valueOf('TIME')); System.assert(dateType.equals(Process.PluginDescribeResult.ParameterType.valueOf('DATE'))); System.assert(!dateType.equals(datetimeType)); System.assert(dateType.ordinal() >= 0); System.assertNotEquals(null, dateType.hashCode());"
+    ]
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.DATE",
+      "symbol": "Process.PluginDescribeResult.ParameterType.DATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.DATETIME",
+      "symbol": "Process.PluginDescribeResult.ParameterType.DATETIME"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.DOUBLE",
+      "symbol": "Process.PluginDescribeResult.ParameterType.DOUBLE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.FLOAT",
+      "symbol": "Process.PluginDescribeResult.ParameterType.FLOAT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.INTEGER",
+      "symbol": "Process.PluginDescribeResult.ParameterType.INTEGER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.LONG",
+      "symbol": "Process.PluginDescribeResult.ParameterType.LONG"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Process.PluginDescribeResult.ParameterType.TIME",
+      "symbol": "Process.PluginDescribeResult.ParameterType.TIME"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "current-base-process-plugin-parameter-type-runtime",
+  "notes": "Exercises the seven missing Process.PluginDescribeResult.ParameterType enum constants through anonymous local execution.",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises deterministic local Process.PluginDescribeResult.ParameterType enum behavior only; it makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Process.PluginDescribeResult.ParameterType dateType = Process.PluginDescribeResult.ParameterType.DATE; Process.PluginDescribeResult.ParameterType datetimeType = Process.PluginDescribeResult.ParameterType.DATETIME; Process.PluginDescribeResult.ParameterType doubleType = Process.PluginDescribeResult.ParameterType.DOUBLE; Process.PluginDescribeResult.ParameterType floatType = Process.PluginDescribeResult.ParameterType.FLOAT; Process.PluginDescribeResult.ParameterType integerType = Process.PluginDescribeResult.ParameterType.INTEGER; Process.PluginDescribeResult.ParameterType longType = Process.PluginDescribeResult.ParameterType.LONG; Process.PluginDescribeResult.ParameterType timeType = Process.PluginDescribeResult.ParameterType.TIME; List<Process.PluginDescribeResult.ParameterType> values = Process.PluginDescribeResult.ParameterType.values(); System.assert(values.size() > 0); System.assertEquals(dateType, Process.PluginDescribeResult.ParameterType.valueOf('DATE')); System.assertEquals(datetimeType, Process.PluginDescribeResult.ParameterType.valueOf('DATETIME')); System.assertEquals(doubleType, Process.PluginDescribeResult.ParameterType.valueOf('DOUBLE')); System.assertEquals(floatType, Process.PluginDescribeResult.ParameterType.valueOf('FLOAT')); System.assertEquals(integerType, Process.PluginDescribeResult.ParameterType.valueOf('INTEGER')); System.assertEquals(longType, Process.PluginDescribeResult.ParameterType.valueOf('LONG')); System.assertEquals(timeType, Process.PluginDescribeResult.ParameterType.valueOf('TIME')); System.assert(dateType.equals(Process.PluginDescribeResult.ParameterType.valueOf('DATE'))); System.assert(!dateType.equals(datetimeType)); System.assert(dateType.ordinal() >= 0); System.assertNotEquals(null, dateType.hashCode());"
+    }
+  ]
+}
