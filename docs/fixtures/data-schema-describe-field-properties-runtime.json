@@ -1,0 +1,38 @@
+{
+  "name": "data-schema-describe-field-properties-runtime",
+  "evidence": [
+    {"surfaceId":"apex:Schema.DescribeFieldResult.accessible","symbol":"Schema.DescribeFieldResult.accessible","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.aggregatable","symbol":"Schema.DescribeFieldResult.aggregatable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.autonumber","symbol":"Schema.DescribeFieldResult.autonumber","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.calculated","symbol":"Schema.DescribeFieldResult.calculated","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.casesensitive","symbol":"Schema.DescribeFieldResult.casesensitive","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.createable","symbol":"Schema.DescribeFieldResult.createable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.deprecatedandhidden","symbol":"Schema.DescribeFieldResult.deprecatedandhidden","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.externalid","symbol":"Schema.DescribeFieldResult.externalid","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.filterable","symbol":"Schema.DescribeFieldResult.filterable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.groupable","symbol":"Schema.DescribeFieldResult.groupable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.label","symbol":"Schema.DescribeFieldResult.label","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.length","symbol":"Schema.DescribeFieldResult.length","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.localname","symbol":"Schema.DescribeFieldResult.localname","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.name","symbol":"Schema.DescribeFieldResult.name","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.nillable","symbol":"Schema.DescribeFieldResult.nillable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.permissionable","symbol":"Schema.DescribeFieldResult.permissionable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.precision","symbol":"Schema.DescribeFieldResult.precision","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.scale","symbol":"Schema.DescribeFieldResult.scale","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.soaptype","symbol":"Schema.DescribeFieldResult.soaptype","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.sobjectfield","symbol":"Schema.DescribeFieldResult.sobjectfield","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.sobjecttype","symbol":"Schema.DescribeFieldResult.sobjecttype","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.sortable","symbol":"Schema.DescribeFieldResult.sortable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.type","symbol":"Schema.DescribeFieldResult.type","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.unique","symbol":"Schema.DescribeFieldResult.unique","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.updateable","symbol":"Schema.DescribeFieldResult.updateable","kind":"exec"}
+  ],
+  "source": [
+    {"path":"anonymous.apex","content":"Schema.DescribeFieldResult d = Account.Name.getDescribe(); System.assertEquals(d.isAccessible(), d.accessible); System.assertEquals(d.isAggregatable(), d.aggregatable); System.assertEquals(d.isAutoNumber(), d.autonumber); System.assertEquals(d.isCalculated(), d.calculated); System.assertEquals(d.isCaseSensitive(), d.casesensitive); System.assertEquals(d.isCreateable(), d.createable); System.assertEquals(d.isDeprecatedAndHidden(), d.deprecatedandhidden); System.assertEquals(d.isExternalId(), d.externalid); System.assertEquals(d.isFilterable(), d.filterable); System.assertEquals(d.isGroupable(), d.groupable); System.assertEquals(d.getLabel(), d.label); System.assertEquals(d.getLength(), d.length); System.assertEquals(d.getLocalName(), d.localname); System.assertEquals(d.getName(), d.name); System.assertEquals(d.isNillable(), d.nillable); System.assertEquals(d.isPermissionable(), d.permissionable); System.assertEquals(d.getPrecision(), d.precision); System.assertEquals(d.getScale(), d.scale); System.assertEquals(d.getSOAPType(), d.soaptype); System.assertEquals(d.getSObjectField(), d.sobjectfield); System.assertEquals(d.getSObjectType(), d.sobjecttype); System.assertEquals(d.isSortable(), d.sortable); System.assertEquals(d.getType(), d.type); System.assertEquals(d.isUnique(), d.unique); System.assertEquals(d.isUpdateable(), d.updateable);"}
+  ],
+  "command": {
+    "kind":"exec",
+    "args":["Schema.DescribeFieldResult d = Account.Name.getDescribe(); System.assertEquals(d.isAccessible(), d.accessible); System.assertEquals(d.isAggregatable(), d.aggregatable); System.assertEquals(d.isAutoNumber(), d.autonumber); System.assertEquals(d.isCalculated(), d.calculated); System.assertEquals(d.isCaseSensitive(), d.casesensitive); System.assertEquals(d.isCreateable(), d.createable); System.assertEquals(d.isDeprecatedAndHidden(), d.deprecatedandhidden); System.assertEquals(d.isExternalId(), d.externalid); System.assertEquals(d.isFilterable(), d.filterable); System.assertEquals(d.isGroupable(), d.groupable); System.assertEquals(d.getLabel(), d.label); System.assertEquals(d.getLength(), d.length); System.assertEquals(d.getLocalName(), d.localname); System.assertEquals(d.getName(), d.name); System.assertEquals(d.isNillable(), d.nillable); System.assertEquals(d.isPermissionable(), d.permissionable); System.assertEquals(d.getPrecision(), d.precision); System.assertEquals(d.getScale(), d.scale); System.assertEquals(d.getSOAPType(), d.soaptype); System.assertEquals(d.getSObjectField(), d.sobjectfield); System.assertEquals(d.getSObjectType(), d.sobjecttype); System.assertEquals(d.isSortable(), d.sortable); System.assertEquals(d.getType(), d.type); System.assertEquals(d.isUnique(), d.unique); System.assertEquals(d.isUpdateable(), d.updateable);"]
+  },
+  "expected":{"result":{"debug":null,"ok":true}}
+}

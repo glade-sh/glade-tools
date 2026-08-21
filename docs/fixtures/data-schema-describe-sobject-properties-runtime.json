@@ -1,0 +1,25 @@
+{
+  "name": "data-schema-describe-sobject-properties-runtime",
+  "evidence": [
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.accessible","symbol":"Schema.DescribeSObjectResult.accessible","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.createable","symbol":"Schema.DescribeSObjectResult.createable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.custom","symbol":"Schema.DescribeSObjectResult.custom","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.customsetting","symbol":"Schema.DescribeSObjectResult.customSetting","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.deletable","symbol":"Schema.DescribeSObjectResult.deletable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.deprecatedandhidden","symbol":"Schema.DescribeSObjectResult.deprecatedAndHidden","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.feedenabled","symbol":"Schema.DescribeSObjectResult.feedEnabled","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.mergeable","symbol":"Schema.DescribeSObjectResult.mergeable","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.mruenabled","symbol":"Schema.DescribeSObjectResult.mruEnabled","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.name","symbol":"Schema.DescribeSObjectResult.name","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.queryable","symbol":"Schema.DescribeSObjectResult.queryable","kind":"exec"}
+  ],
+  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "source":[
+    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"},
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Account Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"anonymous.apex","content":"Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe(); System.assertEquals(accountDescribe.isAccessible(), accountDescribe.accessible); System.assertEquals(accountDescribe.isCreateable(), accountDescribe.createable); System.assertEquals(accountDescribe.isCustom(), accountDescribe.custom); System.assertEquals(accountDescribe.isCustomSetting(), accountDescribe.customSetting); System.assertEquals(accountDescribe.isDeletable(), accountDescribe.deletable); System.assertEquals(accountDescribe.isDeprecatedAndHidden(), accountDescribe.deprecatedAndHidden); System.assertEquals(accountDescribe.isFeedEnabled(), accountDescribe.feedEnabled); System.assertEquals(accountDescribe.isMergeable(), accountDescribe.mergeable); System.assertEquals(accountDescribe.isMruEnabled(), accountDescribe.mruEnabled); System.assertEquals(accountDescribe.getName(), accountDescribe.name); System.assertEquals(accountDescribe.isQueryable(), accountDescribe.queryable);"}
+  ],
+  "command":{"kind":"exec","args":["Schema.DescribeSObjectResult accountDescribe = Account.SObjectType.getDescribe(); System.assertEquals(accountDescribe.isAccessible(), accountDescribe.accessible); System.assertEquals(accountDescribe.isCreateable(), accountDescribe.createable); System.assertEquals(accountDescribe.isCustom(), accountDescribe.custom); System.assertEquals(accountDescribe.isCustomSetting(), accountDescribe.customSetting); System.assertEquals(accountDescribe.isDeletable(), accountDescribe.deletable); System.assertEquals(accountDescribe.isDeprecatedAndHidden(), accountDescribe.deprecatedAndHidden); System.assertEquals(accountDescribe.isFeedEnabled(), accountDescribe.feedEnabled); System.assertEquals(accountDescribe.isMergeable(), accountDescribe.mergeable); System.assertEquals(accountDescribe.isMruEnabled(), accountDescribe.mruEnabled); System.assertEquals(accountDescribe.getName(), accountDescribe.name); System.assertEquals(accountDescribe.isQueryable(), accountDescribe.queryable);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}
