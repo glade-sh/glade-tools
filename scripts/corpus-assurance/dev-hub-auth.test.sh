@@ -29,8 +29,8 @@ printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' \
 printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' \
   'printf "%s\n" "$*" >>"$FAKE_LOG_DIR/sf.log"' \
   'if [[ "$*" == *"org auth show-sfdx-auth-url"* ]]; then printf "%s\n" '\''{"status":0,"result":{"sfdxAuthUrl":"force://TEST-SECRET"}}'\''; exit 0; fi' \
-  'if [[ "$*" == *"org login sfdx-url"* ]]; then input="$(cat)"; [[ "$input" == "force:""//TEST-SECRET" ]]; [[ "${FAKE_SF_FAIL:-0}" != 1 ]] || exit 8; printf "%s\n" '\''{"status":0}'\''; exit 0; fi' \
-  'if [[ "$*" == *"org display"* ]]; then [[ "${FAKE_SF_VERIFY_FAIL:-0}" != 1 ]] || exit 9; printf "%s\n" '\''{"status":0}'\''; exit 0; fi' \
+  'if [[ "$*" == *"org login sfdx-url"* ]]; then [[ "${SF_USE_GENERIC_UNIX_KEYCHAIN:-}" == true ]]; [[ "${!#}" == "--sfdx-url-stdin" ]]; input="$(cat)"; [[ "$input" == "force:""//TEST-SECRET" ]]; [[ "${FAKE_SF_FAIL:-0}" != 1 ]] || exit 8; printf "%s\n" '\''{"status":0}'\''; exit 0; fi' \
+  'if [[ "$*" == *"org display"* ]]; then [[ "${SF_USE_GENERIC_UNIX_KEYCHAIN:-}" == true ]]; [[ "${FAKE_SF_VERIFY_FAIL:-0}" != 1 ]] || exit 9; printf "%s\n" '\''{"status":0}'\''; exit 0; fi' \
   'exit 2' \
   >"$tmp/bin/sf"
 
@@ -73,7 +73,7 @@ grep -F 'missing recipients:' "$tmp/missing.err"
 
 "$helper" login --store "$tmp/store" --alias glade-dev-hub \
   --identity "$identity" --sf-bin "$tmp/bin/sf" >"$tmp/login.out" 2>"$tmp/login.err"
-grep -F 'org login sfdx-url --sfdx-url-stdin --alias glade-dev-hub --set-default-dev-hub --json' "$tmp/logs/sf.log"
+grep -F 'org login sfdx-url --alias glade-dev-hub --set-default-dev-hub --json --sfdx-url-stdin' "$tmp/logs/sf.log"
 
 if FAKE_AGE_FAIL=1 "$helper" login --store "$tmp/store" --alias glade-dev-hub \
   --identity "$identity" --sf-bin "$tmp/bin/sf" 2>"$tmp/decrypt.err"; then
