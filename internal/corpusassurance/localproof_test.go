@@ -103,8 +103,10 @@ func TestLocalProofAcceptsCompatEvidenceKindsForDisposition(t *testing.T) {
 		symbol      string
 	}{
 		{localRuntimeRequired, "exec", "exec", "Runtime.run"},
+		{localRuntimeRequired, "exec", "test", "Runtime.run"},
 		{deterministicMockRequired, "test", "test", "Runtime.run"},
 		{deterministicMockRequired, "exec", "exec", "Runtime.run"},
+		{deterministicMockRequired, "exec", "test", "Runtime.run"},
 		{compileShapeRequired, "check", "shape", "Runtime.run"},
 	} {
 		t.Run(test.disposition, func(t *testing.T) {

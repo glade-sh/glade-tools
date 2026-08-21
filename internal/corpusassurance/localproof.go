@@ -766,9 +766,9 @@ func localProofReceiptSpecSHA256(command localProofCommand, executableSHA256 str
 func localProofEvidenceKindMatches(disposition, commandKind, evidenceKind string) bool {
 	switch disposition {
 	case localRuntimeRequired:
-		return (commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime")) || (commandKind == "test" && evidenceKind == "test")
+		return (commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime" || evidenceKind == "test" || evidenceKind == "behavior")) || (commandKind == "test" && evidenceKind == "test")
 	case deterministicMockRequired:
-		return (commandKind == "test" && (evidenceKind == "test" || evidenceKind == "behavior")) || (commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime"))
+		return (commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime" || evidenceKind == "test" || evidenceKind == "behavior")) || (commandKind == "test" && (evidenceKind == "test" || evidenceKind == "behavior"))
 	case compileShapeRequired:
 		return commandKind == "check" && (evidenceKind == "shape" || evidenceKind == "compile")
 	default:
