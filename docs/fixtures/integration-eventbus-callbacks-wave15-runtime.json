@@ -1,0 +1,26 @@
+{
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "name": "integration-eventbus-callbacks-wave15-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture uses a synthetic local platform event and deterministic ChangeEventHeader values; it proves callback overload and header behavior locally without claiming hosted event delivery.",
+  "evidence": [
+    {"surfaceId":"apex:System.EventBus.publish(Object,Object)","symbol":"EventBus.publish(Object,Object)","kind":"exec","notes":"Callback overload returns a successful local SaveResult for an EventUuid-bearing platform event."},
+    {"surfaceId":"apex:System.EventBus.publish(List<Object>,Object)","symbol":"EventBus.publish(List<Object>,Object)","kind":"exec","notes":"List callback overload returns ordered successful local SaveResult values."},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader","symbol":"eventbus.ChangeEventHeader","kind":"exec","notes":"ChangeEventHeader is constructed and inspected in anonymous execution."}
+  ],
+  "schema": [
+    {"path":"force-app/main/default/objects/Widget_Event__e/Widget_Event__e.object-meta.xml","content":"<CustomObject><label>Widget Event</label><pluralLabel>Widget Events</pluralLabel><deploymentStatus>Deployed</deploymentStatus><fields><fullName>Name__c</fullName><label>Name</label><type>Text</type><length>80</length></fields></CustomObject>"}
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Widget_Event__e event = (Widget_Event__e)Widget_Event__e.SObjectType.newSObject(null, true); Database.SaveResult one = EventBus.publish(event, null); System.assert(one.isSuccess()); List<Database.SaveResult> many = EventBus.publish(new List<SObject>{event}, null); System.assertEquals(1, many.size()); System.assert(many[0].isSuccess()); eventbus.ChangeEventHeader header = new eventbus.ChangeEventHeader(); header.changedfields = new List<String>{'Name'}; header.setChangeOrigin('wave15'); header.setChangeType('UPDATE'); header.setCommitNumber(42L); header.setCommitTimestamp(1700000000123L); header.setCommitUser('005000000000001AAA'); header.setDiffFields(new List<String>{'Description'}); header.setEntityName('Account'); header.setNulledFields(new List<String>{'Phone'}); header.setRecordIds(new List<String>{'001000000000001AAA'}); System.assertEquals('Name', header.changedfields[0]); System.assertEquals(true, header.equals(header)); System.assertEquals('wave15', header.getChangeOrigin()); System.assertEquals('UPDATE', header.getChangeType()); System.assertEquals('Name', header.getChangedFields()[0]); System.assertEquals(42L, header.getCommitNumber()); System.assertEquals(1700000000123L, header.getCommitTimestamp()); System.assertEquals('005000000000001AAA', header.getCommitUser()); System.assertEquals('Description', header.getDiffFields()[0]); System.assertEquals('Account', header.getEntityName()); System.assertEquals('Phone', header.getNulledFields()[0]); System.assertEquals('001000000000001AAA', header.getRecordIds()[0]);"
+    ]
+  },
+  "source": [
+    {"path":"anonymous.apex","content":"Widget_Event__e event = (Widget_Event__e)Widget_Event__e.SObjectType.newSObject(null, true); Database.SaveResult one = EventBus.publish(event, null); System.assert(one.isSuccess()); List<Database.SaveResult> many = EventBus.publish(new List<SObject>{event}, null); System.assertEquals(1, many.size()); System.assert(many[0].isSuccess()); eventbus.ChangeEventHeader header = new eventbus.ChangeEventHeader(); header.changedfields = new List<String>{'Name'}; header.setChangeOrigin('wave15'); header.setChangeType('UPDATE'); header.setCommitNumber(42L); header.setCommitTimestamp(1700000000123L); header.setCommitUser('005000000000001AAA'); header.setDiffFields(new List<String>{'Description'}); header.setEntityName('Account'); header.setNulledFields(new List<String>{'Phone'}); header.setRecordIds(new List<String>{'001000000000001AAA'}); System.assertEquals('Name', header.changedfields[0]); System.assertEquals(true, header.equals(header)); System.assertEquals('wave15', header.getChangeOrigin()); System.assertEquals('UPDATE', header.getChangeType()); System.assertEquals('Name', header.getChangedFields()[0]); System.assertEquals(42L, header.getCommitNumber()); System.assertEquals(1700000000123L, header.getCommitTimestamp()); System.assertEquals('005000000000001AAA', header.getCommitUser()); System.assertEquals('Description', header.getDiffFields()[0]); System.assertEquals('Account', header.getEntityName()); System.assertEquals('Phone', header.getNulledFields()[0]); System.assertEquals('001000000000001AAA', header.getRecordIds()[0]);"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}}
+}

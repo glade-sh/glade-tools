@@ -77,6 +77,29 @@ func TestCB191SystemRebindRowsHaveExactDualEvidence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	transferred := map[string]bool{
+		"apex:System.RoundingMode.UNNECESSARY":                             true,
+		"apex:System.RoundingMode.equals(Object)":                          true,
+		"apex:System.RoundingMode.hashCode()":                              true,
+		"apex:System.RoundingMode.ordinal()":                               true,
+		"apex:System.RoundingMode.values()":                                true,
+		"apex:System.SObject.addError(Schema.SObjectField,String)":         true,
+		"apex:System.SObject.addError(Schema.SObjectField,String,Boolean)": true,
+		"apex:System.SObject.get(Schema.SObjectField)":                     true,
+		"apex:System.SObject.isSet(Schema.SObjectField)":                   true,
+		"apex:System.SObject.put(Schema.SObjectField,Object)":              true,
+	}
+	for _, name := range []string{"core-runtime-enum-families-wave15-runtime.json", "data-runtime-sobject-helper-wave15-runtime.json"} {
+		rows, err := BuildEvidenceSnapshot([]string{filepath.Join(root, "docs", "fixtures", name)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, row := range rows {
+			if transferred[row.SurfaceID] {
+				fixtureEvidence = append(fixtureEvidence, row)
+			}
+		}
+	}
 	gladeSnapshot := BuildGladeSnapshot()
 	gladeByID := rowsBySurfaceKey(gladeSnapshot)
 	for _, row := range fixtureEvidence {

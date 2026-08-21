@@ -1,0 +1,194 @@
+{
+  "name": "core-runtime-enum-families-wave15-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.RoundingMode.CEILING",
+      "symbol": "RoundingMode.CEILING",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the nondefault CEILING enum constant and its ordered value."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.FLOOR",
+      "symbol": "RoundingMode.FLOOR",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the nondefault FLOOR enum constant and its ordered value."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.UNNECESSARY",
+      "symbol": "RoundingMode.UNNECESSARY",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the nondefault UNNECESSARY enum constant and its ordered value."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.equals(Object)",
+      "symbol": "RoundingMode.equals",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts RoundingMode equality."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.hashCode()",
+      "symbol": "RoundingMode.hashCode",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts RoundingMode hash stability."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.ordinal()",
+      "symbol": "RoundingMode.ordinal",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts RoundingMode ordinal position."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.valueOf(String)",
+      "symbol": "RoundingMode.valueOf",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves RoundingMode by explicit name."
+    },
+    {
+      "surfaceId": "apex:System.RoundingMode.values()",
+      "symbol": "RoundingMode.values",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts RoundingMode count and declaration order."
+    },
+    {
+      "surfaceId": "apex:System.AccessType.CREATABLE",
+      "symbol": "AccessType.CREATABLE",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the explicitly asserted CREATABLE enum constant."
+    },
+    {
+      "surfaceId": "apex:System.AccessType.UPDATABLE",
+      "symbol": "AccessType.UPDATABLE",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the explicitly asserted UPDATABLE enum constant."
+    },
+    {
+      "surfaceId": "apex:System.Quiddity.AURA",
+      "symbol": "Quiddity.AURA",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the explicitly asserted AURA enum constant."
+    },
+    {
+      "surfaceId": "apex:System.Quiddity.QUICK_ACTION",
+      "symbol": "Quiddity.QUICK_ACTION",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the explicitly asserted QUICK_ACTION enum constant."
+    },
+    {
+      "surfaceId": "apex:System.Quiddity.VF",
+      "symbol": "Quiddity.VF",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the explicitly asserted VF enum constant."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldDescribeOptions.DEFAULT",
+      "symbol": "Schema.FieldDescribeOptions.DEFAULT",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves DEFAULT and asserts its declaration order."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldDescribeOptions.FULL_DESCRIBE",
+      "symbol": "Schema.FieldDescribeOptions.FULL_DESCRIBE",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the nondefault FULL_DESCRIBE enum constant."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldDescribeOptions.equals(Object)",
+      "symbol": "Schema.FieldDescribeOptions.equals",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts FieldDescribeOptions equality."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldDescribeOptions.hashCode()",
+      "symbol": "Schema.FieldDescribeOptions.hashCode",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts FieldDescribeOptions hash stability."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldDescribeOptions.ordinal()",
+      "symbol": "Schema.FieldDescribeOptions.ordinal",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts FieldDescribeOptions ordinal position."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldDescribeOptions.valueOf(String)",
+      "symbol": "Schema.FieldDescribeOptions.valueOf",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves FieldDescribeOptions by explicit name."
+    },
+    {
+      "surfaceId": "apex:Schema.FieldDescribeOptions.values()",
+      "symbol": "Schema.FieldDescribeOptions.values",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts FieldDescribeOptions count and declaration order."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.DEFAULT",
+      "symbol": "Schema.SObjectDescribeOptions.DEFAULT",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves DEFAULT and asserts its declaration order."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.DEFERRED",
+      "symbol": "Schema.SObjectDescribeOptions.DEFERRED",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the nondefault DEFERRED enum constant."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.FULL",
+      "symbol": "Schema.SObjectDescribeOptions.FULL",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves the nondefault FULL enum constant."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.equals(Object)",
+      "symbol": "Schema.SObjectDescribeOptions.equals",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts SObjectDescribeOptions equality."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.hashCode()",
+      "symbol": "Schema.SObjectDescribeOptions.hashCode",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts SObjectDescribeOptions hash stability."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.ordinal()",
+      "symbol": "Schema.SObjectDescribeOptions.ordinal",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts SObjectDescribeOptions ordinal position."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.valueOf(String)",
+      "symbol": "Schema.SObjectDescribeOptions.valueOf",
+      "kind": "exec",
+      "notes": "Direct anonymous execution resolves SObjectDescribeOptions by explicit name."
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectDescribeOptions.values()",
+      "symbol": "Schema.SObjectDescribeOptions.values",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts SObjectDescribeOptions count and declaration order."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "List<RoundingMode> rounding = RoundingMode.values(); System.assertEquals(8, rounding.size()); System.assertEquals(RoundingMode.UP, rounding.get(0)); System.assertEquals(RoundingMode.DOWN, rounding.get(1)); System.assertEquals(RoundingMode.CEILING, rounding.get(2)); System.assertEquals(RoundingMode.FLOOR, rounding.get(3)); System.assertEquals(RoundingMode.HALF_UP, rounding.get(4)); System.assertEquals(RoundingMode.HALF_DOWN, rounding.get(5)); System.assertEquals(RoundingMode.HALF_EVEN, rounding.get(6)); System.assertEquals(RoundingMode.UNNECESSARY, rounding.get(7)); System.assertEquals(RoundingMode.UNNECESSARY, RoundingMode.valueOf('UNNECESSARY')); System.assert(RoundingMode.CEILING.equals(rounding.get(2))); System.assertEquals(RoundingMode.CEILING.hashCode(), rounding.get(2).hashCode()); System.assertEquals(2, RoundingMode.CEILING.ordinal()); List<AccessType> access = AccessType.values(); System.assertEquals(4, access.size()); System.assertEquals(AccessType.CREATABLE, access.get(0)); System.assertEquals(AccessType.READABLE, access.get(1)); System.assertEquals(AccessType.UPDATABLE, access.get(2)); System.assertEquals(AccessType.UPSERTABLE, access.get(3)); System.assertEquals(AccessType.UPDATABLE, AccessType.valueOf('UPDATABLE')); System.assert(AccessType.UPDATABLE.equals(access.get(2))); System.assertEquals(AccessType.UPDATABLE.hashCode(), access.get(2).hashCode()); System.assertEquals(2, AccessType.UPDATABLE.ordinal()); List<Quiddity> quiddities = Quiddity.values(); System.assertEquals(32, quiddities.size()); System.assertEquals(Quiddity.VF, quiddities.get(10)); System.assertEquals(Quiddity.AURA, quiddities.get(13)); System.assertEquals(Quiddity.QUICK_ACTION, quiddities.get(14)); System.assertEquals(Quiddity.QUICK_ACTION, Quiddity.valueOf('QUICK_ACTION')); System.assert(Quiddity.AURA.equals(quiddities.get(13))); System.assertEquals(Quiddity.AURA.hashCode(), quiddities.get(13).hashCode()); System.assertEquals(13, Quiddity.AURA.ordinal()); List<Schema.FieldDescribeOptions> fieldOptions = Schema.FieldDescribeOptions.values(); System.assertEquals(2, fieldOptions.size()); System.assertEquals(Schema.FieldDescribeOptions.DEFAULT, fieldOptions.get(0)); System.assertEquals(Schema.FieldDescribeOptions.FULL_DESCRIBE, fieldOptions.get(1)); System.assertEquals(Schema.FieldDescribeOptions.FULL_DESCRIBE, Schema.FieldDescribeOptions.valueOf('FULL_DESCRIBE')); System.assert(Schema.FieldDescribeOptions.FULL_DESCRIBE.equals(fieldOptions.get(1))); System.assertEquals(Schema.FieldDescribeOptions.FULL_DESCRIBE.hashCode(), fieldOptions.get(1).hashCode()); System.assertEquals(1, Schema.FieldDescribeOptions.FULL_DESCRIBE.ordinal()); List<Schema.SObjectDescribeOptions> objectOptions = Schema.SObjectDescribeOptions.values(); System.assertEquals(3, objectOptions.size()); System.assertEquals(Schema.SObjectDescribeOptions.DEFAULT, objectOptions.get(0)); System.assertEquals(Schema.SObjectDescribeOptions.FULL, objectOptions.get(1)); System.assertEquals(Schema.SObjectDescribeOptions.DEFERRED, objectOptions.get(2)); System.assertEquals(Schema.SObjectDescribeOptions.FULL, Schema.SObjectDescribeOptions.valueOf('FULL')); System.assert(Schema.SObjectDescribeOptions.FULL.equals(objectOptions.get(1))); System.assertEquals(Schema.SObjectDescribeOptions.FULL.hashCode(), objectOptions.get(1).hashCode()); System.assertEquals(1, Schema.SObjectDescribeOptions.FULL.ordinal());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<RoundingMode> rounding = RoundingMode.values(); System.assertEquals(8, rounding.size()); System.assertEquals(RoundingMode.UP, rounding.get(0)); System.assertEquals(RoundingMode.DOWN, rounding.get(1)); System.assertEquals(RoundingMode.CEILING, rounding.get(2)); System.assertEquals(RoundingMode.FLOOR, rounding.get(3)); System.assertEquals(RoundingMode.HALF_UP, rounding.get(4)); System.assertEquals(RoundingMode.HALF_DOWN, rounding.get(5)); System.assertEquals(RoundingMode.HALF_EVEN, rounding.get(6)); System.assertEquals(RoundingMode.UNNECESSARY, rounding.get(7)); System.assertEquals(RoundingMode.UNNECESSARY, RoundingMode.valueOf('UNNECESSARY')); System.assert(RoundingMode.CEILING.equals(rounding.get(2))); System.assertEquals(RoundingMode.CEILING.hashCode(), rounding.get(2).hashCode()); System.assertEquals(2, RoundingMode.CEILING.ordinal()); List<AccessType> access = AccessType.values(); System.assertEquals(4, access.size()); System.assertEquals(AccessType.CREATABLE, access.get(0)); System.assertEquals(AccessType.READABLE, access.get(1)); System.assertEquals(AccessType.UPDATABLE, access.get(2)); System.assertEquals(AccessType.UPSERTABLE, access.get(3)); System.assertEquals(AccessType.UPDATABLE, AccessType.valueOf('UPDATABLE')); System.assert(AccessType.UPDATABLE.equals(access.get(2))); System.assertEquals(AccessType.UPDATABLE.hashCode(), access.get(2).hashCode()); System.assertEquals(2, AccessType.UPDATABLE.ordinal()); List<Quiddity> quiddities = Quiddity.values(); System.assertEquals(32, quiddities.size()); System.assertEquals(Quiddity.VF, quiddities.get(10)); System.assertEquals(Quiddity.AURA, quiddities.get(13)); System.assertEquals(Quiddity.QUICK_ACTION, quiddities.get(14)); System.assertEquals(Quiddity.QUICK_ACTION, Quiddity.valueOf('QUICK_ACTION')); System.assert(Quiddity.AURA.equals(quiddities.get(13))); System.assertEquals(Quiddity.AURA.hashCode(), quiddities.get(13).hashCode()); System.assertEquals(13, Quiddity.AURA.ordinal()); List<Schema.FieldDescribeOptions> fieldOptions = Schema.FieldDescribeOptions.values(); System.assertEquals(2, fieldOptions.size()); System.assertEquals(Schema.FieldDescribeOptions.DEFAULT, fieldOptions.get(0)); System.assertEquals(Schema.FieldDescribeOptions.FULL_DESCRIBE, fieldOptions.get(1)); System.assertEquals(Schema.FieldDescribeOptions.FULL_DESCRIBE, Schema.FieldDescribeOptions.valueOf('FULL_DESCRIBE')); System.assert(Schema.FieldDescribeOptions.FULL_DESCRIBE.equals(fieldOptions.get(1))); System.assertEquals(Schema.FieldDescribeOptions.FULL_DESCRIBE.hashCode(), fieldOptions.get(1).hashCode()); System.assertEquals(1, Schema.FieldDescribeOptions.FULL_DESCRIBE.ordinal()); List<Schema.SObjectDescribeOptions> objectOptions = Schema.SObjectDescribeOptions.values(); System.assertEquals(3, objectOptions.size()); System.assertEquals(Schema.SObjectDescribeOptions.DEFAULT, objectOptions.get(0)); System.assertEquals(Schema.SObjectDescribeOptions.FULL, objectOptions.get(1)); System.assertEquals(Schema.SObjectDescribeOptions.DEFERRED, objectOptions.get(2)); System.assertEquals(Schema.SObjectDescribeOptions.FULL, Schema.SObjectDescribeOptions.valueOf('FULL')); System.assert(Schema.SObjectDescribeOptions.FULL.equals(objectOptions.get(1))); System.assertEquals(Schema.SObjectDescribeOptions.FULL.hashCode(), objectOptions.get(1).hashCode()); System.assertEquals(1, Schema.SObjectDescribeOptions.FULL.ordinal());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture asserts deterministic local enum runtime behavior only; it makes no hosted Salesforce parity claim."
+}

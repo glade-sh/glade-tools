@@ -1,0 +1,262 @@
+{
+  "name": "core-runtime-exception-families-wave15-runtime",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Exception cause = new QueryException('wave15 cause'); System.assertEquals('System.QueryException', new QueryException().getTypeName()); FatalCursorException fatal = new FatalCursorException('wave15 fatal', cause); System.assertEquals('System.FatalCursorException', fatal.getTypeName()); FinalException fin = new FinalException('wave15 final', cause); System.assertEquals('System.FinalException', fin.getTypeName()); FlowException flow = new FlowException('wave15 flow', cause); System.assertEquals('System.FlowException', flow.getTypeName()); FormulaEvaluationException evaluation = new FormulaEvaluationException('wave15 evaluation', cause); System.assertEquals('System.FormulaEvaluationException', evaluation.getTypeName()); FormulaValidationException validation = new FormulaValidationException('wave15 validation', cause); System.assertEquals('System.FormulaValidationException', validation.getTypeName()); HandledException handled = new HandledException('wave15 handled', cause); System.assertEquals('System.HandledException', handled.getTypeName()); System.assertEquals('wave15 procedure', new ProcedureException('wave15 procedure', cause).getMessage()); RequiredFeatureMissingException required0 = new RequiredFeatureMissingException(); RequiredFeatureMissingException required1 = new RequiredFeatureMissingException(cause); RequiredFeatureMissingException required2 = new RequiredFeatureMissingException('wave15 required'); RequiredFeatureMissingException required3 = new RequiredFeatureMissingException('wave15 required', cause); System.assertEquals('System.RequiredFeatureMissingException', required0.getTypeName()); System.assertEquals(cause, required1.getCause()); System.assertEquals('wave15 required', required2.getMessage()); System.assertEquals(cause, required3.getCause()); SObjectException sobject0 = new SObjectException(); SObjectException sobject1 = new SObjectException(cause); SObjectException sobject2 = new SObjectException('wave15 sobject'); SObjectException sobject3 = new SObjectException('wave15 sobject', cause); System.assertEquals('System.SObjectException', sobject0.getTypeName()); System.assertEquals(cause, sobject1.getCause()); System.assertEquals('wave15 sobject', sobject2.getMessage()); System.assertEquals(cause, sobject3.getCause()); IllegalArgumentException argument0 = new IllegalArgumentException(); IllegalArgumentException argument1 = new IllegalArgumentException(cause); IllegalArgumentException argument2 = new IllegalArgumentException('wave15 argument'); IllegalArgumentException argument3 = new IllegalArgumentException('wave15 argument', cause); System.assertEquals('System.IllegalArgumentException', argument0.getTypeName()); System.assertEquals(cause, argument1.getCause()); System.assertEquals('wave15 argument', argument2.getMessage()); System.assertEquals(cause, argument3.getCause()); System.assertNotEquals(null, argument0.clone()); IllegalStateException state = new IllegalStateException('wave15 state'); System.assertEquals('wave15 state', state.getMessage()); InvalidHeaderException header0 = new InvalidHeaderException(); InvalidHeaderException header1 = new InvalidHeaderException(cause); InvalidHeaderException header2 = new InvalidHeaderException('wave15 header'); InvalidHeaderException header3 = new InvalidHeaderException('wave15 header', cause); System.assertEquals('System.InvalidHeaderException', header0.getTypeName()); System.assertEquals(cause, header1.getCause()); System.assertEquals('wave15 header', header2.getMessage()); System.assertEquals(cause, header3.getCause()); System.assertNotEquals(null, header0.clone()); InvalidParameterValueException parameter = new InvalidParameterValueException('wave15 parameter', 'value'); System.assertEquals('System.InvalidParameterValueException', parameter.getTypeName()); System.assert(parameter.equals(parameter)); System.assertEquals(parameter.hashCode(), parameter.hashCode()); System.assertNotEquals('', parameter.toString()); InvalidReadOnlyUserDmlException readonly0 = new InvalidReadOnlyUserDmlException(); InvalidReadOnlyUserDmlException readonly1 = new InvalidReadOnlyUserDmlException(cause); InvalidReadOnlyUserDmlException readonly2 = new InvalidReadOnlyUserDmlException('wave15 readonly'); InvalidReadOnlyUserDmlException readonly3 = new InvalidReadOnlyUserDmlException('wave15 readonly', cause); System.assertEquals('System.InvalidReadOnlyUserDmlException', readonly0.getTypeName()); System.assertEquals(cause, readonly1.getCause()); System.assertEquals('wave15 readonly', readonly2.getMessage()); System.assertEquals(cause, readonly3.getCause()); JSONException json0 = new JSONException(); JSONException json1 = new JSONException(cause); JSONException json2 = new JSONException('wave15 json'); JSONException json3 = new JSONException('wave15 json', cause); System.assertEquals('System.JSONException', json0.getTypeName()); System.assertEquals(cause, json1.getCause()); System.assertEquals('wave15 json', json2.getMessage()); System.assertEquals(cause, json3.getCause());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Exception cause = new QueryException('wave15 cause'); System.assertEquals('System.QueryException', new QueryException().getTypeName()); FatalCursorException fatal = new FatalCursorException('wave15 fatal', cause); System.assertEquals('System.FatalCursorException', fatal.getTypeName()); FinalException fin = new FinalException('wave15 final', cause); System.assertEquals('System.FinalException', fin.getTypeName()); FlowException flow = new FlowException('wave15 flow', cause); System.assertEquals('System.FlowException', flow.getTypeName()); FormulaEvaluationException evaluation = new FormulaEvaluationException('wave15 evaluation', cause); System.assertEquals('System.FormulaEvaluationException', evaluation.getTypeName()); FormulaValidationException validation = new FormulaValidationException('wave15 validation', cause); System.assertEquals('System.FormulaValidationException', validation.getTypeName()); HandledException handled = new HandledException('wave15 handled', cause); System.assertEquals('System.HandledException', handled.getTypeName()); System.assertEquals('wave15 procedure', new ProcedureException('wave15 procedure', cause).getMessage()); RequiredFeatureMissingException required0 = new RequiredFeatureMissingException(); RequiredFeatureMissingException required1 = new RequiredFeatureMissingException(cause); RequiredFeatureMissingException required2 = new RequiredFeatureMissingException('wave15 required'); RequiredFeatureMissingException required3 = new RequiredFeatureMissingException('wave15 required', cause); System.assertEquals('System.RequiredFeatureMissingException', required0.getTypeName()); System.assertEquals(cause, required1.getCause()); System.assertEquals('wave15 required', required2.getMessage()); System.assertEquals(cause, required3.getCause()); SObjectException sobject0 = new SObjectException(); SObjectException sobject1 = new SObjectException(cause); SObjectException sobject2 = new SObjectException('wave15 sobject'); SObjectException sobject3 = new SObjectException('wave15 sobject', cause); System.assertEquals('System.SObjectException', sobject0.getTypeName()); System.assertEquals(cause, sobject1.getCause()); System.assertEquals('wave15 sobject', sobject2.getMessage()); System.assertEquals(cause, sobject3.getCause()); IllegalArgumentException argument0 = new IllegalArgumentException(); IllegalArgumentException argument1 = new IllegalArgumentException(cause); IllegalArgumentException argument2 = new IllegalArgumentException('wave15 argument'); IllegalArgumentException argument3 = new IllegalArgumentException('wave15 argument', cause); System.assertEquals('System.IllegalArgumentException', argument0.getTypeName()); System.assertEquals(cause, argument1.getCause()); System.assertEquals('wave15 argument', argument2.getMessage()); System.assertEquals(cause, argument3.getCause()); System.assertNotEquals(null, argument0.clone()); IllegalStateException state = new IllegalStateException('wave15 state'); System.assertEquals('wave15 state', state.getMessage()); InvalidHeaderException header0 = new InvalidHeaderException(); InvalidHeaderException header1 = new InvalidHeaderException(cause); InvalidHeaderException header2 = new InvalidHeaderException('wave15 header'); InvalidHeaderException header3 = new InvalidHeaderException('wave15 header', cause); System.assertEquals('System.InvalidHeaderException', header0.getTypeName()); System.assertEquals(cause, header1.getCause()); System.assertEquals('wave15 header', header2.getMessage()); System.assertEquals(cause, header3.getCause()); System.assertNotEquals(null, header0.clone()); InvalidParameterValueException parameter = new InvalidParameterValueException('wave15 parameter', 'value'); System.assertEquals('System.InvalidParameterValueException', parameter.getTypeName()); System.assert(parameter.equals(parameter)); System.assertEquals(parameter.hashCode(), parameter.hashCode()); System.assertNotEquals('', parameter.toString()); InvalidReadOnlyUserDmlException readonly0 = new InvalidReadOnlyUserDmlException(); InvalidReadOnlyUserDmlException readonly1 = new InvalidReadOnlyUserDmlException(cause); InvalidReadOnlyUserDmlException readonly2 = new InvalidReadOnlyUserDmlException('wave15 readonly'); InvalidReadOnlyUserDmlException readonly3 = new InvalidReadOnlyUserDmlException('wave15 readonly', cause); System.assertEquals('System.InvalidReadOnlyUserDmlException', readonly0.getTypeName()); System.assertEquals(cause, readonly1.getCause()); System.assertEquals('wave15 readonly', readonly2.getMessage()); System.assertEquals(cause, readonly3.getCause()); JSONException json0 = new JSONException(); JSONException json1 = new JSONException(cause); JSONException json2 = new JSONException('wave15 json'); JSONException json3 = new JSONException('wave15 json', cause); System.assertEquals('System.JSONException', json0.getTypeName()); System.assertEquals(cause, json1.getCause()); System.assertEquals('wave15 json', json2.getMessage()); System.assertEquals(cause, json3.getCause());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "ok": true,
+      "debug": null
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:System.FatalCursorException",
+      "symbol": "FatalCursorException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.FinalException",
+      "symbol": "FinalException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.FlowException",
+      "symbol": "FlowException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.FormulaEvaluationException",
+      "symbol": "FormulaEvaluationException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.FormulaValidationException",
+      "symbol": "FormulaValidationException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.HandledException",
+      "symbol": "HandledException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.ProcedureException.ProcedureException(String,Exception)",
+      "symbol": "ProcedureException.ProcedureException(String,Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.QueryException.QueryException()",
+      "symbol": "QueryException.QueryException()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException",
+      "symbol": "RequiredFeatureMissingException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException()",
+      "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException(Exception)",
+      "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException(Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException(String)",
+      "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException(String)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.RequiredFeatureMissingException.RequiredFeatureMissingException(String,Exception)",
+      "symbol": "RequiredFeatureMissingException.RequiredFeatureMissingException(String,Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.SObjectException()",
+      "symbol": "SObjectException.SObjectException()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.SObjectException(Exception)",
+      "symbol": "SObjectException.SObjectException(Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.SObjectException(String)",
+      "symbol": "SObjectException.SObjectException(String)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.SObjectException.SObjectException(String,Exception)",
+      "symbol": "SObjectException.SObjectException(String,Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.IllegalArgumentException",
+      "symbol": "IllegalArgumentException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException()",
+      "symbol": "IllegalArgumentException.IllegalArgumentException()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(Exception)",
+      "symbol": "IllegalArgumentException.IllegalArgumentException(Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(String)",
+      "symbol": "IllegalArgumentException.IllegalArgumentException(String)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(String,Exception)",
+      "symbol": "IllegalArgumentException.IllegalArgumentException(String,Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.IllegalStateException",
+      "symbol": "IllegalStateException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidHeaderException",
+      "symbol": "InvalidHeaderException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException()",
+      "symbol": "InvalidHeaderException.InvalidHeaderException()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(Exception)",
+      "symbol": "InvalidHeaderException.InvalidHeaderException(Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(String)",
+      "symbol": "InvalidHeaderException.InvalidHeaderException(String)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(String,Exception)",
+      "symbol": "InvalidHeaderException.InvalidHeaderException(String,Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidParameterValueException",
+      "symbol": "InvalidParameterValueException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException",
+      "symbol": "InvalidReadOnlyUserDmlException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException()",
+      "symbol": "InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(Exception)",
+      "symbol": "InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String)",
+      "symbol": "InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String,Exception)",
+      "symbol": "InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String,Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.JSONException",
+      "symbol": "JSONException",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.JSONException.JSONException()",
+      "symbol": "JSONException.JSONException()",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.JSONException.JSONException(Exception)",
+      "symbol": "JSONException.JSONException(Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.JSONException.JSONException(String)",
+      "symbol": "JSONException.JSONException(String)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    },
+    {
+      "surfaceId": "apex:System.JSONException.JSONException(String,Exception)",
+      "symbol": "JSONException.JSONException(String,Exception)",
+      "kind": "exec",
+      "notes": "Direct anonymous execution asserts a concrete exception value, message, cause, or clone contract."
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade local-runtime exception construction and object contracts only; it makes no hosted Salesforce parity claim."
+}

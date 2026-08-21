@@ -143,12 +143,6 @@
     },
     {
       "kind": "test",
-      "notes": "Built-in enum values execute locally.",
-      "surfaceId": "apex:System.RoundingMode.values()",
-      "symbol": "RoundingMode.values"
-    },
-    {
-      "kind": "test",
       "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.SetupScope.values()",
       "symbol": "SetupScope.values"

@@ -5,18 +5,6 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "Local EventBus callback publish queues success callbacks for platform events that carry EventUuid.",
-      "surfaceId": "apex:System.EventBus.publish(Object,Object)",
-      "symbol": "EventBus.publish(Object,Object)"
-    },
-    {
-      "kind": "test",
-      "notes": "Local EventBus callback publish queues success callbacks for platform events that carry EventUuid.",
-      "surfaceId": "apex:System.EventBus.publish(List<Object>,Object)",
-      "symbol": "EventBus.publish(List<Object>,Object)"
-    },
-    {
-      "kind": "test",
       "notes": "Test.getEventBus().deliver drains queued local platform events and runs after-insert platform event triggers.",
       "surfaceId": "apex:eventbus.TestBroker.deliver()",
       "symbol": "eventbus.TestBroker.deliver()"

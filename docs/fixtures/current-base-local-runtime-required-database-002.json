@@ -6,16 +6,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Database.Error.message",
-      "symbol": "Database.Error.message"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.Error.statuscode",
-      "symbol": "Database.Error.statuscode"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.Error.equals(Object)",
       "symbol": "Database.Error.equals"
     },
@@ -36,28 +26,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.GetDeletedResult",
-      "symbol": "Database.GetDeletedResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.GetDeletedResult.GetDeletedResult()",
-      "symbol": "Database.GetDeletedResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.GetDeletedResult.deletedrecords",
-      "symbol": "Database.GetDeletedResult.deletedrecords"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.GetDeletedResult.earliestdateavailable",
       "symbol": "Database.GetDeletedResult.earliestdateavailable"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.GetDeletedResult.latestdatecovered",
-      "symbol": "Database.GetDeletedResult.latestdatecovered"
     },
     {
       "kind": "test",
@@ -73,26 +43,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.GetDeletedResult.toString()",
       "symbol": "Database.GetDeletedResult.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.GetUpdatedResult",
-      "symbol": "Database.GetUpdatedResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.GetUpdatedResult.GetUpdatedResult()",
-      "symbol": "Database.GetUpdatedResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.GetUpdatedResult.ids",
-      "symbol": "Database.GetUpdatedResult.ids"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.GetUpdatedResult.latestdatecovered",
-      "symbol": "Database.GetUpdatedResult.latestdatecovered"
     },
     {
       "kind": "test",
@@ -116,11 +66,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.LeadConvertResult.LeadConvertResult()",
-      "symbol": "Database.LeadConvertResult"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.LeadConvertResult.accountid",
       "symbol": "Database.LeadConvertResult.accountid"
     },
@@ -131,33 +76,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.LeadConvertResult.equals(Object)",
-      "symbol": "Database.LeadConvertResult.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.LeadConvertResult.errors",
-      "symbol": "Database.LeadConvertResult.errors"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.LeadConvertResult.hashCode()",
-      "symbol": "Database.LeadConvertResult.hashCode"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.LeadConvertResult.leadid",
       "symbol": "Database.LeadConvertResult.leadid"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.LeadConvertResult.opportunityid",
-      "symbol": "Database.LeadConvertResult.opportunityid"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.LeadConvertResult.relatedpersonaccountid",
-      "symbol": "Database.LeadConvertResult.relatedpersonaccountid"
     },
     {
       "kind": "test",
@@ -178,11 +98,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.LocaleOptions.LocaleOptions()",
       "symbol": "Database.LocaleOptions"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.MergeRequest",
-      "symbol": "Database.MergeRequest"
     },
     {
       "kind": "test",
@@ -214,7 +129,7 @@
   "notes": "Current-base lane current-base-local-runtime-required-Database-002: deterministic local error, sync-window DTO, lead-conversion result, locale, and namespace-shape contracts for the missing surface rows.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-002",
-    "selectedRowCount": 39
+    "selectedRowCount": 22
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
