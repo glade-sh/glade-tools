@@ -386,6 +386,12 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-schema-field-behavior-runtime.json", 11},
 		{"ui-apexpages-standard-set-pagination-runtime.json", 23},
 		{"data-platform-schema-describe-tab-result-runtime-depth.json", 23},
+		{"core-runtime-string-encoding-rewrite-depth.json", 15},
+		{"data-schema-field-residual-runtime.json", 2},
+		{"core-sobject-field-clone-runtime-depth.json", 11},
+		{"ui-apexpages-idea-standard-set-state-runtime.json", 6},
+		{"data-database-leadconvert-result-runtime.json", 15},
+		{"data-database-async-dml-list-runtime.json", 6},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))

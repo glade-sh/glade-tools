@@ -1,0 +1,27 @@
+{
+  "name":"core-runtime-string-encoding-rewrite-depth",
+  "evidence":[
+    {"surfaceId":"apex:System.String.escapeCsv","symbol":"String.escapeCsv","kind":"exec","notes":"CSV quoting is asserted exactly and round-tripped."},
+    {"surfaceId":"apex:System.String.unescapeCsv","symbol":"String.unescapeCsv","kind":"exec","notes":"Escaped CSV is decoded back to the exact source."},
+    {"surfaceId":"apex:System.String.escapeEcmaScript","symbol":"String.escapeEcmaScript","kind":"exec","notes":"Slash escaping is asserted exactly and round-tripped."},
+    {"surfaceId":"apex:System.String.unescapeEcmaScript","symbol":"String.unescapeEcmaScript","kind":"exec","notes":"Escaped ECMAScript text is decoded exactly."},
+    {"surfaceId":"apex:System.String.escapeHtml3","symbol":"String.escapeHtml3","kind":"exec","notes":"HTML3 entity escaping is asserted exactly."},
+    {"surfaceId":"apex:System.String.unescapeHtml3","symbol":"String.unescapeHtml3","kind":"exec","notes":"HTML3 entities are decoded back to exact text."},
+    {"surfaceId":"apex:System.String.escapeJava","symbol":"String.escapeJava","kind":"exec","notes":"Java quote escaping is asserted exactly and round-tripped."},
+    {"surfaceId":"apex:System.String.unescapeJava","symbol":"String.unescapeJava","kind":"exec","notes":"Escaped Java text is decoded exactly."},
+    {"surfaceId":"apex:System.String.escapeUnicode","symbol":"String.escapeUnicode","kind":"exec","notes":"Non-ASCII Unicode escaping is asserted exactly and round-tripped."},
+    {"surfaceId":"apex:System.String.unescapeUnicode","symbol":"String.unescapeUnicode","kind":"exec","notes":"Unicode escape text is decoded exactly."},
+    {"surfaceId":"apex:System.String.replaceAll","symbol":"String.replaceAll","kind":"exec","notes":"Regex replacement changes every matching token."},
+    {"surfaceId":"apex:System.String.replaceFirst","symbol":"String.replaceFirst","kind":"exec","notes":"Regex replacement changes only the first matching token."},
+    {"surfaceId":"apex:System.String.remove","symbol":"String.remove","kind":"exec","notes":"Repeated literal removal is asserted exactly."},
+    {"surfaceId":"apex:System.String.swapCase","symbol":"String.swapCase","kind":"exec","notes":"Mixed-case transformation is asserted exactly."},
+    {"surfaceId":"apex:System.String.overlay","symbol":"String.overlay","kind":"exec","notes":"Nondefault bounded overlay indexes are asserted exactly."}
+  ],
+  "command":{"kind":"exec","args":["String csv='a,\"b\",c'; String escapedCsv=csv.escapeCsv(); System.assertEquals('\"a,\"\"b\"\",c\"',escapedCsv); System.assertEquals(csv,escapedCsv.unescapeCsv()); String slash='a/b'; String escapedSlash=slash.escapeEcmaScript(); System.assertEquals('a\\/b',escapedSlash); System.assertEquals(slash,escapedSlash.unescapeEcmaScript()); String html='<tag attr=''x''>&'; String escapedHtml=html.escapeHtml3(); System.assertEquals('&lt;tag attr=&#39;x&#39;&gt;&amp;',escapedHtml); System.assertEquals(html,escapedHtml.unescapeHtml3()); String quoted='He said \"hi\"'; String escapedQuoted=quoted.escapeJava(); String expectedQuoted='He said '+String.fromCharArray(new List<Integer>{92,34})+'hi'+String.fromCharArray(new List<Integer>{92,34}); System.assertEquals(expectedQuoted,escapedQuoted); System.assertEquals(quoted,escapedQuoted.unescapeJava()); String omega='AΩ'; String escapedOmega=omega.escapeUnicode(); System.assertEquals('A\\u03A9',escapedOmega); System.assertEquals(omega,escapedOmega.unescapeUnicode()); String tokens='a1 a2'; System.assertEquals('X X',tokens.replaceAll('a[0-9]','X')); System.assertEquals('X a2',tokens.replaceFirst('a[0-9]','X')); System.assertEquals('ba','banana'.remove('na')); System.assertEquals('tHE Ω42','The Ω42'.swapCase()); System.assertEquals('abZZef','abcdef'.overlay('ZZ',2,4));"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "mode":"local-runtime",
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture proves deterministic local String encoding and rewrite behavior with exact nondefault assertions and makes no hosted Salesforce parity claim.",
+  "source":[{"path":"anonymous.apex","content":"String csv='a,\"b\",c'; String escapedCsv=csv.escapeCsv(); System.assertEquals('\"a,\"\"b\"\",c\"',escapedCsv); System.assertEquals(csv,escapedCsv.unescapeCsv()); String slash='a/b'; String escapedSlash=slash.escapeEcmaScript(); System.assertEquals('a\\/b',escapedSlash); System.assertEquals(slash,escapedSlash.unescapeEcmaScript()); String html='<tag attr=''x''>&'; String escapedHtml=html.escapeHtml3(); System.assertEquals('&lt;tag attr=&#39;x&#39;&gt;&amp;',escapedHtml); System.assertEquals(html,escapedHtml.unescapeHtml3()); String quoted='He said \"hi\"'; String escapedQuoted=quoted.escapeJava(); String expectedQuoted='He said '+String.fromCharArray(new List<Integer>{92,34})+'hi'+String.fromCharArray(new List<Integer>{92,34}); System.assertEquals(expectedQuoted,escapedQuoted); System.assertEquals(quoted,escapedQuoted.unescapeJava()); String omega='AΩ'; String escapedOmega=omega.escapeUnicode(); System.assertEquals('A\\u03A9',escapedOmega); System.assertEquals(omega,escapedOmega.unescapeUnicode()); String tokens='a1 a2'; System.assertEquals('X X',tokens.replaceAll('a[0-9]','X')); System.assertEquals('X a2',tokens.replaceFirst('a[0-9]','X')); System.assertEquals('ba','banana'.remove('na')); System.assertEquals('tHE Ω42','The Ω42'.swapCase()); System.assertEquals('abZZef','abcdef'.overlay('ZZ',2,4));"}]
+}
