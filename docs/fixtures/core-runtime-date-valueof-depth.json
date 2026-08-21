@@ -1,0 +1,13 @@
+{
+  "name":"core-runtime-date-valueof-depth",
+  "evidence":[
+    {"surfaceId":"apex:System.Date.valueOf","symbol":"Date.valueOf","kind":"exec","notes":"A fixed nondefault leap-date literal is parsed and compared to an independently constructed Date."}
+  ],
+  "command":{"kind":"exec","args":["Date parsed=Date.valueOf('2024-02-29'); System.assertEquals(Date.newInstance(2024,2,29),parsed);"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "mode":"local-runtime",
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture proves deterministic local Date.valueOf parsing with a fixed leap-date literal and makes no hosted Salesforce parity claim.",
+  "source":[{"path":"anonymous.apex","content":"Date parsed=Date.valueOf('2024-02-29'); System.assertEquals(Date.newInstance(2024,2,29),parsed);"}]
+}
