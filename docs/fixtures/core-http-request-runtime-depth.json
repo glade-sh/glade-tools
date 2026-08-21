@@ -1,0 +1,29 @@
+{
+  "name": "core-http-request-runtime-depth",
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.HttpRequest()","symbol":"HttpRequest.HttpRequest"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.equals(Object)","symbol":"HttpRequest.equals"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.getBody()","symbol":"HttpRequest.getBody"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.getBodyAsBlob()","symbol":"HttpRequest.getBodyAsBlob"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.getBodyDocument()","symbol":"HttpRequest.getBodyDocument"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.getCompressed()","symbol":"HttpRequest.getCompressed"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.getEndpoint()","symbol":"HttpRequest.getEndpoint"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.getHeader(String)","symbol":"HttpRequest.getHeader"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.getMethod()","symbol":"HttpRequest.getMethod"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.hashCode()","symbol":"HttpRequest.hashCode"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setBody(String)","symbol":"HttpRequest.setBody"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setBodyAsBlob(Blob)","symbol":"HttpRequest.setBodyAsBlob"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setBodyDocument(Dom.Document)","symbol":"HttpRequest.setBodyDocument"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setBodyDocument(Object)","symbol":"HttpRequest.setBodyDocument(Object)"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setCompressed(Boolean)","symbol":"HttpRequest.setCompressed"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setEndpoint(String)","symbol":"HttpRequest.setEndpoint"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setHeader(String,String)","symbol":"HttpRequest.setHeader"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setMethod(String)","symbol":"HttpRequest.setMethod"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setTimeout","symbol":"HttpRequest.setTimeout"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.setTimeout(Integer)","symbol":"HttpRequest.setTimeout(Integer)"},
+    {"kind":"exec","surfaceId":"apex:System.HttpRequest.toString()","symbol":"HttpRequest.toString"}
+  ],
+  "source": [{"path":"anonymous.apex","content":"HttpRequest req = new HttpRequest(); System.assertEquals(true, req.equals(req)); System.assertNotEquals(null, req.hashCode()); req.setEndpoint('https://api.example.test/v4/items'); req.setMethod('patch'); req.setHeader('X-Trace', 'trace-42'); req.setCompressed(true); req.setTimeout(2500); req.setBody('payload-42'); System.assertEquals('https://api.example.test/v4/items', req.getEndpoint()); System.assertEquals('patch', req.getMethod()); System.assertEquals('trace-42', req.getHeader('X-Trace')); System.assertEquals(true, req.getCompressed()); System.assertEquals(2500, req.getTimeout()); System.assertEquals('payload-42', req.getBody()); req.setBodyAsBlob(Blob.valueOf('blob-42')); System.assertEquals('blob-42', req.getBodyAsBlob().toString()); Dom.Document doc = new Dom.Document(); doc.createRootElement('item', null, null); req.setBodyDocument(doc); System.assertEquals('item', req.getBodyDocument().getRootElement().getName()); Object docObject = doc; req.setBodyDocument(docObject); System.assertEquals('item', req.getBodyDocument().getRootElement().getName()); System.assertNotEquals(null, req.toString()); req.setTimeout(1800); System.assertEquals(1800, req.getTimeout());"}],
+  "command": {"kind":"exec","args":["HttpRequest req = new HttpRequest(); System.assertEquals(true, req.equals(req)); System.assertNotEquals(null, req.hashCode()); req.setEndpoint('https://api.example.test/v4/items'); req.setMethod('patch'); req.setHeader('X-Trace', 'trace-42'); req.setCompressed(true); req.setTimeout(2500); req.setBody('payload-42'); System.assertEquals('https://api.example.test/v4/items', req.getEndpoint()); System.assertEquals('patch', req.getMethod()); System.assertEquals('trace-42', req.getHeader('X-Trace')); System.assertEquals(true, req.getCompressed()); System.assertEquals(2500, req.getTimeout()); System.assertEquals('payload-42', req.getBody()); req.setBodyAsBlob(Blob.valueOf('blob-42')); System.assertEquals('blob-42', req.getBodyAsBlob().toString()); Dom.Document doc = new Dom.Document(); doc.createRootElement('item', null, null); req.setBodyDocument(doc); System.assertEquals('item', req.getBodyDocument().getRootElement().getName()); Object docObject = doc; req.setBodyDocument(docObject); System.assertEquals('item', req.getBodyDocument().getRootElement().getName()); System.assertNotEquals(null, req.toString()); req.setTimeout(1800); System.assertEquals(1800, req.getTimeout());"]},
+  "expected": {"result":{"debug":null,"ok":true}}
+}
