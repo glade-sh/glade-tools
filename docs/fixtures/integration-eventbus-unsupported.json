@@ -8,11 +8,6 @@
   "evidence": [
     {
       "kind": "exec",
-      "notes": "Local platform event publish returns no-op success SaveResult records; delivery is not modeled.",
-      "symbol": "EventBus.publish"
-    },
-    {
-      "kind": "exec",
       "notes": "Local EventBus.publish returns no-delivery SaveResult values.",
       "surfaceId": "apex:System.EventBus.publish(Object)",
       "symbol": "EventBus.publish(Object)"
