@@ -1,0 +1,14 @@
+{
+  "name": "ui-apexpages-current-page-test-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves the local test harness current-page slot and does not claim hosted Visualforce execution.",
+  "evidence": [
+    {"kind":"test","surfaceId":"apex:System.Test.setCurrentPage(Object)","symbol":"Test.setCurrentPage(Object)","notes":"Installs PageReference values through the Object overload for local tests."}
+  ],
+  "source": [
+    {"path":"force-app/main/classes/UiApexPagesCurrentPageTest.cls","content":"@isTest private class UiApexPagesCurrentPageTest { @isTest static void tracksTwoPageTransitions() { Test.setCurrentPage(new PageReference('/apex/FirstPage?state=one')); System.assertEquals('/apex/FirstPage?state=one', ApexPages.currentPage().getUrl()); Object second = new PageReference('/apex/SecondPage?state=two'); Test.setCurrentPage(second); System.assertEquals('/apex/SecondPage?state=two', ApexPages.currentPage().getUrl()); System.assertEquals('two', ApexPages.currentPage().getParameters().get('state')); } }"}
+  ],
+  "command": {"kind":"test"},
+  "expected": {"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}}
+}

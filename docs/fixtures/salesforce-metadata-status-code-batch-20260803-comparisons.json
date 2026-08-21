@@ -17,23 +17,23 @@
   "localFixtures": [
     {
       "path": "docs/fixtures/core-runtime-metadata-status-code-constants-api67-00.json",
-      "sha256": "11e8d69dbe51ef9c9bddf65cd694e3815cc48fb76342a44bea69235a176cf55e"
+      "sha256": "ccb03bca26d1ec90f9aae3395a1a4ef1eb68790018598ec7147d74d9bcb436e4"
     },
     {
       "path": "docs/fixtures/core-runtime-metadata-status-code-constants-api67-01.json",
-      "sha256": "491952b35548ff19ff7ab1cc646e1d93b0c9846983a30058023f6ba55f100abe"
+      "sha256": "fb87d1b26bae85e0008df9afd8daa306109f413880ba0f0a0bf86c47fabc7b8a"
     },
     {
       "path": "docs/fixtures/core-runtime-metadata-status-code-constants-api67-02.json",
-      "sha256": "29b7ae8bf067fc0db4e552b19a6b04e7e51afa3da69b4d674cf9aeaceed2a4b0"
+      "sha256": "c36748ccf032f57441ea78c0714df0c87325ff88b57109ba4472412de309bd83"
     },
     {
       "path": "docs/fixtures/core-runtime-metadata-status-code-constants-api67-03.json",
-      "sha256": "4aa809b8041c8923a519c215814f8e13c8eb7ba13f47a5ed8e89687ddd9432a9"
+      "sha256": "fff3404344d42556aba725216ca69d979339cc63e4924a667ef7b567bf2e51af"
     },
     {
       "path": "docs/fixtures/core-runtime-metadata-status-code-constants-api67-04.json",
-      "sha256": "39f41d9e673f135ce8976d29d9f4787305098885b796faf7f2aa2029767ce978"
+      "sha256": "dbd85afb47578f1e0b081326b6b1efa5d1eb85a272a90ab0f231307532e197a0"
     },
     {
       "path": "docs/fixtures/core-runtime-metadata-status-code-constants-api67-05.json",

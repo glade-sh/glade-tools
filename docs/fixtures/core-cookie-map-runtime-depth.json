@@ -1,0 +1,23 @@
+{
+  "name":"core-cookie-map-runtime-depth",
+  "evidence":[
+    {"surfaceId":"apex:System.Cookie","symbol":"Cookie","kind":"exec"},
+    {"surfaceId":"apex:System.Cookie.Cookie(String,String,String,Integer,Boolean)","symbol":"Cookie.Cookie(String,String,String,Integer,Boolean)","kind":"exec"},
+    {"surfaceId":"apex:System.Cookie.Cookie(String,String,String,Integer,Boolean,String)","symbol":"Cookie.Cookie(String,String,String,Integer,Boolean,String)","kind":"exec"},
+    {"surfaceId":"apex:System.Cookie.Cookie(String,String,String,Integer,Boolean,String,Boolean)","symbol":"Cookie.Cookie(String,String,String,Integer,Boolean,String,Boolean)","kind":"exec"},
+    {"surfaceId":"apex:System.Cookie.toString()","symbol":"Cookie.toString()","kind":"exec"},
+    {"surfaceId":"apex:System.Map","symbol":"Map","kind":"exec"},
+    {"surfaceId":"apex:System.Map.Map(Map)","symbol":"Map.Map(Map)","kind":"exec"},
+    {"surfaceId":"apex:System.Map.copyConstructor","symbol":"Map.Map(Map)","kind":"exec"},
+    {"surfaceId":"apex:System.Map.equals(Object)","symbol":"Map.equals(Object)","kind":"exec"},
+    {"surfaceId":"apex:System.Map.hashCode()","symbol":"Map.hashCode()","kind":"exec"}
+  ],
+  "source":[
+    {"path":"anonymous.apex","content":"Cookie base = new Cookie('sid', 'alpha', '/secure', 3600, true); Cookie sameSite = new Cookie('sid', 'alpha', '/secure', 3600, true, 'Lax'); Cookie full = new Cookie('sid', 'alpha', '/secure', 3600, true, 'Strict', true); System.assertEquals('/secure', base.getPath()); System.assertEquals(3600, base.getMaxAge()); System.assertEquals('Lax', sameSite.getSameSite()); System.assertEquals(null, full.getDomain()); System.assertEquals('Strict', full.getSameSite()); System.assertEquals(true, full.isHttpOnly()); System.assertEquals(true, full.isSecure()); System.assertEquals('alpha', full.getValue()); System.assert(full.toString().length() > 0); Map<String,Object> first = new Map<String,Object>{'key' => 'one'}; Map<String,Object> copied = new Map<String,Object>(first); System.assert(copied.equals(first)); System.assertEquals(copied.hashCode(), first.hashCode()); copied.put('key', 'two'); System.assertEquals('one', (String)first.get('key')); System.assertEquals('two', (String)copied.get('key'));"} 
+  ],
+  "command":{"kind":"exec","args":["Cookie base = new Cookie('sid', 'alpha', '/secure', 3600, true); Cookie sameSite = new Cookie('sid', 'alpha', '/secure', 3600, true, 'Lax'); Cookie full = new Cookie('sid', 'alpha', '/secure', 3600, true, 'Strict', true); System.assertEquals('/secure', base.getPath()); System.assertEquals(3600, base.getMaxAge()); System.assertEquals('Lax', sameSite.getSameSite()); System.assertEquals(null, full.getDomain()); System.assertEquals('Strict', full.getSameSite()); System.assertEquals(true, full.isHttpOnly()); System.assertEquals(true, full.isSecure()); System.assertEquals('alpha', full.getValue()); System.assert(full.toString().length() > 0); Map<String,Object> first = new Map<String,Object>{'key' => 'one'}; Map<String,Object> copied = new Map<String,Object>(first); System.assert(copied.equals(first)); System.assertEquals(copied.hashCode(), first.hashCode()); copied.put('key', 'two'); System.assertEquals('one', (String)first.get('key')); System.assertEquals('two', (String)copied.get('key'));"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"Deterministic local value-object and collection semantics are proven here; this fixture does not claim hosted Salesforce parity."
+}

@@ -612,5 +612,6 @@
       "kind": "exec",
       "notes": "API 67 Salesforce and Glade anonymous Apex StatusCode enum constant assertion."
     }
-  ]
+  ],
+  "salesforceEligible": true
 }

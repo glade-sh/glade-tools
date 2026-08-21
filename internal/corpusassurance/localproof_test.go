@@ -372,6 +372,13 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-schema-field-scalars-picklist-runtime.json", 17},
 		{"data-schema-sobject-recordtype-filtered-runtime.json", 13},
 		{"ui-apexpages-page-state-messages-runtime.json", 6},
+		{"data-database-batch-boolean-runtime.json", 3},
+		{"data-database-immediate-dml-runtime.json", 6},
+		{"data-database-async-dml-runtime.json", 9},
+		{"data-schema-displaytype-token-runtime.json", 22},
+		{"core-exception-object-methods-runtime.json", 8},
+		{"core-cookie-map-runtime-depth.json", 10},
+		{"ui-apexpages-current-page-test-runtime.json", 1},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
