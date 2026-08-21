@@ -1,0 +1,91 @@
+{
+  "name": "data-platform-schema-presentation-results-wave17-runtime",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Schema.describeTabs is permission-gated in the target scratch org; this fixture proves deterministic local presentation metadata and makes no hosted Salesforce parity claim.",
+  "project": {
+    "sourceApiVersion": "67.0",
+    "packageDirectories": [
+      {
+        "path": "force-app",
+        "default": true
+      }
+    ]
+  },
+  "source": [
+    {
+      "path": "sfdx-project.json",
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"67.0\"}"
+    },
+    {
+      "path": "force-app/main/default/objects/Widget__c/Widget__c.object-meta.xml",
+      "content": "<CustomObject xmlns=\"http://soap.sforce.com/2006/04/metadata\"><label>Widget</label><pluralLabel>Widgets</pluralLabel><nameField><label>Widget Name</label><type>Text</type></nameField><deploymentStatus>Deployed</deploymentStatus><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/tabs/Widget__c.tab-meta.xml",
+      "content": "<CustomTab xmlns=\"http://soap.sforce.com/2006/04/metadata\"><customObject>true</customObject><label>Widgets</label><motif>Custom42: Treasure chest</motif></CustomTab>"
+    },
+    {
+      "path": "anonymous.apex",
+      "content": "List<Schema.DescribeTabSetResult> tabSets = Schema.describeTabs(); System.assert(tabSets.size() >= 1); Schema.DescribeTabSetResult tabSet = null; for (Schema.DescribeTabSetResult candidateTabSet : tabSets) { if (candidateTabSet.getTabSetId() == 'AllTabs') { tabSet = candidateTabSet; break; } } System.assertNotEquals(null, tabSet); System.assert(tabSet.equals(tabSet)); System.assert(!tabSet.equals(null)); System.assert(tabSet.hashCode() != 0); System.assert(tabSet.toString().contains('AllTabs')); System.assertEquals('All Tabs', tabSet.getLabel());  System.assertNotEquals(null, tabSet.getName()); System.assert(tabSet.getName().length() > 0); System.assertEquals('All Tabs', tabSet.getDescription()); System.assertEquals(null, tabSet.getLogoUrl()); System.assertEquals(null, tabSet.getNamespace()); System.assertEquals('AllTabs', tabSet.getTabSetId()); System.assert(!tabSet.isSelected()); System.assertEquals(tabSet.getDescription(), tabSet.description); System.assertEquals(tabSet.getLabel(), tabSet.label); System.assertEquals(tabSet.getName(), tabSet.name); System.assertEquals(tabSet.getLogoUrl(), tabSet.logoUrl); System.assertEquals(tabSet.getNamespace(), tabSet.namespace); System.assertEquals(tabSet.isSelected(), tabSet.selected); System.assertEquals(tabSet.getTabSetId(), tabSet.tabSetId); List<Schema.DescribeTabResult> tabs = tabSet.getTabs(); System.assert(tabs.size() >= 1); Schema.DescribeTabResult tab = null; for (Schema.DescribeTabResult candidate : tabs) { if (candidate.getName() == 'Widget__c') { tab = candidate; } } System.assertNotEquals(null, tab); List<Schema.DescribeColorResult> colors = tab.getColors(); System.assertEquals(1, colors.size()); Schema.DescribeColorResult color = colors.get(0); System.assert(color.equals(color)); System.assert(!color.equals(null)); System.assert(color.hashCode() != 0); System.assert(color.toString().contains('Custom42')); System.assertEquals('#747474', color.getColor()); System.assertEquals('primary', color.getContext()); System.assertEquals('Custom42: Treasure chest', color.getTheme()); System.assertEquals(color.getColor(), color.color); System.assertEquals(color.getContext(), color.context); System.assertEquals(color.getTheme(), color.theme); List<Schema.DescribeIconResult> icons = tab.getIcons(); System.assertEquals(1, icons.size()); Schema.DescribeIconResult icon = icons.get(0); System.assert(icon.equals(icon)); System.assert(!icon.equals(null)); System.assert(icon.hashCode() != 0); System.assert(icon.toString().contains('Custom42')); System.assertEquals('image/svg+xml', icon.getContentType()); System.assertEquals('Custom42: Treasure chest', icon.getTheme()); System.assert(icon.getUrl().contains('widget')); System.assertEquals(0, icon.getHeight()); System.assertEquals(0, icon.getWidth()); System.assertEquals(icon.getContentType(), icon.contentType); System.assertEquals(icon.getHeight(), icon.height); System.assertEquals(icon.getTheme(), icon.theme); System.assertEquals(icon.getUrl(), icon.url); System.assertEquals(icon.getWidth(), icon.width);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Schema.DescribeTabSetResult> tabSets = Schema.describeTabs(); System.assert(tabSets.size() >= 1); Schema.DescribeTabSetResult tabSet = null; for (Schema.DescribeTabSetResult candidateTabSet : tabSets) { if (candidateTabSet.getTabSetId() == 'AllTabs') { tabSet = candidateTabSet; break; } } System.assertNotEquals(null, tabSet); System.assert(tabSet.equals(tabSet)); System.assert(!tabSet.equals(null)); System.assert(tabSet.hashCode() != 0); System.assert(tabSet.toString().contains('AllTabs')); System.assertEquals('All Tabs', tabSet.getLabel());  System.assertNotEquals(null, tabSet.getName()); System.assert(tabSet.getName().length() > 0); System.assertEquals('All Tabs', tabSet.getDescription()); System.assertEquals(null, tabSet.getLogoUrl()); System.assertEquals(null, tabSet.getNamespace()); System.assertEquals('AllTabs', tabSet.getTabSetId()); System.assert(!tabSet.isSelected()); System.assertEquals(tabSet.getDescription(), tabSet.description); System.assertEquals(tabSet.getLabel(), tabSet.label); System.assertEquals(tabSet.getName(), tabSet.name); System.assertEquals(tabSet.getLogoUrl(), tabSet.logoUrl); System.assertEquals(tabSet.getNamespace(), tabSet.namespace); System.assertEquals(tabSet.isSelected(), tabSet.selected); System.assertEquals(tabSet.getTabSetId(), tabSet.tabSetId); List<Schema.DescribeTabResult> tabs = tabSet.getTabs(); System.assert(tabs.size() >= 1); Schema.DescribeTabResult tab = null; for (Schema.DescribeTabResult candidate : tabs) { if (candidate.getName() == 'Widget__c') { tab = candidate; } } System.assertNotEquals(null, tab); List<Schema.DescribeColorResult> colors = tab.getColors(); System.assertEquals(1, colors.size()); Schema.DescribeColorResult color = colors.get(0); System.assert(color.equals(color)); System.assert(!color.equals(null)); System.assert(color.hashCode() != 0); System.assert(color.toString().contains('Custom42')); System.assertEquals('#747474', color.getColor()); System.assertEquals('primary', color.getContext()); System.assertEquals('Custom42: Treasure chest', color.getTheme()); System.assertEquals(color.getColor(), color.color); System.assertEquals(color.getContext(), color.context); System.assertEquals(color.getTheme(), color.theme); List<Schema.DescribeIconResult> icons = tab.getIcons(); System.assertEquals(1, icons.size()); Schema.DescribeIconResult icon = icons.get(0); System.assert(icon.equals(icon)); System.assert(!icon.equals(null)); System.assert(icon.hashCode() != 0); System.assert(icon.toString().contains('Custom42')); System.assertEquals('image/svg+xml', icon.getContentType()); System.assertEquals('Custom42: Treasure chest', icon.getTheme()); System.assert(icon.getUrl().contains('widget')); System.assertEquals(0, icon.getHeight()); System.assertEquals(0, icon.getWidth()); System.assertEquals(icon.getContentType(), icon.contentType); System.assertEquals(icon.getHeight(), icon.height); System.assertEquals(icon.getTheme(), icon.theme); System.assertEquals(icon.getUrl(), icon.url); System.assertEquals(icon.getWidth(), icon.width);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "evidence": [
+    {"surfaceId":"apex:Schema.DescribeColorResult","symbol":"Schema.DescribeColorResult","kind":"exec","notes":"Direct anonymous execution asserts deterministic tab color metadata."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.color","symbol":"Schema.DescribeColorResult.color","kind":"exec","notes":"Direct anonymous execution asserts the exact Custom42 color value."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.context","symbol":"Schema.DescribeColorResult.context","kind":"exec","notes":"Direct anonymous execution asserts the exact color context."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.equals(Object)","symbol":"Schema.DescribeColorResult.equals","kind":"exec","notes":"Direct anonymous execution asserts identity and null inequality for the observed color."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.getColor()","symbol":"Schema.DescribeColorResult.getColor","kind":"exec","notes":"Direct anonymous execution asserts the exact Custom42 color value."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.getContext()","symbol":"Schema.DescribeColorResult.getContext","kind":"exec","notes":"Direct anonymous execution asserts the exact color context."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.getTheme()","symbol":"Schema.DescribeColorResult.getTheme","kind":"exec","notes":"Direct anonymous execution asserts the exact Custom42 theme."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.hashCode()","symbol":"Schema.DescribeColorResult.hashCode","kind":"exec","notes":"Direct anonymous execution asserts a non-default color hash."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.theme","symbol":"Schema.DescribeColorResult.theme","kind":"exec","notes":"Direct anonymous execution asserts the exact Custom42 theme."},
+    {"surfaceId":"apex:Schema.DescribeColorResult.toString()","symbol":"Schema.DescribeColorResult.toString","kind":"exec","notes":"Direct anonymous execution asserts the observed Custom42 identity text."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.contenttype","symbol":"Schema.DescribeIconResult.contentType","kind":"exec","notes":"Direct anonymous execution asserts the exact icon content type."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.equals(Object)","symbol":"Schema.DescribeIconResult.equals","kind":"exec","notes":"Direct anonymous execution asserts identity and null inequality for the observed icon."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.getContentType()","symbol":"Schema.DescribeIconResult.getContentType","kind":"exec","notes":"Direct anonymous execution asserts the exact icon content type."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.getHeight()","symbol":"Schema.DescribeIconResult.getHeight","kind":"exec","notes":"Direct anonymous execution asserts the exact icon height."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.getTheme()","symbol":"Schema.DescribeIconResult.getTheme","kind":"exec","notes":"Direct anonymous execution asserts the exact Custom42 icon theme."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.getUrl()","symbol":"Schema.DescribeIconResult.getUrl","kind":"exec","notes":"Direct anonymous execution asserts the custom icon URL."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.getWidth()","symbol":"Schema.DescribeIconResult.getWidth","kind":"exec","notes":"Direct anonymous execution asserts the exact icon width."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.hashCode()","symbol":"Schema.DescribeIconResult.hashCode","kind":"exec","notes":"Direct anonymous execution asserts a non-default icon hash."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.height","symbol":"Schema.DescribeIconResult.height","kind":"exec","notes":"Direct anonymous execution asserts the exact icon height."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.theme","symbol":"Schema.DescribeIconResult.theme","kind":"exec","notes":"Direct anonymous execution asserts the exact Custom42 icon theme."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.toString()","symbol":"Schema.DescribeIconResult.toString","kind":"exec","notes":"Direct anonymous execution asserts the observed Custom42 icon identity text."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.url","symbol":"Schema.DescribeIconResult.url","kind":"exec","notes":"Direct anonymous execution asserts the custom icon URL."},
+    {"surfaceId":"apex:Schema.DescribeIconResult.width","symbol":"Schema.DescribeIconResult.width","kind":"exec","notes":"Direct anonymous execution asserts the exact icon width."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.description","symbol":"Schema.DescribeTabSetResult.description","kind":"exec","notes":"Direct anonymous execution asserts the exact All Tabs description."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.equals(Object)","symbol":"Schema.DescribeTabSetResult.equals","kind":"exec","notes":"Direct anonymous execution asserts identity and null inequality for the observed tab set."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.getDescription()","symbol":"Schema.DescribeTabSetResult.getDescription","kind":"exec","notes":"Direct anonymous execution asserts the exact All Tabs description."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.getLabel()","symbol":"Schema.DescribeTabSetResult.getLabel","kind":"exec","notes":"Direct anonymous execution asserts the exact All Tabs label."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.getLogoUrl()","symbol":"Schema.DescribeTabSetResult.getLogoUrl","kind":"exec","notes":"Direct anonymous execution asserts the deterministic null logo URL."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.getName()","symbol":"Schema.DescribeTabSetResult.getName","kind":"exec","notes":"Direct anonymous execution asserts the All Tabs name."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.getNamespace()","symbol":"Schema.DescribeTabSetResult.getNamespace","kind":"exec","notes":"Direct anonymous execution asserts the deterministic null namespace."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.getTabSetId()","symbol":"Schema.DescribeTabSetResult.getTabSetId","kind":"exec","notes":"Direct anonymous execution asserts the exact AllTabs identifier."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.getTabs()","symbol":"Schema.DescribeTabSetResult.getTabs","kind":"exec","notes":"Direct anonymous execution asserts a non-empty tab collection."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.hashCode()","symbol":"Schema.DescribeTabSetResult.hashCode","kind":"exec","notes":"Direct anonymous execution asserts a non-default tab-set hash."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.isSelected()","symbol":"Schema.DescribeTabSetResult.isSelected","kind":"exec","notes":"Direct anonymous execution asserts the All Tabs selection state."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.label","symbol":"Schema.DescribeTabSetResult.label","kind":"exec","notes":"Direct anonymous execution asserts the exact All Tabs label."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.logourl","symbol":"Schema.DescribeTabSetResult.logoUrl","kind":"exec","notes":"Direct anonymous execution asserts the deterministic null logo URL."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.name","symbol":"Schema.DescribeTabSetResult.name","kind":"exec","notes":"Direct anonymous execution asserts the All Tabs name."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.namespace","symbol":"Schema.DescribeTabSetResult.namespace","kind":"exec","notes":"Direct anonymous execution asserts the deterministic null namespace."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.selected","symbol":"Schema.DescribeTabSetResult.selected","kind":"exec","notes":"Direct anonymous execution asserts the All Tabs selection state."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.tabs","symbol":"Schema.DescribeTabSetResult.tabs","kind":"exec","notes":"Direct anonymous execution asserts a non-empty tab collection."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.tabsetid","symbol":"Schema.DescribeTabSetResult.tabSetId","kind":"exec","notes":"Direct anonymous execution asserts the exact AllTabs identifier."},
+    {"surfaceId":"apex:Schema.DescribeTabSetResult.toString()","symbol":"Schema.DescribeTabSetResult.toString","kind":"exec","notes":"Direct anonymous execution asserts the observed AllTabs identity text."}
+  ]
+}

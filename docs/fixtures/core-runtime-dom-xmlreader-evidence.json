@@ -170,12 +170,6 @@
       "notes": "Object overload accepts Dom.XmlNode values and inserts the new child before the reference child."
     },
     {
-      "surfaceId": "apex:dom.XmlNode.insertBefore(Object,Object)",
-      "symbol": "Dom.XmlNode.insertBefore(Object,Object)",
-      "kind": "test",
-      "notes": "Tooling docs also expose the same Dom.XmlNode row with lower-case namespace spelling."
-    },
-    {
       "surfaceId": "apex:Dom.XmlNode.removeAttribute(String,String)",
       "symbol": "Dom.XmlNode.removeAttribute(String,String)",
       "kind": "test",
@@ -192,12 +186,6 @@
       "symbol": "Dom.XmlNode.removeChild(Object)",
       "kind": "test",
       "notes": "Object overload removes a child when the Object value contains a local Dom.XmlNode."
-    },
-    {
-      "surfaceId": "apex:dom.XmlNode.removeChild(Object)",
-      "symbol": "Dom.XmlNode.removeChild(Object)",
-      "kind": "test",
-      "notes": "Tooling docs also expose the same Dom.XmlNode row with lower-case namespace spelling."
     },
     {
       "surfaceId": "apex:Dom.XmlNode.setAttribute(String,String)",

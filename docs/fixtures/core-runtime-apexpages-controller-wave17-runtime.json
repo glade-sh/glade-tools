@@ -1,0 +1,44 @@
+{
+  "apiVersion": "67.0",
+  "project": {
+    "sourceApiVersion": "67.0"
+  },
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Account record = new Account(Name='Controller');\nApexPages.StandardController standard = new ApexPages.StandardController(record);\nBoolean standardFieldsRejected = false;\ntry { standard.addFields(new List<String>{'Name'}); } catch (SObjectException expected) { standardFieldsRejected = true; }\nSystem.assertEquals(true, standardFieldsRejected);\nstandard.reset();\nSystem.assertEquals('Controller', ((Account)standard.getRecord()).Name);\nApexPages.StandardSetController standardSet = new ApexPages.StandardSetController(new List<Account>{record});\nBoolean setFieldsRejected = false;\ntry { standardSet.addFields(new List<String>{'Name'}); } catch (SObjectException expected) { setFieldsRejected = true; }\nSystem.assertEquals(true, setFieldsRejected);\nSystem.assert(standardSet.hashCode() != 0);\nSystem.assert(standardSet.toString().contains('StandardSetController'));\nApexPages.KnowledgeArticleVersionStandardController knowledge = new ApexPages.KnowledgeArticleVersionStandardController(new Account(Name='Knowledge'));\nSystem.assert(knowledge.hashCode() != 0);\nSystem.assert(knowledge.toString().contains('KnowledgeArticleVersionStandardController'));\n"
+    ]
+  },
+  "evidence": [
+    {"kind": "exec", "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController", "symbol": "ApexPages.KnowledgeArticleVersionStandardController"},
+    {"kind": "exec", "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.hashCode()", "symbol": "ApexPages.KnowledgeArticleVersionStandardController.hashCode()"},
+    {"kind": "exec", "surfaceId": "apex:ApexPages.KnowledgeArticleVersionStandardController.toString()", "symbol": "ApexPages.KnowledgeArticleVersionStandardController.toString()"},
+    {"kind": "exec", "surfaceId": "apex:ApexPages.StandardController.addFields(List<String>)", "symbol": "ApexPages.StandardController.addFields(List<String>)"},
+    {"kind": "exec", "surfaceId": "apex:ApexPages.StandardController.reset()", "symbol": "ApexPages.StandardController.reset()"},
+    {"kind": "exec", "surfaceId": "apex:ApexPages.StandardSetController.addFields(List<String>)", "symbol": "ApexPages.StandardSetController.addFields(List<String>)"},
+    {"kind": "exec", "surfaceId": "apex:ApexPages.StandardSetController.hashCode()", "symbol": "ApexPages.StandardSetController.hashCode()"},
+    {"kind": "exec", "surfaceId": "apex:ApexPages.StandardSetController.toString()", "symbol": "ApexPages.StandardSetController.toString()"}
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-apexpages-controller-wave17-runtime",
+  "notes": "Wave17 local-only ApexPages controller behavior. Null-only, self-only, and default-only ApexPages rows remain unclaimed rather than receiving weak direct-exec evidence.",
+  "profile": {
+    "laneId": "wave17-core-runtime-apexpages-controller",
+    "selectedRowCount": 8
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves sealed local anonymous execution only; it makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Account record = new Account(Name='Controller');\nApexPages.StandardController standard = new ApexPages.StandardController(record);\nBoolean standardFieldsRejected = false;\ntry { standard.addFields(new List<String>{'Name'}); } catch (SObjectException expected) { standardFieldsRejected = true; }\nSystem.assertEquals(true, standardFieldsRejected);\nstandard.reset();\nSystem.assertEquals('Controller', ((Account)standard.getRecord()).Name);\nApexPages.StandardSetController standardSet = new ApexPages.StandardSetController(new List<Account>{record});\nBoolean setFieldsRejected = false;\ntry { standardSet.addFields(new List<String>{'Name'}); } catch (SObjectException expected) { setFieldsRejected = true; }\nSystem.assertEquals(true, setFieldsRejected);\nSystem.assert(standardSet.hashCode() != 0);\nSystem.assert(standardSet.toString().contains('StandardSetController'));\nApexPages.KnowledgeArticleVersionStandardController knowledge = new ApexPages.KnowledgeArticleVersionStandardController(new Account(Name='Knowledge'));\nSystem.assert(knowledge.hashCode() != 0);\nSystem.assert(knowledge.toString().contains('KnowledgeArticleVersionStandardController'));\n"
+    }
+  ]
+}

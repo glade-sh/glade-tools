@@ -430,6 +430,12 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-string-tail-wave16-runtime.json", 5},
 		{"core-runtime-value-objects-wave16-runtime.json", 17},
 		{"data-platform-schema-describe-results-wave16-runtime.json", 56},
+		{"core-runtime-apexpages-controller-wave17-runtime.json", 8},
+		{"core-runtime-dom-value-semantics-wave17-runtime.json", 5},
+		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 11},
+		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
+		{"data-platform-schema-record-type-info-wave17-runtime.json", 8},
+		{"integration-metadata-core-dtos-wave17-runtime.json", 21},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
@@ -466,14 +472,22 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 	if !localProofEvidenceKindMatches(localRuntimeRequired, "test", "test") {
 		t.Fatal("local runtime test fixture was rejected")
 	}
-	if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", "apex:System.Test.setMock") {
-		t.Fatal("test-context runtime fixture was rejected")
+	for _, surfaceID := range []string{
+		"apex:System.Test.setMock",
+		"apex:System.StaticResourceCalloutMock.setStatusCode(Integer)",
+		"apex:System.MultiStaticResourceCalloutMock.setStaticResource(String,String)",
+	} {
+		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("test-context runtime fixture %q was rejected", surfaceID)
+		}
 	}
 }
 
 func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
-	if localProofCommandMatchesDisposition(localRuntimeRequired, "test", "apex:System.Location") {
-		t.Fatal("generic test fixture was accepted as runtime proof")
+	for _, surfaceID := range []string{"apex:System.Location", "apex:System.StaticResourceCalloutMockBuilder.run()"} {
+		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("generic test fixture %q was accepted as runtime proof", surfaceID)
+		}
 	}
 }
 

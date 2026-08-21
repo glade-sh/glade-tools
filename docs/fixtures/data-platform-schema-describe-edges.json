@@ -571,21 +571,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.equals(Object)",
-      "symbol": "Schema.RecordTypeInfo.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.hashCode()",
-      "symbol": "Schema.RecordTypeInfo.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.toString()",
-      "symbol": "Schema.RecordTypeInfo.toString"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.ChildRelationship.equals(Object)",
       "symbol": "Schema.ChildRelationship.equals"
     },
@@ -651,11 +636,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.name",
-      "symbol": "Schema.RecordTypeInfo.name"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.RecordTypeInfo.developername",
       "symbol": "Schema.RecordTypeInfo.developername"
     },
@@ -663,26 +643,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.RecordTypeInfo.recordtypeid",
       "symbol": "Schema.RecordTypeInfo.recordtypeid"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.active",
-      "symbol": "Schema.RecordTypeInfo.active"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.available",
-      "symbol": "Schema.RecordTypeInfo.available"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.defaultrecordtypemapping",
-      "symbol": "Schema.RecordTypeInfo.defaultrecordtypemapping"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.RecordTypeInfo.master",
-      "symbol": "Schema.RecordTypeInfo.master"
     },
     {
       "kind": "test",
