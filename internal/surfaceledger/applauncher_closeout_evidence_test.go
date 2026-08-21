@@ -30,6 +30,36 @@ func appLauncherCorrectedUnsupportedIDs() []string {
 
 func TestAppLauncherCloseoutHasExactExecutableOwnership(t *testing.T) {
 	root := filepath.Join("..", "..")
+	supportPolicy, err := LoadSupportPolicy(filepath.Join(root, "docs", "fixtures", "apex-local-support-policy.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantReason := "Salesforce API 67 clean-org compile oracle rejects this Salesforce-internal surface; the retained local fixture proves only Glade's explicit rejection and grants zero Salesforce parity."
+	wantExceptions := map[string]bool{
+		"AccountSettingsController.getExtraFields":        true,
+		"AppMenu.setAppVisibility":                        true,
+		"EmployeeLoginLinkController.getEmployeeLoginUrl": true,
+	}
+	foundExceptions := make(map[string]bool, len(wantExceptions))
+	for _, rule := range supportPolicy.Rules {
+		if rule.Namespace != "applauncher" {
+			continue
+		}
+		for _, exception := range rule.MemberExceptions {
+			key := exception.TypeName + "." + exception.MemberName
+			target := wantExceptions[key]
+			if !target {
+				continue
+			}
+			if foundExceptions[key] || exception.Disposition != DispositionHostedDeferred || exception.Reason != wantReason {
+				t.Fatalf("applauncher exception %s = %#v", key, exception)
+			}
+			foundExceptions[key] = true
+		}
+	}
+	if len(foundExceptions) != len(wantExceptions) {
+		t.Fatalf("applauncher closeout exceptions = %#v, want %#v", foundExceptions, wantExceptions)
+	}
 	wantIDs := appLauncherCloseoutIDs()
 	if len(wantIDs) != 21 {
 		t.Fatalf("applauncher closeout IDs = %d, want 21", len(wantIDs))
@@ -71,6 +101,24 @@ func TestAppLauncherCloseoutHasExactExecutableOwnership(t *testing.T) {
 		if row.Evidence != EvidenceFixture || row.GladeBehavior != behavior || len(row.Sources) != 1 || row.Sources[0] != owner {
 			t.Fatalf("%s evidence/behavior/source = %s/%s/%v", row.SurfaceID, row.Evidence, row.GladeBehavior, row.Sources)
 		}
+	}
+	profile := ComputeSupportProfile(selected, supportPolicy, nil)
+	profileByID := make(map[string]SupportProfileRow, len(profile.Rows))
+	for _, row := range profile.Rows {
+		profileByID[row.SurfaceID] = row
+	}
+	for _, id := range []string{
+		"apex:applauncher.AccountSettingsController.getExtraFields(String)",
+		"apex:applauncher.AppMenu.setAppVisibility(Id,Boolean)",
+		"apex:applauncher.EmployeeLoginLinkController.getEmployeeLoginUrl(String)",
+	} {
+		row := profileByID[id]
+		if row.Disposition != DispositionHostedDeferred || row.MatchRule != "namespace=applauncher (member exception)" || row.GapClass != "" {
+			t.Fatalf("%s profile = %#v", id, row)
+		}
+	}
+	if row := profileByID["apex:applauncher.AccountSettingsController.getCity()"]; row.Disposition != DispositionDeterministicMockRequired || row.MatchRule != "namespace=applauncher" {
+		t.Fatalf("adjacent AppLauncher profile = %#v", row)
 	}
 
 	fixturePath := filepath.Join(root, "docs", "fixtures", "current-base-applauncher-deterministic-001-api67.json")
