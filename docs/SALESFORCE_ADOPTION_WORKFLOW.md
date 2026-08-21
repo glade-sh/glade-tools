@@ -139,6 +139,7 @@ prepare
 usage-draft
 usage
 replay / merge-replay
+surface-scope
 local-proof-plan
 local-proof
 release-validate
@@ -193,6 +194,10 @@ Promotion copies only the exact spec, state, and compact promotion receipt into
 a new directory. Candidate build, inventory preparation, full surface refresh,
 release validation, and independent review still run once through the existing
 sealed workflow below. Do not run them per fixture family.
+
+`surface-scope` derives the exact Salesforce runtime denominator from a bound
+source profile. It includes every `deterministic-mock-required` and
+`local-runtime-required` SurfaceID and grants no parity credit.
 
 `candidate-build` starts the product and tools builds concurrently. Its exact
 commit binding selects reusable commit-scoped Go build and module caches, so a
