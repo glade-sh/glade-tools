@@ -38,7 +38,10 @@
     }
   ],
   "expected": {
-    "ok": true
+    "result": {
+      "debug": null,
+      "ok": true
+    }
   },
   "name": "async-batchable-impl-and-chunk-iterator",
   "salesforceEligible": false,
