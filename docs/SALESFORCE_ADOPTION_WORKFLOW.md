@@ -93,6 +93,22 @@ omits SSH targets, usernames, org IDs, and other private worker identity. If no
 current-candidate Salesforce index exists, Salesforce comparison is shown as
 `not-started` with every runtime-required row open.
 
+Keep private host mappings and input paths in one operator-owned refresh
+command, then run the bounded loop:
+
+```bash
+scripts/corpus-assurance/watch-salesforce-status.sh \
+  --interval 30 \
+  --status /absolute/status/STATUS.json \
+  --html /absolute/status/STATUS.html \
+  -- /absolute/private/refresh-salesforce-status
+```
+
+The refresh command updates worker health, Markdown, and JSON; the watcher
+atomically replaces the HTML. Use `--once` for a single refresh. The loop exits
+when pipeline status is `closed` or `blocked`; a failed refresh exits nonzero
+and leaves the last good page intact.
+
 ## Canonical attempt layout
 
 ```text
