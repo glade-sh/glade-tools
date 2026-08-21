@@ -294,6 +294,39 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 	}
 }
 
+func TestDatetimeFixtureIsFullyCandidateRunnable(t *testing.T) {
+	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(root, "core-datetime-stdlib.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, _, err := decodeLocalProofFixtureWithMetadata(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	required := make(map[string]string)
+	for _, evidence := range fixture.Evidence {
+		required[evidence.SurfaceID] = localRuntimeRequired
+	}
+	candidates, err := discoverLocalProofFixtures(root, required)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, candidate := range candidates {
+		if candidate.entry.ID == fixture.Name {
+			if len(candidate.entry.OwnedSurfaceIDs) != 45 {
+				t.Fatalf("Datetime candidate owns %d rows", len(candidate.entry.OwnedSurfaceIDs))
+			}
+			return
+		}
+	}
+	t.Fatal("Datetime fixture is not candidate-runnable")
+}
+
 func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T) {
 	if !localProofEvidenceKindMatches(localRuntimeRequired, "test", "test") {
 		t.Fatal("local runtime test fixture was rejected")
