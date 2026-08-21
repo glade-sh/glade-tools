@@ -1,0 +1,19 @@
+{
+  "name":"ui-apexpages-page-state-messages-runtime",
+  "evidence":[
+    {"surfaceId":"apex:System.ApexPages.addMessages(Object)","symbol":"ApexPages.addMessages(Object)","kind":"exec"},
+    {"surfaceId":"apex:System.ApexPages.addMessage(ApexPages.Message)","symbol":"ApexPages.addMessage(ApexPages.Message)","kind":"exec"},
+    {"surfaceId":"apex:System.ApexPages.addMessages(Exception)","symbol":"ApexPages.addMessages(Exception)","kind":"exec"},
+    {"surfaceId":"apex:System.ApexPages.getMessages()","symbol":"ApexPages.getMessages()","kind":"exec"},
+    {"surfaceId":"apex:System.ApexPages.hasMessages()","symbol":"ApexPages.hasMessages()","kind":"exec"},
+    {"surfaceId":"apex:System.ApexPages.hasMessages(ApexPages.Severity)","symbol":"ApexPages.hasMessages(ApexPages.Severity)","kind":"exec"}
+  ],
+  "source":[
+    {"path":"anonymous.apex","content":"ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Summary', 'Detail')); try { Integer quotient = 1 / 0; System.assertEquals(0, quotient); } catch (Exception e) { ApexPages.addMessages(e); } System.assert(ApexPages.hasMessages()); System.assert(ApexPages.hasMessages(ApexPages.Severity.ERROR)); System.assert(!ApexPages.hasMessages(ApexPages.Severity.INFO)); System.assertEquals(2, ApexPages.getMessages().size()); ApexPages.addMessages(new ApexPages.Message(ApexPages.Severity.WARNING, 'Warning', 'Warning detail')); System.assertEquals(3, ApexPages.getMessages().size()); System.assert(ApexPages.hasMessages(ApexPages.Severity.WARNING));"}
+  ],
+  "command":{"kind":"exec","args":["ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Summary', 'Detail')); try { Integer quotient = 1 / 0; System.assertEquals(0, quotient); } catch (Exception e) { ApexPages.addMessages(e); } System.assert(ApexPages.hasMessages()); System.assert(ApexPages.hasMessages(ApexPages.Severity.ERROR)); System.assert(!ApexPages.hasMessages(ApexPages.Severity.INFO)); System.assertEquals(2, ApexPages.getMessages().size()); ApexPages.addMessages(new ApexPages.Message(ApexPages.Severity.WARNING, 'Warning', 'Warning detail')); System.assertEquals(3, ApexPages.getMessages().size()); System.assert(ApexPages.hasMessages(ApexPages.Severity.WARNING));"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"The assertions depend on Glade's deterministic VM-local page-message context; this is local runtime evidence, not hosted Salesforce parity."
+}
