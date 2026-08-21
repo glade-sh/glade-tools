@@ -1,0 +1,41 @@
+{
+  "name": "core-cache-email-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:Cache.Org.remove(String)",
+      "symbol": "Cache.Org.remove(String)",
+      "kind": "exec",
+      "notes": "Removing a populated org-cache key returns true."
+    },
+    {
+      "surfaceId": "apex:Cache.Session.remove(String)",
+      "symbol": "Cache.Session.remove(String)",
+      "kind": "exec",
+      "notes": "Removing a populated session-cache key returns true."
+    },
+    {
+      "surfaceId": "apex:Messaging.Email.Email()",
+      "symbol": "Messaging.Email.Email()",
+      "kind": "exec",
+      "notes": "The local base email value is directly constructible."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Cache.Org.put('proof-org-remove', 'value'); System.assertEquals(true, Cache.Org.remove('proof-org-remove')); Cache.Session.put('proof-session-remove', 'value'); System.assertEquals(true, Cache.Session.remove('proof-session-remove')); Messaging.Email email = new Messaging.Email(); System.assertNotEquals(null, email);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Cache.Org.put('proof-org-remove', 'value'); System.assertEquals(true, Cache.Org.remove('proof-org-remove')); Cache.Session.put('proof-session-remove', 'value'); System.assertEquals(true, Cache.Session.remove('proof-session-remove')); Messaging.Email email = new Messaging.Email(); System.assertNotEquals(null, email);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
