@@ -1,0 +1,68 @@
+{
+  "apiVersion": "67.0",
+  "project": {
+    "sourceApiVersion": "67.0"
+  },
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Boolean boolDefault = new Boolean();\nBoolean boolValue = Boolean.valueOf('true');\nBoolean boolFalse = Boolean.valueOf('false');\nSystem.assertNotEquals(null, boolDefault);\nSystem.assert(boolValue.equals(boolValue));\nSystem.assertEquals(false, boolValue.equals(boolFalse));\nSystem.assertEquals(boolValue.hashCode(), boolValue.hashCode());\nSystem.assertEquals('true', boolValue.toString());\nDouble doubleValue = Double.valueOf('12.5');\nDouble doubleZero = Double.valueOf('0');\nSystem.assertEquals(false, doubleZero.equals(doubleValue));\nSystem.assertNotEquals(doubleZero.hashCode(), doubleValue.hashCode());\nSystem.assertEquals('12.5', doubleValue.toString());\nSystem.assertEquals('12.5', doubleValue.format());\nSystem.assertEquals(12.5, Double.valueOf('12.5'));\nId idDefault = new Id();\nId idValue = Id.valueOf('001B000001DVM9t');\nSystem.assertNotEquals(null, idDefault);\nSystem.assert(idValue.equals(idValue));\nSystem.assertEquals(false, idValue.equals(Id.valueOf('001B000001DVM8t')));\nSystem.assertEquals(idValue.hashCode(), idValue.hashCode());\nSystem.assertEquals('001B000001DVM9t', idValue.toString());\nSystem.assertEquals(idValue, Id.valueOf('001B000001DVM9t'));\nInteger integerDefault = new Integer();\nInteger integerValue = Integer.valueOf('42');\nSystem.assertNotEquals(null, integerDefault);\nSystem.assertEquals(2147483647, Integer.MAX_VALUE);\nSystem.assertEquals(-2147483648L, Integer.MIN_VALUE);\nSystem.assertEquals(false, integerDefault.equals(integerValue));\nSystem.assertNotEquals(integerDefault.hashCode(), integerValue.hashCode());\nSystem.assertEquals('42', integerValue.format());\nSystem.assertEquals('42', integerValue.toString());\nSystem.assertEquals(42, Integer.valueOf('42'));\nLong longValue = Long.valueOf('9001');\nSystem.assert(longValue.equals(longValue));\nSystem.assertEquals(longValue.hashCode(), longValue.hashCode());\nSystem.assertEquals('9,001', longValue.format());\nSystem.assertEquals('9001', longValue.toString());\nSystem.assertEquals(9001, Long.valueOf('9001'));\n"
+    ]
+  },
+  "evidence": [
+    {"kind": "exec", "surfaceId": "apex:System.Boolean", "symbol": "System.Boolean"},
+    {"kind": "exec", "surfaceId": "apex:System.Boolean.Boolean()", "symbol": "System.Boolean.Boolean()"},
+    {"kind": "exec", "surfaceId": "apex:System.Boolean.equals(Object)", "symbol": "System.Boolean.equals(Object)"},
+    {"kind": "exec", "surfaceId": "apex:System.Boolean.hashCode()", "symbol": "System.Boolean.hashCode()"},
+    {"kind": "exec", "surfaceId": "apex:System.Boolean.toString()", "symbol": "System.Boolean.toString()"},
+    {"kind": "exec", "surfaceId": "apex:System.Double", "symbol": "System.Double"},
+    {"kind": "exec", "surfaceId": "apex:System.Double.equals(Object)", "symbol": "System.Double.equals(Object)"},
+    {"kind": "exec", "surfaceId": "apex:System.Double.format()", "symbol": "System.Double.format()"},
+    {"kind": "exec", "surfaceId": "apex:System.Double.hashCode()", "symbol": "System.Double.hashCode()"},
+    {"kind": "exec", "surfaceId": "apex:System.Double.toString()", "symbol": "System.Double.toString()"},
+    {"kind": "exec", "surfaceId": "apex:System.Double.valueOf", "symbol": "System.Double.valueOf"},
+    {"kind": "exec", "surfaceId": "apex:System.Id", "symbol": "System.Id"},
+    {"kind": "exec", "surfaceId": "apex:System.Id.Id()", "symbol": "System.Id.Id()"},
+    {"kind": "exec", "surfaceId": "apex:System.Id.equals(Object)", "symbol": "System.Id.equals(Object)"},
+    {"kind": "exec", "surfaceId": "apex:System.Id.hashCode()", "symbol": "System.Id.hashCode()"},
+    {"kind": "exec", "surfaceId": "apex:System.Id.toString()", "symbol": "System.Id.toString()"},
+    {"kind": "exec", "surfaceId": "apex:System.Id.valueOf", "symbol": "System.Id.valueOf"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer", "symbol": "System.Integer"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.Integer()", "symbol": "System.Integer.Integer()"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.MAX_VALUE", "symbol": "System.Integer.MAX_VALUE"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.MIN_VALUE", "symbol": "System.Integer.MIN_VALUE"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.equals(Object)", "symbol": "System.Integer.equals(Object)"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.format()", "symbol": "System.Integer.format()"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.hashCode()", "symbol": "System.Integer.hashCode()"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.toString()", "symbol": "System.Integer.toString()"},
+    {"kind": "exec", "surfaceId": "apex:System.Integer.valueOf", "symbol": "System.Integer.valueOf"},
+    {"kind": "exec", "surfaceId": "apex:System.Long", "symbol": "System.Long"},
+    {"kind": "exec", "surfaceId": "apex:System.Long.equals(Object)", "symbol": "System.Long.equals(Object)"},
+    {"kind": "exec", "surfaceId": "apex:System.Long.format()", "symbol": "System.Long.format()"},
+    {"kind": "exec", "surfaceId": "apex:System.Long.hashCode()", "symbol": "System.Long.hashCode()"},
+    {"kind": "exec", "surfaceId": "apex:System.Long.toString()", "symbol": "System.Long.toString()"},
+    {"kind": "exec", "surfaceId": "apex:System.Long.valueOf", "symbol": "System.Long.valueOf"}
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-primitive-values-wave16-runtime",
+  "notes": "Wave16 local-only primitive-value execution. The three authority candidates Double.Double(), Id.to18, and Integer.doubleValue are omitted because the sealed candidate rejects those paths as unsupported local features.",
+  "profile": {
+    "laneId": "wave16-core-runtime-primitive-values",
+    "selectedRowCount": 32
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves sealed local anonymous execution only; it makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Boolean boolDefault = new Boolean();\nBoolean boolValue = Boolean.valueOf('true');\nBoolean boolFalse = Boolean.valueOf('false');\nSystem.assertNotEquals(null, boolDefault);\nSystem.assert(boolValue.equals(boolValue));\nSystem.assertEquals(false, boolValue.equals(boolFalse));\nSystem.assertEquals(boolValue.hashCode(), boolValue.hashCode());\nSystem.assertEquals('true', boolValue.toString());\nDouble doubleValue = Double.valueOf('12.5');\nDouble doubleZero = Double.valueOf('0');\nSystem.assertEquals(false, doubleZero.equals(doubleValue));\nSystem.assertNotEquals(doubleZero.hashCode(), doubleValue.hashCode());\nSystem.assertEquals('12.5', doubleValue.toString());\nSystem.assertEquals('12.5', doubleValue.format());\nSystem.assertEquals(12.5, Double.valueOf('12.5'));\nId idDefault = new Id();\nId idValue = Id.valueOf('001B000001DVM9t');\nSystem.assertNotEquals(null, idDefault);\nSystem.assert(idValue.equals(idValue));\nSystem.assertEquals(false, idValue.equals(Id.valueOf('001B000001DVM8t')));\nSystem.assertEquals(idValue.hashCode(), idValue.hashCode());\nSystem.assertEquals('001B000001DVM9t', idValue.toString());\nSystem.assertEquals(idValue, Id.valueOf('001B000001DVM9t'));\nInteger integerDefault = new Integer();\nInteger integerValue = Integer.valueOf('42');\nSystem.assertNotEquals(null, integerDefault);\nSystem.assertEquals(2147483647, Integer.MAX_VALUE);\nSystem.assertEquals(-2147483648L, Integer.MIN_VALUE);\nSystem.assertEquals(false, integerDefault.equals(integerValue));\nSystem.assertNotEquals(integerDefault.hashCode(), integerValue.hashCode());\nSystem.assertEquals('42', integerValue.format());\nSystem.assertEquals('42', integerValue.toString());\nSystem.assertEquals(42, Integer.valueOf('42'));\nLong longValue = Long.valueOf('9001');\nSystem.assert(longValue.equals(longValue));\nSystem.assertEquals(longValue.hashCode(), longValue.hashCode());\nSystem.assertEquals('9,001', longValue.format());\nSystem.assertEquals('9001', longValue.toString());\nSystem.assertEquals(9001, Long.valueOf('9001'));\n"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-value-objects-wave16-runtime",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves deterministic Glade-local value-object construction and fields. It excludes hosted Salesforce parity and org-context URL behavior.",
+  "evidence": [
+    {"surfaceId":"apex:System.Address.Address()","symbol":"System.Address.Address","kind":"exec"},
+    {"surfaceId":"apex:System.Address.city","symbol":"System.Address.city","kind":"exec"},
+    {"surfaceId":"apex:System.Address.country","symbol":"System.Address.country","kind":"exec"},
+    {"surfaceId":"apex:System.Address.countrycode","symbol":"System.Address.countrycode","kind":"exec"},
+    {"surfaceId":"apex:System.Address.geocodeaccuracy","symbol":"System.Address.geocodeaccuracy","kind":"exec"},
+    {"surfaceId":"apex:System.Address.postalcode","symbol":"System.Address.postalcode","kind":"exec"},
+    {"surfaceId":"apex:System.Address.state","symbol":"System.Address.state","kind":"exec"},
+    {"surfaceId":"apex:System.Address.statecode","symbol":"System.Address.statecode","kind":"exec"},
+    {"surfaceId":"apex:System.Address.street","symbol":"System.Address.street","kind":"exec"},
+    {"surfaceId":"apex:System.Location.Location()","symbol":"System.Location.Location","kind":"exec"},
+    {"surfaceId":"apex:System.Location.latitude","symbol":"System.Location.latitude","kind":"exec"},
+    {"surfaceId":"apex:System.Location.longitude","symbol":"System.Location.longitude","kind":"exec"},
+    {"surfaceId":"apex:System.SelectOption.SelectOption(String,String)","symbol":"System.SelectOption.SelectOption","kind":"exec"},
+    {"surfaceId":"apex:System.SelectOption.SelectOption(String,String,Boolean)","symbol":"System.SelectOption.SelectOption","kind":"exec"},
+    {"surfaceId":"apex:System.URL.getAuthority","symbol":"System.URL.getAuthority","kind":"exec"},
+    {"surfaceId":"apex:System.URL.getDefaultPort","symbol":"System.URL.getDefaultPort","kind":"exec"},
+    {"surfaceId":"apex:System.URL.getHost","symbol":"System.URL.getHost","kind":"exec"}
+  ],
+  "source": [
+    {"path":"anonymous.apex","content":"Address address = new Address(); address.street = '12 Lake Road'; address.city = 'Port Alsworth'; address.state = 'Alaska'; address.statecode = 'AK'; address.postalcode = '99653'; address.country = 'United States'; address.countrycode = 'US'; address.geocodeaccuracy = 'Zip'; System.assertEquals('12 Lake Road', address.street); System.assertEquals('Port Alsworth', address.city); System.assertEquals('Alaska', address.state); System.assertEquals('AK', address.statecode); System.assertEquals('99653', address.postalcode); System.assertEquals('United States', address.country); System.assertEquals('US', address.countrycode); System.assertEquals('Zip', address.geocodeaccuracy); Location location = new Location(); location.latitude = 37.7749; location.longitude = -122.4194; System.assertEquals(37.7749, location.latitude); System.assertEquals(-122.4194, location.longitude); SelectOption pair = new SelectOption('value', 'Label'); System.assertEquals('value', pair.getValue()); System.assertEquals('Label', pair.getLabel()); SelectOption triple = new SelectOption('value2', 'Label 2', true); System.assertEquals('value2', triple.getValue()); System.assertEquals('Label 2', triple.getLabel()); System.assertEquals(true, triple.getDisabled()); URL https = new URL('https://user:pass@example.test/path'); System.assertEquals('user:pass@example.test', https.getAuthority()); System.assertEquals('example.test', https.getHost()); URL ftp = new URL('ftp://files.example.test/pub/readme.txt'); System.assertEquals(21, ftp.getDefaultPort());"}
+  ],
+  "command": {
+    "kind":"exec",
+    "args":["Address address = new Address(); address.street = '12 Lake Road'; address.city = 'Port Alsworth'; address.state = 'Alaska'; address.statecode = 'AK'; address.postalcode = '99653'; address.country = 'United States'; address.countrycode = 'US'; address.geocodeaccuracy = 'Zip'; System.assertEquals('12 Lake Road', address.street); System.assertEquals('Port Alsworth', address.city); System.assertEquals('Alaska', address.state); System.assertEquals('AK', address.statecode); System.assertEquals('99653', address.postalcode); System.assertEquals('United States', address.country); System.assertEquals('US', address.countrycode); System.assertEquals('Zip', address.geocodeaccuracy); Location location = new Location(); location.latitude = 37.7749; location.longitude = -122.4194; System.assertEquals(37.7749, location.latitude); System.assertEquals(-122.4194, location.longitude); SelectOption pair = new SelectOption('value', 'Label'); System.assertEquals('value', pair.getValue()); System.assertEquals('Label', pair.getLabel()); SelectOption triple = new SelectOption('value2', 'Label 2', true); System.assertEquals('value2', triple.getValue()); System.assertEquals('Label 2', triple.getLabel()); System.assertEquals(true, triple.getDisabled()); URL https = new URL('https://user:pass@example.test/path'); System.assertEquals('user:pass@example.test', https.getAuthority()); System.assertEquals('example.test', https.getHost()); URL ftp = new URL('ftp://files.example.test/pub/readme.txt'); System.assertEquals(21, ftp.getDefaultPort());"]
+  },
+  "expected":{"result":{"debug":null,"ok":true}}
+}

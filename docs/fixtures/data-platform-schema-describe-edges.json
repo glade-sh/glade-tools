@@ -61,51 +61,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getAssociateEntityType()",
-      "symbol": "Schema.DescribeSObjectResult.getAssociateEntityType"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getAssociateParentEntity()",
-      "symbol": "Schema.DescribeSObjectResult.getAssociateParentEntity"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.isMergeable()",
-      "symbol": "Schema.DescribeSObjectResult.isMergeable"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getDataTranslationEnabled()",
-      "symbol": "Schema.DescribeSObjectResult.getDataTranslationEnabled"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getDefaultImplementation()",
-      "symbol": "Schema.DescribeSObjectResult.getDefaultImplementation"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getHasSubtypes()",
-      "symbol": "Schema.DescribeSObjectResult.getHasSubtypes"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getImplementedBy()",
-      "symbol": "Schema.DescribeSObjectResult.getImplementedBy"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getImplementsInterfaces()",
-      "symbol": "Schema.DescribeSObjectResult.getImplementsInterfaces"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getIsInterface()",
-      "symbol": "Schema.DescribeSObjectResult.getIsInterface"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.getSObjectDescribeOption()",
       "symbol": "Schema.DescribeSObjectResult.getSObjectDescribeOption"
     },
@@ -271,16 +226,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.isFeedEnabled()",
-      "symbol": "Schema.DescribeSObjectResult.isFeedEnabled"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.isMruEnabled()",
-      "symbol": "Schema.DescribeSObjectResult.isMruEnabled"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.isQueryable()",
       "symbol": "Schema.DescribeSObjectResult.isQueryable"
     },
@@ -386,11 +331,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isDeprecatedAndHidden()",
-      "symbol": "Schema.DescribeFieldResult.isDeprecatedAndHidden"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.isFilterable()",
       "symbol": "Schema.DescribeFieldResult.isFilterable"
     },
@@ -491,63 +431,13 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isFormulaTreatNullNumberAsZero()",
-      "symbol": "Schema.DescribeFieldResult.isFormulaTreatNullNumberAsZero"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isAiPredictionField()",
-      "symbol": "Schema.DescribeFieldResult.isAiPredictionField"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isDisplayLocationInDecimal()",
-      "symbol": "Schema.DescribeFieldResult.isDisplayLocationInDecimal"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isHighScaleNumber()",
-      "symbol": "Schema.DescribeFieldResult.isHighScaleNumber"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isQueryByDistance()",
-      "symbol": "Schema.DescribeFieldResult.isQueryByDistance"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isRestrictedDelete()",
-      "symbol": "Schema.DescribeFieldResult.isRestrictedDelete"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isSearchPrefilterable()",
-      "symbol": "Schema.DescribeFieldResult.isSearchPrefilterable"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isWriteRequiresMasterRead()",
-      "symbol": "Schema.DescribeFieldResult.isWriteRequiresMasterRead"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.isAggregatable()",
       "symbol": "Schema.DescribeFieldResult.isAggregatable"
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.isCascadeDelete()",
-      "symbol": "Schema.DescribeFieldResult.isCascadeDelete"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.isNameField()",
       "symbol": "Schema.DescribeFieldResult.isNameField"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.getIsSubtype()",
-      "symbol": "Schema.DescribeSObjectResult.getIsSubtype"
     },
     {
       "kind": "test",
@@ -558,11 +448,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.getCompoundFieldName()",
       "symbol": "Schema.DescribeFieldResult.getCompoundFieldName"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.getDataTranslationEnabled()",
-      "symbol": "Schema.DescribeFieldResult.getDataTranslationEnabled"
     },
     {
       "kind": "test",
@@ -616,16 +501,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.getMask()",
-      "symbol": "Schema.DescribeFieldResult.getMask"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.getMaskType()",
-      "symbol": "Schema.DescribeFieldResult.getMaskType"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.isNamePointing()",
       "symbol": "Schema.DescribeFieldResult.isNamePointing"
     },
@@ -643,11 +518,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.hashCode()",
       "symbol": "Schema.DescribeSObjectResult.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.toString()",
-      "symbol": "Schema.DescribeSObjectResult.toString"
     },
     {
       "kind": "test",
@@ -881,11 +751,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.datatranslationenabled",
-      "symbol": "Schema.DescribeFieldResult.datatranslationenabled"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.defaultedoncreate",
       "symbol": "Schema.DescribeFieldResult.defaultedoncreate"
     },
@@ -898,11 +763,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.defaultvalueformula",
       "symbol": "Schema.DescribeFieldResult.defaultvalueformula"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.dependentpicklist",
-      "symbol": "Schema.DescribeFieldResult.dependentpicklist"
     },
     {
       "kind": "test",
@@ -986,16 +846,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.mask",
-      "symbol": "Schema.DescribeFieldResult.mask"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.masktype",
-      "symbol": "Schema.DescribeFieldResult.masktype"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.name",
       "symbol": "Schema.DescribeFieldResult.name"
     },
@@ -1031,16 +881,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.querybydistance",
-      "symbol": "Schema.DescribeFieldResult.querybydistance"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.referencetargetfield",
-      "symbol": "Schema.DescribeFieldResult.referencetargetfield"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.referenceto",
       "symbol": "Schema.DescribeFieldResult.referenceto"
     },
@@ -1051,16 +891,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.relationshiporder",
-      "symbol": "Schema.DescribeFieldResult.relationshiporder"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.restricteddelete",
-      "symbol": "Schema.DescribeFieldResult.restricteddelete"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.restrictedpicklist",
       "symbol": "Schema.DescribeFieldResult.restrictedpicklist"
     },
@@ -1068,11 +898,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.scale",
       "symbol": "Schema.DescribeFieldResult.scale"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.searchprefilterable",
-      "symbol": "Schema.DescribeFieldResult.searchprefilterable"
     },
     {
       "kind": "test",
@@ -1111,28 +936,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeFieldResult.writerequiresmasterread",
-      "symbol": "Schema.DescribeFieldResult.writerequiresmasterread"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.accessible",
       "symbol": "Schema.DescribeSObjectResult.accessible"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.associateentitytype",
-      "symbol": "Schema.DescribeSObjectResult.associateentitytype"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.associateparententity",
-      "symbol": "Schema.DescribeSObjectResult.associateparententity"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.childrelationships",
-      "symbol": "Schema.DescribeSObjectResult.childrelationships"
     },
     {
       "kind": "test",
@@ -1148,16 +953,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.customsetting",
       "symbol": "Schema.DescribeSObjectResult.customsetting"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.datatranslationenabled",
-      "symbol": "Schema.DescribeSObjectResult.datatranslationenabled"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.defaultimplementation",
-      "symbol": "Schema.DescribeSObjectResult.defaultimplementation"
     },
     {
       "kind": "test",
@@ -1178,31 +973,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.fields",
       "symbol": "Schema.DescribeSObjectResult.fields"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.hassubtypes",
-      "symbol": "Schema.DescribeSObjectResult.hassubtypes"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.implementedby",
-      "symbol": "Schema.DescribeSObjectResult.implementedby"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.implementsinterfaces",
-      "symbol": "Schema.DescribeSObjectResult.implementsinterfaces"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.isinterface",
-      "symbol": "Schema.DescribeSObjectResult.isinterface"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.issubtype",
-      "symbol": "Schema.DescribeSObjectResult.issubtype"
     },
     {
       "kind": "test",
@@ -1246,48 +1016,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfos",
-      "symbol": "Schema.DescribeSObjectResult.recordtypeinfos"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfosbydevelopername",
-      "symbol": "Schema.DescribeSObjectResult.recordtypeinfosbydevelopername"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfosbyid",
-      "symbol": "Schema.DescribeSObjectResult.recordtypeinfosbyid"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.recordtypeinfosbyname",
-      "symbol": "Schema.DescribeSObjectResult.recordtypeinfosbyname"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.searchable",
-      "symbol": "Schema.DescribeSObjectResult.searchable"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.sobjectdescribeoption",
-      "symbol": "Schema.DescribeSObjectResult.sobjectdescribeoption"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.sobjecttype",
       "symbol": "Schema.DescribeSObjectResult.sobjecttype"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.undeletable",
-      "symbol": "Schema.DescribeSObjectResult.undeletable"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeSObjectResult.updateable",
-      "symbol": "Schema.DescribeSObjectResult.updateable"
     }
   ],
   "expected": {

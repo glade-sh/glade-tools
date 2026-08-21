@@ -54,12 +54,6 @@
       "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
     },
     {
-      "surfaceId": "apex:Schema.DescribeFieldResult.datatranslationenabled",
-      "symbol": "Schema.DescribeFieldResult.datatranslationenabled",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
       "surfaceId": "apex:Schema.DescribeFieldResult.defaultvalue",
       "symbol": "Schema.DescribeFieldResult.defaultvalue",
       "kind": "exec",
@@ -144,18 +138,6 @@
       "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
     },
     {
-      "surfaceId": "apex:Schema.DescribeFieldResult.mask",
-      "symbol": "Schema.DescribeFieldResult.mask",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeFieldResult.masktype",
-      "symbol": "Schema.DescribeFieldResult.masktype",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
       "surfaceId": "apex:Schema.DescribeFieldResult.namefield",
       "symbol": "Schema.DescribeFieldResult.namefield",
       "kind": "exec",
@@ -174,38 +156,8 @@
       "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
     },
     {
-      "surfaceId": "apex:Schema.DescribeFieldResult.querybydistance",
-      "symbol": "Schema.DescribeFieldResult.querybydistance",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeFieldResult.referencetargetfield",
-      "symbol": "Schema.DescribeFieldResult.referencetargetfield",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeFieldResult.relationshiporder",
-      "symbol": "Schema.DescribeFieldResult.relationshiporder",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeFieldResult.restricteddelete",
-      "symbol": "Schema.DescribeFieldResult.restricteddelete",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
       "surfaceId": "apex:Schema.DescribeFieldResult.restrictedpicklist",
       "symbol": "Schema.DescribeFieldResult.restrictedpicklist",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeFieldResult.searchprefilterable",
-      "symbol": "Schema.DescribeFieldResult.searchprefilterable",
       "kind": "exec",
       "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
     },
@@ -222,36 +174,6 @@
       "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
     },
     {
-      "surfaceId": "apex:Schema.DescribeFieldResult.writerequiresmasterread",
-      "symbol": "Schema.DescribeFieldResult.writerequiresmasterread",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.associateentitytype",
-      "symbol": "Schema.DescribeSObjectResult.associateentitytype",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.associateparententity",
-      "symbol": "Schema.DescribeSObjectResult.associateparententity",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.datatranslationenabled",
-      "symbol": "Schema.DescribeSObjectResult.datatranslationenabled",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.defaultimplementation",
-      "symbol": "Schema.DescribeSObjectResult.defaultimplementation",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
       "surfaceId": "apex:Schema.DescribeSObjectResult.deprecatedandhidden",
       "symbol": "Schema.DescribeSObjectResult.deprecatedandhidden",
       "kind": "exec",
@@ -260,36 +182,6 @@
     {
       "surfaceId": "apex:Schema.DescribeSObjectResult.feedenabled",
       "symbol": "Schema.DescribeSObjectResult.feedenabled",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.hassubtypes",
-      "symbol": "Schema.DescribeSObjectResult.hassubtypes",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.implementedby",
-      "symbol": "Schema.DescribeSObjectResult.implementedby",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.implementsinterfaces",
-      "symbol": "Schema.DescribeSObjectResult.implementsinterfaces",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.isinterface",
-      "symbol": "Schema.DescribeSObjectResult.isinterface",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.issubtype",
-      "symbol": "Schema.DescribeSObjectResult.issubtype",
       "kind": "exec",
       "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
     },
@@ -326,12 +218,6 @@
     {
       "surfaceId": "apex:Schema.DescribeSObjectResult.name",
       "symbol": "Schema.DescribeSObjectResult.name",
-      "kind": "exec",
-      "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
-    },
-    {
-      "surfaceId": "apex:Schema.DescribeSObjectResult.sobjectdescribeoption",
-      "symbol": "Schema.DescribeSObjectResult.sobjectdescribeoption",
       "kind": "exec",
       "notes": "CB146 G02 Schema typed-describe row; dual-oracle exact on API 67."
     },

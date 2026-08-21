@@ -424,6 +424,12 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-database-result-contracts-wave15-runtime.json", 11},
 		{"data-runtime-sobject-helper-wave15-runtime.json", 10},
 		{"integration-eventbus-callbacks-wave15-runtime.json", 3},
+		{"core-runtime-exception-tail-wave16-runtime.json", 17},
+		{"core-runtime-limits-tail-wave16-runtime.json", 14},
+		{"core-runtime-primitive-values-wave16-runtime.json", 32},
+		{"core-runtime-string-tail-wave16-runtime.json", 5},
+		{"core-runtime-value-objects-wave16-runtime.json", 17},
+		{"data-platform-schema-describe-results-wave16-runtime.json", 56},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))

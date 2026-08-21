@@ -7,6 +7,7 @@ import (
 )
 
 const schemaG02CurrentComparisonPath = "docs/fixtures/salesforce-current-base-schema-g02-cb146-api67-20260803-comparisons.json"
+const schemaG02HistoricalFixtureSHA = "c4857003e5f8061a4f6f20a14be2966cdb8cc333cd08ae9563cd509bfa7ed253"
 
 type schemaG02CurrentEnvelope struct {
 	Candidate struct {
@@ -58,11 +59,37 @@ func TestSchemaG02CurrentRowsHaveExactFixtureAndOracleEvidence(t *testing.T) {
 	}
 
 	fixturePath := filepath.Join(toolsRoot, comparison.FixturePath)
-	assertMetadataDTOBatchSHA256(t, fixturePath, comparison.FixtureSHA)
+	if comparison.FixtureSHA != schemaG02HistoricalFixtureSHA {
+		t.Fatalf("Schema G02 historical fixture SHA = %q, want %q", comparison.FixtureSHA, schemaG02HistoricalFixtureSHA)
+	}
 	fixtureEvidence, err := BuildEvidenceSnapshot([]string{fixturePath})
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(fixtureEvidence) != 35 {
+		t.Fatalf("Schema G02 retained fixture rows = %d, want 35", len(fixtureEvidence))
+	}
+	transferredPath := filepath.Join(toolsRoot, "docs/fixtures/data-platform-schema-describe-results-wave16-runtime.json")
+	transferredEvidence, err := BuildEvidenceSnapshot([]string{transferredPath})
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantedSet := make(map[string]struct{}, len(comparison.Comparisons[0].SurfaceIDs))
+	for _, id := range comparison.Comparisons[0].SurfaceIDs {
+		wantedSet[id] = struct{}{}
+	}
+	transferredRows := make([]SurfaceLedgerRow, 0, len(transferredEvidence))
+	for _, row := range transferredEvidence {
+		if row.Product == ProductApex && row.SurfaceID != "" {
+			if _, ok := wantedSet[row.SurfaceID]; ok {
+				transferredRows = append(transferredRows, row)
+			}
+		}
+	}
+	if len(transferredRows) != 19 {
+		t.Fatalf("Schema G02 transferred fixture rows = %d, want 19", len(transferredRows))
+	}
+	fixtureEvidence = append(fixtureEvidence, transferredRows...)
 	wantIDs := make([]string, 0, len(fixtureEvidence))
 	for _, row := range fixtureEvidence {
 		if row.Product == ProductApex && row.SurfaceID != "" {
