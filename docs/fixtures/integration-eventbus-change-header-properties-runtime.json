@@ -1,0 +1,31 @@
+{
+  "name": "integration-eventbus-change-header-properties-runtime",
+  "evidence": [
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.changedfields","symbol":"eventbus.ChangeEventHeader.changedfields","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.changeorigin","symbol":"eventbus.ChangeEventHeader.changeorigin","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.changetype","symbol":"eventbus.ChangeEventHeader.changetype","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.commitnumber","symbol":"eventbus.ChangeEventHeader.commitnumber","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.committimestamp","symbol":"eventbus.ChangeEventHeader.committimestamp","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.commituser","symbol":"eventbus.ChangeEventHeader.commituser","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.difffields","symbol":"eventbus.ChangeEventHeader.difffields","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.entityname","symbol":"eventbus.ChangeEventHeader.entityname","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.nulledfields","symbol":"eventbus.ChangeEventHeader.nulledfields","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.recordids","symbol":"eventbus.ChangeEventHeader.recordids","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.sequencenumber","symbol":"eventbus.ChangeEventHeader.sequencenumber","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.transactionkey","symbol":"eventbus.ChangeEventHeader.transactionkey","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setChangedFields(List<String>)","symbol":"eventbus.ChangeEventHeader.setChangedFields","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setChangeOrigin(String)","symbol":"eventbus.ChangeEventHeader.setChangeOrigin","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setChangeType(String)","symbol":"eventbus.ChangeEventHeader.setChangeType","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setCommitNumber(Long)","symbol":"eventbus.ChangeEventHeader.setCommitNumber","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setCommitTimestamp(Long)","symbol":"eventbus.ChangeEventHeader.setCommitTimestamp","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setCommitUser(String)","symbol":"eventbus.ChangeEventHeader.setCommitUser","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setDiffFields(List<String>)","symbol":"eventbus.ChangeEventHeader.setDiffFields","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setEntityName(String)","symbol":"eventbus.ChangeEventHeader.setEntityName","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setNulledFields(List<String>)","symbol":"eventbus.ChangeEventHeader.setNulledFields","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setRecordIds(List<String>)","symbol":"eventbus.ChangeEventHeader.setRecordIds","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setSequenceNumber(Integer)","symbol":"eventbus.ChangeEventHeader.setSequenceNumber","kind":"exec"},
+    {"surfaceId":"apex:eventbus.ChangeEventHeader.setTransactionKey(String)","symbol":"eventbus.ChangeEventHeader.setTransactionKey","kind":"exec"}
+  ],
+  "command":{"kind":"exec","args":["eventbus.ChangeEventHeader header = new eventbus.ChangeEventHeader(); List<String> changed = new List<String>{'FieldA'}; List<String> diff = new List<String>{'FieldB'}; List<String> recordIds = new List<String>{'record-local-1'}; header.setChangedFields(changed); header.setChangeOrigin('local.fixture'); header.setChangeType('UPDATE'); header.setCommitNumber(42L); header.setCommitTimestamp(987654321L); header.setCommitUser('local-user'); header.setDiffFields(diff); header.setEntityName('LocalEntity'); header.setNulledFields(new List<String>{'FieldC'}); header.setRecordIds(recordIds); header.setSequenceNumber(7); header.setTransactionKey('transaction-local-1'); System.assertEquals(changed, header.changedfields); System.assertEquals('local.fixture', header.changeorigin); System.assertEquals('UPDATE', header.changetype); System.assertEquals(42L, header.commitnumber); System.assertEquals(987654321L, header.committimestamp); System.assertEquals('local-user', header.commituser); System.assertEquals(diff, header.difffields); System.assertEquals('LocalEntity', header.entityname); System.assertEquals(1, header.nulledfields.size()); System.assertEquals('FieldC', header.nulledfields[0]); System.assertEquals(recordIds, header.recordids); System.assertEquals(7, header.sequencenumber); System.assertEquals('transaction-local-1', header.transactionkey);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}
