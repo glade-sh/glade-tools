@@ -1,0 +1,31 @@
+{
+  "name": "data-schema-sobject-recordtype-filtered-runtime",
+  "evidence": [
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.getRecordTypeInfosByDeveloperName()","symbol":"Schema.DescribeSObjectResult.getRecordTypeInfosByDeveloperName()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.getRecordTypeInfosById()","symbol":"Schema.DescribeSObjectResult.getRecordTypeInfosById()","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeSObjectResult.getRecordTypeInfosByName()","symbol":"Schema.DescribeSObjectResult.getRecordTypeInfosByName()","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.getDeveloperName()","symbol":"Schema.RecordTypeInfo.getDeveloperName()","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.getRecordTypeId()","symbol":"Schema.RecordTypeInfo.getRecordTypeId()","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.isActive()","symbol":"Schema.RecordTypeInfo.isActive()","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.isAvailable()","symbol":"Schema.RecordTypeInfo.isAvailable()","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.isDefaultRecordTypeMapping()","symbol":"Schema.RecordTypeInfo.isDefaultRecordTypeMapping()","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.isMaster()","symbol":"Schema.RecordTypeInfo.isMaster()","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.developername","symbol":"Schema.RecordTypeInfo.developerName","kind":"exec"},
+    {"surfaceId":"apex:Schema.RecordTypeInfo.recordtypeid","symbol":"Schema.RecordTypeInfo.recordTypeId","kind":"exec"},
+    {"surfaceId":"apex:Schema.FilteredLookupInfo","symbol":"Schema.FilteredLookupInfo","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeFieldResult.getFilteredLookupInfo()","symbol":"Schema.DescribeFieldResult.getFilteredLookupInfo()","kind":"exec"}
+  ],
+  "source":[{"path":"anonymous.apex","content":"Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe(); Map<String, Schema.RecordTypeInfo> byDeveloperName = describe.getRecordTypeInfosByDeveloperName(); Map<Id, Schema.RecordTypeInfo> byId = describe.getRecordTypeInfosById(); Map<String, Schema.RecordTypeInfo> byName = describe.getRecordTypeInfosByName(); System.assert(byDeveloperName.size() >= 2); System.assert(byId.size() >= 2); System.assert(byName.containsKey('Business Account')); Schema.RecordTypeInfo business = byDeveloperName.get('Business'); System.assertNotEquals(null, business); System.assertEquals('Business', business.getDeveloperName()); System.assertEquals(business.getDeveloperName(), business.developerName); System.assertNotEquals(null, business.getRecordTypeId()); System.assertEquals(business.getRecordTypeId(), business.recordTypeId); System.assert(business.isActive()); System.assert(business.isAvailable()); System.assert(!business.isDefaultRecordTypeMapping()); System.assert(!business.isMaster()); Schema.DescribeFieldResult parent = Account.Parent__c.getDescribe(); Schema.FilteredLookupInfo lookup = parent.getFilteredLookupInfo(); System.assertNotEquals(null, lookup);"}],
+  "command":{"kind":"exec","args":["Schema.DescribeSObjectResult describe = Account.SObjectType.getDescribe(); Map<String, Schema.RecordTypeInfo> byDeveloperName = describe.getRecordTypeInfosByDeveloperName(); Map<Id, Schema.RecordTypeInfo> byId = describe.getRecordTypeInfosById(); Map<String, Schema.RecordTypeInfo> byName = describe.getRecordTypeInfosByName(); System.assert(byDeveloperName.size() >= 2); System.assert(byId.size() >= 2); System.assert(byName.containsKey('Business Account')); Schema.RecordTypeInfo business = byDeveloperName.get('Business'); System.assertNotEquals(null, business); System.assertEquals('Business', business.getDeveloperName()); System.assertEquals(business.getDeveloperName(), business.developerName); System.assertNotEquals(null, business.getRecordTypeId()); System.assertEquals(business.getRecordTypeId(), business.recordTypeId); System.assert(business.isActive()); System.assert(business.isAvailable()); System.assert(!business.isDefaultRecordTypeMapping()); System.assert(!business.isMaster()); Schema.DescribeFieldResult parent = Account.Parent__c.getDescribe(); Schema.FilteredLookupInfo lookup = parent.getFilteredLookupInfo(); System.assertNotEquals(null, lookup);"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"org-configuration-required",
+  "salesforceExclusionReason":"Synthetic local Account record type and lookup-filter metadata are not hosted parity proof.",
+  "schema":[
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Account Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/fields/Parent__c.field-meta.xml","content":"<CustomField><fullName>Parent__c</fullName><label>Parent</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Parent</relationshipName><deleteConstraint>SetNull</deleteConstraint><lookupFilter><active>true</active><filterItems><field>Account.Name</field><operation>equals</operation><value>Acme</value></filterItems><isOptional>true</isOptional></lookupFilter></CustomField>"},
+    {"path":"force-app/main/default/objects/Account/recordTypes/Business.recordType-meta.xml","content":"<RecordType><fullName>Business</fullName><label>Business Account</label><active>true</active></RecordType>"},
+    {"path":"force-app/main/default/objects/Account/recordTypes/Household.recordType-meta.xml","content":"<RecordType><fullName>Household</fullName><label>Household Account</label><active>true</active></RecordType>"}
+  ]
+}

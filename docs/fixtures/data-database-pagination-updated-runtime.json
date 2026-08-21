@@ -1,0 +1,107 @@
+{
+  "name": "data-database-pagination-updated-runtime",
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.getPaginationCursor",
+      "symbol": "Database.getPaginationCursor"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.getPaginationCursor(String)",
+      "symbol": "Database.getPaginationCursor(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.getPaginationCursor(String,AccessLevel)",
+      "symbol": "Database.getPaginationCursor(String,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.getPaginationCursorWithBinds",
+      "symbol": "Database.getPaginationCursorWithBinds"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.getPaginationCursorWithBinds(String,Map,AccessLevel)",
+      "symbol": "Database.getPaginationCursorWithBinds(String,Map,AccessLevel)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.PaginationCursor",
+      "symbol": "Database.PaginationCursor"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.PaginationCursor.PaginationCursor()",
+      "symbol": "Database.PaginationCursor.PaginationCursor"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.PaginationCursor.fetchPage(Integer,Integer)",
+      "symbol": "Database.PaginationCursor.fetchPage"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.PaginationCursor.getNumRecords()",
+      "symbol": "Database.PaginationCursor.getNumRecords"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.getUpdated(String,Datetime,Datetime)",
+      "symbol": "Database.getUpdated(String,Datetime,Datetime)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.GetUpdatedResult.getIds()",
+      "symbol": "Database.GetUpdatedResult.getIds"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Database.GetUpdatedResult.getLatestDateCovered()",
+      "symbol": "Database.GetUpdatedResult.getLatestDateCovered"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.GetUpdatedResult.getIds()",
+      "symbol": "Database.GetUpdatedResult.getIds"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.GetUpdatedResult.getLatestDateCovered()",
+      "symbol": "Database.GetUpdatedResult.getLatestDateCovered"
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Datetime startWindow=Datetime.now().addMinutes(-1); Account activeOne=new Account(Name='Active One'); insert activeOne; Account activeTwo=new Account(Name='Active Two'); insert activeTwo; Account deleted=new Account(Name='Deleted Row'); insert deleted; delete deleted; Account updated=new Account(Name='Updated Before'); insert updated; updated.Name='Updated After'; update updated; Datetime endWindow=Datetime.now().addMinutes(1); String query='SELECT Id,Name FROM Account'; Database.PaginationCursor cursor=new Database.PaginationCursor(); System.assertEquals(0,cursor.getNumRecords()); Database.PaginationCursor plain=Database.getPaginationCursor(query); System.assertEquals(3,plain.getNumRecords()); Database.CursorFetchResult page=plain.fetchPage(0,2); System.assertEquals(2,page.getRecords().size()); System.assertEquals(2,page.getNextIndex()); System.assert(!page.isDone()); Database.PaginationCursor access=Database.getPaginationCursor(query,AccessLevel.USER_MODE); System.assertEquals(3,access.getNumRecords()); Map<String,Object> binds=new Map<String,Object>(); binds.put('wanted','Updated After'); Database.PaginationCursor boundAccess=Database.getPaginationCursorWithBinds('SELECT Id,Name FROM Account WHERE Name=:wanted',binds,AccessLevel.USER_MODE); System.assertEquals(1,boundAccess.getNumRecords()); Database.GetUpdatedResult changed=Database.getUpdated('Account',startWindow,endWindow); System.assert(changed.getIds().contains(updated.Id)); System.assertNotEquals(null,changed.getLatestDateCovered()); List<Account> fresh=[SELECT Id,Name FROM Account WHERE Id=:updated.Id]; System.assertEquals('Updated After',fresh[0].Name); cursor=null; plain=null; access=null; boundAccess=null; changed=null; page=null;"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Pagination cursor and updated-window behavior are exercised against deterministic local active, deleted, and updated records; this fixture makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Datetime startWindow=Datetime.now().addMinutes(-1); Account activeOne=new Account(Name='Active One'); insert activeOne; Account activeTwo=new Account(Name='Active Two'); insert activeTwo; Account deleted=new Account(Name='Deleted Row'); insert deleted; delete deleted; Account updated=new Account(Name='Updated Before'); insert updated; updated.Name='Updated After'; update updated; Datetime endWindow=Datetime.now().addMinutes(1); String query='SELECT Id,Name FROM Account'; Database.PaginationCursor cursor=new Database.PaginationCursor(); System.assertEquals(0,cursor.getNumRecords()); Database.PaginationCursor plain=Database.getPaginationCursor(query); System.assertEquals(3,plain.getNumRecords()); Database.CursorFetchResult page=plain.fetchPage(0,2); System.assertEquals(2,page.getRecords().size()); System.assertEquals(2,page.getNextIndex()); System.assert(!page.isDone()); Database.PaginationCursor access=Database.getPaginationCursor(query,AccessLevel.USER_MODE); System.assertEquals(3,access.getNumRecords()); Map<String,Object> binds=new Map<String,Object>(); binds.put('wanted','Updated After'); Database.PaginationCursor boundAccess=Database.getPaginationCursorWithBinds('SELECT Id,Name FROM Account WHERE Name=:wanted',binds,AccessLevel.USER_MODE); System.assertEquals(1,boundAccess.getNumRecords()); Database.GetUpdatedResult changed=Database.getUpdated('Account',startWindow,endWindow); System.assert(changed.getIds().contains(updated.Id)); System.assertNotEquals(null,changed.getLatestDateCovered()); List<Account> fresh=[SELECT Id,Name FROM Account WHERE Id=:updated.Id]; System.assertEquals('Updated After',fresh[0].Name); cursor=null; plain=null; access=null; boundAccess=null; changed=null; page=null;"
+    }
+  ]
+}

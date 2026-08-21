@@ -1,0 +1,24 @@
+{
+  "name": "core-date-timezone-runtime-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves deterministic local Date, Time, and TimeZone runtime behavior and makes no Salesforce parity claim.",
+  "evidence": [
+    {"surfaceId":"apex:System.Date.addMonths","symbol":"Date.addMonths","kind":"exec"},
+    {"surfaceId":"apex:System.Date.addYears","symbol":"Date.addYears","kind":"exec"},
+    {"surfaceId":"apex:System.Date.equals(Object)","symbol":"Date.equals","kind":"exec"},
+    {"surfaceId":"apex:System.Date.hashCode()","symbol":"Date.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.Date.toString()","symbol":"Date.toString","kind":"exec"},
+    {"surfaceId":"apex:System.Date.today","symbol":"Date.today","kind":"exec"},
+    {"surfaceId":"apex:System.Time.equals(Object)","symbol":"Time.equals","kind":"exec"},
+    {"surfaceId":"apex:System.Time.hashCode()","symbol":"Time.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.Time.toString()","symbol":"Time.toString","kind":"exec"},
+    {"surfaceId":"apex:System.TimeZone.clone()","symbol":"TimeZone.clone","kind":"exec"},
+    {"surfaceId":"apex:System.TimeZone.getID","symbol":"TimeZone.getID","kind":"exec"},
+    {"surfaceId":"apex:System.TimeZone.getOffset","symbol":"TimeZone.getOffset","kind":"exec"},
+    {"surfaceId":"apex:System.TimeZone.toString()","symbol":"TimeZone.toString","kind":"exec"}
+  ],
+  "source":[{"path":"anonymous.apex","content":"Date leap = Date.newInstance(2024, 2, 29); Date monthEnd = Date.newInstance(2024, 1, 31); System.assertEquals(Date.newInstance(2024, 2, 29), monthEnd.addMonths(1)); System.assertEquals(Date.newInstance(2025, 1, 31), monthEnd.addYears(1)); System.assert(leap.equals(leap)); System.assert(leap.hashCode() != null); System.assert(leap.toString().contains('2024-02-29')); Date today = Date.today(); System.assert(today <= Date.today()); Time clock = Time.newInstance(12, 34, 56, 789); System.assert(clock.equals(clock)); System.assert(clock.hashCode() != null); System.assertEquals('12:34:56.789Z', clock.toString()); TimeZone utc = TimeZone.getTimeZone('UTC'); TimeZone cloned = (TimeZone) utc.clone(); System.assertEquals('UTC', utc.getID()); System.assertEquals(0, utc.getOffset(Datetime.newInstanceGmt(2024, 7, 1, 12, 0, 0))); System.assert(utc.toString() != null); System.assert(cloned != null);"}],
+  "command":{"kind":"exec","args":["Date leap = Date.newInstance(2024, 2, 29); Date monthEnd = Date.newInstance(2024, 1, 31); System.assertEquals(Date.newInstance(2024, 2, 29), monthEnd.addMonths(1)); System.assertEquals(Date.newInstance(2025, 1, 31), monthEnd.addYears(1)); System.assert(leap.equals(leap)); System.assert(leap.hashCode() != null); System.assert(leap.toString().contains('2024-02-29')); Date today = Date.today(); System.assert(today <= Date.today()); Time clock = Time.newInstance(12, 34, 56, 789); System.assert(clock.equals(clock)); System.assert(clock.hashCode() != null); System.assertEquals('12:34:56.789Z', clock.toString()); TimeZone utc = TimeZone.getTimeZone('UTC'); TimeZone cloned = (TimeZone) utc.clone(); System.assertEquals('UTC', utc.getID()); System.assertEquals(0, utc.getOffset(Datetime.newInstanceGmt(2024, 7, 1, 12, 0, 0))); System.assert(utc.toString() != null); System.assert(cloned != null);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

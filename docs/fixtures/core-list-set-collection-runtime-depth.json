@@ -1,0 +1,24 @@
+{
+  "name": "core-list-set-collection-runtime-depth",
+  "salesforceEligible": true,
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:System.List.List()","symbol":"List.List()"},
+    {"kind":"exec","surfaceId":"apex:System.List.List(List)","symbol":"List.List(List)"},
+    {"kind":"exec","surfaceId":"apex:System.List.List(Set)","symbol":"List.List(Set)"},
+    {"kind":"exec","surfaceId":"apex:System.List.copyConstructor","symbol":"List.List"},
+    {"kind":"exec","surfaceId":"apex:System.List.hashCode()","symbol":"List.hashCode()"},
+    {"kind":"exec","surfaceId":"apex:System.List.toString()","symbol":"List.toString()"},
+    {"kind":"exec","surfaceId":"apex:System.Set.Set()","symbol":"Set.Set()"},
+    {"kind":"exec","surfaceId":"apex:System.Set.Set(List)","symbol":"Set.Set(List)"},
+    {"kind":"exec","surfaceId":"apex:System.Set.Set(Set)","symbol":"Set.Set(Set)"},
+    {"kind":"exec","surfaceId":"apex:System.Set.addAll(Set<Object>)","symbol":"Set.addAll(Set<Object>)"},
+    {"kind":"exec","surfaceId":"apex:System.Set.containsAll(Set<Object>)","symbol":"Set.containsAll(Set<Object>)"},
+    {"kind":"exec","surfaceId":"apex:System.Set.copyConstructor","symbol":"Set.Set"},
+    {"kind":"exec","surfaceId":"apex:System.Set.hashCode()","symbol":"Set.hashCode()"},
+    {"kind":"exec","surfaceId":"apex:System.Set.removeAll(Set<Object>)","symbol":"Set.removeAll(Set<Object>)"},
+    {"kind":"exec","surfaceId":"apex:System.Set.toString()","symbol":"Set.toString()"}
+  ],
+  "source": [{"path":"anonymous.apex","content":"List<String> empty = new List<String>(); System.assertEquals(0, empty.size()); List<String> source = new List<String>(); source.add('alpha'); source.add('beta'); List<String> copied = new List<String>(source); System.assertEquals(2, copied.size()); System.assertEquals('beta', copied.get(1)); Set<String> sourceSet = new Set<String>(); sourceSet.add('gamma'); sourceSet.add('delta'); List<String> fromSet = new List<String>(sourceSet); System.assertEquals(2, fromSet.size()); System.assert(fromSet.contains('gamma')); System.assert(fromSet.contains('delta')); System.assertNotEquals(null, copied.hashCode()); System.assertNotEquals(null, copied.toString()); Set<String> emptySet = new Set<String>(); System.assertEquals(0, emptySet.size()); Set<String> fromList = new Set<String>(source); System.assertEquals(2, fromList.size()); Set<String> copiedSet = new Set<String>(sourceSet); System.assertEquals(2, copiedSet.size()); Set<String> additions = new Set<String>(); additions.add('epsilon'); additions.add('zeta'); System.assertEquals(true, copiedSet.addAll(additions)); System.assertEquals(true, copiedSet.containsAll(additions)); Set<String> removal = new Set<String>(); removal.add('epsilon'); System.assertEquals(true, copiedSet.removeAll(removal)); System.assertEquals(false, copiedSet.contains('epsilon')); System.assertNotEquals(null, copiedSet.hashCode()); System.assertNotEquals(null, copiedSet.toString());"}],
+  "command": {"kind":"exec","args":["List<String> empty = new List<String>(); System.assertEquals(0, empty.size()); List<String> source = new List<String>(); source.add('alpha'); source.add('beta'); List<String> copied = new List<String>(source); System.assertEquals(2, copied.size()); System.assertEquals('beta', copied.get(1)); Set<String> sourceSet = new Set<String>(); sourceSet.add('gamma'); sourceSet.add('delta'); List<String> fromSet = new List<String>(sourceSet); System.assertEquals(2, fromSet.size()); System.assert(fromSet.contains('gamma')); System.assert(fromSet.contains('delta')); System.assertNotEquals(null, copied.hashCode()); System.assertNotEquals(null, copied.toString()); Set<String> emptySet = new Set<String>(); System.assertEquals(0, emptySet.size()); Set<String> fromList = new Set<String>(source); System.assertEquals(2, fromList.size()); Set<String> copiedSet = new Set<String>(sourceSet); System.assertEquals(2, copiedSet.size()); Set<String> additions = new Set<String>(); additions.add('epsilon'); additions.add('zeta'); System.assertEquals(true, copiedSet.addAll(additions)); System.assertEquals(true, copiedSet.containsAll(additions)); Set<String> removal = new Set<String>(); removal.add('epsilon'); System.assertEquals(true, copiedSet.removeAll(removal)); System.assertEquals(false, copiedSet.contains('epsilon')); System.assertNotEquals(null, copiedSet.hashCode()); System.assertNotEquals(null, copiedSet.toString());"]},
+  "expected": {"result":{"debug":null,"ok":true}}
+}
