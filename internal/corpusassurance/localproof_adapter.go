@@ -209,12 +209,16 @@ func validateLocalProofSurfaceWitnesses(entry LocalProofFixture, fixture compat.
 			source.WriteByte('\n')
 		}
 	}
-	tokens := localProofCodeIdentifiers(source.String())
+	code := source.String()
+	tokens := localProofCodeIdentifiers(code)
 	for _, evidence := range fixture.Evidence {
 		if !stringSet(entry.OwnedSurfaceIDs)[evidence.SurfaceID] {
 			continue
 		}
 		parts := localProofWitnessIdentifiers(evidence.Symbol)
+		if strings.Contains(evidence.Symbol, "(") && len(parts) == 2 && parts[0] == parts[1] && !localProofHasConstructorWitness(code, parts[0]) {
+			return fmt.Errorf("fixture %q surface %q lacks a constructor witness for %q", entry.ID, evidence.SurfaceID, evidence.Symbol)
+		}
 		for _, part := range parts {
 			if !tokens[part] {
 				return fmt.Errorf("fixture %q surface %q lacks a source witness for %q", entry.ID, evidence.SurfaceID, evidence.Symbol)
@@ -240,10 +244,57 @@ func localProofWitnessIdentifiers(symbol string) []string {
 
 func localProofCodeIdentifiers(source string) map[string]bool {
 	identifiers := make(map[string]bool)
+	for _, token := range localProofCodeTokens(source) {
+		switch token {
+		case ".", "(", "{", "<", ">":
+			continue
+		}
+		identifiers[token] = true
+	}
+	return identifiers
+}
+
+func localProofHasConstructorWitness(source, typeName string) bool {
+	tokens := localProofCodeTokens(source)
+	for i := 0; i < len(tokens); i++ {
+		if tokens[i] != "new" {
+			continue
+		}
+		j := i + 1
+		for j+2 < len(tokens) && tokens[j+1] == "." {
+			j += 2
+		}
+		if j >= len(tokens) || tokens[j] != typeName {
+			continue
+		}
+		j++
+		if j < len(tokens) && tokens[j] == "<" {
+			depth := 0
+			for ; j < len(tokens); j++ {
+				if tokens[j] == "<" {
+					depth++
+				} else if tokens[j] == ">" {
+					depth--
+					if depth == 0 {
+						j++
+						break
+					}
+				}
+			}
+		}
+		if j < len(tokens) && (tokens[j] == "(" || tokens[j] == "{") {
+			return true
+		}
+	}
+	return false
+}
+
+func localProofCodeTokens(source string) []string {
+	tokens := make([]string, 0)
 	var token []rune
 	flush := func() {
 		if len(token) > 0 {
-			identifiers[string(token)] = true
+			tokens = append(tokens, string(token))
 			token = token[:0]
 		}
 	}
@@ -289,11 +340,14 @@ func localProofCodeIdentifiers(source string) map[string]bool {
 				token = append(token, r)
 			} else {
 				flush()
+				if r == '.' || r == '(' || r == '{' || r == '<' || r == '>' {
+					tokens = append(tokens, string(r))
+				}
 			}
 		}
 	}
 	flush()
-	return identifiers
+	return tokens
 }
 
 func writeLocalProofProject(root string, fixture compat.Fixture) (int, error) {

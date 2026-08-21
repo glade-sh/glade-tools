@@ -147,6 +147,38 @@ func TestLocalProofRejectsDeclarationOnlyRuntimeExecution(t *testing.T) {
 	}
 }
 
+func TestLocalProofConstructorRequiresNewWitness(t *testing.T) {
+	entry := LocalProofFixture{ID: "constructor", Name: "constructor", Path: filepath.Join(t.TempDir(), "fixture.json"), OwnedSurfaceIDs: []string{"apex:System.UserInfo.UserInfo()"}, Disposition: localRuntimeRequired, Operation: "exec"}
+	for name, source := range map[string]string{
+		"method call":   "System.UserInfo.getName();",
+		"comment decoy": "// new UserInfo()\nSystem.UserInfo.getName();",
+		"string decoy":  "String decoy = 'new UserInfo()'; System.UserInfo.getName();",
+	} {
+		t.Run(name, func(t *testing.T) {
+			fixture := compat.Fixture{Name: entry.Name, Command: compat.Invocation{Kind: "exec", Args: []string{source}}, Evidence: []compat.FixtureEvidence{{SurfaceID: entry.OwnedSurfaceIDs[0], Kind: "exec", Symbol: entry.OwnedSurfaceIDs[0]}}}
+			if err := validateLocalProofFixtureIdentity(entry, fixture); err == nil {
+				t.Fatal("constructor evidence accepted without a new expression")
+			}
+		})
+	}
+	for name, test := range map[string]struct {
+		surfaceID string
+		source    string
+	}{
+		"qualified":          {"apex:System.UserInfo.UserInfo()", "new System.UserInfo();"},
+		"generic":            {"apex:System.Map.Map()", "new Map<String, Object>();"},
+		"collection literal": {"apex:System.Set.Set(Object)", "System.assert(true); new Set<Object>{null};"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			entry.OwnedSurfaceIDs = []string{test.surfaceID}
+			fixture := compat.Fixture{Name: entry.Name, Command: compat.Invocation{Kind: "exec", Args: []string{test.source}}, Evidence: []compat.FixtureEvidence{{SurfaceID: test.surfaceID, Kind: "exec", Symbol: test.surfaceID}}}
+			if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+				t.Fatalf("constructor new expression rejected: %v", err)
+			}
+		})
+	}
+}
+
 func TestLocalProofAcceptsAnonymousDeterministicWitness(t *testing.T) {
 	entry := LocalProofFixture{ID: "anonymous", Name: "anonymous", Path: filepath.Join(t.TempDir(), "fixture.json"), OwnedSurfaceIDs: []string{"apex:Metadata.StatusCode.INTERNAL_ERROR"}, Disposition: deterministicMockRequired, Operation: "exec"}
 	fixture := compat.Fixture{
