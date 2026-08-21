@@ -1,0 +1,35 @@
+{
+  "name": "core-messaging-sendemail-error-fields-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:Messaging.SendEmailError.statuscode",
+      "symbol": "Messaging.SendEmailError.statuscode",
+      "kind": "exec",
+      "notes": "A locally rejected email exposes its required-field status code."
+    },
+    {
+      "surfaceId": "apex:Messaging.SendEmailError.targetobjectid",
+      "symbol": "Messaging.SendEmailError.targetobjectid",
+      "kind": "exec",
+      "notes": "A locally rejected address-only email has no target object id."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Messaging.SingleEmailMessage invalid = new Messaging.SingleEmailMessage(); invalid.setToAddresses(new List<String>{'missing-body@example.test'}); Messaging.SendEmailResult result = Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{invalid}, false)[0]; System.assertEquals(false, result.isSuccess()); Messaging.SendEmailError errorValue = result.getErrors()[0]; System.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, errorValue.statuscode); System.assertEquals(null, errorValue.targetobjectid);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Messaging.SingleEmailMessage invalid = new Messaging.SingleEmailMessage(); invalid.setToAddresses(new List<String>{'missing-body@example.test'}); Messaging.SendEmailResult result = Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{invalid}, false)[0]; System.assertEquals(false, result.isSuccess()); Messaging.SendEmailError errorValue = result.getErrors()[0]; System.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, errorValue.statuscode); System.assertEquals(null, errorValue.targetobjectid);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
