@@ -52,6 +52,24 @@ Back up only an encrypted Git bundle at
 `/Volumes/Photos/glade-bak/glade-proof-auth.bundle`; the bundle must not
 contain a host identity.
 
+Generate the secret-filtered worker status in one bounded parallel probe:
+
+```bash
+python3 scripts/corpus-assurance/worker-health.py \
+  --host casper=matt@casper.local \
+  --host razor=matt@razor.local \
+  --disk casper=/Volumes/Photos \
+  --alias glade-dev-hub \
+  --expected-org-id 00D000000000001 \
+  --output /absolute/status/WORKER_HEALTH.json
+```
+
+The output records connectivity, shared Dev Hub identity, scratch-org quota,
+disk, issues, and the optional mode-0600
+`$HOME/.config/glade-proof/run.json` marker. A missing marker means the worker
+is idle. Raw Salesforce output, SSH stderr, tokens, auth URLs, cookies, and
+environment variables are never copied into the status file.
+
 ## Canonical attempt layout
 
 ```text
