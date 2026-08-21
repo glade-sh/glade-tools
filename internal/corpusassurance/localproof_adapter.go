@@ -133,7 +133,7 @@ var localProofFixtureFields = map[string]bool{
 }
 
 var localProofFixtureExtensionFields = map[string]bool{
-	"apiVersion": true, "candidate": true, "canonicalSnapshot": true, "creditScope": true, "mode": true, "notes": true, "notCredited": true, "packetId": true, "profile": true, "replay": true, "retained": true, "scenario": true,
+	"apiVersion": true, "candidate": true, "canonicalSnapshot": true, "creditScope": true, "evidenceOnly": true, "mode": true, "notes": true, "notCredited": true, "packetId": true, "profile": true, "replay": true, "retained": true, "scenario": true, "title": true,
 	"salesforceEligible": true, "salesforceExclusionClass": true, "salesforceExclusionReason": true,
 }
 
