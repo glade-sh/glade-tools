@@ -140,6 +140,7 @@ usage-draft
 usage
 replay / merge-replay
 surface-scope
+surface-local-proof-plan
 local-proof-plan
 local-proof
 release-validate
@@ -198,6 +199,11 @@ sealed workflow below. Do not run them per fixture family.
 `surface-scope` derives the exact Salesforce runtime denominator from a bound
 source profile. It includes every `deterministic-mock-required` and
 `local-runtime-required` SurfaceID and grants no parity credit.
+
+`surface-local-proof-plan` passes that denominator through the existing strict
+fixture planner. Its coverage output retains the exact missing SurfaceIDs when
+the plan is incomplete; authoritative local-proof inputs are written only at
+100% candidate-runnable coverage.
 
 `candidate-build` starts the product and tools builds concurrently. Its exact
 commit binding selects reusable commit-scoped Go build and module caches, so a

@@ -297,7 +297,7 @@ func localProofOperation(disposition string) string {
 }
 
 func localProofOperationMatches(disposition, operation string) bool {
-	if disposition == localRuntimeRequired {
+	if disposition == localRuntimeRequired || disposition == deterministicMockRequired {
 		return operation == "exec" || operation == "test"
 	}
 	return operation == localProofOperation(disposition)
@@ -768,7 +768,7 @@ func localProofEvidenceKindMatches(disposition, commandKind, evidenceKind string
 	case localRuntimeRequired:
 		return (commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime")) || (commandKind == "test" && evidenceKind == "test")
 	case deterministicMockRequired:
-		return commandKind == "test" && (evidenceKind == "test" || evidenceKind == "behavior")
+		return (commandKind == "test" && (evidenceKind == "test" || evidenceKind == "behavior")) || (commandKind == "exec" && (evidenceKind == "exec" || evidenceKind == "runtime"))
 	case compileShapeRequired:
 		return commandKind == "check" && (evidenceKind == "shape" || evidenceKind == "compile")
 	default:

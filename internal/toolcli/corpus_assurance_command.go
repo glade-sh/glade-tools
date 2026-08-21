@@ -239,6 +239,26 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "surface-scope", scope.Total, *output)
+	case "surface-local-proof-plan":
+		flags := flag.NewFlagSet("corpus assurance surface-local-proof-plan", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		scope, profile := flags.String("surface-scope", "", ""), flags.String("source-profile", "", "")
+		ledger, policy := flags.String("ledger", "", ""), flags.String("policy", "", "")
+		fixtureRoot := flags.String("fixture-root", "", "")
+		localProfile, usage := flags.String("profile-output", "", ""), flags.String("usage-output", "", "")
+		decision, manifest := flags.String("decision-output", "", ""), flags.String("manifest-output", "", "")
+		coverage := flags.String("coverage-output", "", "")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*scope, *profile, *ledger, *policy, *fixtureRoot, *localProfile, *usage, *decision, *manifest, *coverage); err != nil {
+			return err
+		}
+		_, result, err := corpusassurance.BuildSurfaceLocalProofPlan(corpusassurance.SurfaceLocalProofPlanRequest{ScopePath: *scope, SourceProfilePath: *profile, LedgerPath: *ledger, PolicyPath: *policy, FixtureRoot: *fixtureRoot, ProfilePath: *localProfile, UsagePath: *usage, LocalDecisionPath: *decision, ManifestPath: *manifest, CoveragePath: *coverage})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "surface-local-proof-plan", result.Covered, *coverage)
 	case "local-proof":
 		flags := flag.NewFlagSet("corpus assurance local-proof", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -721,6 +741,7 @@ Usage:
   glade-tools corpus assurance replay --host <local|replay-worker> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>
   glade-tools corpus assurance surface-scope --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --output <SURFACE_ORACLE_SCOPE.json>
+  glade-tools corpus assurance surface-local-proof-plan --surface-scope <SURFACE_ORACLE_SCOPE.json> --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json> --coverage-output <SURFACE_LOCAL_PROOF_COVERAGE.json>
   glade-tools corpus assurance local-proof-plan --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <USAGE_DECISIONS.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
   glade-tools corpus assurance release-validate --attempt <ATTEMPT.json> --glade-root <glade-root> --candidate <glade> --tools-root <glade-tools-root> --tools <glade-tools> --tools-freeze <FINAL_TOOLS_COMMIT> --output <RELEASE_VALIDATION.json>
