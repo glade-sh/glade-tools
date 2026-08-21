@@ -1,0 +1,25 @@
+{
+  "name": "data-schema-child-relationship-aliases-runtime",
+  "evidence": [
+    {"surfaceId":"apex:Schema.ChildRelationship.cascadedelete","symbol":"Schema.ChildRelationship.cascadedelete","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.childsobject","symbol":"Schema.ChildRelationship.childsobject","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.deprecatedandhidden","symbol":"Schema.ChildRelationship.deprecatedandhidden","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.equals(Object)","symbol":"Schema.ChildRelationship.equals(Object)","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.field","symbol":"Schema.ChildRelationship.field","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.hashCode()","symbol":"Schema.ChildRelationship.hashCode()","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.junctionidlistnames","symbol":"Schema.ChildRelationship.junctionidlistnames","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.junctionreferenceto","symbol":"Schema.ChildRelationship.junctionreferenceto","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.relationshipname","symbol":"Schema.ChildRelationship.relationshipname","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.restricteddelete","symbol":"Schema.ChildRelationship.restricteddelete","kind":"exec"},
+    {"surfaceId":"apex:Schema.ChildRelationship.toString()","symbol":"Schema.ChildRelationship.toString()","kind":"exec"}
+  ],
+  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "source":[
+    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"},
+    {"path":"force-app/main/default/objects/Task__c/Task__c.object-meta.xml","content":"<CustomObject xmlns=\"http://soap.sforce.com/2006/04/metadata\"><label>Task</label><pluralLabel>Tasks</pluralLabel><nameField><label>Task Name</label><type>Text</type></nameField><deploymentStatus>Deployed</deploymentStatus><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Task__c/fields/Who__c.field-meta.xml","content":"<CustomField xmlns=\"http://soap.sforce.com/2006/04/metadata\"><fullName>Who__c</fullName><label>Who</label><type>Lookup</type><referenceTo>Account</referenceTo><referenceTo>Contact</referenceTo><relationshipName>Who</relationshipName><childRelationshipName>WhoTasks</childRelationshipName><deleteConstraint>Restrict</deleteConstraint></CustomField>"},
+    {"path":"anonymous.apex","content":"Schema.ChildRelationship rel = null; for (Schema.ChildRelationship candidate : Account.SObjectType.getDescribe().getChildRelationships()) { if (candidate.getRelationshipName() == 'Contacts') { rel = candidate; } } System.assertNotEquals(null, rel); System.assertEquals(rel.getRelationshipName(), rel.relationshipname); System.assertEquals(rel.getField(), rel.field); System.assertEquals(rel.getChildSObject(), rel.childsobject); System.assertEquals(rel.isCascadeDelete(), rel.cascadedelete); System.assertEquals(rel.isRestrictedDelete(), rel.restricteddelete); System.assertEquals(rel.isDeprecatedAndHidden(), rel.deprecatedandhidden); System.assertEquals(rel.getJunctionIdListNames(), rel.junctionidlistnames); System.assertEquals(rel.getJunctionReferenceTo(), rel.junctionreferenceto); System.assert(rel.equals(rel)); System.assertEquals(rel.hashCode(), rel.hashCode()); System.assert(rel.toString().length() > 0);"}
+  ],
+  "command":{"kind":"exec","args":["Schema.ChildRelationship rel = null; for (Schema.ChildRelationship candidate : Account.SObjectType.getDescribe().getChildRelationships()) { if (candidate.getRelationshipName() == 'Contacts') { rel = candidate; } } System.assertNotEquals(null, rel); System.assertEquals(rel.getRelationshipName(), rel.relationshipname); System.assertEquals(rel.getField(), rel.field); System.assertEquals(rel.getChildSObject(), rel.childsobject); System.assertEquals(rel.isCascadeDelete(), rel.cascadedelete); System.assertEquals(rel.isRestrictedDelete(), rel.restricteddelete); System.assertEquals(rel.isDeprecatedAndHidden(), rel.deprecatedandhidden); System.assertEquals(rel.getJunctionIdListNames(), rel.junctionidlistnames); System.assertEquals(rel.getJunctionReferenceTo(), rel.junctionreferenceto); System.assert(rel.equals(rel)); System.assertEquals(rel.hashCode(), rel.hashCode()); System.assert(rel.toString().length() > 0);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

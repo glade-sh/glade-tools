@@ -1,0 +1,112 @@
+{
+  "name": "core-http-response-runtime-depth",
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.HttpResponse()",
+      "symbol": "HttpResponse.HttpResponse"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.equals(Object)",
+      "symbol": "HttpResponse.equals"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getBody()",
+      "symbol": "HttpResponse.getBody"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getBodyAsBlob()",
+      "symbol": "HttpResponse.getBodyAsBlob"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getBodyDocument()",
+      "symbol": "HttpResponse.getBodyDocument"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getHeader(String)",
+      "symbol": "HttpResponse.getHeader"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getHeaderKeys()",
+      "symbol": "HttpResponse.getHeaderKeys"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getStatus()",
+      "symbol": "HttpResponse.getStatus"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getStatusCode()",
+      "symbol": "HttpResponse.getStatusCode"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.getXmlStreamReader()",
+      "symbol": "HttpResponse.getXmlStreamReader"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.hashCode()",
+      "symbol": "HttpResponse.hashCode"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.setBody(String)",
+      "symbol": "HttpResponse.setBody"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.setBodyAsBlob(Blob)",
+      "symbol": "HttpResponse.setBodyAsBlob"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.setHeader(String,String)",
+      "symbol": "HttpResponse.setHeader"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.setStatus(String)",
+      "symbol": "HttpResponse.setStatus"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.setStatusCode(Integer)",
+      "symbol": "HttpResponse.setStatusCode"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.HttpResponse.toString()",
+      "symbol": "HttpResponse.toString"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "HttpResponse response=new HttpResponse(); System.assert(response.equals(response)); System.assertNotEquals(null,response.hashCode()); System.assertNotEquals(null,response.toString()); response.setBodyAsBlob(Blob.valueOf('blob-body')); System.assertEquals('blob-body',response.getBodyAsBlob().toString()); response.setBody('<root><item>value</item></root>'); System.assertEquals('<root><item>value</item></root>',response.getBody()); response.setHeader('X-Test','value'); System.assertEquals('value',response.getHeader('X-Test')); System.assertEquals(1,response.getHeaderKeys().size()); response.setStatus('Created'); System.assertEquals('Created',response.getStatus()); response.setStatusCode(201); System.assertEquals(201,response.getStatusCode()); Dom.Document document=response.getBodyDocument(); System.assertNotEquals(null,document); System.assertEquals('root',document.getRootElement().getName()); System.XmlStreamReader reader=response.getXmlStreamReader(); System.assertEquals(XmlTag.START_DOCUMENT,reader.getEventType()); System.assertEquals(1,reader.next()); System.assertEquals('root',reader.getLocalName()); System.assertEquals(1,reader.nextTag()); System.assertEquals('item',reader.getLocalName()); System.assertEquals(4,reader.next()); System.assertEquals('value',reader.getText()); reader=null; response.setBody('safe'); document=null; response = new HttpResponse();"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises locally constructible HttpResponse state and accessors only; it makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "HttpResponse response=new HttpResponse(); System.assert(response.equals(response)); System.assertNotEquals(null,response.hashCode()); System.assertNotEquals(null,response.toString()); response.setBodyAsBlob(Blob.valueOf('blob-body')); System.assertEquals('blob-body',response.getBodyAsBlob().toString()); response.setBody('<root><item>value</item></root>'); System.assertEquals('<root><item>value</item></root>',response.getBody()); response.setHeader('X-Test','value'); System.assertEquals('value',response.getHeader('X-Test')); System.assertEquals(1,response.getHeaderKeys().size()); response.setStatus('Created'); System.assertEquals('Created',response.getStatus()); response.setStatusCode(201); System.assertEquals(201,response.getStatusCode()); Dom.Document document=response.getBodyDocument(); System.assertNotEquals(null,document); System.assertEquals('root',document.getRootElement().getName()); System.XmlStreamReader reader=response.getXmlStreamReader(); System.assertEquals(XmlTag.START_DOCUMENT,reader.getEventType()); System.assertEquals(1,reader.next()); System.assertEquals('root',reader.getLocalName()); System.assertEquals(1,reader.nextTag()); System.assertEquals('item',reader.getLocalName()); System.assertEquals(4,reader.next()); System.assertEquals('value',reader.getText()); reader=null; response.setBody('safe'); document=null; response = new HttpResponse();"
+    }
+  ]
+}

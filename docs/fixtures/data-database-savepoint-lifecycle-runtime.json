@@ -1,0 +1,57 @@
+{
+  "name": "data-database-savepoint-lifecycle-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Database.setSavepoint()",
+      "symbol": "Database.setSavepoint()",
+      "kind": "exec",
+      "notes": "Creates a local org-state snapshot before a DML mutation."
+    },
+    {
+      "surfaceId": "apex:System.Database.rollback(Savepoint)",
+      "symbol": "Database.rollback(Savepoint)",
+      "kind": "exec",
+      "notes": "Restores a selected local snapshot and removes later inserted state."
+    },
+    {
+      "surfaceId": "apex:System.Database.releaseSavepoint(Savepoint)",
+      "symbol": "Database.releaseSavepoint(Savepoint)",
+      "kind": "exec",
+      "notes": "Releases a local snapshot without rolling back current state."
+    },
+    {
+      "surfaceId": "apex:System.Database.releaseSavepoint",
+      "symbol": "Database.releaseSavepoint",
+      "kind": "exec",
+      "notes": "The release-savepoint method family is exercised by the exact Savepoint call witness."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Account before = new Account(Name = 'Savepoint Before'); insert before; System.Savepoint rollbackPoint = Database.setSavepoint(); Account after = new Account(Name = 'Savepoint After'); insert after; List<Account> afterRows = [SELECT Id FROM Account WHERE Name = 'Savepoint After']; System.assertEquals(1, afterRows.size()); Database.rollback(rollbackPoint); List<Account> rolledBackRows = [SELECT Id FROM Account WHERE Name = 'Savepoint After']; System.assertEquals(0, rolledBackRows.size()); List<Account> beforeRows = [SELECT Id FROM Account WHERE Name = 'Savepoint Before']; System.assertEquals(1, beforeRows.size()); System.Savepoint releasePoint = Database.setSavepoint(); Account kept = new Account(Name = 'Savepoint Kept'); insert kept; Database.releaseSavepoint(releasePoint); List<Account> keptRows = [SELECT Id FROM Account WHERE Name = 'Savepoint Kept']; System.assertEquals(1, keptRows.size());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Account before = new Account(Name = 'Savepoint Before'); insert before; System.Savepoint rollbackPoint = Database.setSavepoint(); Account after = new Account(Name = 'Savepoint After'); insert after; List<Account> afterRows = [SELECT Id FROM Account WHERE Name = 'Savepoint After']; System.assertEquals(1, afterRows.size()); Database.rollback(rollbackPoint); List<Account> rolledBackRows = [SELECT Id FROM Account WHERE Name = 'Savepoint After']; System.assertEquals(0, rolledBackRows.size()); List<Account> beforeRows = [SELECT Id FROM Account WHERE Name = 'Savepoint Before']; System.assertEquals(1, beforeRows.size()); System.Savepoint releasePoint = Database.setSavepoint(); Account kept = new Account(Name = 'Savepoint Kept'); insert kept; Database.releaseSavepoint(releasePoint); List<Account> keptRows = [SELECT Id FROM Account WHERE Name = 'Savepoint Kept']; System.assertEquals(1, keptRows.size());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ]
+}
