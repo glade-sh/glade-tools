@@ -23,13 +23,13 @@
   "source": [
     {
       "path": "anonymous.apex",
-      "content": "Database.DMLOptions opts = new Database.DMLOptions();\nopts.DuplicateRuleHeader.AllowSave = true;\nopts.DuplicateRuleHeader.RunAsCurrentUser = true;\nSystem.assertEquals(true, opts.DuplicateRuleHeader.AllowSave);\nSystem.assertEquals(true, opts.DuplicateRuleHeader.RunAsCurrentUser);\nDatabase.SaveResult result = Database.insert(new Account(Name = 'Accepted'), opts);\nSystem.assert(result.isSuccess());\nSystem.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Accepted']);"
+      "content": "Database.DMLOptions opts = new Database.DMLOptions();\nopts.DuplicateRuleHeader.allowSave = true;\nopts.DuplicateRuleHeader.runAsCurrentUser = true;\nSystem.assertEquals(true, opts.DuplicateRuleHeader.allowSave);\nSystem.assertEquals(true, opts.DuplicateRuleHeader.runAsCurrentUser);\nDatabase.SaveResult result = Database.insert(new Account(Name = 'Accepted'), opts);\nSystem.assert(result.isSuccess());\nSystem.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Accepted']);"
     }
   ],
   "command": {
     "kind": "exec",
     "args": [
-      "Database.DMLOptions opts = new Database.DMLOptions();\nopts.DuplicateRuleHeader.AllowSave = true;\nopts.DuplicateRuleHeader.RunAsCurrentUser = true;\nSystem.assertEquals(true, opts.DuplicateRuleHeader.AllowSave);\nSystem.assertEquals(true, opts.DuplicateRuleHeader.RunAsCurrentUser);\nDatabase.SaveResult result = Database.insert(new Account(Name = 'Accepted'), opts);\nSystem.assert(result.isSuccess());\nSystem.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Accepted']);"
+      "Database.DMLOptions opts = new Database.DMLOptions();\nopts.DuplicateRuleHeader.allowSave = true;\nopts.DuplicateRuleHeader.runAsCurrentUser = true;\nSystem.assertEquals(true, opts.DuplicateRuleHeader.allowSave);\nSystem.assertEquals(true, opts.DuplicateRuleHeader.runAsCurrentUser);\nDatabase.SaveResult result = Database.insert(new Account(Name = 'Accepted'), opts);\nSystem.assert(result.isSuccess());\nSystem.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Accepted']);"
     ]
   },
   "expected": {
