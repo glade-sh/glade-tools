@@ -1,0 +1,19 @@
+{
+  "name":"ui-apexpages-idea-standard-set-state-runtime",
+  "evidence":[
+    {"surfaceId":"apex:ApexPages.IdeaStandardSetController.setPageSize(Integer)","symbol":"ApexPages.IdeaStandardSetController.setPageSize(Integer)","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.IdeaStandardSetController.getPageSize()","symbol":"ApexPages.IdeaStandardSetController.getPageSize()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.IdeaStandardSetController.setFilterId(String)","symbol":"ApexPages.IdeaStandardSetController.setFilterId(String)","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.IdeaStandardSetController.getFilterId()","symbol":"ApexPages.IdeaStandardSetController.getFilterId()","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.IdeaStandardSetController.setSelected(List<Object>)","symbol":"ApexPages.IdeaStandardSetController.setSelected(List<Object>)","kind":"exec"},
+    {"surfaceId":"apex:ApexPages.IdeaStandardSetController.getSelected()","symbol":"ApexPages.IdeaStandardSetController.getSelected()","kind":"exec"}
+  ],
+  "source":[
+    {"path":"anonymous.apex","content":"ApexPages.IdeaStandardSetController controller = new ApexPages.IdeaStandardSetController(); controller.setPageSize(7); System.assertEquals(7, controller.getPageSize()); controller.setFilterId('Recent'); System.assertEquals('Recent', controller.getFilterId()); List<Object> selected = new List<Object>{new Idea(Title = 'Selected Idea')}; controller.setSelected(selected); System.assertEquals(1, controller.getSelected().size()); System.assertEquals('Selected Idea', ((Idea)controller.getSelected()[0]).Title);"}
+  ],
+  "command":{"kind":"exec","args":["ApexPages.IdeaStandardSetController controller = new ApexPages.IdeaStandardSetController(); controller.setPageSize(7); System.assertEquals(7, controller.getPageSize()); controller.setFilterId('Recent'); System.assertEquals('Recent', controller.getFilterId()); List<Object> selected = new List<Object>{new Idea(Title = 'Selected Idea')}; controller.setSelected(selected); System.assertEquals(1, controller.getSelected().size()); System.assertEquals('Selected Idea', ((Idea)controller.getSelected()[0]).Title);"]},
+  "expected":{"result":{"debug":null,"ok":true}},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"The assertions depend on deterministic local IdeaStandardSetController state storage; this fixture makes no hosted Salesforce parity claim."
+}

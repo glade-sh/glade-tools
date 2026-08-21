@@ -1,0 +1,30 @@
+{
+  "name": "core-sobject-field-clone-runtime-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "Anonymous execution depends on local schema and VM relationship state; this fixture makes no hosted Salesforce parity claim.",
+  "evidence": [
+    {"surfaceId": "apex:System.SObject.clear()", "symbol": "SObject.clear", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.clone()", "symbol": "SObject.clone", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.clone(Boolean)", "symbol": "SObject.clone", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.equals(Object)", "symbol": "SObject.equals", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.get(String)", "symbol": "SObject.get", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.getPopulatedFieldsAsMap()", "symbol": "SObject.getPopulatedFieldsAsMap", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.getSObject(String)", "symbol": "SObject.getSObject", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.getSObjects(String)", "symbol": "SObject.getSObjects", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.isSet(String)", "symbol": "SObject.isSet", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.put(String,Object)", "symbol": "SObject.put", "kind": "exec"},
+    {"surfaceId": "apex:System.SObject.putSObject(String,Object)", "symbol": "SObject.putSObject", "kind": "exec"}
+  ],
+  "source": [
+    {"path": "force-app/main/default/objects/Account/Account.object-meta.xml", "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path": "force-app/main/default/objects/Task__c/Task__c.object-meta.xml", "content": "<CustomObject><label>Task</label><pluralLabel>Tasks</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path": "force-app/main/default/objects/Task__c/fields/Who__c.field-meta.xml", "content": "<CustomField><fullName>Who__c</fullName><label>Who</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Who</relationshipName><childRelationshipName>WhoTasks</childRelationshipName></CustomField>"},
+    {"path": "force-app/main/default/objects/Contact/Contact.object-meta.xml", "content": "<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path": "force-app/main/default/objects/Contact/fields/LastName.field-meta.xml", "content": "<CustomField><fullName>LastName</fullName><label>Last Name</label><type>Text</type></CustomField>"},
+    {"path": "anonymous.apex", "content": "SObject row = new Account(Name = 'Child');\nrow.put('Id', '001000000000001AAA');\nSystem.assertEquals('Child', row.get('Name'));\nSystem.assert(row.isSet('Name'));\nSystem.assert(row.getPopulatedFieldsAsMap().containsKey('Name'));\nSystem.assert(row.equals(row));\nSObject cloneNoId = row.clone();\nSystem.assertEquals(null, cloneNoId.get('Id'));\nSystem.assertEquals('Child', cloneNoId.get('Name'));\nSObject cloneOne = row.clone(false);\nSystem.assertEquals(null, cloneOne.get('Id'));\nrow.put('Name', 'Changed');\nSystem.assertEquals('Changed', row.get('Name'));\nrow.clear();\nSystem.assert(!row.isSet('Name'));\nAccount parent = new Account(Name = 'Parent');\nrow.putSObject('Parent', parent);\nSystem.assertEquals('Parent', row.getSObject('Parent').get('Name'));\nrow.put('Contacts', new List<Contact>{new Contact(LastName = 'Smith')});\nSystem.assertEquals(1, row.getSObjects('Contacts').size());"
+    }
+  ],
+  "command": {"kind": "exec", "args": ["SObject row = new Account(Name = 'Child');\nrow.put('Id', '001000000000001AAA');\nSystem.assertEquals('Child', row.get('Name'));\nSystem.assert(row.isSet('Name'));\nSystem.assert(row.getPopulatedFieldsAsMap().containsKey('Name'));\nSystem.assert(row.equals(row));\nSObject cloneNoId = row.clone();\nSystem.assertEquals(null, cloneNoId.get('Id'));\nSystem.assertEquals('Child', cloneNoId.get('Name'));\nSObject cloneOne = row.clone(false);\nSystem.assertEquals(null, cloneOne.get('Id'));\nrow.put('Name', 'Changed');\nSystem.assertEquals('Changed', row.get('Name'));\nrow.clear();\nSystem.assert(!row.isSet('Name'));\nAccount parent = new Account(Name = 'Parent');\nrow.putSObject('Parent', parent);\nSystem.assertEquals('Parent', row.getSObject('Parent').get('Name'));\nrow.put('Contacts', new List<Contact>{new Contact(LastName = 'Smith')});\nSystem.assertEquals(1, row.getSObjects('Contacts').size());"]},
+  "expected": {"result": {"debug": null, "ok": true}}
+}
