@@ -46,7 +46,9 @@ scripts/corpus-assurance/dev-hub-auth.sh put \
 ```
 
 Workers authenticate noninteractively with `login` and confirm the live alias
-with `verify`. Back up only an encrypted Git bundle at
+with `verify`. Worker commands that invoke `sf` over SSH must set
+`SF_USE_GENERIC_UNIX_KEYCHAIN=true`, matching the helper's headless login.
+Back up only an encrypted Git bundle at
 `/Volumes/Photos/glade-bak/glade-proof-auth.bundle`; the bundle must not
 contain a host identity.
 

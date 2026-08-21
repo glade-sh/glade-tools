@@ -22,9 +22,10 @@ login_dev_hub() {
   pull_store "$store"
   [[ -f "$identity" ]] || die "missing identity: $identity"
   [[ -f "$cipher" ]] || die "missing encrypted alias: $alias_name"
+  export SF_USE_GENERIC_UNIX_KEYCHAIN=true
   if ! age -d -i "$identity" "$cipher" 2>/dev/null |
-    "$sf_bin" org login sfdx-url --sfdx-url-stdin --alias "$alias_name" \
-      --set-default-dev-hub --json >/dev/null 2>&1; then
+    "$sf_bin" org login sfdx-url --alias "$alias_name" --set-default-dev-hub \
+      --json --sfdx-url-stdin >/dev/null 2>&1; then
     die "Dev Hub login failed: $alias_name"
   fi
   echo "authenticated Dev Hub: $alias_name"
