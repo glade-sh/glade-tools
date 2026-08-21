@@ -1,0 +1,105 @@
+{
+  "name": "data-platform-database-result-contracts-wave15-runtime",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade-local Database result DTO aliases and accessors through real local DML results. It does not establish hosted Salesforce behavior and grants zero Salesforce parity credit.",
+  "evidence": [
+    {
+      "surfaceId": "apex:Database.SaveResult.isSuccess()",
+      "symbol": "Database.SaveResult.isSuccess",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.SaveResult.getId()",
+      "symbol": "Database.SaveResult.getId",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.SaveResult.getErrors()",
+      "symbol": "Database.SaveResult.getErrors",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.UpsertResult.isSuccess()",
+      "symbol": "Database.UpsertResult.isSuccess",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.UpsertResult.getId()",
+      "symbol": "Database.UpsertResult.getId",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.UpsertResult.isCreated()",
+      "symbol": "Database.UpsertResult.isCreated",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.UpsertResult.getErrors()",
+      "symbol": "Database.UpsertResult.getErrors",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.MergeResult.isSuccess()",
+      "symbol": "Database.MergeResult.isSuccess",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.MergeResult.getId()",
+      "symbol": "Database.MergeResult.getId",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.MergeResult.getMergedRecordIds()",
+      "symbol": "Database.MergeResult.getMergedRecordIds",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Database.MergeResult.getUpdatedRelatedIds()",
+      "symbol": "Database.MergeResult.getUpdatedRelatedIds",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.SaveResult badSave = Database.insert(new Account(), false); System.assertEquals(false, badSave.isSuccess()); System.assertEquals(null, badSave.getId()); System.assert(badSave.getErrors() != null && badSave.getErrors().size() > 0); Database.Error saveError = badSave.getErrors().get(0); System.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, saveError.getStatusCode()); System.assert(saveError.getMessage().contains('Required fields')); System.assert(saveError.getFields().contains('Name')); Account saved = new Account(Name = 'Wave 15 Saved'); Database.SaveResult saveResult = Database.insert(saved, false); System.assertEquals(true, saveResult.isSuccess()); System.assertNotEquals(null, saveResult.getId()); System.assertEquals(saved.Id, saveResult.id); System.assertEquals(true, saveResult.success); System.assertEquals(saveResult.getErrors(), saveResult.errors); System.assert(saveResult.equals(saveResult)); System.assertNotEquals(null, saveResult.hashCode()); System.assert(saveResult.toString().length() > 0); Database.SaveResult updateResult = Database.update(new Account(Id = saved.Id, Name = 'Wave 15 Updated'), false); System.assert(updateResult.isSuccess()); System.assertEquals(saved.Id, updateResult.getId()); Account upsertNew = new Account(Name = 'Wave 15 Upsert New'); Database.UpsertResult upsertCreated = Database.upsert(upsertNew, false); System.assert(upsertCreated.isSuccess()); System.assert(upsertCreated.isCreated()); System.assertEquals(upsertCreated.getId(), upsertCreated.id); System.assertEquals(true, upsertCreated.success); System.assertEquals(true, upsertCreated.created); System.assertEquals(upsertCreated.getErrors(), upsertCreated.errors); System.assert(upsertCreated.equals(upsertCreated)); System.assertNotEquals(null, upsertCreated.hashCode()); System.assert(upsertCreated.toString().length() > 0); Database.UpsertResult upsertUpdated = Database.upsert(new Account(Id = upsertCreated.getId(), Name = 'Wave 15 Upsert Updated'), false); System.assert(upsertUpdated.isSuccess()); System.assertEquals(false, upsertUpdated.isCreated()); System.assertEquals(upsertCreated.getId(), upsertUpdated.getId()); Account master = new Account(Name = 'Wave 15 Master'); insert master; Account duplicate = new Account(Name = 'Wave 15 Duplicate'); insert duplicate; Contact child = new Contact(LastName = 'Wave 15 Child', AccountId = duplicate.Id); insert child; Database.MergeResult merged = Database.merge(master, duplicate, false); System.assert(merged.isSuccess()); System.assertEquals(master.Id, merged.getId()); System.assertEquals(1, merged.getMergedRecordIds().size()); System.assertEquals(duplicate.Id, merged.getMergedRecordIds().get(0)); System.assertEquals(1, merged.getUpdatedRelatedIds().size()); System.assertEquals(child.Id, merged.getUpdatedRelatedIds().get(0)); System.assertEquals(true, merged.success); System.assertEquals(master.Id, merged.id); System.assertEquals(merged.getMergedRecordIds(), merged.mergedrecordids); System.assertEquals(merged.getUpdatedRelatedIds(), merged.updatedrelatedids); System.assert(merged.equals(merged)); System.assertNotEquals(null, merged.hashCode()); System.assert(merged.toString().length() > 0); Account recycle = new Account(Name = 'Wave 15 Recycle'); insert recycle; Database.DeleteResult deleted = Database.delete(recycle, false); System.assert(deleted.isSuccess()); System.assertEquals(recycle.Id, deleted.getId()); System.assertEquals(true, deleted.success); System.assertEquals(recycle.Id, deleted.id); System.assertEquals(deleted.getErrors(), deleted.errors); System.assert(deleted.equals(deleted)); System.assertNotEquals(null, deleted.hashCode()); System.assert(deleted.toString().length() > 0); Database.UndeleteResult restored = Database.undelete(recycle, false); System.assert(restored.isSuccess()); System.assertEquals(recycle.Id, restored.getId()); System.assertEquals(true, restored.success); System.assertEquals(recycle.Id, restored.id); System.assertEquals(restored.getErrors(), restored.errors); System.assert(restored.equals(restored)); System.assertNotEquals(null, restored.hashCode()); System.assert(restored.toString().length() > 0); Database.delete(recycle, false); Database.EmptyRecycleBinResult emptied = Database.emptyRecycleBin(recycle); System.assert(emptied.isSuccess()); System.assertEquals(recycle.Id, emptied.getId()); System.assertEquals(true, emptied.success); System.assertEquals(recycle.Id, emptied.id); System.assertEquals(emptied.getErrors(), emptied.errors); System.assert(emptied.equals(emptied)); System.assertNotEquals(null, emptied.hashCode()); System.assert(emptied.toString().length() > 0);"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.SaveResult badSave = Database.insert(new Account(), false); System.assertEquals(false, badSave.isSuccess()); System.assertEquals(null, badSave.getId()); System.assert(badSave.getErrors() != null && badSave.getErrors().size() > 0); Database.Error saveError = badSave.getErrors().get(0); System.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, saveError.getStatusCode()); System.assert(saveError.getMessage().contains('Required fields')); System.assert(saveError.getFields().contains('Name')); Account saved = new Account(Name = 'Wave 15 Saved'); Database.SaveResult saveResult = Database.insert(saved, false); System.assertEquals(true, saveResult.isSuccess()); System.assertNotEquals(null, saveResult.getId()); System.assertEquals(saved.Id, saveResult.id); System.assertEquals(true, saveResult.success); System.assertEquals(saveResult.getErrors(), saveResult.errors); System.assert(saveResult.equals(saveResult)); System.assertNotEquals(null, saveResult.hashCode()); System.assert(saveResult.toString().length() > 0); Database.SaveResult updateResult = Database.update(new Account(Id = saved.Id, Name = 'Wave 15 Updated'), false); System.assert(updateResult.isSuccess()); System.assertEquals(saved.Id, updateResult.getId()); Account upsertNew = new Account(Name = 'Wave 15 Upsert New'); Database.UpsertResult upsertCreated = Database.upsert(upsertNew, false); System.assert(upsertCreated.isSuccess()); System.assert(upsertCreated.isCreated()); System.assertEquals(upsertCreated.getId(), upsertCreated.id); System.assertEquals(true, upsertCreated.success); System.assertEquals(true, upsertCreated.created); System.assertEquals(upsertCreated.getErrors(), upsertCreated.errors); System.assert(upsertCreated.equals(upsertCreated)); System.assertNotEquals(null, upsertCreated.hashCode()); System.assert(upsertCreated.toString().length() > 0); Database.UpsertResult upsertUpdated = Database.upsert(new Account(Id = upsertCreated.getId(), Name = 'Wave 15 Upsert Updated'), false); System.assert(upsertUpdated.isSuccess()); System.assertEquals(false, upsertUpdated.isCreated()); System.assertEquals(upsertCreated.getId(), upsertUpdated.getId()); Account master = new Account(Name = 'Wave 15 Master'); insert master; Account duplicate = new Account(Name = 'Wave 15 Duplicate'); insert duplicate; Contact child = new Contact(LastName = 'Wave 15 Child', AccountId = duplicate.Id); insert child; Database.MergeResult merged = Database.merge(master, duplicate, false); System.assert(merged.isSuccess()); System.assertEquals(master.Id, merged.getId()); System.assertEquals(1, merged.getMergedRecordIds().size()); System.assertEquals(duplicate.Id, merged.getMergedRecordIds().get(0)); System.assertEquals(1, merged.getUpdatedRelatedIds().size()); System.assertEquals(child.Id, merged.getUpdatedRelatedIds().get(0)); System.assertEquals(true, merged.success); System.assertEquals(master.Id, merged.id); System.assertEquals(merged.getMergedRecordIds(), merged.mergedrecordids); System.assertEquals(merged.getUpdatedRelatedIds(), merged.updatedrelatedids); System.assert(merged.equals(merged)); System.assertNotEquals(null, merged.hashCode()); System.assert(merged.toString().length() > 0); Account recycle = new Account(Name = 'Wave 15 Recycle'); insert recycle; Database.DeleteResult deleted = Database.delete(recycle, false); System.assert(deleted.isSuccess()); System.assertEquals(recycle.Id, deleted.getId()); System.assertEquals(true, deleted.success); System.assertEquals(recycle.Id, deleted.id); System.assertEquals(deleted.getErrors(), deleted.errors); System.assert(deleted.equals(deleted)); System.assertNotEquals(null, deleted.hashCode()); System.assert(deleted.toString().length() > 0); Database.UndeleteResult restored = Database.undelete(recycle, false); System.assert(restored.isSuccess()); System.assertEquals(recycle.Id, restored.getId()); System.assertEquals(true, restored.success); System.assertEquals(recycle.Id, restored.id); System.assertEquals(restored.getErrors(), restored.errors); System.assert(restored.equals(restored)); System.assertNotEquals(null, restored.hashCode()); System.assert(restored.toString().length() > 0); Database.delete(recycle, false); Database.EmptyRecycleBinResult emptied = Database.emptyRecycleBin(recycle); System.assert(emptied.isSuccess()); System.assertEquals(recycle.Id, emptied.getId()); System.assertEquals(true, emptied.success); System.assertEquals(recycle.Id, emptied.id); System.assertEquals(emptied.getErrors(), emptied.errors); System.assert(emptied.equals(emptied)); System.assertNotEquals(null, emptied.hashCode()); System.assert(emptied.toString().length() > 0);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/Contact.object-meta.xml",
+      "content": "<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/fields/LastName.field-meta.xml",
+      "content": "<CustomField><fullName>LastName</fullName><label>Last Name</label><type>Text</type></CustomField>"
+    },
+    {
+      "path": "force-app/main/default/objects/Contact/fields/AccountId.field-meta.xml",
+      "content": "<CustomField><fullName>AccountId</fullName><label>Account</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Account</relationshipName><childRelationshipName>Contacts</childRelationshipName></CustomField>"
+    }
+  ]
+}

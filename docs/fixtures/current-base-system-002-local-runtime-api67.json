@@ -17,38 +17,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.IllegalArgumentException",
-      "symbol": "System.IllegalArgumentException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException()",
-      "symbol": "System.IllegalArgumentException.IllegalArgumentException()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(Exception)",
-      "symbol": "System.IllegalArgumentException.IllegalArgumentException(Exception)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(String)",
-      "symbol": "System.IllegalArgumentException.IllegalArgumentException(String)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.IllegalArgumentException.IllegalArgumentException(String,Exception)",
-      "symbol": "System.IllegalArgumentException.IllegalArgumentException(String,Exception)"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:System.IllegalArgumentException.clone()",
       "symbol": "System.IllegalArgumentException.clone()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.IllegalStateException",
-      "symbol": "System.IllegalStateException"
     },
     {
       "kind": "test",
@@ -88,38 +58,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.InvalidHeaderException",
-      "symbol": "System.InvalidHeaderException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException()",
-      "symbol": "System.InvalidHeaderException.InvalidHeaderException()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(Exception)",
-      "symbol": "System.InvalidHeaderException.InvalidHeaderException(Exception)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(String)",
-      "symbol": "System.InvalidHeaderException.InvalidHeaderException(String)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidHeaderException.InvalidHeaderException(String,Exception)",
-      "symbol": "System.InvalidHeaderException.InvalidHeaderException(String,Exception)"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:System.InvalidHeaderException.clone()",
       "symbol": "System.InvalidHeaderException.clone()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidParameterValueException",
-      "symbol": "System.InvalidParameterValueException"
     },
     {
       "kind": "test",
@@ -138,56 +78,6 @@
       "notes": "Retained as an exact current-base row; the local runtime exposes the type but rejects constructing an instance with the documented argument, so no local instance-method claim is made.",
       "surfaceId": "apex:System.InvalidParameterValueException.toString()",
       "symbol": "System.InvalidParameterValueException.toString()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException",
-      "symbol": "System.InvalidReadOnlyUserDmlException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException()",
-      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(Exception)",
-      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(Exception)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String)",
-      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String,Exception)",
-      "symbol": "System.InvalidReadOnlyUserDmlException.InvalidReadOnlyUserDmlException(String,Exception)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.JSONException",
-      "symbol": "System.JSONException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.JSONException.JSONException()",
-      "symbol": "System.JSONException.JSONException()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.JSONException.JSONException(Exception)",
-      "symbol": "System.JSONException.JSONException(Exception)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.JSONException.JSONException(String)",
-      "symbol": "System.JSONException.JSONException(String)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.JSONException.JSONException(String,Exception)",
-      "symbol": "System.JSONException.JSONException(String,Exception)"
     }
   ],
   "expected": {
@@ -201,13 +91,13 @@
   },
   "mode": "local-runtime",
   "name": "current-base-system-002-local-runtime-api67",
-  "notes": "Current-base lane current-base-local-runtime-required-System-002: exactly the 36 queue rows absent from existing fixture evidence. Assertions cover scalar and exception contracts plus the deterministic local install harness.",
+  "notes": "Current-base lane current-base-local-runtime-required-System-002: 14 retained rows after the Wave 15 exception ownership transfer. Assertions cover scalar and exception contracts plus the deterministic local install harness.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-local-runtime-required-System-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 36,
+    "selectedRowCount": 14,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "salesforceEligible": false,

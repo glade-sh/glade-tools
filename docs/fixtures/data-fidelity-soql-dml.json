@@ -65,11 +65,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.SObject.addError(Object)",
-      "symbol": "SObject.addError"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeSObjectResult.getRecordTypeInfos()",
       "symbol": "Schema.DescribeSObjectResult.getRecordTypeInfos"
     },

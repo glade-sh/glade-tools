@@ -8,18 +8,6 @@
       "notes": "Security.stripInaccessible strips fields for local records using the current user's object and field permissions."
     },
     {
-      "surfaceId": "apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean)",
-      "symbol": "Security.stripInaccessible",
-      "kind": "test",
-      "notes": "Security.stripInaccessible honors the local enforceRootObjectCRUD argument."
-    },
-    {
-      "surfaceId": "apex:System.SObjectAccessDecision.getRecords()",
-      "symbol": "SObjectAccessDecision.getRecords",
-      "kind": "test",
-      "notes": "Security.stripInaccessible returns the local SObject records through SObjectAccessDecision.getRecords()."
-    },
-    {
       "surfaceId": "apex:System.SObjectAccessDecision.getRemovedFields()",
       "symbol": "SObjectAccessDecision.getRemovedFields",
       "kind": "test",

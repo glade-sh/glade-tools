@@ -26,6 +26,23 @@ func TestCoreEnumEvidenceFixtureIsExecutableAndShapeBacked(t *testing.T) {
 	}
 
 	wantIDs := coreEnumEvidenceIDs()
+	for _, transferred := range []string{
+		"apex:System.AccessType.CREATABLE",
+		"apex:System.AccessType.UPDATABLE",
+		"apex:System.Quiddity.AURA",
+		"apex:System.Quiddity.QUICK_ACTION",
+		"apex:System.Quiddity.VF",
+		"apex:System.RoundingMode.CEILING",
+		"apex:System.RoundingMode.FLOOR",
+		"apex:System.RoundingMode.UNNECESSARY",
+		"apex:System.RoundingMode.equals(Object)",
+		"apex:System.RoundingMode.hashCode()",
+		"apex:System.RoundingMode.ordinal()",
+		"apex:System.RoundingMode.valueOf(String)",
+		"apex:System.RoundingMode.values()",
+	} {
+		delete(wantIDs, transferred)
+	}
 	gotIDs := make(map[string]bool, len(fixture.Evidence))
 	source := fixture.Source[0].Content
 	for _, evidence := range fixture.Evidence {
@@ -84,7 +101,7 @@ func TestCoreEnumEvidenceFixtureIsExecutableAndShapeBacked(t *testing.T) {
 		"apex:System.TriggerOperation.BEFORE_INSERT",
 		"apex:System.JSONToken.END_OBJECT",
 		"apex:System.RoundingMode.HALF_UP",
-		"apex:System.AccessType.CREATABLE",
+		"apex:System.AccessType.READABLE",
 		"apex:System.ParentJobResult.SUCCESS",
 		"apex:System.Quiddity.REMOTE_ACTION",
 	} {

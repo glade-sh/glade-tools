@@ -416,6 +416,14 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"current-base-process-plugin-parameter-type-runtime.json", 7},
 		{"data-platform-database-async-immediate-dml-runtime.json", 15},
 		{"data-platform-schema-describe-fieldsets-runtime.json", 28},
+		{"core-runtime-enum-families-wave15-runtime.json", 28},
+		{"core-runtime-exception-families-wave15-runtime.json", 39},
+		{"data-platform-database-dto-family-one-wave15-runtime.json", 20},
+		{"data-platform-database-dto-family-two-wave15-runtime.json", 17},
+		{"data-platform-database-leadconvert-accessors-wave15-runtime.json", 19},
+		{"data-platform-database-result-contracts-wave15-runtime.json", 11},
+		{"data-runtime-sobject-helper-wave15-runtime.json", 10},
+		{"integration-eventbus-callbacks-wave15-runtime.json", 3},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))

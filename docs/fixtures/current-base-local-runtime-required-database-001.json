@@ -6,31 +6,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Database.AssignmentRuleHeader",
-      "symbol": "Database.AssignmentRuleHeader"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.AssignmentRuleHeader.AssignmentRuleHeader()",
-      "symbol": "Database.AssignmentRuleHeader"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.AssignmentRuleHeader.AssignmentRuleId",
-      "symbol": "Database.AssignmentRuleHeader.AssignmentRuleId"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.AssignmentRuleHeader.UseDefaultRule",
-      "symbol": "Database.AssignmentRuleHeader.UseDefaultRule"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.AssignmentRuleHeader.clone()",
-      "symbol": "Database.AssignmentRuleHeader.clone"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.Cursor",
       "symbol": "Database.Cursor"
     },
@@ -63,16 +38,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.DeleteResult.DeleteResult()",
       "symbol": "Database.DeleteResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DeletedRecord",
-      "symbol": "Database.DeletedRecord"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DeletedRecord.DeletedRecord()",
-      "symbol": "Database.DeletedRecord"
     },
     {
       "kind": "test",
@@ -131,73 +96,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.DuplicateRuleHeader",
-      "symbol": "Database.DuplicateRuleHeader"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateRuleHeader.AllowSave",
-      "symbol": "Database.DuplicateRuleHeader.AllowSave"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateRuleHeader.DuplicateRuleHeader()",
-      "symbol": "Database.DuplicateRuleHeader"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateRuleHeader.RunAsCurrentUser",
-      "symbol": "Database.DuplicateRuleHeader.RunAsCurrentUser"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateRuleHeader.clone()",
-      "symbol": "Database.DuplicateRuleHeader.clone"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmailHeader",
-      "symbol": "Database.EmailHeader"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmailHeader.EmailHeader()",
-      "symbol": "Database.EmailHeader"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmailHeader.TriggerAutoResponseEmail",
-      "symbol": "Database.EmailHeader.TriggerAutoResponseEmail"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmailHeader.TriggerOtherEmail",
-      "symbol": "Database.EmailHeader.TriggerOtherEmail"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmailHeader.TriggerUserEmail",
-      "symbol": "Database.EmailHeader.TriggerUserEmail"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmailHeader.clone()",
-      "symbol": "Database.EmailHeader.clone"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.EmptyRecycleBinResult.EmptyRecycleBinResult()",
       "symbol": "Database.EmptyRecycleBinResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.Error.Error()",
-      "symbol": "Database.Error"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.Error.fields",
-      "symbol": "Database.Error.fields"
     }
   ],
   "expected": {
@@ -214,7 +114,7 @@
   "notes": "Current-base lane current-base-local-runtime-required-Database-001: deterministic local constructor, field, clone, equality, and passive-result contracts for the missing surface rows.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-001",
-    "selectedRowCount": 39
+    "selectedRowCount": 19
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
