@@ -307,6 +307,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-collection-stdlib.json", 40},
 		{"core-type-id-url-stdlib.json", 31},
 		{"core-string-stdlib.json", 28},
+		{"core-pattern-matcher-stdlib.json", 25},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
