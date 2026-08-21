@@ -317,6 +317,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"integration-eventbus-unsupported.json", 2},
 		{"data-platform-sobjectfield-describe-runtime.json", 1},
 		{"core-cache-email-runtime.json", 3},
+		{"core-system-enum-types-runtime.json", 2},
 		{"core-pattern-matcher-stdlib.json", 25},
 		{"integration-rest-context-stdlib.json", 23},
 		{"async-batchable-impl-and-chunk-iterator.json", 6},
