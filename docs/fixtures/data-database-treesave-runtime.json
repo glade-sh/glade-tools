@@ -1,0 +1,36 @@
+{
+  "name": "data-database-treesave-runtime",
+  "evidence": [
+    {"surfaceId":"apex:Database.NestedSaveResult","symbol":"Database.NestedSaveResult","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.NestedSaveResult()","symbol":"Database.NestedSaveResult.NestedSaveResult","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.equals(Object)","symbol":"Database.NestedSaveResult.equals","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.getErrors()","symbol":"Database.NestedSaveResult.getErrors","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.getId()","symbol":"Database.NestedSaveResult.getId","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.getRelationshipSaveResults()","symbol":"Database.NestedSaveResult.getRelationshipSaveResults","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.hashCode()","symbol":"Database.NestedSaveResult.hashCode","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.isSuccess()","symbol":"Database.NestedSaveResult.isSuccess","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.relationshipsaveresults","symbol":"Database.NestedSaveResult.relationshipsaveresults","kind":"exec"},
+    {"surfaceId":"apex:Database.NestedSaveResult.toString()","symbol":"Database.NestedSaveResult.toString","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult","symbol":"Database.RelationshipSaveResult","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.RelationshipSaveResult()","symbol":"Database.RelationshipSaveResult.RelationshipSaveResult","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.equals(Object)","symbol":"Database.RelationshipSaveResult.equals","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.getRelationshipName()","symbol":"Database.RelationshipSaveResult.getRelationshipName","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.getSaveResults()","symbol":"Database.RelationshipSaveResult.getSaveResults","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.hashCode()","symbol":"Database.RelationshipSaveResult.hashCode","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.relationshipname","symbol":"Database.RelationshipSaveResult.relationshipname","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.saveresults","symbol":"Database.RelationshipSaveResult.saveresults","kind":"exec"},
+    {"surfaceId":"apex:Database.RelationshipSaveResult.toString()","symbol":"Database.RelationshipSaveResult.toString","kind":"exec"},
+    {"surfaceId":"apex:System.Database.treeSave","symbol":"Database.treeSave","kind":"exec"},
+    {"surfaceId":"apex:System.Database.treeSave(List<Object>)","symbol":"Database.treeSave(List<Object>)","kind":"exec"},
+    {"surfaceId":"apex:System.Database.treeSave(Object)","symbol":"Database.treeSave(Object)","kind":"exec"}
+  ],
+  "schema": [
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Contact/Contact.object-meta.xml","content":"<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Contact/fields/LastName.field-meta.xml","content":"<CustomField><fullName>LastName</fullName><label>Last Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Contact/fields/AccountId.field-meta.xml","content":"<CustomField><fullName>AccountId</fullName><label>Account</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Account</relationshipName><relationshipLabel>Account</relationshipLabel><deleteConstraint>SetNull</deleteConstraint></CustomField>"}
+  ],
+  "command": {"kind":"exec","args":["Database.NestedSaveResult objectResult = Database.treeSave(new Account(Name = 'Tree Runtime Object')); System.assert(objectResult.isSuccess()); Account account = new Account(Name = 'Tree Runtime Parent'); account.put('Contacts', new List<Contact>{new Contact(LastName = 'Child')}); List<Database.NestedSaveResult> results = Database.treeSave(new List<Account>{account}); System.assertEquals(1, results.size()); Database.NestedSaveResult result = results[0]; System.assert(result.isSuccess()); System.assert(result.getId() != null); System.assertEquals(0, result.getErrors().size()); System.assertEquals(result.getRelationshipSaveResults(), result.relationshipsaveresults); System.assert(result.toString() != null); System.assert(result.hashCode() != null); System.assert(result.equals(result)); System.assertEquals(1, result.getRelationshipSaveResults().size()); Database.RelationshipSaveResult relationship = result.getRelationshipSaveResults()[0]; System.assertEquals('Contacts', relationship.getRelationshipName()); System.assertEquals(relationship.getRelationshipName(), relationship.relationshipname); System.assertEquals(1, relationship.getSaveResults().size()); System.assertEquals(relationship.getSaveResults(), relationship.saveresults); System.assert(relationship.toString() != null); System.assert(relationship.hashCode() != null); System.assert(relationship.equals(relationship)); Database.NestedSaveResult emptyResult = new Database.NestedSaveResult(); Database.RelationshipSaveResult emptyRelationship = new Database.RelationshipSaveResult(); System.assert(emptyResult != null); System.assert(emptyRelationship != null);"]},
+  "expected":{"result":{"debug":null,"ok":true}}
+}

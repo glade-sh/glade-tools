@@ -1,0 +1,52 @@
+{
+  "name": "data-database-merge-request-runtime",
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "MergeRequest stores and returns the local master record, record ids, and additional-information map.",
+      "surfaceId": "apex:Database.MergeRequest.getAdditionalInformationMap()",
+      "symbol": "Database.MergeRequest.getAdditionalInformationMap"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.MergeRequest.getMasterRecord()",
+      "symbol": "Database.MergeRequest.getMasterRecord"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.MergeRequest.getRecordToMergeIds()",
+      "symbol": "Database.MergeRequest.getRecordToMergeIds"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.MergeRequest.setAdditionalInformationMap(List<Datacloud.AdditionalInformationMap>)",
+      "symbol": "Database.MergeRequest.setAdditionalInformationMap"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.MergeRequest.setMasterRecord(Object)",
+      "symbol": "Database.MergeRequest.setMasterRecord"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.MergeRequest.setRecordToMergeIds(List<String>)",
+      "symbol": "Database.MergeRequest.setRecordToMergeIds"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Account master = new Account(Name = 'Master'); Datacloud.AdditionalInformationMap detail = new Datacloud.AdditionalInformationMap(); detail.name = 'Country'; detail.value = 'US'; Database.MergeRequest request = new Database.MergeRequest(); request.setMasterRecord(master); request.setRecordToMergeIds(new List<String>{'001000000000001AAA', '001000000000002AAA'}); request.setAdditionalInformationMap(new List<Datacloud.AdditionalInformationMap>{detail}); System.assertEquals(master, request.getMasterRecord()); System.assertEquals(2, request.getRecordToMergeIds().size()); System.assertEquals('001000000000001AAA', request.getRecordToMergeIds()[0]); System.assertEquals('001000000000002AAA', request.getRecordToMergeIds()[1]); System.assertEquals(1, request.getAdditionalInformationMap().size()); System.assertEquals('Country', request.getAdditionalInformationMap()[0].name); System.assertEquals('US', request.getAdditionalInformationMap()[0].value);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Database.MergeRequest is a locally constructible DTO contract; this fixture makes no hosted Salesforce parity claim."
+}

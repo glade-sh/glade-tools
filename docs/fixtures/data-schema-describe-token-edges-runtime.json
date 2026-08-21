@@ -1,0 +1,43 @@
+{
+  "name": "data-schema-describe-token-edges-runtime",
+  "evidence": [
+    {
+      "surfaceId": "apex:Schema.SObjectField.getDescribe(Object)",
+      "symbol": "Schema.SObjectField.getDescribe",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectType.getDescribe(Object)",
+      "symbol": "Schema.SObjectType.getDescribe",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:Schema.SObjectType.getDescribe(SObjectDescribeOptions)",
+      "symbol": "Schema.SObjectType.getDescribe",
+      "kind": "exec"
+    },
+    {
+      "surfaceId": "apex:System.SObject.getSObjectType()",
+      "symbol": "SObject.getSObjectType",
+      "kind": "exec"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Schema.SObjectField field = Account.Name; System.assertEquals('Name', field.getDescribe(Schema.FieldDescribeOptions.FULL_DESCRIBE).getName()); Schema.SObjectType accountType = Account.SObjectType; System.assertEquals('Account', accountType.getDescribe(Schema.SObjectDescribeOptions.FULL).getName()); System.assertEquals('Account', accountType.getDescribe(Schema.SObjectDescribeOptions.DEFERRED).getName()); SObject record = accountType.newSObject(); System.assertEquals(Account.SObjectType, record.getSObjectType());"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.SObjectField field = Account.Name; System.assertEquals('Name', field.getDescribe(Schema.FieldDescribeOptions.FULL_DESCRIBE).getName()); Schema.SObjectType accountType = Account.SObjectType; System.assertEquals('Account', accountType.getDescribe(Schema.SObjectDescribeOptions.FULL).getName()); System.assertEquals('Account', accountType.getDescribe(Schema.SObjectDescribeOptions.DEFERRED).getName()); SObject record = accountType.newSObject(); System.assertEquals(Account.SObjectType, record.getSObjectType());"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}
