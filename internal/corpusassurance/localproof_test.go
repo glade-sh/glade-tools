@@ -453,6 +453,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-system-001-wave19-runtime.json", 11},
 		{"core-runtime-system-002-wave19-runtime.json", 4},
 		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
+		{"core-runtime-search-suggest-deterministic-mock.json", 2},
 		{"data-platform-database-pagination-cursor-wave19-runtime.json", 10},
 		{"data-platform-schema-residual-wave19-runtime.json", 20},
 	} {
@@ -467,7 +468,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			required := make(map[string]string)
 			disposition := localRuntimeRequired
-			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" {
+			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" {
 				disposition = deterministicMockRequired
 			}
 			for _, evidence := range fixture.Evidence {
@@ -488,6 +489,48 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			t.Fatalf("fixture is not candidate-runnable for all %d rows", test.count)
 		})
+	}
+}
+
+func TestSearchMockCloseoutOwnsExactlyTwoRows(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	want := map[string]string{"core-runtime-search-suggest-deterministic-mock.json": "apex:System.Search.suggest(String,String,Object)"}
+	seen := map[string]string{}
+	for file, id := range want {
+		data, err := os.ReadFile(filepath.Join(root, file))
+		if err != nil {
+			t.Fatal(err)
+		}
+		fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if fixture.Command.Kind != "test" || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" {
+			t.Fatalf("%s metadata/command invalid", file)
+		}
+		found := false
+		for _, e := range fixture.Evidence {
+			if e.SurfaceID == id && e.Symbol == id && e.Kind == "test" {
+				found = true
+			}
+			if e.SurfaceID == id {
+				seen[id] = file
+			}
+		}
+		if !found {
+			t.Fatalf("%s lacks direct witness for %s", file, id)
+		}
+		if file == "core-runtime-search-suggest-deterministic-mock.json" {
+			id2 := "apex:System.Search.suggest(String,String,Object,Object)"
+			for _, e := range fixture.Evidence {
+				if e.SurfaceID == id2 && e.Symbol == id2 && e.Kind == "test" {
+					seen[id2] = file
+				}
+			}
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("seen = %#v", seen)
 	}
 }
 

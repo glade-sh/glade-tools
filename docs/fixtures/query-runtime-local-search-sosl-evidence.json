@@ -50,18 +50,6 @@
       "notes": "Search.query accepts an Object-cast AccessLevel and routes through the same local SOSL model.",
       "surfaceId": "apex:System.Search.query(String,Object)",
       "symbol": "Search.query with Object AccessLevel"
-    },
-    {
-      "kind": "test",
-      "notes": "Search.suggest accepts an Object-cast SuggestionOption for the local suggestion DTO path.",
-      "surfaceId": "apex:System.Search.suggest(String,String,Object)",
-      "symbol": "Search.suggest with Object options"
-    },
-    {
-      "kind": "test",
-      "notes": "Search.suggest accepts Object-cast options and AccessLevel values for local suggestions.",
-      "surfaceId": "apex:System.Search.suggest(String,String,Object,Object)",
-      "symbol": "Search.suggest with Object options and access level"
     }
   ],
   "expected": {
