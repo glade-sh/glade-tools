@@ -89,6 +89,15 @@ func decodeLocalProofFixtureWithMetadata(data []byte) (compat.Fixture, localProo
 		return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, fmt.Errorf("multiple JSON values")
 	}
 	metadata := localProofFixtureSalesforceMetadata{}
+	if raw, ok := fields["evidenceOnly"]; ok {
+		var evidenceOnly *bool
+		if err := json.Unmarshal(raw, &evidenceOnly); err != nil || evidenceOnly == nil {
+			return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, fmt.Errorf("invalid evidenceOnly")
+		}
+		if *evidenceOnly {
+			return compat.Fixture{}, localProofFixtureSalesforceMetadata{}, fmt.Errorf("evidence-only fixture is not eligible for local proof")
+		}
+	}
 	if raw, ok := fields["salesforceEligible"]; ok {
 		var eligible bool
 		if err := json.Unmarshal(raw, &eligible); err != nil {
