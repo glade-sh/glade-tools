@@ -80,3 +80,33 @@ func TestSalesforceReleaseCommandJSONWritesFailingReport(t *testing.T) {
 		t.Fatalf("code=%d report=%v stderr=%q", code, report, stderr.String())
 	}
 }
+
+func TestDocsInventorySummaryPrintsCanonicalDigest(t *testing.T) {
+	root := t.TempDir()
+	docPath := filepath.Join(root, "apex_class_System_String.md")
+	if err := os.WriteFile(docPath, []byte("# String Class\n\n## Namespace\n[System](./apex_namespace_System.md)\n\n## String Methods\n### trim()\nRemoves whitespace.\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	inv, err := apexdocs.BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var stdout, stderr strings.Builder
+	code := Run(context.Background(), []string{"docs-inventory", "--source", root}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("Run returned %d, stderr=%q", code, stderr.String())
+	}
+	want := []string{
+		"schemaVersion: 1",
+		"documents: 1",
+		"members: 1",
+		"namespaces: 1",
+		"digest: " + apexdocs.CanonicalDigest(inv),
+	}
+	for _, line := range want {
+		if !strings.Contains(stdout.String(), line) {
+			t.Fatalf("summary missing %q:\n%s", line, stdout.String())
+		}
+	}
+}
