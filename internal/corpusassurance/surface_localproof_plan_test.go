@@ -77,6 +77,42 @@ func TestBuildSurfaceLocalProofPlanRetainsUnclassifiedFixtures(t *testing.T) {
 	}
 }
 
+func TestBuildSurfaceLocalProofPlanConsumesTerminalAuthorityWithoutProofCredit(t *testing.T) {
+	request := surfaceLocalProofPlanRequest(t)
+	localProofFixture(t, request.FixtureRoot, "runtime", []string{"apex:System.Runtime.run()"}, localRuntimeRequired)
+	if _, _, err := BuildSurfaceLocalProofPlan(request); err == nil {
+		t.Fatal("initial incomplete plan unexpectedly passed")
+	}
+	classificationPath := filepath.Join(filepath.Dir(request.CoveragePath), "terminal-classifications.json")
+	if err := WriteNewJSON(classificationPath, ExclusionPolicy{SchemaVersion: 1, Rows: []ExclusionPolicyRow{{SurfaceID: "apex:System.Mock.run()", Class: terminalHostedContext, Reason: "requires hosted context"}}}); err != nil {
+		t.Fatal(err)
+	}
+	authorityPath := filepath.Join(filepath.Dir(request.CoveragePath), "terminal-authority.json")
+	if _, err := CreateSurfaceTerminalAuthority(SurfaceTerminalAuthorityRequest{ScopePath: request.ScopePath, CoveragePath: request.CoveragePath, LedgerPath: request.LedgerPath, SupportPolicyPath: request.PolicyPath, FixtureRoot: request.FixtureRoot, ClassificationPath: classificationPath, OutputPath: authorityPath}); err != nil {
+		t.Fatal(err)
+	}
+	request.TerminalAuthorityPath = authorityPath
+	request.ProfilePath += ".terminal"
+	request.UsagePath += ".terminal"
+	request.LocalDecisionPath += ".terminal"
+	request.ManifestPath += ".terminal"
+	request.CoveragePath += ".terminal"
+	_, coverage, err := BuildSurfaceLocalProofPlan(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if coverage.Covered != 1 || coverage.MissingCount != 1 || coverage.TerminalAccounting == nil || coverage.TerminalAccounting.DirectLocalProof != 1 || coverage.TerminalAccounting.TerminalAccounted != 1 || coverage.TerminalAccounting.Accounted != 2 || coverage.TerminalAccounting.Remaining != 0 || coverage.TerminalAccounting.LocalRuntimeCredit != 0 || coverage.TerminalAccounting.SalesforceParityCredit != 0 {
+		t.Fatalf("coverage = %#v", coverage)
+	}
+	profile, err := readExactJSON[LocalProofProfile](request.ProfilePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(profile.Rows) != 1 || profile.Rows[0].SurfaceID != "apex:System.Runtime.run()" {
+		t.Fatalf("runnable profile = %#v", profile.Rows)
+	}
+}
+
 func surfaceLocalProofPlanRequest(t *testing.T) SurfaceLocalProofPlanRequest {
 	t.Helper()
 	root := t.TempDir()
