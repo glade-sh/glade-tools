@@ -581,6 +581,8 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"current-base-flow-interview-context-tail-deterministic-api67.json", 1},
 		{"core-runtime-dom-value-semantics-wave17-runtime.json", 7},
 		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 11},
+		{"core-runtime-async-context-tail-api67.json", 8},
+		{"core-runtime-finalizer-context-tail-api67.json", 6},
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
 		{"data-platform-schema-record-type-info-wave17-runtime.json", 8},
 		{"integration-metadata-core-dtos-wave17-runtime.json", 21},
@@ -690,6 +692,12 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 		"apex:System.MultiStaticResourceCalloutMock.setStaticResource(String,String)",
 		"apex:System.Trigger",
 		"apex:System.Trigger.isExecuting",
+		"apex:System.Queueable.execute(QueueableContext)",
+		"apex:System.QueueableContext.getJobId()",
+		"apex:System.Schedulable.execute(SchedulableContext)",
+		"apex:System.SchedulableContext.getTriggerId()",
+		"apex:System.Finalizer.execute(FinalizerContext)",
+		"apex:System.FinalizerContext.getResult()",
 	} {
 		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("test-context runtime fixture %q was rejected", surfaceID)
@@ -720,7 +728,7 @@ func TestLocalProofAcceptsEventBusTestContextRuntimeSurfaces(t *testing.T) {
 }
 
 func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
-	for _, surfaceID := range []string{"apex:System.Location", "apex:System.StaticResourceCalloutMockBuilder.run()"} {
+	for _, surfaceID := range []string{"apex:System.Location", "apex:System.StaticResourceCalloutMockBuilder.run()", "apex:System.QueueableDuplicateSignature"} {
 		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("generic test fixture %q was accepted as runtime proof", surfaceID)
 		}

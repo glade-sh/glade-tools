@@ -311,6 +311,12 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 	case localRuntimeRequired:
 		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:System.Test.") ||
 			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
+			surfaceID == "apex:System.Queueable" || strings.HasPrefix(surfaceID, "apex:System.Queueable.") ||
+			surfaceID == "apex:System.QueueableContext" || strings.HasPrefix(surfaceID, "apex:System.QueueableContext.") ||
+			surfaceID == "apex:System.Schedulable" || strings.HasPrefix(surfaceID, "apex:System.Schedulable.") ||
+			surfaceID == "apex:System.SchedulableContext" || strings.HasPrefix(surfaceID, "apex:System.SchedulableContext.") ||
+			surfaceID == "apex:System.Finalizer" || strings.HasPrefix(surfaceID, "apex:System.Finalizer.") ||
+			surfaceID == "apex:System.FinalizerContext" || strings.HasPrefix(surfaceID, "apex:System.FinalizerContext.") ||
 			strings.HasPrefix(surfaceID, "apex:eventbus.TestBroker.") || strings.HasPrefix(surfaceID, "apex:eventbus.TestEventService.") ||
 			surfaceID == "apex:System.StaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.StaticResourceCalloutMock.") ||
 			surfaceID == "apex:System.MultiStaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.MultiStaticResourceCalloutMock.")))

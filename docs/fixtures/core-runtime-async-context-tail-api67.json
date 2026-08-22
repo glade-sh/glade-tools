@@ -1,0 +1,36 @@
+{
+  "apiVersion": "67.0",
+  "command": { "kind": "test" },
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "evidence": [
+    { "kind": "test", "surfaceId": "apex:System.Queueable", "symbol": "Queueable" },
+    { "kind": "test", "surfaceId": "apex:System.Queueable.execute(QueueableContext)", "symbol": "Queueable.execute(QueueableContext)" },
+    { "kind": "test", "surfaceId": "apex:System.QueueableContext", "symbol": "QueueableContext" },
+    { "kind": "test", "surfaceId": "apex:System.QueueableContext.getJobId()", "symbol": "QueueableContext.getJobId" },
+    { "kind": "test", "surfaceId": "apex:System.Schedulable", "symbol": "Schedulable" },
+    { "kind": "test", "surfaceId": "apex:System.Schedulable.execute(SchedulableContext)", "symbol": "Schedulable.execute(SchedulableContext)" },
+    { "kind": "test", "surfaceId": "apex:System.SchedulableContext", "symbol": "SchedulableContext" },
+    { "kind": "test", "surfaceId": "apex:System.SchedulableContext.getTriggerId()", "symbol": "SchedulableContext.getTriggerId" }
+  ],
+  "expected": { "result": { "errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1 } },
+  "mode": "local-runtime",
+  "name": "core-runtime-async-context-tail-api67",
+  "notes": "Direct deterministic local Queueable and Schedulable callbacks drained by Test.stopTest; zero hosted Salesforce parity and no worker lifecycle claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "system-lifecycle-tail",
+    "selectedRowCount": 8
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Deterministic local async callbacks have zero hosted Salesforce parity and are not a worker lifecycle oracle.",
+  "source": [
+    { "path": "force-app/main/classes/AsyncContextTailQueue.cls", "content": "public class AsyncContextTailQueue implements Queueable { public static String observed; public void execute(QueueableContext context) { observed = context.getJobId(); } }" },
+    { "path": "force-app/main/classes/AsyncContextTailSchedule.cls", "content": "public class AsyncContextTailSchedule implements Schedulable { public static String observed; public void execute(SchedulableContext context) { observed = context.getTriggerId(); } }" },
+    { "path": "force-app/main/classes/AsyncContextTailTest.cls", "content": "@IsTest private class AsyncContextTailTest { @IsTest static void callbacksDrainAtStopTest() { Test.startTest(); String queueId = System.enqueueJob(new AsyncContextTailQueue()); String triggerId = System.schedule('lifecycle-tail', '0 0 0 * * ?', new AsyncContextTailSchedule()); System.assertEquals('707000000000001', queueId); System.assertEquals('08e000000000002', triggerId); Test.stopTest(); System.assertEquals(queueId, AsyncContextTailQueue.observed); System.assertEquals(triggerId, AsyncContextTailSchedule.observed); } }" }
+  ]
+}

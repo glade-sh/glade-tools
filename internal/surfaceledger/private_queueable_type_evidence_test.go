@@ -11,10 +11,10 @@ import (
 )
 
 func TestPrivateQueueableTypesUseAsyncLifecycleFixture(t *testing.T) {
-	const owner = "async-context-job-record-edges"
+	const owner = "core-runtime-async-context-tail-api67"
 	want := map[string]string{
 		"apex:System.Queueable":        "implements Queueable",
-		"apex:System.QueueableContext": "execute(QueueableContext qc)",
+		"apex:System.QueueableContext": "execute(QueueableContext context)",
 	}
 	root := filepath.Join("..", "..", "docs", "fixtures")
 	paths, err := filepath.Glob(filepath.Join(root, "*.json"))
@@ -45,7 +45,7 @@ func TestPrivateQueueableTypesUseAsyncLifecycleFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fixture.Command.Kind != "test" || len(fixture.Evidence) != 9 {
+	if fixture.Command.Kind != "test" || len(fixture.Evidence) != 8 {
 		t.Fatalf("fixture envelope = %#v", fixture)
 	}
 	source := ""
@@ -73,7 +73,7 @@ func TestPrivateQueueableTypesUseAsyncLifecycleFixture(t *testing.T) {
 	if err := json.Unmarshal(raw, &policy); err != nil {
 		t.Fatal(err)
 	}
-	if policy.Eligible == nil || *policy.Eligible || policy.Class != "policy-local-only" || !strings.Contains(policy.Reason, "zero Salesforce parity") {
+	if policy.Eligible == nil || *policy.Eligible || policy.Class != "policy-local-only" || !strings.Contains(policy.Reason, "zero hosted Salesforce parity") {
 		t.Fatalf("fixture policy = %#v", policy)
 	}
 }
