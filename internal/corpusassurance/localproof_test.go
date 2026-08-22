@@ -171,6 +171,25 @@ func TestApexPagesContextTailFixturesOwnExactPlus34Rows(t *testing.T) {
 			t.Fatal("fixture is not candidate-runnable")
 		})
 	}
+	required := make(map[string]string, 34)
+	for _, fixture := range want {
+		for _, surfaceID := range fixture.ids {
+			required[surfaceID] = fixture.disposition
+		}
+	}
+	manifest, missing, err := analyzeLocalProofFixtures(root, required)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(missing) != 0 || len(manifest.Fixtures) != len(want) {
+		t.Fatalf("selected owners = %#v, missing = %v", manifest.Fixtures, missing)
+	}
+	for _, owner := range manifest.Fixtures {
+		expected, ok := want[owner.ID+".json"]
+		if !ok || owner.Disposition != expected.disposition || !reflect.DeepEqual(owner.OwnedSurfaceIDs, expected.ids) {
+			t.Fatalf("unexpected selected owner = %#v", owner)
+		}
+	}
 }
 
 func TestNormalizeLocalProofStdoutRemovesVolatileExecutionFields(t *testing.T) {
