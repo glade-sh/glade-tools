@@ -9,30 +9,35 @@ import (
 )
 
 type SurfaceLocalProofPlanRequest struct {
-	ScopePath         string
-	SourceProfilePath string
-	LedgerPath        string
-	PolicyPath        string
-	FixtureRoot       string
-	ProfilePath       string
-	UsagePath         string
-	LocalDecisionPath string
-	ManifestPath      string
-	CoveragePath      string
+	ScopePath             string
+	SourceProfilePath     string
+	LedgerPath            string
+	PolicyPath            string
+	FixtureRoot           string
+	ProfilePath           string
+	UsagePath             string
+	LocalDecisionPath     string
+	ManifestPath          string
+	CoveragePath          string
+	TerminalAuthorityPath string
 }
 
 type SurfaceLocalProofCoverage struct {
-	SchemaVersion        int                     `json:"schemaVersion"`
-	ScopeSHA256          string                  `json:"scopeSha256"`
-	Total                int                     `json:"total"`
-	Covered              int                     `json:"covered"`
-	MissingCount         int                     `json:"missingCount"`
-	Missing              []SurfaceOracleScopeRow `json:"missing"`
-	UnclassifiedFixtures []string                `json:"unclassifiedFixtures"`
+	SchemaVersion        int                        `json:"schemaVersion"`
+	ScopeSHA256          string                     `json:"scopeSha256"`
+	Total                int                        `json:"total"`
+	Covered              int                        `json:"covered"`
+	MissingCount         int                        `json:"missingCount"`
+	Missing              []SurfaceOracleScopeRow    `json:"missing"`
+	UnclassifiedFixtures []string                   `json:"unclassifiedFixtures"`
+	TerminalAccounting   *SurfaceTerminalAccounting `json:"terminalAccounting,omitempty"`
 }
 
 func BuildSurfaceLocalProofPlan(request SurfaceLocalProofPlanRequest) (LocalProofFixtureManifest, SurfaceLocalProofCoverage, error) {
 	paths := []string{request.ScopePath, request.SourceProfilePath, request.LedgerPath, request.PolicyPath, request.FixtureRoot, request.ProfilePath, request.UsagePath, request.LocalDecisionPath, request.ManifestPath, request.CoveragePath}
+	if request.TerminalAuthorityPath != "" {
+		paths = append(paths, request.TerminalAuthorityPath)
+	}
 	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return LocalProofFixtureManifest{}, SurfaceLocalProofCoverage{}, fmt.Errorf("absolute surface local-proof plan paths are required")
@@ -97,11 +102,37 @@ func BuildSurfaceLocalProofPlan(request SurfaceLocalProofPlanRequest) (LocalProo
 	if err := verifySurfaceLocalProofInputs(map[string]string{request.ScopePath: coverage.ScopeSHA256, request.SourceProfilePath: scope.SourceProfileSHA256, request.LedgerPath: scope.LedgerSHA256, request.PolicyPath: scope.PolicySHA256}); err != nil {
 		return LocalProofFixtureManifest{}, SurfaceLocalProofCoverage{}, err
 	}
+	terminalSurfaceIDs := map[string]bool{}
+	if request.TerminalAuthorityPath != "" {
+		authority, authorityBytes, err := readExactJSONBytes[SurfaceTerminalAuthority](request.TerminalAuthorityPath)
+		if err != nil {
+			return LocalProofFixtureManifest{}, SurfaceLocalProofCoverage{}, err
+		}
+		fixtureSetSHA, err := terminalFixtureSetSHA256(request.FixtureRoot, authority.Rows)
+		if err != nil {
+			return LocalProofFixtureManifest{}, SurfaceLocalProofCoverage{}, err
+		}
+		accounting, err := ApplySurfaceTerminalAuthority(coverage, authority, replayBytesSHA256(authorityBytes), fixtureSetSHA)
+		if err != nil {
+			return LocalProofFixtureManifest{}, SurfaceLocalProofCoverage{}, err
+		}
+		coverage.TerminalAccounting = &accounting
+		for _, row := range authority.Rows {
+			terminalSurfaceIDs[row.SurfaceID] = true
+		}
+	}
 	if err := WriteNewJSON(request.CoveragePath, coverage); err != nil {
 		return LocalProofFixtureManifest{}, SurfaceLocalProofCoverage{}, err
 	}
-	if coverage.MissingCount != 0 || len(coverage.UnclassifiedFixtures) != 0 {
-		return manifest, coverage, fmt.Errorf("surface local-proof coverage incomplete: covered=%d missing=%d unclassified-fixtures=%d output=%s", coverage.Covered, coverage.MissingCount, len(coverage.UnclassifiedFixtures), request.CoveragePath)
+	actionableMissing := coverage.MissingCount
+	if coverage.TerminalAccounting != nil {
+		actionableMissing = coverage.TerminalAccounting.Remaining
+	}
+	if actionableMissing != 0 || len(coverage.UnclassifiedFixtures) != 0 {
+		return manifest, coverage, fmt.Errorf("surface local-proof coverage incomplete: covered=%d missing=%d actionable-missing=%d unclassified-fixtures=%d output=%s", coverage.Covered, coverage.MissingCount, actionableMissing, len(coverage.UnclassifiedFixtures), request.CoveragePath)
+	}
+	for surfaceID := range terminalSurfaceIDs {
+		delete(required, surfaceID)
 	}
 	if err := writeLocalProofPlan(required, manifest, request.ProfilePath, request.UsagePath, request.LocalDecisionPath, request.ManifestPath); err != nil {
 		return LocalProofFixtureManifest{}, coverage, err
