@@ -599,7 +599,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-system-001-wave19-runtime.json", 11},
 		{"core-runtime-system-002-wave19-runtime.json", 4},
 		{"core-runtime-system-primitive-tail-api67.json", 33},
-		{"core-runtime-system-scalar-adderror-tail-api67.json", 36},
+		{"core-runtime-system-scalar-adderror-tail-api67.json", 40},
 		{"core-runtime-utility-crypto-api67.json", 2},
 		{"core-runtime-utility-exception-tail-api67.json", 2},
 		{"core-runtime-utility-http-mock-api67.json", 2},
@@ -833,6 +833,7 @@ func TestLocalProofAcceptsOnlyScalarAdderrorTestRuntimeRows(t *testing.T) {
 		"apex:System.Id.addError(Exception)", "apex:System.Id.addError(Exception,Boolean)", "apex:System.Id.addError(String)", "apex:System.Id.addError(String,Boolean)",
 		"apex:System.Integer.addError(Exception)", "apex:System.Integer.addError(Exception,Boolean)", "apex:System.Integer.addError(String)", "apex:System.Integer.addError(String,Boolean)",
 		"apex:System.Long.addError(Exception)", "apex:System.Long.addError(Exception,Boolean)", "apex:System.Long.addError(String)", "apex:System.Long.addError(String,Boolean)",
+		"apex:System.String.addError(Exception)", "apex:System.String.addError(Exception,Boolean)", "apex:System.String.addError(String)", "apex:System.String.addError(String,Boolean)",
 		"apex:System.Time.addError(Exception)", "apex:System.Time.addError(Exception,Boolean)", "apex:System.Time.addError(String)", "apex:System.Time.addError(String,Boolean)",
 	}
 	for _, surfaceID := range accepted {
