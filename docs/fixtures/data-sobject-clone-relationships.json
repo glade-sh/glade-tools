@@ -6,18 +6,6 @@
       "symbol": "SObject.clone",
       "kind": "test",
       "notes": "SObject.clone preserves field values and optionally removes Id."
-    },
-    {
-      "surfaceId": "apex:System.SObject.getSObject(Schema.SObjectField)",
-      "symbol": "SObject.getSObject",
-      "kind": "test",
-      "notes": "Parent relationship values can be read by relationship name."
-    },
-    {
-      "surfaceId": "apex:System.SObject.getSObjects(Schema.SObjectField)",
-      "symbol": "SObject.getSObjects",
-      "kind": "test",
-      "notes": "Child relationship list values can be read by relationship name."
     }
   ],
   "source": [

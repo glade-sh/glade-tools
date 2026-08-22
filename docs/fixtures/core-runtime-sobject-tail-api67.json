@@ -1,0 +1,43 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "command": {
+    "args": [
+      "SObject row = new Account(Name = 'Child'); Schema.SObjectField accountField = Contact.SObjectType.getDescribe().fields.getMap().get('AccountId'); Contact child = new Contact(LastName = 'Child'); Account parent = new Account(Name = 'Parent'); child.putSObject(accountField, parent); System.assertEquals('Parent', child.getSObject(accountField).get('Name')); row.addError(new SObjectTailSupport.TailException()); System.assert(row.hasErrors()); System.assertEquals(row.hashCode(), row.hashCode()); System.assertNotEquals(null, row.toString()); row.recalculateFormulas();"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:System.SObject","symbol":"SObject"},
+    {"kind":"exec","surfaceId":"apex:System.SObject.addError(Exception)","symbol":"SObject.addError"},
+    {"kind":"exec","surfaceId":"apex:System.SObject.getSObject(Schema.SObjectField)","symbol":"SObject.getSObject"},
+    {"kind":"exec","surfaceId":"apex:System.SObject.hashCode()","symbol":"SObject.hashCode"},
+    {"kind":"exec","surfaceId":"apex:System.SObject.recalculateFormulas()","symbol":"SObject.recalculateFormulas"},
+    {"kind":"exec","surfaceId":"apex:System.SObject.toString()","symbol":"SObject.toString"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-sobject-tail-api67",
+  "notes": "Exact-candidate anonymous-Apex local-runtime witness for six System.SObject rows. Policy-local-only; no hosted Salesforce execution or parity claim is made. SObject.getSObjects(Schema.SObjectField) remains an explicit product gap.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-sobject-tail-api67",
+    "selectedRowCount": 6
+  },
+  "project": {"sourceApiVersion":"67.0"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture is policy-local-only: it proves only the local runtime witness and grants zero hosted Salesforce parity credit; no hosted Salesforce execution is claimed.",
+  "source": [
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Contact/Contact.object-meta.xml","content":"<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Contact/fields/LastName.field-meta.xml","content":"<CustomField><fullName>LastName</fullName><label>Last Name</label><type>Text</type></CustomField>"},
+    {"path":"force-app/main/default/objects/Contact/fields/AccountId.field-meta.xml","content":"<CustomField><fullName>AccountId</fullName><label>Account</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Account</relationshipName></CustomField>"},
+    {"path":"force-app/main/classes/SObjectTailSupport.cls","content":"public class SObjectTailSupport { public class TailException extends Exception {} }"}
+  ]
+}

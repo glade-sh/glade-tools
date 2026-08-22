@@ -101,12 +101,6 @@
     },
     {
       "kind": "shape",
-      "notes": "Local SObject error collection support exposes the Exception overload shape.",
-      "surfaceId": "apex:System.SObject.addError(Exception)",
-      "symbol": "SObject.addError(Exception)"
-    },
-    {
-      "kind": "shape",
       "notes": "Generic Set helpers expose Set<Object> collection overload shapes locally.",
       "surfaceId": "apex:System.Set.addAll(Set<Object>)",
       "symbol": "Set.addAll(Set<Object>)"
