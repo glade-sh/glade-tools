@@ -54,6 +54,15 @@ func TestSystemTriggerSObjectTailHasExactExecutableLocalEvidence(t *testing.T) {
 	if sObjectFixture.Command.Kind != "exec" || len(sObjectFixture.Command.Args) != 1 || len(sObjectFixture.Source) == 0 {
 		t.Fatalf("SObject fixture envelope = %#v", sObjectFixture)
 	}
+	sObjectCommandSource := false
+	for _, source := range sObjectFixture.Source {
+		if source.Path == "anonymous.apex" && source.Content == sObjectFixture.Command.Args[0] {
+			sObjectCommandSource = true
+		}
+	}
+	if !sObjectCommandSource {
+		t.Fatal("SObject fixture must retain its exact anonymous command as source")
+	}
 
 	allIDs := append(append([]string{}, triggerTailIDs...), sObjectTailIDs...)
 	rows, err := BuildEvidenceSnapshot([]string{triggerPath, sObjectPath})
