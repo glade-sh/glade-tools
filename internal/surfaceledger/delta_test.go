@@ -549,6 +549,17 @@ func TestReleaseDelta_StaleClassificationFails(t *testing.T) {
 	}
 }
 
+func TestReleaseDelta_StaleClassificationDeterministicOrdering(t *testing.T) {
+	classifications := stdClassifyAll("apex:Stale.Z", "apex:Stale.M", "apex:Stale.A")
+	want := "classification for row not in added, removed, or changed: apex:stale.a"
+	for i := 0; i < 20; i++ {
+		_, _, _, _, err := ComputeReleaseDelta(nil, nil, classifications)
+		if err == nil || err.Error() != want {
+			t.Fatalf("iteration %d: error = %v, want %q", i, err, want)
+		}
+	}
+}
+
 func TestReleaseDelta_ClassificationForNonExistentIDFails(t *testing.T) {
 	prev := []SurfaceLedgerRow{
 		{SurfaceID: "apex:A.Class", Signature: "v1", Product: "apex", Kind: KindType},

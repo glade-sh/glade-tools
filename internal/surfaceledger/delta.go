@@ -101,10 +101,15 @@ func ComputeReleaseDelta(prev, current []SurfaceLedgerRow, classifications []Rel
 		}
 	}
 
+	var staleKeys []string
 	for key := range classByKey {
 		if _, ok := classifiedKeys[key]; !ok {
-			return added, removed, changed, unchanged, fmt.Errorf("classification for row not in added, removed, or changed: %s", key)
+			staleKeys = append(staleKeys, key)
 		}
+	}
+	if len(staleKeys) > 0 {
+		sort.Strings(staleKeys)
+		return added, removed, changed, unchanged, fmt.Errorf("classification for row not in added, removed, or changed: %s", staleKeys[0])
 	}
 
 	return added, removed, changed, unchanged, nil

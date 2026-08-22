@@ -1290,7 +1290,7 @@ Optional flags:
   --previous-release-manifest <path>  Previous release manifest for delta mode.
   --previous-inventory <path>         Previous docs inventory for delta mode.
   --current-inventory <path>          Current docs inventory for delta mode.
-  --release-classifications <path>    Added/changed surface classifications.
+  --release-classifications <path>    Added/removed/changed surface classifications.
 
 All four delta-mode flags must be supplied together.
 `)

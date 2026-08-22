@@ -1217,6 +1217,9 @@ func TestSalesforceVerify_HelpExposesCommand(t *testing.T) {
 	if !strings.Contains(out, "salesforce verify") {
 		t.Fatalf("help should mention 'salesforce verify':\n%s", out)
 	}
+	if !strings.Contains(out, "Added/removed/changed surface classifications") {
+		t.Fatalf("help should describe added, removed, and changed classifications:\n%s", out)
+	}
 	for _, flag := range []string{"--release-manifest", "--catalog", "--runtime-cases", "--test-project", "--target-org", "--glade-bin", "--glade-root", "--out", "--previous-release-manifest", "--previous-inventory", "--current-inventory", "--release-classifications"} {
 		if !strings.Contains(out, flag) {
 			t.Fatalf("help should include %s:\n%s", flag, out)
