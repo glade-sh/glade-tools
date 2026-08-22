@@ -137,11 +137,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Canvas.Test.Test()",
-      "symbol": "Canvas.Test.Test()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Canvas.Test.clone()",
       "symbol": "Canvas.Test.clone()"
     },

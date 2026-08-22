@@ -6,16 +6,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Messaging.ActionResult.ActionResult()",
-      "symbol": "Messaging.ActionResult.ActionResult()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Messaging.ActionableNotification.ActionableNotification()",
-      "symbol": "Messaging.ActionableNotification.ActionableNotification()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Messaging.AuthenticationResult",
       "symbol": "Messaging.AuthenticationResult"
     },
