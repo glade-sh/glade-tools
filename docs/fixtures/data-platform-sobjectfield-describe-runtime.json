@@ -1,5 +1,6 @@
 {
   "name": "data-platform-sobjectfield-describe-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:Schema.SObjectField.getDescribe()",

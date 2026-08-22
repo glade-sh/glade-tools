@@ -1,5 +1,6 @@
 {
   "name": "data-schema-describe-sobject-properties-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId":"apex:Schema.DescribeSObjectResult.accessible","symbol":"Schema.DescribeSObjectResult.accessible","kind":"exec"},
     {"surfaceId":"apex:Schema.DescribeSObjectResult.createable","symbol":"Schema.DescribeSObjectResult.createable","kind":"exec"},

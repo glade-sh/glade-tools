@@ -1,5 +1,6 @@
 {
   "name": "core-blob-crypto-stdlib",
+  "salesforceEligible": true,
   "evidence": [
     {
       "symbol": "Blob.valueOf",

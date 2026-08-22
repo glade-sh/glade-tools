@@ -1,5 +1,6 @@
 {
   "name": "data-database-savepoint-lifecycle-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Database.setSavepoint()",

@@ -1,5 +1,6 @@
 {
   "name": "core-system-string-exact-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.String.contains(String)",

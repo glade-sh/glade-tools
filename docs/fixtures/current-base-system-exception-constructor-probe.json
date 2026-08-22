@@ -1,5 +1,8 @@
 {
   "name": "current-base-system-exception-constructor-probe",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves Glade-local System exception constructor availability only; it receives zero Salesforce parity credit.",
   "apiVersion": "67.0",
   "evidence": [
     {"surfaceId": "apex:System.SearchException.SearchException()", "symbol": "SearchException.SearchException", "kind": "exec"},

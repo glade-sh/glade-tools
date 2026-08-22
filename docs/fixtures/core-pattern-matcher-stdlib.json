@@ -1,5 +1,6 @@
 {
   "name": "core-pattern-matcher-stdlib",
+  "salesforceEligible": true,
   "evidence": [
     {
       "symbol": "Pattern.compile",

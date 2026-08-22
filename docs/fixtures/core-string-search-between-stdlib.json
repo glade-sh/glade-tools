@@ -1,5 +1,6 @@
 {
   "name": "core-string-search-between-stdlib",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.String.indexOf(String)",

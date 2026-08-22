@@ -1,5 +1,8 @@
 {
   "name": "async-test-semantics",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves Glade's deterministic async test-harness drain and limit accounting, including the local-only Limits.getAsyncJobs call and exact local job counts; it receives zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Test.startTest()",

@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-domain-cookie-value-objects",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The assertions require Glade's deterministic local hostnames and My Domain values rather than the target org's domain configuration; this fixture receives zero Salesforce parity credit.",
   "evidence": [
     {"surfaceId": "apex:System.Cookie.getDomain()", "symbol": "Cookie.getDomain", "kind": "exec"},
     {"surfaceId": "apex:System.Cookie.getMaxAge()", "symbol": "Cookie.getMaxAge", "kind": "exec"},

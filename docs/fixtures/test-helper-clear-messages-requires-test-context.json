@@ -1,5 +1,8 @@
 {
   "name": "test-helper-clear-messages-requires-test-context",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The exec fixture intentionally exercises Test.clearApexPageMessages outside Apex test context and expects a local guard error; it is not a runnable hosted test and receives zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Test.clearApexPageMessages()",

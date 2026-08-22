@@ -1,5 +1,8 @@
 {
   "name": "core-http-request-runtime-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture exercises the Glade-local HttpRequest.setBodyDocument(Object) overload, while Salesforce API 67 exposes setBodyDocument(Dom.Document); it receives zero Salesforce parity credit.",
   "evidence": [
     {"kind":"exec","surfaceId":"apex:System.HttpRequest.HttpRequest()","symbol":"HttpRequest.HttpRequest"},
     {"kind":"exec","surfaceId":"apex:System.HttpRequest.equals(Object)","symbol":"HttpRequest.equals"},

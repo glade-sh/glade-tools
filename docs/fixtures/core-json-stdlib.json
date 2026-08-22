@@ -1,5 +1,8 @@
 {
   "name": "core-json-stdlib",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The composite fixture includes Glade-local JSON raw-helper ownership and constructed JSONException stack/accessor behavior that the exact hosted adapter cannot adjudicate as one runnable packet; it receives zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "JSON.createGenerator",

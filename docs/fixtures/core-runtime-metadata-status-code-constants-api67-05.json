@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-metadata-status-code-constants-api67-05",
+  "salesforceEligible": true,
   "command": {
     "kind": "exec",
     "args": [

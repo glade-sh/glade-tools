@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-cb72-frozen-behavior-local-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture combines Glade-local SparkPlug stub behavior and local permission-state semantics with no portable hosted setup; it receives zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Security.stripInaccessible(AccessType,List<Object>,Boolean,Id)",

@@ -1,5 +1,8 @@
 {
   "name": "core-database-upsert-sobjectfield-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "The anonymous Apex depends on the fixture's custom Account.Other_Key__c external-id metadata, but the Salesforce exec adapter does not deploy schema before execution; this fixture receives zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Database.upsert(Object,Schema.SObjectField)",

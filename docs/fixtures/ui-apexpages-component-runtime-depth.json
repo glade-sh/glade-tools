@@ -1,5 +1,8 @@
 {
   "name": "ui-apexpages-component-runtime-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 clean-org rejects construction of the internal ApexPages component types exercised here; the fixture is local UI evidence and receives zero Salesforce parity credit.",
   "evidence": [
     {"surfaceId":"apex:ApexPages.Action.getExpression()","symbol":"ApexPages.Action.getExpression()","kind":"exec"},
     {"surfaceId":"apex:ApexPages.Component","symbol":"ApexPages.Component","kind":"exec"},

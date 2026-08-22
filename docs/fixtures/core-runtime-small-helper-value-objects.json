@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-small-helper-value-objects",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The packet asserts Glade-local PDF bytes, CURRENCY formatting, and email-thread token behavior that is not a portable hosted runtime contract; it receives zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Blob.toPdf(String)",

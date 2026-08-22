@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-math-location-exact-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The packet mixes portable Math and Location calls with Glade-local constructed MathException line, stack, cause, and inaccessible-field behavior; as one indivisible fixture it receives zero Salesforce parity credit.",
   "evidence": [
     {"surfaceId": "apex:System.Location.getDistance()", "symbol": "Location.getDistance", "kind": "exec"},
     {"surfaceId": "apex:System.Location.newInstance()", "symbol": "Location.newInstance", "kind": "exec"},
