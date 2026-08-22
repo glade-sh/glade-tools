@@ -1,4 +1,5 @@
 {
+  "evidenceOnly":true,
   "name": "async-batchable-querylocator-overloads",
   "evidence": [
     {
