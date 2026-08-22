@@ -457,6 +457,10 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-eventbus-test-service-tail-api67.json", 5},
 		{"core-runtime-eventbus-trigger-context-api67.json", 1},
 		{"core-runtime-jsonparser-tail-local-evidence.json", 6},
+		{"core-runtime-answers-find-similar-local-evidence.json", 2},
+		{"core-runtime-cache-tail-local-evidence-api67.json", 3},
+		{"core-runtime-process-plugin-tail-local-evidence-api67.json", 4},
+		{"core-runtime-queueable-duplicate-signature-tail-local-evidence-api67.json", 5},
 		{"core-runtime-database-duplicate-recycle-savepoint-api67.json", 12},
 		{"core-messaging-sendemail-error-fields-runtime.json", 2},
 		{"core-messaging-mass-email-fields-runtime.json", 3},
@@ -610,7 +614,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			required := make(map[string]string)
 			disposition := localRuntimeRequired
-			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "current-base-userprovisioning-deterministic-mock-003-api67" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" || fixture.Name == "current-base-flow-interview-context-tail-deterministic-api67" {
+			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "current-base-userprovisioning-deterministic-mock-003-api67" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" || fixture.Name == "current-base-flow-interview-context-tail-deterministic-api67" || strings.HasPrefix(fixture.Name, "core-runtime-answers-find-similar") || strings.HasPrefix(fixture.Name, "core-runtime-cache-tail-") || strings.HasPrefix(fixture.Name, "core-runtime-process-plugin-tail-") {
 				disposition = deterministicMockRequired
 			}
 			for _, evidence := range fixture.Evidence {

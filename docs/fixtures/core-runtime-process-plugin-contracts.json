@@ -4,29 +4,6 @@
   "proofObligationReason": "Fixture evidence explicitly covers the local Process.Plugin service-contract shape; platform invocation is not claimed.",
   "evidence": [
     {
-      "surfaceId": "apex:Process.Plugin.describe()",
-      "symbol": "Process.Plugin.describe",
-      "kind": "check",
-      "notes": "Process.Plugin is a user-implemented service contract; local invocation is user Apex, not a platform service."
-    },
-    {
-      "surfaceId": "apex:Process.Plugin.invoke(Process.PluginRequest)",
-      "symbol": "Process.Plugin.invoke",
-      "kind": "check"
-    },
-    {
-      "surfaceId": "apex:Process.PluginDescribeResult.InputParameter",
-      "symbol": "Process.PluginDescribeResult.InputParameter",
-      "kind": "check",
-      "notes": "Nested docs shape aliases the project-visible plugin input parameter DTO."
-    },
-    {
-      "surfaceId": "apex:Process.PluginDescribeResult.OutputParameter",
-      "symbol": "Process.PluginDescribeResult.OutputParameter",
-      "kind": "check",
-      "notes": "Nested docs shape aliases the project-visible plugin output parameter DTO."
-    },
-    {
       "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.PluginDescribeResult.InputParameter(String,Process.PluginDescribeResult.ParameterType,Boolean)",
       "symbol": "Process.PluginDescribeResult.InputParameter",
       "kind": "check",
