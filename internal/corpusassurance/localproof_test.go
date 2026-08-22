@@ -236,8 +236,6 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 		excludes []string
 	}{
 		{"SoapType", "current-base-cb198-schema-soaptype-positive-api67.json", 1308, []string{"apex:Schema.SoapType"}, nil},
-		{"System enums", "current-base-cb191-system-rebind-positive-api67.json", 733, []string{"apex:System.AccessType", "apex:System.JSONToken", "apex:System.LoggingLevel", "apex:System.Quiddity", "apex:System.StatusCode", "apex:System.TriggerOperation", "apex:System.XmlTag"}, nil},
-		{"UserInfo accessors", "current-base-cb191-system-rebind-positive-api67.json", 35, []string{"apex:System.UserInfo"}, []string{"UserInfo()", "clone()", "hasPackageLicense", "isCurrentUserLicensed"}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			path := filepath.Join(root, test.filename)
@@ -615,6 +613,52 @@ func TestLocalProofFixtureRejectsUnknownJSONFields(t *testing.T) {
 	fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
 	if _, err := loadLocalProofFixture(fixture); err == nil {
 		t.Fatal("loadLocalProofFixture accepted an unknown fixture field")
+	}
+}
+
+func TestLocalProofFixtureEvidenceOnlyEligibility(t *testing.T) {
+	for _, test := range []struct {
+		name          string
+		value         any
+		wantError     string
+		wantCandidate bool
+	}{
+		{"true", true, "evidence-only fixture is not eligible for local proof", false},
+		{"false", false, "", true},
+		{"string", "true", "invalid evidenceOnly", false},
+		{"null", nil, "invalid evidenceOnly", false},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			fixture := localProofFixture(t, root, "runtime", []string{"apex:Runtime.run"}, localRuntimeRequired)
+			var document map[string]any
+			data, err := os.ReadFile(fixture.Path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := json.Unmarshal(data, &document); err != nil {
+				t.Fatal(err)
+			}
+			document["evidenceOnly"] = test.value
+			writeLocalProofJSON(t, fixture.Path, document)
+			fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
+
+			_, err = loadLocalProofFixture(fixture)
+			if test.wantError == "" && err != nil {
+				t.Fatalf("loadLocalProofFixture rejected eligible fixture: %v", err)
+			}
+			if test.wantError != "" && (err == nil || !strings.Contains(err.Error(), test.wantError)) {
+				t.Errorf("loadLocalProofFixture error = %v, want %q", err, test.wantError)
+			}
+
+			candidates, err := discoverLocalProofFixtures(root, map[string]string{"apex:Runtime.run": localRuntimeRequired})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := len(candidates) == 1; got != test.wantCandidate {
+				t.Fatalf("candidate discovered = %t, want %t", got, test.wantCandidate)
+			}
+		})
 	}
 }
 
