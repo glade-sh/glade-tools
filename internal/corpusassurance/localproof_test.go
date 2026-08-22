@@ -609,7 +609,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-utility-xmlwriter-api67.json", 2},
 		{"core-runtime-userinfo-request-tail-api67.json", 43},
 		{"core-runtime-trigger-sobject-tail-api67.json", 14},
-		{"core-runtime-sobject-tail-api67.json", 6},
+		{"core-runtime-sobject-tail-api67.json", 7},
 		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
 		{"current-base-userprovisioning-deterministic-mock-003-api67.json", 6},
 		{"current-base-userprovisioning-deterministic-mock-004-api67.json", 3},

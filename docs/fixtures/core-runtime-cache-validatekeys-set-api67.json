@@ -1,0 +1,35 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+  },
+  "command": {
+    "args": [
+      "Set<String> keys = new Set<String>{'alpha', 'beta'}; Cache.OrgPartition.validateKeys(false, keys); Cache.Partition.validateKeys(false, keys); Cache.SessionPartition.validateKeys(false, keys); System.assertEquals(new Set<String>{'alpha', 'beta'}, keys);"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Cache.OrgPartition.validateKeys(Boolean,Set<String>)","symbol":"Cache.OrgPartition.validateKeys"},
+    {"kind":"exec","surfaceId":"apex:Cache.Partition.validateKeys(Boolean,Set<String>)","symbol":"Cache.Partition.validateKeys"},
+    {"kind":"exec","surfaceId":"apex:Cache.SessionPartition.validateKeys(Boolean,Set<String>)","symbol":"Cache.SessionPartition.validateKeys"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-cache-validatekeys-set-api67",
+  "notes": "Exact-candidate anonymous-Apex local-runtime witness for three API 67 static Cache validateKeys(Boolean, Set<String>) surfaces. List overloads and instance forms are excluded. Policy-local-only; zero hosted Salesforce parity credit; no hosted Salesforce execution is claimed.",
+  "profile": {
+    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
+    "laneId": "runtime-cache-validatekeys-set-api67",
+    "selectedRowCount": 3
+  },
+  "project": {"sourceApiVersion":"67.0"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only the local runtime witness and grants zero hosted Salesforce parity credit; no hosted Salesforce execution is claimed.",
+  "source": [
+    {"path":"anonymous.apex","content":"Set<String> keys = new Set<String>{'alpha', 'beta'}; Cache.OrgPartition.validateKeys(false, keys); Cache.Partition.validateKeys(false, keys); Cache.SessionPartition.validateKeys(false, keys); System.assertEquals(new Set<String>{'alpha', 'beta'}, keys);"}
+  ]
+}

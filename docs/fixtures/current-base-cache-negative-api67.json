@@ -8,17 +8,14 @@
       "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getAvgValueSize();",
       "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getMaxValueSize();",
       "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.validateKeys(false, new List<String>{'a'});",
-      "Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.validateKeys(false, new Set<String>{'a'});",
       "Cache.Partition.getAvgValueSize();",
       "Cache.Partition.getMaxValueSize();",
       "Cache.Partition.validateKeys(false, new List<String>{'a'});",
-      "Cache.Partition.validateKeys(false, new Set<String>{'a'});",
       "Cache.Session.getAvgValueSize();",
       "Cache.Session.getMaxValueSize();",
       "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getAvgValueSize();",
       "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getMaxValueSize();",
-      "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.validateKeys(false, new List<String>{'a'});",
-      "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.validateKeys(false, new Set<String>{'a'});"
+      "Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.validateKeys(false, new List<String>{'a'});"
     ],
     "kind": "exec",
     "perEvidence": true
@@ -56,11 +53,6 @@
     },
     {
       "kind": "exec",
-      "surfaceId": "apex:Cache.OrgPartition.validateKeys(Boolean,Set<String>)",
-      "symbol": "Cache.OrgPartition.validateKeys"
-    },
-    {
-      "kind": "exec",
       "surfaceId": "apex:Cache.Partition.getAvgValueSize()",
       "symbol": "Cache.Partition.getAvgValueSize"
     },
@@ -72,11 +64,6 @@
     {
       "kind": "exec",
       "surfaceId": "apex:Cache.Partition.validateKeys(Boolean,List<String>)",
-      "symbol": "Cache.Partition.validateKeys"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:Cache.Partition.validateKeys(Boolean,Set<String>)",
       "symbol": "Cache.Partition.validateKeys"
     },
     {
@@ -103,11 +90,6 @@
       "kind": "exec",
       "surfaceId": "apex:Cache.SessionPartition.validateKeys(Boolean,List<String>)",
       "symbol": "Cache.SessionPartition.validateKeys"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:Cache.SessionPartition.validateKeys(Boolean,Set<String>)",
-      "symbol": "Cache.SessionPartition.validateKeys"
     }
   ],
   "expected": {
@@ -123,7 +105,7 @@
   "salesforceExclusionReason": "This fixture does not establish Salesforce availability or removal for these Cache members; Glade does not model the Cache statistics, availability, and key-validation behavior exercised here; it proves only the local rejection contract and grants zero Salesforce parity credit.",
   "source": [
     {
-      "content": "Cache.Org.getAvgValueSize(); Cache.Org.getMaxValueSize(); Cache.Org.isAvailable(); Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getAvgValueSize(); orgPartition.getMaxValueSize(); orgPartition.validateKeys(false, new List<String>{'a'}); orgPartition.validateKeys(false, new Set<String>{'a'}); Cache.Partition.validateKeys(false, new List<String>{'a'}); Cache.Partition.validateKeys(false, new Set<String>{'a'}); Cache.Session.getAvgValueSize(); Cache.Session.getMaxValueSize(); Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getAvgValueSize(); sessionPartition.getMaxValueSize(); sessionPartition.validateKeys(false, new List<String>{'a'}); sessionPartition.validateKeys(false, new Set<String>{'a'});",
+      "content": "Cache.Org.getAvgValueSize(); Cache.Org.getMaxValueSize(); Cache.Org.isAvailable(); Cache.OrgPartition orgPartition = Cache.Org.getPartition('local'); orgPartition.getAvgValueSize(); orgPartition.getMaxValueSize(); orgPartition.validateKeys(false, new List<String>{'a'}); Cache.Partition.validateKeys(false, new List<String>{'a'}); Cache.Session.getAvgValueSize(); Cache.Session.getMaxValueSize(); Cache.SessionPartition sessionPartition = Cache.Session.getPartition('local'); sessionPartition.getAvgValueSize(); sessionPartition.getMaxValueSize(); sessionPartition.validateKeys(false, new List<String>{'a'});",
       "path": "anonymous.apex"
     }
   ]

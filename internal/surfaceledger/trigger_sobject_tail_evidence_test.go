@@ -36,6 +36,7 @@ var sObjectTailIDs = []string{
 	"apex:System.SObject",
 	"apex:System.SObject.addError(Exception)",
 	"apex:System.SObject.getSObject(Schema.SObjectField)",
+	"apex:System.SObject.getSObjects(Schema.SObjectField)",
 	"apex:System.SObject.hashCode()",
 	"apex:System.SObject.recalculateFormulas()",
 	"apex:System.SObject.toString()",
@@ -174,7 +175,13 @@ func assertTailFixtureMetadata(t *testing.T, path, mode string, selectedRows int
 	if err := json.Unmarshal(raw, &metadata); err != nil {
 		t.Fatal(err)
 	}
-	if metadata.APIVersion != "67.0" || metadata.Mode != mode || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(metadata.SalesforceExclusionReason, "zero hosted Salesforce parity") || metadata.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || metadata.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || metadata.Profile.CandidateCommit != metadata.Candidate.Commit || metadata.Profile.CandidateSHA256 != metadata.Candidate.SHA256 || metadata.Profile.SelectedRows != selectedRows || metadata.Salesforce != nil || metadata.Comparisons != nil || !strings.Contains(metadata.Notes, "no hosted Salesforce execution or parity claim") {
+	wantCommit := "3409c4c85827b19712e9df83fc8905aa02bd1dc8"
+	wantSHA := "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+	if filepath.Base(path) == sObjectTailFixture {
+		wantCommit = "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5"
+		wantSHA = "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+	}
+	if metadata.APIVersion != "67.0" || metadata.Mode != mode || metadata.EvidenceOnly || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(metadata.SalesforceExclusionReason, "zero hosted Salesforce parity") || metadata.Candidate.Commit != wantCommit || metadata.Candidate.SHA256 != wantSHA || metadata.Profile.CandidateCommit != metadata.Candidate.Commit || metadata.Profile.CandidateSHA256 != metadata.Candidate.SHA256 || metadata.Profile.SelectedRows != selectedRows || metadata.Salesforce != nil || metadata.Comparisons != nil || !strings.Contains(metadata.Notes, "no hosted Salesforce execution or parity claim") {
 		t.Fatalf("fixture provenance = %#v", metadata)
 	}
 }
