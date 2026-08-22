@@ -85,11 +85,11 @@
     },
     {
       "path": "force-app/main/classes/AsyncListSaveProbe.cls",
-      "content": "public class AsyncListSaveProbe implements DataSource.AsyncSaveCallback { public static Integer calls = 0; public void processSave(Database.SaveResult result) { if (result != null && result.isSuccess()) { calls++; } } }"
+      "content": "public class AsyncListSaveProbe extends DataSource.AsyncSaveCallback { public static Integer calls = 0; public override void processSave(Database.SaveResult result) { if (result != null && result.isSuccess()) { calls++; } } }"
     },
     {
       "path": "force-app/main/classes/AsyncListDeleteProbe.cls",
-      "content": "public class AsyncListDeleteProbe implements DataSource.AsyncDeleteCallback { public static Integer calls = 0; public void processDelete(Database.DeleteResult result) { if (result != null && result.isSuccess()) { calls++; } } }"
+      "content": "public class AsyncListDeleteProbe extends DataSource.AsyncDeleteCallback { public static Integer calls = 0; public override void processDelete(Database.DeleteResult result) { if (result != null && result.isSuccess()) { calls++; } } }"
     },
     {
       "path": "force-app/main/classes/AsyncDatabaseListDmlContractsTest.cls",
@@ -107,5 +107,12 @@
       "failed": 0,
       "errors": 0
     }
-  }
+  },
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Current candidate local test execution only; grants zero Salesforce parity credit and claims no hosted Salesforce execution."
 }

@@ -55,15 +55,15 @@
     },
     {
       "path": "force-app/main/classes/AsyncSaveProbe.cls",
-      "content": "public class AsyncSaveProbe implements DataSource.AsyncSaveCallback { public static Integer calls = 0; public static Id lastId; public void processSave(Database.SaveResult result) { calls++; if (result != null) { lastId = result.getId(); } } }"
+      "content": "public class AsyncSaveProbe extends DataSource.AsyncSaveCallback { public static Integer calls = 0; public static Id lastId; public override void processSave(Database.SaveResult result) { calls++; if (result != null) { lastId = result.getId(); } } }"
     },
     {
       "path": "force-app/main/classes/AsyncDeleteProbe.cls",
-      "content": "public class AsyncDeleteProbe implements DataSource.AsyncDeleteCallback { public static Integer calls = 0; public static Id lastId; public void processDelete(Database.DeleteResult result) { calls++; if (result != null) { lastId = result.getId(); } } }"
+      "content": "public class AsyncDeleteProbe extends DataSource.AsyncDeleteCallback { public static Integer calls = 0; public static Id lastId; public override void processDelete(Database.DeleteResult result) { calls++; if (result != null) { lastId = result.getId(); } } }"
     },
     {
       "path": "force-app/main/classes/AsyncDataSourceCallbackContractsTest.cls",
-      "content": "@isTest private class AsyncDataSourceCallbackContractsTest { @isTest static void callbacksReceiveLocalResults() { AsyncSaveProbe saveCallback = new AsyncSaveProbe(); Account inserted = new Account(Name = 'callback insert'); Database.SaveResult insertResult = Database.insertAsync(inserted, saveCallback, AccessLevel.SYSTEM_MODE); System.assert(insertResult.isSuccess()); System.assertEquals(1, AsyncSaveProbe.calls); System.assertEquals(insertResult.getId(), AsyncSaveProbe.lastId); Database.SaveResult bareInsertResult = Database.insertAsync(new Account(Name = 'callback bare insert'), saveCallback); System.assert(bareInsertResult.isSuccess()); System.assertEquals(2, AsyncSaveProbe.calls); System.assertEquals(bareInsertResult.getId(), AsyncSaveProbe.lastId); Account updateRecord = new Account(Id = insertResult.getId(), Name = 'callback update'); Database.SaveResult updateResult = Database.updateAsync(updateRecord, saveCallback, AccessLevel.SYSTEM_MODE); System.assert(updateResult.isSuccess()); System.assertEquals(3, AsyncSaveProbe.calls); AsyncDeleteProbe deleteCallback = new AsyncDeleteProbe(); Database.DeleteResult deleteResult = Database.deleteAsync(updateRecord, deleteCallback, AccessLevel.SYSTEM_MODE); System.assert(deleteResult.isSuccess()); System.assertEquals(1, AsyncDeleteProbe.calls); System.assertEquals(deleteResult.getId(), AsyncDeleteProbe.lastId); } }"
+      "content": "@isTest private class AsyncDataSourceCallbackContractsTest { @isTest static void callbacksReceiveLocalResults() { AsyncSaveProbe saveCallback = new AsyncSaveProbe(); Account inserted = new Account(Name = 'callback insert'); Database.SaveResult insertResult = Database.insertAsync(inserted, saveCallback, AccessLevel.SYSTEM_MODE); System.assert(insertResult.isSuccess()); System.assertEquals(1, AsyncSaveProbe.calls); System.assertEquals(insertResult.getId(), AsyncSaveProbe.lastId); Account updateRecord = new Account(Id = insertResult.getId(), Name = 'callback update'); Database.SaveResult updateResult = Database.updateAsync(updateRecord, saveCallback, AccessLevel.SYSTEM_MODE); System.assert(updateResult.isSuccess()); System.assertEquals(2, AsyncSaveProbe.calls); AsyncDeleteProbe deleteCallback = new AsyncDeleteProbe(); Database.DeleteResult deleteResult = Database.deleteAsync(updateRecord, deleteCallback, AccessLevel.SYSTEM_MODE); System.assert(deleteResult.isSuccess()); System.assertEquals(1, AsyncDeleteProbe.calls); System.assertEquals(deleteResult.getId(), AsyncDeleteProbe.lastId); } }"
     }
   ],
   "command": {
@@ -77,5 +77,12 @@
       "failed": 0,
       "errors": 0
     }
-  }
+  },
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Current candidate local test execution only; grants zero Salesforce parity credit and claims no hosted Salesforce execution."
 }
