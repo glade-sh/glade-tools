@@ -1143,7 +1143,7 @@ func loadProductTestEvidence(proofPath, gladeRoot, gladeCommit string) (productT
 	if proof.SchemaVersion != 1 || proof.Status != "pass" || proof.GladeCommit != gladeCommit {
 		return productTestEvidence{}, fmt.Errorf("proof identity or status mismatch")
 	}
-	wantCommand := []string{"go", "-C", root, "test", "-json", "-count=1", "-p", "4", "-timeout=30m", "./..."}
+	wantCommand := []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + root, "go", "-C", root, "test", "-json", "-count=1", "-p", "1", "-timeout=30m", "./..."}
 	if !slices.Equal(proof.Command, wantCommand) {
 		return productTestEvidence{}, fmt.Errorf("proof command must be %q", wantCommand)
 	}
