@@ -1,0 +1,67 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "sha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "Test.testUninstall passes a concrete local UninstallContext to the callback.",
+      "surfaceId": "apex:System.UninstallContext",
+      "symbol": "UninstallContext"
+    },
+    {
+      "kind": "test",
+      "notes": "The local uninstall context returns the sealed candidate organization Id.",
+      "surfaceId": "apex:System.UninstallContext.organizationId()",
+      "symbol": "UninstallContext.organizationId()"
+    },
+    {
+      "kind": "test",
+      "notes": "The concrete local uninstall callback implements UninstallHandler.",
+      "surfaceId": "apex:System.UninstallHandler",
+      "symbol": "UninstallHandler"
+    },
+    {
+      "kind": "test",
+      "notes": "Test.testUninstall dispatches onUninstall with the local context.",
+      "surfaceId": "apex:System.UninstallHandler.onUninstall(UninstallContext)",
+      "symbol": "UninstallHandler.onUninstall"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-local-uninstall-evidence-api67",
+  "notes": "Deterministic local Test.testUninstall callback only; no hosted Salesforce parity is claimed.",
+  "profile": {
+    "candidateCommit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "candidateSha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e",
+    "laneId": "lifecycle-local13",
+    "selectedRowCount": 4
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Package uninstall callbacks are platform-managed; this fixture proves only Glade's deterministic local Test.testUninstall dispatch and context, with zero hosted Salesforce parity.",
+  "source": [
+    {
+      "content": "public class CoreRuntimeLocalUninstall implements UninstallHandler { public static Boolean called = false; public void onUninstall(UninstallContext context) { System.assertNotEquals(null, context); Id organizationId = context.organizationId(); System.assertNotEquals(null, organizationId); called = true; } }",
+      "path": "force-app/main/classes/CoreRuntimeLocalUninstall.cls"
+    },
+    {
+      "content": "@isTest private class CoreRuntimeLocalUninstallTest { @isTest static void dispatchesLocalUninstall() { UninstallHandler handler = new CoreRuntimeLocalUninstall(); Test.testUninstall(handler); System.assert(CoreRuntimeLocalUninstall.called); } }",
+      "path": "force-app/main/classes/CoreRuntimeLocalUninstallTest.cls"
+    }
+  ]
+}

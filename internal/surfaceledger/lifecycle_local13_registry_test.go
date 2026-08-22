@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	lifecycleLocal13CandidateCommit = "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5"
-	lifecycleLocal13CandidateSHA    = "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+	lifecycleLocal13CandidateCommit = "e47c5550d551e0cef6bfc7706ba59e68f7e71331"
+	lifecycleLocal13CandidateSHA    = "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e"
 )
 
 var lifecycleLocal13Owners = map[string][]string{
@@ -28,12 +28,10 @@ var lifecycleLocal13Owners = map[string][]string{
 		"apex:System.SandboxContext.organizationId()",
 		"apex:System.SandboxContext.sandboxId()",
 		"apex:System.SandboxContext.sandboxName()",
+		"apex:System.SandboxPostCopy",
 		"apex:System.SandboxPostCopy.runApexClass(SandboxContext)",
 	},
-	"current-base-residual-runtime-api67.json": {
-		"apex:System.SandboxPostCopy",
-	},
-	"current-base-platform-lifecycle-shape-api67.json": {
+	"core-runtime-local-uninstall-evidence-api67.json": {
 		"apex:System.UninstallContext",
 		"apex:System.UninstallContext.organizationId()",
 		"apex:System.UninstallHandler",
@@ -128,6 +126,7 @@ func TestLifecycleLocal13RegistryAccountsThirteenPositiveRows(t *testing.T) {
 	for fixtureName := range lifecycleLocal13Owners {
 		evidencePaths = append(evidencePaths, filepath.Join(root, fixtureName))
 	}
+	evidencePaths = append(evidencePaths, filepath.Join(root, "current-base-platform-lifecycle-shape-api67.json"))
 	snapshot, err := BuildEvidenceSnapshot(evidencePaths)
 	if err != nil {
 		t.Fatal(err)
