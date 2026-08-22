@@ -1,0 +1,22 @@
+{
+  "apiVersion": "67.0",
+  "command": {"kind": "test"},
+  "evidence": [
+    {"kind":"test","surfaceId":"apex:UserProvisioning.ConnectorTestUtil.clone()","symbol":"UserProvisioning.ConnectorTestUtil.clone()"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)","symbol":"UserProvisioning.ConnectorTestUtil.createConnectedApp(String)"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.DummyConnectorApexHandler.clone()","symbol":"UserProvisioning.DummyConnectorApexHandler.clone()"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.FlowProvisionBase.clone()","symbol":"UserProvisioning.FlowProvisionBase.clone()"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.UserProvisioningLog.clone()","symbol":"UserProvisioning.UserProvisioningLog.clone()"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.UserProvisioningProcessHandler.clone()","symbol":"UserProvisioning.UserProvisioningProcessHandler.clone()"}
+  ],
+  "expected": {"result":{"errors":0,"failed":0,"ok":true,"passed":4,"total":4}},
+  "mode": "deterministic-mock",
+  "name": "current-base-userprovisioning-deterministic-mock-003-api67",
+  "notes": "Exact sealed candidate deterministic local UserProvisioning witness for six rows. Flow getters remain unsupported, and abstract PluginBatchable and UserProvisioningPlugin construction remains rejected; those rows receive no local-proof credit here. This fixture records no hosted Salesforce execution or parity claim.",
+  "candidate": {"commit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","sha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"},
+  "profile": {"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"current-base-deterministic-mock-required-UserProvisioning-003","selectedRowCount":6},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "UserProvisioning requires local deterministic mocks; this fixture proves local behavior only and makes no hosted Salesforce execution or parity claim.",
+  "source": [{"path":"force-app/main/default/classes/CurrentBaseUserProvisioningDeterministic003Test.cls","content":"@IsTest private class CurrentBaseUserProvisioningDeterministic003Test { @IsTest static void connectorAndDummyWitness() { UserProvisioning.ConnectorTestUtil util = new UserProvisioning.ConnectorTestUtil(); System.assertNotEquals(null, util.clone()); ConnectedApplication app = UserProvisioning.ConnectorTestUtil.createConnectedApp('Local App'); System.assertEquals('Local App', app.Name); System.assertEquals('0SO000000000001', app.Id); UserProvisioning.DummyConnectorApexHandler dummy = new UserProvisioning.DummyConnectorApexHandler(); System.assertNotEquals(null, dummy.clone()); } @IsTest static void flowCloneWitness() { UserProvisioning.FlowProvisionBase flow = new UserProvisioning.FlowProvisionBase(''); System.assertNotEquals(null, flow.clone()); } @IsTest static void logCloneWitness() { UserProvisioning.UserProvisioningLog log = new UserProvisioning.UserProvisioningLog(); System.assertNotEquals(null, log.clone()); } @IsTest static void handlerCloneWitness() { UserProvisioning.UserProvisioningProcessHandler handler = new UserProvisioning.UserProvisioningProcessHandler(); System.assertNotEquals(null, handler.clone()); } }"}]
+}
