@@ -9,36 +9,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:eventbus.SuccessResult",
-      "symbol": "eventbus.SuccessResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.SuccessResult.SuccessResult()",
-      "symbol": "eventbus.SuccessResult.SuccessResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.SuccessResult.getEventUuids()",
-      "symbol": "eventbus.SuccessResult.getEventUuids"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TestBroker.clone()",
-      "symbol": "eventbus.TestBroker.clone"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TestEventService.clone()",
-      "symbol": "eventbus.TestEventService.clone"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TriggerContext.currentContext()",
-      "symbol": "eventbus.TriggerContext.currentContext"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:eventbus.TriggerContext.getResumeCheckpoint()",
       "symbol": "eventbus.TriggerContext.getResumeCheckpoint"
     },
@@ -58,11 +28,11 @@
   },
   "mode": "compile-shape",
   "name": "current-base-eventbus-002-api67",
-  "notes": "Retains 8 compile-shape rows from current-base-local-runtime-required-eventbus-002. Thirteen rows have direct anonymous runtime evidence; SuccessResult, broker/service clone, and TriggerContext resume/current-context rows remain shape-only without runtime-completeness claims.",
+  "notes": "Retains the two compile-shape TriggerContext resume-checkpoint rows from current-base-local-runtime-required-eventbus-002. The other rows have direct exact-candidate runtime ownership.",
   "profile": {
     "laneId": "current-base-local-runtime-required-eventbus-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 8,
+    "selectedRowCount": 2,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "proofObligation": "compile-shape-required",

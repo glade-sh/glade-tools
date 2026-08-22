@@ -1,0 +1,37 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {"kind": "test", "surfaceId": "apex:Cache.ScanResult.isDone", "symbol": "Cache.ScanResult.isDone"},
+    {"kind": "test", "surfaceId": "apex:Cache.ScanResult.result", "symbol": "Cache.ScanResult.result"},
+    {"kind": "test", "surfaceId": "apex:Cache.ScanResult.scanLocator", "symbol": "Cache.ScanResult.scanLocator"}
+  ],
+  "evidenceOnly": false,
+  "expected": {
+    "result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}
+  },
+  "mode": "deterministic-mock",
+  "name": "core-runtime-cache-tail-local-evidence-api67",
+  "notes": "Exact-candidate deterministic local witness for three Cache.ScanResult fields. Cache.Org and Cache.Session are enums on this candidate, so their proposed constructors remain open. No hosted Salesforce execution or parity claim is made.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "cache-tail-local-evidence",
+    "selectedRowCount": 3
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "These deterministic local Cache DTO and namespace behaviors are retained with zero Salesforce parity claimed.",
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CacheTailLocalEvidenceApi67.cls",
+      "content": "@isTest private class CacheTailLocalEvidenceApi67 { @isTest static void cacheTailWitness() { Cache.SecondaryKeyApi secondary = Cache.SecondaryKeyApi.get('localFeature'); secondary.putImmediate('alpha', 'A', 'group-1'); secondary.putImmediate('beta', 'B', 'group-1'); secondary.putImmediate('gamma', 'C', 'group-2'); Cache.ScanResult scan = secondary.scanForKeyValues('group-1', 'group-2', 2); System.assertEquals(false, scan.isDone); System.assertNotEquals(null, scan.scanLocator); System.assertEquals(2, scan.result.size()); } }"
+    }
+  ]
+}

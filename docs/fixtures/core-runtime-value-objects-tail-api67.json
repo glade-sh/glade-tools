@@ -1,0 +1,60 @@
+{
+  "name": "core-runtime-value-objects-tail-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "project": {"sourceApiVersion":"67.0"},
+  "evidenceOnly": false,
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture is policy-local-only: it proves only the local runtime witness and grants zero hosted Salesforce parity credit; no hosted Salesforce execution is claimed.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-value-objects-tail-api67",
+    "selectedRowCount": 29
+  },
+  "evidence": [
+    {"surfaceId":"apex:System.AccessLevel","symbol":"System.AccessLevel","kind":"exec"},
+    {"surfaceId":"apex:System.AccessLevel.SYSTEM_MODE","symbol":"AccessLevel.SYSTEM_MODE","kind":"exec"},
+    {"surfaceId":"apex:System.AccessLevel.USER_MODE","symbol":"AccessLevel.USER_MODE","kind":"exec"},
+    {"surfaceId":"apex:System.AccessLevel.clone()","symbol":"AccessLevel.clone","kind":"exec"},
+    {"surfaceId":"apex:System.Address.equals(Object)","symbol":"Address.equals","kind":"exec"},
+    {"surfaceId":"apex:System.Address.hashCode()","symbol":"Address.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.Address.toString()","symbol":"Address.toString","kind":"exec"},
+    {"surfaceId":"apex:System.AggregateResult","symbol":"System.AggregateResult","kind":"exec"},
+    {"surfaceId":"apex:System.Cookie.hashCode()","symbol":"Cookie.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.Label.get(String,String)","symbol":"Label.get","kind":"exec"},
+    {"surfaceId":"apex:System.Label.get(String,String,String)","symbol":"Label.get","kind":"exec"},
+    {"surfaceId":"apex:System.Label.translationExists(string,string,string)","symbol":"Label.translationExists","kind":"exec"},
+    {"surfaceId":"apex:System.Location.equals(Object)","symbol":"Location.equals","kind":"exec"},
+    {"surfaceId":"apex:System.Location.hashCode()","symbol":"Location.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.Location.toString()","symbol":"Location.toString","kind":"exec"},
+    {"surfaceId":"apex:System.PageReference.PageReference(String)","symbol":"PageReference.PageReference","kind":"exec"},
+    {"surfaceId":"apex:System.PageReference.equals(Object)","symbol":"PageReference.equals","kind":"exec"},
+    {"surfaceId":"apex:System.PageReference.hashCode()","symbol":"PageReference.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.PageReference.toString()","symbol":"PageReference.toString","kind":"exec"},
+    {"surfaceId":"apex:System.SObjectAccessDecision","symbol":"System.SObjectAccessDecision","kind":"exec"},
+    {"surfaceId":"apex:System.SObjectAccessDecision.getModifiedIndexes()","symbol":"SObjectAccessDecision.getModifiedIndexes","kind":"exec"},
+    {"surfaceId":"apex:System.SObjectAccessDecision.getRemovedFields()","symbol":"SObjectAccessDecision.getRemovedFields","kind":"exec"},
+    {"surfaceId":"apex:System.SelectOption","symbol":"System.SelectOption","kind":"exec"},
+    {"surfaceId":"apex:System.SelectOption.equals(Object)","symbol":"SelectOption.equals","kind":"exec"},
+    {"surfaceId":"apex:System.SelectOption.hashCode()","symbol":"SelectOption.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.SelectOption.toString()","symbol":"SelectOption.toString","kind":"exec"},
+    {"surfaceId":"apex:System.Savepoint.equals(Object)","symbol":"Savepoint.equals","kind":"exec"},
+    {"surfaceId":"apex:System.Savepoint.hashCode()","symbol":"Savepoint.hashCode","kind":"exec"},
+    {"surfaceId":"apex:System.Savepoint.toString()","symbol":"Savepoint.toString","kind":"exec"}
+  ],
+  "notes": "Exact-candidate executable local-runtime witness for value/object tail rows. This fixture is local-only: no hosted Salesforce execution or parity claim.",
+  "source": [
+    {"path":"anonymous.apex","content":"Address address = new Address(); System.assertEquals(true, address.equals(address)); System.assertEquals(address.hashCode(), address.hashCode()); System.assertNotEquals(null, address.toString()); Location location = new Location(); System.assertEquals(true, location.equals(location)); System.assertEquals(location.hashCode(), location.hashCode()); System.assertNotEquals(null, location.toString()); System.assertEquals(null, Label.get('pkg', 'Missing')); System.assertEquals(null, Label.get('pkg', 'Missing', 'fr')); System.assertEquals(false, Label.translationExists('pkg', 'Missing', 'fr')); PageReference page = new PageReference('/values'); System.assertEquals(true, page.equals(page)); System.assertEquals(page.hashCode(), page.hashCode()); System.assertEquals('/values', page.toString()); SelectOption option = new SelectOption('value', 'label'); System.assertEquals(true, option.equals(option)); System.assertEquals(option.hashCode(), option.hashCode()); System.assertEquals('value', option.toString()); Cookie cookie = new Cookie('name', 'value', null, 60, false); System.assertEquals(cookie.hashCode(), cookie.hashCode()); AggregateResult aggregate = new AggregateResult(); System.assertNotEquals(null, aggregate); System.assertEquals(true, aggregate.equals(aggregate)); System.assertEquals(aggregate.hashCode(), aggregate.hashCode()); System.assertNotEquals(null, aggregate.toString()); List<Account> records = new List<Account>(); SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records); System.assertNotEquals(null, decision); System.assertEquals(0, decision.getModifiedIndexes().size()); System.assertEquals(0, decision.getRemovedFields().size()); System.assertNotEquals(null, AccessLevel.SYSTEM_MODE); System.assertNotEquals(null, AccessLevel.USER_MODE); System.assertNotEquals(null, (AccessLevel)AccessLevel.USER_MODE.clone()); System.assertEquals(AccessLevel.USER_MODE, (AccessLevel)AccessLevel.USER_MODE.clone()); Savepoint savepoint = Database.setSavepoint(); System.assertEquals(true, savepoint.equals(savepoint)); System.assertEquals(savepoint.hashCode(), savepoint.hashCode()); System.assertNotEquals(null, savepoint.toString());"}
+  ],
+  "command": {
+    "kind": "exec",
+    "args": ["Address address = new Address(); System.assertEquals(true, address.equals(address)); System.assertEquals(address.hashCode(), address.hashCode()); System.assertNotEquals(null, address.toString()); Location location = new Location(); System.assertEquals(true, location.equals(location)); System.assertEquals(location.hashCode(), location.hashCode()); System.assertNotEquals(null, location.toString()); System.assertEquals(null, Label.get('pkg', 'Missing')); System.assertEquals(null, Label.get('pkg', 'Missing', 'fr')); System.assertEquals(false, Label.translationExists('pkg', 'Missing', 'fr')); PageReference page = new PageReference('/values'); System.assertEquals(true, page.equals(page)); System.assertEquals(page.hashCode(), page.hashCode()); System.assertEquals('/values', page.toString()); SelectOption option = new SelectOption('value', 'label'); System.assertEquals(true, option.equals(option)); System.assertEquals(option.hashCode(), option.hashCode()); System.assertEquals('value', option.toString()); Cookie cookie = new Cookie('name', 'value', null, 60, false); System.assertEquals(cookie.hashCode(), cookie.hashCode()); AggregateResult aggregate = new AggregateResult(); System.assertNotEquals(null, aggregate); System.assertEquals(true, aggregate.equals(aggregate)); System.assertEquals(aggregate.hashCode(), aggregate.hashCode()); System.assertNotEquals(null, aggregate.toString()); List<Account> records = new List<Account>(); SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records); System.assertNotEquals(null, decision); System.assertEquals(0, decision.getModifiedIndexes().size()); System.assertEquals(0, decision.getRemovedFields().size()); System.assertNotEquals(null, AccessLevel.SYSTEM_MODE); System.assertNotEquals(null, AccessLevel.USER_MODE); System.assertNotEquals(null, (AccessLevel)AccessLevel.USER_MODE.clone()); System.assertEquals(AccessLevel.USER_MODE, (AccessLevel)AccessLevel.USER_MODE.clone()); Savepoint savepoint = Database.setSavepoint(); System.assertEquals(true, savepoint.equals(savepoint)); System.assertEquals(savepoint.hashCode(), savepoint.hashCode()); System.assertNotEquals(null, savepoint.toString());"]
+  },
+  "expected": {"result":{"debug":null,"ok":true}}
+}

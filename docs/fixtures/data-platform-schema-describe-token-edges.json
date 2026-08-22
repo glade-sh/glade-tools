@@ -12,11 +12,6 @@
       "kind": "test"
     },
     {
-      "symbol": "Schema.describeSObjects",
-      "surfaceId": "apex:Schema.Schema.describeSObjects(List<String>,Object)",
-      "kind": "test"
-    },
-    {
       "symbol": "Schema.SObjectType.equals",
       "surfaceId": "apex:Schema.SObjectType.equals(Object)",
       "kind": "test"

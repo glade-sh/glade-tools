@@ -8,18 +8,6 @@
       "notes": "DeletedRecord exposes a Salesforce Date rather than a Datetime."
     },
     {
-      "surfaceId": "apex:Database.GetDeletedResult.getEarliestDateAvailable()",
-      "symbol": "Database.GetDeletedResult.getEarliestDateAvailable",
-      "kind": "test",
-      "notes": "GetDeletedResult exposes the earliest retained deleted-record date as Date; the local runtime returns null when no retained deletion exists, and this no-history edge has no Salesforce oracle receipt."
-    },
-    {
-      "surfaceId": "apex:Database.GetDeletedResult.getLatestDateCovered()",
-      "symbol": "Database.GetDeletedResult.getLatestDateCovered",
-      "kind": "test",
-      "notes": "GetDeletedResult exposes the requested latest sync date as Date."
-    },
-    {
       "surfaceId": "apex:Database.GetUpdatedResult.getLatestDateCovered()",
       "symbol": "Database.GetUpdatedResult.getLatestDateCovered",
       "kind": "test",

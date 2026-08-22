@@ -1,0 +1,32 @@
+{
+  "name": "core-runtime-utility-security-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "utility-tail-security-api67",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local Security behavior and grants zero hosted Salesforce parity credit.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Account account = new Account(Name = 'Utility'); List<SObject> rows = new List<SObject>{account}; SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, rows); System.assertEquals(1, decision.getRecords().size()); System.assertEquals(0, decision.getRemovedFields().size());"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Account account = new Account(Name = 'Utility'); List<SObject> rows = new List<SObject>{account}; SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, rows); System.assertEquals(1, decision.getRecords().size()); System.assertEquals(0, decision.getRemovedFields().size());"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.Security","symbol":"System.Security","kind":"exec"},
+    {"surfaceId":"apex:System.Security.stripInaccessible(AccessType,List<Object>)","symbol":"Security.stripInaccessible","kind":"exec"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "notes": "Exact-candidate executable local-runtime witness; no hosted Salesforce execution or parity claim."
+}

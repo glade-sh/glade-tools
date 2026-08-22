@@ -28,11 +28,6 @@ var systemGlobalTypeShapesIDs = []string{
 	"apex:System.CronTrigger",
 	"apex:System.Custom",
 	"apex:System.CustomizationType",
-	"apex:System.Finalizer",
-	"apex:System.FinalizerContext",
-	"apex:System.SObjectAccessDecision",
-	"apex:System.Schedulable",
-	"apex:System.SchedulableContext",
 	"apex:System.Security",
 }
 
@@ -90,11 +85,6 @@ func TestSystemGlobalTypeShapesHasExactLocalFixtureOwnership(t *testing.T) {
 		"CronTrigger cronTrigger;",
 		"Custom custom;",
 		"CustomizationType customizationType;",
-		"Finalizer finalizerValue;",
-		"FinalizerContext finalizerContext;",
-		"SObjectAccessDecision accessDecision;",
-		"Schedulable schedulableValue;",
-		"SchedulableContext schedulableContext;",
 		"Security securityValue;",
 	} {
 		if !strings.Contains(source, witness) {

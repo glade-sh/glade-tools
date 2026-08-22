@@ -13,7 +13,7 @@
       "symbol": "System.SoqlStubProvider"
     },
     {
-      "kind": "shape",
+      "kind": "test",
       "notes": "The provider implementation exposes the inherited clone shape.",
       "surfaceId": "apex:System.SoqlStubProvider.clone()",
       "symbol": "System.SoqlStubProvider.clone"
@@ -50,7 +50,7 @@
       "path": "force-app/main/default/classes/SoqlStubProviderCallbackProvider.cls"
     },
     {
-      "content": "@isTest private class SoqlStubProviderCallbackTest { @isTest static void callbackReceivesQueryShape() { Test.createSoqlStub(Account.SObjectType, new SoqlStubProviderCallbackProvider()); String name = 'Acme'; List<Account> rows = Database.queryWithBinds('SELECT Id, Name FROM Account WHERE Name = :name', new Map<String,Object>{'name' => name}); System.assertEquals(1, rows.size()); System.assert(rows[0].Name.startsWith('Account:')); System.assert(rows[0].Name.contains(':true:')); System.assert(rows[0].Name.endsWith(':Acme')); } }",
+      "content": "@isTest private class SoqlStubProviderCallbackTest { @isTest static void callbackReceivesQueryShape() { SoqlStubProviderCallbackProvider provider = new SoqlStubProviderCallbackProvider(); System.assertEquals(provider, provider.clone()); Test.createSoqlStub(Account.SObjectType, provider); String name = 'Acme'; List<Account> rows = Database.queryWithBinds('SELECT Id, Name FROM Account WHERE Name = :name', new Map<String,Object>{'name' => name}); System.assertEquals(1, rows.size()); System.assert(rows[0].Name.startsWith('Account:')); System.assert(rows[0].Name.contains(':true:')); System.assert(rows[0].Name.endsWith(':Acme')); } }",
       "path": "force-app/main/default/classes/SoqlStubProviderCallbackTest.cls"
     }
   ]

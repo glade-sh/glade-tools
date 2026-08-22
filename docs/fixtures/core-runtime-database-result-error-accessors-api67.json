@@ -1,0 +1,39 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Account record = new Account(Name = 'Result Accessors');\ninsert record;\nDatabase.DeleteResult deleted = Database.delete(record, false);\nSystem.assert(deleted.isSuccess());\nSystem.assertEquals(record.Id, deleted.getId());\nSystem.assertNotEquals(null, deleted.getErrors());\nSystem.assertEquals(0, deleted.getErrors().size());\nDatabase.UndeleteResult restored = Database.undelete(record, false);\nSystem.assert(restored.isSuccess());\nSystem.assertEquals(record.Id, restored.getId());\nDatabase.UndeleteResult restoredErrors = (Database.UndeleteResult)JSON.deserialize('{\"errors\":[]}', Database.UndeleteResult.class);\nSystem.assertNotEquals(null, restoredErrors.getErrors());\nSystem.assertEquals(0, restoredErrors.getErrors().size());\nDatabase.SaveResult invalid = Database.insert(new Account(), false);\nSystem.assert(!invalid.isSuccess());\nDatabase.Error error = invalid.getErrors().get(0);\nSystem.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, error.getStatusCode());\nSystem.assert(error.getMessage().length() > 0);\nSystem.assertEquals('Name', error.getFields().get(0));\nSystem.assertEquals(0, error.getExtendedErrorDetails().size());"
+    ]
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Database.DeleteResult.getErrors()","symbol":"Database.DeleteResult.getErrors()"},
+    {"kind":"exec","surfaceId":"apex:Database.DeleteResult.getId()","symbol":"Database.DeleteResult.getId()"},
+    {"kind":"exec","surfaceId":"apex:Database.DeleteResult.isSuccess()","symbol":"Database.DeleteResult.isSuccess()"},
+    {"kind":"exec","surfaceId":"apex:Database.Error.getExtendedErrorDetails()","symbol":"Database.Error.getExtendedErrorDetails()"},
+    {"kind":"exec","surfaceId":"apex:Database.Error.getFields()","symbol":"Database.Error.getFields()"},
+    {"kind":"exec","surfaceId":"apex:Database.Error.getMessage()","symbol":"Database.Error.getMessage()"},
+    {"kind":"exec","surfaceId":"apex:Database.Error.getStatusCode()","symbol":"Database.Error.getStatusCode()"},
+    {"kind":"exec","surfaceId":"apex:Database.UndeleteResult.getErrors()","symbol":"Database.UndeleteResult.getErrors()"},
+    {"kind":"exec","surfaceId":"apex:Database.UndeleteResult.getId()","symbol":"Database.UndeleteResult.getId()"},
+    {"kind":"exec","surfaceId":"apex:Database.UndeleteResult.isSuccess()","symbol":"Database.UndeleteResult.isSuccess()"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-database-result-error-accessors-api67",
+  "notes": "Exact-candidate executable local-runtime witness for DeleteResult, UndeleteResult, and Database.Error accessors, including non-null empty error collections. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-database-result-error-accessors-api67",
+    "selectedRowCount": 10
+  },
+  "project": {"sourceApiVersion":"67.0"},
+  "salesforceEligible": true,
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Account record = new Account(Name = 'Result Accessors');\ninsert record;\nDatabase.DeleteResult deleted = Database.delete(record, false);\nSystem.assert(deleted.isSuccess());\nSystem.assertEquals(record.Id, deleted.getId());\nSystem.assertNotEquals(null, deleted.getErrors());\nSystem.assertEquals(0, deleted.getErrors().size());\nDatabase.UndeleteResult restored = Database.undelete(record, false);\nSystem.assert(restored.isSuccess());\nSystem.assertEquals(record.Id, restored.getId());\nDatabase.UndeleteResult restoredErrors = (Database.UndeleteResult)JSON.deserialize('{\"errors\":[]}', Database.UndeleteResult.class);\nSystem.assertNotEquals(null, restoredErrors.getErrors());\nSystem.assertEquals(0, restoredErrors.getErrors().size());\nDatabase.SaveResult invalid = Database.insert(new Account(), false);\nSystem.assert(!invalid.isSuccess());\nDatabase.Error error = invalid.getErrors().get(0);\nSystem.assertEquals(StatusCode.REQUIRED_FIELD_MISSING, error.getStatusCode());\nSystem.assert(error.getMessage().length() > 0);\nSystem.assertEquals('Name', error.getFields().get(0));\nSystem.assertEquals(0, error.getExtendedErrorDetails().size());"
+    }
+  ]
+}

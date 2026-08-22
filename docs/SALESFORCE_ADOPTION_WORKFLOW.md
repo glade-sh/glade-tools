@@ -80,6 +80,8 @@ scripts/render-salesforce-completeness.sh \
   --profile /absolute/inputs/SOURCE_PROFILE.json \
   --packet /absolute/inputs/SURFACE_PACKET_MANIFEST.json \
   --binding /absolute/inputs/SOURCE_BINDING.json \
+  --salesforce-scope /absolute/status/SURFACE_ORACLE_SCOPE.json \
+  --salesforce-index /absolute/status/SURFACE_ORACLE_INDEX.json \
   --worker-health /absolute/status/WORKER_HEALTH.json \
   --output /absolute/status/STATUS.md \
   --json-output /absolute/status/STATUS.json
@@ -92,6 +94,20 @@ Open `STATUS.html`; it refreshes every 30 seconds. The publishable projection
 omits SSH targets, usernames, org IDs, and other private worker identity. If no
 current-candidate Salesforce index exists, Salesforce comparison is shown as
 `not-started` with every runtime-required row open.
+
+Promote a sealed reviewed runtime batch into a create-only cumulative index:
+
+```bash
+glade-tools corpus assurance surface-oracle-index \
+  --scope /absolute/inputs/SURFACE_ORACLE_SCOPE.json \
+  --reviewed-runtime-batch /absolute/private/sealed-batch \
+  --output /absolute/status/SURFACE_ORACLE_INDEX.json
+```
+
+For later batches, repeat `--reviewed-runtime-batch` for every retained batch.
+The command cheaply revalidates every receipt without rerunning Salesforce,
+accepts only exact reviewed matches, rejects candidate or receipt drift, and
+stores hashes and public SurfaceIDs rather than private paths or org details.
 
 Keep private host mappings and input paths in one operator-owned refresh
 command, then run the bounded loop:
@@ -154,6 +170,7 @@ oracle-bundle
 org-create / org-preflight
 salesforce-dispatch / salesforce-run / org-cleanup
 salesforce-reconcile
+surface-oracle-index
 remote-failure-preserve, when a remote phase fails
 review-index, after preserving a failed or resumed attempt
 cleanup, only after the review index is verified and retained evidence is reviewed

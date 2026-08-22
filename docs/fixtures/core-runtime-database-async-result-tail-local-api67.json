@@ -1,0 +1,22 @@
+{
+  "apiVersion":"67.0",
+  "command":{"kind":"exec","args":["Object asyncSave = Database.insertAsync(new Account(Name = 'async result tail'));\nObject locator = Database.getAsyncLocator(asyncSave);\nSystem.assertNotEquals(null, locator);\nBoolean saveRejected = false;\ntry { Database.getAsyncSaveResult('missing-save-result'); } catch (Exception e) { saveRejected = true; }\nSystem.assert(saveRejected);\nBoolean deleteRejected = false;\ntry { Database.getAsyncDeleteResult('missing-delete-result'); } catch (Exception e) { deleteRejected = true; }\nSystem.assert(deleteRejected);"]},
+  "evidence":[
+    {"kind":"exec","surfaceId":"apex:System.Database.getAsyncLocator","symbol":"Database.getAsyncLocator"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getAsyncLocator(Object)","symbol":"Database.getAsyncLocator"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getAsyncSaveResult(String)","symbol":"Database.getAsyncSaveResult"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getAsyncDeleteResult(String)","symbol":"Database.getAsyncDeleteResult"}
+  ],
+  "evidenceOnly":false,
+  "mode":"local-runtime",
+  "project":{"sourceApiVersion":"67.0"},
+  "name":"core-runtime-database-async-result-tail-local-api67",
+  "notes":"Exact-candidate executable local-runtime witness for async locator and rejected string result lookups. No hosted Salesforce execution or parity claim is made.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"database-runtime-tail-evidence","selectedRowCount":4},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"zero hosted Salesforce parity; local runtime behavior only",
+  "schema":[{"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},{"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}],
+  "source":[{"path":"anonymous.apex","content":"Object asyncSave = Database.insertAsync(new Account(Name = 'async result tail'));\nObject locator = Database.getAsyncLocator(asyncSave);\nSystem.assertNotEquals(null, locator);\nBoolean saveRejected = false;\ntry { Database.getAsyncSaveResult('missing-save-result'); } catch (Exception e) { saveRejected = true; }\nSystem.assert(saveRejected);\nBoolean deleteRejected = false;\ntry { Database.getAsyncDeleteResult('missing-delete-result'); } catch (Exception e) { deleteRejected = true; }\nSystem.assert(deleteRejected);"}],
+  "title":"API 67 Database async result executable local evidence"
+}

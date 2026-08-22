@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"sort"
 	"strings"
 	"testing"
 
@@ -42,6 +43,133 @@ func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSur
 	}
 	if _, err := os.Stat(request.OutputPath); err != nil {
 		t.Fatalf("proof output was not written: %v", err)
+	}
+}
+
+func TestApexPagesContextTailFixturesOwnExactPlus34Rows(t *testing.T) {
+	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]struct {
+		count       int
+		disposition string
+		ids         []string
+	}{
+		"current-base-apexpages-context-tail-runtime-api67.json": {
+			count:       33,
+			disposition: localRuntimeRequired,
+			ids: []string{
+				"apex:ApexPages.Component.getComponentById(String)",
+				"apex:ApexPages.ComponentIteration.getComponentById(String)",
+				"apex:ApexPages.IdeaStandardController.addFields(List<String>)",
+				"apex:ApexPages.IdeaStandardController.getCommentList()",
+				"apex:ApexPages.IdeaStandardController.getId()",
+				"apex:ApexPages.IdeaStandardSetController.addFields(List<String>)",
+				"apex:ApexPages.IdeaStandardSetController.cancel()",
+				"apex:ApexPages.IdeaStandardSetController.first()",
+				"apex:ApexPages.IdeaStandardSetController.getCompleteResult()",
+				"apex:ApexPages.IdeaStandardSetController.getHasNext()",
+				"apex:ApexPages.IdeaStandardSetController.getHasPrevious()",
+				"apex:ApexPages.IdeaStandardSetController.getIdeaList()",
+				"apex:ApexPages.IdeaStandardSetController.getListViewOptions()",
+				"apex:ApexPages.IdeaStandardSetController.getPageNumber()",
+				"apex:ApexPages.IdeaStandardSetController.getRecord()",
+				"apex:ApexPages.IdeaStandardSetController.getRecords()",
+				"apex:ApexPages.IdeaStandardSetController.getResultSize()",
+				"apex:ApexPages.IdeaStandardSetController.hashCode()",
+				"apex:ApexPages.IdeaStandardSetController.last()",
+				"apex:ApexPages.IdeaStandardSetController.next()",
+				"apex:ApexPages.IdeaStandardSetController.previous()",
+				"apex:ApexPages.IdeaStandardSetController.save()",
+				"apex:ApexPages.IdeaStandardSetController.setPageNumber(Integer)",
+				"apex:ApexPages.IdeaStandardSetController.toString()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.addFields(List<String>)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.cancel()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.equals(Object)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.getId()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.getSourceId()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.selectDataCategory(String,String)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory(String,String)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.view()",
+				"apex:ApexPages.StandardSetController.equals(Object)",
+			},
+		},
+		"current-base-flow-interview-context-tail-deterministic-api67.json": {
+			count:       1,
+			disposition: deterministicMockRequired,
+			ids:         []string{"apex:Flow.Interview.Interview()"},
+		},
+	}
+	for filename, want := range want {
+		t.Run(filename, func(t *testing.T) {
+			path, err := filepath.Abs(filepath.Join(root, filename))
+			if err != nil {
+				t.Fatal(err)
+			}
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var envelope struct {
+				Candidate struct {
+					Commit string `json:"commit"`
+					SHA256 string `json:"sha256"`
+				} `json:"candidate"`
+			}
+			if err := json.Unmarshal(data, &envelope); err != nil {
+				t.Fatal(err)
+			}
+			if envelope.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || envelope.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" {
+				t.Fatalf("candidate binding = %#v", envelope.Candidate)
+			}
+			fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := compat.Validate(fixture); err != nil {
+				t.Fatal(err)
+			}
+			if fixture.Command.Kind != "exec" || len(fixture.Source) != 1 || len(fixture.Command.Args) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
+				t.Fatalf("source/command mismatch: %#v", fixture)
+			}
+			got := make([]string, 0, len(fixture.Evidence))
+			for _, evidence := range fixture.Evidence {
+				if evidence.Kind != "exec" {
+					t.Fatalf("evidence kind = %q", evidence.Kind)
+				}
+				got = append(got, evidence.SurfaceID)
+			}
+			sort.Strings(got)
+			sort.Strings(want.ids)
+			if !reflect.DeepEqual(got, want.ids) || len(got) != want.count {
+				t.Fatalf("owned IDs = %v, want %v", got, want.ids)
+			}
+			entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, OwnedSurfaceIDs: got, Disposition: want.disposition, Operation: "exec", SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
+			if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+				t.Fatalf("identity: %v", err)
+			}
+			if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
+				t.Fatalf("metadata: %v", err)
+			}
+			required := make(map[string]string, len(want.ids))
+			for _, surfaceID := range want.ids {
+				required[surfaceID] = want.disposition
+			}
+			candidates, err := discoverLocalProofFixtures(root, required)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, candidate := range candidates {
+				if candidate.entry.ID == fixture.Name {
+					if !reflect.DeepEqual(candidate.entry.OwnedSurfaceIDs, got) {
+						t.Fatalf("candidate ownership = %v, want %v", candidate.entry.OwnedSurfaceIDs, got)
+					}
+					return
+				}
+			}
+			t.Fatal("fixture is not candidate-runnable")
+		})
 	}
 }
 
@@ -236,8 +364,6 @@ func TestArchivedEnumFixturesAreFullyCandidateRunnable(t *testing.T) {
 		excludes []string
 	}{
 		{"SoapType", "current-base-cb198-schema-soaptype-positive-api67.json", 1308, []string{"apex:Schema.SoapType"}, nil},
-		{"System enums", "current-base-cb191-system-rebind-positive-api67.json", 733, []string{"apex:System.AccessType", "apex:System.JSONToken", "apex:System.LoggingLevel", "apex:System.Quiddity", "apex:System.StatusCode", "apex:System.TriggerOperation", "apex:System.XmlTag"}, nil},
-		{"UserInfo accessors", "current-base-cb191-system-rebind-positive-api67.json", 35, []string{"apex:System.UserInfo"}, []string{"UserInfo()", "clone()", "hasPackageLicense", "isCurrentUserLicensed"}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			path := filepath.Join(root, test.filename)
@@ -318,6 +444,26 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-sobjectfield-describe-runtime.json", 1},
 		{"core-cache-email-runtime.json", 3},
 		{"core-system-enum-types-runtime.json", 2},
+		{"core-runtime-system-enum-families-api67.json", 104},
+		{"core-runtime-value-objects-tail-api67.json", 29},
+		{"core-runtime-database-cursor-sync-tail-api67.json", 10},
+		{"core-runtime-database-batch-async-tail-api67.json", 8},
+		{"core-runtime-apex-schema-tail-api67.json", 13},
+		{"core-runtime-database-options-request-tail-api67.json", 6},
+		{"core-runtime-database-result-request-tail-local-api67.json", 8},
+		{"core-runtime-database-result-error-accessors-api67.json", 10},
+		{"core-runtime-database-result-error-constructors-local-api67.json", 4},
+		{"core-runtime-database-query-locator-api67.json", 4},
+		{"core-runtime-database-query-locator-local-only-api67.json", 9},
+		{"core-runtime-eventbus-callback-result-tail-api67.json", 8},
+		{"core-runtime-eventbus-test-service-tail-api67.json", 5},
+		{"core-runtime-eventbus-trigger-context-api67.json", 1},
+		{"core-runtime-jsonparser-tail-local-evidence.json", 6},
+		{"core-runtime-answers-find-similar-local-evidence.json", 2},
+		{"core-runtime-cache-tail-local-evidence-api67.json", 3},
+		{"core-runtime-process-plugin-tail-local-evidence-api67.json", 4},
+		{"core-runtime-queueable-duplicate-signature-tail-local-evidence-api67.json", 5},
+		{"core-runtime-database-duplicate-recycle-savepoint-api67.json", 12},
 		{"core-messaging-sendemail-error-fields-runtime.json", 2},
 		{"core-messaging-mass-email-fields-runtime.json", 3},
 		{"integration-pagereference-accessors-runtime.json", 3},
@@ -376,7 +522,8 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-database-immediate-dml-runtime.json", 6},
 		{"data-database-async-dml-runtime.json", 9},
 		{"data-schema-displaytype-token-runtime.json", 22},
-		{"core-exception-object-methods-runtime.json", 8},
+		{"core-exception-object-methods-runtime.json", 4},
+		{"core-noaccess-exception-object-methods-local-runtime.json", 4},
 		{"core-cookie-map-runtime-depth.json", 10},
 		{"ui-apexpages-current-page-test-runtime.json", 1},
 		{"core-runtime-string-transform-depth.json", 12},
@@ -417,6 +564,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-database-async-immediate-dml-runtime.json", 15},
 		{"data-platform-schema-describe-fieldsets-runtime.json", 28},
 		{"core-runtime-enum-families-wave15-runtime.json", 28},
+		{"core-runtime-system-enum-exception-tail-api67.json", 26},
 		{"core-runtime-exception-families-wave15-runtime.json", 39},
 		{"data-platform-database-dto-family-one-wave15-runtime.json", 20},
 		{"data-platform-database-dto-family-two-wave15-runtime.json", 17},
@@ -428,11 +576,17 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-limits-tail-wave16-runtime.json", 14},
 		{"core-runtime-primitive-values-wave16-runtime.json", 32},
 		{"core-runtime-string-tail-wave16-runtime.json", 5},
+		{"core-runtime-system-string-template-value-map-api67.json", 1},
 		{"core-runtime-value-objects-wave16-runtime.json", 17},
 		{"data-platform-schema-describe-results-wave16-runtime.json", 56},
 		{"core-runtime-apexpages-controller-wave17-runtime.json", 8},
+		{"current-base-apexpages-context-tail-runtime-api67.json", 33},
+		{"current-base-flow-interview-context-tail-deterministic-api67.json", 1},
 		{"core-runtime-dom-value-semantics-wave17-runtime.json", 7},
-		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 11},
+		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 13},
+		{"core-runtime-async-context-tail-api67.json", 8},
+		{"core-runtime-finalizer-context-tail-api67.json", 6},
+		{"core-runtime-system-test-eventbus-lifecycle-tail-api67.json", 13},
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
 		{"data-platform-schema-record-type-info-wave17-runtime.json", 8},
 		{"integration-metadata-core-dtos-wave17-runtime.json", 21},
@@ -444,7 +598,23 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-dom-xmlreader-value-contracts-wave19-runtime.json", 13},
 		{"core-runtime-system-001-wave19-runtime.json", 11},
 		{"core-runtime-system-002-wave19-runtime.json", 4},
+		{"core-runtime-system-primitive-tail-api67.json", 33},
+		{"core-runtime-system-scalar-adderror-tail-api67.json", 36},
+		{"core-runtime-utility-crypto-api67.json", 2},
+		{"core-runtime-utility-exception-tail-api67.json", 2},
+		{"core-runtime-utility-http-mock-api67.json", 2},
+		{"core-runtime-utility-security-api67.json", 2},
+		{"core-runtime-utility-stub-provider-api67.json", 2},
+		{"core-runtime-utility-xmlreader-api67.json", 2},
+		{"core-runtime-utility-xmlwriter-api67.json", 2},
+		{"core-runtime-userinfo-request-tail-api67.json", 43},
+		{"core-runtime-trigger-sobject-tail-api67.json", 14},
+		{"core-runtime-sobject-tail-api67.json", 6},
 		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
+		{"current-base-userprovisioning-deterministic-mock-003-api67.json", 6},
+		{"current-base-userprovisioning-deterministic-mock-004-api67.json", 3},
+		{"core-runtime-search-suggest-deterministic-mock.json", 2},
+		{"core-runtime-messaging-dto-mock-api67.json", 14},
 		{"data-platform-database-pagination-cursor-wave19-runtime.json", 10},
 		{"data-platform-schema-residual-wave19-runtime.json", 20},
 	} {
@@ -459,7 +629,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			required := make(map[string]string)
 			disposition := localRuntimeRequired
-			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" {
+			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "current-base-userprovisioning-deterministic-mock-003-api67" || fixture.Name == "current-base-userprovisioning-deterministic-mock-004-api67" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" || fixture.Name == "current-base-flow-interview-context-tail-deterministic-api67" || strings.HasPrefix(fixture.Name, "core-runtime-answers-find-similar") || strings.HasPrefix(fixture.Name, "core-runtime-cache-tail-") || strings.HasPrefix(fixture.Name, "core-runtime-process-plugin-tail-") {
 				disposition = deterministicMockRequired
 			}
 			for _, evidence := range fixture.Evidence {
@@ -483,14 +653,129 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 	}
 }
 
+func TestValueObjectsTailRunsSealedCandidateCLIJSON(t *testing.T) {
+	candidatePath := os.Getenv("GLADE_CANDIDATE")
+	if candidatePath == "" {
+		t.Skip("set GLADE_CANDIDATE to run the sealed-candidate regression")
+	}
+	if !filepath.IsAbs(candidatePath) {
+		t.Fatalf("candidate path must be absolute: %q", candidatePath)
+	}
+	const wantCandidateSHA = "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+	if got := localProofFileSHA256(t, candidatePath); got != wantCandidateSHA {
+		t.Fatalf("candidate SHA-256 = %s, want sealed %s", got, wantCandidateSHA)
+	}
+	root, err := filepath.Abs(filepath.Join("..", ".."))
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixturePath := filepath.Join(root, "docs", "fixtures", "core-runtime-value-objects-tail-api67.json")
+	data, err := os.ReadFile(fixturePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := compat.Validate(fixture); err != nil {
+		t.Fatal(err)
+	}
+	owned := make([]string, 0, len(fixture.Evidence))
+	for _, item := range fixture.Evidence {
+		owned = append(owned, item.SurfaceID)
+	}
+	sort.Strings(owned)
+	entry := LocalProofFixture{
+		ID: fixture.Name, Name: fixture.Name, Path: fixturePath, SHA256: replayBytesSHA256(data),
+		OwnedSurfaceIDs: owned, Disposition: localRuntimeRequired, Operation: "exec",
+		SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason,
+	}
+	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
+		t.Fatal(err)
+	}
+	command, cleanup, err := materializeLocalProofFixture(entry, candidatePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	execution := runLocalProofCommand(command)
+	if !execution.Validated {
+		t.Fatalf("sealed candidate JSON was not validated: exit=%d stderr=%s stdout=%s", execution.Receipt.ExitCode, execution.Stderr, execution.Stdout)
+	}
+	if strings.Contains(strings.ToLower(execution.Stdout+execution.Stderr), "cycle") {
+		t.Fatalf("sealed candidate JSON retained a cycle: stdout=%s stderr=%s", execution.Stdout, execution.Stderr)
+	}
+}
+
+func TestSearchMockCloseoutOwnsExactlyTwoRows(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "fixtures")
+	want := map[string]string{"core-runtime-search-suggest-deterministic-mock.json": "apex:System.Search.suggest(String,String,Object)"}
+	seen := map[string]string{}
+	for file, id := range want {
+		data, err := os.ReadFile(filepath.Join(root, file))
+		if err != nil {
+			t.Fatal(err)
+		}
+		fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if fixture.Command.Kind != "test" || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" {
+			t.Fatalf("%s metadata/command invalid", file)
+		}
+		found := false
+		for _, e := range fixture.Evidence {
+			if e.SurfaceID == id && e.Symbol == id && e.Kind == "test" {
+				found = true
+			}
+			if e.SurfaceID == id {
+				seen[id] = file
+			}
+		}
+		if !found {
+			t.Fatalf("%s lacks direct witness for %s", file, id)
+		}
+		if file == "core-runtime-search-suggest-deterministic-mock.json" {
+			id2 := "apex:System.Search.suggest(String,String,Object,Object)"
+			for _, e := range fixture.Evidence {
+				if e.SurfaceID == id2 && e.Symbol == id2 && e.Kind == "test" {
+					seen[id2] = file
+				}
+			}
+		}
+	}
+	if len(seen) != 2 {
+		t.Fatalf("seen = %#v", seen)
+	}
+}
+
 func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T) {
 	if !localProofEvidenceKindMatches(localRuntimeRequired, "test", "test") {
 		t.Fatal("local runtime test fixture was rejected")
 	}
 	for _, surfaceID := range []string{
 		"apex:System.Test.setMock",
+		"apex:System.ExternalServiceTest.sendCallback(HttpRequest)",
+		"apex:System.System.attachFinalizer(finalizer)",
+		"apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)",
 		"apex:System.StaticResourceCalloutMock.setStatusCode(Integer)",
 		"apex:System.MultiStaticResourceCalloutMock.setStaticResource(String,String)",
+		"apex:System.HttpCalloutMock.respond(HttpRequest)",
+		"apex:System.WebServiceMock.doInvoke(Object,Object,Map<String,Object>,String,String,String,String,String,String)",
+		"apex:System.StubProvider.handleMethodCall(Object,String,Type,List<Type>,List<String>,List<Object>)",
+		"apex:System.SoqlStubProvider.handleSoqlQuery(Schema.SObjectType,String,Map<String,Object>)",
+		"apex:System.Trigger",
+		"apex:System.Trigger.isExecuting",
+		"apex:System.Queueable.execute(QueueableContext)",
+		"apex:System.QueueableContext.getJobId()",
+		"apex:System.Schedulable.execute(SchedulableContext)",
+		"apex:System.SchedulableContext.getTriggerId()",
+		"apex:System.Finalizer.execute(FinalizerContext)",
+		"apex:System.FinalizerContext.getResult()",
 	} {
 		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("test-context runtime fixture %q was rejected", surfaceID)
@@ -498,10 +783,72 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 	}
 }
 
+func TestLocalProofAcceptsEventBusTestContextRuntimeSurfaces(t *testing.T) {
+	for _, surfaceID := range []string{
+		"apex:eventbus.TestBroker.clone()",
+		"apex:eventbus.TestBroker.deliver()",
+		"apex:eventbus.TestBroker.fail()",
+		"apex:eventbus.TestEventService.clone()",
+		"apex:eventbus.TestEventService.publishEvent(String,Map<String,Object>)",
+	} {
+		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("EventBus test-context runtime fixture %q was rejected", surfaceID)
+		}
+	}
+	for _, surfaceID := range []string{
+		"apex:eventbus.ChangeEventHeader.getChangeType()",
+		"apex:System.String.valueOf(Object)",
+	} {
+		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("unrelated test fixture %q was accepted for local-runtime-required proof", surfaceID)
+		}
+	}
+}
+
 func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
-	for _, surfaceID := range []string{"apex:System.Location", "apex:System.StaticResourceCalloutMockBuilder.run()"} {
+	for _, surfaceID := range []string{
+		"apex:System.Location",
+		"apex:System.StaticResourceCalloutMockBuilder.run()",
+		"apex:System.QueueableDuplicateSignature",
+		"apex:System.HttpCalloutMockBuilder.run()",
+		"apex:System.WebServiceMockFactory.run()",
+		"apex:System.StubProviderFactory.run()",
+		"apex:System.SoqlStubProviderExtension.run()",
+		"apex:eventbus.TriggerContext.getResumeCheckpoint()",
+		"apex:eventbus.TriggerContext.setResumeCheckpoint(String)",
+	} {
 		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("generic test fixture %q was accepted as runtime proof", surfaceID)
+		}
+	}
+}
+
+func TestLocalProofAcceptsOnlyScalarAdderrorTestRuntimeRows(t *testing.T) {
+	accepted := []string{
+		"apex:System.Boolean.addError(Exception)", "apex:System.Boolean.addError(Exception,Boolean)", "apex:System.Boolean.addError(String)", "apex:System.Boolean.addError(String,Boolean)",
+		"apex:System.Date.addError(Exception)", "apex:System.Date.addError(Exception,Boolean)", "apex:System.Date.addError(String)", "apex:System.Date.addError(String,Boolean)",
+		"apex:System.Datetime.addError(Exception)", "apex:System.Datetime.addError(Exception,Boolean)", "apex:System.Datetime.addError(String)", "apex:System.Datetime.addError(String,Boolean)",
+		"apex:System.Decimal.addError(Exception)", "apex:System.Decimal.addError(Exception,Boolean)", "apex:System.Decimal.addError(String)", "apex:System.Decimal.addError(String,Boolean)",
+		"apex:System.Double.addError(Exception)", "apex:System.Double.addError(Exception,Boolean)", "apex:System.Double.addError(String)", "apex:System.Double.addError(String,Boolean)",
+		"apex:System.Id.addError(Exception)", "apex:System.Id.addError(Exception,Boolean)", "apex:System.Id.addError(String)", "apex:System.Id.addError(String,Boolean)",
+		"apex:System.Integer.addError(Exception)", "apex:System.Integer.addError(Exception,Boolean)", "apex:System.Integer.addError(String)", "apex:System.Integer.addError(String,Boolean)",
+		"apex:System.Long.addError(Exception)", "apex:System.Long.addError(Exception,Boolean)", "apex:System.Long.addError(String)", "apex:System.Long.addError(String,Boolean)",
+		"apex:System.Time.addError(Exception)", "apex:System.Time.addError(Exception,Boolean)", "apex:System.Time.addError(String)", "apex:System.Time.addError(String,Boolean)",
+	}
+	for _, surfaceID := range accepted {
+		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("scalar addError test row %q was rejected", surfaceID)
+		}
+	}
+	for _, surfaceID := range []string{
+		"apex:System.Date.Date()", "apex:System.Datetime.Datetime()", "apex:System.Decimal.Decimal()",
+		"apex:System.Double.Double()", "apex:System.Id.to18", "apex:System.Integer.doubleValue",
+		"apex:System.Boolean.toString()", "apex:System.Date.addDays(Integer)", "apex:System.Datetime.time()",
+		"apex:System.Decimal.abs", "apex:System.Double.toString()", "apex:System.Id.to15()",
+		"apex:System.Integer.format()", "apex:System.Long.valueOf", "apex:System.Time.hour()",
+	} {
+		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("unrelated or rejected test row %q was accepted", surfaceID)
 		}
 	}
 }
@@ -614,6 +961,52 @@ func TestLocalProofFixtureRejectsUnknownJSONFields(t *testing.T) {
 	fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
 	if _, err := loadLocalProofFixture(fixture); err == nil {
 		t.Fatal("loadLocalProofFixture accepted an unknown fixture field")
+	}
+}
+
+func TestLocalProofFixtureEvidenceOnlyEligibility(t *testing.T) {
+	for _, test := range []struct {
+		name          string
+		value         any
+		wantError     string
+		wantCandidate bool
+	}{
+		{"true", true, "evidence-only fixture is not eligible for local proof", false},
+		{"false", false, "", true},
+		{"string", "true", "invalid evidenceOnly", false},
+		{"null", nil, "invalid evidenceOnly", false},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			fixture := localProofFixture(t, root, "runtime", []string{"apex:Runtime.run"}, localRuntimeRequired)
+			var document map[string]any
+			data, err := os.ReadFile(fixture.Path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := json.Unmarshal(data, &document); err != nil {
+				t.Fatal(err)
+			}
+			document["evidenceOnly"] = test.value
+			writeLocalProofJSON(t, fixture.Path, document)
+			fixture.SHA256 = localProofFileSHA256(t, fixture.Path)
+
+			_, err = loadLocalProofFixture(fixture)
+			if test.wantError == "" && err != nil {
+				t.Fatalf("loadLocalProofFixture rejected eligible fixture: %v", err)
+			}
+			if test.wantError != "" && (err == nil || !strings.Contains(err.Error(), test.wantError)) {
+				t.Errorf("loadLocalProofFixture error = %v, want %q", err, test.wantError)
+			}
+
+			candidates, err := discoverLocalProofFixtures(root, map[string]string{"apex:Runtime.run": localRuntimeRequired})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := len(candidates) == 1; got != test.wantCandidate {
+				t.Fatalf("candidate discovered = %t, want %t", got, test.wantCandidate)
+			}
+		})
 	}
 }
 

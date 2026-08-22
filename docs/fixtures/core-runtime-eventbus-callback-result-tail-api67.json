@@ -1,0 +1,38 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "eventbus.EventPublishFailureCallback failureCallback;\neventbus.EventPublishSuccessCallback successCallback;\nSystem.assertEquals(null, failureCallback);\nSystem.assertEquals(null, successCallback);\neventbus.FailureResult failure = new eventbus.FailureResult();\nSystem.assertEquals(0, failure.getEventUuids().size());\neventbus.SuccessResult success = new eventbus.SuccessResult();\nSystem.assertEquals(0, success.getEventUuids().size());"
+    ]
+  },
+  "evidence": [
+    {"kind": "exec", "surfaceId": "apex:eventbus.EventPublishFailureCallback", "symbol": "apex:eventbus.EventPublishFailureCallback"},
+    {"kind": "exec", "surfaceId": "apex:eventbus.EventPublishSuccessCallback", "symbol": "apex:eventbus.EventPublishSuccessCallback"},
+    {"kind": "exec", "surfaceId": "apex:eventbus.FailureResult", "symbol": "apex:eventbus.FailureResult"},
+    {"kind": "exec", "surfaceId": "apex:eventbus.FailureResult.FailureResult()", "symbol": "apex:eventbus.FailureResult.FailureResult()"},
+    {"kind": "exec", "surfaceId": "apex:eventbus.FailureResult.getEventUuids()", "symbol": "apex:eventbus.FailureResult.getEventUuids()"},
+    {"kind": "exec", "surfaceId": "apex:eventbus.SuccessResult", "symbol": "apex:eventbus.SuccessResult"},
+    {"kind": "exec", "surfaceId": "apex:eventbus.SuccessResult.SuccessResult()", "symbol": "apex:eventbus.SuccessResult.SuccessResult()"},
+    {"kind": "exec", "surfaceId": "apex:eventbus.SuccessResult.getEventUuids()", "symbol": "apex:eventbus.SuccessResult.getEventUuids()"}
+  ],
+  "expected": {"result": {"debug": null, "ok": true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-eventbus-callback-result-tail-api67",
+  "notes": "Exact-candidate anonymous local-runtime witness for EventBus callback interface types and locally constructible result DTO behavior. These local DTO mechanics are policy-local-only and record no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "eventbus-tail-local-evidence",
+    "selectedRowCount": 8
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Direct construction of callback result DTOs is Glade local-runtime behavior, with zero Salesforce parity claimed.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "eventbus.EventPublishFailureCallback failureCallback;\neventbus.EventPublishSuccessCallback successCallback;\nSystem.assertEquals(null, failureCallback);\nSystem.assertEquals(null, successCallback);\neventbus.FailureResult failure = new eventbus.FailureResult();\nSystem.assertEquals(0, failure.getEventUuids().size());\neventbus.SuccessResult success = new eventbus.SuccessResult();\nSystem.assertEquals(0, success.getEventUuids().size());"
+    }
+  ]
+}

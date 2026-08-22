@@ -6,11 +6,6 @@
   "evidence": [
     {
       "kind": "shape",
-      "surfaceId": "apex:UserProvisioning.PluginBatchable",
-      "symbol": "UserProvisioning.PluginBatchable"
-    },
-    {
-      "kind": "shape",
       "surfaceId": "apex:UserProvisioning.PluginBatchable.PluginBatchable(List<Object>)",
       "symbol": "UserProvisioning.PluginBatchable.PluginBatchable(List<Object>)"
     }
@@ -25,13 +20,13 @@
   },
   "mode": "compile-shape",
   "name": "current-base-userprovisioning-pluginbatchable-compile-shape-api67",
-  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: two PluginBatchable rows are compile-shape evidence because direct local execution is not a stable deterministic contract.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: the abstract PluginBatchable constructor remains compile-shape evidence; executable base and clone rows are owned by the exact deterministic mock fixture.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-deterministic-mock-required-UserProvisioning-001",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 2,
+    "selectedRowCount": 1,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "proofObligation": "compile-shape-required",

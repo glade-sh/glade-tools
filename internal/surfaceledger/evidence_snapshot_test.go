@@ -428,10 +428,6 @@ func TestBuildEvidenceSnapshotReadsApexTailShapeEvidence(t *testing.T) {
 		"apex:DataSource.AsyncSaveCallback.processSave()",
 		"apex:Messaging.SingleEmailMessage.setDocumentAttachments()",
 		"apex:Schema.DescribeFieldResult",
-		"apex:Schema.SObjectTypeFieldSets.get(String)",
-		"apex:Schema.SObjectTypeFieldSets.getMap()",
-		"apex:Schema.SObjectTypeFields.get(String)",
-		"apex:Schema.SObjectTypeFields.getMap()",
 		"apex:System.Address.getDistance(Location,String)",
 		"apex:System.HttpRequest client certificate local mock metadata",
 		"apex:System.Location.getDistance()",
@@ -441,7 +437,6 @@ func TestBuildEvidenceSnapshotReadsApexTailShapeEvidence(t *testing.T) {
 		"apex:System.QuickAction.describeQuickActions()",
 		"apex:System.QuickAction.performQuickAction()",
 		"apex:System.QuickAction.performQuickActions()",
-		"apex:System.SObject.addError(Exception)",
 		"apex:System.Set.addAll(Set<Object>)",
 		"apex:System.Set.containsAll(Set<Object>)",
 		"apex:System.Set.removeAll(Set<Object>)",
@@ -837,23 +832,15 @@ func TestBuildEvidenceSnapshotReadsAnswersFindSimilarLocalEvidence(t *testing.T)
 		t.Fatalf("exact Answers.findSimilar(Object) evidence/behavior = %s/%s, want fixture/supported", exactRow.Evidence, exactRow.GladeBehavior)
 	}
 
-	// Raw evidence has two family rows: one shape-only, one behavior-supported.
+	// The exact-candidate fixture owns one behavior-supported family row.
 	familyID := "apex:Answers.findSimilar"
-	var familyShapeRow, familyTestRow *SurfaceLedgerRow
+	var familyTestRow *SurfaceLedgerRow
 	for i := range rows {
 		if rows[i].SurfaceID == familyID {
-			if rows[i].GladeBehavior == BehaviorNone {
-				familyShapeRow = &rows[i]
-			} else if rows[i].GladeBehavior == BehaviorSupported {
+			if rows[i].GladeBehavior == BehaviorSupported {
 				familyTestRow = &rows[i]
 			}
 		}
-	}
-	if familyShapeRow == nil {
-		t.Fatalf("missing shape-only family row for %s", familyID)
-	}
-	if familyShapeRow.GladeShape == ShapeAbsent || familyShapeRow.GladeBehavior != BehaviorNone || familyShapeRow.Evidence != EvidenceFixture {
-		t.Fatalf("shape-only family row shape/behavior/evidence = %s/%s/%s, want non-absent/none/fixture", familyShapeRow.GladeShape, familyShapeRow.GladeBehavior, familyShapeRow.Evidence)
 	}
 	if familyTestRow == nil {
 		t.Fatalf("missing behavior-supported family row for %s", familyID)
@@ -862,13 +849,10 @@ func TestBuildEvidenceSnapshotReadsAnswersFindSimilarLocalEvidence(t *testing.T)
 		t.Fatalf("behavior family row behavior/evidence = %s/%s, want supported/fixture", familyTestRow.GladeBehavior, familyTestRow.Evidence)
 	}
 
-	// After merge, the single family row closes the gap.
+	// After merge, the family row remains behavior-supported.
 	ledger := Merge(nil, nil, nil, rows)
 	mergedByID := rowsByID(ledger.Rows)
 	familyMerged := mergedByID[familyID]
-	if familyMerged.GladeShape == ShapeAbsent {
-		t.Fatalf("merged family row shape is absent, want non-absent")
-	}
 	if familyMerged.GladeBehavior != BehaviorSupported {
 		t.Fatalf("merged family row behavior = %s, want %s", familyMerged.GladeBehavior, BehaviorSupported)
 	}

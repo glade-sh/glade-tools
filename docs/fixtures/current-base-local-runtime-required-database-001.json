@@ -11,28 +11,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.Cursor.Cursor()",
-      "symbol": "Database.Cursor"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.Cursor.clone()",
       "symbol": "Database.Cursor.clone"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DeleteResult.DeleteResult()",
-      "symbol": "Database.DeleteResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateError.duplicateresult",
-      "symbol": "Database.DuplicateError.duplicateresult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmptyRecycleBinResult.EmptyRecycleBinResult()",
-      "symbol": "Database.EmptyRecycleBinResult"
     }
   ],
   "expected": {
@@ -46,10 +26,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-001",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone plus passive result constructors and DuplicateError result-field shape.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-001",
-    "selectedRowCount": 6
+    "selectedRowCount": 2
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

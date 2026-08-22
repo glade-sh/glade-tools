@@ -22,11 +22,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.PageReference.PageReference(String)",
-      "symbol": "PageReference(String)"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:System.PageReference.getHeaders()",
       "symbol": "PageReference.getHeaders"
     },

@@ -10,34 +10,16 @@
   },
   "evidence": [
     {
-      "surfaceId": "apex:System.Date.Date()",
-      "symbol": "Date.Date()",
-      "kind": "exec",
-      "notes": "Salesforce Execute Anonymous rejects this scalar constructor with Type cannot be constructed; local runtime now rejects the same path."
-    },
-    {
       "surfaceId": "apex:System.Date.toEndOfMonth()",
       "symbol": "Date.toEndOfMonth()",
       "kind": "exec",
       "notes": "CB339 focused local Apex executable coverage with Salesforce Execute Anonymous comparison."
     },
     {
-      "surfaceId": "apex:System.Datetime.Datetime()",
-      "symbol": "Datetime.Datetime()",
-      "kind": "exec",
-      "notes": "Salesforce Execute Anonymous rejects this scalar constructor with Type cannot be constructed; local runtime now rejects the same path."
-    },
-    {
       "surfaceId": "apex:System.Datetime.formatGmt",
       "symbol": "Datetime.formatGmt",
       "kind": "exec",
       "notes": "CB339 focused local Apex executable coverage with Salesforce Execute Anonymous comparison."
-    },
-    {
-      "surfaceId": "apex:System.Decimal.Decimal()",
-      "symbol": "Decimal.Decimal()",
-      "kind": "exec",
-      "notes": "Salesforce Execute Anonymous rejects this scalar constructor with Type cannot be constructed; local runtime now rejects the same path."
     },
     {
       "surfaceId": "apex:System.Decimal.valueOf",
@@ -50,12 +32,6 @@
       "symbol": "DmlException.DmlException()",
       "kind": "exec",
       "notes": "CB339 focused local Apex executable coverage with Salesforce Execute Anonymous comparison."
-    },
-    {
-      "surfaceId": "apex:System.Double.Double()",
-      "symbol": "Double.Double()",
-      "kind": "exec",
-      "notes": "Salesforce Execute Anonymous rejects this scalar constructor with Type cannot be constructed; local runtime now rejects the same path."
     },
     {
       "surfaceId": "apex:System.DuplicateMessageException",

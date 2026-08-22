@@ -1,4 +1,5 @@
 {
+  "evidenceOnly":true,
   "name": "async-batchable-querylocator-overloads",
   "evidence": [
     {
@@ -54,12 +55,6 @@
       "surfaceId": "apex:System.QueryLocator.iterator()",
       "kind": "test",
       "notes": "QueryLocator exposes an iterator over its eager local snapshot."
-    },
-    {
-      "symbol": "Database.QueryLocator constructor",
-      "surfaceId": "apex:Database.QueryLocator.QueryLocator()",
-      "kind": "test",
-      "notes": "A direct QueryLocator constructor produces an empty local locator."
     }
   ],
   "source": [

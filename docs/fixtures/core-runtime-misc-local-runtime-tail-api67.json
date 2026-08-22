@@ -1,0 +1,45 @@
+{
+  "name": "core-runtime-misc-local-runtime-tail-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "misc-local-runtime-tail-api67",
+    "selectedRowCount": 11
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local candidate behavior and grants zero hosted Salesforce parity credit.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Type TypeResolutionSystemNamespace = Type.forName('String'); System.assertNotEquals(null, TypeResolutionSystemNamespace); System.assertEquals('String', TypeResolutionSystemNamespace.getName()); System.assertEquals(null, Type.forName('DefinitelyNotAType')); Schema.DataCategory category = new Schema.DataCategory(); System.assertNotEquals(null, Schema.DataCategory.class); System.assertNotEquals(null, category); ApexPages apexPages = new ApexPages(); System.assertNotEquals(null, apexPages); Assert assertion = new Assert(); Object assertionClone = assertion.clone(); System.assertNotEquals(null, assertionClone); System.assertNotEquals(assertion, assertionClone); AsyncOptions options = new AsyncOptions(); System.assertEquals(null, options.MinimumQueueableDelayInMinutes); options.setMinimumQueueableDelayInMinutes(2); System.assertEquals(2, options.MinimumQueueableDelayInMinutes); Iterable<String> iterable = new List<String>{'a'}; Iterator<String> iterator = iterable.iterator(); System.assertNotEquals(null, iterator); System.assertEquals(true, iterator.hasNext()); System.assertEquals('a', iterator.next()); Object objectValue = new Object(); System.assertNotEquals(null, objectValue); Pattern pattern = Pattern.compile('a'); System.assertNotEquals(null, pattern); TimeZone timeZone = TimeZone.getTimeZone('UTC'); System.assertNotEquals(null, timeZone); System.assertEquals('UTC', timeZone.getID());"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Type TypeResolutionSystemNamespace = Type.forName('String'); System.assertNotEquals(null, TypeResolutionSystemNamespace); System.assertEquals('String', TypeResolutionSystemNamespace.getName()); System.assertEquals(null, Type.forName('DefinitelyNotAType')); Schema.DataCategory category = new Schema.DataCategory(); System.assertNotEquals(null, Schema.DataCategory.class); System.assertNotEquals(null, category); ApexPages apexPages = new ApexPages(); System.assertNotEquals(null, apexPages); Assert assertion = new Assert(); Object assertionClone = assertion.clone(); System.assertNotEquals(null, assertionClone); System.assertNotEquals(assertion, assertionClone); AsyncOptions options = new AsyncOptions(); System.assertEquals(null, options.MinimumQueueableDelayInMinutes); options.setMinimumQueueableDelayInMinutes(2); System.assertEquals(2, options.MinimumQueueableDelayInMinutes); Iterable<String> iterable = new List<String>{'a'}; Iterator<String> iterator = iterable.iterator(); System.assertNotEquals(null, iterator); System.assertEquals(true, iterator.hasNext()); System.assertEquals('a', iterator.next()); Object objectValue = new Object(); System.assertNotEquals(null, objectValue); Pattern pattern = Pattern.compile('a'); System.assertNotEquals(null, pattern); TimeZone timeZone = TimeZone.getTimeZone('UTC'); System.assertNotEquals(null, timeZone); System.assertEquals('UTC', timeZone.getID());"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex-language:TypeResolutionSystemNamespace","symbol":"TypeResolutionSystemNamespace","kind":"exec"},
+    {"surfaceId":"apex:Schema.DataCategory","symbol":"Schema.DataCategory","kind":"exec"},
+    {"surfaceId":"apex:Schema.DataCategory.DataCategory()","symbol":"Schema.DataCategory.DataCategory()","kind":"exec"},
+    {"surfaceId":"apex:System.ApexPages.ApexPages()","symbol":"ApexPages.ApexPages()","kind":"exec"},
+    {"surfaceId":"apex:System.Assert.Assert()","symbol":"Assert.Assert()","kind":"exec"},
+    {"surfaceId":"apex:System.Assert.clone()","symbol":"Assert.clone()","kind":"exec"},
+    {"surfaceId":"apex:System.AsyncOptions.setMinimumQueueableDelayInMinutes(Integer)","symbol":"AsyncOptions.setMinimumQueueableDelayInMinutes","kind":"exec"},
+    {"surfaceId":"apex:System.Iterable.iterator()","symbol":"Iterable.iterator","kind":"exec"},
+    {"surfaceId":"apex:System.Object","symbol":"Object","kind":"exec"},
+    {"surfaceId":"apex:System.Pattern","symbol":"Pattern","kind":"exec"},
+    {"surfaceId":"apex:System.TimeZone","symbol":"TimeZone","kind":"exec"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "notes": "Exact sealed-candidate anonymous-Apex executable local-runtime witness for 11 accepted rows. Unsupported or non-discriminating scoped rows are recorded in the focused registry rejection set; no hosted Salesforce execution or parity claim is made."
+}

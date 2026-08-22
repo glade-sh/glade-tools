@@ -27,51 +27,6 @@
       "surfaceId": "apex:System.Database.getQueryLocator(String)",
       "kind": "test",
       "notes": "One-argument Database.getQueryLocator returns a local QueryLocator snapshot for supported SOQL."
-    },
-    {
-      "symbol": "Database.QueryLocator.getQuery",
-      "surfaceId": "apex:Database.QueryLocator.getQuery()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocator.iterator",
-      "surfaceId": "apex:Database.QueryLocator.iterator()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocator.querymore",
-      "surfaceId": "apex:Database.QueryLocator.querymore(Integer)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocator.equals",
-      "surfaceId": "apex:Database.QueryLocator.equals(Object)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocator.hashCode",
-      "surfaceId": "apex:Database.QueryLocator.hashCode()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocator.toString",
-      "surfaceId": "apex:Database.QueryLocator.toString()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocatorIterator.hasNext",
-      "surfaceId": "apex:Database.QueryLocatorIterator.hasNext()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocatorIterator.next",
-      "surfaceId": "apex:Database.QueryLocatorIterator.next()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.QueryLocatorIterator.clone",
-      "surfaceId": "apex:Database.QueryLocatorIterator.clone()",
-      "kind": "test"
     }
   ],
   "source": [

@@ -37,17 +37,12 @@ var messagingInboundDTODepthOwners = map[string][]string{
 		"apex:Messaging.EmailAttachment",
 		"apex:Messaging.EmailAttachment.EmailAttachment()",
 		"apex:Messaging.EmailAttachment.body",
-		"apex:Messaging.EmailAttachment.contentid",
-		"apex:Messaging.EmailAttachment.contenttype",
 		"apex:Messaging.EmailAttachment.equals(Object)",
-		"apex:Messaging.EmailAttachment.filename",
 		"apex:Messaging.EmailAttachment.hashCode()",
 		"apex:Messaging.EmailAttachment.toString()",
 		"apex:Messaging.EmailFileAttachment.EmailFileAttachment()",
 		"apex:Messaging.EmailFileAttachment.body",
-		"apex:Messaging.EmailFileAttachment.contenttype",
 		"apex:Messaging.EmailFileAttachment.equals(Object)",
-		"apex:Messaging.EmailFileAttachment.filename",
 		"apex:Messaging.EmailFileAttachment.hashCode()",
 		"apex:Messaging.EmailFileAttachment.inline",
 		"apex:Messaging.EmailFileAttachment.toString()",
@@ -103,8 +98,8 @@ func TestMessagingInboundDTODepthHasExactExecutableOwnership(t *testing.T) {
 		wantIDs = append(wantIDs, id)
 	}
 	assertExactSurfaceSet(t, selected, wantIDs)
-	if len(wantIDs) != 47 {
-		t.Fatalf("selected rows = %d, want 47", len(wantIDs))
+	if len(wantIDs) != 42 {
+		t.Fatalf("selected rows = %d, want 42", len(wantIDs))
 	}
 	for _, row := range selected {
 		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported || len(row.Sources) != 1 || row.Sources[0] != "fixture:"+want[row.SurfaceID] {

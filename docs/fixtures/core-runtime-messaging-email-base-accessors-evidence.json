@@ -15,16 +15,10 @@
     {"surfaceId": "apex:Messaging.Email.setSenderDisplayName(String)", "symbol": "Messaging.Email.setSenderDisplayName", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.setSubject(String)", "symbol": "Messaging.Email.setSubject", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.setUseSignature(Boolean)", "symbol": "Messaging.Email.setUseSignature", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.bccsender", "symbol": "Messaging.Email.bccsender", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.emailpriority", "symbol": "Messaging.Email.emailpriority", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.equals(Object)", "symbol": "Messaging.Email.equals", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.hashCode()", "symbol": "Messaging.Email.hashCode", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.replyto", "symbol": "Messaging.Email.replyto", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.saveasactivity", "symbol": "Messaging.Email.saveasactivity", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.senderdisplayname", "symbol": "Messaging.Email.senderdisplayname", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.subject", "symbol": "Messaging.Email.subject", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.toString()", "symbol": "Messaging.Email.toString", "kind": "test"},
-    {"surfaceId": "apex:Messaging.Email.usesignature", "symbol": "Messaging.Email.usesignature", "kind": "test"}
+    {"surfaceId": "apex:Messaging.Email.toString()", "symbol": "Messaging.Email.toString", "kind": "test"}
   ],
   "source": [
     {

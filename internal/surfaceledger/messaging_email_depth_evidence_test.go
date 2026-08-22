@@ -12,24 +12,16 @@ import (
 
 var messagingEmailDepthOwners = map[string][]string{
 	"core-runtime-messaging-email-base-accessors-evidence": {
-		"apex:Messaging.Email.bccsender",
-		"apex:Messaging.Email.emailpriority",
 		"apex:Messaging.Email.equals(Object)",
 		"apex:Messaging.Email.hashCode()",
-		"apex:Messaging.Email.replyto",
-		"apex:Messaging.Email.saveasactivity",
-		"apex:Messaging.Email.senderdisplayname",
 		"apex:Messaging.Email.subject",
 		"apex:Messaging.Email.toString()",
-		"apex:Messaging.Email.usesignature",
 	},
 	"core-runtime-messaging-single-email-accessors-broad-evidence": {
 		"apex:Messaging.SingleEmailMessage.bccaddresses",
 		"apex:Messaging.SingleEmailMessage.ccaddresses",
 		"apex:Messaging.SingleEmailMessage.charset",
-		"apex:Messaging.SingleEmailMessage.entityattachments",
 		"apex:Messaging.SingleEmailMessage.equals(Object)",
-		"apex:Messaging.SingleEmailMessage.fileattachments",
 		"apex:Messaging.SingleEmailMessage.hashCode()",
 		"apex:Messaging.SingleEmailMessage.htmlbody",
 		"apex:Messaging.SingleEmailMessage.inreplyto",
@@ -94,8 +86,8 @@ func TestMessagingEmailDepthHasExactExecutableOwnership(t *testing.T) {
 		wantIDs = append(wantIDs, id)
 	}
 	assertExactSurfaceSet(t, selected, wantIDs)
-	if len(wantIDs) != 41 {
-		t.Fatalf("selected rows = %d, want 41", len(wantIDs))
+	if len(wantIDs) != 33 {
+		t.Fatalf("selected rows = %d, want 33", len(wantIDs))
 	}
 	for _, row := range selected {
 		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported || len(row.Sources) != 1 || row.Sources[0] != "fixture:"+want[row.SurfaceID] {

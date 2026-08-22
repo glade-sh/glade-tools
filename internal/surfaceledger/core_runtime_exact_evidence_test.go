@@ -38,8 +38,8 @@ func TestCoreRuntimeExactEvidenceFixtures(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(rows) != 36 {
-		t.Fatalf("exact runtime evidence rows = %d, want 36", len(rows))
+	if len(rows) != 34 {
+		t.Fatalf("exact runtime evidence rows = %d, want 34", len(rows))
 	}
 	seen := make(map[string]bool, len(rows))
 	for _, row := range rows {

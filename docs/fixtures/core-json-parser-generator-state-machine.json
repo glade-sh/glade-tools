@@ -26,21 +26,6 @@
       "notes": "Closed generator checks take precedence over raw JSON validation."
     },
     {
-      "symbol": "JSONParser.getText",
-      "kind": "exec",
-      "notes": "Accessor calls without a current token throw catchable JSONException."
-    },
-    {
-      "symbol": "JSONParser.getBooleanValue",
-      "kind": "exec",
-      "notes": "Wrong-token accessors throw catchable JSONException and preserve parser position."
-    },
-    {
-      "symbol": "JSONParser.getDateValue",
-      "kind": "exec",
-      "notes": "Invalid platform scalar parser access throws catchable JSONException."
-    },
-    {
       "symbol": "JSON.createParser",
       "kind": "exec",
       "notes": "Malformed JSON input throws catchable JSONException."

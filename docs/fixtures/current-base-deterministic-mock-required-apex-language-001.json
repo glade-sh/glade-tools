@@ -5,10 +5,10 @@
   "apiVersion": "67.0",
   "mode": "local-runtime",
   "salesforceEligible": true,
-  "notes": "Current-base lane current-base-deterministic-mock-required-apex-language-001: two uncovered Apex language rows with executable local precedence witnesses.",
+  "notes": "Current-base compile-shape lane for System namespace type resolution; runtime precedence evidence moved to its exact candidate fixture.",
   "profile": {
     "laneId": "current-base-deterministic-mock-required-apex-language-001",
-    "selectedRowCount": 2
+    "selectedRowCount": 1
   },
   "command": {
     "kind": "check"
@@ -32,12 +32,6 @@
     }
   ],
   "evidence": [
-    {
-      "surfaceId": "apex-language:NamespaceClassVariablePrecedence",
-      "symbol": "Apex namespace, class, and variable precedence",
-      "kind": "test",
-      "notes": "A local variable named Database resolves before the local class and the System.Database namespace."
-    },
     {
       "surfaceId": "apex-language:TypeResolutionSystemNamespace",
       "symbol": "Apex type resolution and System namespace",

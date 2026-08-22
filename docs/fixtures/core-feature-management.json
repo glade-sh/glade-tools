@@ -13,11 +13,6 @@
       "kind": "test"
     },
     {
-      "symbol": "FeatureManagement.checkPermission",
-      "surfaceId": "apex:System.FeatureManagement.checkPermission(String)",
-      "kind": "test"
-    },
-    {
       "symbol": "FeatureManagement.checkPackageBooleanValue",
       "surfaceId": "apex:System.FeatureManagement.checkPackageBooleanValue(String)",
       "kind": "test"

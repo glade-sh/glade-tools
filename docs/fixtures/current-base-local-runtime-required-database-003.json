@@ -78,21 +78,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.RelationshipSaveResult.toString()",
       "symbol": "Database.RelationshipSaveResult.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.SaveResult.SaveResult()",
-      "symbol": "Database.SaveResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.Savepoint",
-      "symbol": "Database.Savepoint"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.UndeleteResult.UndeleteResult()",
-      "symbol": "Database.UndeleteResult"
     }
   ],
   "expected": {
@@ -106,10 +91,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-003",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-003: retained nested/relationship result DTO, pagination cursor, result constructors, and savepoint shape contracts.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-003: retained nested/relationship result DTO and pagination cursor.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-003",
-    "selectedRowCount": 18
+    "selectedRowCount": 15
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

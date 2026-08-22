@@ -3,6 +3,7 @@
   "command": {
     "kind": "test"
   },
+  "evidenceOnly": true,
   "evidence": [
     {
       "kind": "test",

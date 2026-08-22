@@ -1,0 +1,23 @@
+{
+  "apiVersion": "67.0",
+  "command": {"kind": "exec", "args": ["eventbus.TriggerContext context = eventbus.TriggerContext.currentContext();\nSystem.assertNotEquals(null, context);"]},
+  "evidence": [
+    {"kind": "exec", "surfaceId": "apex:eventbus.TriggerContext.currentContext()", "symbol": "apex:eventbus.TriggerContext.currentContext()"}
+  ],
+  "expected": {"result": {"debug": null, "ok": true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-eventbus-trigger-context-api67",
+  "notes": "Exact-candidate executable local-runtime witness for the non-null local TriggerContext.currentContext fallback. This context-free local fallback is policy-local-only and records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "eventbus-tail-local-evidence",
+    "selectedRowCount": 1
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The context-free TriggerContext fallback is a Glade local-runtime behavior outside an executing platform-event trigger, with zero Salesforce parity claimed.",
+  "source": [
+    {"path": "anonymous.apex", "content": "eventbus.TriggerContext context = eventbus.TriggerContext.currentContext();\nSystem.assertNotEquals(null, context);"}
+  ]
+}

@@ -1,4 +1,5 @@
 {
+  "evidenceOnly":true,
   "name": "data-platform-database-async-result-locator-rejection",
   "evidence": [
     {

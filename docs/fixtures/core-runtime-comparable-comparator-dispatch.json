@@ -1,9 +1,34 @@
 {
   "name": "core-runtime-comparable-comparator-dispatch",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "693bc1b8652907eee1c40c1c9f4604637f06a172",
+    "sha256": "235ef5f5fd6b35a9eec2ab81c129c2639c0282ff66573e8dbace80e991481bc3"
+  },
+  "profile": {
+    "candidateCommit": "693bc1b8652907eee1c40c1c9f4604637f06a172",
+    "candidateSha256": "235ef5f5fd6b35a9eec2ab81c129c2639c0282ff66573e8dbace80e991481bc3",
+    "laneId": "core-runtime-comparable-comparator-dispatch",
+    "selectedRowCount": 4
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Exact-candidate local-runtime evidence with zero hosted Salesforce parity credit.",
   "evidence": [
+    {
+      "surfaceId": "apex:System.Comparable",
+      "symbol": "Comparable",
+      "kind": "test"
+    },
     {
       "surfaceId": "apex:System.Comparable.compareTo(Object)",
       "symbol": "Comparable.compareTo(Object)",
+      "kind": "test"
+    },
+    {
+      "surfaceId": "apex:System.Comparator",
+      "symbol": "Comparator",
       "kind": "test"
     },
     {
@@ -37,5 +62,6 @@
       "failed": 0,
       "errors": 0
     }
-  }
+  },
+  "notes": "User implementations execute through Comparable and Comparator during List sorting."
 }

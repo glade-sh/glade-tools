@@ -11,18 +11,11 @@
     {"surfaceId":"apex:System.ConnectedApplication","symbol":"System.ConnectedApplication","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.ContactPointPrefEnum","symbol":"System.ContactPointPrefEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.ContactPointTypeRepresentationEnum","symbol":"System.ContactPointTypeRepresentationEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.Comparable","symbol":"System.Comparable","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.Comparator","symbol":"System.Comparator","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.ContentDocumentLink","symbol":"System.ContentDocumentLink","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.CronJobDetail","symbol":"System.CronJobDetail","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.CronTrigger","symbol":"System.CronTrigger","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.Custom","symbol":"System.Custom","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.CustomizationType","symbol":"System.CustomizationType","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.Finalizer","symbol":"System.Finalizer","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.FinalizerContext","symbol":"System.FinalizerContext","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.SObjectAccessDecision","symbol":"System.SObjectAccessDecision","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.Schedulable","symbol":"System.Schedulable","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.SchedulableContext","symbol":"System.SchedulableContext","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.Security","symbol":"System.Security","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."}
   ],
   "source": [

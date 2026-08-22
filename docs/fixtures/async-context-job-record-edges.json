@@ -5,47 +5,6 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "Private projects implement Queueable; this executable fixture directly implements and drains the local async lifecycle.",
-      "surfaceId": "apex:System.Queueable",
-      "symbol": "Queueable"
-    },
-    {
-      "kind": "test",
-      "notes": "The queued execute method directly receives and uses the local QueueableContext value.",
-      "surfaceId": "apex:System.QueueableContext",
-      "symbol": "QueueableContext"
-    },
-    {
-      "kind": "test",
-      "notes": "Queued class execute runs during Test.stopTest and writes a row from the QueueableContext.",
-      "surfaceId": "apex:System.Queueable.execute(QueueableContext)",
-      "symbol": "Queueable.execute(QueueableContext)"
-    },
-    {
-      "kind": "test",
-      "notes": "QueueableContext exposes the deterministic local async job id during drain.",
-      "surfaceId": "apex:System.QueueableContext.getJobId()",
-      "symbol": "QueueableContext.getJobId"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.BatchableContext.getJobId()",
-      "symbol": "Database.BatchableContext.getJobId"
-    },
-    {
-      "kind": "test",
-      "notes": "Scheduled class execute runs during Test.stopTest and writes a row from the SchedulableContext.",
-      "surfaceId": "apex:System.Schedulable.execute(SchedulableContext)",
-      "symbol": "Schedulable.execute(SchedulableContext)"
-    },
-    {
-      "kind": "test",
-      "notes": "SchedulableContext exposes the deterministic local CronTrigger id during drain.",
-      "surfaceId": "apex:System.SchedulableContext.getTriggerId()",
-      "symbol": "SchedulableContext.getTriggerId"
-    },
-    {
-      "kind": "test",
       "surfaceId": "data-reference:AsyncApexJob.TotalJobItems",
       "symbol": "AsyncApexJob.TotalJobItems"
     },

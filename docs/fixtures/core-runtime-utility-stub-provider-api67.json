@@ -1,0 +1,35 @@
+{
+  "name": "core-runtime-utility-stub-provider-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "utility-tail-stub-provider-api67",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local test-context StubProvider behavior and grants zero hosted Salesforce parity credit.",
+  "command": {"kind":"test"},
+  "source": [
+    {
+      "path": "force-app/main/classes/UtilityGreeter.cls",
+      "content": "public interface UtilityGreeter { String greet(String name); }"
+    },
+    {
+      "path": "force-app/main/classes/UtilityStubProvider.cls",
+      "content": "public class UtilityStubProvider implements StubProvider { public Object handleMethodCall(Object stubbedObject, String stubbedMethodName, Type returnType, List<Type> listOfParamTypes, List<String> listOfParamNames, List<Object> listOfArgs) { return 'hello ' + String.valueOf(listOfArgs.get(0)); } }"
+    },
+    {
+      "path": "force-app/main/classes/UtilityStubProviderTest.cls",
+      "content": "@isTest private class UtilityStubProviderTest { @isTest static void stubDispatches() { StubProvider baseProvider = new StubProvider(); System.assertNotEquals(null, baseProvider); UtilityGreeter greeter = (UtilityGreeter)Test.createStub(UtilityGreeter.class, new UtilityStubProvider()); System.assertEquals('hello Ada', greeter.greet('Ada')); } }"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.StubProvider.StubProvider()","symbol":"StubProvider.StubProvider()","kind":"test"},
+    {"surfaceId":"apex:System.StubProvider.handleMethodCall(Object,String,Type,List<Type>,List<String>,List<Object>)","symbol":"StubProvider.handleMethodCall","kind":"test"}
+  ],
+  "expected": {"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}},
+  "notes": "Exact-candidate executable local-runtime witness in isolated test context; no hosted Salesforce execution or parity claim."
+}

@@ -24,6 +24,7 @@ func TestCoreEnumEvidenceFixtureIsExecutableAndShapeBacked(t *testing.T) {
 	if len(fixture.Source) != 1 {
 		t.Fatalf("source files = %d, want 1", len(fixture.Source))
 	}
+	root := filepath.Join("..", "..")
 
 	wantIDs := coreEnumEvidenceIDs()
 	for _, transferred := range []string{
@@ -42,6 +43,15 @@ func TestCoreEnumEvidenceFixtureIsExecutableAndShapeBacked(t *testing.T) {
 		"apex:System.RoundingMode.values()",
 	} {
 		delete(wantIDs, transferred)
+	}
+	var api67 struct {
+		Evidence []struct {
+			SurfaceID string `json:"surfaceId"`
+		} `json:"evidence"`
+	}
+	readJSON(t, filepath.Join(root, "docs", "fixtures", "core-runtime-system-enum-families-api67.json"), &api67)
+	for _, row := range api67.Evidence {
+		delete(wantIDs, row.SurfaceID)
 	}
 	gotIDs := make(map[string]bool, len(fixture.Evidence))
 	source := fixture.Source[0].Content
@@ -98,12 +108,8 @@ func TestCoreEnumEvidenceFixtureIsExecutableAndShapeBacked(t *testing.T) {
 
 	for _, id := range []string{
 		"apex:System.LoggingLevel.INFO",
-		"apex:System.TriggerOperation.BEFORE_INSERT",
-		"apex:System.JSONToken.END_OBJECT",
 		"apex:System.RoundingMode.HALF_UP",
-		"apex:System.AccessType.READABLE",
 		"apex:System.ParentJobResult.SUCCESS",
-		"apex:System.Quiddity.REMOTE_ACTION",
 	} {
 		if !gotIDs[id] {
 			t.Fatalf("representative constant %q is not evidenced", id)

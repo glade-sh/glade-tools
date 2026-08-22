@@ -3,37 +3,7 @@
   "evidence": [
     {
       "symbol": "Database.executeBatch",
-      "surfaceId": "apex:System.Database.executeBatch(Object)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.executeBatch",
       "surfaceId": "apex:System.Database.executeBatch(Object,Integer)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.Batchable.start",
-      "surfaceId": "apex:Database.Batchable.start(Database.BatchableContext)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.Batchable.execute",
-      "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.Batchable.finish",
-      "surfaceId": "apex:Database.Batchable.finish(Database.BatchableContext)",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.BatchableContext.getJobId",
-      "surfaceId": "apex:Database.BatchableContext.getJobId()",
-      "kind": "test"
-    },
-    {
-      "symbol": "Database.BatchableContext.getChildJobId",
-      "surfaceId": "apex:Database.BatchableContext.getChildJobId()",
       "kind": "test"
     }
   ],

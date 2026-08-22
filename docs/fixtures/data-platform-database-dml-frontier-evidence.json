@@ -1,4 +1,5 @@
 {
+  "evidenceOnly":true,
   "name": "data-platform-database-dml-frontier-evidence",
   "evidence": [
     {

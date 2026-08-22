@@ -1,0 +1,38 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {"kind": "test", "surfaceId": "apex:Process.Plugin.describe()", "symbol": "Process.Plugin.describe"},
+    {"kind": "test", "surfaceId": "apex:Process.Plugin.invoke(Process.PluginRequest)", "symbol": "Process.Plugin.invoke"},
+    {"kind": "test", "surfaceId": "apex:Process.PluginDescribeResult.InputParameter", "symbol": "Process.PluginDescribeResult.InputParameter"},
+    {"kind": "test", "surfaceId": "apex:Process.PluginDescribeResult.OutputParameter", "symbol": "Process.PluginDescribeResult.OutputParameter"}
+  ],
+  "evidenceOnly": false,
+  "expected": {
+    "result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}
+  },
+  "mode": "deterministic-mock",
+  "name": "core-runtime-process-plugin-tail-local-evidence-api67",
+  "notes": "Exact-candidate deterministic local witness for the user-implemented Process.Plugin contract and nested parameter DTOs. No hosted Salesforce execution or parity claim is made.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "process-plugin-tail-local-evidence",
+    "selectedRowCount": 4
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Process.Plugin is a user-implemented local service contract; this fixture records zero Salesforce parity.",
+  "source": [
+    {
+      "path": "force-app/main/default/classes/ProcessPluginTailLocalEvidenceApi67.cls",
+      "content": "public class ProcessPluginTailLocalEvidenceApi67 implements Process.Plugin { public Process.PluginDescribeResult describe() { Process.PluginDescribeResult result = new Process.PluginDescribeResult(); Process.PluginDescribeResult.InputParameter input = new Process.PluginDescribeResult.InputParameter('recordId', 'Record Id', Process.PluginDescribeResult.ParameterType.ID, true); Process.PluginDescribeResult.OutputParameter output = new Process.PluginDescribeResult.OutputParameter('message', 'Message', Process.PluginDescribeResult.ParameterType.STRING); result.inputParameters = new List<Process.PluginDescribeResult.InputParameter>{input}; result.outputParameters = new List<Process.PluginDescribeResult.OutputParameter>{output}; return result; } public Process.PluginResult invoke(Process.PluginRequest request) { return null; } } @isTest private class ProcessPluginTailLocalEvidenceApi67Test { @isTest static void processPluginTailWitness() { Process.Plugin plugin = new ProcessPluginTailLocalEvidenceApi67(); Process.PluginDescribeResult described = plugin.describe(); System.assertEquals(1, described.inputParameters.size()); System.assertEquals(1, described.outputParameters.size()); Process.PluginRequest request = new Process.PluginRequest(new Map<String,Object>{'recordId' => '001000000000001'}); System.assertEquals(null, plugin.invoke(request)); } }"
+    }
+  ]
+}

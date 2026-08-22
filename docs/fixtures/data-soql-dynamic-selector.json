@@ -1,4 +1,5 @@
 {
+  "evidenceOnly":true,
   "name": "data-soql-dynamic-selector",
   "evidence": [
     {

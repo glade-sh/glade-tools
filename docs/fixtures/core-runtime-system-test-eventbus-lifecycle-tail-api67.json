@@ -1,0 +1,70 @@
+{
+  "name": "core-runtime-system-test-eventbus-lifecycle-tail-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "project": { "sourceApiVersion": "67.0" },
+  "evidenceOnly": false,
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This deterministic local test harness has zero hosted Salesforce parity credit; no hosted Salesforce execution or lifecycle parity is claimed.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "system-test-eventbus-lifecycle-tail",
+    "selectedRowCount": 13
+  },
+  "notes": "deterministic local Test and event-bus lifecycle callbacks only; no hosted Salesforce execution or parity claim.",
+  "evidence": [
+    { "surfaceId": "apex:System.ExternalServiceTest.sendCallback(HttpRequest)", "symbol": "ExternalServiceTest.sendCallback(HttpRequest)", "kind": "test", "notes": "Test.getExternalService returns a deterministic local HTTP callback response." },
+    { "surfaceId": "apex:System.System.attachFinalizer(finalizer)", "symbol": "System.attachFinalizer", "kind": "test", "notes": "A local queueable attaches and drains its finalizer during Test.stopTest." },
+    { "surfaceId": "apex:System.Test.getEventBus()", "symbol": "Test.getEventBus", "kind": "test", "notes": "The local test broker is obtained and used for deterministic event delivery." },
+    { "surfaceId": "apex:System.Test.getExternalService()", "symbol": "Test.getExternalService", "kind": "test", "notes": "The local external-service harness is obtained without live service execution." },
+    { "surfaceId": "apex:System.Test.getStandardPricebookId", "symbol": "Test.getStandardPricebookId", "kind": "test", "notes": "The local test context returns the deterministic standard pricebook id." },
+    { "surfaceId": "apex:System.Test.getStandardPricebookId()", "symbol": "Test.getStandardPricebookId", "kind": "test", "notes": "The local test context returns the deterministic standard pricebook id for the parenthesized surface alias." },
+    { "surfaceId": "apex:System.Test.isRunningTest()", "symbol": "Test.isRunningTest", "kind": "test", "notes": "The local test method observes the active test context." },
+    { "surfaceId": "apex:System.Test.isSoqlStubDefined(Schema.SObjectType)", "symbol": "Test.isSoqlStubDefined", "kind": "test", "notes": "The local test helper reports the deterministic absence of a registered SOQL stub." },
+    { "surfaceId": "apex:System.Test.setMock(Type,Object)", "symbol": "Test.setMock", "kind": "test", "notes": "The local HTTP mock is registered through Test.setMock in test context." },
+    { "surfaceId": "apex:System.Test.startTest", "symbol": "Test.startTest", "kind": "test", "notes": "The local test window starts before queueable/event-bus work." },
+    { "surfaceId": "apex:System.Test.stopTest", "symbol": "Test.stopTest", "kind": "test", "notes": "The local test window stops and drains the attached finalizer deterministically." },
+    { "surfaceId": "apex:System.Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)", "symbol": "Test.testNotificationActionHandler", "kind": "test", "notes": "The local notification test helper invokes the handler callback." },
+    { "surfaceId": "apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)", "symbol": "TestAsyncHttp.executeHttpRequest(HttpRequest)", "kind": "test", "notes": "The local async HTTP test harness returns a deterministic HTTP 200 response." }
+  ],
+  "source": [
+    {
+      "path": "force-app/main/classes/SystemTestEventBusLifecycleJob.cls",
+      "content": "public class SystemTestEventBusLifecycleJob implements Queueable, Finalizer { public static String result; public void execute(QueueableContext context) { System.attachFinalizer(this); } public void execute(FinalizerContext context) { result = context.getResult().name(); } }"
+    },
+    {
+      "path": "force-app/main/classes/SystemTestEventBusLifecycleMock.cls",
+      "content": "public class SystemTestEventBusLifecycleMock implements HttpCalloutMock, Messaging.NotificationActionHandler { public HttpResponse respond(HttpRequest request) { HttpResponse response = new HttpResponse(); response.setStatusCode(201); response.setBody('system-test-eventbus-mock'); return response; } public Messaging.ActionResult executeAction(Messaging.ActionableNotification notification) { return new Messaging.ActionResult.Builder().withSuccess(false).build(); } }"
+    },
+    {
+      "path": "force-app/main/default/classes/SystemTestEventBusLifecycleState.cls",
+      "content": "public class SystemTestEventBusLifecycleState { public static Integer delivered = 0; }"
+    },
+    {
+      "path": "force-app/main/default/triggers/SystemTestEventBusLifecycleTrigger.trigger",
+      "content": "trigger SystemTestEventBusLifecycleTrigger on EventBus_Tail__e (after insert) { SystemTestEventBusLifecycleState.delivered += Trigger.new.size(); }"
+    },
+    {
+      "path": "force-app/main/classes/SystemTestEventBusLifecycleTest.cls",
+      "content": "@isTest private class SystemTestEventBusLifecycleTest { @isTest static void localTestAndEventBusLifecycle() { System.assert(Test.isRunningTest()); System.assertEquals('01s000000000001', Test.getStandardPricebookId()); System.assertEquals('01s000000000001', Test.getStandardPricebookId()); System.assertEquals(false, Test.isSoqlStubDefined(Account.SObjectType)); Test.setMock(HttpCalloutMock.class, new SystemTestEventBusLifecycleMock()); HttpRequest mockRequest = new HttpRequest(); mockRequest.setEndpoint('https://example.test/system-test'); mockRequest.setMethod('GET'); HttpResponse mockResponse = new Http().send(mockRequest); System.assertEquals(201, mockResponse.getStatusCode()); System.assertEquals('system-test-eventbus-mock', mockResponse.getBody()); ExternalServiceTest service = (ExternalServiceTest)Test.getExternalService(); HttpResponse callback = service.sendCallback(new HttpRequest()); System.assertEquals(200, callback.getStatusCode()); HttpResponse asyncResponse = new TestAsyncHttp().executeHttpRequest(new HttpRequest()); System.assertEquals(200, asyncResponse.getStatusCode()); SystemTestEventBusLifecycleState.delivered = 0; eventbus.TestEventService.publishEvent('EventBus_Tail__e', new Map<String,Object>{'Payload__c' => 'deliver'}); System.assertEquals(0, SystemTestEventBusLifecycleState.delivered); Test.getEventBus().deliver(); System.assertEquals(1, SystemTestEventBusLifecycleState.delivered); Messaging.ActionableNotification notification = new Messaging.ActionableNotification.Builder().withActionIdentifier('local').build(); Messaging.ActionResult action = Test.testNotificationActionHandler(new SystemTestEventBusLifecycleMock(), notification); System.assertEquals(false, action.isSuccess()); Test.startTest(); System.enqueueJob(new SystemTestEventBusLifecycleJob()); Test.stopTest(); System.assertEquals('SUCCESS', SystemTestEventBusLifecycleJob.result); } }"
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/EventBus_Tail__e/EventBus_Tail__e.object-meta.xml",
+      "content": "<CustomObject><label>EventBus Tail</label><pluralLabel>EventBus Tails</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/EventBus_Tail__e/fields/Payload__c.field-meta.xml",
+      "content": "<CustomField><fullName>Payload__c</fullName><label>Payload</label><type>Text</type></CustomField>"
+    }
+  ],
+  "command": { "kind": "test" },
+  "expected": { "result": { "errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1 } }
+}

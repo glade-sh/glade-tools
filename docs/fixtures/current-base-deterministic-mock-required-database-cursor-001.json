@@ -4,12 +4,6 @@
     "kind": "test"
   },
   "evidence": [
-    {
-      "kind": "test",
-      "notes": "A public Salesforce cursor delete-filter enum exercised against Glade's deterministic local SOQL rows.",
-      "surfaceId": "apex:Database.Cursor.DeleteFilter",
-      "symbol": "Database.Cursor.DeleteFilter"
-    }
   ],
   "expected": {
     "result": {
@@ -25,7 +19,7 @@
   "notes": "Hosted API 67 witness for Database.Cursor.DeleteFilter with a filename-matching test class.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database.Cursor-001",
-    "selectedRowCount": 1
+    "selectedRowCount": 0
   },
   "salesforceEligible": true,
   "source": [

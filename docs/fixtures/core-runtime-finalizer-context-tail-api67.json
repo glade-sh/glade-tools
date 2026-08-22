@@ -1,0 +1,33 @@
+{
+  "apiVersion": "67.0",
+  "command": { "kind": "test" },
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "evidence": [
+    { "kind": "test", "surfaceId": "apex:System.Finalizer", "symbol": "Finalizer" },
+    { "kind": "test", "surfaceId": "apex:System.Finalizer.execute(FinalizerContext)", "symbol": "Finalizer.execute(FinalizerContext)" },
+    { "kind": "test", "surfaceId": "apex:System.FinalizerContext", "symbol": "FinalizerContext" },
+    { "kind": "test", "surfaceId": "apex:System.FinalizerContext.getException()", "symbol": "FinalizerContext.getException" },
+    { "kind": "test", "surfaceId": "apex:System.FinalizerContext.getRequestId()", "symbol": "FinalizerContext.getRequestId" },
+    { "kind": "test", "surfaceId": "apex:System.FinalizerContext.getResult()", "symbol": "FinalizerContext.getResult" }
+  ],
+  "expected": { "result": { "errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1 } },
+  "mode": "local-runtime",
+  "name": "core-runtime-finalizer-context-tail-api67",
+  "notes": "Attached-finalizer context is executed in a deterministic local Queueable drain; no unsupported no-arg FinalizerContextImpl, zero hosted Salesforce parity, and no worker lifecycle claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "system-lifecycle-tail",
+    "selectedRowCount": 6
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Attached local finalizer execution has zero hosted Salesforce parity and is not a worker lifecycle oracle.",
+  "source": [
+    { "path": "force-app/main/classes/FinalizerContextTailFixture.cls", "content": "public class FinalizerContextTailFixture implements Queueable, Finalizer { public static String result; public static String requestId; public static Exception exceptionValue; public void execute(QueueableContext context) { System.attachFinalizer(this); } public void execute(FinalizerContext context) { result = context.getResult().name(); requestId = context.getRequestId(); exceptionValue = context.getException(); } }" },
+    { "path": "force-app/main/classes/FinalizerContextTailTest.cls", "content": "@IsTest private class FinalizerContextTailTest { @IsTest static void attachedContextRunsAfterQueueable() { Test.startTest(); System.enqueueJob(new FinalizerContextTailFixture()); Test.stopTest(); System.assertEquals('SUCCESS', FinalizerContextTailFixture.result); System.assertNotEquals(null, FinalizerContextTailFixture.requestId); System.assertEquals(null, FinalizerContextTailFixture.exceptionValue); } }" }
+  ]
+}

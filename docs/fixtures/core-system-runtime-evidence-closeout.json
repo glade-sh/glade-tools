@@ -155,96 +155,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getCurrentUvid()",
-      "symbol": "UserInfo.getCurrentUvid()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getDefaultCurrency()",
-      "symbol": "UserInfo.getDefaultCurrency()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getFirstName()",
-      "symbol": "UserInfo.getFirstName()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getLastName()",
-      "symbol": "UserInfo.getLastName()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getName()",
-      "symbol": "UserInfo.getName()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getOrganizationId()",
-      "symbol": "UserInfo.getOrganizationId()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getOrganizationName()",
-      "symbol": "UserInfo.getOrganizationName()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getProfileId()",
-      "symbol": "UserInfo.getProfileId()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getSessionId()",
-      "symbol": "UserInfo.getSessionId()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getUiTheme()",
-      "symbol": "UserInfo.getUiTheme()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getUiThemeDisplayed()",
-      "symbol": "UserInfo.getUiThemeDisplayed()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getUserEmail()",
-      "symbol": "UserInfo.getUserEmail()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getUserId()",
-      "symbol": "UserInfo.getUserId()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getUserName()",
-      "symbol": "UserInfo.getUserName()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getUserRoleId()",
-      "symbol": "UserInfo.getUserRoleId()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.getUserType()",
-      "symbol": "UserInfo.getUserType()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.isCurrentUserLicensed(String)",
-      "symbol": "UserInfo.isCurrentUserLicensed(String)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.UserInfo.isMultiCurrencyOrganization()",
-      "symbol": "UserInfo.isMultiCurrencyOrganization()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:System.SObject.addError(String)",
       "symbol": "SObject.addError(String)"
     },
@@ -337,11 +247,6 @@
       "kind": "test",
       "surfaceId": "apex:System.SObject.putSObject(String,Object)",
       "symbol": "SObject.putSObject(String,Object)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.SObject.recalculateFormulas()",
-      "symbol": "SObject.recalculateFormulas()"
     },
     {
       "kind": "test",

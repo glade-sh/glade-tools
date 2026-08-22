@@ -1,0 +1,96 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "command": {
+    "args": [
+      "Database.DuplicateError duplicateError = new Database.DuplicateError();\nSystem.assertEquals(null, duplicateError.duplicateresult);\nSystem.assertEquals(null, duplicateError.getDuplicateResult());\nSystem.assertNotEquals(null, duplicateError.getFields());\nSystem.assertEquals(0, duplicateError.getFields().size());\nSystem.assertEquals(null, duplicateError.getMessage());\nSystem.assertEquals(null, duplicateError.getStatusCode());\nDatabase.EmptyRecycleBinResult emptyResult = new Database.EmptyRecycleBinResult();\nSystem.assertNotEquals(null, emptyResult.errors);\nSystem.assertEquals(0, emptyResult.errors.size());\nSystem.assertNotEquals(null, emptyResult.getErrors());\nSystem.assertEquals(0, emptyResult.getErrors().size());\nSystem.assertEquals(emptyResult.errors, emptyResult.getErrors());\nSystem.assertEquals(null, emptyResult.getId());\nSystem.assertEquals(false, emptyResult.isSuccess());\nDatabase.MergeRequest request = new Database.MergeRequest();\nSystem.assertNotEquals(null, request);\nDatabase.Savepoint savepoint = (Database.Savepoint)null;\nSystem.assertEquals(null, savepoint);\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.DuplicateError.duplicateresult",
+      "symbol": "apex:Database.DuplicateError.duplicateresult"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.DuplicateError.getDuplicateResult()",
+      "symbol": "apex:Database.DuplicateError.getDuplicateResult()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.DuplicateError.getFields()",
+      "symbol": "apex:Database.DuplicateError.getFields()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.DuplicateError.getMessage()",
+      "symbol": "apex:Database.DuplicateError.getMessage()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.DuplicateError.getStatusCode()",
+      "symbol": "apex:Database.DuplicateError.getStatusCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.EmptyRecycleBinResult.EmptyRecycleBinResult()",
+      "symbol": "apex:Database.EmptyRecycleBinResult.EmptyRecycleBinResult()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.EmptyRecycleBinResult.errors",
+      "symbol": "apex:Database.EmptyRecycleBinResult.errors"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.EmptyRecycleBinResult.getErrors()",
+      "symbol": "apex:Database.EmptyRecycleBinResult.getErrors()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.EmptyRecycleBinResult.getId()",
+      "symbol": "apex:Database.EmptyRecycleBinResult.getId()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.EmptyRecycleBinResult.isSuccess()",
+      "symbol": "apex:Database.EmptyRecycleBinResult.isSuccess()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.MergeRequest.MergeRequest()",
+      "symbol": "apex:Database.MergeRequest.MergeRequest()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.Savepoint",
+      "symbol": "apex:Database.Savepoint"
+    }
+  ],
+  "evidenceOnly": false,
+  "mode": "local-runtime",
+  "name": "core-runtime-database-duplicate-recycle-savepoint-api67",
+  "notes": "Exact-candidate executable local-runtime witness for 12 Database duplicate, recycle, merge-request, and savepoint rows. Constructed result/error DTOs and aliases are invalid hosted Salesforce compile/probe paths; no hosted Salesforce execution or parity claim.",
+  "packetId": "DB-DUPLICATE-RECYCLE-SAVEPOINT",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "database-duplicate-recycle-local-evidence",
+    "selectedRowCount": 12
+  },
+  "salesforceEligible": false,
+  "source": [
+    {
+      "content": "Database.DuplicateError duplicateError = new Database.DuplicateError();\nSystem.assertEquals(null, duplicateError.duplicateresult);\nSystem.assertEquals(null, duplicateError.getDuplicateResult());\nSystem.assertNotEquals(null, duplicateError.getFields());\nSystem.assertEquals(0, duplicateError.getFields().size());\nSystem.assertEquals(null, duplicateError.getMessage());\nSystem.assertEquals(null, duplicateError.getStatusCode());\nDatabase.EmptyRecycleBinResult emptyResult = new Database.EmptyRecycleBinResult();\nSystem.assertNotEquals(null, emptyResult.errors);\nSystem.assertEquals(0, emptyResult.errors.size());\nSystem.assertNotEquals(null, emptyResult.getErrors());\nSystem.assertEquals(0, emptyResult.getErrors().size());\nSystem.assertEquals(emptyResult.errors, emptyResult.getErrors());\nSystem.assertEquals(null, emptyResult.getId());\nSystem.assertEquals(false, emptyResult.isSuccess());\nDatabase.MergeRequest request = new Database.MergeRequest();\nSystem.assertNotEquals(null, request);\nDatabase.Savepoint savepoint = (Database.Savepoint)null;\nSystem.assertEquals(null, savepoint);\n",
+      "path": "anonymous.apex"
+    }
+  ],
+  "title": "API 67 Database duplicate recycle merge savepoint local evidence",
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Constructed result/error DTOs and aliases are invalid hosted Salesforce compile/probe paths; this fixture provides local-runtime evidence only and makes no hosted Salesforce parity claim."
+}

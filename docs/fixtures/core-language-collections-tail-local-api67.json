@@ -1,0 +1,41 @@
+{
+  "name": "core-language-collections-tail-local-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Local candidate only; zero hosted Salesforce parity is claimed for this fixture.",
+  "notes": "deterministic local candidate execution for the remaining language and collection tail; no hosted Salesforce execution or parity claim.",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "language-collections-tail-local-api67",
+    "selectedRowCount": 9
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "SObjectType accountType = Account.SObjectType; System.assertNotEquals(null, accountType); List<String> values = new List<String>(); Set<String> valueSet = new Set<String>(); System.assertEquals(0, valueSet.size()); Iterable<String> iterable = values; System.assertNotEquals(null, iterable); JSONParser parser = JSON.createParser('{}'); System.assertNotEquals(null, parser); Pattern pattern = Pattern.compile('a'); Matcher matcher = pattern.matcher('a'); Matcher matcherClone = (Matcher)matcher.clone(); Pattern patternClone = (Pattern)pattern.clone(); Type stringType = Type.forName('String'); Type typeClone = (Type)stringType.clone(); System.assertNotEquals(null, matcherClone); System.assertNotEquals(null, patternClone); System.assertNotEquals(null, typeClone);"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex-language:SchemaNamespaceImplicitImport","symbol":"SObjectType","kind":"exec"},
+    {"surfaceId":"apex:System.Iterable","symbol":"Iterable","kind":"exec"},
+    {"surfaceId":"apex:System.JSON.createParser","symbol":"JSON.createParser","kind":"exec"},
+    {"surfaceId":"apex:System.List","symbol":"List","kind":"exec"},
+    {"surfaceId":"apex:System.Matcher","symbol":"Matcher","kind":"exec"},
+    {"surfaceId":"apex:System.Matcher.clone()","symbol":"Matcher.clone()","kind":"exec"},
+    {"surfaceId":"apex:System.Pattern.clone()","symbol":"Pattern.clone()","kind":"exec"},
+    {"surfaceId":"apex:System.Set","symbol":"Set","kind":"exec"},
+    {"surfaceId":"apex:System.Type.clone()","symbol":"Type.clone()","kind":"exec"}
+  ],
+  "command": {
+    "kind": "exec",
+    "args": ["SObjectType accountType = Account.SObjectType; System.assertNotEquals(null, accountType); List<String> values = new List<String>(); Set<String> valueSet = new Set<String>(); System.assertEquals(0, valueSet.size()); Iterable<String> iterable = values; System.assertNotEquals(null, iterable); JSONParser parser = JSON.createParser('{}'); System.assertNotEquals(null, parser); Pattern pattern = Pattern.compile('a'); Matcher matcher = pattern.matcher('a'); Matcher matcherClone = (Matcher)matcher.clone(); Pattern patternClone = (Pattern)pattern.clone(); Type stringType = Type.forName('String'); Type typeClone = (Type)stringType.clone(); System.assertNotEquals(null, matcherClone); System.assertNotEquals(null, patternClone); System.assertNotEquals(null, typeClone);"]
+  },
+  "expected": {"result": {"debug": null, "ok": true}}
+}

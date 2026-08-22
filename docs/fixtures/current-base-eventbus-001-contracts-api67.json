@@ -146,31 +146,6 @@
       "kind": "test",
       "surfaceId": "apex:eventbus.ChangeEventHeader.toString()",
       "symbol": "eventbus.ChangeEventHeader.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.EventPublishFailureCallback",
-      "symbol": "eventbus.EventPublishFailureCallback"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.EventPublishSuccessCallback",
-      "symbol": "eventbus.EventPublishSuccessCallback"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.FailureResult",
-      "symbol": "eventbus.FailureResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.FailureResult.FailureResult()",
-      "symbol": "eventbus.FailureResult.FailureResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.FailureResult.getEventUuids()",
-      "symbol": "eventbus.FailureResult.getEventUuids"
     }
   ],
   "expected": {
@@ -184,11 +159,11 @@
   },
   "mode": "local-runtime",
   "name": "current-base-eventbus-001-contracts-api67",
-  "notes": "Covers the 36 missing rows from current-base-local-runtime-required-eventbus-001: ChangeEventHeader accessors, mutators, object methods, callback interface shapes, and FailureResult access.",
+  "notes": "Retains the ChangeEventHeader accessors, mutators, and object methods from current-base-local-runtime-required-eventbus-001. Callback and FailureResult rows have direct exact-candidate ownership.",
   "profile": {
     "laneId": "current-base-local-runtime-required-eventbus-001",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 35,
+    "selectedRowCount": 30,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "salesforceEligible": false,

@@ -6,11 +6,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Database.Errors",
-      "symbol": "Database.Errors"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.LeadConvertResult",
       "symbol": "Database.LeadConvertResult"
     },
@@ -38,16 +33,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.LeadConvertResult.toString()",
       "symbol": "Database.LeadConvertResult.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.LocaleOptions",
-      "symbol": "Database.LocaleOptions"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.LocaleOptions.LocaleOptions()",
-      "symbol": "Database.LocaleOptions"
     }
   ],
   "expected": {
@@ -61,10 +46,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-002",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-002: retained Errors namespace shape, LeadConvertResult fields, and LocaleOptions type/constructor contracts.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-002: retained LeadConvertResult field contracts; Errors and LocaleOptions are owned by exact executable local-only fixtures.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-002",
-    "selectedRowCount": 9
+    "selectedRowCount": 6
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

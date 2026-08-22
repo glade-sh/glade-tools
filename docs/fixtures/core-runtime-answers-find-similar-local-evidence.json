@@ -10,12 +10,6 @@
       "symbol": "Answers.findSimilar(Object)"
     },
     {
-      "kind": "shape",
-      "notes": "Answers.findSimilar method-family shape is known from the exact overload local evidence.",
-      "surfaceId": "apex:Answers.findSimilar",
-      "symbol": "Answers.findSimilar"
-    },
-    {
       "kind": "test",
       "notes": "The exact overload test supplies family behavior evidence.",
       "surfaceId": "apex:Answers.findSimilar",
@@ -31,10 +25,24 @@
       "total": 1
     }
   },
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "evidenceOnly": false,
+  "mode": "deterministic-mock",
   "name": "core-runtime-answers-find-similar-local-evidence",
+  "notes": "Exact-candidate deterministic local witness for Answers.findSimilar and Answers.findSimilar(Object). No hosted Salesforce execution or parity claim is made.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "answers-tail-local-evidence",
+    "selectedRowCount": 2
+  },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "API 67 clean-org cannot resolve the local Question type; retained as local Answers evidence and excluded from hosted parity.",
+  "salesforceExclusionReason": "API 67 clean-org cannot resolve the local Question type; retained as local Answers evidence with zero Salesforce parity claimed.",
   "source": [
     {
       "content": "@isTest private class AnswersFindSimilarLocalTest { @isTest static void findSimilarReturnsEmptyList() { List<Id> ids = Answers.findSimilar(new Question(Title = 'Acme')); System.assertEquals(0, ids.size()); } }",

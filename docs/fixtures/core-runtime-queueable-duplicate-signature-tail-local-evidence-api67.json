@@ -1,0 +1,42 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "command": {
+    "args": [
+      "QueueableDuplicateSignature.Builder builder = new QueueableDuplicateSignature.Builder(); System.assertNotEquals(null, builder); QueueableDuplicateSignature.Builder clonedBuilder = (QueueableDuplicateSignature.Builder)builder.clone(); System.assertNotEquals(null, clonedBuilder); QueueableDuplicateSignature signature = builder.addString('fixture').build(); QueueableDuplicateSignature clonedSignature = (QueueableDuplicateSignature)signature.clone(); System.assertNotEquals(null, clonedSignature);"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {"kind": "exec", "surfaceId": "apex:QueueableDuplicateSignature", "symbol": "QueueableDuplicateSignature"},
+    {"kind": "exec", "surfaceId": "apex:QueueableDuplicateSignature.Builder", "symbol": "QueueableDuplicateSignature.Builder"},
+    {"kind": "exec", "surfaceId": "apex:QueueableDuplicateSignature.Builder.Builder()", "symbol": "QueueableDuplicateSignature.Builder.Builder()"},
+    {"kind": "exec", "surfaceId": "apex:QueueableDuplicateSignature.Builder.clone()", "symbol": "QueueableDuplicateSignature.Builder.clone()"},
+    {"kind": "exec", "surfaceId": "apex:QueueableDuplicateSignature.clone()", "symbol": "QueueableDuplicateSignature.clone()"}
+  ],
+  "evidenceOnly": false,
+  "expected": {
+    "result": {"debug": null, "ok": true}
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-queueable-duplicate-signature-tail-local-evidence-api67",
+  "notes": "Exact-candidate local runtime witness for QueueableDuplicateSignature and Builder value-object construction and cloning. No hosted Salesforce execution or parity claim is made.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "queueable-duplicate-signature-tail-local-evidence",
+    "selectedRowCount": 5
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The QueueableDuplicateSignature value-object contract is local-only, with zero Salesforce parity claimed.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "QueueableDuplicateSignature.Builder builder = new QueueableDuplicateSignature.Builder(); System.assertNotEquals(null, builder); QueueableDuplicateSignature.Builder clonedBuilder = (QueueableDuplicateSignature.Builder)builder.clone(); System.assertNotEquals(null, clonedBuilder); QueueableDuplicateSignature signature = builder.addString('fixture').build(); QueueableDuplicateSignature clonedSignature = (QueueableDuplicateSignature)signature.clone(); System.assertNotEquals(null, clonedSignature);"
+    }
+  ]
+}

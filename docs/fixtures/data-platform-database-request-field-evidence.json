@@ -53,39 +53,9 @@
     },
     {
       "kind": "test",
-      "notes": "Public relatedpersonaccountid field round-trips on a locally constructed Database request DTO.",
-      "surfaceId": "apex:Database.LeadConvert.relatedpersonaccountid",
-      "symbol": "Database.relatedpersonaccountid"
-    },
-    {
-      "kind": "test",
       "notes": "Public sendnotificationemail field round-trips on a locally constructed Database request DTO.",
       "surfaceId": "apex:Database.LeadConvert.sendnotificationemail",
       "symbol": "Database.sendnotificationemail"
-    },
-    {
-      "kind": "test",
-      "notes": "MergeRequest is constructible and exposes writable public fields.",
-      "surfaceId": "apex:Database.MergeRequest.MergeRequest()",
-      "symbol": "Database.MergeRequest"
-    },
-    {
-      "kind": "test",
-      "notes": "Public additionalinformationmap field round-trips on a locally constructed Database request DTO.",
-      "surfaceId": "apex:Database.MergeRequest.additionalinformationmap",
-      "symbol": "Database.additionalinformationmap"
-    },
-    {
-      "kind": "test",
-      "notes": "Public masterrecord field round-trips on a locally constructed Database request DTO.",
-      "surfaceId": "apex:Database.MergeRequest.masterrecord",
-      "symbol": "Database.masterrecord"
-    },
-    {
-      "kind": "test",
-      "notes": "Public recordtomergeids field round-trips on a locally constructed Database request DTO.",
-      "surfaceId": "apex:Database.MergeRequest.recordtomergeids",
-      "symbol": "Database.recordtomergeids"
     }
   ],
   "expected": {

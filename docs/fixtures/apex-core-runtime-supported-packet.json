@@ -5,12 +5,6 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "A local Batchable<Object> fixture drains execute(Database.BatchableContext, List<Object>) through Test.stopTest.",
-      "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)",
-      "symbol": "Database.Batchable.execute"
-    },
-    {
-      "kind": "test",
       "notes": "The fixture builds a local QueryLocator from a List<Object> of SObjects.",
       "surfaceId": "apex:System.Database.getQueryLocator(List<Object>)",
       "symbol": "Database.getQueryLocator"
@@ -78,12 +72,6 @@
     {
       "kind": "test",
       "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.AccessType.values()",
-      "symbol": "AccessType.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.CallbackStatus.values()",
       "symbol": "CallbackStatus.values"
     },
@@ -98,18 +86,6 @@
       "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.DomainType.values()",
       "symbol": "DomainType.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.JSONToken.values()",
-      "symbol": "JSONToken.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Built-in enum values execute locally.",
-      "surfaceId": "apex:System.LoggingLevel.values()",
-      "symbol": "LoggingLevel.values"
     },
     {
       "kind": "test",
@@ -138,32 +114,8 @@
     {
       "kind": "test",
       "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.Quiddity.values()",
-      "symbol": "Quiddity.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.SetupScope.values()",
       "symbol": "SetupScope.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.StatusCode.values()",
-      "symbol": "StatusCode.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.TriggerOperation.values()",
-      "symbol": "TriggerOperation.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.XmlTag.values()",
-      "symbol": "XmlTag.values"
     },
     {
       "kind": "test",
