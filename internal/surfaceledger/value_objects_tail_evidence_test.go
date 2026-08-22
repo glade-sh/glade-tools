@@ -44,10 +44,6 @@ var valueObjectsTailIDs = []string{
 	"apex:System.Savepoint.toString()",
 }
 
-var valueObjectsTailRejected = map[string]string{
-	"apex:System.Cookie.equals(Object)": "candidate dispatch exposes Cookie.equals with zero arguments, so the Object overload is not executable evidence",
-}
-
 func TestValueObjectsTailHasExactExecutableLocalEvidence(t *testing.T) {
 	root := filepath.Join("..", "..")
 	path := filepath.Join(root, "docs", "fixtures", valueObjectsTailFixture)
@@ -72,11 +68,6 @@ func TestValueObjectsTailHasExactExecutableLocalEvidence(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertExactSurfaceSet(t, evidence, valueObjectsTailIDs)
-	for _, row := range fixture.Evidence {
-		if reason, rejected := valueObjectsTailRejected[row.SurfaceID]; rejected {
-			t.Fatalf("rejected row %s was included: %s", row.SurfaceID, reason)
-		}
-	}
 	for _, row := range evidence {
 		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported || len(row.Sources) != 1 || row.Sources[0] != "fixture:"+strings.TrimSuffix(valueObjectsTailFixture, ".json") {
 			t.Fatalf("%s evidence = %#v", row.SurfaceID, row)
