@@ -310,6 +310,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 	switch disposition {
 	case localRuntimeRequired:
 		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:System.Test.") ||
+			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
 			strings.HasPrefix(surfaceID, "apex:eventbus.TestBroker.") || strings.HasPrefix(surfaceID, "apex:eventbus.TestEventService.") ||
 			surfaceID == "apex:System.StaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.StaticResourceCalloutMock.") ||
 			surfaceID == "apex:System.MultiStaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.MultiStaticResourceCalloutMock.")))

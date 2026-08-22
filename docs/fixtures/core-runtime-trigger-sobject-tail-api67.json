@@ -1,0 +1,53 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {"kind":"test","surfaceId":"apex:System.Trigger","symbol":"Trigger"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.isAfter","symbol":"Trigger.isAfter"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.isBefore","symbol":"Trigger.isBefore"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.isDelete","symbol":"Trigger.isDelete"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.isExecuting","symbol":"Trigger.isExecuting"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.isInsert","symbol":"Trigger.isInsert"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.isUndelete","symbol":"Trigger.isUndelete"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.isUpdate","symbol":"Trigger.isUpdate"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.new","symbol":"Trigger.new"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.newMap","symbol":"Trigger.newMap"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.old","symbol":"Trigger.old"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.oldMap","symbol":"Trigger.oldMap"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.operationType","symbol":"Trigger.operationType"},
+    {"kind":"test","surfaceId":"apex:System.Trigger.size","symbol":"Trigger.size"}
+  ],
+  "expected": {"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}},
+  "mode": "local-runtime",
+  "name": "core-runtime-trigger-sobject-tail-api67",
+  "notes": "Exact-candidate test-context local-runtime witness for 14 System.Trigger rows. Trigger context cannot be reached by anonymous Apex, so the materialized test performs real Account DML and asserts each context value inside executing triggers. Policy-local-only; no hosted Salesforce execution or parity claim is made.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-trigger-sobject-tail-api67",
+    "selectedRowCount": 14
+  },
+  "project": {"sourceApiVersion":"67.0"},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture is policy-local-only: it proves only the local runtime witness and grants zero hosted Salesforce parity credit; no hosted Salesforce execution is claimed.",
+  "source": [
+    {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"},
+    {"path":"force-app/main/default/objects/Contact/Contact.object-meta.xml","content":"<CustomObject><label>Contact</label><pluralLabel>Contacts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/objects/Contact/fields/LastName.field-meta.xml","content":"<CustomField><fullName>LastName</fullName><label>Last Name</label><type>Text</type></CustomField>"},
+    {"path":"force-app/main/default/objects/Contact/fields/AccountId.field-meta.xml","content":"<CustomField><fullName>AccountId</fullName><label>Account</label><type>Lookup</type><referenceTo>Account</referenceTo><relationshipName>Account</relationshipName></CustomField>"},
+    {"path":"force-app/main/classes/TriggerTailBeforeInsert.trigger","content":"trigger TriggerTailBeforeInsert on Account (before insert) { System.assert(Trigger.isExecuting); System.assert(Trigger.isBefore); System.assert(Trigger.isInsert); System.assertEquals(TriggerOperation.BEFORE_INSERT, Trigger.operationType); System.assertEquals(1, Trigger.size); System.assertEquals(1, Trigger.new.size()); }"},
+    {"path":"force-app/main/classes/TriggerTailAfterInsert.trigger","content":"trigger TriggerTailAfterInsert on Account (after insert) { System.assert(Trigger.isExecuting); System.assert(Trigger.isAfter); System.assert(Trigger.isInsert); System.assertEquals(TriggerOperation.AFTER_INSERT, Trigger.operationType); System.assertEquals(1, Trigger.size); Account row = Trigger.new[0]; System.assertEquals(row.Id, Trigger.newMap.get(row.Id).Id); }"},
+    {"path":"force-app/main/classes/TriggerTailBeforeUpdate.trigger","content":"trigger TriggerTailBeforeUpdate on Account (before update) { System.assert(Trigger.isExecuting); System.assert(Trigger.isBefore); System.assert(Trigger.isUpdate); System.assertEquals(TriggerOperation.BEFORE_UPDATE, Trigger.operationType); System.assertEquals(1, Trigger.size); Account row = Trigger.new[0]; System.assertEquals('Before', Trigger.oldMap.get(row.Id).Name); System.assertEquals('Before', Trigger.old[0].Name); }"},
+    {"path":"force-app/main/classes/TriggerTailBeforeDelete.trigger","content":"trigger TriggerTailBeforeDelete on Account (before delete) { System.assert(Trigger.isExecuting); System.assert(Trigger.isBefore); System.assert(Trigger.isDelete); System.assertEquals(TriggerOperation.BEFORE_DELETE, Trigger.operationType); System.assertEquals(1, Trigger.size); System.assertEquals(null, Trigger.new); System.assertEquals(null, Trigger.newMap); System.assertEquals(1, Trigger.old.size()); System.assert(Trigger.oldMap.containsKey(Trigger.old[0].Id)); }"},
+    {"path":"force-app/main/classes/TriggerTailAfterUndelete.trigger","content":"trigger TriggerTailAfterUndelete on Account (after undelete) { System.assert(Trigger.isExecuting); System.assert(Trigger.isAfter); System.assert(Trigger.isUndelete); System.assertEquals(TriggerOperation.AFTER_UNDELETE, Trigger.operationType); System.assertEquals(1, Trigger.size); System.assertEquals(null, Trigger.old); System.assertEquals(null, Trigger.oldMap); System.assert(Trigger.newMap.containsKey(Trigger.new[0].Id)); }"},
+    {"path":"force-app/main/classes/TriggerSObjectTailTest.cls","content":"@isTest private class TriggerSObjectTailTest { @isTest static void dmlTriggerBoundary() { Account row = new Account(Name = 'Before'); insert row; row.Name = 'After'; update row; delete row; undelete row; } }"}
+  ]
+}

@@ -250,11 +250,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.SObject.recalculateFormulas()",
-      "symbol": "SObject.recalculateFormulas()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:System.SObject.setOptions(Object)",
       "symbol": "SObject.setOptions(Object)"
     },

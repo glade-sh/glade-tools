@@ -437,7 +437,6 @@ func TestBuildEvidenceSnapshotReadsApexTailShapeEvidence(t *testing.T) {
 		"apex:System.QuickAction.describeQuickActions()",
 		"apex:System.QuickAction.performQuickAction()",
 		"apex:System.QuickAction.performQuickActions()",
-		"apex:System.SObject.addError(Exception)",
 		"apex:System.Set.addAll(Set<Object>)",
 		"apex:System.Set.containsAll(Set<Object>)",
 		"apex:System.Set.removeAll(Set<Object>)",
