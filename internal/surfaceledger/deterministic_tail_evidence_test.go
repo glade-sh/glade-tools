@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	deterministicTailCandidateCommit = "3409c4c85827b19712e9df83fc8905aa02bd1dc8"
-	deterministicTailCandidateSHA    = "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+	deterministicTailCandidateCommit = "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5"
+	deterministicTailCandidateSHA    = "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
 )
 
 func TestDeterministicTailEvidenceHasExactLocalRows(t *testing.T) {
@@ -28,6 +28,7 @@ func TestDeterministicTailEvidenceHasExactLocalRows(t *testing.T) {
 			mode: "deterministic-mock",
 			kind: "test",
 			ids: []string{
+				"apex:System.FeatureManagement.checkPermission",
 				"apex:System.FeatureManagement.checkPermission(String)",
 				"apex:System.Http.send(HttpRequest)",
 			},
@@ -94,14 +95,15 @@ func TestDeterministicTailEvidenceHasExactLocalRows(t *testing.T) {
 			t.Fatalf("%s provenance = %#v", test.name, metadata)
 		}
 	}
-	if len(seen) != 2 {
-		t.Fatalf("deterministic tail accepted rows = %d, want 2", len(seen))
+	if len(seen) != 3 {
+		t.Fatalf("deterministic tail accepted rows = %d, want 3", len(seen))
 	}
 }
 
 func TestDeterministicTailGlobalNonEvidenceOnlyOwnership(t *testing.T) {
 	const fixtureName = "core-runtime-deterministic-tail-local-evidence-api67.json"
 	targets := []string{
+		"apex:System.FeatureManagement.checkPermission",
 		"apex:System.FeatureManagement.checkPermission(String)",
 		"apex:System.Http.send(HttpRequest)",
 	}

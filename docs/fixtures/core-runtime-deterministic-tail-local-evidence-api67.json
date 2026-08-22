@@ -1,13 +1,18 @@
 {
   "apiVersion": "67.0",
   "candidate": {
-    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
-    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
   },
   "command": {
     "kind": "test"
   },
   "evidence": [
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.FeatureManagement.checkPermission",
+      "symbol": "System.FeatureManagement.checkPermission"
+    },
     {
       "kind": "test",
       "surfaceId": "apex:System.FeatureManagement.checkPermission(String)",
@@ -31,12 +36,12 @@
   },
   "mode": "deterministic-mock",
   "name": "core-runtime-deterministic-tail-local-evidence-api67",
-  "notes": "Exact-candidate deterministic local witness for FeatureManagement.checkPermission(String) and Http.send(HttpRequest) through a registered local callout mock.",
+  "notes": "Exact-candidate deterministic local witness for the FeatureManagement.checkPermission alias and typed method plus Http.send(HttpRequest) through a registered local callout mock.",
   "profile": {
-    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
-    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
     "laneId": "deterministic-tail-local-evidence-api67",
-    "selectedRowCount": 2
+    "selectedRowCount": 3
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
