@@ -231,6 +231,52 @@ func TestDiscoverProjectsSkipsAggregateRootWhenNestedProjectsExist(t *testing.T)
 	}
 }
 
+func TestCheckDiscoversAndRunsMetadataPackageRoots(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell fixture uses sh")
+	}
+	root := t.TempDir()
+	writeProject(t, root, "sfdx-project")
+	metadataRoot := filepath.Join(root, "metadata-package")
+	if err := os.MkdirAll(filepath.Join(root, "sfdx-project", "manifest"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "sfdx-project", "package.xml"), []byte("<Package/>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "sfdx-project", "manifest", "package.xml"), []byte("<Package/>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(metadataRoot, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(metadataRoot, "package.xml"), []byte("<Package/>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	logPath := filepath.Join(root, "projects.log")
+	glade := filepath.Join(root, "fake-glade.sh")
+	if err := os.WriteFile(glade, []byte("#!/bin/sh\nprintf '%s\\n' \"$3\" >> \""+logPath+"\"\nprintf '{\"diagnostics\":[]}'\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	report, err := Check(context.Background(), Options{Root: root, Glade: glade, OutDir: filepath.Join(root, "out")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Summary.ProjectCount != 2 {
+		t.Fatalf("project count = %d, want 2: %#v", report.Summary.ProjectCount, report.Projects)
+	}
+	data, err := os.ReadFile(logPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := strings.Split(strings.TrimSpace(string(data)), "\n")
+	want := []string{filepath.Join(root, "metadata-package"), filepath.Join(root, "sfdx-project")}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("run projects = %#v, want %#v", got, want)
+	}
+}
+
 func TestClassifyClosureAllowedDiagnosticsAreNarrow(t *testing.T) {
 	tests := []struct {
 		name string

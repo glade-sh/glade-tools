@@ -112,7 +112,8 @@ func Check(ctx context.Context, options Options) (Report, error) {
 }
 
 func discoverProjects(root string) ([]string, error) {
-	var projects []string
+	sfdxRoots := map[string]bool{}
+	metadataRoots := map[string]bool{}
 	err := filepath.WalkDir(root, func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -124,14 +125,35 @@ func discoverProjects(root string) ([]string, error) {
 			}
 			return nil
 		}
-		if entry.Name() != "sfdx-project.json" {
-			return nil
+		switch entry.Name() {
+		case "sfdx-project.json":
+			sfdxRoots[filepath.Dir(path)] = true
+		case "package.xml":
+			metadataRoots[filepath.Dir(path)] = true
 		}
-		projects = append(projects, filepath.Dir(path))
 		return nil
 	})
 	if err != nil {
 		return nil, err
+	}
+	projects := make([]string, 0, len(sfdxRoots)+len(metadataRoots))
+	for project := range sfdxRoots {
+		projects = append(projects, project)
+	}
+	for project := range metadataRoots {
+		if sfdxRoots[project] {
+			continue
+		}
+		nestedUnderSFDX := false
+		for sfdxRoot := range sfdxRoots {
+			if project != sfdxRoot && strings.HasPrefix(project, sfdxRoot+string(os.PathSeparator)) {
+				nestedUnderSFDX = true
+				break
+			}
+		}
+		if !nestedUnderSFDX {
+			projects = append(projects, project)
+		}
 	}
 	sort.Strings(projects)
 	return removeAggregateProjectRoots(projects), nil
