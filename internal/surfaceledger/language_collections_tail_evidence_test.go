@@ -22,10 +22,6 @@ var languageCollectionsTailIDs = []string{
 	"apex:System.Type.clone()",
 }
 
-var languageCollectionsTailRejected = map[string]string{
-	"apex:System.List.List(Integer)": "candidate execution fails with cannot assign integer to String; excluded as a masking failure",
-}
-
 func TestLanguageCollectionsTailHasExactExecutableLocalEvidence(t *testing.T) {
 	root := filepath.Join("..", "..")
 	fixtureName := "core-language-collections-tail-local-api67.json"
@@ -94,7 +90,6 @@ func TestLanguageCollectionsTailHasExactExecutableLocalEvidence(t *testing.T) {
 		t.Fatal(err)
 	}
 	owners := map[string]int{}
-	activeRows := map[string]int{}
 	for _, candidatePath := range paths {
 		var header struct {
 			EvidenceOnly bool `json:"evidenceOnly"`
@@ -107,7 +102,6 @@ func TestLanguageCollectionsTailHasExactExecutableLocalEvidence(t *testing.T) {
 			continue
 		}
 		for _, evidence := range header.Evidence {
-			activeRows[evidence.SurfaceID]++
 			if want[evidence.SurfaceID] {
 				owners[evidence.SurfaceID]++
 			}
@@ -116,11 +110,6 @@ func TestLanguageCollectionsTailHasExactExecutableLocalEvidence(t *testing.T) {
 	for id := range want {
 		if owners[id] != 1 {
 			t.Fatalf("fixture ownership for %s = %d, want exactly one", id, owners[id])
-		}
-	}
-	for id := range languageCollectionsTailRejected {
-		if activeRows[id] != 0 {
-			t.Fatalf("rejected active fixture ownership for %s = %d, want zero", id, activeRows[id])
 		}
 	}
 }

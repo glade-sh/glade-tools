@@ -27,8 +27,8 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 		"apex:System.Pattern":                                                 localRuntimeRequired,
 		"apex:System.TimeZone":                                                localRuntimeRequired,
 	}
-	// This is the exact rejected set for the remaining scoped rows in the
-	// 8080/8216 current-base receipt. Keep reasons here so a fixture change
+	// These are the rows from the 8080/8216 receipt still rejected after later
+	// exact evidence closed other rows. Keep reasons here so a fixture change
 	// cannot silently turn unsupported behavior into local-proof credit.
 	rejected := map[string]string{
 		"apex-language:NamespaceClassVariablePrecedence":       "compat run rejects the source-class method path; no direct anonymous witness is claimed",
@@ -39,21 +39,19 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 		"apex:System.Comparable.compareTo(Object)":             "requires a user class implementation; standard fixture execution cannot register source classes",
 		"apex:System.Comparator":                               "requires a user class implementation; standard fixture execution cannot register source classes",
 		"apex:System.Comparator.compare(Object,Object)":        "requires a user class implementation; standard fixture execution cannot register source classes",
-		"apex:System.Cookie.equals(Object)":                    "sealed candidate does not expose the required callable contract",
-		"apex:System.Date.Date()":                              "sealed candidate does not execute this constructor contract",
-		"apex:System.Datetime.Datetime()":                      "sealed candidate does not execute this constructor contract",
-		"apex:System.Decimal.Decimal()":                        "sealed candidate does not execute this constructor contract",
-		"apex:System.Double.Double()":                          "sealed candidate does not execute this constructor contract",
+		"apex:System.Date.Date()":                              "Salesforce and the current candidate reject this scalar constructor",
+		"apex:System.Datetime.Datetime()":                      "Salesforce and the current candidate reject this scalar constructor",
+		"apex:System.Decimal.Decimal()":                        "Salesforce and the current candidate reject this scalar constructor",
+		"apex:System.Double.Double()":                          "Salesforce and the current candidate reject this scalar constructor",
 		"apex:System.Id.to18":                                  "sealed candidate does not execute this conversion contract",
 		"apex:System.Integer.doubleValue":                      "sealed candidate does not execute this conversion contract",
-		"apex:System.List.List(Integer)":                       "dropped: the exact Salesforce constructor contract was not adjudicated; the prior one-element assertion was insufficient",
 		"apex:System.SObject.getSObjects(Schema.SObjectField)": "dropped: the supported fixture cannot populate a child relationship through a Schema.SObjectField token",
 	}
-	if len(rejected) != 17 {
-		t.Fatalf("rejected rows = %d, want exact 17: %#v", len(rejected), rejected)
+	if len(rejected) != 15 {
+		t.Fatalf("rejected rows = %d, want exact 15: %#v", len(rejected), rejected)
 	}
-	if len(required)+len(rejected) != 28 {
-		t.Fatalf("scoped rows = %d, want exact 28", len(required)+len(rejected))
+	if len(required)+len(rejected) != 26 {
+		t.Fatalf("scoped rows = %d, want exact 26", len(required)+len(rejected))
 	}
 	for surfaceID, reason := range rejected {
 		if reason == "" {

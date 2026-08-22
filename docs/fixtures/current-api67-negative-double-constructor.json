@@ -1,0 +1,44 @@
+{
+  "name": "current-api67-negative-double-constructor",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "693bc1b8652907eee1c40c1c9f4604637f06a172",
+    "sha256": "235ef5f5fd6b35a9eec2ab81c129c2639c0282ff66573e8dbace80e991481bc3"
+  },
+  "profile": {
+    "candidateCommit": "693bc1b8652907eee1c40c1c9f4604637f06a172",
+    "candidateSha256": "235ef5f5fd6b35a9eec2ab81c129c2639c0282ff66573e8dbace80e991481bc3",
+    "laneId": "current-api67-negative-double-constructor",
+    "selectedRowCount": 1
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Double value = new Double();"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Double value = new Double();"
+    ]
+  },
+  "expected": {
+    "error": {
+      "type": "Error",
+      "message": "Type cannot be constructed: Double"
+    }
+  },
+  "evidence": [
+    {
+      "surfaceId": "apex:System.Double.Double()",
+      "symbol": "Double.Double()",
+      "kind": "unsupported",
+      "notes": "Salesforce API 67 rejects this scalar constructor, and the sealed local compiler preserves the explicit rejection."
+    }
+  ],
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Compile-negative evidence only; no Salesforce runtime parity is claimed."
+}
