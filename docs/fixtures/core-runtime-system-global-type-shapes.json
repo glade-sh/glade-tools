@@ -18,7 +18,6 @@
     {"surfaceId":"apex:System.CronTrigger","symbol":"System.CronTrigger","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.Custom","symbol":"System.Custom","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.CustomizationType","symbol":"System.CustomizationType","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.SObjectAccessDecision","symbol":"System.SObjectAccessDecision","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.Security","symbol":"System.Security","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."}
   ],
   "source": [

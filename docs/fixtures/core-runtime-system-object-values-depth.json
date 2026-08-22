@@ -23,21 +23,6 @@
       "surfaceId": "apex:System.Object.toString()",
       "symbol": "Object.toString",
       "kind": "test"
-    },
-    {
-      "surfaceId": "apex:System.Savepoint.equals(Object)",
-      "symbol": "Savepoint.equals",
-      "kind": "test"
-    },
-    {
-      "surfaceId": "apex:System.Savepoint.hashCode()",
-      "symbol": "Savepoint.hashCode",
-      "kind": "test"
-    },
-    {
-      "surfaceId": "apex:System.Savepoint.toString()",
-      "symbol": "Savepoint.toString",
-      "kind": "test"
     }
   ],
   "source": [

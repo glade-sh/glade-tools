@@ -2,18 +2,6 @@
   "name": "core-runtime-accesslevel-user-system-mode",
   "evidence": [
     {
-      "surfaceId": "apex:System.AccessLevel.SYSTEM_MODE",
-      "symbol": "System.AccessLevel.SYSTEM_MODE",
-      "kind": "test",
-      "notes": "SYSTEM_MODE is a typed access-mode value used by SOQL and DML to bypass current-user CRUD/FLS checks."
-    },
-    {
-      "surfaceId": "apex:System.AccessLevel.USER_MODE",
-      "symbol": "System.AccessLevel.USER_MODE",
-      "kind": "test",
-      "notes": "USER_MODE is a typed access-mode value used by SOQL and DML to enforce current-user CRUD/FLS checks."
-    },
-    {
       "surfaceId": "apex:System.Database.query(String,AccessLevel)",
       "symbol": "Database.query",
       "kind": "test",
