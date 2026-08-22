@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 --ledger <SURFACE_LEDGER.json> --profile <SOURCE_PROFILE.json> --packet <SURFACE_PACKET_MANIFEST.json> --binding <SOURCE_BINDING.json> [--corpus <ASSURANCE.json> --attempt <ATTEMPT.json>] [--private-corpus-status <PRIVATE_CORPUS_STATUS.json>] [--release <RELEASE_VALIDATION.json>] [--worker-health <WORKER_HEALTH.json>] --output <STATUS.md> [--json-output <STATUS.json>]" >&2
+  echo "usage: $0 --ledger <SURFACE_LEDGER.json> --profile <SOURCE_PROFILE.json> --packet <SURFACE_PACKET_MANIFEST.json> --binding <SOURCE_BINDING.json> [--corpus <ASSURANCE.json> --attempt <ATTEMPT.json>] [--private-corpus-status <PRIVATE_CORPUS_STATUS.json>] [--release <RELEASE_VALIDATION.json>] [--worker-health <WORKER_HEALTH.json>] [--salesforce-index <SURFACE_ORACLE_INDEX.json> --salesforce-scope <SURFACE_ORACLE_SCOPE.json>] --output <STATUS.md> [--json-output <STATUS.json>]" >&2
   exit 2
 }
 
@@ -15,6 +15,8 @@ attempt=""
 private_status=""
 release=""
 worker_health=""
+salesforce_index=""
+salesforce_scope=""
 output=""
 json_output=""
 while (($#)); do
@@ -28,6 +30,8 @@ while (($#)); do
     --private-corpus-status) private_status="${2:-}"; shift 2 ;;
     --release) release="${2:-}"; shift 2 ;;
     --worker-health) worker_health="${2:-}"; shift 2 ;;
+    --salesforce-index) salesforce_index="${2:-}"; shift 2 ;;
+    --salesforce-scope) salesforce_scope="${2:-}"; shift 2 ;;
     --output) output="${2:-}"; shift 2 ;;
     --json-output) json_output="${2:-}"; shift 2 ;;
     -h|--help) usage ;;
@@ -91,6 +95,13 @@ if [[ -n "$worker_health" ]]; then
     )
   ' "$worker_health" >/dev/null || { echo "worker health input is invalid" >&2; exit 1; }
 fi
+if [[ -n "$salesforce_index" || -n "$salesforce_scope" ]]; then
+  [[ -n "$salesforce_index" && -n "$salesforce_scope" ]] || { echo "Salesforce index and scope must be supplied together" >&2; exit 1; }
+  [[ -f "$salesforce_index" ]] || { echo "Salesforce index input is unavailable" >&2; exit 1; }
+  [[ -f "$salesforce_scope" ]] || { echo "Salesforce scope input is unavailable" >&2; exit 1; }
+  jq -e . "$salesforce_index" >/dev/null || { echo "Salesforce index input is invalid JSON" >&2; exit 1; }
+  jq -e . "$salesforce_scope" >/dev/null || { echo "Salesforce scope input is invalid JSON" >&2; exit 1; }
+fi
 
 jq -e '
   .status == "exact-candidate-bound"
@@ -118,6 +129,158 @@ if [[ -n "$release" ]]; then
   [[ "$(jq -r '.tools.commit' "$release")" == "$tools_commit" ]] || { echo "release tools do not match source binding" >&2; exit 1; }
 fi
 
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" | awk '{print $1}'
+  else
+    echo "no SHA-256 utility is available" >&2
+    exit 1
+  fi
+}
+
+salesforce_adjudicated=0
+salesforce_matched=0
+salesforce_explicit_nonparity=0
+salesforce_product_mismatch=0
+salesforce_inconclusive=0
+salesforce_open=0
+salesforce_state='not-started'
+profile_sha256=""
+ledger_sha256=""
+scope_sha256=""
+policy_sha256=""
+if [[ -n "$salesforce_index" ]]; then
+  profile_sha256="$(sha256_file "$profile")"
+  ledger_sha256="$(sha256_file "$ledger")"
+  scope_sha256="$(sha256_file "$salesforce_scope")"
+  policy_sha256="$(jq -r '[.inputs.files[]? | select(.name == "policy") | .sha256] | unique | if length == 1 then .[0] else empty end' "$profile")"
+  [[ "$policy_sha256" =~ ^[0-9a-fA-F]{64}$ ]] || { echo "current profile has no unique policy SHA-256 binding" >&2; exit 1; }
+  jq -n -e \
+    --slurpfile binding "$binding" \
+    --slurpfile profile "$profile" \
+    --slurpfile index "$salesforce_index" \
+    --slurpfile scope "$salesforce_scope" \
+    --arg profileSHA256 "$profile_sha256" \
+    --arg ledgerSHA256 "$ledger_sha256" \
+    --arg scopeSHA256 "$scope_sha256" \
+    --arg policySHA256 "$policy_sha256" '
+      def hash64: type == "string" and test("^[0-9a-f]{64}$");
+      $binding[0] as $binding
+      | $profile[0] as $profile
+      | $index[0] as $index
+      | $scope[0] as $scope
+      | ([$profile.rows[]? | select(.disposition == "deterministic-mock-required" or .disposition == "local-runtime-required") | {surfaceId, disposition}]) as $runtimeRows
+      | ($runtimeRows | sort_by(.surfaceId)) as $expectedScopeRows
+      | ($runtimeRows | map(.surfaceId)) as $runtimeIDs
+      | ($runtimeIDs | sort | unique) as $expectedIDs
+      | ($scope.rows // []) as $scopeRows
+      | ([$scope.rows[]? | .surfaceId]) as $scopeIDs
+      | ([$index.rows[]? | .surfaceId]) as $indexIDs
+      | ($index.counts // {}) as $counts
+      | ($index.rows // []) as $rows
+      | ($index.runtimeBatches // []) as $batches
+      | ([$batches[]?.surfaceIds[]?]) as $batchIDs
+      | ([$rows[]? | select(.state == "matched") | .surfaceId]) as $matchedIDs
+      | (["candidate", "tools"]
+          | map(. as $side
+            | ([$binding[$side] // {} | to_entries[] | select(.key | test("sha256"; "i")) | .key]) as $keys
+            | ($keys | map(. as $key | (($index[$side] // {})[$key] == $binding[$side][$key])) | all)
+          )
+          | all) as $hashesMatch
+      | ($rows | map(select(.state == "matched")) | length) as $matchedCount
+      | ($rows | map(select(.state == "explicit-nonparity")) | length) as $explicitNonParityCount
+      | ($rows | map(select(.state == "product-mismatch")) | length) as $productMismatchCount
+      | ($rows | map(select(.state == "inconclusive")) | length) as $inconclusiveCount
+      | ($rows | map(select(.state == "open")) | length) as $openCount
+      | $hashesMatch
+      and (($index | keys | sort) == ["candidate", "counts", "kind", "ledgerSha256", "policySha256", "rows", "runtimeBatches", "schemaVersion", "scopeSha256", "sourceProfileSha256", "tools", "total"])
+      and (($index.candidate | keys | sort) == ["binarySha256", "commit"])
+      and (($index.tools | keys | sort) == ["binarySha256", "commit"])
+      and $index.schemaVersion == 1
+      and $index.kind == "all-runtime"
+      and ($index.policySha256 == $scope.policySha256)
+      and ($batches | type == "array" and length > 0)
+      and all($batches[]?;
+        type == "object"
+        and (keys | sort) == ["bindingsSha256", "finalAuditSha256", "localSummarySha256", "manifestSha256", "mismatchReviewSha256", "oracleResultsSha256", "profileSha256", "rawReconciliationSha256", "surfaceIds"]
+        and (. as $batch | ["bindingsSha256", "finalAuditSha256", "localSummarySha256", "manifestSha256", "mismatchReviewSha256", "oracleResultsSha256", "profileSha256", "rawReconciliationSha256"] | map(. as $name | $batch[$name] | hash64) | all)
+        and (.surfaceIds | type == "array" and length > 0)
+        and (.surfaceIds | map(type == "string" and length > 0) | all)
+        and (.surfaceIds == (.surfaceIds | sort | unique))
+      )
+      and ([$batches | .[] | .manifestSha256] == ([$batches | .[] | .manifestSha256] | sort | unique))
+      and ($batchIDs == ($batchIDs | sort | unique))
+      and ($batchIDs == ($matchedIDs | sort))
+      and $scope.schemaVersion == 1
+      and $scope.kind == "all-runtime"
+      and ($scope.sourceProfileSha256 == $profileSHA256)
+      and ($scope.ledgerSha256 == $ledgerSHA256)
+      and ($scope.policySha256 == $policySHA256)
+      and ($scope.total == ($expectedScopeRows | length))
+      and ($scopeRows | type == "array")
+      and all($scopeRows[]?;
+        type == "object"
+        and (keys | sort) == ["disposition", "surfaceId"]
+        and (.surfaceId | type == "string" and length > 0)
+        and (.disposition == "deterministic-mock-required" or .disposition == "local-runtime-required")
+      )
+      and ($scopeRows == $expectedScopeRows)
+      and ($scopeIDs == ($scopeIDs | sort | unique))
+      and ($index.candidate.commit == $binding.candidate.commit)
+      and ($index.tools.commit == $binding.tools.commit)
+      and ($binding.candidate.binarySha256 | type == "string" and test("^[0-9a-fA-F]{64}$"))
+      and ($binding.tools.binarySha256 | type == "string" and test("^[0-9a-fA-F]{64}$"))
+      and ($index.candidate.binarySha256 | type == "string" and test("^[0-9a-fA-F]{64}$"))
+      and ($index.tools.binarySha256 | type == "string" and test("^[0-9a-fA-F]{64}$"))
+      and ($index.candidate.binarySha256 == $binding.candidate.binarySha256)
+      and ($index.tools.binarySha256 == $binding.tools.binarySha256)
+      and ($index.sourceProfileSha256 == $profileSHA256)
+      and ($index.ledgerSha256 == $ledgerSHA256)
+      and ($index.scopeSha256 == $scopeSHA256)
+      and ($runtimeIDs | length) == ($expectedIDs | length)
+      and ($index.total == ($expectedIDs | length))
+      and ($rows | type == "array")
+      and all($rows[]?;
+        type == "object"
+        and (keys | sort) == ["state", "surfaceId"]
+        and (.surfaceId | type == "string" and length > 0)
+        and (.state | type == "string")
+        and (.state as $state | ["matched", "open"] | index($state) != null)
+      )
+      and ($indexIDs == ($indexIDs | sort | unique))
+      and ($indexIDs == $expectedIDs)
+      and ($indexIDs == $scopeIDs)
+      and ($counts | type == "object")
+      and (($counts | keys | sort) == ["adjudicated", "explicitNonParity", "inconclusive", "matched", "open", "productMismatch"])
+      and (["adjudicated", "matched", "explicitNonParity", "productMismatch", "inconclusive", "open"]
+        | map(. as $name | ($counts[$name] | type == "number" and isfinite and floor == . and . >= 0)) | all)
+      and ($counts.explicitNonParity == 0)
+      and ($counts.productMismatch == 0)
+      and ($counts.inconclusive == 0)
+      and ($counts.adjudicated == $counts.matched)
+      and (($counts.adjudicated + $counts.open) == $index.total)
+      and ($matchedCount == $counts.matched)
+      and ($explicitNonParityCount == $counts.explicitNonParity)
+      and ($productMismatchCount == $counts.productMismatch)
+      and ($inconclusiveCount == $counts.inconclusive)
+      and ($openCount == $counts.open)
+    ' >/dev/null || { echo "Salesforce index is stale or invalid" >&2; exit 1; }
+  read -r salesforce_adjudicated salesforce_matched salesforce_explicit_nonparity salesforce_product_mismatch salesforce_inconclusive salesforce_open <<EOF
+$(jq -r '[.counts.adjudicated, .counts.matched, .counts.explicitNonParity, .counts.productMismatch, .counts.inconclusive, .counts.open] | @tsv' "$salesforce_index")
+EOF
+  if [[ "$salesforce_open" -eq 0 && "$salesforce_inconclusive" -eq 0 && "$salesforce_product_mismatch" -eq 0 ]]; then
+    salesforce_state='complete'
+  elif [[ "$salesforce_product_mismatch" -gt 0 ]]; then
+    salesforce_state='mismatch'
+  elif [[ "$salesforce_inconclusive" -gt 0 ]]; then
+    salesforce_state='inconclusive'
+  else
+    salesforce_state='in-progress'
+  fi
+fi
+
 ledger_total="$(jq -r '.rows | length' "$ledger")"
 open_rows="$(jq -r '.totalOpenRows' "$packet")"
 [[ "$ledger_total" =~ ^[0-9]+$ && "$open_rows" =~ ^[0-9]+$ && "$open_rows" -le "$ledger_total" ]] || { echo "invalid ledger or packet counts" >&2; exit 1; }
@@ -131,12 +294,15 @@ EOF
 compile_closed="$(jq -r '[.rows[] | select(.disposition == "compile-shape-required" and ((.gapClass // "") == ""))] | length' "$profile")"
 runtime_shape="$(jq -r '[.rows[] | select((.disposition == "deterministic-mock-required" or .disposition == "local-runtime-required") and (.ledgerShape != null and .ledgerShape != "" and .ledgerShape != "absent"))] | length' "$profile")"
 local_complete="$(jq -r '[.rows[] | select((.disposition == "deterministic-mock-required" or .disposition == "local-runtime-required") and (.behavior == "supported" or .behavior == "passive") and (.evidence == "fixture" or .evidence == "fixture-and-oracle"))] | length' "$profile")"
-parity_complete="$(jq -r '[.rows[] | select((.disposition == "deterministic-mock-required" or .disposition == "local-runtime-required") and (.behavior == "supported" or .behavior == "passive") and .evidence == "fixture-and-oracle")] | length' "$profile")"
 
 runtime_required=$((deterministic_total + runtime_total))
+if [[ -z "$salesforce_index" ]]; then
+  salesforce_open="$runtime_required"
+fi
 required_rows=$((compile_total + runtime_required))
 required_checkpoints=$((compile_total + 3 * runtime_required))
-completed_checkpoints=$((compile_closed + runtime_shape + local_complete + parity_complete))
+salesforce_proof_complete=$((salesforce_matched + salesforce_explicit_nonparity))
+completed_checkpoints=$((compile_closed + runtime_shape + local_complete + salesforce_proof_complete))
 remaining_checkpoints=$((required_checkpoints - completed_checkpoints))
 local_required_complete=$((compile_closed + local_complete))
 
@@ -157,7 +323,7 @@ commify() {
 surface_percent="$(percent "$completed_checkpoints" "$required_checkpoints")"
 inventory_percent="$(percent "$accounted" "$ledger_total")"
 local_percent="$(percent "$local_required_complete" "$required_rows")"
-parity_percent="$(percent "$parity_complete" "$runtime_required")"
+salesforce_match_percent="$(percent "$salesforce_matched" "$runtime_required")"
 
 corpus_line='Formal corpus assurance: **STALE / MISSING** — run the current candidate before claiming completion.'
 corpus_done=0
@@ -240,7 +406,7 @@ trap '[[ ! -e "$tmp_output" ]] || unlink "$tmp_output"; [[ -z "$tmp_json" || ! -
   printf '## Completion dimensions\n\n'
   printf -- '- Inventory accounting: **%s%%** (%s / %s rows accounted)\n' "$inventory_percent" "$(commify "$accounted")" "$(commify "$ledger_total")"
   printf -- '- Local evidence: **%s%%** (%s / %s required rows)\n' "$local_percent" "$(commify "$local_required_complete")" "$(commify "$required_rows")"
-  printf -- '- Salesforce comparison: **%s%%** (%s / %s runtime rows)\n' "$parity_percent" "$(commify "$parity_complete")" "$(commify "$runtime_required")"
+  printf -- '- Salesforce comparison: **%s%%** (%s / %s runtime rows)\n' "$salesforce_match_percent" "$(commify "$salesforce_matched")" "$(commify "$runtime_required")"
   printf -- '- %s\n' "$corpus_line"
   printf -- '- %s\n' "$private_project_lines"
   printf -- '- %s\n\n' "$release_line"
@@ -249,7 +415,7 @@ trap '[[ ! -e "$tmp_output" ]] || unlink "$tmp_output"; [[ -z "$tmp_json" || ! -
   printf '| compile shape | %s | %s |\n' "$(commify "$compile_closed")" "$(commify "$compile_total")"
   printf '| runtime shape | %s | %s |\n' "$(commify "$runtime_shape")" "$(commify "$runtime_required")"
   printf '| local behavior | %s | %s |\n' "$(commify "$local_complete")" "$(commify "$runtime_required")"
-  printf '| Salesforce comparison | %s | %s |\n\n' "$(commify "$parity_complete")" "$(commify "$runtime_required")"
+  printf '| Salesforce comparison | %s | %s |\n\n' "$(commify "$salesforce_proof_complete")" "$(commify "$runtime_required")"
   printf 'Hosted-deferred rows: **%s**. Open packet rows: **%s**.\n' "$(commify "$hosted_total")" "$(commify "$open_rows")"
 } >"$tmp_output"
 mv "$tmp_output" "$output"
@@ -278,6 +444,12 @@ if [[ -n "$json_output" ]]; then
   action_reason="No current Salesforce index exists for the ${runtime_required} runtime-required surfaces."
   action_command='Freeze the exact candidate and initialize the all-runtime Salesforce index.'
   action_clears='A candidate-bound Salesforce index exists with one row per runtime-required surface.'
+  if [[ -n "$salesforce_index" ]]; then
+    action_summary='Salesforce comparison is current'
+    action_reason="${salesforce_matched} matched, ${salesforce_explicit_nonparity} explicit non-parity, ${salesforce_product_mismatch} product mismatch, ${salesforce_inconclusive} inconclusive, ${salesforce_open} open."
+    action_command='Review the current Salesforce index and continue the next bounded wave.'
+    action_clears='All runtime-required rows are terminal with no mismatch or inconclusive result.'
+  fi
   if [[ -n "$unhealthy_names" ]]; then
     action_summary='Restore worker health'
     action_reason="Unhealthy workers: $unhealthy_names."
@@ -294,7 +466,7 @@ if [[ -n "$json_output" ]]; then
   tmp_json="$(mktemp "${json_output}.tmp.XXXXXX")"
   jq -n \
     --arg generatedAt "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
-    --arg programStatus 'NOT DONE' \
+    --arg programStatus "$program_status" \
     --arg glade "$candidate_commit" \
     --arg tools "$tools_commit" \
     --argjson completionPercent "$surface_percent" \
@@ -305,7 +477,15 @@ if [[ -n "$json_output" ]]; then
     --argjson inventoryRequired "$ledger_total" \
     --argjson localComplete "$local_required_complete" \
     --argjson localRequired "$required_rows" \
+    --argjson salesforceComplete "$salesforce_proof_complete" \
     --argjson runtimeRequired "$runtime_required" \
+    --argjson salesforceAdjudicated "$salesforce_adjudicated" \
+    --argjson salesforceMatched "$salesforce_matched" \
+    --argjson salesforceExplicitNonParity "$salesforce_explicit_nonparity" \
+    --argjson salesforceProductMismatch "$salesforce_product_mismatch" \
+    --argjson salesforceInconclusive "$salesforce_inconclusive" \
+    --argjson salesforceOpen "$salesforce_open" \
+    --arg salesforceState "$salesforce_state" \
     --argjson hostedDeferred "$hosted_total" \
     --argjson packetOpen "$open_rows" \
     --argjson machines "$machines" \
@@ -322,13 +502,13 @@ if [[ -n "$json_output" ]]; then
       tiers: {
         inventory: {complete: $inventoryComplete, required: $inventoryRequired},
         localEvidence: {complete: $localComplete, required: $localRequired},
-        salesforceComparison: {complete: 0, required: $runtimeRequired},
+        salesforceComparison: {complete: $salesforceComplete, required: $runtimeRequired},
         hostedDeferred: $hostedDeferred,
         openPacketRows: $packetOpen
       },
       salesforce: {
-        state: "not-started",
-        outcomes: {adjudicated: 0, matched: 0, explicitNonParity: 0, productMismatch: 0, inconclusive: 0, open: $runtimeRequired}
+        state: $salesforceState,
+        outcomes: {adjudicated: $salesforceAdjudicated, matched: $salesforceMatched, explicitNonParity: $salesforceExplicitNonParity, productMismatch: $salesforceProductMismatch, inconclusive: $salesforceInconclusive, open: $salesforceOpen}
       },
       pipeline: {phase: "not-started", status: "idle", startedAt: null, updatedAt: null},
       machines: $machines,
