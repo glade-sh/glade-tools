@@ -16,21 +16,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:UserProvisioning.CollectingBatchable.nextReconOffset",
-      "symbol": "UserProvisioning.CollectingBatchable.nextReconOffset"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.CollectingBatchable.reconOffset",
-      "symbol": "UserProvisioning.CollectingBatchable.reconOffset"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.CollectingBatchable.status",
-      "symbol": "UserProvisioning.CollectingBatchable.status"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:UserProvisioning.CommittingBatchable",
       "symbol": "UserProvisioning.CommittingBatchable"
     },

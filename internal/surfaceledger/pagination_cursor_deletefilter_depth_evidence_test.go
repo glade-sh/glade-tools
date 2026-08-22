@@ -12,6 +12,7 @@ import (
 
 func TestPaginationCursorDeleteFilterHasExactLocalOnlyEnumEvidence(t *testing.T) {
 	wantIDs := []string{
+		"apex:Database.PaginationCursor.DeleteFilter",
 		"apex:Database.PaginationCursor.DeleteFilter.DELETED_ROWS_ONLY",
 		"apex:Database.PaginationCursor.DeleteFilter.NO_DELETED_ROWS",
 		"apex:Database.PaginationCursor.DeleteFilter.NO_DELETED_SHARING_ROWS",
@@ -22,7 +23,7 @@ func TestPaginationCursorDeleteFilterHasExactLocalOnlyEnumEvidence(t *testing.T)
 		"apex:Database.PaginationCursor.DeleteFilter.valueOf(String)",
 		"apex:Database.PaginationCursor.DeleteFilter.values()",
 	}
-	const owner = "fixture:current-base-local-runtime-required-Database.PaginationCursor-001"
+	const owner = "fixture:data-platform-database-pagination-cursor-wave19-runtime"
 	root := filepath.Join("..", "..")
 	paths, err := filepath.Glob(filepath.Join(root, "docs", "fixtures", "*.json"))
 	if err != nil {
@@ -49,7 +50,7 @@ func TestPaginationCursorDeleteFilterHasExactLocalOnlyEnumEvidence(t *testing.T)
 		}
 	}
 
-	fixturePath := filepath.Join(root, "docs", "fixtures", "current-base-deterministic-mock-required-database-pagination-cursor-001.json")
+	fixturePath := filepath.Join(root, "docs", "fixtures", "data-platform-database-pagination-cursor-wave19-runtime.json")
 	fixture, err := compat.LoadFile(fixturePath)
 	if err != nil {
 		t.Fatal(err)
@@ -60,7 +61,7 @@ func TestPaginationCursorDeleteFilterHasExactLocalOnlyEnumEvidence(t *testing.T)
 	if result, err := compat.Run(fixture); err != nil || !result.OK {
 		t.Fatalf("fixture execution = %#v, error = %v", result, err)
 	}
-	if fixture.Command.Kind != "test" || len(fixture.Source) != 3 {
+	if fixture.Command.Kind != "exec" || len(fixture.Source) != 3 {
 		t.Fatalf("fixture source/command envelope = %d sources/%q command", len(fixture.Source), fixture.Command.Kind)
 	}
 	source := fixture.Source[2].Content
@@ -70,7 +71,7 @@ func TestPaginationCursorDeleteFilterHasExactLocalOnlyEnumEvidence(t *testing.T)
 		"Database.PaginationCursor.DeleteFilter.NO_DELETED_SHARING_ROWS",
 		"Database.PaginationCursor.DeleteFilter.NO_FILTER",
 		"noFilter.equals(noFilter)", "!noFilter.equals(deletedRowsOnly)", "!noFilter.equals(null)",
-		"noFilter.hashCode()", "noFilter.ordinal()",
+		"System.assertNotEquals(noFilter.hashCode(), deletedRowsOnly.hashCode())", "noFilter.ordinal()",
 		"Database.PaginationCursor.DeleteFilter.valueOf('NO_FILTER')",
 		"Database.PaginationCursor.DeleteFilter.values()",
 	} {

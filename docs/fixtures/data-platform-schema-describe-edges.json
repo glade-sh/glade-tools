@@ -251,16 +251,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.SObjectField.label",
-      "symbol": "Schema.SObjectField.label"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.SObjectField.name",
-      "symbol": "Schema.SObjectField.name"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.getLength()",
       "symbol": "Schema.DescribeFieldResult.getLength"
     },
@@ -533,21 +523,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeFieldResult.toString()",
       "symbol": "Schema.DescribeFieldResult.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.PicklistEntry.equals(Object)",
-      "symbol": "Schema.PicklistEntry.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.PicklistEntry.hashCode()",
-      "symbol": "Schema.PicklistEntry.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.PicklistEntry.toString()",
-      "symbol": "Schema.PicklistEntry.toString"
     },
     {
       "kind": "test",

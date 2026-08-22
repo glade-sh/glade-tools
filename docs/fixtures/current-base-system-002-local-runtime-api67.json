@@ -6,58 +6,8 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "Retained as an exact current-base row; Glade local semantic analysis rejects this method as unsupported, so the executable witness records Id construction only.",
-      "surfaceId": "apex:System.Id.to18",
-      "symbol": "System.Id.to18"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.IllegalArgumentException.clone()",
-      "symbol": "System.IllegalArgumentException.clone()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InstallContext",
-      "symbol": "System.InstallContext"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InstallHandler",
-      "symbol": "System.InstallHandler"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:System.InstallHandler.onInstall(InstallContext)",
       "symbol": "System.InstallHandler.onInstall(InstallContext)"
-    },
-    {
-      "kind": "test",
-      "notes": "Retained as an exact current-base row; Glade local semantic analysis rejects this method as unsupported, so the executable witness records Integer construction and constants only.",
-      "surfaceId": "apex:System.Integer.doubleValue",
-      "symbol": "System.Integer.doubleValue"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:System.InvalidHeaderException.clone()",
-      "symbol": "System.InvalidHeaderException.clone()"
-    },
-    {
-      "kind": "test",
-      "notes": "Retained as an exact current-base row; the local runtime exposes the type but rejects constructing an instance with the documented argument, so no local instance-method claim is made.",
-      "surfaceId": "apex:System.InvalidParameterValueException.equals(Object)",
-      "symbol": "System.InvalidParameterValueException.equals(Object)"
-    },
-    {
-      "kind": "test",
-      "notes": "Retained as an exact current-base row; the local runtime exposes the type but rejects constructing an instance with the documented argument, so no local instance-method claim is made.",
-      "surfaceId": "apex:System.InvalidParameterValueException.hashCode()",
-      "symbol": "System.InvalidParameterValueException.hashCode()"
-    },
-    {
-      "kind": "test",
-      "notes": "Retained as an exact current-base row; the local runtime exposes the type but rejects constructing an instance with the documented argument, so no local instance-method claim is made.",
-      "surfaceId": "apex:System.InvalidParameterValueException.toString()",
-      "symbol": "System.InvalidParameterValueException.toString()"
     }
   ],
   "expected": {
@@ -71,13 +21,13 @@
   },
   "mode": "local-runtime",
   "name": "current-base-system-002-local-runtime-api67",
-  "notes": "Current-base lane current-base-local-runtime-required-System-002: 10 retained rows after the Wave 16 primitive-value ownership transfer. Assertions cover scalar and exception contracts plus the deterministic local install harness.",
+  "notes": "Retains the exact Test.testInstall runtime owner for InstallHandler.onInstall. Unsupported rows remain historical-only; the four strengthened rows are transferred to core-runtime-system-002-wave19-runtime.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-local-runtime-required-System-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 10,
+    "selectedRowCount": 1,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "salesforceEligible": false,

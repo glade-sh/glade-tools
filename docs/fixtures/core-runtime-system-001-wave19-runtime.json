@@ -1,0 +1,26 @@
+{
+  "apiVersion": "67.0",
+  "command": {"kind":"exec","args":["BusinessHours hours = new BusinessHours();\nSystem.assertNotEquals(null, hours);\nBusinessHours hoursCopy = (BusinessHours)hours.clone();\nSystem.assertNotEquals(hours.hashCode(), hoursCopy.hashCode());\nAsyncInfo asyncInfo = new AsyncInfo();\nAsyncInfo asyncCopy = (AsyncInfo)asyncInfo.clone();\nSystem.assertNotEquals(asyncInfo.hashCode(), asyncCopy.hashCode());\nBlob emptyBlob = new Blob();\nSystem.assertNotEquals(null, emptyBlob);\nExternalServiceTest service = new ExternalServiceTest();\nExternalServiceTest serviceCopy = (ExternalServiceTest)service.clone();\nSystem.assertNotEquals(service.hashCode(), serviceCopy.hashCode());\nHttpResponse callback = service.sendCallback(new HttpRequest());\nSystem.assertEquals(200, callback.getStatusCode());\nFinalizerContext finalizerContext = new FinalizerContext();\nSystem.assertNotEquals(null, finalizerContext);"]},
+  "evidence":[
+    {"kind":"exec","surfaceId":"apex-language:SystemNamespaceDefaultImport","symbol":"BusinessHours"},
+    {"kind":"exec","surfaceId":"apex:BusinessHours","symbol":"BusinessHours"},
+    {"kind":"exec","surfaceId":"apex:BusinessHours.BusinessHours()","symbol":"BusinessHours.BusinessHours()"},
+    {"kind":"exec","surfaceId":"apex:BusinessHours.clone()","symbol":"BusinessHours.clone()"},
+    {"kind":"exec","surfaceId":"apex:System.AsyncInfo.AsyncInfo()","symbol":"System.AsyncInfo.AsyncInfo()"},
+    {"kind":"exec","surfaceId":"apex:System.AsyncInfo.clone()","symbol":"System.AsyncInfo.clone()"},
+    {"kind":"exec","surfaceId":"apex:System.Blob.Blob()","symbol":"System.Blob.Blob()"},
+    {"kind":"exec","surfaceId":"apex:System.ExternalServiceTest","symbol":"System.ExternalServiceTest"},
+    {"kind":"exec","surfaceId":"apex:System.ExternalServiceTest.ExternalServiceTest()","symbol":"System.ExternalServiceTest.ExternalServiceTest()"},
+    {"kind":"exec","surfaceId":"apex:System.ExternalServiceTest.clone()","symbol":"System.ExternalServiceTest.clone()"},
+    {"kind":"exec","surfaceId":"apex:System.FinalizerContext.FinalizerContext()","symbol":"System.FinalizerContext.FinalizerContext()"}
+  ],
+  "expected":{"result":{"debug":null,"ok":true}},
+  "mode":"local-runtime",
+  "name":"core-runtime-system-001-wave19-runtime",
+  "notes":"Exact-candidate executable local-only witness for default System namespace resolution, value construction/cloning, ExternalServiceTest callback behavior, and FinalizerContext construction. Enum null-only and HttpCalloutMock declaration-only rows remain historical evidence.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"runtime-conversion-wave-19-System-001","selectedRowCount":11},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture records Glade local-runtime behavior only; it does not claim hosted Salesforce execution.",
+  "source":[{"path":"anonymous.apex","content":"BusinessHours hours = new BusinessHours();\nSystem.assertNotEquals(null, hours);\nBusinessHours hoursCopy = (BusinessHours)hours.clone();\nSystem.assertNotEquals(hours.hashCode(), hoursCopy.hashCode());\nAsyncInfo asyncInfo = new AsyncInfo();\nAsyncInfo asyncCopy = (AsyncInfo)asyncInfo.clone();\nSystem.assertNotEquals(asyncInfo.hashCode(), asyncCopy.hashCode());\nBlob emptyBlob = new Blob();\nSystem.assertNotEquals(null, emptyBlob);\nExternalServiceTest service = new ExternalServiceTest();\nExternalServiceTest serviceCopy = (ExternalServiceTest)service.clone();\nSystem.assertNotEquals(service.hashCode(), serviceCopy.hashCode());\nHttpResponse callback = service.sendCallback(new HttpRequest());\nSystem.assertEquals(200, callback.getStatusCode());\nFinalizerContext finalizerContext = new FinalizerContext();\nSystem.assertNotEquals(null, finalizerContext);"}]
+}

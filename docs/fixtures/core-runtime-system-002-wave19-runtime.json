@@ -1,0 +1,19 @@
+{
+  "apiVersion":"67.0",
+  "command":{"kind":"exec","args":["IllegalArgumentException illegal = new IllegalArgumentException('bad');\nIllegalArgumentException illegalCopy = (IllegalArgumentException)illegal.clone();\nSystem.assertNotEquals(illegal, illegalCopy);\nSystem.assertEquals('bad', illegalCopy.getMessage());\nInstallContext installContext = new InstallContext();\nSystem.assertNotEquals(null, installContext);\nInstallHandler installHandler = new InstallHandler();\nSystem.assertNotEquals(null, installHandler);\nInvalidHeaderException header = new InvalidHeaderException('bad');\nInvalidHeaderException headerCopy = (InvalidHeaderException)header.clone();\nSystem.assertNotEquals(header, headerCopy);\nSystem.assertEquals('bad', headerCopy.getMessage());"]},
+  "evidence":[
+    {"kind":"exec","surfaceId":"apex:System.IllegalArgumentException.clone()","symbol":"System.IllegalArgumentException.clone()"},
+    {"kind":"exec","surfaceId":"apex:System.InstallContext","symbol":"System.InstallContext"},
+    {"kind":"exec","surfaceId":"apex:System.InstallHandler","symbol":"System.InstallHandler"},
+    {"kind":"exec","surfaceId":"apex:System.InvalidHeaderException.clone()","symbol":"System.InvalidHeaderException.clone()"}
+  ],
+  "expected":{"result":{"debug":null,"ok":true}},
+  "mode":"local-runtime",
+  "name":"core-runtime-system-002-wave19-runtime",
+  "notes":"Exact-candidate executable local-only witness for exception cloning and install-context/handler construction. Id.to18, Integer.doubleValue, InstallHandler.onInstall, and shallow InvalidParameterValueException object-method checks remain historical evidence because the candidate does not support substantive local execution.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"runtime-conversion-wave-19-System-002","selectedRowCount":4},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture records Glade local-runtime behavior only; it does not claim hosted Salesforce execution.",
+  "source":[{"path":"anonymous.apex","content":"IllegalArgumentException illegal = new IllegalArgumentException('bad');\nIllegalArgumentException illegalCopy = (IllegalArgumentException)illegal.clone();\nSystem.assertNotEquals(illegal, illegalCopy);\nSystem.assertEquals('bad', illegalCopy.getMessage());\nInstallContext installContext = new InstallContext();\nSystem.assertNotEquals(null, installContext);\nInstallHandler installHandler = new InstallHandler();\nSystem.assertNotEquals(null, installHandler);\nInvalidHeaderException header = new InvalidHeaderException('bad');\nInvalidHeaderException headerCopy = (InvalidHeaderException)header.clone();\nSystem.assertNotEquals(header, headerCopy);\nSystem.assertEquals('bad', headerCopy.getMessage());"}]
+}

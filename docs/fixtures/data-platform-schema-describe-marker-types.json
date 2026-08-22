@@ -10,16 +10,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.FieldDescribeOptions",
-      "symbol": "Schema.FieldDescribeOptions"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.FieldSetMap",
-      "symbol": "Schema.FieldSetMap"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.FilteredLookupInfo",
       "symbol": "Schema.FilteredLookupInfo"
     },
@@ -30,11 +20,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.SObjectDescribeOptions",
-      "symbol": "Schema.SObjectDescribeOptions"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.SObjectField",
       "symbol": "Schema.SObjectField"
     },
@@ -42,16 +27,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.SObjectType",
       "symbol": "Schema.SObjectType"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.SObjectTypeFieldSets",
-      "symbol": "Schema.SObjectTypeFieldSets"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.SObjectTypeFields",
-      "symbol": "Schema.SObjectTypeFields"
     },
     {
       "kind": "test",

@@ -52,11 +52,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.FieldSet.getNamespace()",
-      "symbol": "Schema.FieldSet.getNamespace"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.FieldSet.getNameSpace()",
       "symbol": "Schema.FieldSet.getNameSpace"
     },
@@ -122,11 +117,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.FieldSet.namespace",
-      "symbol": "Schema.FieldSet.namespace"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.FieldSet.sobjecttype",
       "symbol": "Schema.FieldSet.sobjecttype"
     },
@@ -159,21 +149,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.FieldSetMember.type",
       "symbol": "Schema.FieldSetMember.type"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.FieldSet.equals(Object)",
-      "symbol": "Schema.FieldSet.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.FieldSet.hashCode()",
-      "symbol": "Schema.FieldSet.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.FieldSet.toString()",
-      "symbol": "Schema.FieldSet.toString"
     },
     {
       "kind": "test",

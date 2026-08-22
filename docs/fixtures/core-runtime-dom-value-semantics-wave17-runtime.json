@@ -31,10 +31,22 @@
       "notes": "Direct anonymous execution inserts a node parsed from a distinct document before a distinct reference node and asserts the child order and text postconditions."
     },
     {
+      "surfaceId": "apex:Dom.XmlNode.insertBefore(Object,Object)",
+      "symbol": "Dom.XmlNode.insertBefore(Object,Object)",
+      "kind": "exec",
+      "notes": "The same direct anonymous execution provides the exact catalog-cased Object-overload witness."
+    },
+    {
       "surfaceId": "apex:dom.XmlNode.removeChild(Object)",
       "symbol": "Dom.XmlNode.removeChild(Object)",
       "kind": "exec",
       "notes": "Direct anonymous execution removes the inserted node and the parsed reference node, asserting the returned booleans and final child count."
+    },
+    {
+      "surfaceId": "apex:Dom.XmlNode.removeChild(Object)",
+      "symbol": "Dom.XmlNode.removeChild(Object)",
+      "kind": "exec",
+      "notes": "The same direct anonymous execution provides the exact catalog-cased Object-overload witness."
     },
     {
       "surfaceId": "apex:dom.XmlNodeType.ordinal()",
