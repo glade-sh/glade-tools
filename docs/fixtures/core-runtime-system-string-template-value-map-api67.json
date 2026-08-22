@@ -1,0 +1,41 @@
+{
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "name": "core-runtime-system-string-template-value-map-api67",
+  "notes": "Exact-candidate executable local-runtime witness for String.template(valueMap); no hosted Salesforce execution or parity claim is made.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-system-string-template-value-map-api67",
+    "selectedRowCount": 1
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture is policy-local-only: it proves only the local runtime witness and grants zero Salesforce parity credit; no hosted Salesforce execution is claimed.",
+  "evidence": [
+    {
+      "surfaceId": "apex:System.String.template(valueMap)",
+      "symbol": "String.template(valueMap)",
+      "kind": "exec",
+      "notes": "Map-backed placeholder substitution is asserted exactly."
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Map<String,Object> values = new Map<String,Object>{ 'name' => 'Ada', 'count' => 2 }; System.assertEquals('Hello Ada: 2', 'Hello ${name}: ${count}'.template(values)); System.assertEquals('Escaped ${name} and Ada', 'Escaped $${name} and ${name}'.template(values));"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Map<String,Object> values = new Map<String,Object>{ 'name' => 'Ada', 'count' => 2 }; System.assertEquals('Hello Ada: 2', 'Hello ${name}: ${count}'.template(values)); System.assertEquals('Escaped ${name} and Ada', 'Escaped $${name} and ${name}'.template(values));"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  }
+}

@@ -6,16 +6,6 @@
   "evidence": [
     {
       "kind": "shape",
-      "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin",
-      "symbol": "UserProvisioning.UserProvisioningPlugin"
-    },
-    {
-      "kind": "shape",
-      "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.clone()",
-      "symbol": "UserProvisioning.UserProvisioningPlugin.clone()"
-    },
-    {
-      "kind": "shape",
       "surfaceId": "apex:UserProvisioning.UserProvisioningPlugin.buildDescribeCall()",
       "symbol": "UserProvisioning.UserProvisioningPlugin.buildDescribeCall()"
     },
@@ -40,13 +30,13 @@
   },
   "mode": "compile-shape",
   "name": "current-base-userprovisioning-plugin-compile-shape-api67",
-  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: six plugin rows are shape-only because Salesforce rejects direct base-class construction.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: three remaining plugin rows are shape-only; executable base and clone rows are owned by the exact deterministic mock fixture.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-deterministic-mock-required-UserProvisioning-001",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 5,
+    "selectedRowCount": 3,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "proofObligation": "compile-shape-required",

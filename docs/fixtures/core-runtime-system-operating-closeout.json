@@ -34,12 +34,6 @@
       "kind": "test"
     },
     {
-      "surfaceId": "apex:System.Http.send(HttpRequest)",
-      "symbol": "Http.send local mock callouts",
-      "kind": "test",
-      "notes": "Local Http.send routes through an HttpCalloutMock registered by Test.setMock."
-    },
-    {
       "surfaceId": "apex:System.Search.suggest",
       "symbol": "Search.suggest",
       "kind": "test",
