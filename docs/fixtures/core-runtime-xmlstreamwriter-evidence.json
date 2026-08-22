@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-xmlstreamwriter-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:System.XmlStreamWriter", "symbol": "XmlStreamWriter", "kind": "exec", "notes": "XmlStreamWriter keeps a local XML buffer and element stack."},
     {"surfaceId": "apex:System.XmlStreamWriter.XmlStreamWriter()", "symbol": "XmlStreamWriter", "kind": "exec", "notes": "XmlStreamWriter constructs a local writer object."},

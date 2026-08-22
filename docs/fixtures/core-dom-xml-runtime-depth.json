@@ -1,5 +1,8 @@
 {
   "name": "core-dom-xml-runtime-depth",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The command directly constructs Dom.XmlNode, which Salesforce API 67 does not permit; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {"surfaceId":"apex:Dom.Document.Document()","symbol":"Dom.Document.Document()","kind":"exec"},
     {"surfaceId":"apex:Dom.Document.createRootElement(String,String,String)","symbol":"Dom.Document.createRootElement","kind":"exec"},

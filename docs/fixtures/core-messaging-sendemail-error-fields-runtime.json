@@ -1,5 +1,6 @@
 {
   "name": "core-messaging-sendemail-error-fields-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:Messaging.SendEmailError.statuscode",

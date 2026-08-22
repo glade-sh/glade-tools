@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-page-reference-cookies-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.PageReference.getCookies()",

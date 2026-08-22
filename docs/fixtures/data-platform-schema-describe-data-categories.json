@@ -1,5 +1,8 @@
 {
   "name": "data-platform-schema-describe-data-categories",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "The fixture requires synthetic data-category metadata that the adapter does not materialize into the fixed Salesforce org; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "Schema.describeDataCategoryGroups",

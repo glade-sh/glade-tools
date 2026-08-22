@@ -1,5 +1,6 @@
 {
   "name": "core-integer-valueof-object-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Integer.valueOf(Object)",

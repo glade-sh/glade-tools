@@ -1,5 +1,6 @@
 {
   "name": "data-database-delete-undelete-id-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:System.Database.delete(Id)", "symbol": "Database.delete", "kind": "exec", "notes": "Direct org-state execution returns a successful DeleteResult for an Id."},
     {"surfaceId": "apex:System.Database.delete(Id,AccessLevel)", "symbol": "Database.delete", "kind": "exec", "notes": "Direct org-state execution returns a successful DeleteResult for an Id and AccessLevel."},

@@ -1,5 +1,6 @@
 {
   "name": "core-pattern-split-nullable-stdlib",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Pattern.split(String,Integer)",

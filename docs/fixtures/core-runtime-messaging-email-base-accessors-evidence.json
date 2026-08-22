@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-messaging-email-base-accessors-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The test depends on Glade-local Messaging.Email public fields and object identity, hash, and string behavior; it grants zero Salesforce parity credit.",
   "evidence": [
     {"surfaceId": "apex:Messaging.Email.getBccSender()", "symbol": "Messaging.Email.getBccSender", "kind": "test"},
     {"surfaceId": "apex:Messaging.Email.getEmailPriority()", "symbol": "Messaging.Email.getEmailPriority", "kind": "test"},

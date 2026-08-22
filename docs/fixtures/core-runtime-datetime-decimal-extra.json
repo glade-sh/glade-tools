@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-datetime-decimal-extra",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The command assumes Glade's fixed GMT and en-US context for Datetime.newInstance, format, and parse; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {"surfaceId": "apex:System.Datetime.addYears(Integer)", "symbol": "Datetime.addYears(Integer)", "kind": "exec"},
     {"surfaceId": "apex:System.Datetime.dayGmt()", "symbol": "Datetime.dayGmt", "kind": "exec"},

@@ -1,5 +1,6 @@
 {
   "name": "core-collection-stdlib-sobject-deepclone",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.List.deepClone(Boolean)",

@@ -1,5 +1,8 @@
 {
   "name": "integration-auth-session-current",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The command asserts Glade's synthetic session sentinel instead of a real Salesforce session value; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:Auth.SessionManagement.getCurrentSession()",

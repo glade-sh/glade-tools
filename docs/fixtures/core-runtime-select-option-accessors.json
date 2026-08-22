@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-select-option-accessors",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.SelectOption.getDisabled()",
