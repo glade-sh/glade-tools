@@ -1,4 +1,5 @@
 {
+  "evidenceOnly": true,
   "apiVersion": "67.0",
   "command": {
     "kind": "check"

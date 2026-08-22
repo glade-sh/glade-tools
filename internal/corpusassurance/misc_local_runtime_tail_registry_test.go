@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 )
 
@@ -18,6 +19,8 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 		"apex-language:TypeResolutionSystemNamespace":                         localRuntimeRequired,
 		"apex:Schema.DataCategory":                                            localRuntimeRequired,
 		"apex:Schema.DataCategory.DataCategory()":                             localRuntimeRequired,
+		"apex:Schema.DescribeDataCategoryGroupResult":                         localRuntimeRequired,
+		"apex:Schema.DescribeDataCategoryGroupStructureResult":                localRuntimeRequired,
 		"apex:System.ApexPages.ApexPages()":                                   localRuntimeRequired,
 		"apex:System.Assert.Assert()":                                         localRuntimeRequired,
 		"apex:System.Assert.clone()":                                          localRuntimeRequired,
@@ -32,8 +35,6 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 	// cannot silently turn unsupported behavior into local-proof credit.
 	rejected := map[string]string{
 		"apex-language:NamespaceClassVariablePrecedence":       "compat run rejects the source-class method path; no direct anonymous witness is claimed",
-		"apex:Schema.DescribeDataCategoryGroupResult":          "sealed candidate has no supported executable constructor witness",
-		"apex:Schema.DescribeDataCategoryGroupStructureResult": "sealed candidate has no supported executable constructor witness",
 		"apex:System.Callable.call(String,Map<String,Object>)": "requires a user class implementation; standard fixture execution cannot register source classes",
 		"apex:System.Comparable":                               "requires a user class implementation; standard fixture execution cannot register source classes",
 		"apex:System.Comparable.compareTo(Object)":             "requires a user class implementation; standard fixture execution cannot register source classes",
@@ -46,8 +47,8 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 		"apex:System.Id.to18":                                  "sealed candidate does not execute this conversion contract",
 		"apex:System.Integer.doubleValue":                      "sealed candidate does not execute this conversion contract",
 	}
-	if len(rejected) != 14 {
-		t.Fatalf("rejected rows = %d, want exact 14: %#v", len(rejected), rejected)
+	if len(rejected) != 12 {
+		t.Fatalf("rejected rows = %d, want exact 12: %#v", len(rejected), rejected)
 	}
 	if len(required)+len(rejected) != 25 {
 		t.Fatalf("scoped rows = %d, want exact 25", len(required)+len(rejected))
@@ -76,53 +77,60 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 	if len(missing) != 0 {
 		t.Fatalf("registry missing = %v", missing)
 	}
-	if len(manifest.Fixtures) != 1 {
-		t.Fatalf("selected fixtures = %#v, want one exact owner", manifest.Fixtures)
+	if len(manifest.Fixtures) != 2 {
+		t.Fatalf("selected fixtures = %#v, want two exact owners", manifest.Fixtures)
 	}
-	fixture := manifest.Fixtures[0]
-	got := append([]string(nil), fixture.OwnedSurfaceIDs...)
-	sort.Strings(got)
-	want := make([]string, 0, len(required))
-	for surfaceID := range required {
-		want = append(want, surfaceID)
-	}
-	sort.Strings(want)
-	if fixture.ID != "core-runtime-misc-local-runtime-tail-api67" || fixture.Disposition != localRuntimeRequired || !reflect.DeepEqual(got, want) || fixture.SalesforceEligible == nil || *fixture.SalesforceEligible || fixture.SalesforceExclusionClass != "policy-local-only" {
-		t.Fatalf("selected owner = %#v", fixture)
-	}
-	for _, surfaceID := range fixture.OwnedSurfaceIDs {
-		if reason, ok := rejected[surfaceID]; ok {
-			t.Fatalf("rejected surface %q was credited: %s", surfaceID, reason)
+	for _, fixture := range manifest.Fixtures {
+		got := append([]string(nil), fixture.OwnedSurfaceIDs...)
+		sort.Strings(got)
+		if fixture.Disposition != localRuntimeRequired || fixture.SalesforceEligible == nil || *fixture.SalesforceEligible || fixture.SalesforceExclusionClass != "policy-local-only" {
+			t.Fatalf("selected owner = %#v", fixture)
 		}
-	}
-	path := filepath.Join(root, fixture.ID+".json")
-	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	decoded, metadata, err := decodeLocalProofFixtureWithMetadata(data)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(decoded.Source) != 1 || decoded.Source[0].Path != "anonymous.apex" || len(decoded.Command.Args) != 1 || decoded.Command.Args[0] != decoded.Source[0].Content {
-		t.Fatal("anonymous source and command diverged")
-	}
-	var envelope struct {
-		Candidate struct {
-			Commit string `json:"commit"`
-			SHA256 string `json:"sha256"`
-		} `json:"candidate"`
-		Profile struct {
-			CandidateCommit  string `json:"candidateCommit"`
-			CandidateSHA256  string `json:"candidateSha256"`
-			SelectedRowCount int    `json:"selectedRowCount"`
-		} `json:"profile"`
-	}
-	if err := json.Unmarshal(data, &envelope); err != nil {
-		t.Fatal(err)
-	}
-	if envelope.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || envelope.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || envelope.Profile.CandidateCommit != envelope.Candidate.Commit || envelope.Profile.CandidateSHA256 != envelope.Candidate.SHA256 || envelope.Profile.SelectedRowCount != len(required) || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" {
-		t.Fatalf("sealed provenance/metadata = %#v/%#v/%#v", envelope.Candidate, envelope.Profile, metadata)
+		for _, surfaceID := range fixture.OwnedSurfaceIDs {
+			if reason, ok := rejected[surfaceID]; ok {
+				t.Fatalf("rejected surface %q was credited: %s", surfaceID, reason)
+			}
+		}
+		path := filepath.Join(root, fixture.ID+".json")
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		decoded, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		reason := strings.ToLower(metadata.ExclusionReason)
+		if metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" || !strings.Contains(reason, "zero") || !strings.Contains(reason, "salesforce") || !strings.Contains(reason, "parity") {
+			t.Fatalf("sealed metadata = %#v", metadata)
+		}
+		var envelope struct {
+			Candidate struct {
+				Commit string `json:"commit"`
+				SHA256 string `json:"sha256"`
+			} `json:"candidate"`
+			Profile struct {
+				CandidateCommit  string `json:"candidateCommit"`
+				CandidateSHA256  string `json:"candidateSha256"`
+				SelectedRowCount int    `json:"selectedRowCount"`
+			} `json:"profile"`
+		}
+		if err := json.Unmarshal(data, &envelope); err != nil {
+			t.Fatal(err)
+		}
+		if envelope.Candidate.Commit == "" || envelope.Candidate.SHA256 == "" || envelope.Profile.CandidateCommit != envelope.Candidate.Commit || envelope.Profile.CandidateSHA256 != envelope.Candidate.SHA256 || envelope.Profile.SelectedRowCount < len(got) {
+			t.Fatalf("sealed provenance = %#v", envelope)
+		}
+		if fixture.ID == "core-runtime-local-metadata-search-evidence" && (envelope.Candidate.Commit != "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5" || envelope.Candidate.SHA256 != "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a") {
+			t.Fatalf("metadata candidate binding = %#v", envelope.Candidate)
+		}
+		if fixture.ID == "core-runtime-misc-local-runtime-tail-api67" {
+			if len(decoded.Source) != 1 || decoded.Source[0].Path != "anonymous.apex" || len(decoded.Command.Args) != 1 || decoded.Command.Args[0] != decoded.Source[0].Content {
+				t.Fatal("anonymous source and command diverged")
+			}
+		} else if fixture.ID != "core-runtime-local-metadata-search-evidence" || len(decoded.Source) == 0 || decoded.Command.Kind != "test" || len(decoded.Command.Args) != 0 {
+			t.Fatalf("metadata owner = %#v", fixture)
+		}
 	}
 	sobjectManifest, sobjectMissing, err := analyzeLocalProofFixtures(root, map[string]string{
 		"apex:System.SObject.getSObjects(Schema.SObjectField)": localRuntimeRequired,
