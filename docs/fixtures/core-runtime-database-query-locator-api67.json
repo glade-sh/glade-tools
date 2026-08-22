@@ -1,0 +1,63 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "insert new List<Account>{new Account(Name = 'Locator One'), new Account(Name = 'Locator Two')};\nString queryText = 'SELECT Id, Name FROM Account ORDER BY Name';\nDatabase.QueryLocator locator = Database.getQueryLocator(queryText);\nSystem.assertEquals(queryText, locator.getQuery());\nDatabase.QueryLocatorIterator rowIterator = locator.iterator();\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator One', ((Account)rowIterator.next()).Name);\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator Two', ((Account)rowIterator.next()).Name);\nSystem.assertEquals(false, rowIterator.hasNext());"
+    ]
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.QueryLocator.getQuery()",
+      "symbol": "apex:Database.QueryLocator.getQuery()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.QueryLocator.iterator()",
+      "symbol": "apex:Database.QueryLocator.iterator()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.QueryLocatorIterator.hasNext()",
+      "symbol": "apex:Database.QueryLocatorIterator.hasNext()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:Database.QueryLocatorIterator.next()",
+      "symbol": "apex:Database.QueryLocatorIterator.next()"
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-database-query-locator-api67",
+  "notes": "Exact-candidate executable local-runtime witness for the documented QueryLocator query text and iterator traversal APIs, acquired through Database.getQueryLocator. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "database-query-locator-local-evidence",
+    "selectedRowCount": 4
+  },
+  "salesforceEligible": true,
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml",
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    },
+    {
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml",
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"
+    }
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "insert new List<Account>{new Account(Name = 'Locator One'), new Account(Name = 'Locator Two')};\nString queryText = 'SELECT Id, Name FROM Account ORDER BY Name';\nDatabase.QueryLocator locator = Database.getQueryLocator(queryText);\nSystem.assertEquals(queryText, locator.getQuery());\nDatabase.QueryLocatorIterator rowIterator = locator.iterator();\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator One', ((Account)rowIterator.next()).Name);\nSystem.assert(rowIterator.hasNext());\nSystem.assertEquals('Locator Two', ((Account)rowIterator.next()).Name);\nSystem.assertEquals(false, rowIterator.hasNext());"
+    }
+  ]
+}
