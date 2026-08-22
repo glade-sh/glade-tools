@@ -1,10 +1,6 @@
 {
   "name": "core-exception-object-methods-runtime",
   "evidence": [
-    {"surfaceId": "apex:System.NoAccessException", "symbol": "NoAccessException", "kind": "exec"},
-    {"surfaceId": "apex:System.NoAccessException.equals(Object)", "symbol": "NoAccessException.equals", "kind": "exec"},
-    {"surfaceId": "apex:System.NoAccessException.hashCode()", "symbol": "NoAccessException.hashCode", "kind": "exec"},
-    {"surfaceId": "apex:System.NoAccessException.toString()", "symbol": "NoAccessException.toString", "kind": "exec"},
     {"surfaceId": "apex:System.NoDataFoundException", "symbol": "NoDataFoundException", "kind": "exec"},
     {"surfaceId": "apex:System.NoDataFoundException.equals(Object)", "symbol": "NoDataFoundException.equals", "kind": "exec"},
     {"surfaceId": "apex:System.NoDataFoundException.hashCode()", "symbol": "NoDataFoundException.hashCode", "kind": "exec"},
@@ -12,11 +8,11 @@
   ],
   "source": [{
     "path": "anonymous.apex",
-    "content": "NoAccessException noAccess = new NoAccessException();\nnoAccess.setMessage('blocked value');\nSystem.assertEquals('System.NoAccessException', noAccess.getTypeName());\nSystem.assertEquals('System.NoAccessException: blocked value', noAccess.toString());\nSystem.assert(noAccess.equals(noAccess));\nSystem.assert(!noAccess.equals(new NoAccessException()));\nSystem.assertEquals(noAccess.hashCode(), noAccess.hashCode());\nNoDataFoundException noData = new NoDataFoundException();\nnoData.setMessage('missing value');\nSystem.assertEquals('System.NoDataFoundException', noData.getTypeName());\nSystem.assertEquals('System.NoDataFoundException: missing value', noData.toString());\nSystem.assert(noData.equals(noData));\nSystem.assert(!noData.equals(new NoDataFoundException()));\nSystem.assertEquals(noData.hashCode(), noData.hashCode());"
+    "content": "NoDataFoundException noData = new NoDataFoundException();\nNoDataFoundException otherNoData = new NoDataFoundException();\nnoData.setMessage('missing value');\nSystem.assertEquals('System.NoDataFoundException', noData.getTypeName());\nSystem.assertEquals('System.NoDataFoundException: missing value', noData.toString());\nSystem.assert(noData.equals(noData));\nSystem.assert(!noData.equals(otherNoData));\nSystem.assertEquals(noData.hashCode(), noData.hashCode());\nSystem.assertNotEquals(noData.hashCode(), otherNoData.hashCode());"
   }],
   "command": {
     "kind": "exec",
-    "args": ["NoAccessException noAccess = new NoAccessException();\nnoAccess.setMessage('blocked value');\nSystem.assertEquals('System.NoAccessException', noAccess.getTypeName());\nSystem.assertEquals('System.NoAccessException: blocked value', noAccess.toString());\nSystem.assert(noAccess.equals(noAccess));\nSystem.assert(!noAccess.equals(new NoAccessException()));\nSystem.assertEquals(noAccess.hashCode(), noAccess.hashCode());\nNoDataFoundException noData = new NoDataFoundException();\nnoData.setMessage('missing value');\nSystem.assertEquals('System.NoDataFoundException', noData.getTypeName());\nSystem.assertEquals('System.NoDataFoundException: missing value', noData.toString());\nSystem.assert(noData.equals(noData));\nSystem.assert(!noData.equals(new NoDataFoundException()));\nSystem.assertEquals(noData.hashCode(), noData.hashCode());"]
+    "args": ["NoDataFoundException noData = new NoDataFoundException();\nNoDataFoundException otherNoData = new NoDataFoundException();\nnoData.setMessage('missing value');\nSystem.assertEquals('System.NoDataFoundException', noData.getTypeName());\nSystem.assertEquals('System.NoDataFoundException: missing value', noData.toString());\nSystem.assert(noData.equals(noData));\nSystem.assert(!noData.equals(otherNoData));\nSystem.assertEquals(noData.hashCode(), noData.hashCode());\nSystem.assertNotEquals(noData.hashCode(), otherNoData.hashCode());"]
   },
   "expected": {"result": {"debug": null, "ok": true}},
   "salesforceEligible": true

@@ -1,0 +1,21 @@
+{
+  "name": "core-noaccess-exception-object-methods-local-runtime",
+  "evidence": [
+    {"surfaceId": "apex:System.NoAccessException", "symbol": "NoAccessException", "kind": "exec"},
+    {"surfaceId": "apex:System.NoAccessException.equals(Object)", "symbol": "NoAccessException.equals", "kind": "exec"},
+    {"surfaceId": "apex:System.NoAccessException.hashCode()", "symbol": "NoAccessException.hashCode", "kind": "exec"},
+    {"surfaceId": "apex:System.NoAccessException.toString()", "symbol": "NoAccessException.toString", "kind": "exec"}
+  ],
+  "source": [{
+    "path": "anonymous.apex",
+    "content": "NoAccessException noAccess = new NoAccessException();\nNoAccessException otherNoAccess = new NoAccessException();\nnoAccess.setMessage('blocked value');\nSystem.assertEquals('System.NoAccessException', noAccess.getTypeName());\nSystem.assertEquals('System.NoAccessException: blocked value', noAccess.toString());\nSystem.assert(noAccess.equals(noAccess));\nSystem.assert(!noAccess.equals(otherNoAccess));\nSystem.assertEquals(noAccess.hashCode(), noAccess.hashCode());\nSystem.assertNotEquals(noAccess.hashCode(), otherNoAccess.hashCode());"
+  }],
+  "command": {
+    "kind": "exec",
+    "args": ["NoAccessException noAccess = new NoAccessException();\nNoAccessException otherNoAccess = new NoAccessException();\nnoAccess.setMessage('blocked value');\nSystem.assertEquals('System.NoAccessException', noAccess.getTypeName());\nSystem.assertEquals('System.NoAccessException: blocked value', noAccess.toString());\nSystem.assert(noAccess.equals(noAccess));\nSystem.assert(!noAccess.equals(otherNoAccess));\nSystem.assertEquals(noAccess.hashCode(), noAccess.hashCode());\nSystem.assertNotEquals(noAccess.hashCode(), otherNoAccess.hashCode());"]
+  },
+  "expected": {"result": {"debug": null, "ok": true}},
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce anonymous Apex rejects NoAccessException construction outside its Visualforce or Aura context, so this fixture records Glade-local behavior and claims no hosted parity."
+}
