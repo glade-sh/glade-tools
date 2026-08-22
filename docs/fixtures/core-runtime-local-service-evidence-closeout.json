@@ -53,24 +53,6 @@
     },
     {
       "kind": "test",
-      "notes": "Local Apex execution exposes deterministic request context.",
-      "surfaceId": "apex:System.Request.getCurrent()",
-      "symbol": "Request.getCurrent()"
-    },
-    {
-      "kind": "test",
-      "notes": "Local request context returns deterministic RUNTEST_SYNC quiddity.",
-      "surfaceId": "apex:System.Request.getQuiddity()",
-      "symbol": "Request.getQuiddity()"
-    },
-    {
-      "kind": "test",
-      "notes": "Local request context returns a deterministic request id.",
-      "surfaceId": "apex:System.Request.getRequestId()",
-      "symbol": "Request.getRequestId()"
-    },
-    {
-      "kind": "test",
       "notes": "RequestImpl returns the same deterministic local request context.",
       "surfaceId": "apex:System.RequestImpl.getCurrent()",
       "symbol": "RequestImpl.getCurrent()"

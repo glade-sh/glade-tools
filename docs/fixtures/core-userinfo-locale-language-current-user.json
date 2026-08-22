@@ -1,5 +1,6 @@
 {
   "name": "core-userinfo-locale-language-current-user",
+  "evidenceOnly": true,
   "evidence": [
     {
       "surfaceId": "apex:System.UserInfo.getLocale()",

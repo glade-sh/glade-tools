@@ -1,0 +1,77 @@
+{
+  "name": "core-runtime-userinfo-request-tail-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "evidenceOnly": false,
+  "salesforceEligible": false,
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "userinfo-request-tail-local-evidence",
+    "selectedRowCount": 43
+  },
+  "command": {
+    "kind": "exec",
+    "args": [
+      "UserInfo instance = new UserInfo(); System.assertNotEquals(null, instance); UserInfo instanceClone = (UserInfo)instance.clone(); System.assertNotEquals(null, instanceClone); System.assertNotEquals(null, UserInfo.getCurrentUvid()); System.assertEquals('USD', UserInfo.getDefaultCurrency()); System.assertEquals('System', UserInfo.getFirstName()); System.assertEquals('en_US', UserInfo.getLanguage()); System.assertEquals('User', UserInfo.getLastName()); System.assertEquals('en_US', UserInfo.getLocale()); System.assertEquals('System User', UserInfo.getName()); System.assertNotEquals(null, UserInfo.getOrganizationId()); System.assert(UserInfo.getOrganizationName() != null && UserInfo.getOrganizationName() != ''); System.assertEquals('', UserInfo.getProfileId()); System.assertEquals('', UserInfo.getSessionId()); System.assertEquals('UTC', UserInfo.getTimeZone().getID()); System.assertEquals('Theme4d', UserInfo.getUiTheme()); System.assertEquals('Theme4d', UserInfo.getUiThemeDisplayed()); System.assertEquals('system@example.invalid', UserInfo.getUserEmail()); System.assert(UserInfo.getUserId() != null); System.assert(UserInfo.getUserName() != null); System.assertEquals('', UserInfo.getUserRoleId()); System.assertEquals('Standard', UserInfo.getUserType()); System.assertEquals(false, UserInfo.isCurrentUserLicensed('missing')); System.assertEquals(false, UserInfo.isMultiCurrencyOrganization()); Request request = Request.getCurrent(); System.assertNotEquals(null, request); Request requestClone = (Request)request.clone(); System.assertNotEquals(null, requestClone); System.assertEquals(request.getRequestId(), requestClone.getRequestId()); System.assertNotEquals(null, request.getQuiddity()); System.assertEquals('glade-request-000000000001', request.getRequestId());"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "UserInfo instance = new UserInfo(); System.assertNotEquals(null, instance); UserInfo instanceClone = (UserInfo)instance.clone(); System.assertNotEquals(null, instanceClone); System.assertNotEquals(null, UserInfo.getCurrentUvid()); System.assertEquals('USD', UserInfo.getDefaultCurrency()); System.assertEquals('System', UserInfo.getFirstName()); System.assertEquals('en_US', UserInfo.getLanguage()); System.assertEquals('User', UserInfo.getLastName()); System.assertEquals('en_US', UserInfo.getLocale()); System.assertEquals('System User', UserInfo.getName()); System.assertNotEquals(null, UserInfo.getOrganizationId()); System.assert(UserInfo.getOrganizationName() != null && UserInfo.getOrganizationName() != ''); System.assertEquals('', UserInfo.getProfileId()); System.assertEquals('', UserInfo.getSessionId()); System.assertEquals('UTC', UserInfo.getTimeZone().getID()); System.assertEquals('Theme4d', UserInfo.getUiTheme()); System.assertEquals('Theme4d', UserInfo.getUiThemeDisplayed()); System.assertEquals('system@example.invalid', UserInfo.getUserEmail()); System.assert(UserInfo.getUserId() != null); System.assert(UserInfo.getUserName() != null); System.assertEquals('', UserInfo.getUserRoleId()); System.assertEquals('Standard', UserInfo.getUserType()); System.assertEquals(false, UserInfo.isCurrentUserLicensed('missing')); System.assertEquals(false, UserInfo.isMultiCurrencyOrganization()); Request request = Request.getCurrent(); System.assertNotEquals(null, request); Request requestClone = (Request)request.clone(); System.assertNotEquals(null, requestClone); System.assertEquals(request.getRequestId(), requestClone.getRequestId()); System.assertNotEquals(null, request.getQuiddity()); System.assertEquals('glade-request-000000000001', request.getRequestId());"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.Request","symbol":"Request","kind":"exec"},
+    {"surfaceId":"apex:System.Request.clone()","symbol":"Request.clone()","kind":"exec"},
+    {"surfaceId":"apex:System.Request.getCurrent()","symbol":"Request.getCurrent","kind":"exec"},
+    {"surfaceId":"apex:System.Request.getQuiddity()","symbol":"Request.getQuiddity","kind":"exec"},
+    {"surfaceId":"apex:System.Request.getRequestId()","symbol":"Request.getRequestId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo","symbol":"UserInfo","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.UserInfo()","symbol":"UserInfo.UserInfo()","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.clone()","symbol":"UserInfo.clone()","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getCurrentUvid()","symbol":"UserInfo.getCurrentUvid","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getDefaultCurrency()","symbol":"UserInfo.getDefaultCurrency","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getFirstName","symbol":"UserInfo.getFirstName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getFirstName()","symbol":"UserInfo.getFirstName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getLanguage","symbol":"UserInfo.getLanguage","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getLanguage()","symbol":"UserInfo.getLanguage","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getLastName","symbol":"UserInfo.getLastName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getLastName()","symbol":"UserInfo.getLastName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getLocale","symbol":"UserInfo.getLocale","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getLocale()","symbol":"UserInfo.getLocale","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getName","symbol":"UserInfo.getName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getName()","symbol":"UserInfo.getName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getOrganizationId","symbol":"UserInfo.getOrganizationId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getOrganizationId()","symbol":"UserInfo.getOrganizationId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getOrganizationName()","symbol":"UserInfo.getOrganizationName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getProfileId","symbol":"UserInfo.getProfileId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getProfileId()","symbol":"UserInfo.getProfileId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getSessionId","symbol":"UserInfo.getSessionId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getSessionId()","symbol":"UserInfo.getSessionId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getTimeZone","symbol":"UserInfo.getTimeZone","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getTimeZone()","symbol":"UserInfo.getTimeZone","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUiTheme()","symbol":"UserInfo.getUiTheme","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUiThemeDisplayed()","symbol":"UserInfo.getUiThemeDisplayed","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserEmail","symbol":"UserInfo.getUserEmail","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserEmail()","symbol":"UserInfo.getUserEmail","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserId","symbol":"UserInfo.getUserId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserId()","symbol":"UserInfo.getUserId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserName","symbol":"UserInfo.getUserName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserName()","symbol":"UserInfo.getUserName","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserRoleId()","symbol":"UserInfo.getUserRoleId","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserType","symbol":"UserInfo.getUserType","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.getUserType()","symbol":"UserInfo.getUserType","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.isCurrentUserLicensed(String)","symbol":"UserInfo.isCurrentUserLicensed","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.isMultiCurrencyOrganization","symbol":"UserInfo.isMultiCurrencyOrganization","kind":"exec"},
+    {"surfaceId":"apex:System.UserInfo.isMultiCurrencyOrganization()","symbol":"UserInfo.isMultiCurrencyOrganization","kind":"exec"}
+  ],
+  "notes": "Exact-candidate executable local-runtime witness for deterministic local identity/request context. This fixture is local-only: no real org/session/OAuth and no hosted Salesforce execution or parity claim.",
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Deterministic local identity/request context is policy-local-only; zero Salesforce parity is claimed because this witness uses no real org, session, or OAuth."
+}

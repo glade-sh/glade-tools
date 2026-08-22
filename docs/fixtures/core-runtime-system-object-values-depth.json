@@ -25,16 +25,6 @@
       "kind": "test"
     },
     {
-      "surfaceId": "apex:System.Request",
-      "symbol": "Request",
-      "kind": "test"
-    },
-    {
-      "surfaceId": "apex:System.Request.clone()",
-      "symbol": "Request.clone",
-      "kind": "test"
-    },
-    {
       "surfaceId": "apex:System.Savepoint.equals(Object)",
       "symbol": "Savepoint.equals",
       "kind": "test"
