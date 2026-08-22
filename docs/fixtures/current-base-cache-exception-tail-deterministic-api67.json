@@ -81,11 +81,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Cache.Org.Org()",
-      "symbol": "Cache.Org.Org()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Cache.Org.clone()",
       "symbol": "Cache.Org.clone()"
     },
@@ -166,11 +161,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Cache.Session.Session()",
-      "symbol": "Cache.Session.Session()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Cache.Session.clone()",
       "symbol": "Cache.Session.clone()"
     }
@@ -186,12 +176,12 @@
   },
   "mode": "deterministic-mock",
   "name": "current-base-cache-exception-tail-deterministic-api67",
-  "notes": "Current-base lane current-base-deterministic-mock-required-cache-001: exception constructors/clones, cache container shapes, TTL constants, put overloads, and remaining ScanResult behavior are covered as local deterministic behavior. Three ScanResult fields have direct exact-candidate ownership.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-cache-001: exception constructors/clones, cache container shapes, TTL constants, put overloads, and remaining ScanResult behavior are covered as local deterministic behavior. Cache.Org.Org() and Cache.Session.Session() are owned by the exact constructor fixture. Three ScanResult fields have direct exact-candidate ownership.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "laneId": "current-base-deterministic-mock-required-cache-001",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 34,
+    "selectedRowCount": 32,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "salesforceEligible": false,

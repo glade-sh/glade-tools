@@ -1,0 +1,50 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {"kind":"test","surfaceId":"apex:UserProvisioning.PluginBatchable","symbol":"UserProvisioning.PluginBatchable"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.UserProvisioningPlugin","symbol":"UserProvisioning.UserProvisioningPlugin"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.UserProvisioningPlugin.clone()","symbol":"UserProvisioning.UserProvisioningPlugin.clone()"}
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "deterministic-mock",
+  "name": "current-base-userprovisioning-deterministic-mock-004-api67",
+  "notes": "Exact sealed-candidate deterministic local UserProvisioning witness for three executable current missing rows. The test executes concrete implementations through base-typed receivers and clone against the sealed candidate; abstract constructors and unsupported passive members are rejected, with zero Salesforce parity.",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "current-base-deterministic-mock-required-UserProvisioning-004",
+    "selectedRowCount": 3
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local deterministic mock behavior and grants zero hosted Salesforce parity credit.",
+  "source": [
+    {
+      "path": "force-app/main/default/classes/CurrentBaseUserProvisioningDeterministic004Batch.cls",
+      "content": "public class CurrentBaseUserProvisioningDeterministic004Batch extends UserProvisioning.PluginBatchable { public CurrentBaseUserProvisioningDeterministic004Batch(List<SObject> requests) { super(requests); } }"
+    },
+    {
+      "path": "force-app/main/default/classes/CurrentBaseUserProvisioningDeterministic004Plugin.cls",
+      "content": "public class CurrentBaseUserProvisioningDeterministic004Plugin extends UserProvisioning.UserProvisioningPlugin { public CurrentBaseUserProvisioningDeterministic004Plugin() { super(); } public override Process.PluginDescribeResult buildDescribeCall() { return null; } }"
+    },
+    {
+      "path": "force-app/main/default/classes/CurrentBaseUserProvisioningDeterministic004Test.cls",
+      "content": "@IsTest private class CurrentBaseUserProvisioningDeterministic004Test { @IsTest static void deterministicWitness() { UserProvisioning.PluginBatchable batch = new CurrentBaseUserProvisioningDeterministic004Batch(new List<SObject>()); UserProvisioning.UserProvisioningPlugin plugin = new CurrentBaseUserProvisioningDeterministic004Plugin(); System.assertNotEquals(null, batch); System.assertNotEquals(null, plugin); System.assertNotEquals(null, plugin.clone()); } }"
+    }
+  ]
+}

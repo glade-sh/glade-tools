@@ -576,6 +576,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-limits-tail-wave16-runtime.json", 14},
 		{"core-runtime-primitive-values-wave16-runtime.json", 32},
 		{"core-runtime-string-tail-wave16-runtime.json", 5},
+		{"core-runtime-system-string-template-value-map-api67.json", 1},
 		{"core-runtime-value-objects-wave16-runtime.json", 17},
 		{"data-platform-schema-describe-results-wave16-runtime.json", 56},
 		{"core-runtime-apexpages-controller-wave17-runtime.json", 8},
@@ -611,6 +612,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-sobject-tail-api67.json", 6},
 		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
 		{"current-base-userprovisioning-deterministic-mock-003-api67.json", 6},
+		{"current-base-userprovisioning-deterministic-mock-004-api67.json", 3},
 		{"core-runtime-search-suggest-deterministic-mock.json", 2},
 		{"core-runtime-messaging-dto-mock-api67.json", 14},
 		{"data-platform-database-pagination-cursor-wave19-runtime.json", 10},
@@ -627,7 +629,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			required := make(map[string]string)
 			disposition := localRuntimeRequired
-			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "current-base-userprovisioning-deterministic-mock-003-api67" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" || fixture.Name == "current-base-flow-interview-context-tail-deterministic-api67" || strings.HasPrefix(fixture.Name, "core-runtime-answers-find-similar") || strings.HasPrefix(fixture.Name, "core-runtime-cache-tail-") || strings.HasPrefix(fixture.Name, "core-runtime-process-plugin-tail-") {
+			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "current-base-userprovisioning-deterministic-mock-003-api67" || fixture.Name == "current-base-userprovisioning-deterministic-mock-004-api67" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" || fixture.Name == "current-base-flow-interview-context-tail-deterministic-api67" || strings.HasPrefix(fixture.Name, "core-runtime-answers-find-similar") || strings.HasPrefix(fixture.Name, "core-runtime-cache-tail-") || strings.HasPrefix(fixture.Name, "core-runtime-process-plugin-tail-") {
 				disposition = deterministicMockRequired
 			}
 			for _, evidence := range fixture.Evidence {

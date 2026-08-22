@@ -1,0 +1,35 @@
+{
+  "name": "current-base-cache-tail-deterministic-api67",
+  "apiVersion": "67.0",
+  "mode": "deterministic-mock",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This deterministic local fixture is not a Salesforce oracle. It witnesses only Glade's local Cache constructor boundaries and grants zero Salesforce parity credit.",
+  "notes": "Exact current-candidate local proof for the two executable Cache constructor rows. The six validateKeys overloads remain explicitly rejected as unsupported diagnostics.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Cache.Org org = new Cache.Org(); System.assertNotEquals(null, org); Cache.Session session = new Cache.Session(); System.assertNotEquals(null, session);"
+    ]
+  },
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "evidence": [
+    {"kind": "exec", "surfaceId": "apex:Cache.Org.Org()", "symbol": "Cache.Org.Org()"},
+    {"kind": "exec", "surfaceId": "apex:Cache.Session.Session()", "symbol": "Cache.Session.Session()"}
+  ],
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Cache.Org org = new Cache.Org(); System.assertNotEquals(null, org); Cache.Session session = new Cache.Session(); System.assertNotEquals(null, session);"
+    }
+  ]
+}
