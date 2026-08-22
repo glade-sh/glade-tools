@@ -4,17 +4,6 @@
   "proofObligationReason": "Fixture evidence covers Database result DTO shape; live DML/runtime behavior is not claimed.",
   "evidence": [
     {
-      "surfaceId": "apex:Database.LeadConvertResult.getErrors()",
-      "symbol": "Database.LeadConvertResult.getErrors",
-      "kind": "shape",
-      "notes": "Salesforce exposes the accessor on a non-constructible result DTO; this fixture proves compile shape only."
-    },
-    {
-      "surfaceId": "apex:Database.LeadConvertResult.getRelatedPersonAccountId()",
-      "symbol": "Database.LeadConvertResult.getRelatedPersonAccountId",
-      "kind": "shape"
-    },
-    {
       "surfaceId": "apex:Database.DuplicateError.getDuplicateResult()",
       "symbol": "Database.DuplicateError.getDuplicateResult",
       "kind": "shape"
