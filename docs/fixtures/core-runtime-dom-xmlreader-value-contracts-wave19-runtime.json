@@ -1,0 +1,36 @@
+{
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "name": "core-runtime-dom-xmlreader-value-contracts-wave19-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This packet records Glade local-runtime behavior only and makes no hosted Salesforce execution claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "dom.Document d = new dom.Document(); d.load('<root><child>text</child></root>'); dom.Document otherDocument = new dom.Document(); otherDocument.load('<other/>');\nSystem.assertEquals(d,d); System.assertEquals(false,d.equals(otherDocument)); System.assertNotEquals(null,d.hashCode()); System.assertNotEquals(d.hashCode(),otherDocument.hashCode()); System.assert(d.toString().contains('root')); System.assertNotEquals(d.toString(),otherDocument.toString());\ndom.XmlNode constructedNode = new dom.XmlNode(); System.assertNotEquals(null,constructedNode); dom.XmlNode n = d.getRootElement(); dom.XmlNode otherNode = otherDocument.getRootElement();\nSystem.assertEquals(n,n); System.assertEquals(false,n.equals(otherNode)); System.assertNotEquals(null,n.hashCode()); System.assertNotEquals(n.hashCode(),otherNode.hashCode()); System.assert(n.toString().contains('root')); System.assertNotEquals(n.toString(),otherNode.toString());\ndom.XmlNodeType c = dom.XmlNodeType.COMMENT; dom.XmlNodeType t = dom.XmlNodeType.TEXT;\nSystem.assertEquals(c,c); System.assertEquals(false,c.equals(t)); System.assertNotEquals(null,c.hashCode()); System.assertNotEquals(c.hashCode(),t.hashCode());\nXmlStreamReader r = new XmlStreamReader('<?xml version=\"1.0\"?><p:root xmlns:p=\"urn:p\" p:id=\"7\"/>');\nr.setNamespaceAware(true); r.next(); r.next();\nSystem.assertEquals('Line: 1 Column: 56', r.getLocation());\nSystem.assertEquals('urn:p', r.getNamespace());\nSystem.assertEquals('1.0', r.getVersion());\nconstructedNode = null; d = null; otherDocument = null; n = null; otherNode = null;"
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "dom.Document d = new dom.Document(); d.load('<root><child>text</child></root>'); dom.Document otherDocument = new dom.Document(); otherDocument.load('<other/>');\nSystem.assertEquals(d,d); System.assertEquals(false,d.equals(otherDocument)); System.assertNotEquals(null,d.hashCode()); System.assertNotEquals(d.hashCode(),otherDocument.hashCode()); System.assert(d.toString().contains('root')); System.assertNotEquals(d.toString(),otherDocument.toString());\ndom.XmlNode constructedNode = new dom.XmlNode(); System.assertNotEquals(null,constructedNode); dom.XmlNode n = d.getRootElement(); dom.XmlNode otherNode = otherDocument.getRootElement();\nSystem.assertEquals(n,n); System.assertEquals(false,n.equals(otherNode)); System.assertNotEquals(null,n.hashCode()); System.assertNotEquals(n.hashCode(),otherNode.hashCode()); System.assert(n.toString().contains('root')); System.assertNotEquals(n.toString(),otherNode.toString());\ndom.XmlNodeType c = dom.XmlNodeType.COMMENT; dom.XmlNodeType t = dom.XmlNodeType.TEXT;\nSystem.assertEquals(c,c); System.assertEquals(false,c.equals(t)); System.assertNotEquals(null,c.hashCode()); System.assertNotEquals(c.hashCode(),t.hashCode());\nXmlStreamReader r = new XmlStreamReader('<?xml version=\"1.0\"?><p:root xmlns:p=\"urn:p\" p:id=\"7\"/>');\nr.setNamespaceAware(true); r.next(); r.next();\nSystem.assertEquals('Line: 1 Column: 56', r.getLocation());\nSystem.assertEquals('urn:p', r.getNamespace());\nSystem.assertEquals('1.0', r.getVersion());\nconstructedNode = null; d = null; otherDocument = null; n = null; otherNode = null;"
+    ]
+  },
+  "expected": { "result": { "debug": null, "ok": true } },
+  "evidence": [
+    { "surfaceId": "apex:dom.Document.equals(Object)", "symbol": "dom.Document.equals(Object)", "kind": "exec", "notes": "Anonymous execution asserts a newly constructed document equals itself." },
+    { "surfaceId": "apex:dom.Document.hashCode()", "symbol": "dom.Document.hashCode()", "kind": "exec", "notes": "Anonymous execution asserts a document hash is available." },
+    { "surfaceId": "apex:dom.Document.toString()", "symbol": "dom.Document.toString()", "kind": "exec", "notes": "Anonymous execution asserts the loaded root appears in the document representation and differs from a distinct document." },
+    { "surfaceId": "apex:dom.XmlNode.XmlNode()", "symbol": "dom.XmlNode.XmlNode()", "kind": "exec", "notes": "Anonymous execution constructs a local DOM node." },
+    { "surfaceId": "apex:dom.XmlNode.equals(Object)", "symbol": "dom.XmlNode.equals(Object)", "kind": "exec", "notes": "Anonymous execution asserts a newly constructed node equals itself." },
+    { "surfaceId": "apex:dom.XmlNode.hashCode()", "symbol": "dom.XmlNode.hashCode()", "kind": "exec", "notes": "Anonymous execution asserts a node hash is available." },
+    { "surfaceId": "apex:dom.XmlNode.toString()", "symbol": "dom.XmlNode.toString()", "kind": "exec", "notes": "Anonymous execution asserts the parsed root appears in the node representation and differs from a distinct node." },
+    { "surfaceId": "apex:dom.XmlNodeType.equals(Object)", "symbol": "dom.XmlNodeType.equals(Object)", "kind": "exec", "notes": "Anonymous execution asserts an enum value equals itself." },
+    { "surfaceId": "apex:dom.XmlNodeType.hashCode()", "symbol": "dom.XmlNodeType.hashCode()", "kind": "exec", "notes": "Anonymous execution asserts an enum value hash is available." },
+    { "surfaceId": "apex:System.XmlStreamReader", "symbol": "XmlStreamReader", "kind": "exec", "notes": "Anonymous execution constructs a local XML stream reader." },
+    { "surfaceId": "apex:System.XmlStreamReader.getLocation()", "symbol": "XmlStreamReader.getLocation()", "kind": "exec", "notes": "Anonymous execution reads the current XML token location." },
+    { "surfaceId": "apex:System.XmlStreamReader.getNamespace()", "symbol": "XmlStreamReader.getNamespace()", "kind": "exec", "notes": "Anonymous execution asserts the non-default urn:p namespace on the prefixed root token." },
+    { "surfaceId": "apex:System.XmlStreamReader.getVersion()", "symbol": "XmlStreamReader.getVersion()", "kind": "exec", "notes": "Anonymous execution asserts XML version 1.0 from the declaration." }
+  ]
+}

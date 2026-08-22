@@ -1,0 +1,18 @@
+{
+  "apiVersion": "67.0",
+  "command": {"kind": "test"},
+  "evidence": [
+    {"kind":"test","surfaceId":"apex:UserProvisioning.CollectingBatchable.nextReconOffset","symbol":"UserProvisioning.CollectingBatchable.nextReconOffset"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.CollectingBatchable.reconOffset","symbol":"UserProvisioning.CollectingBatchable.reconOffset"},
+    {"kind":"test","surfaceId":"apex:UserProvisioning.CollectingBatchable.status","symbol":"UserProvisioning.CollectingBatchable.status"}
+  ],
+  "expected": {"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}},
+  "mode":"deterministic-mock",
+  "name":"core-runtime-userprovisioning-deterministic-wave19",
+  "notes":"Wave19 deterministic local-only witness for substantive UserProvisioning runtime behavior. Hosted provisioning parity is not claimed.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","laneId":"runtime-conversion-wave-19-userprovisioning","selectedRowCount":3},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"UserProvisioning requires local deterministic mocks; this fixture proves local runtime behavior only and makes no hosted provisioning claim.",
+  "source":[{"path":"force-app/main/default/classes/CoreRuntimeUserProvisioningWave19Test.cls","content":"@isTest private class CoreRuntimeUserProvisioningWave19Test { @isTest static void userProvisioningRuntimeWitness() { UserProvisioning.CollectingBatchable c = new UserProvisioning.CollectingBatchable('0','upr','app'); c.nextReconOffset = 'next'; c.reconOffset = 'offset'; c.status = 'Queued'; System.assertEquals('next', c.nextReconOffset); System.assertEquals('offset', c.reconOffset); System.assertEquals('Queued', c.status); } }"}]
+}

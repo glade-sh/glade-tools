@@ -1,0 +1,54 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Schema.FieldDescribeOptions fo=Schema.FieldDescribeOptions.DEFAULT; Schema.SObjectDescribeOptions so=Schema.SObjectDescribeOptions.DEFAULT; Schema.SObjectField f=Account.Name; System.assertEquals(Schema.FieldDescribeOptions.DEFAULT,fo); System.assertEquals(Schema.SObjectDescribeOptions.DEFAULT,so); System.assertEquals('Account Name',f.getDescribe().getSObjectField().getDescribe().getLabel()); System.assertEquals('Name',f.getDescribe().getSObjectField().getDescribe().getName()); System.assert(Account.SObjectType.getDescribe().fields!=null); System.assert(Account.SObjectType.getDescribe().fieldSets!=null); Schema.FieldSet fs=Account.SObjectType.getDescribe().fieldSets.getMap().get('Summary'); Schema.FieldSet details=Account.SObjectType.getDescribe().fieldSets.getMap().get('Details'); System.assert(fs!=null); System.assert(details!=null); System.assert(fs.equals(fs)); System.assert(!fs.equals(details)); System.assert(fs.hashCode()!=details.hashCode()); System.assertEquals(fs.hashCode(),fs.hashCode()); System.assert(fs.toString().contains('Summary')); System.assertEquals(null,fs.getNamespace()); System.assertEquals(null,fs.namespace); List<Schema.PicklistEntry> ps=Account.Rating.getDescribe().getPicklistValues(); System.assert(ps.size()>=2); System.assert(ps.get(0).equals(ps.get(0))); System.assert(!ps.get(0).equals(ps.get(1))); System.assert(ps.get(0).hashCode()!=ps.get(1).hashCode()); System.assertEquals(ps.get(0).hashCode(),ps.get(0).hashCode()); System.assert(ps.get(0).toString().contains('Hot')); List<Schema.DescribeTabSetResult> sets=Schema.describeTabs(); System.assert(sets.size()>=1); System.assert(Schema.getAppDescribe('Sales').containsKey('Widget__c')); System.assert(Schema.getModuleDescribe().containsKey('Widget__c')); System.assert(Schema.getModuleDescribe('Sales').containsKey('Widget__c')); Schema.DescribeTabResult tab; for(Schema.DescribeTabSetResult s:sets) for(Schema.DescribeTabResult t:s.getTabs()) if(t.getName()=='Widget__c') tab=t; System.assert(tab!=null); System.assert(tab.getIconUrl().contains('Custom42')); System.assertEquals(tab.getIconUrl(),tab.iconUrl);"
+    ]
+  },
+  "evidence": [
+    {"surfaceId":"apex:Schema.FieldDescribeOptions","symbol":"Schema.FieldDescribeOptions","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSetMap","symbol":"Schema.SObjectType.fieldSets","kind":"exec"},
+    {"surfaceId":"apex:Schema.SObjectDescribeOptions","symbol":"Schema.SObjectDescribeOptions","kind":"exec"},
+    {"surfaceId":"apex:Schema.SObjectTypeFieldSets","symbol":"Schema.SObjectType.fieldSets","kind":"exec"},
+    {"surfaceId":"apex:Schema.SObjectTypeFields","symbol":"Schema.SObjectType.fields","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.equals(Object)","symbol":"Schema.FieldSet.equals","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.getNamespace()","symbol":"Schema.FieldSet.getNamespace","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.hashCode()","symbol":"Schema.FieldSet.hashCode","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.namespace","symbol":"Schema.FieldSet.namespace","kind":"exec"},
+    {"surfaceId":"apex:Schema.FieldSet.toString()","symbol":"Schema.FieldSet.toString","kind":"exec"},
+    {"surfaceId":"apex:Schema.PicklistEntry.equals(Object)","symbol":"Schema.PicklistEntry.equals","kind":"exec"},
+    {"surfaceId":"apex:Schema.PicklistEntry.hashCode()","symbol":"Schema.PicklistEntry.hashCode","kind":"exec"},
+    {"surfaceId":"apex:Schema.PicklistEntry.toString()","symbol":"Schema.PicklistEntry.toString","kind":"exec"},
+    {"surfaceId":"apex:Schema.SObjectField.label","symbol":"Schema.SObjectField.getLabel","kind":"exec"},
+    {"surfaceId":"apex:Schema.SObjectField.name","symbol":"Schema.SObjectField.getName","kind":"exec"},
+    {"surfaceId":"apex:Schema.Schema.getAppDescribe(String)","symbol":"Schema.getAppDescribe(String)","kind":"exec"},
+    {"surfaceId":"apex:Schema.Schema.getModuleDescribe()","symbol":"Schema.getModuleDescribe","kind":"exec"},
+    {"surfaceId":"apex:Schema.Schema.getModuleDescribe(String)","symbol":"Schema.getModuleDescribe","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeTabResult.getIconUrl()","symbol":"Schema.DescribeTabResult.getIconUrl","kind":"exec"},
+    {"surfaceId":"apex:Schema.DescribeTabResult.iconurl","symbol":"Schema.DescribeTabResult.iconUrl","kind":"exec"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "data-platform-schema-residual-wave19-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "laneId": "runtime-conversion-wave-19-schema-residual",
+    "selectedRowCount": 20
+  },
+  "project": {
+    "sourceApiVersion": "67.0",
+    "packageDirectories": [{"path":"force-app","default":true}]
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Local candidate proof for residual Schema metadata and describe accessors; hosted parity is not claimed.",
+  "source": [
+    {"path":"force-app/main/default/objects/Account/fieldSets/Summary.fieldSet-meta.xml","content":"<FieldSet><fullName>Summary</fullName><label>Summary Fields</label><displayedFields><field>Name</field><isRequired>true</isRequired></displayedFields></FieldSet>"},
+    {"path":"force-app/main/default/objects/Account/fieldSets/Details.fieldSet-meta.xml","content":"<FieldSet><fullName>Details</fullName><label>Details Fields</label><displayedFields><field>Name</field></displayedFields></FieldSet>"},
+    {"path":"force-app/main/default/objects/Account/fields/Rating.field-meta.xml","content":"<CustomField><fullName>Rating</fullName><label>Rating</label><type>Picklist</type><valueSet><valueSetDefinition><value><fullName>Hot</fullName><label>Hot Label</label></value><value><fullName>Cold</fullName><label>Cold</label></value></valueSetDefinition></valueSet></CustomField>"},
+    {"path":"force-app/main/default/objects/Widget__c/Widget__c.object-meta.xml","content":"<CustomObject><label>Widget</label><pluralLabel>Widgets</pluralLabel><nameField><label>Widget Name</label><type>Text</type></nameField><deploymentStatus>Deployed</deploymentStatus><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path":"force-app/main/default/tabs/Widget__c.tab-meta.xml","content":"<CustomTab><customObject>true</customObject><label>Widgets</label><motif>Custom42: Treasure chest</motif></CustomTab>"},
+    {"path":"anonymous.apex","content":"Schema.FieldDescribeOptions fo=Schema.FieldDescribeOptions.DEFAULT; Schema.SObjectDescribeOptions so=Schema.SObjectDescribeOptions.DEFAULT; Schema.SObjectField f=Account.Name; System.assertEquals(Schema.FieldDescribeOptions.DEFAULT,fo); System.assertEquals(Schema.SObjectDescribeOptions.DEFAULT,so); System.assertEquals('Account Name',f.getDescribe().getSObjectField().getDescribe().getLabel()); System.assertEquals('Name',f.getDescribe().getSObjectField().getDescribe().getName()); System.assert(Account.SObjectType.getDescribe().fields!=null); System.assert(Account.SObjectType.getDescribe().fieldSets!=null); Schema.FieldSet fs=Account.SObjectType.getDescribe().fieldSets.getMap().get('Summary'); Schema.FieldSet details=Account.SObjectType.getDescribe().fieldSets.getMap().get('Details'); System.assert(fs!=null); System.assert(details!=null); System.assert(fs.equals(fs)); System.assert(!fs.equals(details)); System.assert(fs.hashCode()!=details.hashCode()); System.assertEquals(fs.hashCode(),fs.hashCode()); System.assert(fs.toString().contains('Summary')); System.assertEquals(null,fs.getNamespace()); System.assertEquals(null,fs.namespace); List<Schema.PicklistEntry> ps=Account.Rating.getDescribe().getPicklistValues(); System.assert(ps.size()>=2); System.assert(ps.get(0).equals(ps.get(0))); System.assert(!ps.get(0).equals(ps.get(1))); System.assert(ps.get(0).hashCode()!=ps.get(1).hashCode()); System.assertEquals(ps.get(0).hashCode(),ps.get(0).hashCode()); System.assert(ps.get(0).toString().contains('Hot')); List<Schema.DescribeTabSetResult> sets=Schema.describeTabs(); System.assert(sets.size()>=1); System.assert(Schema.getAppDescribe('Sales').containsKey('Widget__c')); System.assert(Schema.getModuleDescribe().containsKey('Widget__c')); System.assert(Schema.getModuleDescribe('Sales').containsKey('Widget__c')); Schema.DescribeTabResult tab; for(Schema.DescribeTabSetResult s:sets) for(Schema.DescribeTabResult t:s.getTabs()) if(t.getName()=='Widget__c') tab=t; System.assert(tab!=null); System.assert(tab.getIconUrl().contains('Custom42')); System.assertEquals(tab.getIconUrl(),tab.iconUrl);"}
+  ]
+}

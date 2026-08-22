@@ -10,21 +10,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Schema.Schema.getAppDescribe(String)",
-      "symbol": "Schema.getAppDescribe"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.Schema.getModuleDescribe()",
-      "symbol": "Schema.getModuleDescribe"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.Schema.getModuleDescribe(String)",
-      "symbol": "Schema.getModuleDescribe"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Schema.DescribeTabSetResult",
       "symbol": "Schema.DescribeTabSetResult"
     },
@@ -52,11 +37,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeTabResult.isCustom()",
       "symbol": "Schema.DescribeTabResult.isCustom"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabResult.getIconUrl()",
-      "symbol": "Schema.DescribeTabResult.getIconUrl"
     },
     {
       "kind": "test",
@@ -107,11 +87,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.DescribeTabResult.icons",
       "symbol": "Schema.DescribeTabResult.icons"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.DescribeTabResult.iconurl",
-      "symbol": "Schema.DescribeTabResult.iconurl"
     },
     {
       "kind": "test",

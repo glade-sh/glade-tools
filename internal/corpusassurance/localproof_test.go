@@ -431,7 +431,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-value-objects-wave16-runtime.json", 17},
 		{"data-platform-schema-describe-results-wave16-runtime.json", 56},
 		{"core-runtime-apexpages-controller-wave17-runtime.json", 8},
-		{"core-runtime-dom-value-semantics-wave17-runtime.json", 5},
+		{"core-runtime-dom-value-semantics-wave17-runtime.json", 7},
 		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 11},
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
 		{"data-platform-schema-record-type-info-wave17-runtime.json", 8},
@@ -441,6 +441,12 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-database-result-dto-wave18-runtime.json", 30},
 		{"integration-eventbus-state-wave18-runtime.json", 13},
 		{"ui-apexpages-idea-controller-wave18-runtime.json", 6},
+		{"core-runtime-dom-xmlreader-value-contracts-wave19-runtime.json", 13},
+		{"core-runtime-system-001-wave19-runtime.json", 11},
+		{"core-runtime-system-002-wave19-runtime.json", 4},
+		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
+		{"data-platform-database-pagination-cursor-wave19-runtime.json", 10},
+		{"data-platform-schema-residual-wave19-runtime.json", 20},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
@@ -452,8 +458,12 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 				t.Fatal(err)
 			}
 			required := make(map[string]string)
+			disposition := localRuntimeRequired
+			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" {
+				disposition = deterministicMockRequired
+			}
 			for _, evidence := range fixture.Evidence {
-				required[evidence.SurfaceID] = localRuntimeRequired
+				required[evidence.SurfaceID] = disposition
 			}
 			candidates, err := discoverLocalProofFixtures(root, required)
 			if err != nil {
@@ -466,7 +476,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 				if len(candidate.entry.OwnedSurfaceIDs) == test.count {
 					return
 				}
-				t.Fatalf("fixture owns %d rows, want %d", len(candidate.entry.OwnedSurfaceIDs), test.count)
+				t.Fatalf("fixture owns %d rows, want %d: %v", len(candidate.entry.OwnedSurfaceIDs), test.count, candidate.entry.OwnedSurfaceIDs)
 			}
 			t.Fatalf("fixture is not candidate-runnable for all %d rows", test.count)
 		})

@@ -1,0 +1,60 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "insert new Account(Name = 'Pagination'); Database.PaginationCursor cursor = Database.getPaginationCursor('SELECT Id FROM Account'); Database.PaginationCursor.DeleteFilter deletedRowsOnly = Database.PaginationCursor.DeleteFilter.DELETED_ROWS_ONLY; Database.PaginationCursor.DeleteFilter noDeletedRows = Database.PaginationCursor.DeleteFilter.NO_DELETED_ROWS; Database.PaginationCursor.DeleteFilter noDeletedSharingRows = Database.PaginationCursor.DeleteFilter.NO_DELETED_SHARING_ROWS; Database.PaginationCursor.DeleteFilter noFilter = Database.PaginationCursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assert(noFilter.equals(noFilter)); System.assert(!noFilter.equals(deletedRowsOnly)); System.assert(!noFilter.equals(null)); System.assertEquals(noFilter.hashCode(), noFilter.hashCode()); System.assertNotEquals(noFilter.hashCode(), deletedRowsOnly.hashCode()); System.assertEquals(0, deletedRowsOnly.ordinal()); System.assertEquals(1, noDeletedRows.ordinal()); System.assertEquals(2, noDeletedSharingRows.ordinal()); System.assertEquals(3, noFilter.ordinal()); System.assertEquals(noFilter, Database.PaginationCursor.DeleteFilter.valueOf('NO_FILTER')); List<Database.PaginationCursor.DeleteFilter> values = Database.PaginationCursor.DeleteFilter.values(); System.assertEquals(4, values.size()); System.assertEquals(deletedRowsOnly, values.get(0)); System.assertEquals(noDeletedRows, values.get(1)); System.assertEquals(noDeletedSharingRows, values.get(2)); System.assertEquals(noFilter, values.get(3));"
+    ]
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "notes": "A public Salesforce pagination-cursor delete-filter enum exercised against Glade's deterministic local SOQL rows.",
+      "surfaceId": "apex:Database.PaginationCursor.DeleteFilter",
+      "symbol": "Database.PaginationCursor.DeleteFilter"
+    },
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.DELETED_ROWS_ONLY", "symbol": "Database.PaginationCursor.DeleteFilter.DELETED_ROWS_ONLY"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.NO_DELETED_ROWS", "symbol": "Database.PaginationCursor.DeleteFilter.NO_DELETED_ROWS"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.NO_DELETED_SHARING_ROWS", "symbol": "Database.PaginationCursor.DeleteFilter.NO_DELETED_SHARING_ROWS"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.NO_FILTER", "symbol": "Database.PaginationCursor.DeleteFilter.NO_FILTER"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.equals(Object)", "symbol": "Database.PaginationCursor.DeleteFilter.equals"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.hashCode()", "symbol": "Database.PaginationCursor.DeleteFilter.hashCode"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.ordinal()", "symbol": "Database.PaginationCursor.DeleteFilter.ordinal"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.valueOf(String)", "symbol": "Database.PaginationCursor.DeleteFilter.valueOf"},
+    {"kind": "exec", "surfaceId": "apex:Database.PaginationCursor.DeleteFilter.values()", "symbol": "Database.PaginationCursor.DeleteFilter.values"}
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "data-platform-database-pagination-cursor-wave19-runtime",
+  "notes": "Wave 19 local-runtime proof for Database.PaginationCursor.DeleteFilter against deterministic rows; no Salesforce parity claim.",
+  "profile": {
+    "laneId": "wave19-database-pagination-cursor-runtime",
+    "selectedRowCount": 10
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "API 67 clean-org rejects the local Database pagination cursor method; retained as local evidence and excluded from hosted parity.",
+  "project": {
+    "sourceApiVersion": "67.0",
+    "packageDirectories": [{"path": "force-app", "default": true}]
+  },
+  "source": [
+    {
+      "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
+      "path": "force-app/main/default/objects/Account/Account.object-meta.xml"
+    },
+    {
+      "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>",
+      "path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml"
+    },
+    {
+      "content": "insert new Account(Name = 'Pagination'); Database.PaginationCursor cursor = Database.getPaginationCursor('SELECT Id FROM Account'); Database.PaginationCursor.DeleteFilter deletedRowsOnly = Database.PaginationCursor.DeleteFilter.DELETED_ROWS_ONLY; Database.PaginationCursor.DeleteFilter noDeletedRows = Database.PaginationCursor.DeleteFilter.NO_DELETED_ROWS; Database.PaginationCursor.DeleteFilter noDeletedSharingRows = Database.PaginationCursor.DeleteFilter.NO_DELETED_SHARING_ROWS; Database.PaginationCursor.DeleteFilter noFilter = Database.PaginationCursor.DeleteFilter.NO_FILTER; System.assertEquals(1, cursor.getNumRecords()); System.assert(noFilter.equals(noFilter)); System.assert(!noFilter.equals(deletedRowsOnly)); System.assert(!noFilter.equals(null)); System.assertEquals(noFilter.hashCode(), noFilter.hashCode()); System.assertNotEquals(noFilter.hashCode(), deletedRowsOnly.hashCode()); System.assertEquals(0, deletedRowsOnly.ordinal()); System.assertEquals(1, noDeletedRows.ordinal()); System.assertEquals(2, noDeletedSharingRows.ordinal()); System.assertEquals(3, noFilter.ordinal()); System.assertEquals(noFilter, Database.PaginationCursor.DeleteFilter.valueOf('NO_FILTER')); List<Database.PaginationCursor.DeleteFilter> values = Database.PaginationCursor.DeleteFilter.values(); System.assertEquals(4, values.size()); System.assertEquals(deletedRowsOnly, values.get(0)); System.assertEquals(noDeletedRows, values.get(1)); System.assertEquals(noDeletedSharingRows, values.get(2)); System.assertEquals(noFilter, values.get(3));",
+      "path": "anonymous.apex"
+    }
+  ]
+}
