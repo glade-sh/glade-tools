@@ -1893,28 +1893,13 @@
     },
     {
       "kind": "exec",
-      "surfaceId": "apex:System.JSONParser",
-      "symbol": "apex:System.JSONParser"
-    },
-    {
-      "kind": "exec",
       "surfaceId": "apex:System.JSONParser.clearCurrentToken()",
       "symbol": "apex:System.JSONParser.clearCurrentToken()"
     },
     {
       "kind": "exec",
-      "surfaceId": "apex:System.JSONParser.clone()",
-      "symbol": "apex:System.JSONParser.clone()"
-    },
-    {
-      "kind": "exec",
       "surfaceId": "apex:System.JSONParser.getBlobValue()",
       "symbol": "apex:System.JSONParser.getBlobValue()"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.JSONParser.getBooleanValue",
-      "symbol": "apex:System.JSONParser.getBooleanValue"
     },
     {
       "kind": "exec",
@@ -1930,11 +1915,6 @@
       "kind": "exec",
       "surfaceId": "apex:System.JSONParser.getCurrentToken()",
       "symbol": "apex:System.JSONParser.getCurrentToken()"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.JSONParser.getDateValue",
-      "symbol": "apex:System.JSONParser.getDateValue"
     },
     {
       "kind": "exec",
@@ -1975,11 +1955,6 @@
       "kind": "exec",
       "surfaceId": "apex:System.JSONParser.getLongValue()",
       "symbol": "apex:System.JSONParser.getLongValue()"
-    },
-    {
-      "kind": "exec",
-      "surfaceId": "apex:System.JSONParser.getText",
-      "symbol": "apex:System.JSONParser.getText"
     },
     {
       "kind": "exec",

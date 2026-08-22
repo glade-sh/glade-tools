@@ -27,11 +27,6 @@
       "notes": "Pretty object/raw writers close cleanly and expose deterministic output."
     },
     {
-      "symbol": "JSONParser",
-      "kind": "exec",
-      "notes": "Remaining parser id/blob/false/end/current-token edges match local token streams."
-    },
-    {
       "symbol": "JSONToken",
       "kind": "exec",
       "notes": "Common JSONToken constants compare and stringify deterministically."
