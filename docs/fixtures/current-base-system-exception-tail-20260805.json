@@ -1,5 +1,6 @@
 {
   "name": "current-base-system-exception-tail-20260805",
+  "evidenceOnly": true,
   "command": {
     "kind": "exec",
     "args": [

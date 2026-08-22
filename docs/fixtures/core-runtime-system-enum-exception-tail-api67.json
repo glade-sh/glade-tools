@@ -1,0 +1,56 @@
+{
+  "name": "core-runtime-system-enum-exception-tail-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "evidenceOnly": false,
+  "salesforceEligible": false,
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "system-enum-exception-tail-local-evidence",
+    "selectedRowCount": 26
+  },
+  "command": {
+    "kind": "exec",
+    "args": [
+      "System.Enum enumValue = null; System.assertEquals(null, enumValue); System.RoundingMode rounding = System.RoundingMode.HALF_UP; System.assertNotEquals(null, rounding.name()); System.assert(rounding.ordinal() >= 0); System.assertNotEquals(null, rounding.toString()); System.assertEquals(rounding.ordinal(), System.RoundingMode.valueOf('HALF_UP').ordinal()); System.assert(System.RoundingMode.values().size() > 0); Exception asyncValue = new AsyncException('async'); System.assertEquals('System.AsyncException', asyncValue.getTypeName()); Exception listValue = new ListException('list'); System.assertEquals('System.ListException', listValue.getTypeName()); Exception noSuchValue = new NoSuchElementException('no such'); System.assertEquals('System.NoSuchElementException', noSuchValue.getTypeName()); Exception patternValue = new PatternSyntaxException('bad'); System.assertEquals('System.PatternSyntaxException', patternValue.getTypeName()); Exception queryValue = new QueryException('query'); System.assertEquals('System.QueryException', queryValue.getTypeName()); Exception sobjectValue = new SObjectException('sobject'); System.assertEquals('System.SObjectException', sobjectValue.getTypeName()); Exception securityValue = new SecurityException('security'); System.assertEquals('System.SecurityException', securityValue.getTypeName()); try { Auth.AuthToken.getAccessToken('provider', 'local'); System.assert(false, 'expected InvalidParameterValueException'); } catch (InvalidParameterValueException invalidValue) { System.assertEquals(true, invalidValue.equals(invalidValue)); System.assertEquals(invalidValue.hashCode(), invalidValue.hashCode()); System.assertNotEquals(null, invalidValue.toString()); } TouchHandledException touchValue = new TouchHandledException('touch'); System.assertEquals(true, touchValue.equals(touchValue)); System.assertEquals(touchValue.hashCode(), touchValue.hashCode()); System.assertNotEquals(null, touchValue.toString()); VisualforceException visualValue = new VisualforceException(); System.assertEquals(true, visualValue.equals(visualValue)); System.assertEquals(visualValue.hashCode(), visualValue.hashCode()); WaveTemplateException waveValue = new WaveTemplateException(); System.assertEquals(true, waveValue.equals(waveValue)); System.assertEquals(waveValue.hashCode(), waveValue.hashCode());"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "System.Enum enumValue = null; System.assertEquals(null, enumValue); System.RoundingMode rounding = System.RoundingMode.HALF_UP; System.assertNotEquals(null, rounding.name()); System.assert(rounding.ordinal() >= 0); System.assertNotEquals(null, rounding.toString()); System.assertEquals(rounding.ordinal(), System.RoundingMode.valueOf('HALF_UP').ordinal()); System.assert(System.RoundingMode.values().size() > 0); Exception asyncValue = new AsyncException('async'); System.assertEquals('System.AsyncException', asyncValue.getTypeName()); Exception listValue = new ListException('list'); System.assertEquals('System.ListException', listValue.getTypeName()); Exception noSuchValue = new NoSuchElementException('no such'); System.assertEquals('System.NoSuchElementException', noSuchValue.getTypeName()); Exception patternValue = new PatternSyntaxException('bad'); System.assertEquals('System.PatternSyntaxException', patternValue.getTypeName()); Exception queryValue = new QueryException('query'); System.assertEquals('System.QueryException', queryValue.getTypeName()); Exception sobjectValue = new SObjectException('sobject'); System.assertEquals('System.SObjectException', sobjectValue.getTypeName()); Exception securityValue = new SecurityException('security'); System.assertEquals('System.SecurityException', securityValue.getTypeName()); try { Auth.AuthToken.getAccessToken('provider', 'local'); System.assert(false, 'expected InvalidParameterValueException'); } catch (InvalidParameterValueException invalidValue) { System.assertEquals(true, invalidValue.equals(invalidValue)); System.assertEquals(invalidValue.hashCode(), invalidValue.hashCode()); System.assertNotEquals(null, invalidValue.toString()); } TouchHandledException touchValue = new TouchHandledException('touch'); System.assertEquals(true, touchValue.equals(touchValue)); System.assertEquals(touchValue.hashCode(), touchValue.hashCode()); System.assertNotEquals(null, touchValue.toString()); VisualforceException visualValue = new VisualforceException(); System.assertEquals(true, visualValue.equals(visualValue)); System.assertEquals(visualValue.hashCode(), visualValue.hashCode()); WaveTemplateException waveValue = new WaveTemplateException(); System.assertEquals(true, waveValue.equals(waveValue)); System.assertEquals(waveValue.hashCode(), waveValue.hashCode());"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.Enum","symbol":"System.Enum","kind":"exec"},
+    {"surfaceId":"apex:System.RoundingMode.name","symbol":"RoundingMode.name","kind":"exec"},
+    {"surfaceId":"apex:System.RoundingMode.ordinal","symbol":"RoundingMode.ordinal","kind":"exec"},
+    {"surfaceId":"apex:System.RoundingMode.toString","symbol":"RoundingMode.toString","kind":"exec"},
+    {"surfaceId":"apex:System.RoundingMode.valueOf","symbol":"RoundingMode.valueOf","kind":"exec"},
+    {"surfaceId":"apex:System.RoundingMode.values","symbol":"RoundingMode.values","kind":"exec"},
+    {"surfaceId":"apex:System.AsyncException","symbol":"AsyncException","kind":"exec"},
+    {"surfaceId":"apex:System.ListException","symbol":"ListException","kind":"exec"},
+    {"surfaceId":"apex:System.NoSuchElementException","symbol":"NoSuchElementException","kind":"exec"},
+    {"surfaceId":"apex:System.PatternSyntaxException","symbol":"PatternSyntaxException","kind":"exec"},
+    {"surfaceId":"apex:System.QueryException","symbol":"QueryException","kind":"exec"},
+    {"surfaceId":"apex:System.SObjectException","symbol":"SObjectException","kind":"exec"},
+    {"surfaceId":"apex:System.SecurityException","symbol":"SecurityException","kind":"exec"},
+    {"surfaceId":"apex:System.InvalidParameterValueException.equals(Object)","symbol":"InvalidParameterValueException.equals(Object)","kind":"exec"},
+    {"surfaceId":"apex:System.InvalidParameterValueException.hashCode()","symbol":"InvalidParameterValueException.hashCode()","kind":"exec"},
+    {"surfaceId":"apex:System.InvalidParameterValueException.toString()","symbol":"InvalidParameterValueException.toString()","kind":"exec"},
+    {"surfaceId":"apex:System.TouchHandledException","symbol":"TouchHandledException","kind":"exec"},
+    {"surfaceId":"apex:System.TouchHandledException.equals(Object)","symbol":"TouchHandledException.equals(Object)","kind":"exec"},
+    {"surfaceId":"apex:System.TouchHandledException.hashCode()","symbol":"TouchHandledException.hashCode()","kind":"exec"},
+    {"surfaceId":"apex:System.TouchHandledException.toString()","symbol":"TouchHandledException.toString()","kind":"exec"},
+    {"surfaceId":"apex:System.VisualforceException","symbol":"VisualforceException","kind":"exec"},
+    {"surfaceId":"apex:System.VisualforceException.equals(Object)","symbol":"VisualforceException.equals(Object)","kind":"exec"},
+    {"surfaceId":"apex:System.VisualforceException.hashCode()","symbol":"VisualforceException.hashCode()","kind":"exec"},
+    {"surfaceId":"apex:System.WaveTemplateException","symbol":"WaveTemplateException","kind":"exec"},
+    {"surfaceId":"apex:System.WaveTemplateException.equals(Object)","symbol":"WaveTemplateException.equals(Object)","kind":"exec"},
+    {"surfaceId":"apex:System.WaveTemplateException.hashCode()","symbol":"WaveTemplateException.hashCode()","kind":"exec"}
+  ],
+  "notes": "Exact-candidate executable local-runtime witness for System.Enum, RoundingMode, exception type/object behavior, induced InvalidParameterValueException, and PatternSyntaxException. Local-only; no hosted Salesforce execution or parity claim.",
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Anonymous Apex type/object behavior and induced exception paths are local-runtime evidence only; no hosted Salesforce parity is claimed."
+}

@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-cb62-system-exceptions-evidence",
+  "evidenceOnly": true,
   "evidence": [
     {"surfaceId": "apex:System.AsyncException", "symbol": "System.AsyncException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
     {"surfaceId": "apex:System.DmlException", "symbol": "System.DmlException", "kind": "test", "notes": "CB57 passing typed-null exception declaration case."},
