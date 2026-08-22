@@ -4,12 +4,12 @@
     {"surfaceId":"apex:Schema.DescribeFieldResult.bytelength","symbol":"Schema.DescribeFieldResult.bytelength","kind":"exec"},
     {"surfaceId":"apex:Schema.DescribeFieldResult.isPermissionable()","symbol":"Schema.DescribeFieldResult.isPermissionable()","kind":"exec"}
   ],
-  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "project":{"sourceApiVersion":"65.0","packageDirectories":[{"path":"force-app","default":true}]},
   "salesforceEligible":false,
   "salesforceExclusionClass":"org-configuration-required",
   "salesforceExclusionReason":"This fixture proves local metadata-backed field behavior and does not claim hosted org configuration.",
   "source":[
-    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"},
+    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"65.0\"}"},
     {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
     {"path":"force-app/main/default/objects/Account/fields/Notes__c.field-meta.xml","content":"<CustomField><fullName>Notes__c</fullName><label>Notes</label><type>LongTextArea</type><length>1024</length><visibleLines>3</visibleLines></CustomField>"},
     {"path":"anonymous.apex","content":"Schema.DescribeFieldResult notes = Account.Notes__c.getDescribe(); System.assertEquals(3072, notes.bytelength); Schema.DescribeFieldResult activity = Account.LastActivityDate.getDescribe(); System.assertEquals(false, activity.isPermissionable()); System.assertEquals(activity.isPermissionable(), activity.permissionable);"}

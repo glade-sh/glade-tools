@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "previousRelease": "Winter '26",
+  "currentRelease": "Spring '26",
+  "inventoryDigest": "b5751a9d951bf0d47cb438b957e404dfe5eda7d93557e3e9cad4fbf5acb4e273",
+  "branchDefaults": {
+    "__root__": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_analytics.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_automate.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_c360_truth.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_cms.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_commerce.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_customization.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_deployment.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_development.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_einstein.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_experiences.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_fieldservice.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_general.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_hyperforce.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_industries.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_marketing_parent.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_mobile.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_mulesoft.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_omnistudio.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_partner_cloud.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_revenue.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_sales.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_security.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    },
+    "release-notes.rn_service.htm": {
+      "outOfScopeReason": "No additional API-versioned Glade contract is introduced by this document in this transition."
+    }
+  },
+  "routeOverrides": [
+    {
+      "sourcePath": "rn_apex_constructor_visibility_invocable_custom_classes_v66.md",
+      "behaviorIds": [
+        "invocable.custom-parameter.visible-no-arg-constructor"
+      ]
+    },
+    {
+      "sourcePath": "rn_apex_cursors.md",
+      "behaviorIds": [
+        "apex.cursor.aura-serialization",
+        "apex.pagination-cursor.governor-accounting"
+      ],
+      "surfaceIds": [
+        "apex:Database.CursorFetchResult",
+        "apex:Database.CursorFetchResult.getNextIndex()",
+        "apex:Database.CursorFetchResult.getNumDeletedRecords()",
+        "apex:Database.CursorFetchResult.getRecords()",
+        "apex:Database.CursorFetchResult.isDone()",
+        "apex:Database.PaginationCursor",
+        "apex:Database.PaginationCursor.fetchDeleted(Integer,Integer)",
+        "apex:Database.PaginationCursor.fetchPage(Integer,Integer)",
+        "apex:Database.PaginationCursor.getNumRecords()",
+        "apex:System.Database.getPaginationCursor(String,Object)",
+        "apex:System.Database.getPaginationCursor(String)",
+        "apex:System.Database.getPaginationCursorWithBinds(String,Map,Object)",
+        "apex:System.Limits.getApexCursors()",
+        "apex:System.Limits.getApexPaginationCursorRows()",
+        "apex:System.Limits.getApexPaginationCursors()",
+        "apex:System.Limits.getLimitApexCursors()",
+        "apex:System.Limits.getLimitApexPaginationCursorRows()",
+        "apex:System.Limits.getLimitApexPaginationCursors()"
+      ]
+    },
+    {
+      "sourcePath": "rn_apex_DWSupportQueryResults.md",
+      "behaviorIds": [
+        "apex.dataweave.nested-soql"
+      ]
+    },
+    {
+      "sourcePath": "rn_apex_extract_picklist_values.md",
+      "surfaceIds": [
+        "apex:ConnectApi.PicklistValue",
+        "apex:ConnectApi.PicklistValues",
+        "apex:ConnectApi.PicklistValuesCollection",
+        "apex:ConnectApi.RecordUi",
+        "apex:ConnectApi.RecordUi.getPicklistValuesByRecordType(String,String)"
+      ]
+    },
+    {
+      "sourcePath": "rn_apex_nc.md",
+      "surfaceIds": [
+        "apex:commercepayments.AbstractResponse.setRetryCategory(commercepayments.RetryCategory)",
+        "apex:commercepayments.AbstractResponse.setRetryDecision(commercepayments.RetryDecision)",
+        "apex:commercepayments.AuthorizationResponse.setAsync(Boolean)",
+        "apex:commercepayments.BaseApiPaymentMethodRequest.idType",
+        "apex:commercepayments.BaseNotification.setGatewayAvsCode(String)",
+        "apex:commercepayments.CaptureNotification.setGatewayAvsCode(String)",
+        "apex:commercepayments.PaymentMethodIdType",
+        "apex:commercepayments.PaymentMethodTokenizationRequest.savedByMerchant",
+        "apex:commercepayments.PostAuthorizationResponse.setAmount(Double)",
+        "apex:commercepayments.PostAuthorizationResponse.setCardPaymentMethodResponse(commercepayments.CardPaymentMethodResponse)",
+        "apex:commercepayments.PostAuthorizationResponse.setGatewayAvsCode(String)",
+        "apex:commercepayments.PostAuthorizationResponse.setGatewayDate(Datetime)",
+        "apex:commercepayments.PostAuthorizationResponse.setGatewayMessage(String)",
+        "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceDetails(String)",
+        "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceNumber(String)",
+        "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCode(String)",
+        "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCodeDescription(String)",
+        "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetails(commercepayments.PaymentMethodDetailsResponse)",
+        "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetailsResponse(commercepayments.PaymentMethodDetailsResponse)",
+        "apex:commercepayments.PostAuthorizationResponse.setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo)",
+        "apex:commercepayments.ReferencedRefundNotification.setGatewayAvsCode(String)",
+        "apex:commercepayments.ReferencedRefundResponse.setAsync(Boolean)",
+        "apex:commercepayments.RetryCategory",
+        "apex:commercepayments.RetryDecision",
+        "apex:commercepayments.SaleNotification.setRetryCategory(commercepayments.RetryCategory)",
+        "apex:commercepayments.SaleNotification.setRetryDecision(commercepayments.RetryDecision)",
+        "apex:commercepayments.SaleRequest.submittedByMerchant",
+        "apex:commercepayments.SaleResponse.setRetryCategory(commercepayments.RetryCategory)",
+        "apex:commercepayments.SaleResponse.setRetryDecision(commercepayments.RetryDecision)",
+        "apex:commercetax.CalculateTaxRequest.isHeaderTaxRequested",
+        "apex:ConnectApi.AbstractPicklistValueAttributes",
+        "apex:ConnectApi.BuyerProductSummaryRepresentation",
+        "apex:ConnectApi.CaseStatusPicklistValueAttributes",
+        "apex:ConnectApi.CdpQuery.getMetadataEntities()",
+        "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String,String)",
+        "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String)",
+        "apex:ConnectApi.CdpQueryMetadataEntitiesOutput",
+        "apex:ConnectApi.CdpQueryMetadataEntityOutput",
+        "apex:ConnectApi.ChangeOrderAdjustmentGroupSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderDeliveryGroupSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderItemAdjustmentLineSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderItemSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderItemTaxLineItemSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderSummaryInputRepresentation",
+        "apex:ConnectApi.CommerceCart.createQuoteFromCart(String,String,ConnectApi.CreateQuoteFromCartInput)",
+        "apex:ConnectApi.CommerceCatalog.getProductChildCollection(String,String,String,List<String>,List<String>,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,String,Integer,String)",
+        "apex:ConnectApi.CommerceNote",
+        "apex:ConnectApi.CommerceQuoteCollection",
+        "apex:ConnectApi.CommerceQuoteDetail",
+        "apex:ConnectApi.CommerceQuoteLineItem",
+        "apex:ConnectApi.CommerceQuotes",
+        "apex:ConnectApi.CommerceQuotes.getQuoteDetail(String,String,String,String)",
+        "apex:ConnectApi.CommerceQuotes.getQuotes(String,String,String,ConnectApi.CommereQuotesSortOrder,Integer,String,String,String)",
+        "apex:ConnectApi.CommerceQuoteWithProductDetail",
+        "apex:ConnectApi.CreatedFile",
+        "apex:ConnectApi.CreateQuoteFromCartInput",
+        "apex:ConnectApi.CreateQuoteFromCartOutput",
+        "apex:ConnectApi.fetchFilesInput",
+        "apex:ConnectApi.FetchFilesOutputRepresentation",
+        "apex:ConnectApi.FlowApprovalProcess",
+        "apex:ConnectApi.FlowApprovalProcessAction",
+        "apex:ConnectApi.FlowApprovalProcessCollection",
+        "apex:ConnectApi.FlowApprovalProcesses",
+        "apex:ConnectApi.FlowApprovalProcesses.getFlowApprovalProcessWithStatus(String,List<String>)",
+        "apex:ConnectApi.LeadStatusPicklistValueAttributes",
+        "apex:ConnectApi.ManagedContent.getManagedContentProvidersForSpace(String)",
+        "apex:ConnectApi.ManagedContent.updateManagedContentProviderInstance(String,ConnectApi.ManagedContentProviderInput)",
+        "apex:ConnectApi.NamedCredentials.deleteExternalAuthIdentityProvider(String)",
+        "apex:ConnectApi.NamedCredentials.deleteExternalCredential(String)",
+        "apex:ConnectApi.NamedCredentials.deleteNamedCredential(String)",
+        "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)",
+        "apex:ConnectApi.NamedCredentials.updateExternalCredential(String,ConnectApi.ExternalCredentialInput)",
+        "apex:ConnectApi.NamedCredentials.updateNamedCredential(String,ConnectApi.NamedCredentialInput)",
+        "apex:ConnectApi.OpportunityStagePicklistValueAttributes",
+        "apex:ConnectApi.OptimizationFiles",
+        "apex:ConnectApi.OptimizationFiles.FetchOptimizationFiles(ConnectApi.fetchFilesInput)",
+        "apex:ConnectApi.Orchestration.getOrchestrationInstanceCollection(String,String)",
+        "apex:ConnectApi.OrderSummary.previewChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
+        "apex:ConnectApi.OrderSummary.submitChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
+        "apex:ConnectApi.PicklistValue",
+        "apex:ConnectApi.PicklistValues",
+        "apex:ConnectApi.PicklistValuesCollection",
+        "apex:ConnectApi.PreviewChangeOrderSummaryOutputRepresentation",
+        "apex:ConnectApi.QuoteError",
+        "apex:ConnectApi.RecordUi",
+        "apex:ConnectApi.RecordUi.getPicklistValuesByRecordType(String,String)",
+        "apex:ConnectApi.SubmitChangeOrderSummaryOutputRepresentation",
+        "apex:ConnectApi.WorkStepPicklistValueAttribute",
+        "apex:Database.CursorFetchResult",
+        "apex:Database.CursorFetchResult.getNextIndex()",
+        "apex:Database.CursorFetchResult.getNumDeletedRecords()",
+        "apex:Database.CursorFetchResult.getRecords()",
+        "apex:Database.CursorFetchResult.isDone()",
+        "apex:Database.PaginationCursor",
+        "apex:Database.PaginationCursor.fetchDeleted(Integer,Integer)",
+        "apex:Database.PaginationCursor.fetchPage(Integer,Integer)",
+        "apex:Database.PaginationCursor.getNumRecords()",
+        "apex:embeddedai.ApexMap.ApexMap()",
+        "apex:embeddedai.ApexMap.ApexMap(String,String)",
+        "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation()",
+        "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation(String,List<embeddedai.ApexMap>,List<embeddedai.RecordApexRepresentation>)",
+        "apex:embeddedai.RecordApexRepresentation.toRecordApexRep(String)",
+        "apex:Invocable.Action.createCustomAction(String,String,String,String)",
+        "apex:Invocable.Action.createStandardAction(String,String)",
+        "apex:Invocable.Action.getVersion()",
+        "apex:Messaging.ActionableNotification",
+        "apex:Messaging.ActionableNotification.Builder",
+        "apex:Messaging.ActionableNotification.Builder.build()",
+        "apex:Messaging.ActionableNotification.Builder.withActionIdentifier(String)",
+        "apex:Messaging.ActionableNotification.Builder.withNotificationTypeId(String)",
+        "apex:Messaging.ActionableNotification.Builder.withRecipientId(String)",
+        "apex:Messaging.ActionableNotification.Builder.withSenderId(String)",
+        "apex:Messaging.ActionableNotification.Builder.withTargetId(String)",
+        "apex:Messaging.ActionableNotification.Builder.withTargetPageRef(String)",
+        "apex:Messaging.ActionableNotification.getActionIdentifier()",
+        "apex:Messaging.ActionableNotification.getNotificationTypeId()",
+        "apex:Messaging.ActionableNotification.getRecipientId()",
+        "apex:Messaging.ActionableNotification.getSenderId()",
+        "apex:Messaging.ActionableNotification.getTargetId()",
+        "apex:Messaging.ActionableNotification.getTargetPageRef()",
+        "apex:Messaging.ActionError",
+        "apex:Messaging.ActionResult",
+        "apex:Messaging.ActionResult.Builder",
+        "apex:Messaging.ActionResult.Builder.build()",
+        "apex:Messaging.ActionResult.Builder.withErrorCode(Messaging.ActionError)",
+        "apex:Messaging.ActionResult.Builder.withMessage(String)",
+        "apex:Messaging.ActionResult.Builder.withSuccess(Boolean)",
+        "apex:Messaging.ActionResult.getErrorCode()",
+        "apex:Messaging.ActionResult.getMessage()",
+        "apex:Messaging.ActionResult.isSuccess()",
+        "apex:Messaging.NotificationActionHandler",
+        "apex:Messaging.NotificationActionHandler.executeAction(Messaging.ActionableNotification)",
+        "apex:RichMessaging.ProcessFormHandler",
+        "apex:RichMessaging.ProcessFormHandler.processFormRequest(RichMessaging.ProcessFormResponse)",
+        "apex:System.Database.getPaginationCursor(String,Object)",
+        "apex:System.Database.getPaginationCursor(String)",
+        "apex:System.Database.getPaginationCursorWithBinds(String,Map,Object)",
+        "apex:System.Limits.getApexCursors()",
+        "apex:System.Limits.getApexPaginationCursorRows()",
+        "apex:System.Limits.getApexPaginationCursors()",
+        "apex:System.Limits.getLimitApexCursors()",
+        "apex:System.Limits.getLimitApexPaginationCursorRows()",
+        "apex:System.Limits.getLimitApexPaginationCursors()",
+        "apex:System.System.purgeOldAsyncJobs(Date,Integer)",
+        "apex:System.Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)",
+        "apex:wave.QueryNode.order(List<List<String>>)"
+      ]
+    },
+    {
+      "sourcePath": "rn_apex_purgeOldAsyncJobs_overload.md",
+      "surfaceIds": [
+        "apex:System.System.purgeOldAsyncJobs(Date,Integer)"
+      ]
+    },
+    {
+      "sourcePath": "rn_apex_WithUserModeQuery.md",
+      "behaviorIds": [
+        "apex.soql.user-mode.automated-process"
+      ]
+    },
+    {
+      "sourcePath": "rn_api_rest_constructor_visibility_invocable_action_parameters_v66.md",
+      "behaviorIds": [
+        "rest.invocable-parameter.constructor-validation"
+      ]
+    },
+    {
+      "sourcePath": "rn_api_tooling_new_and_changed_objects.md",
+      "surfaceIds": [
+        "tooling:CustomNotifActionDef",
+        "tooling:CustomNotificationActionGroup",
+        "tooling:ExtConvParticipantIntegDef",
+        "tooling:SandboxProcessStage"
+      ]
+    },
+    {
+      "sourcePath": "rn_connect_in_apex_classes.md",
+      "surfaceIds": [
+        "apex:ConnectApi.AbstractPicklistValueAttributes",
+        "apex:ConnectApi.BuyerProductSummaryRepresentation",
+        "apex:ConnectApi.CaseStatusPicklistValueAttributes",
+        "apex:ConnectApi.CdpQuery.getMetadataEntities()",
+        "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String,String)",
+        "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String)",
+        "apex:ConnectApi.CdpQueryMetadataEntitiesOutput",
+        "apex:ConnectApi.CdpQueryMetadataEntityOutput",
+        "apex:ConnectApi.ChangeOrderAdjustmentGroupSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderDeliveryGroupSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderItemAdjustmentLineSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderItemSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderItemTaxLineItemSummaryInputRepresentation",
+        "apex:ConnectApi.ChangeOrderSummaryInputRepresentation",
+        "apex:ConnectApi.CommerceCart.createQuoteFromCart(String,String,ConnectApi.CreateQuoteFromCartInput)",
+        "apex:ConnectApi.CommerceCatalog.getProductChildCollection(String,String,String,List<String>,List<String>,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,String,Integer,String)",
+        "apex:ConnectApi.CommerceNote",
+        "apex:ConnectApi.CommerceQuoteCollection",
+        "apex:ConnectApi.CommerceQuoteDetail",
+        "apex:ConnectApi.CommerceQuoteLineItem",
+        "apex:ConnectApi.CommerceQuotes",
+        "apex:ConnectApi.CommerceQuotes.getQuoteDetail(String,String,String,String)",
+        "apex:ConnectApi.CommerceQuotes.getQuotes(String,String,String,ConnectApi.CommereQuotesSortOrder,Integer,String,String,String)",
+        "apex:ConnectApi.CommerceQuoteWithProductDetail",
+        "apex:ConnectApi.CreatedFile",
+        "apex:ConnectApi.CreateQuoteFromCartInput",
+        "apex:ConnectApi.CreateQuoteFromCartOutput",
+        "apex:ConnectApi.fetchFilesInput",
+        "apex:ConnectApi.FetchFilesOutputRepresentation",
+        "apex:ConnectApi.FlowApprovalProcess",
+        "apex:ConnectApi.FlowApprovalProcessAction",
+        "apex:ConnectApi.FlowApprovalProcessCollection",
+        "apex:ConnectApi.FlowApprovalProcesses",
+        "apex:ConnectApi.FlowApprovalProcesses.getFlowApprovalProcessWithStatus(String,List<String>)",
+        "apex:ConnectApi.LeadStatusPicklistValueAttributes",
+        "apex:ConnectApi.ManagedContent.getManagedContentProvidersForSpace(String)",
+        "apex:ConnectApi.ManagedContent.updateManagedContentProviderInstance(String,ConnectApi.ManagedContentProviderInput)",
+        "apex:ConnectApi.NamedCredentials.deleteExternalAuthIdentityProvider(String)",
+        "apex:ConnectApi.NamedCredentials.deleteExternalCredential(String)",
+        "apex:ConnectApi.NamedCredentials.deleteNamedCredential(String)",
+        "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)",
+        "apex:ConnectApi.NamedCredentials.updateExternalCredential(String,ConnectApi.ExternalCredentialInput)",
+        "apex:ConnectApi.NamedCredentials.updateNamedCredential(String,ConnectApi.NamedCredentialInput)",
+        "apex:ConnectApi.OpportunityStagePicklistValueAttributes",
+        "apex:ConnectApi.OptimizationFiles",
+        "apex:ConnectApi.OptimizationFiles.FetchOptimizationFiles(ConnectApi.fetchFilesInput)",
+        "apex:ConnectApi.Orchestration.getOrchestrationInstanceCollection(String,String)",
+        "apex:ConnectApi.OrderSummary.previewChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
+        "apex:ConnectApi.OrderSummary.submitChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
+        "apex:ConnectApi.PicklistValue",
+        "apex:ConnectApi.PicklistValues",
+        "apex:ConnectApi.PicklistValuesCollection",
+        "apex:ConnectApi.PreviewChangeOrderSummaryOutputRepresentation",
+        "apex:ConnectApi.QuoteError",
+        "apex:ConnectApi.RecordUi",
+        "apex:ConnectApi.RecordUi.getPicklistValuesByRecordType(String,String)",
+        "apex:ConnectApi.SubmitChangeOrderSummaryOutputRepresentation",
+        "apex:ConnectApi.WorkStepPicklistValueAttribute"
+      ]
+    },
+    {
+      "sourcePath": "rn_lwc_cte.md",
+      "behaviorIds": [
+        "lwc.template.complex-expressions"
+      ]
+    },
+    {
+      "sourcePath": "rn_lwc_versioning.md",
+      "behaviorIds": [
+        "lwc.framework-version.selection"
+      ]
+    },
+    {
+      "sourcePath": "rn_security_named_credentials_update_delete_nc.md",
+      "surfaceIds": [
+        "apex:ConnectApi.NamedCredentials.deleteExternalAuthIdentityProvider(String)",
+        "apex:ConnectApi.NamedCredentials.deleteExternalCredential(String)",
+        "apex:ConnectApi.NamedCredentials.deleteNamedCredential(String)",
+        "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)",
+        "apex:ConnectApi.NamedCredentials.updateExternalCredential(String,ConnectApi.ExternalCredentialInput)",
+        "apex:ConnectApi.NamedCredentials.updateNamedCredential(String,ConnectApi.NamedCredentialInput)"
+      ],
+      "behaviorIds": [
+        "connectapi.named-credentials.external-auth-id-parameter"
+      ]
+    }
+  ]
+}

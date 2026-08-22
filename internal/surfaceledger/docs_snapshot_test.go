@@ -47,15 +47,56 @@ func TestBuildDocsSnapshotRejectsNonApexSource(t *testing.T) {
 
 func TestBuildDocsSnapshotExtractsAPIVersionText(t *testing.T) {
 	root := t.TempDir()
-	writeDoc(t, root, "apex/apex_methods_system_label.md", "# Label Class\n\nAvailable in API version 60.0 and later.\n")
+	writeDoc(t, root, "apex/apex_ConnectAPI_Labels_get.md", "# get(name)\n\nAvailable in API version 60.0 and later.\n\n## Signature\n\n`public static String get(String name)`\n")
+
+	inv, err := apexdocs.BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if row := rowsByID(ReleaseRowsFromDocsInventory(inv))[ApexMemberID("ConnectApi", "Labels", "get", []string{"String"})]; row.APIVersion != "60.0" {
+		t.Fatalf("checked inventory api version = %q, want 60.0", row.APIVersion)
+	}
 
 	rows, err := BuildDocsSnapshot(root)
 	if err != nil {
 		t.Fatal(err)
 	}
-	row := rowsByID(rows)[ApexTypeID("System", "Label")]
+	row := rowsByID(rows)[ApexMemberID("ConnectApi", "Labels", "get", []string{"String"})]
 	if row.APIVersion != "60.0" {
 		t.Fatalf("api version = %q, want 60.0", row.APIVersion)
+	}
+}
+
+func TestRowsFromDocsInventoryPreserveTypeAndMemberAPIVersions(t *testing.T) {
+	rows := rowsByID(ReleaseRowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath: "apex/apex_connectapi_output_Quote.md",
+		Kind:       "output",
+		Namespace:  "ConnectApi",
+		Name:       "Quote",
+		Title:      "ConnectApi.Quote",
+		APIVersion: "66.0",
+		Members: []apexdocs.Member{{
+			Kind: "property", Name: "status", Signature: "status", PropertyType: "String", APIVersion: "67.0",
+		}},
+	}}}))
+	if got := rows[ApexTypeID("ConnectApi", "Quote")].APIVersion; got != "66.0" {
+		t.Fatalf("type API version = %q", got)
+	}
+	if got := rows[ApexMemberID("ConnectApi", "Quote", "status", nil)].APIVersion; got != "67.0" {
+		t.Fatalf("member API version = %q", got)
+	}
+}
+
+func TestRowsFromDocsInventoryPreserveToolingAPIVersion(t *testing.T) {
+	rows := rowsByID(ReleaseRowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath: "tooling-api/tooling_api_objects_engagementinsighttype.md",
+		Kind:       "document",
+		Name:       "EngagementInsightType",
+		Title:      "EngagementInsightType",
+		APIVersion: "65.0",
+	}}}))
+	if got := rows["tooling:EngagementInsightType"].APIVersion; got != "65.0" {
+		t.Fatalf("Tooling API version = %q", got)
 	}
 }
 
@@ -139,7 +180,7 @@ func TestRowsFromDocsInventoryIdentifiesServerAndUIDTOFamiliesWithoutClosingDocs
 				Name: "items",
 			}},
 		}, {
-			SourcePath: "tooling-api/intro_rest_resources_testing_runner_sync.md",
+			SourcePath: "tooling-api/tooling_api_objects_run.md",
 			Name:       "Run",
 			Members: []apexdocs.Member{{
 				Kind: "property",
@@ -324,16 +365,43 @@ func TestBuildDocsSnapshotUsesApexSignatureParameterTypes(t *testing.T) {
 	}
 }
 
-func TestBuildDocsSnapshotInfersConnectApiStandaloneMethodIdentity(t *testing.T) {
+func TestBuildDocsSnapshotPreservesSameArityOverloads(t *testing.T) {
 	root := t.TempDir()
-	writeDoc(t, root, "apex/apex_ConnectAPI_OMSAnalytics_productExpand.md", "# productsExpand(scope, products, expand)\n\n## Signature\n\n`public static ConnectApi.ProductsListOutputRepresentation productsExpand(String scope, List<String> products, List<ConnectApi.ProductExpandType> expand)`\n")
+	writeDoc(t, root, "apex/apex_methods_system_database.md", "# Database Class\n\n### convertLead(leadConvert, accessLevel)\n\n#### Signature\n\n`public static Database.LeadConvertResult convertLead(Database.LeadConvert leadConvert, AccessLevel accessLevel)`\n\n### convertLead(leadConverts, accessLevel)\n\n#### Signature\n\n`public static List<Database.LeadConvertResult> convertLead(List<Database.LeadConvert> leadConverts, AccessLevel accessLevel)`\n")
 
 	rows, err := BuildDocsSnapshot(root)
 	if err != nil {
 		t.Fatal(err)
 	}
 	byID := rowsByID(rows)
+	for _, want := range []string{
+		ApexMemberID("System", "Database", "convertLead", []string{"Database.LeadConvert", "AccessLevel"}),
+		ApexMemberID("System", "Database", "convertLead", []string{"List<Database.LeadConvert>", "AccessLevel"}),
+	} {
+		if _, ok := byID[want]; !ok {
+			t.Fatalf("missing same-arity overload %s in %#v", want, rows)
+		}
+	}
+}
+
+func TestBuildDocsSnapshotInfersConnectApiStandaloneMethodIdentity(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, root, "apex/apex_ConnectAPI_OMSAnalytics_productExpand.md", "# productsExpand(scope, products, expand)\n\n## Signature\n\n`public static ConnectApi.ProductsListOutputRepresentation productsExpand(String scope, List<String> products, List<ConnectApi.ProductExpandType> expand)`\n")
 	want := ApexMemberID("ConnectApi", "OMSAnalytics", "productsExpand", []string{"String", "List<String>", "List<ConnectApi.ProductExpandType>"})
+
+	inv, err := apexdocs.BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := rowsByID(ReleaseRowsFromDocsInventory(inv))[want]; !ok {
+		t.Fatalf("checked inventory lost standalone declaration types: %#v", inv.Documents)
+	}
+
+	rows, err := BuildDocsSnapshot(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := rowsByID(rows)
 	if _, ok := byID[want]; !ok {
 		t.Fatalf("missing canonical ConnectApi docs row %s in %#v", want, rows)
 	}
@@ -982,6 +1050,116 @@ func TestRowsFromDocsInventorySkipsApexHeadingAliasesWithoutTypedDeclarations(t 
 	goodInnerMember := ApexMemberID("mock", "InnerType", "valueOf", []string{"String"})
 	if _, ok := byID[goodInnerMember]; !ok {
 		t.Fatalf("missing inner type member row %s", goodInnerMember)
+	}
+}
+
+func TestRowsFromDocsInventorySkipsToolingGuideTables(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{
+		{
+			SourcePath: "tooling-api/intro_rest_resources_testing_runner_async.md",
+			Kind:       "document",
+			Name:       "Run",
+			Members: []apexdocs.Member{{
+				Kind:      "property",
+				Name:      "testLevel",
+				Signature: "testLevel",
+			}},
+		},
+		{
+			SourcePath: "tooling-api/tooling_api_objects_platformeventmigration.md",
+			Kind:       "object",
+			Name:       "PlatformEventMigration",
+			Members: []apexdocs.Member{{
+				Kind:      "property",
+				Name:      "Status",
+				Signature: "Status",
+			}},
+		},
+	}})
+	byID := rowsByID(rows)
+	if _, ok := byID[ToolingObjectID("Run")]; ok {
+		t.Fatal("kept Tooling guide table as an object")
+	}
+	if _, ok := byID[ToolingFieldID("Run", "testLevel")]; ok {
+		t.Fatal("kept Tooling guide table field")
+	}
+	if _, ok := byID[ToolingObjectID("PlatformEventMigration")]; !ok {
+		t.Fatal("dropped Tooling object reference")
+	}
+	if _, ok := byID[ToolingFieldID("PlatformEventMigration", "Status")]; !ok {
+		t.Fatal("dropped Tooling object field")
+	}
+}
+
+func TestRowsFromDocsInventorySkipsRESTGuidePages(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{
+		{SourcePath: "rest-api/resources_named_query_intro.md", Name: "Named", Title: "Named Query APIs for SOQL Queries"},
+		{SourcePath: "rest-api/resources_named_query_setup.md", Name: "Create", Title: "Create Named Query APIs in Setup"},
+		{SourcePath: "rest-api/resources_named_query_vscode.md", Name: "Create", Title: "Create Named Query APIs in VS Code"},
+		{SourcePath: "rest-api/resources_named_query.md", Name: "Named", Title: "Named Query API", Headings: []string{"Syntax"}},
+	}})
+	if len(rows) != 1 || rows[0].SurfaceID != RestResourceID("resources_named_query", "get") {
+		t.Fatalf("rows = %#v", rows)
+	}
+}
+
+func TestRowsFromDocsInventorySkipsInternalOnlyApexPages(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath:   "apex/apex_class_setup_Internal.md",
+		Kind:         "class",
+		Namespace:    "setup",
+		Name:         "Internal",
+		InternalOnly: true,
+	}}})
+	if len(rows) != 0 {
+		t.Fatalf("rows = %#v", rows)
+	}
+}
+
+func TestReleaseRowsFromDocsInventoryKeepsTypedInterfaceMethod(t *testing.T) {
+	rows := ReleaseRowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath: "apex/apex_interface_RichMessaging_ProcessFormHandler.md",
+		Kind:       "interface",
+		Namespace:  "RichMessaging",
+		Name:       "ProcessFormHandler",
+		Members: []apexdocs.Member{{
+			Kind:       "method",
+			Name:       "processFormRequest",
+			Signature:  "ID processFormRequest(RichMessaging.ProcessFormResponse formResponse)",
+			ReturnType: "ID",
+			Parameters: []string{"RichMessaging.ProcessFormResponse"},
+		}},
+	}}})
+	want := ApexMemberID("RichMessaging", "ProcessFormHandler", "processFormRequest", []string{"RichMessaging.ProcessFormResponse"})
+	if _, ok := rowsByID(rows)[want]; !ok {
+		t.Fatalf("missing typed interface method %s in %#v", want, rows)
+	}
+}
+
+func TestRowsFromDocsInventoryCanonicalizesMissingNamespaceSeparator(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath: "apex/apex_commercepayments_PostAuthorizationResponse_setCardPaymentMethodResponse.md",
+		Kind:       "document",
+		Name:       "setCardPaymentMethodResponse(CardPaymentMethodResponsecardPaymentMethod)",
+		Signature:  "global void setCardPaymentMethodResponse(commercepaymentsCardPaymentMethodResponse cardPaymentMethodResponse)",
+	}}})
+	want := ApexMemberID("commercepayments", "PostAuthorizationResponse", "setCardPaymentMethodResponse", []string{"commercepayments.CardPaymentMethodResponse"})
+	if _, ok := rowsByID(rows)[want]; !ok {
+		t.Fatalf("missing normalized parameter %s in %#v", want, rows)
+	}
+}
+
+func TestRowsFromDocsInventoryAliasesFullCommercePaymentsPropertyStem(t *testing.T) {
+	rows := RowsFromDocsInventory(apexdocs.Inventory{Documents: []apexdocs.Document{{
+		SourcePath: "apex/apex_commercepayments_PostAuthApiPaymentMethodRequest_alternativePaymentMethod.md",
+		Kind:       "document",
+		Name:       "alternativePaymentMethod",
+		Title:      "alternativePaymentMethod",
+		Signature:  "global commercepayments.AlternativePaymentMethodRequest PaymentMethod {get; set;}",
+	}}})
+	want := ApexMemberID("commercepayments", "PostAuthApiPaymentMethodRequest", "alternativePaymentMethod", nil)
+	if _, ok := rowsByID(rows)[want]; !ok {
+		t.Fatalf("missing canonical property %s in %#v", want, rows)
 	}
 }
 

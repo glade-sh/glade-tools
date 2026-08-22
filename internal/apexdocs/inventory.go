@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -38,21 +39,25 @@ type NamespaceSummary struct {
 }
 
 type Document struct {
-	SourcePath string        `json:"sourcePath"`
-	Kind       string        `json:"kind"`
-	Namespace  string        `json:"namespace,omitempty"`
-	Name       string        `json:"name"`
-	Title      string        `json:"title,omitempty"`
-	Headings   []string      `json:"headings,omitempty"`
-	Members    []Member      `json:"members,omitempty"`
-	Examples   []Example     `json:"examples,omitempty"`
-	Behaviors  []DocBehavior `json:"behaviors,omitempty"`
+	SourcePath   string        `json:"sourcePath"`
+	Kind         string        `json:"kind"`
+	Namespace    string        `json:"namespace,omitempty"`
+	Name         string        `json:"name"`
+	Title        string        `json:"title,omitempty"`
+	Signature    string        `json:"signature,omitempty"`
+	APIVersion   string        `json:"apiVersion,omitempty"`
+	InternalOnly bool          `json:"internalOnly,omitempty"`
+	Headings     []string      `json:"headings,omitempty"`
+	Members      []Member      `json:"members,omitempty"`
+	Examples     []Example     `json:"examples,omitempty"`
+	Behaviors    []DocBehavior `json:"behaviors,omitempty"`
 }
 
 type Member struct {
 	Kind         string   `json:"kind"`
 	Name         string   `json:"name"`
 	Signature    string   `json:"signature"`
+	APIVersion   string   `json:"apiVersion,omitempty"`
 	ReturnType   string   `json:"returnType,omitempty"`
 	PropertyType string   `json:"propertyType,omitempty"`
 	Parameters   []string `json:"parameters,omitempty"`
@@ -226,20 +231,158 @@ func parseDocument(path, rel string) (Document, error) {
 	title := firstHeading(lines, "# ")
 	meta := inferMetadata(rel, title)
 	doc := Document{
-		SourcePath: rel,
-		Kind:       meta.kind,
-		Namespace:  meta.namespace,
-		Name:       meta.name,
-		Title:      title,
+		SourcePath:   rel,
+		Kind:         meta.kind,
+		Namespace:    meta.namespace,
+		Name:         meta.name,
+		Title:        title,
+		Signature:    documentSignature(lines),
+		InternalOnly: introIsInternalOnly(lines),
 	}
 	doc.Headings = collectHeadings(lines)
 	doc.Members = collectMembers(lines, doc.Name)
+	if len(doc.Members) == 0 {
+		doc.APIVersion = documentAPIVersion(lines)
+	} else {
+		doc.APIVersion = completeMembersAPIVersion(doc.Members)
+	}
 	doc.Examples = collectExamples(lines)
 	doc.Behaviors = collectBehaviors(lines)
 	if doc.Namespace == "" {
 		doc.Namespace = namespaceFromSection(lines)
 	}
 	return doc, nil
+}
+
+func introIsInternalOnly(lines []string) bool {
+	var intro strings.Builder
+	for _, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "## ") {
+			break
+		}
+		intro.WriteString(strings.ToLower(line))
+		intro.WriteByte(' ')
+	}
+	text := strings.Join(strings.Fields(intro.String()), " ")
+	return strings.Contains(text, "for internal use only") ||
+		strings.Contains(text, "reserved for internal use") ||
+		strings.Contains(text, "reserved for future use")
+}
+
+var (
+	availableAPIVersionPattern = regexp.MustCompile(`(?i)Available\s+(?:in|from)\s+(?:Tooling\s+)?API\s+versions?\s+([0-9]+(?:\.[0-9]+)?)`)
+	canonicalAPIVersionPattern = regexp.MustCompile(`^[1-9][0-9]*(?:\.0)?$`)
+)
+
+func documentAPIVersion(lines []string) string {
+	return sectionAPIVersion(lines, "## ")
+}
+
+func memberAPIVersion(lines []string) string {
+	return sectionAPIVersion(lines, "#### ")
+}
+
+func sectionAPIVersion(lines []string, headingPrefix string) string {
+	earliest := ""
+	add := func(value string) {
+		value = canonicalAPIVersion(value)
+		if value == "" {
+			return
+		}
+		if earliest == "" || apiVersionMajor(value) < apiVersionMajor(earliest) {
+			earliest = value
+		}
+	}
+	introEnd := len(lines)
+	for index, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "##") {
+			introEnd = index
+			break
+		}
+	}
+	for _, match := range availableAPIVersionPattern.FindAllStringSubmatch(strings.Join(lines[:introEnd], "\n"), -1) {
+		add(match[1])
+	}
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if !strings.HasPrefix(trimmed, headingPrefix) || !strings.EqualFold(strings.TrimSpace(strings.TrimPrefix(trimmed, headingPrefix)), "API Version") {
+			continue
+		}
+		for _, next := range lines[i+1:] {
+			next = strings.TrimSpace(next)
+			if next == "" {
+				continue
+			}
+			add(next)
+			break
+		}
+	}
+	for i, line := range lines {
+		header := markdownTableCells(line)
+		versionIndex := -1
+		for index, cell := range header {
+			name := strings.ToLower(strings.Join(strings.Fields(stripMarkdownInline(cell)), " "))
+			if name == "available version" || name == "api version" {
+				versionIndex = index
+				break
+			}
+		}
+		if versionIndex < 0 {
+			continue
+		}
+		for _, next := range lines[i+1:] {
+			row := markdownTableCells(next)
+			if len(row) == 0 {
+				break
+			}
+			if !isMarkdownSeparatorRow(row) && versionIndex < len(row) {
+				add(stripMarkdownInline(row[versionIndex]))
+			}
+		}
+	}
+	return earliest
+}
+
+func canonicalAPIVersion(value string) string {
+	value = strings.TrimSpace(value)
+	if !canonicalAPIVersionPattern.MatchString(value) {
+		return ""
+	}
+	if !strings.Contains(value, ".") {
+		value += ".0"
+	}
+	return value
+}
+
+func apiVersionMajor(value string) int {
+	major, _ := strconv.Atoi(strings.TrimSuffix(value, ".0"))
+	return major
+}
+
+func completeMembersAPIVersion(members []Member) string {
+	earliest := 0
+	for _, member := range members {
+		major, err := strconv.Atoi(strings.TrimSuffix(member.APIVersion, ".0"))
+		if err != nil || major == 0 {
+			return ""
+		}
+		if earliest == 0 || major < earliest {
+			earliest = major
+		}
+	}
+	if earliest == 0 {
+		return ""
+	}
+	return strconv.Itoa(earliest) + ".0"
+}
+
+func documentSignature(lines []string) string {
+	for i, line := range lines {
+		if strings.TrimSpace(line) == "## Signature" {
+			return readSignatureCode(lines[i+1:])
+		}
+	}
+	return ""
 }
 
 type documentMeta struct {
@@ -538,8 +681,10 @@ func collectMembers(lines []string, typeName string) []Member {
 	section := ""
 	propertyMembers := collectPropertyTableMembers(lines)
 	propertyTypes := map[string]string{}
+	propertyVersions := map[string]string{}
 	for _, member := range propertyMembers {
 		propertyTypes[member.Name] = member.PropertyType
+		propertyVersions[member.Name] = member.APIVersion
 	}
 	seen := map[string]bool{}
 	for i, line := range lines {
@@ -561,12 +706,14 @@ func collectMembers(lines []string, typeName string) []Member {
 			Kind:        memberKind(heading, section, typeName),
 			Name:        memberName(heading),
 			Signature:   heading,
+			APIVersion:  memberAPIVersion(memberSection(lines[i+1:])),
 			Section:     section,
 			Description: firstParagraph(lines[i+1:]),
 		}
 		if propertyType := propertyTypes[member.Name]; propertyType != "" {
 			member.Kind = "property"
 			member.PropertyType = propertyType
+			member.APIVersion = propertyVersions[member.Name]
 		}
 		if signature := signatureBlock(lines[i+1:]); signature != "" {
 			member.Signature = signature
@@ -574,6 +721,21 @@ func collectMembers(lines []string, typeName string) []Member {
 				member.Name = name
 				member.PropertyType = propertyType
 			} else if parsed := parseApexSignature(signature, typeName); parsed.name != "" {
+				headingName := member.Name
+				headingParameters := parameterNamesFromHeading(heading)
+				if parsed.name == headingName && len(parsed.parameters) < len(headingParameters) {
+					if parameterTypes := documentedParameterTypes(lines[i+1:]); len(parameterTypes) == len(headingParameters) {
+						signature = signatureWithParameters(signature, headingParameters, parameterTypes)
+						member.Signature = signature
+						parsed = parseApexSignature(signature, typeName)
+					}
+				}
+				if parsed.name != headingName {
+					member.Signature = heading
+					members = append(members, member)
+					seen[member.Name] = true
+					continue
+				}
 				member.Name = parsed.name
 				member.ReturnType = parsed.returnType
 				member.Parameters = parsed.parameters
@@ -602,6 +764,15 @@ func collectMembers(lines []string, typeName string) []Member {
 	return members
 }
 
+func memberSection(lines []string) []string {
+	for i, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "### ") {
+			return lines[:i]
+		}
+	}
+	return lines
+}
+
 func collectPropertyTableMembers(lines []string) []Member {
 	var out []Member
 	section := ""
@@ -617,7 +788,7 @@ func collectPropertyTableMembers(lines []string) []Member {
 		if !strings.Contains(strings.ToLower(section), "propert") {
 			continue
 		}
-		nameIdx, typeIdx := propertyTableIndexes(cells)
+		nameIdx, typeIdx, versionIdx := propertyTableIndexes(cells)
 		if nameIdx < 0 || typeIdx < 0 {
 			continue
 		}
@@ -637,13 +808,17 @@ func collectPropertyTableMembers(lines []string) []Member {
 				continue
 			}
 			if typ := NormalizeApexDocType(row[typeIdx]); typ != "" {
-				out = append(out, Member{
+				member := Member{
 					Kind:         "property",
 					Name:         name,
 					Signature:    name,
 					PropertyType: typ,
 					Section:      section,
-				})
+				}
+				if versionIdx >= 0 && versionIdx < len(row) {
+					member.APIVersion = canonicalAPIVersion(stripMarkdownInline(row[versionIdx]))
+				}
+				out = append(out, member)
 			}
 		}
 	}
@@ -664,8 +839,8 @@ func markdownTableCells(line string) []string {
 	return cells
 }
 
-func propertyTableIndexes(cells []string) (int, int) {
-	nameIdx, typeIdx := -1, -1
+func propertyTableIndexes(cells []string) (int, int, int) {
+	nameIdx, typeIdx, versionIdx := -1, -1, -1
 	for i, cell := range cells {
 		header := strings.ToLower(strings.Join(strings.Fields(stripMarkdownInline(cell)), " "))
 		switch header {
@@ -673,9 +848,11 @@ func propertyTableIndexes(cells []string) (int, int) {
 			nameIdx = i
 		case "type":
 			typeIdx = i
+		case "available version":
+			versionIdx = i
 		}
 	}
-	return nameIdx, typeIdx
+	return nameIdx, typeIdx, versionIdx
 }
 
 func isMarkdownSeparatorRow(cells []string) bool {
@@ -706,10 +883,14 @@ func signatureBlock(lines []string) string {
 }
 
 func readSignatureCode(lines []string) string {
-	var b strings.Builder
+	var fenced, inline strings.Builder
 	inFence := false
+	inInline := false
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
+		if trimmed == "#### Note" {
+			continue
+		}
 		if strings.HasPrefix(trimmed, "#### ") || strings.HasPrefix(trimmed, "### ") {
 			break
 		}
@@ -722,28 +903,110 @@ func readSignatureCode(lines []string) string {
 		}
 		if inFence {
 			if trimmed != "" {
-				b.WriteString(trimmed)
-				b.WriteByte(' ')
+				fenced.WriteString(trimmed)
+				fenced.WriteByte(' ')
 			}
 			continue
 		}
-		if inline := inlineCode(trimmed); inline != "" {
-			return inline
+		for _, r := range line {
+			if r == '`' {
+				if inInline {
+					candidate := strings.Join(strings.Fields(inline.String()), " ")
+					if looksLikeApexDeclaration(candidate) {
+						return candidate
+					}
+					inline.Reset()
+					inInline = false
+					continue
+				}
+				inInline = true
+				continue
+			}
+			if inInline {
+				inline.WriteRune(r)
+			}
+		}
+		if inInline {
+			inline.WriteByte(' ')
 		}
 	}
-	return strings.Join(strings.Fields(b.String()), " ")
+	return strings.Join(strings.Fields(fenced.String()), " ")
 }
 
-func inlineCode(line string) string {
-	start := strings.IndexByte(line, '`')
-	if start < 0 {
-		return ""
+func looksLikeApexDeclaration(value string) bool {
+	if strings.Contains(value, "(") || strings.Contains(value, "{") {
+		return true
 	}
-	end := strings.IndexByte(line[start+1:], '`')
-	if end < 0 {
-		return ""
+	fields := strings.Fields(value)
+	if len(fields) < 2 {
+		return false
 	}
-	return strings.TrimSpace(line[start+1 : start+1+end])
+	switch strings.ToLower(fields[0]) {
+	case "public", "private", "protected", "global", "webservice", "static":
+		return true
+	default:
+		return false
+	}
+}
+
+func parameterNamesFromHeading(heading string) []string {
+	open := strings.IndexByte(heading, '(')
+	close := strings.LastIndexByte(heading, ')')
+	if open < 0 || close < open {
+		return nil
+	}
+	parts := splitTopLevel(heading[open+1:close], ',')
+	if len(parts) == 1 && strings.TrimSpace(parts[0]) == "" {
+		return []string{}
+	}
+	for i, part := range parts {
+		fields := strings.Fields(part)
+		if len(fields) > 0 {
+			parts[i] = fields[len(fields)-1]
+		}
+	}
+	return parts
+}
+
+func documentedParameterTypes(lines []string) []string {
+	inParameters := false
+	var out []string
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "#### ") {
+			if inParameters {
+				break
+			}
+			inParameters = trimmed == "#### Parameters"
+			continue
+		}
+		if !inParameters {
+			continue
+		}
+		lower := strings.ToLower(trimmed)
+		index := strings.Index(lower, "type:")
+		if index < 0 {
+			continue
+		}
+		value := NormalizeApexDocType(trimmed[index+len("type:"):])
+		if value != "" {
+			out = append(out, value)
+		}
+	}
+	return out
+}
+
+func signatureWithParameters(signature string, names, types []string) string {
+	open := strings.IndexByte(signature, '(')
+	close := strings.LastIndexByte(signature, ')')
+	if open < 0 || close < open || len(names) != len(types) {
+		return signature
+	}
+	parameters := make([]string, len(names))
+	for i := range names {
+		parameters[i] = types[i] + " " + names[i]
+	}
+	return signature[:open+1] + strings.Join(parameters, ", ") + signature[close:]
 }
 
 type parsedApexSignature struct {
@@ -1014,7 +1277,7 @@ func firstParagraph(lines []string) string {
 	}
 	out := strings.Join(parts, " ")
 	if len(out) > 400 {
-		out = out[:400]
+		out = strings.ToValidUTF8(out[:400], "")
 	}
 	return out
 }

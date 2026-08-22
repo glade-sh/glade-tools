@@ -282,7 +282,7 @@ func TestPerformanceScanAppliesTopAfterMinConfidence(t *testing.T) {
 
 func TestPerformanceScanOrgFactsFlag(t *testing.T) {
 	root := t.TempDir()
-	writeCLITestFile(t, filepath.Join(root, "sfdx-project.json"), `{"packageDirectories":[{"path":"force-app","default":true}],"sourceApiVersion":"63.0"}`)
+	writeCLITestFile(t, filepath.Join(root, "sfdx-project.json"), `{"packageDirectories":[{"path":"force-app","default":true}],"sourceApiVersion":"65.0"}`)
 	writeCLITestFile(t, filepath.Join(root, "force-app/main/default/classes/QueryRisk.cls"), `
 public class QueryRisk {
   public static List<Account> byFormula(String value) {

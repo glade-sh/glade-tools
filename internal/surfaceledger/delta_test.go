@@ -1,6 +1,7 @@
 package surfaceledger
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -96,7 +97,7 @@ func TestReleaseDelta_MissingIDRemoved(t *testing.T) {
 		{SurfaceID: "apex:Old.Class", Signature: "v1"},
 	}
 	current := []SurfaceLedgerRow{}
-	added, removed, changed, unchanged, err := ComputeReleaseDelta(prev, current, nil)
+	added, removed, changed, unchanged, err := ComputeReleaseDelta(prev, current, stdClassifyAll("apex:Old.Class"))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -141,6 +142,21 @@ func TestReleaseDelta_SameIDChangedContract(t *testing.T) {
 	}
 }
 
+func TestReleaseDelta_APIVersionChangeIsChanged(t *testing.T) {
+	prev := []SurfaceLedgerRow{{SurfaceID: "apex:System.Probe", APIVersion: "66.0"}}
+	current := []SurfaceLedgerRow{{SurfaceID: "apex:System.Probe", APIVersion: "67.0"}}
+	added, removed, changed, unchanged, err := ComputeReleaseDelta(prev, current, stdClassifyAll("apex:System.Probe"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(changed) != 1 || len(unchanged) != 0 {
+		t.Fatalf("changed=%d unchanged=%d, want changed=1 unchanged=0", len(changed), len(unchanged))
+	}
+	if len(added) != 0 || len(removed) != 0 {
+		t.Fatalf("added=%d removed=%d, want both 0", len(added), len(removed))
+	}
+}
+
 // --- test case 5: same contract-bearing row is unchanged ---
 
 func TestReleaseDelta_SameRowUnchanged(t *testing.T) {
@@ -181,7 +197,7 @@ func TestReleaseDelta_DeterministicOrdering(t *testing.T) {
 		{SurfaceID: "apex:B.Class", Signature: "unchanged"},
 		{SurfaceID: "apex:M.Class", Signature: "new"},
 	}
-	cls := stdClassifyAll("apex:A.Class", "apex:M.Class")
+	cls := stdClassifyAll("apex:A.Class", "apex:Z.Class", "apex:M.Class")
 	added, removed, changed, unchanged, err := ComputeReleaseDelta(prev, current, cls)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -234,7 +250,7 @@ func TestReleaseDelta_DuplicateCurrentFails(t *testing.T) {
 	}
 }
 
-// --- test case 8: every added or changed row requires explicit classification ---
+// --- test case 8: every added, removed, or changed row requires explicit classification ---
 
 func TestReleaseDelta_AddedMissingClassificationFails(t *testing.T) {
 	prev := []SurfaceLedgerRow{}
@@ -257,6 +273,54 @@ func TestReleaseDelta_ChangedMissingClassificationFails(t *testing.T) {
 	_, _, _, _, err := ComputeReleaseDelta(prev, current, nil)
 	if err == nil {
 		t.Fatal("expected error for missing classification on changed row, got nil")
+	}
+}
+
+func TestReleaseDelta_RemovedMissingClassificationFails(t *testing.T) {
+	prev := []SurfaceLedgerRow{{SurfaceID: "apex:Old.Class", Signature: "v1"}}
+	_, _, _, _, err := ComputeReleaseDelta(prev, nil, nil)
+	if err == nil || !strings.Contains(err.Error(), "missing classification for removed row") {
+		t.Fatalf("error = %v, want missing classification for removed row", err)
+	}
+}
+
+func TestReleaseDelta_RemovedClassificationIsNotStale(t *testing.T) {
+	prev := []SurfaceLedgerRow{{SurfaceID: "apex:Old.Class", Signature: "v1"}}
+	_, removed, _, _, err := ComputeReleaseDelta(prev, nil, stdClassifyAll("apex:Old.Class"))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(removed) != 1 {
+		t.Fatalf("removed=%d, want 1", len(removed))
+	}
+}
+
+func TestDiffReleaseRows_ReturnsAllKindsWithoutClassifications(t *testing.T) {
+	prev := []SurfaceLedgerRow{
+		{SurfaceID: "apex:Removed.Class", Signature: "old"},
+		{SurfaceID: "apex:Changed.Class", Signature: "old"},
+		{SurfaceID: "apex:Unchanged.Class", Signature: "same"},
+	}
+	current := []SurfaceLedgerRow{
+		{SurfaceID: "apex:Added.Class", Signature: "new"},
+		{SurfaceID: "apex:Changed.Class", Signature: "new"},
+		{SurfaceID: "apex:Unchanged.Class", Signature: "same"},
+	}
+	added, removed, changed, unchanged, err := DiffReleaseRows(prev, current)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got := surfaceIDs(added); !equalStrings(got, []string{"apex:Added.Class"}) {
+		t.Errorf("added=%v", got)
+	}
+	if got := surfaceIDs(removed); !equalStrings(got, []string{"apex:Removed.Class"}) {
+		t.Errorf("removed=%v", got)
+	}
+	if got := surfaceIDs(changed); !equalStrings(got, []string{"apex:Changed.Class"}) {
+		t.Errorf("changed=%v", got)
+	}
+	if got := surfaceIDs(unchanged); !equalStrings(got, []string{"apex:Unchanged.Class"}) {
+		t.Errorf("unchanged=%v", got)
 	}
 }
 
@@ -384,6 +448,20 @@ func TestReleaseDelta_T1ValidClassifications(t *testing.T) {
 	}
 }
 
+func TestReleaseDelta_NewCaseAcceptsExactProductTestBinding(t *testing.T) {
+	prev := []SurfaceLedgerRow{}
+	current := []SurfaceLedgerRow{{SurfaceID: "apex:T.Class", Signature: "v1"}}
+	cls := []ReleaseClassification{{
+		SurfaceID:    "apex:T.Class",
+		Scope:        ScopeT1,
+		Disposition:  DispoNewCase,
+		ProductTests: []string{"internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:t.class"},
+	}}
+	if _, _, _, _, err := ComputeReleaseDelta(prev, current, cls); err != nil {
+		t.Fatalf("exact product-test binding: %v", err)
+	}
+}
+
 // --- test case 12: T2 and outside-claim rows still require explicit decision and reason ---
 
 func TestReleaseDelta_T2RequiresDecision(t *testing.T) {
@@ -430,14 +508,14 @@ func TestReleaseDelta_T2EmptyReasonFails(t *testing.T) {
 	}
 }
 
-// --- test case 13: removed and unchanged rows do not require release classification ---
+// --- test case 13: removed and unchanged rows have distinct classification requirements ---
 
-func TestReleaseDelta_RemovedRowNoClassificationNeeded(t *testing.T) {
+func TestReleaseDelta_RemovedRowRequiresClassification(t *testing.T) {
 	prev := []SurfaceLedgerRow{
 		{SurfaceID: "apex:Old.Class", Signature: "v1"},
 	}
 	current := []SurfaceLedgerRow{}
-	added, removed, changed, unchanged, err := ComputeReleaseDelta(prev, current, nil)
+	added, removed, changed, unchanged, err := ComputeReleaseDelta(prev, current, stdClassifyAll("apex:Old.Class"))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -482,6 +560,17 @@ func TestReleaseDelta_StaleClassificationFails(t *testing.T) {
 	_, _, _, _, err := ComputeReleaseDelta(prev, current, cls)
 	if err == nil {
 		t.Fatal("expected error for stale classification on unchanged row, got nil")
+	}
+}
+
+func TestReleaseDelta_StaleClassificationDeterministicOrdering(t *testing.T) {
+	classifications := stdClassifyAll("apex:Stale.Z", "apex:Stale.M", "apex:Stale.A")
+	want := "classification for row not in added, removed, or changed: apex:stale.a"
+	for i := 0; i < 20; i++ {
+		_, _, _, _, err := ComputeReleaseDelta(nil, nil, classifications)
+		if err == nil || err.Error() != want {
+			t.Fatalf("iteration %d: error = %v, want %q", i, err, want)
+		}
 	}
 }
 

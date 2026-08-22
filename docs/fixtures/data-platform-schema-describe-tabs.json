@@ -154,7 +154,7 @@
   "salesforceExclusionReason": "Schema.describeTabs is permission-gated in the target scratch org; the observed Salesforce SecurityException is an org entitlement boundary, not a Glade runtime failure. Retain compile/local shape proof and exclude hosted runtime.",
   "source": [
     {
-      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}",
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"65.0\"}",
       "path": "sfdx-project.json"
     },
     {

@@ -80,7 +80,7 @@
   "source": [
     {
       "path": "sfdx-project.json",
-      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"65.0\"}"
     },
     {
       "path": "force-app/main/default/classes/SchemaDescribeTokenEdgesFixtureTest.cls",

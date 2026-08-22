@@ -18,7 +18,7 @@ import (
 func testPerfProject(t *testing.T, files map[string]string) string {
 	t.Helper()
 	root := t.TempDir()
-	writeTestFile(t, filepath.Join(root, "sfdx-project.json"), `{"packageDirectories":[{"path":"force-app","default":true}],"sourceApiVersion":"63.0"}`)
+	writeTestFile(t, filepath.Join(root, "sfdx-project.json"), `{"packageDirectories":[{"path":"force-app","default":true}],"sourceApiVersion":"65.0"}`)
 	for rel, body := range files {
 		writeTestFile(t, filepath.Join(root, filepath.FromSlash(rel)), body)
 	}

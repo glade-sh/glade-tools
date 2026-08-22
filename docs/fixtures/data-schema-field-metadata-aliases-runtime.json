@@ -18,9 +18,9 @@
     {"surfaceId":"apex:Schema.DescribeFieldResult.relationshipname","symbol":"Schema.DescribeFieldResult.relationshipname","kind":"exec"},
     {"surfaceId":"apex:Schema.DescribeFieldResult.restrictedpicklist","symbol":"Schema.DescribeFieldResult.restrictedpicklist","kind":"exec"}
   ],
-  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "project":{"sourceApiVersion":"65.0","packageDirectories":[{"path":"force-app","default":true}]},
   "source":[
-    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"},
+    {"path":"sfdx-project.json","content":"{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"65.0\"}"},
     {"path":"force-app/main/default/objects/Record__c/Record__c.object-meta.xml","content":"<CustomObject><label>Record</label><pluralLabel>Records</pluralLabel><nameField><label>Record Name</label><type>Text</type><required>true</required></nameField><sharingModel>ReadWrite</sharingModel></CustomObject>"},
     {"path":"force-app/main/default/objects/Record__c/fields/Number__c.field-meta.xml","content":"<CustomField><fullName>Number__c</fullName><label>Number</label><type>Number</type><precision>12</precision><scale>2</scale></CustomField>"},
     {"path":"force-app/main/default/objects/Record__c/fields/Formula__c.field-meta.xml","content":"<CustomField><fullName>Formula__c</fullName><label>Formula</label><type>Number</type><formula>Number__c * 2</formula><precision>12</precision><scale>2</scale></CustomField>"},

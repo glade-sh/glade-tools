@@ -27,6 +27,7 @@ if ! git -C "${GLADE_ROOT}" rev-parse --is-inside-work-tree >/dev/null 2>&1; the
   echo "glade git worktree not found: ${GLADE_ROOT}" >&2
   exit 1
 fi
+GLADE_ROOT="$(cd "${GLADE_ROOT}" && pwd)"
 if [[ ! -x "${GLADE_BIN}" ]]; then
   echo "glade candidate binary not found or not executable: ${GLADE_BIN}" >&2
   exit 1
@@ -37,6 +38,36 @@ if [[ -z "${TARGET_ORG}" ]]; then
 fi
 if [[ -z "${OUT_DIR}" ]]; then
   echo "output directory must not be blank" >&2
+  exit 1
+fi
+
+# --- bind both candidates to clean source commits ---
+GLADE_HEAD="$(git -C "${GLADE_ROOT}" rev-parse HEAD)"
+TOOLS_HEAD="$(git -C "${REPO_ROOT}" rev-parse HEAD)"
+if [[ -n "$(git -C "${GLADE_ROOT}" status --porcelain)" ]]; then
+  echo "glade worktree must be clean" >&2
+  exit 1
+fi
+if [[ -n "$(git -C "${REPO_ROOT}" status --porcelain)" ]]; then
+  echo "glade-tools worktree must be clean" >&2
+  exit 1
+fi
+
+binary_vcs_setting() {
+  local binary="$1" setting="$2"
+  go version -m "${binary}" 2>/dev/null | sed -n "s/^[[:space:]]*build[[:space:]]*vcs\\.${setting}=//p"
+}
+
+TOOLS_BIN_REVISION="$(binary_vcs_setting "${TOOLS_BIN}" revision)"
+TOOLS_BIN_MODIFIED="$(binary_vcs_setting "${TOOLS_BIN}" modified)"
+GLADE_BIN_REVISION="$(binary_vcs_setting "${GLADE_BIN}" revision)"
+GLADE_BIN_MODIFIED="$(binary_vcs_setting "${GLADE_BIN}" modified)"
+if [[ "${TOOLS_BIN_REVISION}" != "${TOOLS_HEAD}" || "${TOOLS_BIN_MODIFIED}" != "false" ]]; then
+  echo "glade-tools binary is not built from clean commit ${TOOLS_HEAD}" >&2
+  exit 1
+fi
+if [[ "${GLADE_BIN_REVISION}" != "${GLADE_HEAD}" || "${GLADE_BIN_MODIFIED}" != "false" ]]; then
+  echo "glade candidate is not built from clean commit ${GLADE_HEAD}" >&2
   exit 1
 fi
 
@@ -57,14 +88,52 @@ CORPUS_DIR="${OUT_DIR}/corpus"
 mkdir -p "${CORPUS_DIR}"
 
 # --- provenance ---
-GLADE_HEAD="$(git -C "${GLADE_ROOT}" rev-parse HEAD)"
-TOOLS_HEAD="$(git -C "${REPO_ROOT}" rev-parse HEAD)"
+TOOLS_BIN_SHA256="$(shasum -a 256 "${TOOLS_BIN}" | awk '{print $1}')"
+GLADE_BIN_SHA256="$(shasum -a 256 "${GLADE_BIN}" | awk '{print $1}')"
+PROVENANCE_OUT="${OUT_DIR}/candidate-provenance.json"
+jq -n \
+  --arg gladeCommit "${GLADE_HEAD}" \
+  --arg gladeSHA256 "${GLADE_BIN_SHA256}" \
+  --arg toolsCommit "${TOOLS_HEAD}" \
+  --arg toolsSHA256 "${TOOLS_BIN_SHA256}" \
+  '{schemaVersion: 1,
+    glade: {commit: $gladeCommit, modified: false, sha256: $gladeSHA256},
+    gladeTools: {commit: $toolsCommit, modified: false, sha256: $toolsSHA256}}' > "${PROVENANCE_OUT}"
 
-# --- step 1: salesforce verify ---
+# --- step 1: generated release data and exact Glade product tests ---
+echo "salesforce release check..." >&2
+"${TOOLS_BIN}" salesforce release \
+  --contract docs/fixtures/salesforce-release-contract.json \
+  --glade-root "${GLADE_ROOT}" \
+  --check || { echo "release generation check failed" >&2; exit 1; }
+
+echo "installing LWC compiler..." >&2
+npm ci --prefix "${GLADE_ROOT}/third_party/lwc"
+export GLADE_LWC_COMPILE=1
+export GLADE_ROOT
+PRODUCT_TEST_EVENTS="${OUT_DIR}/product-tests.jsonl"
+echo "Glade product tests..." >&2
+go -C "${GLADE_ROOT}" test -json -count=1 -p 4 ./... | tee "${PRODUCT_TEST_EVENTS}"
+
+PRODUCT_TEST_EVENTS_SHA256="$(shasum -a 256 "${PRODUCT_TEST_EVENTS}" | awk '{print $1}')"
+PRODUCT_VERSION_PROOF="${OUT_DIR}/product-version-proof.json"
+jq -n \
+  --arg gladeCommit "${GLADE_HEAD}" \
+  --arg gladeRoot "${GLADE_ROOT}" \
+  --arg testEventsSHA256 "${PRODUCT_TEST_EVENTS_SHA256}" \
+  '{schemaVersion: 1,
+    gladeCommit: $gladeCommit,
+    status: "pass",
+    command: ["go", "-C", $gladeRoot, "test", "-json", "-count=1", "-p", "4", "./..."],
+    testEvents: "product-tests.jsonl",
+    testEventsSHA256: $testEventsSHA256}' > "${PRODUCT_VERSION_PROOF}"
+
+# --- step 2: salesforce verify ---
 VERIFIER_OUT="${OUT_DIR}/salesforce-verification.json"
 echo "salesforce verify..." >&2
 "${TOOLS_BIN}" salesforce verify \
-  --release-manifest docs/fixtures/salesforce-release-current.json \
+  --release-contract docs/fixtures/salesforce-release-contract.json \
+  --product-version-proof "${PRODUCT_VERSION_PROOF}" \
   --catalog docs/fixtures/apex-language-rules.json \
   --runtime-cases docs/fixtures/salesforce-runtime-correctness.json \
   --test-project testdata/salesforce-correctness \
@@ -73,26 +142,43 @@ echo "salesforce verify..." >&2
   --glade-root "${GLADE_ROOT}" \
   --out "${VERIFIER_OUT}" || { echo "verifier command failed" >&2; exit 1; }
 
-# --- validate verifier artifact (one jq -e expression) ---
+# --- validate verifier and product-test artifacts ---
 jq -e \
   --arg gladeHead "${GLADE_HEAD}" \
   --arg toolsHead "${TOOLS_HEAD}" \
-  '.status == "pass"
+  '.schemaVersion == 2
+   and .status == "pass"
    and .glade.commit == $gladeHead
    and .glade.dirty == false
    and .gladeTools.commit == $toolsHead
    and .gladeTools.dirty == false
    and .candidate.sha256Before == .candidate.sha256After
    and (.candidate.sha256Before | length) > 0
-   and .summary.pass == 487
+   and .summary.required == .summary.pass
    and .summary.fail == 0
    and .summary.inconclusive == 0
-   and .compiler.summary.pass == 422
-   and .runtime.summary.pass == 53
-   and .lifecycle.summary.pass == 12' \
+   and .compiler.summary.required == .compiler.summary.pass
+   and .runtime.summary.required == .runtime.summary.pass
+   and .lifecycle.summary.required == .lifecycle.summary.pass
+   and .releaseCompleteness.status == "pass"
+   and .releaseCompleteness.surfaceDelta.total == .releaseCompleteness.surfaceDelta.classified
+   and .releaseCompleteness.surfaceDelta.total == .releaseCompleteness.surfaceDelta.proved
+   and .releaseCompleteness.surfaceDelta.total == (.releaseCompleteness.surfaceDelta.implemented + .releaseCompleteness.surfaceDelta.explicitNonParity)
+   and .releaseCompleteness.behaviorDelta.total == .releaseCompleteness.behaviorDelta.classified
+   and .releaseCompleteness.behaviorDelta.total == .releaseCompleteness.behaviorDelta.proved
+   and .releaseCompleteness.behaviorDelta.total == (.releaseCompleteness.behaviorDelta.implemented + .releaseCompleteness.behaviorDelta.explicitNonParity)
+   and .releaseCompleteness.changeInventory.total == .releaseCompleteness.changeInventory.routed
+   and .releaseCompleteness.sourceVersions.advertised == .releaseCompleteness.sourceVersions.passing
+   and .releaseCompleteness.endpointVersions.advertised == .releaseCompleteness.endpointVersions.passing
+   and .releaseCompleteness.orgProfiles.advertised == .releaseCompleteness.orgProfiles.passing
+   and .releaseCompleteness.silentFallbacks == 0
+   and (.releaseCompleteness.unclassified // [] | length) == 0' \
   "${VERIFIER_OUT}" >/dev/null || { echo "verifier artifact validation failed" >&2; exit 1; }
+jq -e --arg sha256 "${PRODUCT_TEST_EVENTS_SHA256}" \
+  '.schemaVersion == 1 and .status == "pass" and .testEvents == "product-tests.jsonl" and .testEventsSHA256 == $sha256' \
+  "${PRODUCT_VERSION_PROOF}" >/dev/null || { echo "product-version proof validation failed" >&2; exit 1; }
 
-# --- step 2: corpus check ---
+# --- step 3: corpus check ---
 echo "corpus check..." >&2
 "${TOOLS_BIN}" corpus check \
   --root testdata/salesforce-correctness \
@@ -120,6 +206,9 @@ CHECKSUMS_FILE="${OUT_DIR}/SHA256SUMS.txt"
 rm -f "${CHECKSUMS_FILE}"
 cd "${OUT_DIR}"
 shasum -a 256 salesforce-verification.json >> "${CHECKSUMS_FILE}"
+shasum -a 256 product-tests.jsonl >> "${CHECKSUMS_FILE}"
+shasum -a 256 product-version-proof.json >> "${CHECKSUMS_FILE}"
+shasum -a 256 candidate-provenance.json >> "${CHECKSUMS_FILE}"
 for f in corpus/*.tsv; do
   [[ -f "$f" ]] && shasum -a 256 "$f" >> "${CHECKSUMS_FILE}"
 done

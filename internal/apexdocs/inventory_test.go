@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"unicode/utf8"
 )
 
 func TestBuildInventoryParsesSystemMethodPage(t *testing.T) {
@@ -46,6 +47,253 @@ String s = ' hi ';
 	}
 	if len(doc.Examples) != 1 || doc.Examples[0].Heading != "Example: Trim a value" {
 		t.Fatalf("examples = %#v", doc.Examples)
+	}
+}
+
+func TestBuildInventoryParsesMultilineInlineSignature(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_methods_system_approval.md"), `# Approval Class
+
+## Approval Methods
+### lock(recordId)
+
+#### Signature
+
+`+"`"+`public static Approval.LockResult lock(Id
+recordId)`+"`"+`
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	member := inv.Documents[0].Members[0]
+	if member.Signature != "public static Approval.LockResult lock(Id recordId)" || len(member.Parameters) != 1 || member.Parameters[0] != "Id" {
+		t.Fatalf("member = %#v", member)
+	}
+}
+
+func TestBuildInventorySkipsInlineProseBeforeSignature(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_class_Messaging_Builder.md"), `# Builder Class
+
+## Builder Methods
+### withTargetId(targetId)
+
+#### Signature
+
+Specify either a `+"`"+`targetID`+"`"+` or a target page.
+
+`+"`"+`public Messaging.Builder withTargetId(String
+targetId)`+"`"+`
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	member := inv.Documents[0].Members[0]
+	if member.Signature != "public Messaging.Builder withTargetId(String targetId)" || len(member.Parameters) != 1 || member.Parameters[0] != "String" {
+		t.Fatalf("member = %#v", member)
+	}
+}
+
+func TestBuildInventoryReadsSignatureAfterNote(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_classes_sites_cookie.md"), `# Cookie Class
+
+## Cookie Constructors
+### Cookie(name, value, path, maxAge, isSecure, sameSite)
+
+#### Signature
+
+#### Note
+
+The default is `+"`"+`Lax`+"`"+`.
+
+`+"`"+`public Cookie(String name, String value, String path, Integer maxAge, Boolean isSecure, String sameSite)`+"`"+`
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	member := inv.Documents[0].Members[0]
+	if member.Signature != "public Cookie(String name, String value, String path, Integer maxAge, Boolean isSecure, String sameSite)" {
+		t.Fatalf("signature = %q", member.Signature)
+	}
+}
+
+func TestBuildInventoryRecoversTrailingParameterTypesFromParametersSection(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_class_Invocable_Action.md"), `# Action Class
+
+## Action Methods
+### createCustomAction(type, namespace, name, version)
+
+#### Signature
+
+`+"`"+`public static Invocable.Action createCustomAction(String type, String namespace, String name)`+"`"+`
+
+#### Parameters
+
+type
+:   Type: String
+
+namespace
+:   Type: String
+
+name
+:   Type: String
+
+version
+:   Type: String
+
+#### Return Value
+
+Type: Invocable.Action
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	member := inv.Documents[0].Members[0]
+	if member.Signature != "public static Invocable.Action createCustomAction(String type, String namespace, String name, String version)" {
+		t.Fatalf("signature = %q", member.Signature)
+	}
+	if got := strings.Join(member.Parameters, ","); got != "String,String,String,String" {
+		t.Fatalf("parameters = %q", got)
+	}
+}
+
+func TestBuildInventoryMarksInternalOnlyIntro(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_class_setup_Internal.md"), `# Internal Class
+
+The methods and properties in this class are for internal use only.
+
+## Namespace
+
+[setup](./apex_namespace_setup.md)
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !inv.Documents[0].InternalOnly {
+		t.Fatalf("document = %#v", inv.Documents[0])
+	}
+}
+
+func TestBuildInventoryDoesNotApplyNestedAvailabilityToWholeDocument(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_methods_system_system.md"), `# System Class
+
+## System Methods
+### oldMethod()
+
+#### Signature
+
+`+"`"+`public static Boolean oldMethod()`+"`"+`
+
+### newMethod()
+
+#### API Version
+
+67.0
+
+#### Signature
+
+`+"`"+`public static Boolean newMethod()`+"`"+`
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := inv.Documents[0].APIVersion; got != "" {
+		t.Fatalf("document API version = %q, want empty for a multi-surface page", got)
+	}
+	for _, member := range inv.Documents[0].Members {
+		if member.Name == "newMethod" && member.APIVersion != "67.0" {
+			t.Fatalf("newMethod API version = %q, want 67.0", member.APIVersion)
+		}
+	}
+}
+
+func TestBuildInventoryUsesDocumentAvailabilityInsteadOfNestedTableValues(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "tooling_api_objects_customfield.md"), `# CustomField
+
+Available from API version 28.0 or later.
+
+## Fields
+
+| Field | Description |
+| --- | --- |
+| creationType | Available in API version 67.0 and later. |
+`)
+	writeDoc(t, filepath.Join(root, "tooling_api_objects_nested_only.md"), `# NestedOnly
+
+## Fields
+
+| Field | Description |
+| --- | --- |
+| newField | Available in API version 67.0 and later. |
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := inv.Documents[0].APIVersion; got != "28.0" {
+		t.Fatalf("CustomField API version = %q", got)
+	}
+	if got := inv.Documents[1].APIVersion; got != "" {
+		t.Fatalf("nested-only document API version = %q", got)
+	}
+}
+
+func TestBuildInventoryUsesDedicatedAvailabilityTableForPropertyOnlyDocument(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "apex_connectapi_output_quote.md"), `# ConnectApi.Quote
+
+Representation of a quote.
+
+| Property Name | Type | Available Version |
+| --- | --- | --- |
+| id | String | 66.0 |
+| name | String | 66.0 |
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := inv.Documents[0].APIVersion; got != "66.0" {
+		t.Fatalf("property-only document API version = %q", got)
+	}
+}
+
+func TestBuildInventoryParsesToolingDocumentAvailability(t *testing.T) {
+	root := t.TempDir()
+	writeDoc(t, filepath.Join(root, "tooling_api_objects_group.md"), `# Group
+
+Available in Tooling API version 38.0 and later.
+`)
+	writeDoc(t, filepath.Join(root, "tooling_api_objects_engagement.md"), `# Engagement
+
+This object is available in API versions 65.0 and later.
+`)
+
+	inv, err := BuildInventory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if inv.Documents[0].APIVersion != "65.0" || inv.Documents[1].APIVersion != "38.0" {
+		t.Fatalf("document API versions = %q, %q", inv.Documents[0].APIVersion, inv.Documents[1].APIVersion)
 	}
 }
 
@@ -213,6 +461,14 @@ public String currency {get; set;}
 	if got := members["ManagedContentVersionCollection.items"].PropertyType; got != "List<ConnectApi.ManagedContentVersion>" {
 		t.Fatalf("items property type = %q", got)
 	}
+	if got := members["ManagedContentVersionCollection.items"].APIVersion; got != "49.0" {
+		t.Fatalf("items API version = %q", got)
+	}
+	for _, doc := range inv.Documents {
+		if doc.Name == "ManagedContentVersionCollection" && doc.APIVersion != "49.0" {
+			t.Fatalf("ManagedContentVersionCollection API version = %q", doc.APIVersion)
+		}
+	}
 	if got := members["ManagedContentVersionCollection.managedContentTypes"].PropertyType; got != "Map<String,ConnectApi.ManagedContentType>" {
 		t.Fatalf("managedContentTypes property type = %q", got)
 	}
@@ -357,6 +613,13 @@ func TestCanonicalDigestRepeatedIsIdentical(t *testing.T) {
 	}
 	if first == "" {
 		t.Fatal("digest is empty")
+	}
+}
+
+func TestFirstParagraphTruncationKeepsValidUTF8(t *testing.T) {
+	got := firstParagraph([]string{strings.Repeat("x", 399) + "’"})
+	if !strings.Contains(got, strings.Repeat("x", 399)) || !utf8.ValidString(got) {
+		t.Fatalf("firstParagraph returned invalid UTF-8: %x", []byte(got))
 	}
 }
 

@@ -2063,6 +2063,7 @@ func writeDocsInventorySummary(w io.Writer, inv apexdocs.Inventory) {
 	fmt.Fprintf(w, "documents: %d\n", inv.TotalFiles)
 	fmt.Fprintf(w, "members: %d\n", inv.TotalMembers)
 	fmt.Fprintf(w, "namespaces: %d\n", len(inv.Namespaces))
+	fmt.Fprintf(w, "digest: %s\n", apexdocs.CanonicalDigest(inv))
 	if len(inv.Namespaces) == 0 {
 		return
 	}
