@@ -1,5 +1,8 @@
 {
   "name": "test-helper-unsupported-fixed-search-results",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture preserves a local anonymous-execution rejection for a test-context-only helper and is not adapter-materializable as a hosted runtime probe; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Test.setFixedSearchResults(List<Id>)",

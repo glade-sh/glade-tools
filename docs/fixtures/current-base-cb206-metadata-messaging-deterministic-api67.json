@@ -1,5 +1,6 @@
 {
   "name": "current-base-cb206-metadata-messaging-deterministic-api67",
+  "salesforceEligible": true,
   "apiVersion": "67.0",
   "mode": "exec",
   "candidate": {

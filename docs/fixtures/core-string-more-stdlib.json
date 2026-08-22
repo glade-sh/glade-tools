@@ -1,5 +1,6 @@
 {
   "name": "core-string-more-stdlib",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.String.replaceAll(String,String)",

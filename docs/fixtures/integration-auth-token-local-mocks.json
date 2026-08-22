@@ -1,5 +1,8 @@
 {
   "name": "integration-auth-token-local-mocks",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture uses a synthetic user ID, provider name, token context, and remote identifier without a provisioned hosted auth provider; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:Auth.AuthToken.revokeAccess(String,String,String,String)",

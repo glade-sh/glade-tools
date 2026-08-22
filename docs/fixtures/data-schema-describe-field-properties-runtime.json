@@ -1,5 +1,6 @@
 {
   "name": "data-schema-describe-field-properties-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId":"apex:Schema.DescribeFieldResult.accessible","symbol":"Schema.DescribeFieldResult.accessible","kind":"exec"},
     {"surfaceId":"apex:Schema.DescribeFieldResult.aggregatable","symbol":"Schema.DescribeFieldResult.aggregatable","kind":"exec"},

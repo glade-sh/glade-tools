@@ -1,5 +1,8 @@
 {
   "name": "core-json-raw-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "JSONGenerator.writeRaw and writeRawField are local runtime extensions absent from the Salesforce Apex surface; this fixture grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.JSONGenerator.writeRaw(String)",

@@ -1,5 +1,6 @@
 {
   "name": "core-stdlib-supported-closeout",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Decimal.round()",

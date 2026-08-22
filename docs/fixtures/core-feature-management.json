@@ -1,5 +1,8 @@
 {
   "name": "core-feature-management",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture depends on local-only package feature state and synthetic runAs user permissions; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "FeatureManagement",

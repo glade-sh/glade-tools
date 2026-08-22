@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-cache-builder-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:Cache.Partition.validateCacheBuilder(Type)", "symbol": "Cache.Partition.validateCacheBuilder(Type)", "kind": "test", "notes": "Public docs and generated tooling expose local validation of a CacheBuilder Type."},
     {"surfaceId": "apex:Cache.OrgPartition.validateCacheBuilder(Type)", "symbol": "Cache.OrgPartition.validateCacheBuilder(Type)", "kind": "test", "notes": "Generated tooling exposes local validation of a CacheBuilder Type on org partitions."},

@@ -1,5 +1,6 @@
 {
   "name": "data-database-delete-undelete-object-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:System.Database.delete(List<Object>)", "symbol": "Database.delete", "kind": "exec", "notes": "Direct org-state execution deletes each record in a statically typed List<Object> and returns successful result rows."},
     {"surfaceId": "apex:System.Database.delete(List<Object>,AccessLevel)", "symbol": "Database.delete", "kind": "exec", "notes": "Direct org-state execution deletes each record in a statically typed List<Object> with AccessLevel and returns successful result rows."},

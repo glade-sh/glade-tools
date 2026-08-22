@@ -1,5 +1,6 @@
 {
   "name": "core-database-upsert-mode-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:System.Database.upsert(Object)", "symbol": "Database.upsert", "kind": "exec"},
     {"surfaceId": "apex:System.Database.upsert(Object,AccessLevel)", "symbol": "Database.upsert", "kind": "exec"},

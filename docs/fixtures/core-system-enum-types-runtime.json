@@ -1,5 +1,6 @@
 {
   "name": "core-system-enum-types-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.AccessType",

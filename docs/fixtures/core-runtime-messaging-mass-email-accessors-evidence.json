@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-messaging-mass-email-accessors-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:Messaging.MassEmailMessage.getBccSender()", "symbol": "Messaging.MassEmailMessage.getBccSender", "kind": "test"},
     {"surfaceId": "apex:Messaging.MassEmailMessage.getDescription()", "symbol": "Messaging.MassEmailMessage.getDescription", "kind": "test"},

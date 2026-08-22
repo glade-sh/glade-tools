@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-system-operating-closeout",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture intentionally mixes a failing assertion, synthetic user context, local HTTP handling, and deterministic Search.suggest behavior; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Assert.areNotEqual",
