@@ -7,24 +7,6 @@
       "notes": "Already-deleted local rows can be permanently removed and return an EmptyRecycleBinResult-shaped object."
     },
     {
-      "surfaceId": "apex:Database.EmptyRecycleBinResult.isSuccess()",
-      "symbol": "Database.EmptyRecycleBinResult.isSuccess",
-      "kind": "test",
-      "notes": "emptyRecycleBin returns a result object that reports success for a permanently removed local row."
-    },
-    {
-      "surfaceId": "apex:Database.EmptyRecycleBinResult.getId()",
-      "symbol": "Database.EmptyRecycleBinResult.getId",
-      "kind": "test",
-      "notes": "emptyRecycleBin result exposes the id of the row it permanently removed."
-    },
-    {
-      "surfaceId": "apex:Database.EmptyRecycleBinResult.getErrors()",
-      "symbol": "Database.EmptyRecycleBinResult.getErrors",
-      "kind": "test",
-      "notes": "emptyRecycleBin result exposes an empty local error list on success."
-    },
-    {
       "surfaceId": "apex:Approval.LockResult.isSuccess()",
       "symbol": "Approval.LockResult.isSuccess",
       "kind": "test",

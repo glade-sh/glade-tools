@@ -56,12 +56,6 @@
       "notes": "Public sendnotificationemail field round-trips on a locally constructed Database request DTO.",
       "surfaceId": "apex:Database.LeadConvert.sendnotificationemail",
       "symbol": "Database.sendnotificationemail"
-    },
-    {
-      "kind": "test",
-      "notes": "MergeRequest is constructible and exposes writable public fields.",
-      "surfaceId": "apex:Database.MergeRequest.MergeRequest()",
-      "symbol": "Database.MergeRequest"
     }
   ],
   "expected": {

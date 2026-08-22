@@ -3,26 +3,6 @@
   "proofObligation": "compile-shape-required",
   "proofObligationReason": "Fixture evidence covers Database result DTO shape; live DML/runtime behavior is not claimed.",
   "evidence": [
-    {
-      "surfaceId": "apex:Database.DuplicateError.getDuplicateResult()",
-      "symbol": "Database.DuplicateError.getDuplicateResult",
-      "kind": "shape"
-    },
-    {
-      "surfaceId": "apex:Database.DuplicateError.getFields()",
-      "symbol": "Database.DuplicateError.getFields",
-      "kind": "shape"
-    },
-    {
-      "surfaceId": "apex:Database.DuplicateError.getMessage()",
-      "symbol": "Database.DuplicateError.getMessage",
-      "kind": "shape"
-    },
-    {
-      "surfaceId": "apex:Database.DuplicateError.getStatusCode()",
-      "symbol": "Database.DuplicateError.getStatusCode",
-      "kind": "shape"
-    }
   ],
   "source": [
     {

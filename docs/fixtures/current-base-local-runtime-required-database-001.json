@@ -13,16 +13,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.Cursor.clone()",
       "symbol": "Database.Cursor.clone"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateError.duplicateresult",
-      "symbol": "Database.DuplicateError.duplicateresult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.EmptyRecycleBinResult.EmptyRecycleBinResult()",
-      "symbol": "Database.EmptyRecycleBinResult"
     }
   ],
   "expected": {
@@ -36,10 +26,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-001",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone plus DuplicateError and EmptyRecycleBinResult shape.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-001",
-    "selectedRowCount": 4
+    "selectedRowCount": 2
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

@@ -9,7 +9,6 @@
     {"surfaceId": "apex:Database.DeleteResult.errors", "symbol": "Database.DeleteResult.errors", "kind": "test"},
     {"surfaceId": "apex:Database.DeleteResult.id", "symbol": "Database.DeleteResult.id", "kind": "test"},
     {"surfaceId": "apex:Database.DeleteResult.success", "symbol": "Database.DeleteResult.success", "kind": "test"},
-    {"surfaceId": "apex:Database.EmptyRecycleBinResult.errors", "symbol": "Database.EmptyRecycleBinResult.errors", "kind": "test"},
     {"surfaceId": "apex:Database.SaveResult.errors", "symbol": "Database.SaveResult.errors", "kind": "test"},
     {"surfaceId": "apex:Database.SaveResult.id", "symbol": "Database.SaveResult.id", "kind": "test"},
     {"surfaceId": "apex:Database.SaveResult.success", "symbol": "Database.SaveResult.success", "kind": "test"},
