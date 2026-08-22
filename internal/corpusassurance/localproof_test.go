@@ -459,6 +459,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-system-002-wave19-runtime.json", 4},
 		{"core-runtime-userprovisioning-deterministic-wave19.json", 3},
 		{"core-runtime-search-suggest-deterministic-mock.json", 2},
+		{"core-runtime-messaging-dto-mock-api67.json", 14},
 		{"data-platform-database-pagination-cursor-wave19-runtime.json", 10},
 		{"data-platform-schema-residual-wave19-runtime.json", 20},
 	} {
@@ -473,7 +474,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			required := make(map[string]string)
 			disposition := localRuntimeRequired
-			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" {
+			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" {
 				disposition = deterministicMockRequired
 			}
 			for _, evidence := range fixture.Evidence {

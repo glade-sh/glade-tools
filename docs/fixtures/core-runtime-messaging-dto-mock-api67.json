@@ -1,0 +1,31 @@
+{
+  "apiVersion":"67.0",
+  "command":{"kind":"test"},
+  "evidence":[
+    {"kind":"test","surfaceId":"apex:Messaging.Email.bccsender","symbol":"Messaging.Email.bccsender"},
+    {"kind":"test","surfaceId":"apex:Messaging.Email.emailpriority","symbol":"Messaging.Email.emailpriority"},
+    {"kind":"test","surfaceId":"apex:Messaging.Email.replyto","symbol":"Messaging.Email.replyto"},
+    {"kind":"test","surfaceId":"apex:Messaging.Email.saveasactivity","symbol":"Messaging.Email.saveasactivity"},
+    {"kind":"test","surfaceId":"apex:Messaging.Email.senderdisplayname","symbol":"Messaging.Email.senderdisplayname"},
+    {"kind":"test","surfaceId":"apex:Messaging.Email.usesignature","symbol":"Messaging.Email.usesignature"},
+    {"kind":"test","surfaceId":"apex:Messaging.EmailAttachment.contentid","symbol":"Messaging.EmailAttachment.contentid"},
+    {"kind":"test","surfaceId":"apex:Messaging.EmailAttachment.contenttype","symbol":"Messaging.EmailAttachment.contenttype"},
+    {"kind":"test","surfaceId":"apex:Messaging.EmailAttachment.filename","symbol":"Messaging.EmailAttachment.filename"},
+    {"kind":"test","surfaceId":"apex:Messaging.EmailFileAttachment.contenttype","symbol":"Messaging.EmailFileAttachment.contenttype"},
+    {"kind":"test","surfaceId":"apex:Messaging.EmailFileAttachment.filename","symbol":"Messaging.EmailFileAttachment.filename"},
+    {"kind":"test","surfaceId":"apex:Messaging.PushNotification","symbol":"Messaging.PushNotification"},
+    {"kind":"test","surfaceId":"apex:Messaging.SingleEmailMessage.entityattachments","symbol":"Messaging.SingleEmailMessage.entityattachments"},
+    {"kind":"test","surfaceId":"apex:Messaging.SingleEmailMessage.fileattachments","symbol":"Messaging.SingleEmailMessage.fileattachments"}
+  ],
+  "evidenceOnly":false,
+  "expected":{"result":{"ok":true,"total":1,"passed":1,"failed":0,"errors":0}},
+  "mode":"local-runtime",
+  "name":"core-runtime-messaging-dto-mock-api67",
+  "notes":"Exact-candidate deterministic local mock witness for Messaging DTO fields and PushNotification. This fixture is local-only and makes no hosted Salesforce execution or parity claim.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"messaging-dto-mock-evidence","selectedRowCount":14},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"This fixture records deterministic local mock behavior only; it makes no hosted Salesforce execution or parity claim.",
+  "source":[{"path":"force-app/main/classes/CoreRuntimeMessagingDTOMockTest.cls","content":"@IsTest private class CoreRuntimeMessagingDTOMockTest {\n  @IsTest static void rows() {\n    Messaging.Email email = new Messaging.SingleEmailMessage();\n    email.bccsender = true; email.emailpriority = 'High'; email.replyto = 'reply@example.com'; email.saveasactivity = true; email.senderdisplayname = 'Sender'; email.usesignature = false;\n    System.assertEquals(true, email.bccsender); System.assertEquals('High', email.emailpriority); System.assertEquals('reply@example.com', email.replyto); System.assertEquals(true, email.saveasactivity); System.assertEquals('Sender', email.senderdisplayname); System.assertEquals(false, email.usesignature);\n    Messaging.EmailAttachment attachment = new Messaging.EmailAttachment();\n    attachment.contentid = 'cid'; attachment.contenttype = 'text/plain'; attachment.filename = 'file.txt';\n    System.assertEquals('cid', attachment.contentid); System.assertEquals('text/plain', attachment.contenttype); System.assertEquals('file.txt', attachment.filename);\n    Messaging.EmailFileAttachment fileAttachment = new Messaging.EmailFileAttachment();\n    fileAttachment.contenttype = 'text/plain'; fileAttachment.filename = 'file.txt';\n    System.assertEquals('text/plain', fileAttachment.contenttype); System.assertEquals('file.txt', fileAttachment.filename);\n    Messaging.PushNotification push = new Messaging.PushNotification(new Map<String,Object>{'key' => 'value'});\n    System.assertNotEquals(null, push);\n    Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();\n    message.entityattachments = new List<String>{'015000000000001AAA'}; message.fileattachments = new List<Messaging.EmailFileAttachment>{fileAttachment};\n    System.assertEquals(1, message.entityattachments.size()); System.assertEquals(1, message.fileattachments.size());\n  }\n}"}],
+  "title":"API 67 Messaging DTO deterministic mock test evidence"
+}

@@ -300,18 +300,8 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Messaging.SingleEmailMessage.entityattachments",
-      "symbol": "Messaging.SingleEmailMessage.entityattachments"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Messaging.SingleEmailMessage.equals(Object)",
       "symbol": "Messaging.SingleEmailMessage.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Messaging.SingleEmailMessage.fileattachments",
-      "symbol": "Messaging.SingleEmailMessage.fileattachments"
     },
     {
       "kind": "test",
