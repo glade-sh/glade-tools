@@ -1,0 +1,32 @@
+{
+  "name": "core-runtime-utility-exception-tail-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "utility-tail-exception-api67",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local exception behavior and grants zero hosted Salesforce parity credit.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "VisualforceException visual = new VisualforceException(); WaveTemplateException wave = new WaveTemplateException(); System.assertNotEquals(null, visual.toString()); System.assertNotEquals(null, wave.toString());"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "VisualforceException visual = new VisualforceException(); WaveTemplateException wave = new WaveTemplateException(); System.assertNotEquals(null, visual.toString()); System.assertNotEquals(null, wave.toString());"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.VisualforceException.toString()","symbol":"VisualforceException.toString","kind":"exec"},
+    {"surfaceId":"apex:System.WaveTemplateException.toString()","symbol":"WaveTemplateException.toString","kind":"exec"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "notes": "Exact-candidate executable local-runtime witness. getInaccessibleFields rows remain context-bound and are intentionally not credited."
+}

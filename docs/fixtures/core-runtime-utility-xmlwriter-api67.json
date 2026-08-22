@@ -1,0 +1,32 @@
+{
+  "name": "core-runtime-utility-xmlwriter-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "utility-tail-xmlwriter-api67",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local XML writer value behavior and grants zero hosted Salesforce parity credit.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "XmlStreamWriter writer = new XmlStreamWriter(); System.assertEquals(true, writer.equals(writer)); System.assertEquals(writer.hashCode(), writer.hashCode());"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "XmlStreamWriter writer = new XmlStreamWriter(); System.assertEquals(true, writer.equals(writer)); System.assertEquals(writer.hashCode(), writer.hashCode());"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.XmlStreamWriter.equals(Object)","symbol":"XmlStreamWriter.equals","kind":"exec"},
+    {"surfaceId":"apex:System.XmlStreamWriter.hashCode()","symbol":"XmlStreamWriter.hashCode","kind":"exec"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "notes": "Exact-candidate executable local-runtime witness; no hosted Salesforce execution or parity claim."
+}

@@ -582,7 +582,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"current-base-apexpages-context-tail-runtime-api67.json", 33},
 		{"current-base-flow-interview-context-tail-deterministic-api67.json", 1},
 		{"core-runtime-dom-value-semantics-wave17-runtime.json", 7},
-		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 11},
+		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 13},
 		{"core-runtime-async-context-tail-api67.json", 8},
 		{"core-runtime-finalizer-context-tail-api67.json", 6},
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
@@ -598,6 +598,13 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-system-002-wave19-runtime.json", 4},
 		{"core-runtime-system-primitive-tail-api67.json", 33},
 		{"core-runtime-system-scalar-adderror-tail-api67.json", 36},
+		{"core-runtime-utility-crypto-api67.json", 2},
+		{"core-runtime-utility-exception-tail-api67.json", 2},
+		{"core-runtime-utility-http-mock-api67.json", 2},
+		{"core-runtime-utility-security-api67.json", 2},
+		{"core-runtime-utility-stub-provider-api67.json", 2},
+		{"core-runtime-utility-xmlreader-api67.json", 2},
+		{"core-runtime-utility-xmlwriter-api67.json", 2},
 		{"core-runtime-userinfo-request-tail-api67.json", 43},
 		{"core-runtime-trigger-sobject-tail-api67.json", 14},
 		{"core-runtime-sobject-tail-api67.json", 6},
@@ -751,6 +758,10 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 		"apex:System.Test.setMock",
 		"apex:System.StaticResourceCalloutMock.setStatusCode(Integer)",
 		"apex:System.MultiStaticResourceCalloutMock.setStaticResource(String,String)",
+		"apex:System.HttpCalloutMock.respond(HttpRequest)",
+		"apex:System.WebServiceMock.doInvoke(Object,Object,Map<String,Object>,String,String,String,String,String,String)",
+		"apex:System.StubProvider.handleMethodCall(Object,String,Type,List<Type>,List<String>,List<Object>)",
+		"apex:System.SoqlStubProvider.handleSoqlQuery(Schema.SObjectType,String,Map<String,Object>)",
 		"apex:System.Trigger",
 		"apex:System.Trigger.isExecuting",
 		"apex:System.Queueable.execute(QueueableContext)",
@@ -789,7 +800,15 @@ func TestLocalProofAcceptsEventBusTestContextRuntimeSurfaces(t *testing.T) {
 }
 
 func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
-	for _, surfaceID := range []string{"apex:System.Location", "apex:System.StaticResourceCalloutMockBuilder.run()", "apex:System.QueueableDuplicateSignature"} {
+	for _, surfaceID := range []string{
+		"apex:System.Location",
+		"apex:System.StaticResourceCalloutMockBuilder.run()",
+		"apex:System.QueueableDuplicateSignature",
+		"apex:System.HttpCalloutMockBuilder.run()",
+		"apex:System.WebServiceMockFactory.run()",
+		"apex:System.StubProviderFactory.run()",
+		"apex:System.SoqlStubProviderExtension.run()",
+	} {
 		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("generic test fixture %q was accepted as runtime proof", surfaceID)
 		}

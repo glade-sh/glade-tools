@@ -1,0 +1,32 @@
+{
+  "name": "core-runtime-utility-crypto-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "utility-tail-crypto-api67",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local Crypto behavior and grants zero hosted Salesforce parity credit.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Blob key = Blob.valueOf('0123456789abcdef0123456789abcdef'); Blob clear = Blob.valueOf('payload'); Blob encrypted = Crypto.encryptWithManagedIV('AES256', key, clear); System.assertEquals('payload', Crypto.decryptWithManagedIV('AES256', key, encrypted).toString()); Blob aad = Blob.valueOf('aad'); Blob encryptedGcm = Crypto.encryptWithManagedIV('AES256-GCM', key, clear, aad); System.assertEquals('payload', Crypto.decryptWithManagedIV('AES256-GCM', key, encryptedGcm, aad).toString());"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Blob key = Blob.valueOf('0123456789abcdef0123456789abcdef'); Blob clear = Blob.valueOf('payload'); Blob encrypted = Crypto.encryptWithManagedIV('AES256', key, clear); System.assertEquals('payload', Crypto.decryptWithManagedIV('AES256', key, encrypted).toString()); Blob aad = Blob.valueOf('aad'); Blob encryptedGcm = Crypto.encryptWithManagedIV('AES256-GCM', key, clear, aad); System.assertEquals('payload', Crypto.decryptWithManagedIV('AES256-GCM', key, encryptedGcm, aad).toString());"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.Crypto.decryptWithManagedIV","symbol":"Crypto.decryptWithManagedIV","kind":"exec"},
+    {"surfaceId":"apex:System.Crypto.encryptWithManagedIV","symbol":"Crypto.encryptWithManagedIV","kind":"exec"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "notes": "Exact-candidate executable local-runtime witness; no hosted Salesforce execution or parity claim."
+}

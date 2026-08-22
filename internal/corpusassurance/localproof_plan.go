@@ -320,7 +320,11 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 			surfaceID == "apex:System.FinalizerContext" || strings.HasPrefix(surfaceID, "apex:System.FinalizerContext.") ||
 			strings.HasPrefix(surfaceID, "apex:eventbus.TestBroker.") || strings.HasPrefix(surfaceID, "apex:eventbus.TestEventService.") ||
 			surfaceID == "apex:System.StaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.StaticResourceCalloutMock.") ||
-			surfaceID == "apex:System.MultiStaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.MultiStaticResourceCalloutMock.")))
+			surfaceID == "apex:System.MultiStaticResourceCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.MultiStaticResourceCalloutMock.") ||
+			surfaceID == "apex:System.HttpCalloutMock" || strings.HasPrefix(surfaceID, "apex:System.HttpCalloutMock.") ||
+			surfaceID == "apex:System.WebServiceMock" || strings.HasPrefix(surfaceID, "apex:System.WebServiceMock.") ||
+			surfaceID == "apex:System.StubProvider" || strings.HasPrefix(surfaceID, "apex:System.StubProvider.") ||
+			surfaceID == "apex:System.SoqlStubProvider" || strings.HasPrefix(surfaceID, "apex:System.SoqlStubProvider.")))
 	case deterministicMockRequired:
 		return command == "exec" || command == "test"
 	case compileShapeRequired:
