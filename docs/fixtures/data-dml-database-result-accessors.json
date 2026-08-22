@@ -5,43 +5,8 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Database.Error.getExtendedErrorDetails()",
-      "symbol": "Database.Error.getExtendedErrorDetails"
-    },
-    {
-      "kind": "test",
       "notes": "Local SaveResult/DeleteResult/UpsertResult/MergeResult/UndeleteResult/EmptyRecycleBinResult/LockResult/UnlockResult expose id, success, errors, created, merged IDs, updated-related IDs, status-code, message, fields, and empty extended-error-detail accessors where applicable.",
       "symbol": "Database result objects"
-    },
-    {
-      "kind": "test",
-      "notes": "Database DeleteResult success accessor is asserted on local delete results.",
-      "surfaceId": "apex:Database.DeleteResult.isSuccess()",
-      "symbol": "Database.DeleteResult.isSuccess"
-    },
-    {
-      "kind": "test",
-      "notes": "Database DeleteResult id accessor is asserted on local delete results.",
-      "surfaceId": "apex:Database.DeleteResult.getId()",
-      "symbol": "Database.DeleteResult.getId"
-    },
-    {
-      "kind": "test",
-      "notes": "Database DeleteResult errors accessor is asserted on local delete results.",
-      "surfaceId": "apex:Database.DeleteResult.getErrors()",
-      "symbol": "Database.DeleteResult.getErrors"
-    },
-    {
-      "kind": "test",
-      "notes": "Database UndeleteResult success accessor is asserted on failed and successful undelete results.",
-      "surfaceId": "apex:Database.UndeleteResult.isSuccess()",
-      "symbol": "Database.UndeleteResult.isSuccess"
-    },
-    {
-      "kind": "test",
-      "notes": "Database UndeleteResult errors accessor is asserted on active-record undelete failures.",
-      "surfaceId": "apex:Database.UndeleteResult.getErrors()",
-      "symbol": "Database.UndeleteResult.getErrors"
     },
     {
       "kind": "test",
@@ -54,24 +19,6 @@
       "notes": "Single-record emptyRecycleBin permanently removes a deleted local record.",
       "surfaceId": "apex:System.Database.emptyRecycleBin(Object)",
       "symbol": "Database.emptyRecycleBin"
-    },
-    {
-      "kind": "test",
-      "notes": "Database Error status-code accessor is asserted on required-field and unknown-field failures.",
-      "surfaceId": "apex:Database.Error.getStatusCode()",
-      "symbol": "Database.Error.getStatusCode"
-    },
-    {
-      "kind": "test",
-      "notes": "Database Error message accessor is asserted on required-field failures.",
-      "surfaceId": "apex:Database.Error.getMessage()",
-      "symbol": "Database.Error.getMessage"
-    },
-    {
-      "kind": "test",
-      "notes": "Database Error fields accessor is asserted on required-field and unknown-field failures.",
-      "surfaceId": "apex:Database.Error.getFields()",
-      "symbol": "Database.Error.getFields"
     },
     {
       "kind": "test",

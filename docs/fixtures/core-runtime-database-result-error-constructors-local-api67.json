@@ -1,0 +1,34 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Database.DeleteResult deleted = new Database.DeleteResult();\nSystem.assert(!deleted.isSuccess());\nSystem.assertEquals(null, deleted.getId());\nSystem.assertEquals(0, deleted.getErrors().size());\nObject errorsType = (Database.Errors)null;\nSystem.assertEquals(null, errorsType);\nDatabase.SaveResult saved = new Database.SaveResult();\nSystem.assert(!saved.isSuccess());\nSystem.assertEquals(null, saved.getId());\nSystem.assertEquals(0, saved.getErrors().size());\nDatabase.UndeleteResult restored = new Database.UndeleteResult();\nSystem.assert(!restored.isSuccess());\nSystem.assertEquals(null, restored.getId());\nSystem.assertEquals(0, restored.getErrors().size());"
+    ]
+  },
+  "evidence": [
+    {"kind":"exec","surfaceId":"apex:Database.DeleteResult.DeleteResult()","symbol":"Database.DeleteResult.DeleteResult()"},
+    {"kind":"exec","surfaceId":"apex:Database.Errors","symbol":"Database.Errors"},
+    {"kind":"exec","surfaceId":"apex:Database.SaveResult.SaveResult()","symbol":"Database.SaveResult.SaveResult()"},
+    {"kind":"exec","surfaceId":"apex:Database.UndeleteResult.UndeleteResult()","symbol":"Database.UndeleteResult.UndeleteResult()"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "mode": "local-runtime",
+  "name": "core-runtime-database-result-error-constructors-local-api67",
+  "notes": "Exact-candidate executable local-runtime witness for directly constructed Database result DTO defaults and the Database.Errors null-only type token. This fixture is not a portable hosted anonymous Apex runtime probe and records no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "runtime-conversion-database-result-error-constructors-local-api67",
+    "selectedRowCount": 4
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Directly constructed Glade-local Database result DTOs and the local Database.Errors type token are not a portable hosted anonymous Apex runtime probe; this fixture records no hosted Salesforce parity.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Database.DeleteResult deleted = new Database.DeleteResult();\nSystem.assert(!deleted.isSuccess());\nSystem.assertEquals(null, deleted.getId());\nSystem.assertEquals(0, deleted.getErrors().size());\nObject errorsType = (Database.Errors)null;\nSystem.assertEquals(null, errorsType);\nDatabase.SaveResult saved = new Database.SaveResult();\nSystem.assert(!saved.isSuccess());\nSystem.assertEquals(null, saved.getId());\nSystem.assertEquals(0, saved.getErrors().size());\nDatabase.UndeleteResult restored = new Database.UndeleteResult();\nSystem.assert(!restored.isSuccess());\nSystem.assertEquals(null, restored.getId());\nSystem.assertEquals(0, restored.getErrors().size());"
+    }
+  ]
+}
