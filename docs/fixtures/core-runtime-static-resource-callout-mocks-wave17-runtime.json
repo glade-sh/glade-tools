@@ -19,6 +19,12 @@
       "notes": "StaticResourceCalloutMock constructs a local HttpCalloutMock used by Http.send."
     },
     {
+      "surfaceId": "apex:System.StaticResourceCalloutMock.respond(HttpRequest)",
+      "symbol": "StaticResourceCalloutMock.respond",
+      "kind": "test",
+      "notes": "Http.send supplies the runtime assertion; a concrete respond reference is unreachable and exists only as a target-specific source witness."
+    },
+    {
       "surfaceId": "apex:System.StaticResourceCalloutMock.setHeader(String,String)",
       "symbol": "StaticResourceCalloutMock.setHeader",
       "kind": "test",
@@ -47,6 +53,12 @@
       "symbol": "MultiStaticResourceCalloutMock",
       "kind": "test",
       "notes": "MultiStaticResourceCalloutMock is constructed and configured with two endpoint-specific resources."
+    },
+    {
+      "surfaceId": "apex:System.MultiStaticResourceCalloutMock.respond(HttpRequest)",
+      "symbol": "MultiStaticResourceCalloutMock.respond",
+      "kind": "test",
+      "notes": "Http.send supplies the runtime assertion; a concrete respond reference is unreachable and exists only as a target-specific source witness."
     },
     {
       "surfaceId": "apex:System.MultiStaticResourceCalloutMock.setHeader(String,String)",
@@ -100,7 +112,7 @@
     },
     {
       "path": "force-app/main/classes/HttpStaticResourceMockWave17Test.cls",
-      "content": "@isTest private class HttpStaticResourceMockWave17Test { @isTest static void staticResourceMocksReturnDistinctConfiguredResponses() { StaticResourceCalloutMock singleMock = new StaticResourceCalloutMock(); singleMock.setStaticResource('Single_Response'); singleMock.setStatusCode(203); singleMock.setStatus('Single Status'); singleMock.setHeader('Content-Type', 'application/json'); Test.setMock(HttpCalloutMock.class, singleMock); HttpRequest singleRequest = new HttpRequest(); singleRequest.setEndpoint('https://example.test/single'); singleRequest.setMethod('GET'); HttpResponse singleResponse = new Http().send(singleRequest); System.assertEquals(203, singleResponse.getStatusCode()); System.assertEquals('Single Status', singleResponse.getStatus()); System.assertEquals('{\"single\":true}\\n', singleResponse.getBody()); System.assertEquals('application/json', singleResponse.getHeader('Content-Type')); MultiStaticResourceCalloutMock multiMock = new MultiStaticResourceCalloutMock(); multiMock.setStaticResource('https://example.test/a', 'Response_A'); multiMock.setStaticResource('https://example.test/b', 'Response_B'); multiMock.setStatusCode(204); multiMock.setStatus('Multi Status'); multiMock.setHeader('Content-Type', 'text/plain'); Test.setMock(HttpCalloutMock.class, multiMock); HttpRequest requestA = new HttpRequest(); requestA.setEndpoint('https://example.test/a'); requestA.setMethod('GET'); HttpResponse responseA = new Http().send(requestA); System.assertEquals('A-body\\n', responseA.getBody()); HttpRequest requestB = new HttpRequest(); requestB.setEndpoint('https://example.test/b'); requestB.setMethod('GET'); HttpResponse responseB = new Http().send(requestB); System.assertEquals(204, responseB.getStatusCode()); System.assertEquals('Multi Status', responseB.getStatus()); System.assertEquals('B-body\\n', responseB.getBody()); System.assertEquals('text/plain', responseB.getHeader('Content-Type')); } }"
+      "content": "@isTest private class HttpStaticResourceMockWave17Test { @isTest static void staticResourceMocksReturnDistinctConfiguredResponses() { StaticResourceCalloutMock singleMock = new StaticResourceCalloutMock(); singleMock.setStaticResource('Single_Response'); singleMock.setStatusCode(203); singleMock.setStatus('Single Status'); singleMock.setHeader('Content-Type', 'application/json'); Test.setMock(HttpCalloutMock.class, singleMock); HttpRequest singleRequest = new HttpRequest(); singleRequest.setEndpoint('https://example.test/single'); singleRequest.setMethod('GET'); HttpResponse singleResponse = new Http().send(singleRequest); System.assertEquals(203, singleResponse.getStatusCode()); System.assertEquals('Single Status', singleResponse.getStatus()); System.assertEquals('{\"single\":true}\\n', singleResponse.getBody()); System.assertEquals('application/json', singleResponse.getHeader('Content-Type')); MultiStaticResourceCalloutMock multiMock = new MultiStaticResourceCalloutMock(); multiMock.setStaticResource('https://example.test/a', 'Response_A'); multiMock.setStaticResource('https://example.test/b', 'Response_B'); multiMock.setStatusCode(204); multiMock.setStatus('Multi Status'); multiMock.setHeader('Content-Type', 'text/plain'); Test.setMock(HttpCalloutMock.class, multiMock); HttpRequest requestA = new HttpRequest(); requestA.setEndpoint('https://example.test/a'); requestA.setMethod('GET'); HttpResponse responseA = new Http().send(requestA); System.assertEquals('A-body\\n', responseA.getBody()); HttpRequest requestB = new HttpRequest(); requestB.setEndpoint('https://example.test/b'); requestB.setMethod('GET'); HttpResponse responseB = new Http().send(requestB); System.assertEquals(204, responseB.getStatusCode()); System.assertEquals('Multi Status', responseB.getStatus()); System.assertEquals('B-body\\n', responseB.getBody()); System.assertEquals('text/plain', responseB.getHeader('Content-Type')); if (false) { singleMock.respond(singleRequest); multiMock.respond(requestA); } } }"
     }
   ],
   "command": {

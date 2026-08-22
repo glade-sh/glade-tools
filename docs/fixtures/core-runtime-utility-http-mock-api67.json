@@ -1,0 +1,31 @@
+{
+  "name": "core-runtime-utility-http-mock-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "utility-tail-http-mock-api67",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local test-context HTTP mock behavior and grants zero hosted Salesforce parity credit.",
+  "command": {"kind":"test"},
+  "source": [
+    {
+      "path": "force-app/main/classes/UtilityHttpMock.cls",
+      "content": "public class UtilityHttpMock implements HttpCalloutMock { public HttpResponse respond(HttpRequest request) { HttpResponse response = new HttpResponse(); response.setStatusCode(202); response.setBody('utility'); return response; } }"
+    },
+    {
+      "path": "force-app/main/classes/UtilityHttpMockTest.cls",
+      "content": "@isTest private class UtilityHttpMockTest { @isTest static void mockResponds() { Test.setMock(HttpCalloutMock.class, new UtilityHttpMock()); HttpRequest request = new HttpRequest(); request.setEndpoint('https://utility.example.test'); request.setMethod('GET'); HttpResponse response = new Http().send(request); System.assertEquals(202, response.getStatusCode()); System.assertEquals('utility', response.getBody()); } }"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.HttpCalloutMock","symbol":"HttpCalloutMock","kind":"test"},
+    {"surfaceId":"apex:System.HttpCalloutMock.respond(HttpRequest)","symbol":"HttpCalloutMock.respond","kind":"test"}
+  ],
+  "expected": {"result":{"errors":0,"failed":0,"ok":true,"passed":1,"total":1}},
+  "notes": "Exact-candidate executable local-runtime witness in isolated test context; no hosted Salesforce execution or parity claim."
+}

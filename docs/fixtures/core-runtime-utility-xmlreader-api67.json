@@ -1,0 +1,32 @@
+{
+  "name": "core-runtime-utility-xmlreader-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "utility-tail-xmlreader-api67",
+    "selectedRowCount": 2
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local XML reader behavior and grants zero hosted Salesforce parity credit.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "XmlStreamReader reader = new XmlStreamReader('<p:root xmlns:p=\"urn:p\" p:id=\"7\"/>'); reader.setNamespaceAware(true); reader.next(); System.assertEquals('', reader.getPrefix()); System.assertEquals('', reader.getAttributePrefix(0));"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "XmlStreamReader reader = new XmlStreamReader('<p:root xmlns:p=\"urn:p\" p:id=\"7\"/>'); reader.setNamespaceAware(true); reader.next(); System.assertEquals('', reader.getPrefix()); System.assertEquals('', reader.getAttributePrefix(0));"
+    }
+  ],
+  "evidence": [
+    {"surfaceId":"apex:System.XmlStreamReader.getAttributePrefix(Integer)","symbol":"XmlStreamReader.getAttributePrefix","kind":"exec"},
+    {"surfaceId":"apex:System.XmlStreamReader.getPrefix()","symbol":"XmlStreamReader.getPrefix","kind":"exec"}
+  ],
+  "expected": {"result":{"debug":null,"ok":true}},
+  "notes": "Exact-candidate executable local-runtime witness; no hosted Salesforce execution or parity claim."
+}
