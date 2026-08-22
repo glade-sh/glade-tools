@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"sort"
 	"strings"
 	"testing"
 
@@ -42,6 +43,133 @@ func TestLocalProofDerivesBindingsRunsFixedCommandsAndNormalizesEverySelectedSur
 	}
 	if _, err := os.Stat(request.OutputPath); err != nil {
 		t.Fatalf("proof output was not written: %v", err)
+	}
+}
+
+func TestApexPagesContextTailFixturesOwnExactPlus34Rows(t *testing.T) {
+	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]struct {
+		count       int
+		disposition string
+		ids         []string
+	}{
+		"current-base-apexpages-context-tail-runtime-api67.json": {
+			count:       33,
+			disposition: localRuntimeRequired,
+			ids: []string{
+				"apex:ApexPages.Component.getComponentById(String)",
+				"apex:ApexPages.ComponentIteration.getComponentById(String)",
+				"apex:ApexPages.IdeaStandardController.addFields(List<String>)",
+				"apex:ApexPages.IdeaStandardController.getCommentList()",
+				"apex:ApexPages.IdeaStandardController.getId()",
+				"apex:ApexPages.IdeaStandardSetController.addFields(List<String>)",
+				"apex:ApexPages.IdeaStandardSetController.cancel()",
+				"apex:ApexPages.IdeaStandardSetController.first()",
+				"apex:ApexPages.IdeaStandardSetController.getCompleteResult()",
+				"apex:ApexPages.IdeaStandardSetController.getHasNext()",
+				"apex:ApexPages.IdeaStandardSetController.getHasPrevious()",
+				"apex:ApexPages.IdeaStandardSetController.getIdeaList()",
+				"apex:ApexPages.IdeaStandardSetController.getListViewOptions()",
+				"apex:ApexPages.IdeaStandardSetController.getPageNumber()",
+				"apex:ApexPages.IdeaStandardSetController.getRecord()",
+				"apex:ApexPages.IdeaStandardSetController.getRecords()",
+				"apex:ApexPages.IdeaStandardSetController.getResultSize()",
+				"apex:ApexPages.IdeaStandardSetController.hashCode()",
+				"apex:ApexPages.IdeaStandardSetController.last()",
+				"apex:ApexPages.IdeaStandardSetController.next()",
+				"apex:ApexPages.IdeaStandardSetController.previous()",
+				"apex:ApexPages.IdeaStandardSetController.save()",
+				"apex:ApexPages.IdeaStandardSetController.setPageNumber(Integer)",
+				"apex:ApexPages.IdeaStandardSetController.toString()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.addFields(List<String>)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.cancel()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.equals(Object)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.getId()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.getSourceId()",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.selectDataCategory(String,String)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.setDataCategory(String,String)",
+				"apex:ApexPages.KnowledgeArticleVersionStandardController.view()",
+				"apex:ApexPages.StandardSetController.equals(Object)",
+			},
+		},
+		"current-base-flow-interview-context-tail-deterministic-api67.json": {
+			count:       1,
+			disposition: deterministicMockRequired,
+			ids:         []string{"apex:Flow.Interview.Interview()"},
+		},
+	}
+	for filename, want := range want {
+		t.Run(filename, func(t *testing.T) {
+			path, err := filepath.Abs(filepath.Join(root, filename))
+			if err != nil {
+				t.Fatal(err)
+			}
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var envelope struct {
+				Candidate struct {
+					Commit string `json:"commit"`
+					SHA256 string `json:"sha256"`
+				} `json:"candidate"`
+			}
+			if err := json.Unmarshal(data, &envelope); err != nil {
+				t.Fatal(err)
+			}
+			if envelope.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || envelope.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" {
+				t.Fatalf("candidate binding = %#v", envelope.Candidate)
+			}
+			fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := compat.Validate(fixture); err != nil {
+				t.Fatal(err)
+			}
+			if fixture.Command.Kind != "exec" || len(fixture.Source) != 1 || len(fixture.Command.Args) != 1 || fixture.Source[0].Content != fixture.Command.Args[0] {
+				t.Fatalf("source/command mismatch: %#v", fixture)
+			}
+			got := make([]string, 0, len(fixture.Evidence))
+			for _, evidence := range fixture.Evidence {
+				if evidence.Kind != "exec" {
+					t.Fatalf("evidence kind = %q", evidence.Kind)
+				}
+				got = append(got, evidence.SurfaceID)
+			}
+			sort.Strings(got)
+			sort.Strings(want.ids)
+			if !reflect.DeepEqual(got, want.ids) || len(got) != want.count {
+				t.Fatalf("owned IDs = %v, want %v", got, want.ids)
+			}
+			entry := LocalProofFixture{ID: fixture.Name, Name: fixture.Name, Path: path, OwnedSurfaceIDs: got, Disposition: want.disposition, Operation: "exec", SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason}
+			if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+				t.Fatalf("identity: %v", err)
+			}
+			if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
+				t.Fatalf("metadata: %v", err)
+			}
+			required := make(map[string]string, len(want.ids))
+			for _, surfaceID := range want.ids {
+				required[surfaceID] = want.disposition
+			}
+			candidates, err := discoverLocalProofFixtures(root, required)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, candidate := range candidates {
+				if candidate.entry.ID == fixture.Name {
+					if !reflect.DeepEqual(candidate.entry.OwnedSurfaceIDs, got) {
+						t.Fatalf("candidate ownership = %v, want %v", candidate.entry.OwnedSurfaceIDs, got)
+					}
+					return
+				}
+			}
+			t.Fatal("fixture is not candidate-runnable")
+		})
 	}
 }
 
@@ -445,6 +573,8 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-value-objects-wave16-runtime.json", 17},
 		{"data-platform-schema-describe-results-wave16-runtime.json", 56},
 		{"core-runtime-apexpages-controller-wave17-runtime.json", 8},
+		{"current-base-apexpages-context-tail-runtime-api67.json", 33},
+		{"current-base-flow-interview-context-tail-deterministic-api67.json", 1},
 		{"core-runtime-dom-value-semantics-wave17-runtime.json", 7},
 		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 11},
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
@@ -476,7 +606,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			required := make(map[string]string)
 			disposition := localRuntimeRequired
-			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" {
+			if fixture.Name == "core-runtime-userprovisioning-deterministic-wave19" || fixture.Name == "core-runtime-search-suggest-deterministic-mock" || fixture.Name == "core-runtime-messaging-dto-mock-api67" || fixture.Name == "current-base-flow-interview-context-tail-deterministic-api67" {
 				disposition = deterministicMockRequired
 			}
 			for _, evidence := range fixture.Evidence {
