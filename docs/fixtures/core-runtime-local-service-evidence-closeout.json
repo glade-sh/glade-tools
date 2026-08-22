@@ -1,9 +1,4 @@
 {
-  "apiVersion": "67.0",
-  "candidate": {
-    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
-  },
   "command": {
     "kind": "test"
   },
@@ -58,42 +53,6 @@
     },
     {
       "kind": "test",
-      "notes": "RequestImpl returns the same deterministic local request context.",
-      "surfaceId": "apex:System.RequestImpl.getCurrent()",
-      "symbol": "RequestImpl.getCurrent()"
-    },
-    {
-      "kind": "test",
-      "notes": "UIRequest exposes deterministic local request headers.",
-      "surfaceId": "apex:System.UIRequest.getCurrent()",
-      "symbol": "UIRequest.getCurrent()"
-    },
-    {
-      "kind": "test",
-      "notes": "UIRequest header lookup is case-insensitive for local request headers.",
-      "surfaceId": "apex:System.UIRequest.getRequestHeader(String)",
-      "symbol": "UIRequest.getRequestHeader(String)"
-    },
-    {
-      "kind": "test",
-      "notes": "Sandbox post-copy test harness passes a deterministic local SandboxContext.",
-      "surfaceId": "apex:System.SandboxContext.organizationId()",
-      "symbol": "SandboxContext.organizationId()"
-    },
-    {
-      "kind": "test",
-      "notes": "Sandbox post-copy test harness passes a deterministic local SandboxContext.",
-      "surfaceId": "apex:System.SandboxContext.sandboxId()",
-      "symbol": "SandboxContext.sandboxId()"
-    },
-    {
-      "kind": "test",
-      "notes": "Sandbox post-copy test harness passes a deterministic local SandboxContext.",
-      "surfaceId": "apex:System.SandboxContext.sandboxName()",
-      "symbol": "SandboxContext.sandboxName()"
-    },
-    {
-      "kind": "test",
       "notes": "Local scheduled Apex queues and drains during Test.stopTest with deterministic CronTrigger state.",
       "surfaceId": "apex:System.System.schedule(String,String,Object)",
       "symbol": "System.schedule(String,String,Object)"
@@ -121,12 +80,6 @@
       "notes": "Local QuickAction defaults handlers accept a defaults list callback.",
       "surfaceId": "apex:QuickAction.QuickActionDefaultsHandler.onInitDefaults(List<QuickAction.QuickActionDefaults>)",
       "symbol": "QuickAction.QuickActionDefaultsHandler.onInitDefaults"
-    },
-    {
-      "kind": "test",
-      "notes": "The local sandbox post-copy harness invokes runApexClass with a deterministic SandboxContext.",
-      "surfaceId": "apex:System.SandboxPostCopy.runApexClass(SandboxContext)",
-      "symbol": "SandboxPostCopy.runApexClass"
     },
     {
       "kind": "test",
@@ -188,22 +141,14 @@
       "errors": 0,
       "failed": 0,
       "ok": true,
-      "passed": 5,
-      "total": 5
+      "passed": 4,
+      "total": 4
     }
   },
   "name": "core-runtime-local-service-evidence-closeout",
-  "mode": "local-runtime",
-  "notes": "Deterministic local sandbox post-copy callbacks only; no hosted Salesforce parity is claimed.",
-  "profile": {
-    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
-    "laneId": "lifecycle-local13",
-    "selectedRowCount": 4
-  },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
-  "salesforceExclusionReason": "This closeout fixture exercises Glade-local RequestImpl, QuickAction defaults, and sandbox harness types that are not constructible or visible in an API 67 scratch org; retain local proof and exclude from hosted deployment.",
+  "salesforceExclusionReason": "This closeout fixture exercises Glade-local QuickAction defaults and test harness types that are not constructible or visible in an API 67 scratch org; retain local proof and exclude from hosted deployment.",
   "source": [
     {
       "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>",
@@ -226,20 +171,12 @@
       "path": "force-app/main/classes/CoreRuntimeLocalContinuationController.cls"
     },
     {
-      "content": "public class CoreRuntimeLocalSandboxCopy implements SandboxPostCopy { public void runApexClass(SandboxContext context) { System.assertEquals('00D000000000001', String.valueOf(context.organizationId())); System.assertEquals('0GR000000000001', String.valueOf(context.sandboxId())); System.assertEquals('preview', context.sandboxName()); } }",
-      "path": "force-app/main/classes/CoreRuntimeLocalSandboxCopy.cls"
-    },
-    {
       "content": "@isTest private class CoreRuntimeLocalQuickActionTest { @isTest static void runsLocalQuickActionDtos() { List<QuickAction.DescribeAvailableQuickActionResult> available = QuickAction.describeAvailableQuickActions('Account'); System.assertEquals(1, available.size()); System.assertEquals('Account.NewTask', available[0].getName()); List<QuickAction.DescribeQuickActionResult> described = QuickAction.describeQuickActions(new List<String>{'Account.NewTask'}); System.assertEquals(1, described.size()); System.assertEquals('Account', described[0].getTargetSobjectType()); QuickAction.QuickActionTemplateResult template = QuickAction.retrieveQuickActionTemplate('Account.NewTask', '001000000000001'); System.assertEquals(true, template.isSuccess()); System.assertEquals('Account.NewTask', template.getDefaultValues().getQuickActionName()); List<QuickAction.QuickActionTemplateResult> templates = QuickAction.retrieveQuickActionTemplates(new List<String>{'Account.NewTask'}, '001000000000001'); System.assertEquals(1, templates.size()); QuickAction.QuickActionRequest request = new QuickAction.QuickActionRequest(); request.setQuickActionName('Account.NewTask'); request.setContextId('001000000000001'); QuickAction.QuickActionResult one = QuickAction.performQuickAction(request); System.assert(one.isSuccess()); QuickAction.QuickActionResult two = QuickAction.performQuickAction(request, true); System.assert(two.isSuccess()); List<QuickAction.QuickActionResult> listOne = QuickAction.performQuickActions(new List<QuickAction.QuickActionRequest>{request}); System.assertEquals(1, listOne.size()); List<QuickAction.QuickActionResult> listTwo = QuickAction.performQuickActions(new List<QuickAction.QuickActionRequest>{request}, true); System.assertEquals(1, listTwo.size()); QuickAction.SendEmailQuickActionDefaults defaults = Test.newSendEmailQuickActionDefaults('001000000000001', '00T000000000001'); System.assertEquals('SendEmail', defaults.getActionName()); System.assertEquals('SendEmail', defaults.getActionType()); System.assertEquals('001000000000001', defaults.getContextId()); System.assertEquals('00T000000000001', defaults.getInReplyToId()); System.assertEquals(0, defaults.getFromAddressList().size()); System.assertNotEquals(null, defaults.getTargetSObject()); defaults.setIgnoreTemplateSubject(true); defaults.setInsertTemplateBody(false); defaults.setTemplateId('00X000000000001'); } }",
       "path": "force-app/main/classes/CoreRuntimeLocalQuickActionTest.cls"
     },
     {
       "content": "@isTest private class CoreRuntimeLocalQuickActionDefaultsHandlerTest { @isTest static void acceptsDefaultsListCallback() { QuickAction.QuickActionDefaultsHandler handler = new QuickAction.QuickActionDefaultsHandler(); List<QuickAction.QuickActionDefaults> defaults = new List<QuickAction.QuickActionDefaults>{new QuickAction.QuickActionDefaults()}; handler.onInitDefaults(defaults); System.assertEquals(1, defaults.size()); System.assertEquals(null, defaults[0].getActionName()); System.assertEquals(null, defaults[0].getActionType()); } }",
       "path": "force-app/main/classes/CoreRuntimeLocalQuickActionDefaultsHandlerTest.cls"
-    },
-    {
-      "content": "@isTest private class CoreRuntimeLocalRequestSandboxTest { @isTest static void runsLocalRequestAndSandboxGetters() { Request request = Request.getCurrent(); System.assertEquals('glade-request-000000000001', request.getRequestId()); System.assertEquals('RUNTEST_SYNC', request.getQuiddity().name()); System.assertEquals('glade-request-000000000001', RequestImpl.getCurrent().getRequestId()); UIRequest uiRequest = UIRequest.getCurrent(); System.assertEquals('local.glade.example', uiRequest.getRequestHeader('host')); System.assertEquals('local.glade.example', uiRequest.getRequestHeader('Host')); System.assertEquals(null, uiRequest.getRequestHeader('x-missing')); Test.testSandboxPostCopyScript(new CoreRuntimeLocalSandboxCopy(), '00D000000000001', '0GR000000000001', 'preview', true); } }",
-      "path": "force-app/main/classes/CoreRuntimeLocalRequestSandboxTest.cls"
     },
     {
       "content": "@isTest private class CoreRuntimeLocalScheduleTest { @isTest static void drainsLocalSchedule() { Test.startTest(); String scheduleId = System.schedule('local service closeout', '0 0 0 * * ?', new CoreRuntimeLocalServiceScheduler()); Test.stopTest(); CronTrigger cron = [SELECT Id, State FROM CronTrigger WHERE Id = :scheduleId]; System.assertEquals('Complete', cron.State); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'scheduled local service']); } }",

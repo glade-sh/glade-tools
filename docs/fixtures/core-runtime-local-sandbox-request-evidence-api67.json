@@ -1,0 +1,85 @@
+{
+  "apiVersion": "67.0",
+  "candidate": {
+    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+  },
+  "command": {
+    "kind": "test"
+  },
+  "evidence": [
+    {
+      "kind": "test",
+      "notes": "RequestImpl returns the same deterministic local request context.",
+      "surfaceId": "apex:System.RequestImpl.getCurrent()",
+      "symbol": "RequestImpl.getCurrent()"
+    },
+    {
+      "kind": "test",
+      "notes": "UIRequest exposes deterministic local request headers.",
+      "surfaceId": "apex:System.UIRequest.getCurrent()",
+      "symbol": "UIRequest.getCurrent()"
+    },
+    {
+      "kind": "test",
+      "notes": "UIRequest header lookup is case-insensitive for local request headers.",
+      "surfaceId": "apex:System.UIRequest.getRequestHeader(String)",
+      "symbol": "UIRequest.getRequestHeader(String)"
+    },
+    {
+      "kind": "test",
+      "notes": "Sandbox post-copy test harness passes a deterministic local SandboxContext.",
+      "surfaceId": "apex:System.SandboxContext.organizationId()",
+      "symbol": "SandboxContext.organizationId()"
+    },
+    {
+      "kind": "test",
+      "notes": "Sandbox post-copy test harness passes a deterministic local SandboxContext.",
+      "surfaceId": "apex:System.SandboxContext.sandboxId()",
+      "symbol": "SandboxContext.sandboxId()"
+    },
+    {
+      "kind": "test",
+      "notes": "Sandbox post-copy test harness passes a deterministic local SandboxContext.",
+      "surfaceId": "apex:System.SandboxContext.sandboxName()",
+      "symbol": "SandboxContext.sandboxName()"
+    },
+    {
+      "kind": "test",
+      "notes": "The local sandbox post-copy harness invokes runApexClass with a deterministic SandboxContext.",
+      "surfaceId": "apex:System.SandboxPostCopy.runApexClass(SandboxContext)",
+      "symbol": "SandboxPostCopy.runApexClass"
+    }
+  ],
+  "expected": {
+    "result": {
+      "errors": 0,
+      "failed": 0,
+      "ok": true,
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "mode": "local-runtime",
+  "name": "core-runtime-local-sandbox-request-evidence-api67",
+  "notes": "Deterministic local request and sandbox post-copy harness only; no hosted Salesforce parity is claimed.",
+  "profile": {
+    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
+    "laneId": "lifecycle-local13",
+    "selectedRowCount": 4
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises Glade-local RequestImpl, UIRequest, and sandbox post-copy test harness types that are not constructible or visible in an API 67 scratch org; retain local proof and exclude from hosted deployment.",
+  "source": [
+    {
+      "content": "public class CoreRuntimeLocalSandboxCopy implements SandboxPostCopy { public void runApexClass(SandboxContext context) { System.assertEquals('00D000000000001', String.valueOf(context.organizationId())); System.assertEquals('0GR000000000001', String.valueOf(context.sandboxId())); System.assertEquals('preview', context.sandboxName()); } }",
+      "path": "force-app/main/classes/CoreRuntimeLocalSandboxCopy.cls"
+    },
+    {
+      "content": "@isTest private class CoreRuntimeLocalRequestSandboxTest { @isTest static void runsLocalRequestAndSandboxGetters() { Request request = Request.getCurrent(); System.assertEquals('glade-request-000000000001', request.getRequestId()); System.assertEquals('RUNTEST_SYNC', request.getQuiddity().name()); System.assertEquals('glade-request-000000000001', RequestImpl.getCurrent().getRequestId()); UIRequest uiRequest = UIRequest.getCurrent(); System.assertEquals('local.glade.example', uiRequest.getRequestHeader('host')); System.assertEquals('local.glade.example', uiRequest.getRequestHeader('Host')); System.assertEquals(null, uiRequest.getRequestHeader('x-missing')); Test.testSandboxPostCopyScript(new CoreRuntimeLocalSandboxCopy(), '00D000000000001', '0GR000000000001', 'preview', true); } }",
+      "path": "force-app/main/classes/CoreRuntimeLocalRequestSandboxTest.cls"
+    }
+  ]
+}
