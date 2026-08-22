@@ -1,0 +1,38 @@
+{
+  "name": "core-runtime-userprovisioning-inherited-tail-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "notes": "Provisional exact-candidate local test witness for eight Salesforce-confirmed inherited UserProvisioning behaviors. Rebind after the runtime correction merges; no deep PluginDescribeResult fields are claimed.",
+  "profile": {
+    "candidateCommit": "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62",
+    "candidateSha256": "b9f9ddf3461a3aa1cb87288d58231a573f32aec716b5e9c1c8dc8ea641037a5d",
+    "laneId": "userprovisioning-inherited-runtime-api67",
+    "selectedRowCount": 8
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The asserted values were confirmed on Salesforce and are replayed against this provisional local candidate, but this fixture performs zero hosted Salesforce parity execution.",
+  "project": {"sourceApiVersion":"67.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "evidence": [
+    {"surfaceId":"apex:UserProvisioning.FlowProvisionBase.getFlowName()","symbol":"UserProvisioning.FlowProvisionBase.getFlowName","kind":"test"},
+    {"surfaceId":"apex:UserProvisioning.FlowProvisionBase.getFlowNamespace()","symbol":"UserProvisioning.FlowProvisionBase.getFlowNamespace","kind":"test"},
+    {"surfaceId":"apex:UserProvisioning.FlowProvisionBase.hasFlow()","symbol":"UserProvisioning.FlowProvisionBase.hasFlow","kind":"test"},
+    {"surfaceId":"apex:UserProvisioning.FlowProvisionBase.hasFlowOrApex()","symbol":"UserProvisioning.FlowProvisionBase.hasFlowOrApex","kind":"test"},
+    {"surfaceId":"apex:UserProvisioning.UserProvisioningPlugin.UserProvisioningPlugin()","symbol":"UserProvisioning.UserProvisioningPlugin.UserProvisioningPlugin","kind":"test","notes":"Constructor credit is exercised only through ConcretePlugin super()."},
+    {"surfaceId":"apex:UserProvisioning.UserProvisioningPlugin.buildDescribeCall()","symbol":"UserProvisioning.UserProvisioningPlugin.buildDescribeCall","kind":"test"},
+    {"surfaceId":"apex:UserProvisioning.UserProvisioningPlugin.describe()","symbol":"UserProvisioning.UserProvisioningPlugin.describe","kind":"test"},
+    {"surfaceId":"apex:UserProvisioning.UserProvisioningPlugin.getPluginClassName()","symbol":"UserProvisioning.UserProvisioningPlugin.getPluginClassName","kind":"test"}
+  ],
+  "source": [
+    {
+      "path": "force-app/main/default/classes/UserProvisioningInheritedWitness.cls",
+      "content": "public class UserProvisioningInheritedWitness { public class ConcreteFlow extends UserProvisioning.FlowProvisionBase implements Database.Batchable<SObject> { public ConcreteFlow() { super(''); } public Iterable<SObject> start(Database.BatchableContext context) { return new List<SObject>(); } public void execute(Database.BatchableContext context, List<SObject> scope) {} public void finish(Database.BatchableContext context) {} } public class ConcretePlugin extends UserProvisioning.UserProvisioningPlugin { public ConcretePlugin() { super(); } public override Process.PluginDescribeResult buildDescribeCall() { return null; } public override Process.PluginResult invoke(Process.PluginRequest request) { return null; } } }"
+    },
+    {
+      "path": "force-app/main/default/classes/UserProvisioningInheritedRuntimeTest.cls",
+      "content": "@IsTest private class UserProvisioningInheritedRuntimeTest { @IsTest static void matchesSalesforce() { UserProvisioning.FlowProvisionBase flow = new UserProvisioningInheritedWitness.ConcreteFlow(); System.assertEquals(null, flow.getFlowName()); System.assertEquals(null, flow.getFlowNamespace()); System.assertEquals(false, flow.hasFlow()); System.assertEquals(false, flow.hasFlowOrApex()); UserProvisioning.UserProvisioningPlugin plugin = new UserProvisioningInheritedWitness.ConcretePlugin(); System.assertEquals(null, plugin.buildDescribeCall()); System.assertNotEquals(null, plugin.describe()); System.assertEquals('ConcretePlugin', plugin.getPluginClassName()); } }"
+    }
+  ],
+  "command": {"kind":"test"},
+  "expected": {"result":{"ok":true,"total":1,"passed":1,"failed":0,"errors":0}}
+}

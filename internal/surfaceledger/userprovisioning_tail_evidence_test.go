@@ -33,8 +33,8 @@ var userProvisioningOpenTailIDs = []string{
 const userProvisioningDeterministicMissingFixture = "current-base-userprovisioning-deterministic-mock-004-api67.json"
 
 const (
-	userProvisioningCandidateCommit = "3409c4c85827b19712e9df83fc8905aa02bd1dc8"
-	userProvisioningCandidateSHA256 = "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+	userProvisioningCandidateCommit = "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62"
+	userProvisioningCandidateSHA256 = "b9f9ddf3461a3aa1cb87288d58231a573f32aec716b5e9c1c8dc8ea641037a5d"
 )
 
 var userProvisioningDeterministicMissingIDs = []string{
@@ -58,6 +58,10 @@ func TestUserProvisioningCurrentMissingRowsHaveExactDeterministicEvidence(t *tes
 	}
 	if result, err := compat.Run(fixture); err != nil || !result.OK {
 		t.Fatalf("fixture execution = %#v, error = %v", result, err)
+	}
+	missingSource := fixture.Source[0].Content + fixture.Source[1].Content + fixture.Source[2].Content
+	if !strings.Contains(missingSource, "extends UserProvisioning.UserProvisioningPlugin") || !strings.Contains(missingSource, "override Process.PluginResult invoke(Process.PluginRequest request)") || strings.Contains(missingSource, "new UserProvisioning.UserProvisioningPlugin(") {
+		t.Fatalf("plugin subclass witness = %q", missingSource)
 	}
 	owned := make([]string, 0, len(fixture.Evidence))
 	for _, evidence := range fixture.Evidence {
@@ -94,6 +98,7 @@ func TestUserProvisioningCurrentMissingRowsHaveExactDeterministicEvidence(t *tes
 	var metadata struct {
 		APIVersion                string `json:"apiVersion"`
 		Mode                      string `json:"mode"`
+		Notes                     string `json:"notes"`
 		SalesforceEligible        *bool  `json:"salesforceEligible"`
 		SalesforceExclusionClass  string `json:"salesforceExclusionClass"`
 		SalesforceExclusionReason string `json:"salesforceExclusionReason"`
@@ -111,7 +116,7 @@ func TestUserProvisioningCurrentMissingRowsHaveExactDeterministicEvidence(t *tes
 	if err := json.Unmarshal(data, &metadata); err != nil {
 		t.Fatal(err)
 	}
-	if metadata.APIVersion != "67.0" || metadata.Mode != "deterministic-mock" || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "zero hosted") || metadata.Candidate.Commit != userProvisioningCandidateCommit || metadata.Candidate.SHA256 != userProvisioningCandidateSHA256 || metadata.Profile.CandidateCommit != userProvisioningCandidateCommit || metadata.Profile.CandidateSHA256 != userProvisioningCandidateSHA256 || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningDeterministicMissingIDs) {
+	if metadata.APIVersion != "67.0" || metadata.Mode != "deterministic-mock" || !strings.Contains(strings.ToLower(metadata.Notes), "provisional") || !strings.Contains(strings.ToLower(metadata.Notes), "rebind") || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "zero hosted") || metadata.Candidate.Commit != userProvisioningCandidateCommit || metadata.Candidate.SHA256 != userProvisioningCandidateSHA256 || metadata.Profile.CandidateCommit != userProvisioningCandidateCommit || metadata.Profile.CandidateSHA256 != userProvisioningCandidateSHA256 || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningDeterministicMissingIDs) {
 		t.Fatalf("fixture metadata = %#v", metadata)
 	}
 }
@@ -131,6 +136,9 @@ func TestUserProvisioningDeterministicTailHasExactLocalEvidence(t *testing.T) {
 	}
 	if result, err := compat.Run(fixture); err != nil || !result.OK {
 		t.Fatalf("fixture execution = %#v, error = %v", result, err)
+	}
+	if source := fixture.Source[0].Content; !strings.Contains(source, "class ConcreteFlow extends UserProvisioning.FlowProvisionBase") || !strings.Contains(source, "new ConcreteFlow()") || strings.Contains(source, "new UserProvisioning.FlowProvisionBase(") {
+		t.Fatalf("flow subclass witness = %q", source)
 	}
 
 	paths, err := filepath.Glob(filepath.Join(root, "docs", "fixtures", "*.json"))
