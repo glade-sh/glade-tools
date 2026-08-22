@@ -10,12 +10,6 @@
     },
     {
       "kind": "test",
-      "notes": "Database EmptyRecycleBinResult success accessor is asserted on permanent delete results.",
-      "surfaceId": "apex:Database.EmptyRecycleBinResult.isSuccess()",
-      "symbol": "Database.EmptyRecycleBinResult.isSuccess"
-    },
-    {
-      "kind": "test",
       "notes": "Single-record emptyRecycleBin permanently removes a deleted local record.",
       "surfaceId": "apex:System.Database.emptyRecycleBin(Object)",
       "symbol": "Database.emptyRecycleBin"

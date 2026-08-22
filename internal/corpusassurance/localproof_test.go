@@ -329,6 +329,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-eventbus-test-service-tail-api67.json", 5},
 		{"core-runtime-eventbus-trigger-context-api67.json", 1},
 		{"core-runtime-jsonparser-tail-local-evidence.json", 6},
+		{"core-runtime-database-duplicate-recycle-savepoint-api67.json", 12},
 		{"core-messaging-sendemail-error-fields-runtime.json", 2},
 		{"core-messaging-mass-email-fields-runtime.json", 3},
 		{"integration-pagereference-accessors-runtime.json", 3},

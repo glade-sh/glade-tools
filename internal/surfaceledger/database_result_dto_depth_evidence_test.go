@@ -39,6 +39,7 @@ func databaseResultDTODepthIDs() []string {
 func TestDatabaseResultDTOsHaveExactLocalOnlyEvidence(t *testing.T) {
 	const (
 		legacyOwner     = "fixture:core-runtime-database-result-dto-local-evidence"
+		duplicateOwner  = "fixture:core-runtime-database-duplicate-recycle-savepoint-api67"
 		fieldStateOwner = "fixture:data-database-result-field-state-runtime"
 		runtimeOwner    = "fixture:data-platform-database-result-dto-wave18-runtime"
 	)
@@ -46,7 +47,6 @@ func TestDatabaseResultDTOsHaveExactLocalOnlyEvidence(t *testing.T) {
 		"apex:Database.DeleteResult.errors":          {},
 		"apex:Database.DeleteResult.id":              {},
 		"apex:Database.DeleteResult.success":         {},
-		"apex:Database.EmptyRecycleBinResult.errors": {},
 		"apex:Database.SaveResult.errors":            {},
 		"apex:Database.SaveResult.id":                {},
 		"apex:Database.SaveResult.success":           {},
@@ -85,6 +85,7 @@ func TestDatabaseResultDTOsHaveExactLocalOnlyEvidence(t *testing.T) {
 	for id := range legacyIDs {
 		expectedOwners[id] = map[string]struct{}{legacyOwner: {}}
 	}
+	expectedOwners["apex:Database.EmptyRecycleBinResult.errors"] = map[string]struct{}{duplicateOwner: {}}
 	for id := range fieldStateIDs {
 		expectedOwners[id][fieldStateOwner] = struct{}{}
 	}
