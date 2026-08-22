@@ -147,7 +147,7 @@ func TestMiscContextTailHasExactCandidateLocalEvidence(t *testing.T) {
 	}
 }
 
-func TestMiscContextTailLeavesCacheValidateKeysAsNonParity(t *testing.T) {
+func TestMiscContextTailLeavesCacheValidateKeysListOverloadsAsNonParity(t *testing.T) {
 	path := filepath.Join("..", "..", "docs", "fixtures", "current-base-cache-negative-api67.json")
 	fixture, err := compat.LoadFile(path)
 	if err != nil {
@@ -158,11 +158,8 @@ func TestMiscContextTailLeavesCacheValidateKeysAsNonParity(t *testing.T) {
 	}
 	want := map[string]bool{
 		"apex:Cache.OrgPartition.validateKeys(Boolean,List<String>)":     true,
-		"apex:Cache.OrgPartition.validateKeys(Boolean,Set<String>)":      true,
 		"apex:Cache.Partition.validateKeys(Boolean,List<String>)":        true,
-		"apex:Cache.Partition.validateKeys(Boolean,Set<String>)":         true,
 		"apex:Cache.SessionPartition.validateKeys(Boolean,List<String>)": true,
-		"apex:Cache.SessionPartition.validateKeys(Boolean,Set<String>)":  true,
 	}
 	seen := make(map[string]bool, len(want))
 	for _, evidence := range fixture.Evidence {
@@ -171,7 +168,7 @@ func TestMiscContextTailLeavesCacheValidateKeysAsNonParity(t *testing.T) {
 		}
 	}
 	if len(seen) != len(want) {
-		t.Fatalf("Cache.validateKeys rows = %d, want six", len(seen))
+		t.Fatalf("Cache.validateKeys List rows = %d, want three", len(seen))
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {

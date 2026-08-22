@@ -45,13 +45,12 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 		"apex:System.Double.Double()":                          "Salesforce and the current candidate reject this scalar constructor",
 		"apex:System.Id.to18":                                  "sealed candidate does not execute this conversion contract",
 		"apex:System.Integer.doubleValue":                      "sealed candidate does not execute this conversion contract",
-		"apex:System.SObject.getSObjects(Schema.SObjectField)": "dropped: the supported fixture cannot populate a child relationship through a Schema.SObjectField token",
 	}
-	if len(rejected) != 15 {
-		t.Fatalf("rejected rows = %d, want exact 15: %#v", len(rejected), rejected)
+	if len(rejected) != 14 {
+		t.Fatalf("rejected rows = %d, want exact 14: %#v", len(rejected), rejected)
 	}
-	if len(required)+len(rejected) != 26 {
-		t.Fatalf("scoped rows = %d, want exact 26", len(required)+len(rejected))
+	if len(required)+len(rejected) != 25 {
+		t.Fatalf("scoped rows = %d, want exact 25", len(required)+len(rejected))
 	}
 	for surfaceID, reason := range rejected {
 		if reason == "" {
@@ -124,5 +123,14 @@ func TestMiscLocalRuntimeTailIsSelectedByLocalProofRegistry(t *testing.T) {
 	}
 	if envelope.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || envelope.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || envelope.Profile.CandidateCommit != envelope.Candidate.Commit || envelope.Profile.CandidateSHA256 != envelope.Candidate.SHA256 || envelope.Profile.SelectedRowCount != len(required) || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" {
 		t.Fatalf("sealed provenance/metadata = %#v/%#v/%#v", envelope.Candidate, envelope.Profile, metadata)
+	}
+	sobjectManifest, sobjectMissing, err := analyzeLocalProofFixtures(root, map[string]string{
+		"apex:System.SObject.getSObjects(Schema.SObjectField)": localRuntimeRequired,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sobjectMissing) != 0 || len(sobjectManifest.Fixtures) != 1 || sobjectManifest.Fixtures[0].ID != "core-runtime-sobject-tail-api67" || !reflect.DeepEqual(sobjectManifest.Fixtures[0].OwnedSurfaceIDs, []string{"apex:System.SObject.getSObjects(Schema.SObjectField)"}) {
+		t.Fatalf("SObject field-token local owner = %#v, missing = %v", sobjectManifest, sobjectMissing)
 	}
 }

@@ -32,13 +32,15 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 		"apex:Cache.Org.Org()",
 		"apex:Cache.Session.Session()",
 	}
+	accepted := []string{
+		"apex:Cache.OrgPartition.validateKeys(Boolean,Set<String>)",
+		"apex:Cache.Partition.validateKeys(Boolean,Set<String>)",
+		"apex:Cache.SessionPartition.validateKeys(Boolean,Set<String>)",
+	}
 	rejected := []string{
 		"apex:Cache.OrgPartition.validateKeys(Boolean,List<String>)",
-		"apex:Cache.OrgPartition.validateKeys(Boolean,Set<String>)",
 		"apex:Cache.Partition.validateKeys(Boolean,List<String>)",
-		"apex:Cache.Partition.validateKeys(Boolean,Set<String>)",
 		"apex:Cache.SessionPartition.validateKeys(Boolean,List<String>)",
-		"apex:Cache.SessionPartition.validateKeys(Boolean,Set<String>)",
 	}
 	got := make([]string, 0, len(fixture.Evidence))
 	for _, evidence := range fixture.Evidence {
@@ -70,15 +72,15 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	required := make(map[string]string, len(want)+len(rejected))
-	for _, surfaceID := range append(append([]string{}, want...), rejected...) {
+	required := make(map[string]string, len(want)+len(accepted)+len(rejected))
+	for _, surfaceID := range append(append(append([]string{}, want...), accepted...), rejected...) {
 		required[surfaceID] = deterministicMockRequired
 	}
 	preManifest, preMissing, err := analyzeLocalProofFixtures(root, required)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(preMissing) != len(rejected) || len(preManifest.Fixtures) != 1 || !reflect.DeepEqual(preManifest.Fixtures[0].OwnedSurfaceIDs, want) {
+	if len(preMissing) != len(rejected) || len(preManifest.Fixtures) != 2 {
 		t.Fatalf("pre-admission manifest = %#v, missing = %v", preManifest, preMissing)
 	}
 	if result, err := compat.Run(fixture); err != nil || !result.OK {
@@ -107,7 +109,67 @@ func TestCacheTailHasOneExecutableLocalOwner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(missing, rejected) || len(manifest.Fixtures) != 1 || manifest.Fixtures[0].ID != fixture.Name || !reflect.DeepEqual(manifest.Fixtures[0].OwnedSurfaceIDs, want) {
+	if !reflect.DeepEqual(missing, rejected) || len(manifest.Fixtures) != 2 || manifest.Fixtures[0].ID != "core-runtime-cache-validatekeys-set-api67" || !reflect.DeepEqual(manifest.Fixtures[0].OwnedSurfaceIDs, accepted) || manifest.Fixtures[1].ID != fixture.Name || !reflect.DeepEqual(manifest.Fixtures[1].OwnedSurfaceIDs, want) {
 		t.Fatalf("admission manifest = %#v, missing = %v", manifest, missing)
+	}
+}
+
+func TestCacheSObjectRowsRunSealedCandidateCLIJSON(t *testing.T) {
+	candidatePath := os.Getenv("GLADE_CANDIDATE")
+	if candidatePath == "" {
+		t.Skip("set GLADE_CANDIDATE to run the sealed-candidate regression")
+	}
+	const candidateSHA = "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+	if !filepath.IsAbs(candidatePath) || localProofFileSHA256(t, candidatePath) != candidateSHA {
+		t.Fatalf("candidate is not the sealed runtime: %q", candidatePath)
+	}
+	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cases := []struct {
+		name string
+		ids  []string
+	}{
+		{
+			name: "core-runtime-cache-validatekeys-set-api67",
+			ids: []string{
+				"apex:Cache.OrgPartition.validateKeys(Boolean,Set<String>)",
+				"apex:Cache.Partition.validateKeys(Boolean,Set<String>)",
+				"apex:Cache.SessionPartition.validateKeys(Boolean,Set<String>)",
+			},
+		},
+		{
+			name: "core-runtime-sobject-tail-api67",
+			ids:  []string{"apex:System.SObject.getSObjects(Schema.SObjectField)"},
+		},
+	}
+	for _, tc := range cases {
+		path := filepath.Join(root, tc.name+".json")
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := compat.Validate(fixture); err != nil {
+			t.Fatal(err)
+		}
+		entry := LocalProofFixture{
+			ID: tc.name, Name: tc.name, Path: path, SHA256: replayBytesSHA256(data),
+			OwnedSurfaceIDs: tc.ids, Disposition: localRuntimeRequired, Operation: "exec",
+			SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason,
+		}
+		command, cleanup, err := materializeLocalProofFixture(entry, candidatePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		execution := runLocalProofCommand(command)
+		cleanup()
+		if !execution.Validated {
+			t.Fatalf("sealed candidate execution failed for %s: exit=%d stderr=%s stdout=%s", tc.name, execution.Receipt.ExitCode, execution.Stderr, execution.Stdout)
+		}
 	}
 }
