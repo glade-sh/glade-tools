@@ -6,11 +6,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Database.Errors",
-      "symbol": "Database.Errors"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.LeadConvertResult",
       "symbol": "Database.LeadConvertResult"
     },
@@ -51,10 +46,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-002",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-002: retained Errors namespace shape and LeadConvertResult field contracts; LocaleOptions is owned by the exact executable local-only result/request tail fixture.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-002: retained LeadConvertResult field contracts; Errors and LocaleOptions are owned by exact executable local-only fixtures.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-002",
-    "selectedRowCount": 7
+    "selectedRowCount": 6
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

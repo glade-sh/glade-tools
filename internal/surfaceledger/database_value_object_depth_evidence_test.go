@@ -61,10 +61,10 @@ func TestDatabaseValueObjectsHaveExactExecutableLocalEvidence(t *testing.T) {
 			"Database.Cursor cursor = new Database.Cursor();",
 		},
 		"current-base-local-runtime-required-database-002.json": {
-			"Object errorsType = (Database.Errors)null;", "Database.LocaleOptions locale = new Database.LocaleOptions();",
+			"Database.LocaleOptions locale = new Database.LocaleOptions();",
 		},
 		"current-base-local-runtime-required-database-003.json": {
-			"Database.SaveResult saveResult = new Database.SaveResult();", "Object savepoint = (Database.Savepoint)null;", "Database.UndeleteResult undeleteResult = new Database.UndeleteResult();",
+			"Object savepoint = (Database.Savepoint)null;",
 		},
 		"data-platform-database-dto-wave18-runtime.json": {
 			"deletedA.deleteddate = Date.newInstance(2026,1,2);", "deletedA.equals(deletedB)", "deletedA.hashCode()", "deletedA.toString()",

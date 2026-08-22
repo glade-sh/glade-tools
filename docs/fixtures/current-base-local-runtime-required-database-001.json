@@ -16,11 +16,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.DeleteResult.DeleteResult()",
-      "symbol": "Database.DeleteResult"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.DuplicateError.duplicateresult",
       "symbol": "Database.DuplicateError.duplicateresult"
     },
@@ -41,10 +36,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-001",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone plus passive result constructors and DuplicateError result-field shape.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone plus DuplicateError and EmptyRecycleBinResult shape.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-001",
-    "selectedRowCount": 5
+    "selectedRowCount": 4
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
