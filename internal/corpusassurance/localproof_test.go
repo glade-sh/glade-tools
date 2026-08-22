@@ -323,6 +323,8 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-database-result-request-tail-local-api67.json", 8},
 		{"core-runtime-database-result-error-accessors-api67.json", 10},
 		{"core-runtime-database-result-error-constructors-local-api67.json", 4},
+		{"core-runtime-database-query-locator-api67.json", 4},
+		{"core-runtime-database-query-locator-local-only-api67.json", 9},
 		{"core-messaging-sendemail-error-fields-runtime.json", 2},
 		{"core-messaging-mass-email-fields-runtime.json", 3},
 		{"integration-pagereference-accessors-runtime.json", 3},

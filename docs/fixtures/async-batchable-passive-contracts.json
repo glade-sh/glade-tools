@@ -42,24 +42,6 @@
     },
     {
       "kind": "test",
-      "notes": "The no-arg iterator constructor returns an empty passive iterator.",
-      "surfaceId": "apex:Database.QueryLocatorIterator.QueryLocatorIterator()",
-      "symbol": "Database.QueryLocatorIterator constructor"
-    },
-    {
-      "kind": "test",
-      "notes": "The local chunk iterator type can be named and constructed as an empty passive iterator.",
-      "surfaceId": "apex:Database.QueryLocatorChunkIterator",
-      "symbol": "Database.QueryLocatorChunkIterator"
-    },
-    {
-      "kind": "test",
-      "notes": "The no-arg chunk iterator constructor returns an empty passive iterator.",
-      "surfaceId": "apex:Database.QueryLocatorChunkIterator.QueryLocatorChunkIterator()",
-      "symbol": "Database.QueryLocatorChunkIterator constructor"
-    },
-    {
-      "kind": "test",
       "notes": "Docs expose the access-level overload as Object; local execution receives an AccessLevel value held in Object.",
       "surfaceId": "apex:System.Database.getQueryLocator(String,Object)",
       "symbol": "Database.getQueryLocator"
