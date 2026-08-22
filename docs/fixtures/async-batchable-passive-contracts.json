@@ -18,24 +18,6 @@
     },
     {
       "kind": "test",
-      "notes": "BatchableContext constructs as a passive local context value for tests.",
-      "surfaceId": "apex:Database.BatchableContext",
-      "symbol": "Database.BatchableContext"
-    },
-    {
-      "kind": "test",
-      "notes": "BatchableContextImpl constructs as a passive local context implementation value.",
-      "surfaceId": "apex:Database.BatchableContextImpl",
-      "symbol": "Database.BatchableContextImpl"
-    },
-    {
-      "kind": "test",
-      "notes": "The no-arg implementation constructor returns an empty passive context.",
-      "surfaceId": "apex:Database.BatchableContextImpl.BatchableContextImpl()",
-      "symbol": "Database.BatchableContextImpl constructor"
-    },
-    {
-      "kind": "test",
       "notes": "The local iterator type can be named and constructed as an empty passive iterator.",
       "surfaceId": "apex:Database.QueryLocatorIterator",
       "symbol": "Database.QueryLocatorIterator"

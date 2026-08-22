@@ -446,6 +446,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-system-enum-types-runtime.json", 2},
 		{"core-runtime-system-enum-families-api67.json", 104},
 		{"core-runtime-database-cursor-sync-tail-api67.json", 10},
+		{"core-runtime-database-batch-async-tail-api67.json", 8},
 		{"core-runtime-apex-schema-tail-api67.json", 13},
 		{"core-runtime-database-options-request-tail-api67.json", 6},
 		{"core-runtime-database-result-request-tail-local-api67.json", 8},

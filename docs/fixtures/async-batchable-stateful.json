@@ -7,11 +7,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.Stateful",
       "symbol": "Database.Stateful"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)",
-      "symbol": "Database.Batchable.execute"
     }
   ],
   "expected": {
