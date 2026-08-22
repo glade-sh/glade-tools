@@ -95,36 +95,6 @@
       "notes": "Two-argument pagination cursor construction accepts the typed AccessLevel mode argument."
     },
     {
-      "surfaceId": "apex:Database.CursorFetchResult.getRecords()",
-      "symbol": "Database.CursorFetchResult.getRecords",
-      "kind": "test",
-      "notes": "Pagination cursor fetch results expose local SOQL records."
-    },
-    {
-      "surfaceId": "apex:Database.CursorFetchResult.isDone()",
-      "symbol": "Database.CursorFetchResult.isDone",
-      "kind": "test",
-      "notes": "Pagination cursor fetch results expose completion state."
-    },
-    {
-      "surfaceId": "apex:Database.CursorFetchResult.getNextIndex()",
-      "symbol": "Database.CursorFetchResult.getNextIndex",
-      "kind": "test",
-      "notes": "Pagination cursor fetch results expose the next local fetch index."
-    },
-    {
-      "surfaceId": "apex:Database.CursorFetchResult.getNumDeletedRecords()",
-      "symbol": "Database.CursorFetchResult.getNumDeletedRecords",
-      "kind": "test",
-      "notes": "Pagination cursor fetch results expose zero deleted rows for local active-row fetches."
-    },
-    {
-      "surfaceId": "apex:Database.PaginationCursor.fetchDeleted(Integer,Integer)",
-      "symbol": "Database.PaginationCursor.fetchDeleted",
-      "kind": "test",
-      "notes": "Pagination cursor deleted fetch returns the local deleted-record count."
-    },
-    {
       "surfaceId": "apex:Database.PaginationCursor.fetchPage(Integer,Integer)",
       "symbol": "Database.PaginationCursor.fetchPage",
       "kind": "test",
@@ -175,24 +145,6 @@
       "symbol": "Database.getDeleted",
       "kind": "test",
       "notes": "Database getDeleted returns a deterministic local deleted-record window."
-    },
-    {
-      "surfaceId": "apex:Database.GetDeletedResult.getDeletedRecords()",
-      "symbol": "Database.GetDeletedResult.getDeletedRecords",
-      "kind": "test",
-      "notes": "GetDeletedResult exposes the local deleted-record list."
-    },
-    {
-      "surfaceId": "apex:Database.GetDeletedResult.getEarliestDateAvailable()",
-      "symbol": "Database.GetDeletedResult.getEarliestDateAvailable",
-      "kind": "test",
-      "notes": "GetDeletedResult exposes the earliest retained deleted-record date; the local runtime returns null when no retained deletion exists, and this no-history edge has no Salesforce oracle receipt."
-    },
-    {
-      "surfaceId": "apex:Database.GetDeletedResult.getLatestDateCovered()",
-      "symbol": "Database.GetDeletedResult.getLatestDateCovered",
-      "kind": "test",
-      "notes": "GetDeletedResult exposes the requested latest covered date."
     },
     {
       "symbol": "Database.getUpdated",

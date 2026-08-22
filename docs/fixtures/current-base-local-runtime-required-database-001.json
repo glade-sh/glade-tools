@@ -11,11 +11,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.Cursor.Cursor()",
-      "symbol": "Database.Cursor"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.Cursor.clone()",
       "symbol": "Database.Cursor.clone"
     },
@@ -49,7 +44,7 @@
   "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone plus passive result constructors and DuplicateError result-field shape.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-001",
-    "selectedRowCount": 6
+    "selectedRowCount": 5
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
