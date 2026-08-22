@@ -5,14 +5,7 @@
     ],
     "kind": "exec"
   },
-  "evidence": [
-    {
-      "kind": "unsupported",
-      "notes": "ConnectorTestUtil.createConnectedApp is a Salesforce test-only utility and rejects anonymous execution with System.TypeException; preserve the rejection rather than adding local behavior.",
-      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
-      "symbol": "UserProvisioning.ConnectorTestUtil.createConnectedApp(String)"
-    }
-  ],
+  "evidence": [],
   "expected": {
     "error": {
       "message": "Cannot call test methods in non-test context",

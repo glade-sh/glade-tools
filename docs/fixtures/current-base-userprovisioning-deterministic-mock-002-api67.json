@@ -36,16 +36,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.clone()",
-      "symbol": "UserProvisioning.ConnectorTestUtil.clone()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.ConnectorTestUtil.createConnectedApp(String)",
-      "symbol": "UserProvisioning.ConnectorTestUtil.createConnectedApp(String)"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:UserProvisioning.DeletingBatchable",
       "symbol": "UserProvisioning.DeletingBatchable"
     },
@@ -66,11 +56,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.clone()",
-      "symbol": "UserProvisioning.DummyConnectorApexHandler.clone()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)",
       "symbol": "UserProvisioning.DummyConnectorApexHandler.invoke(UserProvisioning.ProvisioningProcessHandlerInput)"
     },
@@ -83,31 +68,6 @@
       "kind": "test",
       "surfaceId": "apex:UserProvisioning.FlowProvisionBase.FlowProvisionBase(String)",
       "symbol": "UserProvisioning.FlowProvisionBase.FlowProvisionBase(String)"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.clone()",
-      "symbol": "UserProvisioning.FlowProvisionBase.clone()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.getFlowName()",
-      "symbol": "UserProvisioning.FlowProvisionBase.getFlowName()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.getFlowNamespace()",
-      "symbol": "UserProvisioning.FlowProvisionBase.getFlowNamespace()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.hasFlow()",
-      "symbol": "UserProvisioning.FlowProvisionBase.hasFlow()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.FlowProvisionBase.hasFlowOrApex()",
-      "symbol": "UserProvisioning.FlowProvisionBase.hasFlowOrApex()"
     },
     {
       "kind": "test",
@@ -151,11 +111,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:UserProvisioning.UserProvisioningLog.clone()",
-      "symbol": "UserProvisioning.UserProvisioningLog.clone()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler",
       "symbol": "UserProvisioning.UserProvisioningProcessHandler"
     },
@@ -163,11 +118,6 @@
       "kind": "test",
       "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.UserProvisioningProcessHandler()",
       "symbol": "UserProvisioning.UserProvisioningProcessHandler.UserProvisioningProcessHandler()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:UserProvisioning.UserProvisioningProcessHandler.clone()",
-      "symbol": "UserProvisioning.UserProvisioningProcessHandler.clone()"
     },
     {
       "kind": "test",
@@ -186,13 +136,13 @@
   },
   "mode": "deterministic-mock",
   "name": "current-base-userprovisioning-deterministic-mock-002-api67",
-  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: 28 uncovered concrete runtime rows after existing log evidence. PluginBatchable and the abstract UserProvisioningPlugin shape are retained in companion compile-shape fixtures.",
+  "notes": "Current-base lane current-base-deterministic-mock-required-UserProvisioning-001: 18 retained concrete runtime rows after exact tail transfer and rejected getter removal.",
   "profile": {
     "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
     "candidateSha256": "0a330ace06fabae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-deterministic-mock-required-UserProvisioning-001",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 28,
+    "selectedRowCount": 18,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "salesforceEligible": false,
