@@ -711,6 +711,51 @@ func TestValueObjectsTailRunsSealedCandidateCLIJSON(t *testing.T) {
 	}
 }
 
+func TestFeatureManagementPermissionAliasRunsSealedCandidateCLIJSON(t *testing.T) {
+	candidatePath := os.Getenv("GLADE_CANDIDATE")
+	if candidatePath == "" {
+		t.Skip("set GLADE_CANDIDATE to run the sealed-candidate regression")
+	}
+	const candidateSHA = "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+	if !filepath.IsAbs(candidatePath) || localProofFileSHA256(t, candidatePath) != candidateSHA {
+		t.Fatalf("candidate is not the sealed runtime: %q", candidatePath)
+	}
+	root, err := filepath.Abs(filepath.Join("..", ".."))
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixturePath := filepath.Join(root, "docs", "fixtures", "core-runtime-deterministic-tail-local-evidence-api67.json")
+	data, err := os.ReadFile(fixturePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := compat.Validate(fixture); err != nil {
+		t.Fatal(err)
+	}
+	owned := make([]string, 0, len(fixture.Evidence))
+	for _, evidence := range fixture.Evidence {
+		owned = append(owned, evidence.SurfaceID)
+	}
+	sort.Strings(owned)
+	entry := LocalProofFixture{
+		ID: fixture.Name, Name: fixture.Name, Path: fixturePath, SHA256: replayBytesSHA256(data),
+		OwnedSurfaceIDs: owned, Disposition: deterministicMockRequired, Operation: "test",
+		SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason,
+	}
+	command, cleanup, err := materializeLocalProofFixture(entry, candidatePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	if execution := runLocalProofCommand(command); !execution.Validated {
+		t.Fatalf("sealed candidate execution failed: exit=%d stderr=%s stdout=%s", execution.Receipt.ExitCode, execution.Stderr, execution.Stdout)
+	}
+}
+
 func TestSearchMockCloseoutOwnsExactlyTwoRows(t *testing.T) {
 	root := filepath.Join("..", "..", "docs", "fixtures")
 	want := map[string]string{"core-runtime-search-suggest-deterministic-mock.json": "apex:System.Search.suggest(String,String,Object)"}

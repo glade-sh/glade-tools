@@ -361,6 +361,7 @@ func TestBuildGladeSnapshotAddsFixtureBackedSystemAliasRows(t *testing.T) {
 	}{
 		{id: "apex:System.Crypto.areEqualConstantTime(Blob,Blob)", kind: KindMethod, behavior: BehaviorUnsupported},
 		{id: "apex:System.CustomMetadataType.getAll", kind: KindMethod, behavior: BehaviorSupported},
+		{id: "apex:System.FeatureManagement.checkPermission", kind: KindMethod, behavior: BehaviorSupported},
 		{id: "apex:System.Messaging.MassEmailMessage", kind: KindType, behavior: BehaviorPassive},
 		{id: "apex:System.Matcher.hasTransparentBounds", kind: KindMethod, behavior: BehaviorSupported},
 		{id: "apex:System.Matcher.useTransparentBounds", kind: KindMethod, behavior: BehaviorSupported},
