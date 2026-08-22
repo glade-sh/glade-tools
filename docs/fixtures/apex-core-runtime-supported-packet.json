@@ -23,50 +23,14 @@
     },
     {
       "kind": "test",
-      "notes": "The fixture invokes DataSource.AsyncDeleteCallback.processDelete for local deleteAsync list results.",
-      "surfaceId": "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback)",
-      "symbol": "Database.deleteAsync"
-    },
-    {
-      "kind": "test",
-      "notes": "The fixture invokes the deleteAsync list callback overload with AccessLevel.USER_MODE.",
-      "surfaceId": "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback,AccessLevel)",
-      "symbol": "Database.deleteAsync"
-    },
-    {
-      "kind": "test",
       "notes": "The fixture inserts List<Object> SObjects through the local async DML alias.",
       "surfaceId": "apex:System.Database.insertAsync(List<Object>)",
       "symbol": "Database.insertAsync"
     },
     {
       "kind": "test",
-      "notes": "The fixture invokes DataSource.AsyncSaveCallback.processSave for local insertAsync list results.",
-      "surfaceId": "apex:System.Database.insertAsync(List<Object>,DataSource.AsyncSaveCallback)",
-      "symbol": "Database.insertAsync"
-    },
-    {
-      "kind": "test",
-      "notes": "The fixture invokes the single-record insertAsync callback overload with AccessLevel.USER_MODE.",
-      "surfaceId": "apex:System.Database.insertAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)",
-      "symbol": "Database.insertAsync"
-    },
-    {
-      "kind": "test",
       "notes": "The fixture updates List<Object> SObjects through the local async DML alias.",
       "surfaceId": "apex:System.Database.updateAsync(List<Object>)",
-      "symbol": "Database.updateAsync"
-    },
-    {
-      "kind": "test",
-      "notes": "The fixture invokes DataSource.AsyncSaveCallback.processSave for local updateAsync list results.",
-      "surfaceId": "apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback)",
-      "symbol": "Database.updateAsync"
-    },
-    {
-      "kind": "test",
-      "notes": "The fixture invokes the updateAsync list callback overload with AccessLevel.USER_MODE.",
-      "surfaceId": "apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback,AccessLevel)",
       "symbol": "Database.updateAsync"
     },
     {

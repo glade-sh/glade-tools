@@ -313,6 +313,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 			surfaceID == "apex:System.ExternalServiceTest.sendCallback(HttpRequest)" || surfaceID == "apex:System.System.attachFinalizer(finalizer)" || surfaceID == "apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)" ||
 			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
 			localRuntimeUserClassTestSurface(surfaceID) ||
+			localRuntimeDatabaseTestSurface(surfaceID) ||
 			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
 			surfaceID == "apex:System.Queueable" || strings.HasPrefix(surfaceID, "apex:System.Queueable.") ||
 			surfaceID == "apex:System.QueueableContext" || strings.HasPrefix(surfaceID, "apex:System.QueueableContext.") ||
@@ -331,6 +332,31 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 		return command == "exec" || command == "test"
 	case compileShapeRequired:
 		return command == "check"
+	default:
+		return false
+	}
+}
+
+func localRuntimeDatabaseTestSurface(surfaceID string) bool {
+	switch surfaceID {
+	case "apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback)",
+		"apex:System.Database.deleteAsync(List<Object>,DataSource.AsyncDeleteCallback,AccessLevel)",
+		"apex:System.Database.deleteAsync(Object,DataSource.AsyncDeleteCallback,AccessLevel)",
+		"apex:System.Database.deleteImmediate(List<Object>,Object)",
+		"apex:System.Database.deleteImmediate(Object,Object)",
+		"apex:System.Database.getCursorWithBinds(String,Map,Object)",
+		"apex:System.Database.getPaginationCursorWithBinds(String,Map,Object)",
+		"apex:System.Database.insertAsync(List<Object>,DataSource.AsyncSaveCallback)",
+		"apex:System.Database.insertAsync(List<Object>,DataSource.AsyncSaveCallback,AccessLevel)",
+		"apex:System.Database.insertAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)",
+		"apex:System.Database.insertImmediate(List<Object>,Object)",
+		"apex:System.Database.insertImmediate(Object,Object)",
+		"apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback)",
+		"apex:System.Database.updateAsync(List<Object>,DataSource.AsyncSaveCallback,AccessLevel)",
+		"apex:System.Database.updateAsync(Object,DataSource.AsyncSaveCallback,AccessLevel)",
+		"apex:System.Database.updateImmediate(List<Object>,Object)",
+		"apex:System.Database.updateImmediate(Object,Object)":
+		return true
 	default:
 		return false
 	}
