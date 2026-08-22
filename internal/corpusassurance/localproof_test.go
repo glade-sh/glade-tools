@@ -325,6 +325,9 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-database-result-error-constructors-local-api67.json", 4},
 		{"core-runtime-database-query-locator-api67.json", 4},
 		{"core-runtime-database-query-locator-local-only-api67.json", 9},
+		{"core-runtime-eventbus-callback-result-tail-api67.json", 8},
+		{"core-runtime-eventbus-test-service-tail-api67.json", 5},
+		{"core-runtime-eventbus-trigger-context-api67.json", 1},
 		{"core-messaging-sendemail-error-fields-runtime.json", 2},
 		{"core-messaging-mass-email-fields-runtime.json", 3},
 		{"integration-pagereference-accessors-runtime.json", 3},
@@ -545,6 +548,28 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 	} {
 		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("test-context runtime fixture %q was rejected", surfaceID)
+		}
+	}
+}
+
+func TestLocalProofAcceptsEventBusTestContextRuntimeSurfaces(t *testing.T) {
+	for _, surfaceID := range []string{
+		"apex:eventbus.TestBroker.clone()",
+		"apex:eventbus.TestBroker.deliver()",
+		"apex:eventbus.TestBroker.fail()",
+		"apex:eventbus.TestEventService.clone()",
+		"apex:eventbus.TestEventService.publishEvent(String,Map<String,Object>)",
+	} {
+		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("EventBus test-context runtime fixture %q was rejected", surfaceID)
+		}
+	}
+	for _, surfaceID := range []string{
+		"apex:eventbus.ChangeEventHeader.getChangeType()",
+		"apex:System.String.valueOf(Object)",
+	} {
+		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("unrelated test fixture %q was accepted for local-runtime-required proof", surfaceID)
 		}
 	}
 }

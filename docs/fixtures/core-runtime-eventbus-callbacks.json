@@ -2,26 +2,7 @@
   "command": {
     "kind": "test"
   },
-  "evidence": [
-    {
-      "kind": "test",
-      "notes": "Test.getEventBus().deliver drains queued local platform events and runs after-insert platform event triggers.",
-      "surfaceId": "apex:eventbus.TestBroker.deliver()",
-      "symbol": "eventbus.TestBroker.deliver()"
-    },
-    {
-      "kind": "test",
-      "notes": "Test.getEventBus().fail marks queued callback publishes so Test.stopTest routes them to EventPublishFailureCallback.",
-      "surfaceId": "apex:eventbus.TestBroker.fail()",
-      "symbol": "eventbus.TestBroker.fail()"
-    },
-    {
-      "kind": "test",
-      "notes": "Local test event service converts the payload map into a queued platform event for TestBroker delivery.",
-      "surfaceId": "apex:eventbus.TestEventService.publishEvent(String,Map<String,Object>)",
-      "symbol": "eventbus.TestEventService.publishEvent(String,Map<String,Object>)"
-    }
-  ],
+  "evidence": [],
   "expected": {
     "result": {
       "errors": 0,
