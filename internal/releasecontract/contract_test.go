@@ -142,6 +142,30 @@ func TestValidateRejectsUnknownBehaviorValues(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsMaturityBehaviorOutsideAdvertisedWindows(t *testing.T) {
+	for _, test := range []struct {
+		axis     string
+		boundary string
+	}{
+		{axis: "source", boundary: "64.0"},
+		{axis: "endpoint", boundary: "64.0"},
+	} {
+		t.Run(test.axis, func(t *testing.T) {
+			contract := validContract()
+			behavior := contract.Behaviors[0]
+			behavior.ID = "maturity-outside-" + test.axis
+			behavior.Axis = test.axis
+			behavior.Kind = "maturity"
+			behavior.Since = test.boundary
+			behavior.Until = ""
+			contract.Behaviors = []Behavior{behavior}
+			if err := contract.Validate(t.TempDir()); err == nil {
+				t.Fatal("Validate unexpectedly succeeded")
+			}
+		})
+	}
+}
+
 func TestValidateRejectsDuplicateWindowsAndMissingProofs(t *testing.T) {
 	tests := []struct {
 		name string

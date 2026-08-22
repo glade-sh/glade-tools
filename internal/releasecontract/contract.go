@@ -135,7 +135,7 @@ func (c Contract) Validate(root string) error {
 	if err := validateReleases(root, c.Releases, c.Windows.Source); err != nil {
 		return err
 	}
-	if err := validateBehaviors(root, c.Behaviors); err != nil {
+	if err := validateBehaviors(root, c.Behaviors, c.Windows.Source, c.Windows.Endpoint); err != nil {
 		return err
 	}
 	if err := validateNoFallbackProductTests(root, c.NoFallbackProductTests); err != nil {
@@ -269,7 +269,7 @@ func validateReleases(root string, releases []Release, sourceWindow []VersionPro
 	return nil
 }
 
-func validateBehaviors(root string, behaviors []Behavior) error {
+func validateBehaviors(root string, behaviors []Behavior, sourceWindow, endpointWindow []VersionProof) error {
 	seen := make(map[string]struct{}, len(behaviors))
 	for index, behavior := range behaviors {
 		if strings.TrimSpace(behavior.ID) == "" {
@@ -308,6 +308,17 @@ func validateBehaviors(root string, behaviors []Behavior) error {
 		}
 		if behavior.Since != "" && behavior.Until != "" && compareAPIVersions(behavior.Since, behavior.Until) >= 0 {
 			return fmt.Errorf("behaviors[%d] since must be before until", index)
+		}
+		if behavior.Kind == "maturity" {
+			window := sourceWindow
+			if behavior.Axis == "endpoint" {
+				window = endpointWindow
+			}
+			for boundaryName, boundary := range map[string]string{"since": behavior.Since, "until": behavior.Until} {
+				if boundary != "" && !containsVersion(window, boundary) {
+					return fmt.Errorf("behaviors[%d].%s %q is outside the advertised %s window", index, boundaryName, boundary, behavior.Axis)
+				}
+			}
 		}
 		if len(behavior.SourceRefs) == 0 {
 			return fmt.Errorf("behaviors[%d] must have a Salesforce source reference", index)
