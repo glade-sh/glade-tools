@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The exact program combines cache removal with direct construction of the local Messaging.Email base type, so the whole fixture is not a portable hosted runtime candidate and grants zero Salesforce parity credit.",
   "name": "core-cache-email-runtime",
   "evidence": [
     {

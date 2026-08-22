@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves Glade's lowercase MassEmailMessage field aliases rather than the hosted setter contract and grants zero Salesforce parity credit.",
   "name": "core-messaging-mass-email-fields-runtime",
   "evidence": [
     {

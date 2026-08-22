@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 rejects Database.NestedSaveResult and Database.RelationshipSaveResult as invalid hosted types; this fixture retains local treeSave behavior and grants zero Salesforce parity credit.",
   "name": "data-database-treesave-runtime",
   "evidence": [
     {"surfaceId":"apex:Database.NestedSaveResult","symbol":"Database.NestedSaveResult","kind":"exec"},

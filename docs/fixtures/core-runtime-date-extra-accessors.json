@@ -1,4 +1,5 @@
 {
+  "salesforceEligible": true,
   "name": "core-runtime-date-extra-accessors",
   "evidence": [
     {"surfaceId": "apex:System.Date.dayOfYear()", "symbol": "Date.dayOfYear", "kind": "exec"},

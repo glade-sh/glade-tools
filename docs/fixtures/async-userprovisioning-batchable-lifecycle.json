@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The exact test constructs Glade-only Database.BatchableContextImpl values and deterministic local UserProvisioning batchables; it is not a deployable hosted runtime test and grants zero Salesforce parity credit.",
   "name": "async-userprovisioning-batchable-lifecycle",
   "evidence": [
     {"symbol": "UserProvisioning.CollectingBatchable.clone", "surfaceId": "apex:UserProvisioning.CollectingBatchable.clone()", "kind": "test"},

@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture binds Glade-local type-resolution nulls, constructed exception formatting, and a deterministic local org URL; it is not a portable hosted observation and grants zero Salesforce parity credit.",
   "name": "core-type-exception-url-followup",
   "evidence": [
     {

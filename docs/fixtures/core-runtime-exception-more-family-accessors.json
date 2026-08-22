@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce API 67 rejects these context-bound exception-family constructions or accessors in anonymous Apex; this fixture retains local behavior and grants zero Salesforce parity credit.",
   "name": "core-runtime-exception-more-family-accessors",
   "evidence": [
     {"surfaceId": "apex:System.FatalCursorException.getCause()", "symbol": "FatalCursorException.getCause", "kind": "exec"},

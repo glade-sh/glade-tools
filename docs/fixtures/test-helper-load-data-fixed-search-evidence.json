@@ -1,4 +1,5 @@
 {
+  "salesforceEligible": true,
   "name": "test-helper-load-data-fixed-search-evidence",
   "evidence": [
     {
