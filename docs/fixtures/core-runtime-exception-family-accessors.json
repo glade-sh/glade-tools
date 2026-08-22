@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-exception-family-accessors",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture asserts local constructed-exception defaults, including getInaccessibleFields on non-QueryException families, and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.BigObjectException.getCause()",

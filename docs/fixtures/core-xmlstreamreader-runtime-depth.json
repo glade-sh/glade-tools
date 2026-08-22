@@ -1,5 +1,6 @@
 {
   "name": "core-xmlstreamreader-runtime-depth",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId":"apex:System.XmlStreamReader.XmlStreamReader(String)","symbol":"XmlStreamReader.XmlStreamReader","kind":"exec"},
     {"surfaceId":"apex:System.XmlStreamReader.equals(Object)","symbol":"XmlStreamReader.equals","kind":"exec"},

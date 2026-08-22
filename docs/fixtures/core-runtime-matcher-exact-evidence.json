@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-matcher-exact-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:System.Matcher.end()", "symbol": "Matcher.end", "kind": "exec"},
     {"surfaceId": "apex:System.Matcher.end(Integer)", "symbol": "Matcher.end(Integer)", "kind": "exec"},

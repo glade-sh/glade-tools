@@ -1,5 +1,8 @@
 {
   "name": "core-blob-crypto-partial-encrypt-unsupported-decrypt-sign-verify",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises deterministic local AES, signature, and certificate-name stubs without a hosted key or certificate trust model; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Crypto.encrypt(String,Blob,Blob,Blob)",

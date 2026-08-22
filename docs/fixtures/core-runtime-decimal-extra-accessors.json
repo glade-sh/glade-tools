@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-decimal-extra-accessors",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:System.Decimal.round(RoundingMode)", "symbol": "Decimal.round(RoundingMode)", "kind": "exec"},
     {"surfaceId": "apex:System.Decimal.scale()", "symbol": "Decimal.scale", "kind": "exec"},

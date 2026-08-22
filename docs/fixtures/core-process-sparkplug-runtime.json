@@ -1,5 +1,6 @@
 {
   "name": "core-process-sparkplug-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:Process.SparkPlugApi.describePlugin(String)",

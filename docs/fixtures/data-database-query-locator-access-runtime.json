@@ -1,5 +1,6 @@
 {
   "name": "data-database-query-locator-access-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId":"apex:System.Database.query(String)","symbol":"Database.query","kind":"exec"},
     {"surfaceId":"apex:System.Database.query(String,Object)","symbol":"Database.query","kind":"exec"},

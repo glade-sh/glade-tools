@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-metadata-flow-approval-enum-contracts",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:Metadata.DeployProblemType.Error",

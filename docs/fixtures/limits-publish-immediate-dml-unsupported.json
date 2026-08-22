@@ -1,5 +1,6 @@
 {
   "name": "limits-publish-immediate-dml-unsupported",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Limits.getPublishImmediateDML()",

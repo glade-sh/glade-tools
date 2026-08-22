@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-service-noops-and-random",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves deterministic local no-op services and pseudo-random values, not hosted side effects or entropy; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Aura.redirect(Object)",

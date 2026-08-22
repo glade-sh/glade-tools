@@ -1,5 +1,8 @@
 {
   "name": "async-finalizer-context-getters",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture default-constructs local FinalizerContext implementations and asserts empty synthetic job IDs; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "FinalizerContext.getAsyncApexJobId",

@@ -1,5 +1,8 @@
 {
   "name": "data-platform-schema-describe-dependent-picklists",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture relies on local getControllerValues/controllerValues dependent-picklist extensions beyond the Salesforce DescribeFieldResult contract; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "Schema.DescribeFieldResult.getController",

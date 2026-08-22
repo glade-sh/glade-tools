@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-page-reference-redirect-code-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.PageReference.getRedirectCode()",

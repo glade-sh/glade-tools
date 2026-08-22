@@ -1,5 +1,8 @@
 {
   "name": "core-pattern-dialect-flags-stdlib",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture exercises local Pattern flag constants and compile(regex, flags) behavior outside the Salesforce Apex Pattern contract; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Pattern.pattern()",
