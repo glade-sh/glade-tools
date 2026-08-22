@@ -33,8 +33,8 @@ var userProvisioningOpenTailIDs = []string{
 const userProvisioningDeterministicMissingFixture = "current-base-userprovisioning-deterministic-mock-004-api67.json"
 
 const (
-	userProvisioningCandidateCommit = "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62"
-	userProvisioningCandidateSHA256 = "b9f9ddf3461a3aa1cb87288d58231a573f32aec716b5e9c1c8dc8ea641037a5d"
+	userProvisioningCandidateCommit = "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5"
+	userProvisioningCandidateSHA256 = "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
 )
 
 var userProvisioningDeterministicMissingIDs = []string{
@@ -116,7 +116,7 @@ func TestUserProvisioningCurrentMissingRowsHaveExactDeterministicEvidence(t *tes
 	if err := json.Unmarshal(data, &metadata); err != nil {
 		t.Fatal(err)
 	}
-	if metadata.APIVersion != "67.0" || metadata.Mode != "deterministic-mock" || !strings.Contains(strings.ToLower(metadata.Notes), "provisional") || !strings.Contains(strings.ToLower(metadata.Notes), "rebind") || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "zero hosted") || metadata.Candidate.Commit != userProvisioningCandidateCommit || metadata.Candidate.SHA256 != userProvisioningCandidateSHA256 || metadata.Profile.CandidateCommit != userProvisioningCandidateCommit || metadata.Profile.CandidateSHA256 != userProvisioningCandidateSHA256 || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningDeterministicMissingIDs) {
+	if metadata.APIVersion != "67.0" || metadata.Mode != "deterministic-mock" || !strings.Contains(strings.ToLower(metadata.Notes), "canonical") || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "zero hosted") || metadata.Candidate.Commit != userProvisioningCandidateCommit || metadata.Candidate.SHA256 != userProvisioningCandidateSHA256 || metadata.Profile.CandidateCommit != userProvisioningCandidateCommit || metadata.Profile.CandidateSHA256 != userProvisioningCandidateSHA256 || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningDeterministicMissingIDs) {
 		t.Fatalf("fixture metadata = %#v", metadata)
 	}
 }
@@ -194,7 +194,7 @@ func TestUserProvisioningDeterministicTailHasExactLocalEvidence(t *testing.T) {
 	if err := json.Unmarshal(raw, &metadata); err != nil {
 		t.Fatal(err)
 	}
-	if metadata.APIVersion != "67.0" || metadata.Mode != "deterministic-mock" || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "no hosted") || metadata.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || metadata.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || metadata.Profile.CandidateCommit != metadata.Candidate.Commit || metadata.Profile.CandidateSHA256 != metadata.Candidate.SHA256 || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningDeterministicTailIDs) {
+	if metadata.APIVersion != "67.0" || metadata.Mode != "deterministic-mock" || metadata.SalesforceEligible == nil || *metadata.SalesforceEligible || metadata.SalesforceExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.SalesforceExclusionReason), "no hosted") || metadata.Candidate.Commit != userProvisioningCandidateCommit || metadata.Candidate.SHA256 != userProvisioningCandidateSHA256 || metadata.Profile.CandidateCommit != metadata.Candidate.Commit || metadata.Profile.CandidateSHA256 != metadata.Candidate.SHA256 || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningDeterministicTailIDs) {
 		t.Fatalf("fixture metadata = %#v", metadata)
 	}
 }

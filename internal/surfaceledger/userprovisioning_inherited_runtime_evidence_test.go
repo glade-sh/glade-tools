@@ -138,7 +138,7 @@ func TestUserProvisioningInheritedRuntimeHasExactCandidateEvidence(t *testing.T)
 	if err := json.Unmarshal(data, &metadata); err != nil {
 		t.Fatal(err)
 	}
-	if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.ExclusionReason), "zero hosted salesforce parity") || metadata.Profile.CandidateCommit != "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62" || metadata.Profile.CandidateSHA256 == "" || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningInheritedRuntimeIDs) {
+	if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.ExclusionReason), "zero hosted salesforce parity") || metadata.Profile.CandidateCommit != userProvisioningCandidateCommit || metadata.Profile.CandidateSHA256 != userProvisioningCandidateSHA256 || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(userProvisioningInheritedRuntimeIDs) {
 		t.Fatalf("fixture provenance = %#v", metadata)
 	}
 }

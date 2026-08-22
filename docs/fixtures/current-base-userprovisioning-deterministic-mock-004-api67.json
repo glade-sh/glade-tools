@@ -19,14 +19,14 @@
   },
   "mode": "deterministic-mock",
   "name": "current-base-userprovisioning-deterministic-mock-004-api67",
-  "notes": "Provisional exact-candidate deterministic local UserProvisioning witness for three executable current missing rows. The test executes concrete implementations through base-typed receivers and clone against the corrected candidate; rebind after the runtime correction merges. Zero Salesforce parity is claimed.",
+  "notes": "Exact canonical-candidate deterministic local UserProvisioning witness for three executable current missing rows. The test executes concrete implementations through base-typed receivers and clone against the canonical candidate. Zero Salesforce parity is claimed.",
   "candidate": {
-    "commit": "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62",
-    "sha256": "b9f9ddf3461a3aa1cb87288d58231a573f32aec716b5e9c1c8dc8ea641037a5d"
+    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
   },
   "profile": {
-    "candidateCommit": "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62",
-    "candidateSha256": "b9f9ddf3461a3aa1cb87288d58231a573f32aec716b5e9c1c8dc8ea641037a5d",
+    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
     "laneId": "current-base-deterministic-mock-required-UserProvisioning-004",
     "selectedRowCount": 3
   },
