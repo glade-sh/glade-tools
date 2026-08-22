@@ -19,14 +19,14 @@
   },
   "mode": "deterministic-mock",
   "name": "current-base-userprovisioning-deterministic-mock-004-api67",
-  "notes": "Exact sealed-candidate deterministic local UserProvisioning witness for three executable current missing rows. The test executes concrete implementations through base-typed receivers and clone against the sealed candidate; abstract constructors and unsupported passive members are rejected, with zero Salesforce parity.",
+  "notes": "Provisional exact-candidate deterministic local UserProvisioning witness for three executable current missing rows. The test executes concrete implementations through base-typed receivers and clone against the corrected candidate; rebind after the runtime correction merges. Zero Salesforce parity is claimed.",
   "candidate": {
-    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
-    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+    "commit": "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62",
+    "sha256": "b9f9ddf3461a3aa1cb87288d58231a573f32aec716b5e9c1c8dc8ea641037a5d"
   },
   "profile": {
-    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
-    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "candidateCommit": "e1a9317c98d77dc8a43187cdec1b4d350aa4fc62",
+    "candidateSha256": "b9f9ddf3461a3aa1cb87288d58231a573f32aec716b5e9c1c8dc8ea641037a5d",
     "laneId": "current-base-deterministic-mock-required-UserProvisioning-004",
     "selectedRowCount": 3
   },
@@ -40,7 +40,7 @@
     },
     {
       "path": "force-app/main/default/classes/CurrentBaseUserProvisioningDeterministic004Plugin.cls",
-      "content": "public class CurrentBaseUserProvisioningDeterministic004Plugin extends UserProvisioning.UserProvisioningPlugin { public CurrentBaseUserProvisioningDeterministic004Plugin() { super(); } public override Process.PluginDescribeResult buildDescribeCall() { return null; } }"
+      "content": "public class CurrentBaseUserProvisioningDeterministic004Plugin extends UserProvisioning.UserProvisioningPlugin { public CurrentBaseUserProvisioningDeterministic004Plugin() { super(); } public override Process.PluginDescribeResult buildDescribeCall() { return null; } public override Process.PluginResult invoke(Process.PluginRequest request) { return null; } }"
     },
     {
       "path": "force-app/main/default/classes/CurrentBaseUserProvisioningDeterministic004Test.cls",
