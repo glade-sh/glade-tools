@@ -1,5 +1,6 @@
 {
   "name": "core-userinfo-local-identity-contracts",
+  "evidenceOnly": true,
   "evidence": [
     {
       "surfaceId": "apex:System.UserInfo.getFirstName()",
