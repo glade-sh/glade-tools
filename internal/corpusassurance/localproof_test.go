@@ -596,6 +596,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-system-001-wave19-runtime.json", 11},
 		{"core-runtime-system-002-wave19-runtime.json", 4},
 		{"core-runtime-system-primitive-tail-api67.json", 33},
+		{"core-runtime-system-scalar-adderror-tail-api67.json", 36},
 		{"core-runtime-userinfo-request-tail-api67.json", 43},
 		{"core-runtime-trigger-sobject-tail-api67.json", 14},
 		{"core-runtime-sobject-tail-api67.json", 6},
@@ -732,6 +733,36 @@ func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
 	for _, surfaceID := range []string{"apex:System.Location", "apex:System.StaticResourceCalloutMockBuilder.run()", "apex:System.QueueableDuplicateSignature"} {
 		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("generic test fixture %q was accepted as runtime proof", surfaceID)
+		}
+	}
+}
+
+func TestLocalProofAcceptsOnlyScalarAdderrorTestRuntimeRows(t *testing.T) {
+	accepted := []string{
+		"apex:System.Boolean.addError(Exception)", "apex:System.Boolean.addError(Exception,Boolean)", "apex:System.Boolean.addError(String)", "apex:System.Boolean.addError(String,Boolean)",
+		"apex:System.Date.addError(Exception)", "apex:System.Date.addError(Exception,Boolean)", "apex:System.Date.addError(String)", "apex:System.Date.addError(String,Boolean)",
+		"apex:System.Datetime.addError(Exception)", "apex:System.Datetime.addError(Exception,Boolean)", "apex:System.Datetime.addError(String)", "apex:System.Datetime.addError(String,Boolean)",
+		"apex:System.Decimal.addError(Exception)", "apex:System.Decimal.addError(Exception,Boolean)", "apex:System.Decimal.addError(String)", "apex:System.Decimal.addError(String,Boolean)",
+		"apex:System.Double.addError(Exception)", "apex:System.Double.addError(Exception,Boolean)", "apex:System.Double.addError(String)", "apex:System.Double.addError(String,Boolean)",
+		"apex:System.Id.addError(Exception)", "apex:System.Id.addError(Exception,Boolean)", "apex:System.Id.addError(String)", "apex:System.Id.addError(String,Boolean)",
+		"apex:System.Integer.addError(Exception)", "apex:System.Integer.addError(Exception,Boolean)", "apex:System.Integer.addError(String)", "apex:System.Integer.addError(String,Boolean)",
+		"apex:System.Long.addError(Exception)", "apex:System.Long.addError(Exception,Boolean)", "apex:System.Long.addError(String)", "apex:System.Long.addError(String,Boolean)",
+		"apex:System.Time.addError(Exception)", "apex:System.Time.addError(Exception,Boolean)", "apex:System.Time.addError(String)", "apex:System.Time.addError(String,Boolean)",
+	}
+	for _, surfaceID := range accepted {
+		if !localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("scalar addError test row %q was rejected", surfaceID)
+		}
+	}
+	for _, surfaceID := range []string{
+		"apex:System.Date.Date()", "apex:System.Datetime.Datetime()", "apex:System.Decimal.Decimal()",
+		"apex:System.Double.Double()", "apex:System.Id.to18", "apex:System.Integer.doubleValue",
+		"apex:System.Boolean.toString()", "apex:System.Date.addDays(Integer)", "apex:System.Datetime.time()",
+		"apex:System.Decimal.abs", "apex:System.Double.toString()", "apex:System.Id.to15()",
+		"apex:System.Integer.format()", "apex:System.Long.valueOf", "apex:System.Time.hour()",
+	} {
+		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
+			t.Fatalf("unrelated or rejected test row %q was accepted", surfaceID)
 		}
 	}
 }
