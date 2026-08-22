@@ -445,6 +445,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-cache-email-runtime.json", 3},
 		{"core-system-enum-types-runtime.json", 2},
 		{"core-runtime-system-enum-families-api67.json", 104},
+		{"core-runtime-value-objects-tail-api67.json", 29},
 		{"core-runtime-database-cursor-sync-tail-api67.json", 10},
 		{"core-runtime-database-batch-async-tail-api67.json", 8},
 		{"core-runtime-apex-schema-tail-api67.json", 13},
@@ -639,6 +640,64 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 			}
 			t.Fatalf("fixture is not candidate-runnable for all %d rows", test.count)
 		})
+	}
+}
+
+func TestValueObjectsTailRunsSealedCandidateCLIJSON(t *testing.T) {
+	candidatePath := os.Getenv("GLADE_CANDIDATE")
+	if candidatePath == "" {
+		t.Skip("set GLADE_CANDIDATE to run the sealed-candidate regression")
+	}
+	if !filepath.IsAbs(candidatePath) {
+		t.Fatalf("candidate path must be absolute: %q", candidatePath)
+	}
+	const wantCandidateSHA = "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+	if got := localProofFileSHA256(t, candidatePath); got != wantCandidateSHA {
+		t.Fatalf("candidate SHA-256 = %s, want sealed %s", got, wantCandidateSHA)
+	}
+	root, err := filepath.Abs(filepath.Join("..", ".."))
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixturePath := filepath.Join(root, "docs", "fixtures", "core-runtime-value-objects-tail-api67.json")
+	data, err := os.ReadFile(fixturePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, metadata, err := decodeLocalProofFixtureWithMetadata(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := compat.Validate(fixture); err != nil {
+		t.Fatal(err)
+	}
+	owned := make([]string, 0, len(fixture.Evidence))
+	for _, item := range fixture.Evidence {
+		owned = append(owned, item.SurfaceID)
+	}
+	sort.Strings(owned)
+	entry := LocalProofFixture{
+		ID: fixture.Name, Name: fixture.Name, Path: fixturePath, SHA256: replayBytesSHA256(data),
+		OwnedSurfaceIDs: owned, Disposition: localRuntimeRequired, Operation: "exec",
+		SalesforceEligible: metadata.Eligible, SalesforceExclusionClass: metadata.ExclusionClass, SalesforceExclusionReason: metadata.ExclusionReason,
+	}
+	if err := validateLocalProofFixtureIdentity(entry, fixture); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateLocalProofFixtureSalesforceMetadata(entry, metadata); err != nil {
+		t.Fatal(err)
+	}
+	command, cleanup, err := materializeLocalProofFixture(entry, candidatePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	execution := runLocalProofCommand(command)
+	if !execution.Validated {
+		t.Fatalf("sealed candidate JSON was not validated: exit=%d stderr=%s stdout=%s", execution.Receipt.ExitCode, execution.Stderr, execution.Stdout)
+	}
+	if strings.Contains(strings.ToLower(execution.Stdout+execution.Stderr), "cycle") {
+		t.Fatalf("sealed candidate JSON retained a cycle: stdout=%s stderr=%s", execution.Stdout, execution.Stderr)
 	}
 }
 

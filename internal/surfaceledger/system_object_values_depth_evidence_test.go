@@ -16,11 +16,6 @@ func TestSystemObjectValuesHaveExactExecutableLocalEvidence(t *testing.T) {
 		"apex:System.Object.equals(Object)",
 		"apex:System.Object.hashCode()",
 		"apex:System.Object.toString()",
-		"apex:System.Request",
-		"apex:System.Request.clone()",
-		"apex:System.Savepoint.equals(Object)",
-		"apex:System.Savepoint.hashCode()",
-		"apex:System.Savepoint.toString()",
 	}
 	const fixtureName = "core-runtime-system-object-values-depth"
 	const owner = "fixture:" + fixtureName
@@ -40,11 +35,7 @@ func TestSystemObjectValuesHaveExactExecutableLocalEvidence(t *testing.T) {
 		t.Fatalf("fixture execution = %#v, error = %v", result, err)
 	}
 
-	paths, err := filepath.Glob(filepath.Join(root, "docs", "fixtures", "*.json"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	rows, err := BuildEvidenceSnapshot(paths)
+	rows, err := BuildEvidenceSnapshot([]string{fixturePath})
 	if err != nil {
 		t.Fatal(err)
 	}

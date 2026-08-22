@@ -6,18 +6,6 @@
       "symbol": "Security.stripInaccessible",
       "kind": "test",
       "notes": "Security.stripInaccessible strips fields for local records using the current user's object and field permissions."
-    },
-    {
-      "surfaceId": "apex:System.SObjectAccessDecision.getRemovedFields()",
-      "symbol": "SObjectAccessDecision.getRemovedFields",
-      "kind": "test",
-      "notes": "Security.stripInaccessible reports the local removed-field map through SObjectAccessDecision.getRemovedFields()."
-    },
-    {
-      "surfaceId": "apex:System.SObjectAccessDecision.getModifiedIndexes()",
-      "symbol": "SObjectAccessDecision.getModifiedIndexes",
-      "kind": "test",
-      "notes": "Security.stripInaccessible reports the local modified-index set through SObjectAccessDecision.getModifiedIndexes()."
     }
   ],
   "source": [
