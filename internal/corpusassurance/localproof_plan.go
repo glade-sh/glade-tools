@@ -310,6 +310,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 	switch disposition {
 	case localRuntimeRequired:
 		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:Database.Batchable") || surfaceID == "apex:System.Database.executeBatch(Object)" || strings.HasPrefix(surfaceID, "apex:System.Test.") ||
+			surfaceID == "apex:System.ExternalServiceTest.sendCallback(HttpRequest)" || surfaceID == "apex:System.System.attachFinalizer(finalizer)" || surfaceID == "apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)" ||
 			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
 			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
 			surfaceID == "apex:System.Queueable" || strings.HasPrefix(surfaceID, "apex:System.Queueable.") ||

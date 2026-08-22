@@ -585,6 +585,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-static-resource-callout-mocks-wave17-runtime.json", 13},
 		{"core-runtime-async-context-tail-api67.json", 8},
 		{"core-runtime-finalizer-context-tail-api67.json", 6},
+		{"core-runtime-system-test-eventbus-lifecycle-tail-api67.json", 13},
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
 		{"data-platform-schema-record-type-info-wave17-runtime.json", 8},
 		{"integration-metadata-core-dtos-wave17-runtime.json", 21},
@@ -756,6 +757,9 @@ func TestLocalProofAcceptsTestExecutionForTestContextRuntimeSurface(t *testing.T
 	}
 	for _, surfaceID := range []string{
 		"apex:System.Test.setMock",
+		"apex:System.ExternalServiceTest.sendCallback(HttpRequest)",
+		"apex:System.System.attachFinalizer(finalizer)",
+		"apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)",
 		"apex:System.StaticResourceCalloutMock.setStatusCode(Integer)",
 		"apex:System.MultiStaticResourceCalloutMock.setStaticResource(String,String)",
 		"apex:System.HttpCalloutMock.respond(HttpRequest)",
@@ -808,6 +812,8 @@ func TestLocalProofRejectsGenericTestFixtureAsRuntimeProof(t *testing.T) {
 		"apex:System.WebServiceMockFactory.run()",
 		"apex:System.StubProviderFactory.run()",
 		"apex:System.SoqlStubProviderExtension.run()",
+		"apex:eventbus.TriggerContext.getResumeCheckpoint()",
+		"apex:eventbus.TriggerContext.setResumeCheckpoint(String)",
 	} {
 		if localProofCommandMatchesDisposition(localRuntimeRequired, "test", surfaceID) {
 			t.Fatalf("generic test fixture %q was accepted as runtime proof", surfaceID)
