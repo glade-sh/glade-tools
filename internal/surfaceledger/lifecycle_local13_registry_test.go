@@ -124,6 +124,39 @@ func TestLifecycleLocal13RegistryAccountsThirteenPositiveRows(t *testing.T) {
 		}
 	}
 
+	evidencePaths := make([]string, 0, len(lifecycleLocal13Owners))
+	for fixtureName := range lifecycleLocal13Owners {
+		evidencePaths = append(evidencePaths, filepath.Join(root, fixtureName))
+	}
+	snapshot, err := BuildEvidenceSnapshot(evidencePaths)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshotByID := rowsByID(snapshot)
+	snapshotCredits := map[string]SurfaceLedgerRow{}
+	for surfaceID := range wantOwners {
+		row, ok := snapshotByID[surfaceID]
+		if !ok {
+			t.Fatalf("positive lifecycle row %s is absent from evidence snapshot", surfaceID)
+		}
+		if !lifecycleLocal13SnapshotCredits(row) {
+			t.Fatalf("positive lifecycle row %s snapshot = %#v", surfaceID, row)
+		}
+		snapshotCredits[surfaceID] = row
+	}
+	if len(snapshotCredits) != 13 {
+		t.Fatalf("snapshot lifecycle credit = %d, want 13", len(snapshotCredits))
+	}
+	for surfaceID, reason := range lifecycleLocal13Excluded {
+		row, ok := snapshotByID[surfaceID]
+		if !ok {
+			t.Fatalf("excluded lifecycle row %s is absent from evidence snapshot", surfaceID)
+		}
+		if lifecycleLocal13SnapshotCredits(row) || row.GladeBehavior != BehaviorUnsupported || row.GladeShape != ShapeAbsent {
+			t.Fatalf("excluded lifecycle row %s received snapshot credit (%s): %#v", surfaceID, reason, row)
+		}
+	}
+
 	got := make([]string, 0, len(wantOwners))
 	for surfaceID := range wantOwners {
 		got = append(got, surfaceID)
@@ -132,6 +165,10 @@ func TestLifecycleLocal13RegistryAccountsThirteenPositiveRows(t *testing.T) {
 	if len(got) != 13 {
 		t.Fatalf("sorted lifecycle accounting rows = %d, want 13", len(got))
 	}
+}
+
+func lifecycleLocal13SnapshotCredits(row SurfaceLedgerRow) bool {
+	return row.Evidence == EvidenceFixture && (row.GladeBehavior == BehaviorSupported || row.GladeShape != ShapeAbsent)
 }
 
 func assertLifecycleLocal13Metadata(t *testing.T, path string, selectedRows int) {
