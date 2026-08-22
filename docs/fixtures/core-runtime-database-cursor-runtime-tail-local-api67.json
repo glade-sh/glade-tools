@@ -1,0 +1,24 @@
+{
+  "apiVersion":"67.0",
+  "command":{"kind":"exec","args":["insert new Account(Name = 'cursor runtime tail');\nDatabase.Cursor cursor = Database.getCursor('SELECT Id FROM Account', (Object)AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, cursor);\nMap<String,Object> binds = new Map<String,Object>();\nbinds.put('name', 'cursor runtime tail');\nDatabase.Cursor boundCursor = Database.getCursorWithBinds('SELECT Id FROM Account WHERE Name = :name', binds, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, boundCursor);\nDatabase.GetDeletedResult deleted = Database.getDeleted('Account', Datetime.now().addDays(-1), Datetime.now());\nSystem.assertNotEquals(null, deleted);\nDatabase.PaginationCursor page = Database.getPaginationCursor('SELECT Id FROM Account', (Object)AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, page);\nDatabase.GetUpdatedResult updated = Database.getUpdated('Account', Datetime.now().addDays(-1), Datetime.now());\nSystem.assertNotEquals(null, updated);"]},
+  "evidence":[
+    {"kind":"exec","surfaceId":"apex:System.Database.getCursor","symbol":"Database.getCursor"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getCursor(String,Object)","symbol":"Database.getCursor"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getCursorWithBinds","symbol":"Database.getCursorWithBinds"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getDeleted","symbol":"Database.getDeleted"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getPaginationCursor(String,Object)","symbol":"Database.getPaginationCursor"},
+    {"kind":"exec","surfaceId":"apex:System.Database.getUpdated","symbol":"Database.getUpdated"}
+  ],
+  "evidenceOnly":false,
+  "mode":"local-runtime",
+  "project":{"sourceApiVersion":"67.0"},
+  "name":"core-runtime-database-cursor-runtime-tail-local-api67",
+  "notes":"Exact-candidate executable local-runtime witness for the remaining Database cursor, pagination, deleted, and updated overloads. No hosted Salesforce execution or parity claim is made.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"database-runtime-tail-evidence","selectedRowCount":6},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"zero hosted Salesforce parity; local runtime behavior only",
+  "schema":[{"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},{"path":"force-app/main/default/objects/Account/fields/Name.field-meta.xml","content":"<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}],
+  "source":[{"path":"anonymous.apex","content":"insert new Account(Name = 'cursor runtime tail');\nDatabase.Cursor cursor = Database.getCursor('SELECT Id FROM Account', (Object)AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, cursor);\nMap<String,Object> binds = new Map<String,Object>();\nbinds.put('name', 'cursor runtime tail');\nDatabase.Cursor boundCursor = Database.getCursorWithBinds('SELECT Id FROM Account WHERE Name = :name', binds, AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, boundCursor);\nDatabase.GetDeletedResult deleted = Database.getDeleted('Account', Datetime.now().addDays(-1), Datetime.now());\nSystem.assertNotEquals(null, deleted);\nDatabase.PaginationCursor page = Database.getPaginationCursor('SELECT Id FROM Account', (Object)AccessLevel.SYSTEM_MODE);\nSystem.assertNotEquals(null, page);\nDatabase.GetUpdatedResult updated = Database.getUpdated('Account', Datetime.now().addDays(-1), Datetime.now());\nSystem.assertNotEquals(null, updated);"}],
+  "title":"API 67 Database cursor runtime executable local evidence"
+}
