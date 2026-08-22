@@ -1,0 +1,33 @@
+{
+  "apiVersion": "67.0",
+  "command": {"kind": "test"},
+  "evidence": [
+    {"kind": "test", "surfaceId": "apex:eventbus.TestBroker.clone()", "symbol": "apex:eventbus.TestBroker.clone()"},
+    {"kind": "test", "surfaceId": "apex:eventbus.TestBroker.deliver()", "symbol": "apex:eventbus.TestBroker.deliver()"},
+    {"kind": "test", "surfaceId": "apex:eventbus.TestBroker.fail()", "symbol": "apex:eventbus.TestBroker.fail()"},
+    {"kind": "test", "surfaceId": "apex:eventbus.TestEventService.clone()", "symbol": "apex:eventbus.TestEventService.clone()"},
+    {"kind": "test", "surfaceId": "apex:eventbus.TestEventService.publishEvent(String,Map<String,Object>)", "symbol": "apex:eventbus.TestEventService.publishEvent(String,Map<String,Object>)"}
+  ],
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 2, "total": 2}},
+  "mode": "local-runtime",
+  "name": "core-runtime-eventbus-test-service-tail-api67",
+  "notes": "Exact-candidate executable local-runtime witness for EventBus test-broker and local test-event-service mechanics. These test-context mechanics are policy-local-only and record no hosted Salesforce execution or parity claim.",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "eventbus-tail-local-evidence",
+    "selectedRowCount": 5
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "TestBroker and TestEventService require Glade local test context and are exercised with zero Salesforce parity claimed.",
+  "schema": [
+    {"path": "force-app/main/default/objects/EventBus_Tail__e/EventBus_Tail__e.object-meta.xml", "content": "<CustomObject><label>EventBus Tail</label><pluralLabel>EventBus Tails</pluralLabel><deploymentStatus>Deployed</deploymentStatus><eventType>HighVolume</eventType></CustomObject>"},
+    {"path": "force-app/main/default/objects/EventBus_Tail__e/fields/Payload__c.field-meta.xml", "content": "<CustomField><fullName>Payload__c</fullName><label>Payload</label><type>Text</type></CustomField>"}
+  ],
+  "source": [
+    {"path": "force-app/main/default/classes/EventBusTailServiceState.cls", "content": "public class EventBusTailServiceState { public static Integer delivered = 0; }"},
+    {"path": "force-app/main/default/triggers/EventBusTailServiceTrigger.trigger", "content": "trigger EventBusTailServiceTrigger on EventBus_Tail__e (after insert) { EventBusTailServiceState.delivered += Trigger.new.size(); }"},
+    {"path": "force-app/main/default/classes/EventBusTailServiceLocalEvidenceTest.cls", "content": "@isTest private class EventBusTailServiceLocalEvidenceTest { @isTest static void clonePublishAndDeliver() { eventbus.TestBroker broker = Test.getEventBus(); eventbus.TestBroker brokerClone = (eventbus.TestBroker)broker.clone(); System.assert(broker !== brokerClone); eventbus.TestEventService service = new eventbus.TestEventService(); eventbus.TestEventService serviceClone = (eventbus.TestEventService)service.clone(); System.assert(service !== serviceClone); EventBusTailServiceState.delivered = 0; Test.startTest(); eventbus.TestEventService.publishEvent('EventBus_Tail__e', new Map<String,Object>{'Payload__c' => 'deliver'}); System.assertEquals(0, EventBusTailServiceState.delivered); broker.deliver(); System.assertEquals(1, EventBusTailServiceState.delivered); Test.stopTest(); } @isTest static void failQueuedEvent() { Test.startTest(); eventbus.TestEventService.publishEvent('EventBus_Tail__e', new Map<String,Object>{'Payload__c' => 'fail'}); Test.getEventBus().fail(); Test.stopTest(); } }"}
+  ]
+}
