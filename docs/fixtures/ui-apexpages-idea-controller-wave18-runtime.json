@@ -1,0 +1,52 @@
+{
+  "name": "ui-apexpages-idea-controller-wave18-runtime",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "ApexPages Idea controllers are deterministic local controller contracts; this fixture makes no hosted Salesforce parity claim.",
+  "project": {
+    "sourceApiVersion": "67.0",
+    "packageDirectories": [{"path":"force-app","default":true}]
+  },
+  "source": [
+    {
+      "path": "sfdx-project.json",
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"67.0\"}"
+    },
+    {
+      "path": "anonymous.apex",
+      "content": "List<Idea> seeded = [SELECT Id, Title FROM Idea ORDER BY Title]; System.assertEquals(2, seeded.size()); ApexPages.IdeaStandardController controller = new ApexPages.IdeaStandardController(); Idea current = (Idea)controller.getRecord(); current.Id = seeded[0].Id; current.Title = seeded[0].Title; System.assertEquals(seeded[0].Id, controller.getId()); System.assertEquals(seeded[0].Id, ((Idea)controller.getRecord()).Id); String expectedPage = '/' + String.valueOf(seeded[0].Id).substring(0, 15); System.assertEquals(expectedPage, controller.cancel().getUrl()); System.assertEquals(expectedPage, controller.edit().getUrl()); System.assertEquals(expectedPage, controller.view().getUrl()); System.assertNotEquals(null, controller.save()); System.assertEquals(seeded[0].Id, controller.getId()); System.assertNotEquals(null, controller.delete()); ApexPages.IdeaStandardSetController setController = new ApexPages.IdeaStandardSetController(); List<Object> selected = new List<Object>{seeded[1]}; setController.setSelected(selected); System.assertEquals(1, setController.getSelected().size()); System.assertEquals(seeded[1].Id, ((Idea)setController.getSelected()[0]).Id); setController.setFilterId('RecentIdeas'); System.assertEquals('RecentIdeas', setController.getFilterId()); setController.setPageSize(7); System.assertEquals(7, setController.getPageSize());"
+    }
+  ],
+  "schema": [
+    {
+      "path": "force-app/main/default/objects/Idea/Idea.object-meta.xml",
+      "content": "<CustomObject><label>Idea</label><pluralLabel>Ideas</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"
+    }
+  ],
+  "seedData": [
+    {
+      "object": "Idea",
+      "records": [
+        {"Id":"a01000000000001","Title":"Wave 18 controller idea one"},
+        {"Id":"a01000000000002","Title":"Wave 18 controller idea two"}
+      ]
+    }
+  ],
+  "command": {
+    "kind": "exec",
+    "args": [
+      "List<Idea> seeded = [SELECT Id, Title FROM Idea ORDER BY Title]; System.assertEquals(2, seeded.size()); ApexPages.IdeaStandardController controller = new ApexPages.IdeaStandardController(); Idea current = (Idea)controller.getRecord(); current.Id = seeded[0].Id; current.Title = seeded[0].Title; System.assertEquals(seeded[0].Id, controller.getId()); System.assertEquals(seeded[0].Id, ((Idea)controller.getRecord()).Id); String expectedPage = '/' + String.valueOf(seeded[0].Id).substring(0, 15); System.assertEquals(expectedPage, controller.cancel().getUrl()); System.assertEquals(expectedPage, controller.edit().getUrl()); System.assertEquals(expectedPage, controller.view().getUrl()); System.assertNotEquals(null, controller.save()); System.assertEquals(seeded[0].Id, controller.getId()); System.assertNotEquals(null, controller.delete()); ApexPages.IdeaStandardSetController setController = new ApexPages.IdeaStandardSetController(); List<Object> selected = new List<Object>{seeded[1]}; setController.setSelected(selected); System.assertEquals(1, setController.getSelected().size()); System.assertEquals(seeded[1].Id, ((Idea)setController.getSelected()[0]).Id); setController.setFilterId('RecentIdeas'); System.assertEquals('RecentIdeas', setController.getFilterId()); setController.setPageSize(7); System.assertEquals(7, setController.getPageSize());"
+    ]
+  },
+  "expected": {"result":{"debug":null,"ok":true}},
+  "evidence": [
+    {"surfaceId":"apex:ApexPages.IdeaStandardController.cancel()","symbol":"ApexPages.IdeaStandardController.cancel","kind":"exec","notes":"Direct anonymous execution asserts the controller cancel navigation result."},
+    {"surfaceId":"apex:ApexPages.IdeaStandardController.delete()","symbol":"ApexPages.IdeaStandardController.delete","kind":"exec","notes":"Direct anonymous execution asserts the controller delete navigation result against seeded local state."},
+    {"surfaceId":"apex:ApexPages.IdeaStandardController.edit()","symbol":"ApexPages.IdeaStandardController.edit","kind":"exec","notes":"Direct anonymous execution asserts the controller edit navigation result."},
+    {"surfaceId":"apex:ApexPages.IdeaStandardController.getRecord()","symbol":"ApexPages.IdeaStandardController.getRecord","kind":"exec","notes":"Direct anonymous execution asserts the controller record state."},
+    {"surfaceId":"apex:ApexPages.IdeaStandardController.save()","symbol":"ApexPages.IdeaStandardController.save","kind":"exec","notes":"Direct anonymous execution asserts the controller save navigation result against seeded local state."},
+    {"surfaceId":"apex:ApexPages.IdeaStandardController.view()","symbol":"ApexPages.IdeaStandardController.view","kind":"exec","notes":"Direct anonymous execution asserts the controller view navigation result."}
+  ]
+}

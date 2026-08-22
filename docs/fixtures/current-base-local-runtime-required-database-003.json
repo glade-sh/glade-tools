@@ -6,21 +6,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Database.MergeResult",
-      "symbol": "Database.MergeResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.MergeResult.MergeResult()",
-      "symbol": "Database.MergeResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.MergeResult.errors",
-      "symbol": "Database.MergeResult.errors"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.NestedSaveResult",
       "symbol": "Database.NestedSaveResult"
     },
@@ -58,11 +43,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.PaginationCursor.PaginationCursor()",
       "symbol": "Database.PaginationCursor"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.PaginationCursor.clone()",
-      "symbol": "Database.PaginationCursor.clone"
     },
     {
       "kind": "test",
@@ -113,11 +93,6 @@
       "kind": "test",
       "surfaceId": "apex:Database.UndeleteResult.UndeleteResult()",
       "symbol": "Database.UndeleteResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.UnitOfWork.clone()",
-      "symbol": "Database.UnitOfWork.clone"
     }
   ],
   "expected": {
@@ -131,10 +106,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-003",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-003: deterministic local result DTO, cursor, savepoint shape, and unit-of-work clone contracts for the missing surface rows.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-003: retained nested/relationship result DTO, pagination cursor, result constructors, and savepoint shape contracts.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-003",
-    "selectedRowCount": 23
+    "selectedRowCount": 18
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

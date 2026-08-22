@@ -9,26 +9,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:eventbus.InvalidReplayIdException",
-      "symbol": "eventbus.InvalidReplayIdException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.InvalidReplayIdException.clone()",
-      "symbol": "eventbus.InvalidReplayIdException.clone"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.RetryableException",
-      "symbol": "eventbus.RetryableException"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.RetryableException.clone()",
-      "symbol": "eventbus.RetryableException.clone"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:eventbus.SuccessResult",
       "symbol": "eventbus.SuccessResult"
     },
@@ -44,48 +24,13 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:eventbus.TestBroker",
-      "symbol": "eventbus.TestBroker"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TestBroker.TestBroker()",
-      "symbol": "eventbus.TestBroker.TestBroker"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:eventbus.TestBroker.clone()",
       "symbol": "eventbus.TestBroker.clone"
     },
     {
       "kind": "test",
-      "surfaceId": "apex:eventbus.TestEventService",
-      "symbol": "eventbus.TestEventService"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TestEventService.TestEventService()",
-      "symbol": "eventbus.TestEventService.TestEventService"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:eventbus.TestEventService.clone()",
       "symbol": "eventbus.TestEventService.clone"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TriggerContext",
-      "symbol": "eventbus.TriggerContext"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TriggerContext.TriggerContext()",
-      "symbol": "eventbus.TriggerContext.TriggerContext"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TriggerContext.clone()",
-      "symbol": "eventbus.TriggerContext.clone"
     },
     {
       "kind": "test",
@@ -101,16 +46,6 @@
       "kind": "test",
       "surfaceId": "apex:eventbus.TriggerContext.setResumeCheckpoint(String)",
       "symbol": "eventbus.TriggerContext.setResumeCheckpoint"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TriggerContext.lastError",
-      "symbol": "eventbus.TriggerContext.lastError"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:eventbus.TriggerContext.retries",
-      "symbol": "eventbus.TriggerContext.retries"
     }
   ],
   "expected": {
@@ -123,11 +58,11 @@
   },
   "mode": "compile-shape",
   "name": "current-base-eventbus-002-api67",
-  "notes": "Covers the 21 retained rows from current-base-local-runtime-required-eventbus-002 with compile-shape evidence. The bounded runtime probe exposed an existing unsupported call for TriggerContext.setResumeCheckpoint; no product code is changed and this fixture makes no runtime-completeness claim for that method.",
+  "notes": "Retains 8 compile-shape rows from current-base-local-runtime-required-eventbus-002. Thirteen rows have direct anonymous runtime evidence; SuccessResult, broker/service clone, and TriggerContext resume/current-context rows remain shape-only without runtime-completeness claims.",
   "profile": {
     "laneId": "current-base-local-runtime-required-eventbus-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 21,
+    "selectedRowCount": 8,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "proofObligation": "compile-shape-required",
