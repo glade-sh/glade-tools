@@ -1,8 +1,8 @@
 {
   "apiVersion": "67.0",
   "candidate": {
-    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+    "commit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "sha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e"
   },
   "command": {
     "kind": "test"
@@ -46,6 +46,12 @@
     },
     {
       "kind": "test",
+      "notes": "The concrete local post-copy callback implements the SandboxPostCopy type.",
+      "surfaceId": "apex:System.SandboxPostCopy",
+      "symbol": "SandboxPostCopy"
+    },
+    {
+      "kind": "test",
       "notes": "The local sandbox post-copy harness invokes runApexClass with a deterministic SandboxContext.",
       "surfaceId": "apex:System.SandboxPostCopy.runApexClass(SandboxContext)",
       "symbol": "SandboxPostCopy.runApexClass"
@@ -64,10 +70,10 @@
   "name": "core-runtime-local-sandbox-request-evidence-api67",
   "notes": "Deterministic local request and sandbox post-copy harness only; no hosted Salesforce parity is claimed.",
   "profile": {
-    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
+    "candidateCommit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "candidateSha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e",
     "laneId": "lifecycle-local13",
-    "selectedRowCount": 4
+    "selectedRowCount": 5
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

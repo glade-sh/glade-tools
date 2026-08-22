@@ -4,8 +4,8 @@
     "kind": "test"
   },
   "candidate": {
-    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+    "commit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "sha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e"
   },
   "evidence": [
     {
@@ -42,8 +42,8 @@
   "mode": "local-runtime",
   "notes": "Deterministic local install-context callbacks only; uppercase InstallerId remains version-bound and receives no execution credit.",
   "profile": {
-    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
+    "candidateCommit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "candidateSha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e",
     "laneId": "lifecycle-local13",
     "selectedRowCount": 3
   },
@@ -52,7 +52,7 @@
   "salesforceExclusionReason": "API 67 clean-org rejects the fixture's InstallContext member shape; retained as local runtime evidence and excluded from hosted parity.",
   "source": [
     {
-      "content": "public class LocalInstallScript implements InstallHandler { public static Boolean sawFresh = false; public static Boolean sawUpgrade = false; public void onInstall(InstallContext context) { if (context.previousVersion() == null) { sawFresh = !context.isPush() && context.installerId() == null && context.InstallerId == null; } else { sawUpgrade = context.previousVersion().compareTo(new Version(1, 47, 1)) < 0 && context.previousVersion().toString() == '1.47.0' && context.isPush() && context.installerId() == null; } } }",
+      "content": "public class LocalInstallScript implements InstallHandler { public static Boolean sawFresh = false; public static Boolean sawUpgrade = false; public void onInstall(InstallContext context) { if (context.previousVersion() == null) { sawFresh = !context.isPush() && context.installerId() == null; } else { sawUpgrade = context.previousVersion().compareTo(new Version(1, 47, 1)) < 0 && context.previousVersion().toString() == '1.47.0' && context.isPush() && context.installerId() == null; } } }",
       "path": "force-app/main/classes/LocalInstallScript.cls"
     },
     {

@@ -9,16 +9,66 @@ import (
 	"github.com/glade-sh/glade/tools/internal/compat"
 )
 
+func TestLifecycleLocal13FixturesAreCanonicalPlannerRunnable(t *testing.T) {
+	required := map[string]string{
+		"apex:System.InstallContext.InstallerId":                     localRuntimeRequired,
+		"apex:System.InstallContext.installerId()":                   localRuntimeRequired,
+		"apex:System.InstallContext.isPush()":                        localRuntimeRequired,
+		"apex:System.InstallContext.previousVersion()":               localRuntimeRequired,
+		"apex:System.InstallHandler.onInstall(InstallContext)":       localRuntimeRequired,
+		"apex:System.SandboxContext.organizationId()":                localRuntimeRequired,
+		"apex:System.SandboxContext.sandboxId()":                     localRuntimeRequired,
+		"apex:System.SandboxContext.sandboxName()":                   localRuntimeRequired,
+		"apex:System.SandboxPostCopy":                                localRuntimeRequired,
+		"apex:System.SandboxPostCopy.runApexClass(SandboxContext)":   localRuntimeRequired,
+		"apex:System.UninstallContext":                               localRuntimeRequired,
+		"apex:System.UninstallContext.OrganizationId":                localRuntimeRequired,
+		"apex:System.UninstallContext.organizationId()":              localRuntimeRequired,
+		"apex:System.UninstallHandler":                               localRuntimeRequired,
+		"apex:System.UninstallHandler.onUninstall(UninstallContext)": localRuntimeRequired,
+	}
+
+	root, err := filepath.Abs(filepath.Join("..", "..", "docs", "fixtures"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifest, missing, err := analyzeLocalProofFixtures(root, required)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantMissing := []string{"apex:System.InstallContext.InstallerId", "apex:System.UninstallContext.OrganizationId"}
+	if !equalStrings(missing, wantMissing) {
+		t.Fatalf("missing lifecycle surfaces = %v, want %v", missing, wantMissing)
+	}
+	covered := map[string]bool{}
+	for _, fixture := range manifest.Fixtures {
+		for _, surfaceID := range fixture.OwnedSurfaceIDs {
+			covered[surfaceID] = true
+		}
+	}
+	if len(covered) != 13 {
+		t.Fatalf("canonical lifecycle coverage = %d, want 13: %v", len(covered), covered)
+	}
+}
+
 func TestLifecycleLocal13DedicatedFixtureRunsSealedCandidate(t *testing.T) {
 	candidatePath := os.Getenv("GLADE_CANDIDATE")
 	if candidatePath == "" {
 		t.Skip("set GLADE_CANDIDATE to run the sealed-candidate regression")
 	}
-	if !filepath.IsAbs(candidatePath) || localProofFileSHA256(t, candidatePath) != "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a" {
+	if !filepath.IsAbs(candidatePath) || localProofFileSHA256(t, candidatePath) != "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e" {
 		t.Fatalf("candidate is not the sealed lifecycle runtime: %q", candidatePath)
 	}
 
-	const fixtureName = "core-runtime-local-sandbox-request-evidence-api67"
+	for _, fixtureName := range []string{"core-runtime-install-context-accessors", "current-base-system-002-local-runtime-api67", "core-runtime-local-sandbox-request-evidence-api67", "core-runtime-local-uninstall-evidence-api67"} {
+		t.Run(fixtureName, func(t *testing.T) {
+			runLifecycleLocal13Fixture(t, fixtureName, candidatePath)
+		})
+	}
+}
+
+func runLifecycleLocal13Fixture(t *testing.T, fixtureName, candidatePath string) {
+	t.Helper()
 	root, err := filepath.Abs(filepath.Join("..", ".."))
 	if err != nil {
 		t.Fatal(err)
@@ -37,7 +87,9 @@ func TestLifecycleLocal13DedicatedFixtureRunsSealedCandidate(t *testing.T) {
 	}
 	owned := make([]string, 0, len(fixture.Evidence))
 	for _, evidence := range fixture.Evidence {
-		owned = append(owned, evidence.SurfaceID)
+		if evidence.Kind == "test" {
+			owned = append(owned, evidence.SurfaceID)
+		}
 	}
 	entry := LocalProofFixture{
 		ID: fixtureName, Name: fixtureName, Path: path, SHA256: replayBytesSHA256(data),

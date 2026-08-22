@@ -314,6 +314,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
 			localRuntimeUserClassTestSurface(surfaceID) ||
 			localRuntimeDatabaseTestSurface(surfaceID) ||
+			localRuntimeLifecycleTestSurface(surfaceID) ||
 			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
 			surfaceID == "apex:System.Queueable" || strings.HasPrefix(surfaceID, "apex:System.Queueable.") ||
 			surfaceID == "apex:System.QueueableContext" || strings.HasPrefix(surfaceID, "apex:System.QueueableContext.") ||
@@ -332,6 +333,27 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 		return command == "exec" || command == "test"
 	case compileShapeRequired:
 		return command == "check"
+	default:
+		return false
+	}
+}
+
+func localRuntimeLifecycleTestSurface(surfaceID string) bool {
+	switch surfaceID {
+	case "apex:System.InstallContext.installerId()",
+		"apex:System.InstallContext.isPush()",
+		"apex:System.InstallContext.previousVersion()",
+		"apex:System.InstallHandler.onInstall(InstallContext)",
+		"apex:System.SandboxContext.organizationId()",
+		"apex:System.SandboxContext.sandboxId()",
+		"apex:System.SandboxContext.sandboxName()",
+		"apex:System.SandboxPostCopy",
+		"apex:System.SandboxPostCopy.runApexClass(SandboxContext)",
+		"apex:System.UninstallContext",
+		"apex:System.UninstallContext.organizationId()",
+		"apex:System.UninstallHandler",
+		"apex:System.UninstallHandler.onUninstall(UninstallContext)":
+		return true
 	default:
 		return false
 	}

@@ -1,8 +1,8 @@
 {
   "apiVersion": "67.0",
   "candidate": {
-    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+    "commit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "sha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e"
   },
   "command": {
     "kind": "test"
@@ -25,10 +25,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-system-002-local-runtime-api67",
-  "notes": "Retains the exact Test.testInstall runtime owner for InstallHandler.onInstall. Unsupported rows remain historical-only; the four strengthened rows are transferred to core-runtime-system-002-wave19-runtime.",
+  "notes": "Retains the exact Test.testInstall runtime owner for InstallHandler.onInstall; unsupported rows remain historical-only.",
   "profile": {
-    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
-    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
+    "candidateCommit": "e47c5550d551e0cef6bfc7706ba59e68f7e71331",
+    "candidateSha256": "7ffd4f2a68b78d39621072dd8b09a5b75bf2f96e1f14883f2c73e844ec7e862e",
     "laneId": "lifecycle-local13",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
     "selectedRowCount": 1,
@@ -39,7 +39,7 @@
   "salesforceExclusionReason": "This fixture records Glade local-runtime behavior only and makes no hosted Salesforce package-lifecycle claim.",
   "source": [
     {
-      "content": "public class CurrentBaseSystem002Install implements InstallHandler { public static Boolean called; public void onInstall(InstallContext context) { called = context != null && context.previousVersion() == null && !context.isPush() && context.installerId() == null && context.InstallerId == null; } }",
+      "content": "public class CurrentBaseSystem002Install implements InstallHandler { public static Boolean called; public void onInstall(InstallContext context) { called = context != null && context.previousVersion() == null && !context.isPush() && context.installerId() == null; } }",
       "path": "force-app/main/default/classes/CurrentBaseSystem002Install.cls"
     },
     {
