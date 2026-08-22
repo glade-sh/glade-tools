@@ -83,6 +83,7 @@ func TestValidateRejectsInvalidContractFields(t *testing.T) {
 		{"preview release in stable source window", func(c *Contract) { c.Releases[1].Maturity = "preview" }},
 		{"absolute release path", func(c *Contract) { c.Releases[0].Manifest = "/tmp/winter.json" }},
 		{"escaping release path", func(c *Contract) { c.Releases[0].Inventory = "../winter-inventory.json" }},
+		{"backslash release path", func(c *Contract) { c.Releases[0].Manifest = `..\outside.json` }},
 		{"duplicate behavior ID", func(c *Contract) { c.Behaviors = append(c.Behaviors, c.Behaviors[0]) }},
 		{"behavior without proof", func(c *Contract) { c.Behaviors[0].ProofCases = nil; c.Behaviors[0].ProductTests = nil }},
 		{"non-Salesforce source URL", func(c *Contract) { c.Behaviors[0].SourceRefs = []string{"https://example.com/release"} }},
@@ -90,6 +91,7 @@ func TestValidateRejectsInvalidContractFields(t *testing.T) {
 		{"empty no-fallback binding", func(c *Contract) { c.NoFallbackProductTests[0] = "" }},
 		{"empty no-fallback list", func(c *Contract) { c.NoFallbackProductTests = nil }},
 		{"escaping no-fallback binding", func(c *Contract) { c.NoFallbackProductTests[0] = "../version_test.go:TestNoFallback" }},
+		{"backslash no-fallback binding", func(c *Contract) { c.NoFallbackProductTests[0] = `..\outside_test.go:TestX` }},
 		{"duplicate no-fallback binding", func(c *Contract) {
 			c.NoFallbackProductTests = append(c.NoFallbackProductTests, c.NoFallbackProductTests[0])
 		}},
@@ -166,6 +168,49 @@ func TestValidateRejectsMaturityBehaviorOutsideAdvertisedWindows(t *testing.T) {
 	}
 }
 
+func TestValidateMaturityBoundaryDiagnosticsCheckSinceFirst(t *testing.T) {
+	contract := validContract()
+	behavior := contract.Behaviors[0]
+	behavior.ID = "maturity-boundaries-outside"
+	behavior.Kind = "maturity"
+	behavior.Since = "64.0"
+	behavior.Until = "68.0"
+	contract.Behaviors = []Behavior{behavior}
+	if err := contract.Validate(t.TempDir()); err == nil || !strings.Contains(err.Error(), ".since") {
+		t.Fatalf("Validate error = %v, want since diagnostic", err)
+	}
+}
+
+func TestValidateAllowsOrgCapabilityMaturityWithoutNumericWindow(t *testing.T) {
+	contract := validContract()
+	behavior := contract.Behaviors[0]
+	behavior.ID = "org-capability-maturity"
+	behavior.Axis = "org-capability"
+	behavior.Kind = "maturity"
+	behavior.Since = "64.0"
+	behavior.Until = "68.0"
+	contract.Behaviors = []Behavior{behavior}
+	if err := contract.Validate(t.TempDir()); err != nil {
+		t.Fatalf("Validate: %v", err)
+	}
+}
+
+func TestValidateRejectsInvalidSourceReferenceForms(t *testing.T) {
+	for _, sourceRef := range []string{
+		"ftp://salesforce.com/release",
+		"//salesforce.com/release",
+		"https://user@salesforce.com/release",
+	} {
+		t.Run(sourceRef, func(t *testing.T) {
+			contract := validContract()
+			contract.Behaviors[0].SourceRefs = []string{sourceRef}
+			if err := contract.Validate(t.TempDir()); err == nil {
+				t.Fatal("Validate unexpectedly succeeded")
+			}
+		})
+	}
+}
+
 func TestValidateRejectsDuplicateWindowsAndMissingProofs(t *testing.T) {
 	tests := []struct {
 		name string
@@ -204,6 +249,34 @@ func TestLoadRejectsUnknownFieldsAndTrailingJSON(t *testing.T) {
 		{"trailing JSON", string(validJSON) + ` {}`},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+			if err := os.WriteFile(path, []byte(test.data), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if _, _, err := Load(path); err == nil {
+				t.Fatal("Load unexpectedly succeeded")
+			}
+		})
+	}
+}
+
+func TestLoadRejectsDuplicateAndCaseVariantJSONKeys(t *testing.T) {
+	validJSON, err := json.Marshal(validContract())
+	if err != nil {
+		t.Fatal(err)
+	}
+	valid := string(validJSON)
+	tests := []struct {
+		name string
+		data string
+	}{
+		{"duplicate top-level key", strings.Replace(valid, `{"schemaVersion":1,`, `{"schemaVersion":1,"schemaVersion":1,`, 1)},
+		{"duplicate nested key", strings.Replace(valid, `{"source":"65.0","endpoint"`, `{"source":"65.0","source":"65.0","endpoint"`, 1)},
+		{"case-variant top-level key", strings.Replace(valid, `"schemaVersion"`, `"SchemaVersion"`, 1)},
+		{"case-variant nested key", strings.Replace(valid, `"apiVersion"`, `"ApiVersion"`, 1)},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "contract.json")
 			if err := os.WriteFile(path, []byte(test.data), 0o600); err != nil {
 				t.Fatal(err)
 			}

@@ -1,12 +1,14 @@
 package releasecontract
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"strings"
 )
@@ -78,6 +80,9 @@ func Load(path string) (Contract, string, error) {
 		return Contract{}, "", err
 	}
 	var contract Contract
+	if err := validateExactJSON(data, reflect.TypeOf(contract)); err != nil {
+		return Contract{}, "", err
+	}
 	decoder := json.NewDecoder(strings.NewReader(string(data)))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&contract); err != nil {
@@ -310,13 +315,20 @@ func validateBehaviors(root string, behaviors []Behavior, sourceWindow, endpoint
 			return fmt.Errorf("behaviors[%d] since must be before until", index)
 		}
 		if behavior.Kind == "maturity" {
-			window := sourceWindow
-			if behavior.Axis == "endpoint" {
-				window = endpointWindow
-			}
-			for boundaryName, boundary := range map[string]string{"since": behavior.Since, "until": behavior.Until} {
-				if boundary != "" && !containsVersion(window, boundary) {
-					return fmt.Errorf("behaviors[%d].%s %q is outside the advertised %s window", index, boundaryName, boundary, behavior.Axis)
+			switch behavior.Axis {
+			case "source":
+				if behavior.Since != "" && !containsVersion(sourceWindow, behavior.Since) {
+					return fmt.Errorf("behaviors[%d].since %q is outside the advertised source window", index, behavior.Since)
+				}
+				if behavior.Until != "" && !containsVersion(sourceWindow, behavior.Until) {
+					return fmt.Errorf("behaviors[%d].until %q is outside the advertised source window", index, behavior.Until)
+				}
+			case "endpoint":
+				if behavior.Since != "" && !containsVersion(endpointWindow, behavior.Since) {
+					return fmt.Errorf("behaviors[%d].since %q is outside the advertised endpoint window", index, behavior.Since)
+				}
+				if behavior.Until != "" && !containsVersion(endpointWindow, behavior.Until) {
+					return fmt.Errorf("behaviors[%d].until %q is outside the advertised endpoint window", index, behavior.Until)
 				}
 			}
 		}
@@ -374,7 +386,7 @@ func validateProductTest(root, field, value string) error {
 }
 
 func validateRepositoryPath(root, field, value string) error {
-	if strings.TrimSpace(value) == "" || filepath.IsAbs(value) || filepath.Clean(value) != value {
+	if strings.TrimSpace(value) == "" || strings.Contains(value, "\\") || filepath.IsAbs(value) || filepath.Clean(value) != value {
 		return fmt.Errorf("%s must be a non-empty, relative, clean path", field)
 	}
 	joined := filepath.Join(root, value)
@@ -387,7 +399,7 @@ func validateRepositoryPath(root, field, value string) error {
 
 func validateSalesforceURL(field, value string) error {
 	parsed, err := url.Parse(value)
-	if err != nil || parsed.Hostname() == "" {
+	if err != nil || parsed.Scheme != "https" || parsed.User != nil || parsed.Hostname() == "" {
 		return fmt.Errorf("%s must be a Salesforce URL", field)
 	}
 	host := strings.ToLower(parsed.Hostname())
@@ -395,6 +407,104 @@ func validateSalesforceURL(field, value string) error {
 		return fmt.Errorf("%s must be hosted at salesforce.com", field)
 	}
 	return nil
+}
+
+func validateExactJSON(data []byte, typeOf reflect.Type) error {
+	if typeOf.Kind() == reflect.Ptr {
+		typeOf = typeOf.Elem()
+	}
+	trimmed := bytes.TrimSpace(data)
+	if bytes.Equal(trimmed, []byte("null")) {
+		return nil
+	}
+	switch typeOf.Kind() {
+	case reflect.Struct:
+		decoder := json.NewDecoder(bytes.NewReader(trimmed))
+		token, err := decoder.Token()
+		if err != nil {
+			return err
+		}
+		if delimiter, ok := token.(json.Delim); !ok || delimiter != '{' {
+			return fmt.Errorf("expected JSON object")
+		}
+		fields := exactJSONFields(typeOf)
+		seen := make(map[string]struct{}, len(fields))
+		for decoder.More() {
+			token, err := decoder.Token()
+			if err != nil {
+				return err
+			}
+			key, ok := token.(string)
+			if !ok {
+				return fmt.Errorf("expected JSON object key")
+			}
+			if _, ok := seen[key]; ok {
+				return fmt.Errorf("duplicate JSON key %q", key)
+			}
+			seen[key] = struct{}{}
+			fieldType, ok := fields[key]
+			if !ok {
+				return fmt.Errorf("unknown JSON key %q", key)
+			}
+			var value json.RawMessage
+			if err := decoder.Decode(&value); err != nil {
+				return err
+			}
+			if err := validateExactJSON(value, fieldType); err != nil {
+				return err
+			}
+		}
+		if _, err := decoder.Token(); err != nil {
+			return err
+		}
+		if _, err := decoder.Token(); err != io.EOF {
+			return fmt.Errorf("multiple JSON values")
+		}
+	case reflect.Slice, reflect.Array:
+		decoder := json.NewDecoder(bytes.NewReader(trimmed))
+		token, err := decoder.Token()
+		if err != nil {
+			return err
+		}
+		if delimiter, ok := token.(json.Delim); !ok || delimiter != '[' {
+			return fmt.Errorf("expected JSON array")
+		}
+		for decoder.More() {
+			var value json.RawMessage
+			if err := decoder.Decode(&value); err != nil {
+				return err
+			}
+			if err := validateExactJSON(value, typeOf.Elem()); err != nil {
+				return err
+			}
+		}
+		if _, err := decoder.Token(); err != nil {
+			return err
+		}
+		if _, err := decoder.Token(); err != io.EOF {
+			return fmt.Errorf("multiple JSON values")
+		}
+	}
+	return nil
+}
+
+func exactJSONFields(typeOf reflect.Type) map[string]reflect.Type {
+	fields := make(map[string]reflect.Type, typeOf.NumField())
+	for index := 0; index < typeOf.NumField(); index++ {
+		field := typeOf.Field(index)
+		if field.PkgPath != "" {
+			continue
+		}
+		name := strings.Split(field.Tag.Get("json"), ",")[0]
+		if name == "-" {
+			continue
+		}
+		if name == "" {
+			name = field.Name
+		}
+		fields[name] = field.Type
+	}
+	return fields
 }
 
 func validateAPIVersion(field, value string) error {
