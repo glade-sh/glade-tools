@@ -1,0 +1,39 @@
+{
+  "name": "core-runtime-exception-inaccessible-fields-tail-local-api67",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "exception-inaccessible-fields-tail-local-api67",
+    "selectedRowCount": 5
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves only local exception accessor behavior and grants zero Salesforce parity credit.",
+  "command": {
+    "kind": "exec",
+    "args": [
+      "Boolean noAccessCalled = false;\ntry { NoAccessException noAccess = new NoAccessException(); noAccess.getInaccessibleFields(); } catch (Exception noAccessFailure) { noAccessCalled = true; System.assertEquals('System.TypeException', noAccessFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', noAccessFailure.getMessage()); }\nBoolean noDataCalled = false;\ntry { NoDataFoundException noData = new NoDataFoundException(); noData.getInaccessibleFields(); } catch (Exception noDataFailure) { noDataCalled = true; System.assertEquals('System.TypeException', noDataFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', noDataFailure.getMessage()); }\nBoolean touchCalled = false;\ntry { TouchHandledException touch = new TouchHandledException('touch handled'); touch.getInaccessibleFields(); } catch (Exception touchFailure) { touchCalled = true; System.assertEquals('System.TypeException', touchFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', touchFailure.getMessage()); }\nBoolean visualforceCalled = false;\ntry { VisualforceException visualforce = new VisualforceException(); visualforce.getInaccessibleFields(); } catch (Exception visualforceFailure) { visualforceCalled = true; System.assertEquals('System.TypeException', visualforceFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', visualforceFailure.getMessage()); }\nBoolean waveCalled = false;\ntry { WaveTemplateException wave = new WaveTemplateException(); wave.getInaccessibleFields(); } catch (Exception waveFailure) { waveCalled = true; System.assertEquals('System.TypeException', waveFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', waveFailure.getMessage()); }\nSystem.assert(noAccessCalled && noDataCalled && touchCalled && visualforceCalled && waveCalled);"
+    ]
+  },
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "Boolean noAccessCalled = false;\ntry { NoAccessException noAccess = new NoAccessException(); noAccess.getInaccessibleFields(); } catch (Exception noAccessFailure) { noAccessCalled = true; System.assertEquals('System.TypeException', noAccessFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', noAccessFailure.getMessage()); }\nBoolean noDataCalled = false;\ntry { NoDataFoundException noData = new NoDataFoundException(); noData.getInaccessibleFields(); } catch (Exception noDataFailure) { noDataCalled = true; System.assertEquals('System.TypeException', noDataFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', noDataFailure.getMessage()); }\nBoolean touchCalled = false;\ntry { TouchHandledException touch = new TouchHandledException('touch handled'); touch.getInaccessibleFields(); } catch (Exception touchFailure) { touchCalled = true; System.assertEquals('System.TypeException', touchFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', touchFailure.getMessage()); }\nBoolean visualforceCalled = false;\ntry { VisualforceException visualforce = new VisualforceException(); visualforce.getInaccessibleFields(); } catch (Exception visualforceFailure) { visualforceCalled = true; System.assertEquals('System.TypeException', visualforceFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', visualforceFailure.getMessage()); }\nBoolean waveCalled = false;\ntry { WaveTemplateException wave = new WaveTemplateException(); wave.getInaccessibleFields(); } catch (Exception waveFailure) { waveCalled = true; System.assertEquals('System.TypeException', waveFailure.getTypeName()); System.assertEquals('Procedure is only valid for System.QueryException', waveFailure.getMessage()); }\nSystem.assert(noAccessCalled && noDataCalled && touchCalled && visualforceCalled && waveCalled);"
+    }
+  ],
+  "evidence": [
+    {"surfaceId": "apex:System.NoAccessException.getInaccessibleFields()", "symbol": "NoAccessException.getInaccessibleFields", "kind": "exec"},
+    {"surfaceId": "apex:System.NoDataFoundException.getInaccessibleFields()", "symbol": "NoDataFoundException.getInaccessibleFields", "kind": "exec"},
+    {"surfaceId": "apex:System.TouchHandledException.getInaccessibleFields()", "symbol": "TouchHandledException.getInaccessibleFields", "kind": "exec"},
+    {"surfaceId": "apex:System.VisualforceException.getInaccessibleFields()", "symbol": "VisualforceException.getInaccessibleFields", "kind": "exec"},
+    {"surfaceId": "apex:System.WaveTemplateException.getInaccessibleFields()", "symbol": "WaveTemplateException.getInaccessibleFields", "kind": "exec"}
+  ],
+  "expected": {"result": {"debug": null, "ok": true}},
+  "notes": "Exact-candidate executable local-runtime witness. Hosted Salesforce parity is intentionally excluded."
+}
