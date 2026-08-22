@@ -430,6 +430,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-database-async-immediate-dml-runtime.json", 15},
 		{"data-platform-schema-describe-fieldsets-runtime.json", 28},
 		{"core-runtime-enum-families-wave15-runtime.json", 28},
+		{"core-runtime-system-enum-exception-tail-api67.json", 26},
 		{"core-runtime-exception-families-wave15-runtime.json", 39},
 		{"data-platform-database-dto-family-one-wave15-runtime.json", 20},
 		{"data-platform-database-dto-family-two-wave15-runtime.json", 17},
