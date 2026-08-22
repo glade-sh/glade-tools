@@ -15,5 +15,7 @@
     "args": ["NoDataFoundException noData = new NoDataFoundException();\nNoDataFoundException otherNoData = new NoDataFoundException();\nnoData.setMessage('missing value');\nSystem.assertEquals('System.NoDataFoundException', noData.getTypeName());\nSystem.assertEquals('System.NoDataFoundException: missing value', noData.toString());\nSystem.assert(noData.equals(noData));\nSystem.assert(!noData.equals(otherNoData));\nSystem.assertEquals(noData.hashCode(), noData.hashCode());\nSystem.assertNotEquals(noData.hashCode(), otherNoData.hashCode());"]
   },
   "expected": {"result": {"debug": null, "ok": true}},
-  "salesforceEligible": true
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Salesforce anonymous Apex rejects NoDataFoundException construction with 'Can only throw this exception type from VisualForce or Aura context', so this fixture records Glade-local behavior and claims no hosted parity."
 }
