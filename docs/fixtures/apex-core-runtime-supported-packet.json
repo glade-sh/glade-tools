@@ -150,12 +150,6 @@
     {
       "kind": "test",
       "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.StatusCode.values()",
-      "symbol": "StatusCode.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.TriggerOperation.values()",
       "symbol": "TriggerOperation.values"
     },
