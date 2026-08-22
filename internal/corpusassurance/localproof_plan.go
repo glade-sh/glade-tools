@@ -358,6 +358,7 @@ func localRuntimeScalarAdderrorTestSurface(surfaceID string) bool {
 		"apex:System.Id.addError(Exception)", "apex:System.Id.addError(Exception,Boolean)", "apex:System.Id.addError(String)", "apex:System.Id.addError(String,Boolean)",
 		"apex:System.Integer.addError(Exception)", "apex:System.Integer.addError(Exception,Boolean)", "apex:System.Integer.addError(String)", "apex:System.Integer.addError(String,Boolean)",
 		"apex:System.Long.addError(Exception)", "apex:System.Long.addError(Exception,Boolean)", "apex:System.Long.addError(String)", "apex:System.Long.addError(String,Boolean)",
+		"apex:System.String.addError(Exception)", "apex:System.String.addError(Exception,Boolean)", "apex:System.String.addError(String)", "apex:System.String.addError(String,Boolean)",
 		"apex:System.Time.addError(Exception)", "apex:System.Time.addError(Exception,Boolean)", "apex:System.Time.addError(String)", "apex:System.Time.addError(String,Boolean)":
 		return true
 	default:

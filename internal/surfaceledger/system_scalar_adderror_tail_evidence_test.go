@@ -21,6 +21,7 @@ var systemScalarAdderrorTailIDs = []string{
 	"apex:System.Id.addError(Exception)", "apex:System.Id.addError(Exception,Boolean)", "apex:System.Id.addError(String)", "apex:System.Id.addError(String,Boolean)",
 	"apex:System.Integer.addError(Exception)", "apex:System.Integer.addError(Exception,Boolean)", "apex:System.Integer.addError(String)", "apex:System.Integer.addError(String,Boolean)",
 	"apex:System.Long.addError(Exception)", "apex:System.Long.addError(Exception,Boolean)", "apex:System.Long.addError(String)", "apex:System.Long.addError(String,Boolean)",
+	"apex:System.String.addError(Exception)", "apex:System.String.addError(Exception,Boolean)", "apex:System.String.addError(String)", "apex:System.String.addError(String,Boolean)",
 	"apex:System.Time.addError(Exception)", "apex:System.Time.addError(Exception,Boolean)", "apex:System.Time.addError(String)", "apex:System.Time.addError(String,Boolean)",
 }
 
@@ -34,7 +35,7 @@ func TestSystemScalarAdderrorTailHasExactCandidateLocalEvidence(t *testing.T) {
 	if err := compat.Validate(fixture); err != nil {
 		t.Fatal(err)
 	}
-	if fixture.Name != strings.TrimSuffix(systemScalarAdderrorTailFixture, ".json") || fixture.Command.Kind != "test" || len(fixture.Source) != 11 || fixture.Project.SourceAPIVersion != "67.0" {
+	if fixture.Name != strings.TrimSuffix(systemScalarAdderrorTailFixture, ".json") || fixture.Command.Kind != "test" || len(fixture.Source) != 12 || fixture.Project.SourceAPIVersion != "67.0" {
 		t.Fatalf("fixture envelope = %#v", fixture)
 	}
 	if len(fixture.Evidence) != len(systemScalarAdderrorTailIDs) {
@@ -68,7 +69,7 @@ func TestSystemScalarAdderrorTailHasExactCandidateLocalEvidence(t *testing.T) {
 	if err := json.Unmarshal(data, &metadata); err != nil {
 		t.Fatal(err)
 	}
-	if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.ExclusionReason), "zero hosted salesforce parity") || metadata.Profile.CandidateCommit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || metadata.Profile.CandidateSHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(systemScalarAdderrorTailIDs) || metadata.Salesforce != nil || metadata.Comparisons != nil || !strings.Contains(metadata.Notes, "no hosted Salesforce execution or parity claim") {
+	if metadata.APIVersion != "67.0" || metadata.Mode != "local-runtime" || metadata.EvidenceOnly || metadata.Eligible == nil || *metadata.Eligible || metadata.ExclusionClass != "policy-local-only" || !strings.Contains(strings.ToLower(metadata.ExclusionReason), "zero hosted salesforce parity") || metadata.Profile.CandidateCommit != "693bc1b8652907eee1c40c1c9f4604637f06a172" || metadata.Profile.CandidateSHA256 != "235ef5f5fd6b35a9eec2ab81c129c2639c0282ff66573e8dbace80e991481bc3" || metadata.Profile.LaneID == "" || metadata.Profile.SelectedRows != len(systemScalarAdderrorTailIDs) || metadata.Salesforce != nil || metadata.Comparisons != nil || !strings.Contains(metadata.Notes, "no hosted Salesforce execution or parity claim") {
 		t.Fatalf("fixture provenance = %#v", metadata)
 	}
 
