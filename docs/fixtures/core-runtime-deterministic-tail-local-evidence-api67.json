@@ -20,8 +20,18 @@
     },
     {
       "kind": "test",
+      "surfaceId": "apex:System.FeatureManagement.clone()",
+      "symbol": "System.FeatureManagement.clone()"
+    },
+    {
+      "kind": "test",
       "surfaceId": "apex:System.Http.send(HttpRequest)",
       "symbol": "System.Http.send(HttpRequest)"
+    },
+    {
+      "kind": "test",
+      "surfaceId": "apex:System.Messaging.Messaging()",
+      "symbol": "System.Messaging.Messaging()"
     }
   ],
   "evidenceOnly": false,
@@ -36,12 +46,12 @@
   },
   "mode": "deterministic-mock",
   "name": "core-runtime-deterministic-tail-local-evidence-api67",
-  "notes": "Exact-candidate deterministic local witness for the FeatureManagement.checkPermission alias and typed method plus Http.send(HttpRequest) through a registered local callout mock.",
+  "notes": "Exact-candidate deterministic local witness for FeatureManagement permission checks and clone(), Messaging construction, and Http.send(HttpRequest) through a registered local callout mock.",
   "profile": {
     "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
     "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
     "laneId": "deterministic-tail-local-evidence-api67",
-    "selectedRowCount": 3
+    "selectedRowCount": 5
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
@@ -53,7 +63,7 @@
     },
     {
       "path": "force-app/main/default/classes/CoreRuntimeDeterministicTailLocalEvidenceApi67Test.cls",
-      "content": "@isTest private class CoreRuntimeDeterministicTailLocalEvidenceApi67Test { @isTest static void rows() { System.runAs(new User(Id = '005-user-deterministic-tail', Username = 'deterministic-tail@example.test', Permissions = 'CanRunLocal')) { System.assert(FeatureManagement.checkPermission('CanRunLocal')); System.assert(!FeatureManagement.checkPermission('OtherPermission')); } Test.setMock(HttpCalloutMock.class, new CoreRuntimeDeterministicTailMock()); HttpRequest request = new HttpRequest(); request.setEndpoint('https://example.test/deterministic-tail'); request.setMethod('GET'); HttpResponse response = new Http().send(request); System.assertEquals(204, response.getStatusCode()); System.assertEquals('deterministic-tail', response.getBody()); } }"
+      "content": "@isTest private class CoreRuntimeDeterministicTailLocalEvidenceApi67Test { @isTest static void rows() { System.runAs(new User(Id = '005-user-deterministic-tail', Username = 'deterministic-tail@example.test', Permissions = 'CanRunLocal')) { System.assert(FeatureManagement.checkPermission('CanRunLocal')); System.assert(!FeatureManagement.checkPermission('OtherPermission')); } System.FeatureManagement feature = new System.FeatureManagement(); Object featureClone = feature.clone(); System.assertNotEquals(null, featureClone); System.Messaging.Messaging messaging = new System.Messaging.Messaging(); System.assertNotEquals(null, messaging); Test.setMock(HttpCalloutMock.class, new CoreRuntimeDeterministicTailMock()); HttpRequest request = new HttpRequest(); request.setEndpoint('https://example.test/deterministic-tail'); request.setMethod('GET'); HttpResponse response = new Http().send(request); System.assertEquals(204, response.getStatusCode()); System.assertEquals('deterministic-tail', response.getBody()); } }"
     }
   ]
 }

@@ -111,11 +111,6 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:System.Messaging.Messaging()",
-      "symbol": "System.Messaging.Messaging()"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:System.Messaging.SendEmailResult",
       "symbol": "System.Messaging.SendEmailResult"
     }

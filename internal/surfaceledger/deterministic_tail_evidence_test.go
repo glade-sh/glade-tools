@@ -30,7 +30,9 @@ func TestDeterministicTailEvidenceHasExactLocalRows(t *testing.T) {
 			ids: []string{
 				"apex:System.FeatureManagement.checkPermission",
 				"apex:System.FeatureManagement.checkPermission(String)",
+				"apex:System.FeatureManagement.clone()",
 				"apex:System.Http.send(HttpRequest)",
+				"apex:System.Messaging.Messaging()",
 			},
 		},
 	}
@@ -44,6 +46,20 @@ func TestDeterministicTailEvidenceHasExactLocalRows(t *testing.T) {
 		}
 		if err := compat.Validate(fixture); err != nil {
 			t.Fatal(err)
+		}
+		if len(fixture.Source) != 2 {
+			t.Fatalf("%s source count = %d, want 2", test.name, len(fixture.Source))
+		}
+		for _, assertion := range []string{
+			"System.FeatureManagement feature = new System.FeatureManagement()",
+			"Object featureClone = feature.clone()",
+			"System.assertNotEquals(null, featureClone)",
+			"System.Messaging.Messaging messaging = new System.Messaging.Messaging()",
+			"System.assertNotEquals(null, messaging)",
+		} {
+			if !strings.Contains(fixture.Source[1].Content, assertion) {
+				t.Fatalf("%s missing runtime assertion %q", test.name, assertion)
+			}
 		}
 		if fixture.Command.Kind != test.kind {
 			t.Fatalf("%s envelope = kind:%q", test.name, fixture.Command.Kind)
@@ -95,8 +111,8 @@ func TestDeterministicTailEvidenceHasExactLocalRows(t *testing.T) {
 			t.Fatalf("%s provenance = %#v", test.name, metadata)
 		}
 	}
-	if len(seen) != 3 {
-		t.Fatalf("deterministic tail accepted rows = %d, want 3", len(seen))
+	if len(seen) != 5 {
+		t.Fatalf("deterministic tail accepted rows = %d, want 5", len(seen))
 	}
 }
 
@@ -105,7 +121,9 @@ func TestDeterministicTailGlobalNonEvidenceOnlyOwnership(t *testing.T) {
 	targets := []string{
 		"apex:System.FeatureManagement.checkPermission",
 		"apex:System.FeatureManagement.checkPermission(String)",
+		"apex:System.FeatureManagement.clone()",
 		"apex:System.Http.send(HttpRequest)",
+		"apex:System.Messaging.Messaging()",
 	}
 
 	type evidenceRow struct {

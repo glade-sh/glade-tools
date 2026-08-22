@@ -11,11 +11,6 @@
     },
     {
       "kind": "shape",
-      "surfaceId": "apex:System.Messaging.Messaging()",
-      "symbol": "System.Messaging.Messaging()"
-    },
-    {
-      "kind": "shape",
       "surfaceId": "apex:System.Messaging.SendEmailResult",
       "symbol": "System.Messaging.SendEmailResult"
     }
@@ -35,7 +30,7 @@
     "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
     "laneId": "current-base-deterministic-mock-required-Messaging-002",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
-    "selectedRowCount": 3,
+    "selectedRowCount": 2,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
   },
   "proofObligation": "compile-shape-required",
@@ -45,7 +40,7 @@
   "salesforceExclusionReason": "These inventory rows use the System.Messaging spelling emitted by the docs catalog; the fixture checks the local alias boundary and makes no hosted delivery claim.",
   "source": [
     {
-      "content": "public class CurrentBaseMessagingSystemAliasApi67 { public void probe() { System.Messaging.MassEmailMessage mass = new System.Messaging.MassEmailMessage(); System.Messaging.SendEmailResult result = new System.Messaging.SendEmailResult(); new System.Messaging.Messaging(); } }",
+      "content": "public class CurrentBaseMessagingSystemAliasApi67 { public void probe() { System.Messaging.MassEmailMessage mass = new System.Messaging.MassEmailMessage(); System.Messaging.SendEmailResult result = new System.Messaging.SendEmailResult(); } }",
       "path": "force-app/main/default/classes/CurrentBaseMessagingSystemAliasApi67.cls"
     }
   ]
