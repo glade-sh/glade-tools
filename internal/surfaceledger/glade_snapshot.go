@@ -333,6 +333,7 @@ var fixtureBackedSystemAliasRows = []fixtureBackedSystemAliasRow{
 	{SurfaceID: "apex:System.EventBus.*", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostics for local platform event delivery surfaces"},
 	{SurfaceID: "apex:System.EventBus.publish", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local no-op platform event publish SaveResult behavior"},
 	{SurfaceID: "apex:System.EventBus.publishAfterCommit", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for after-commit platform event delivery"},
+	{SurfaceID: "apex:System.FeatureManagement", Kind: KindType, Behavior: BehaviorPassive, Notes: "fixture-backed System-qualified alias for local FeatureManagement permission checks"},
 	{SurfaceID: "apex:System.HierarchyCustomSetting.getOrgDefaults", Kind: KindMethod, Behavior: BehaviorSupported, Notes: "fixture-backed System-qualified alias for local hierarchy custom setting org-default lookup"},
 	{SurfaceID: "apex:System.HttpRequest.setClientCertificate", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for inline client-certificate material"},
 	{SurfaceID: "apex:System.HttpRequest.setClientCertificateName", Kind: KindMethod, Behavior: BehaviorUnsupported, Notes: "fixture-backed explicit unsupported diagnostic for named client-certificate configuration"},

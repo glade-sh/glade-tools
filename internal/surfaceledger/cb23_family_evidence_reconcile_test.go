@@ -13,6 +13,7 @@ func TestCB23MergedFamilyEvidenceClosesTargetRows(t *testing.T) {
 		"core-runtime-messaging-single-email-attachments-evidence.json",
 		"visualforce-controller-runtime.json",
 		"core-feature-management.json",
+		"core-runtime-deterministic-tail-local-evidence-api67.json",
 	}
 	paths := make([]string, 0, len(fixtureNames))
 	for _, name := range fixtureNames {

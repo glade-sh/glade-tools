@@ -2,12 +2,6 @@
   "name": "core-feature-management",
   "evidence": [
     {
-      "symbol": "FeatureManagement",
-      "surfaceId": "apex:System.FeatureManagement",
-      "kind": "test",
-      "notes": "Static FeatureManagement APIs execute in this fixture."
-    },
-    {
       "symbol": "FeatureManagement.changeProtection",
       "surfaceId": "apex:System.FeatureManagement.changeProtection(String,String,String)",
       "kind": "test"
