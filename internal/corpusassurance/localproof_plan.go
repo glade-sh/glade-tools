@@ -310,6 +310,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 	switch disposition {
 	case localRuntimeRequired:
 		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:Database.Batchable") || surfaceID == "apex:System.Database.executeBatch(Object)" || strings.HasPrefix(surfaceID, "apex:System.Test.") ||
+			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
 			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
 			surfaceID == "apex:System.Queueable" || strings.HasPrefix(surfaceID, "apex:System.Queueable.") ||
 			surfaceID == "apex:System.QueueableContext" || strings.HasPrefix(surfaceID, "apex:System.QueueableContext.") ||
@@ -324,6 +325,23 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 		return command == "exec" || command == "test"
 	case compileShapeRequired:
 		return command == "check"
+	default:
+		return false
+	}
+}
+
+func localRuntimeScalarAdderrorTestSurface(surfaceID string) bool {
+	switch surfaceID {
+	case "apex:System.Boolean.addError(Exception)", "apex:System.Boolean.addError(Exception,Boolean)", "apex:System.Boolean.addError(String)", "apex:System.Boolean.addError(String,Boolean)",
+		"apex:System.Date.addError(Exception)", "apex:System.Date.addError(Exception,Boolean)", "apex:System.Date.addError(String)", "apex:System.Date.addError(String,Boolean)",
+		"apex:System.Datetime.addError(Exception)", "apex:System.Datetime.addError(Exception,Boolean)", "apex:System.Datetime.addError(String)", "apex:System.Datetime.addError(String,Boolean)",
+		"apex:System.Decimal.addError(Exception)", "apex:System.Decimal.addError(Exception,Boolean)", "apex:System.Decimal.addError(String)", "apex:System.Decimal.addError(String,Boolean)",
+		"apex:System.Double.addError(Exception)", "apex:System.Double.addError(Exception,Boolean)", "apex:System.Double.addError(String)", "apex:System.Double.addError(String,Boolean)",
+		"apex:System.Id.addError(Exception)", "apex:System.Id.addError(Exception,Boolean)", "apex:System.Id.addError(String)", "apex:System.Id.addError(String,Boolean)",
+		"apex:System.Integer.addError(Exception)", "apex:System.Integer.addError(Exception,Boolean)", "apex:System.Integer.addError(String)", "apex:System.Integer.addError(String,Boolean)",
+		"apex:System.Long.addError(Exception)", "apex:System.Long.addError(Exception,Boolean)", "apex:System.Long.addError(String)", "apex:System.Long.addError(String,Boolean)",
+		"apex:System.Time.addError(Exception)", "apex:System.Time.addError(Exception,Boolean)", "apex:System.Time.addError(String)", "apex:System.Time.addError(String,Boolean)":
+		return true
 	default:
 		return false
 	}
