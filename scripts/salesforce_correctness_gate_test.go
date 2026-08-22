@@ -233,6 +233,20 @@ func TestSalesforceCorrectnessGateSuccess(t *testing.T) {
 			t.Fatalf("missing %s: %v", rel, err)
 		}
 	}
+	var proof struct {
+		Command []string `json:"command"`
+	}
+	proofRaw, err := os.ReadFile(filepath.Join(od, "product-version-proof.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(proofRaw, &proof); err != nil {
+		t.Fatal(err)
+	}
+	wantCommand := []string{"go", "-C", f.gr, "test", "-json", "-count=1", "-p", "4", "-timeout=30m", "./..."}
+	if !slices.Equal(proof.Command, wantCommand) {
+		t.Fatalf("proof command mismatch: got %q, want %q", proof.Command, wantCommand)
+	}
 	argsRaw, err := os.ReadFile(argsFile)
 	if err != nil {
 		t.Fatalf("cannot read args file: %v", err)

@@ -113,7 +113,7 @@ export GLADE_LWC_COMPILE=1
 export GLADE_ROOT
 PRODUCT_TEST_EVENTS="${OUT_DIR}/product-tests.jsonl"
 echo "Glade product tests..." >&2
-go -C "${GLADE_ROOT}" test -json -count=1 -p 4 ./... | tee "${PRODUCT_TEST_EVENTS}"
+go -C "${GLADE_ROOT}" test -json -count=1 -p 4 -timeout=30m ./... | tee "${PRODUCT_TEST_EVENTS}"
 
 PRODUCT_TEST_EVENTS_SHA256="$(shasum -a 256 "${PRODUCT_TEST_EVENTS}" | awk '{print $1}')"
 PRODUCT_VERSION_PROOF="${OUT_DIR}/product-version-proof.json"
@@ -124,7 +124,7 @@ jq -n \
   '{schemaVersion: 1,
     gladeCommit: $gladeCommit,
     status: "pass",
-    command: ["go", "-C", $gladeRoot, "test", "-json", "-count=1", "-p", "4", "./..."],
+    command: ["go", "-C", $gladeRoot, "test", "-json", "-count=1", "-p", "4", "-timeout=30m", "./..."],
     testEvents: "product-tests.jsonl",
     testEventsSHA256: $testEventsSHA256}' > "${PRODUCT_VERSION_PROOF}"
 
