@@ -24,7 +24,7 @@ var lifecycleLocal13Owners = map[string][]string{
 	"current-base-system-002-local-runtime-api67.json": {
 		"apex:System.InstallHandler.onInstall(InstallContext)",
 	},
-	"core-runtime-local-service-evidence-closeout.json": {
+	"core-runtime-local-sandbox-request-evidence-api67.json": {
 		"apex:System.SandboxContext.organizationId()",
 		"apex:System.SandboxContext.sandboxId()",
 		"apex:System.SandboxContext.sandboxName()",
