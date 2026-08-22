@@ -64,6 +64,7 @@ type Behavior struct {
 	Outcome      string   `json:"outcome"`
 	Since        string   `json:"since,omitempty"`
 	Until        string   `json:"until,omitempty"`
+	DocumentedIn string   `json:"documentedIn,omitempty"`
 	Maturity     string   `json:"maturity"`
 	SurfaceIDs   []string `json:"surfaceIds,omitempty"`
 	Requirements []string `json:"requirements,omitempty"`
@@ -128,7 +129,7 @@ func (c Contract) Validate(root string) error {
 	if err := validateReleases(root, c.Releases, c.Windows.Source); err != nil {
 		return err
 	}
-	if err := validateBehaviors(root, c.Behaviors, c.Windows.Source, c.Windows.Endpoint); err != nil {
+	if err := validateBehaviors(root, c.Behaviors, c.Windows.Source, c.Windows.Endpoint, c.Releases); err != nil {
 		return err
 	}
 	if err := validateNoFallbackProductTests(root, c.NoFallbackProductTests); err != nil {
@@ -262,7 +263,7 @@ func validateReleases(root string, releases []Release, sourceWindow []VersionPro
 	return nil
 }
 
-func validateBehaviors(root string, behaviors []Behavior, sourceWindow, endpointWindow []VersionProof) error {
+func validateBehaviors(root string, behaviors []Behavior, sourceWindow, endpointWindow []VersionProof, releases []Release) error {
 	seen := make(map[string]struct{}, len(behaviors))
 	for index, behavior := range behaviors {
 		if strings.TrimSpace(behavior.ID) == "" {
@@ -297,6 +298,18 @@ func validateBehaviors(root string, behaviors []Behavior, sourceWindow, endpoint
 		if behavior.Until != "" {
 			if err := validateAPIVersion(fmt.Sprintf("behaviors[%d].until", index), behavior.Until); err != nil {
 				return err
+			}
+		}
+		if behavior.DocumentedIn != "" {
+			if err := validateAPIVersion(fmt.Sprintf("behaviors[%d].documentedIn", index), behavior.DocumentedIn); err != nil {
+				return err
+			}
+			found := false
+			for _, release := range releases {
+				found = found || release.APIVersion == behavior.DocumentedIn
+			}
+			if !found {
+				return fmt.Errorf("behaviors[%d].documentedIn %q has no release", index, behavior.DocumentedIn)
 			}
 		}
 		if behavior.Since != "" && behavior.Until != "" && compareAPIVersions(behavior.Since, behavior.Until) >= 0 {

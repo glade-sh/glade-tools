@@ -397,7 +397,11 @@ func validateRoute(route ReleaseNoteRoute, delta map[string]bool, behaviors map[
 		if !ok {
 			return fmt.Errorf("route %q references unknown behavior %q", route.SourcePath, id)
 		}
-		if b.Since != api && b.Until != api {
+		bound := b.DocumentedIn
+		if bound == "" && (b.Since == api || b.Until == api) {
+			bound = api
+		}
+		if bound != api {
 			return fmt.Errorf("route %q behavior %q is not bound to %s", route.SourcePath, id, api)
 		}
 		seenBehavior[behaviorKey] = true

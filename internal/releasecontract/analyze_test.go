@@ -159,6 +159,22 @@ func TestAnalyzeRejectsDuplicateEquivalentBehaviorIDs(t *testing.T) {
 	}
 }
 
+func TestValidateRouteAcceptsExplicitLateDocumentationRelease(t *testing.T) {
+	route := ReleaseNoteRoute{SourcePath: "rn_lwc_modules.md", BehaviorIDs: []string{"lwc.block-builder"}}
+	behavior := Behavior{
+		ID: "lwc.block-builder", Axis: "source", Kind: "added", Outcome: "supported",
+		Since: "66.0", DocumentedIn: "67.0", Maturity: "ga",
+	}
+
+	if err := validateRoute(route, nil, map[string]Behavior{behavior.ID: behavior}, "67.0"); err != nil {
+		t.Fatalf("validateRoute: %v", err)
+	}
+	behavior.DocumentedIn = ""
+	if err := validateRoute(route, nil, map[string]Behavior{behavior.ID: behavior}, "67.0"); err == nil || !strings.Contains(err.Error(), "not bound") {
+		t.Fatalf("validateRoute error = %v, want not bound", err)
+	}
+}
+
 func TestAnalyzeRejectsExactRouteJSON(t *testing.T) {
 	for _, payload := range []string{
 		`{"schemaVersion":1,"previousRelease":"Spring '26","currentRelease":"Summer '26","inventoryDigest":"x","routes":[],"routes":[]}`,

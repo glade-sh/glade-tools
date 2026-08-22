@@ -67,6 +67,16 @@ func TestValidateAcceptsMovingReleaseContract(t *testing.T) {
 	}
 }
 
+func TestValidateAcceptsBehaviorDocumentedAfterEffectiveVersion(t *testing.T) {
+	contract := validContract()
+	contract.Behaviors[0].Since = "66.0"
+	contract.Behaviors[0].Until = ""
+	contract.Behaviors[0].DocumentedIn = "67.0"
+	if err := contract.Validate(t.TempDir()); err != nil {
+		t.Fatalf("Validate: %v", err)
+	}
+}
+
 func TestValidateRejectsInvalidContractFields(t *testing.T) {
 	tests := []struct {
 		name string
@@ -88,6 +98,8 @@ func TestValidateRejectsInvalidContractFields(t *testing.T) {
 		{"behavior without proof", func(c *Contract) { c.Behaviors[0].ProofCases = nil; c.Behaviors[0].ProductTests = nil }},
 		{"non-Salesforce source URL", func(c *Contract) { c.Behaviors[0].SourceRefs = []string{"https://example.com/release"} }},
 		{"behavior boundary order", func(c *Contract) { c.Behaviors[0].Since, c.Behaviors[0].Until = "67.0", "66.0" }},
+		{"invalid documented release", func(c *Contract) { c.Behaviors[0].DocumentedIn = "Summer '26" }},
+		{"unknown documented release", func(c *Contract) { c.Behaviors[0].DocumentedIn = "68.0" }},
 		{"empty no-fallback binding", func(c *Contract) { c.NoFallbackProductTests[0] = "" }},
 		{"empty no-fallback list", func(c *Contract) { c.NoFallbackProductTests = nil }},
 		{"escaping no-fallback binding", func(c *Contract) { c.NoFallbackProductTests[0] = "../version_test.go:TestNoFallback" }},
