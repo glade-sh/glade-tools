@@ -2059,6 +2059,7 @@ func deltaVerifyOpts(t *testing.T, dir string, classified bool) salesforceVerify
 	if classified {
 		entries = []map[string]any{
 			{"surfaceId": "apex:System.New", "scope": "t0", "disposition": "new-case", "caseId": "NEW"},
+			{"surfaceId": "apex:System.Old", "scope": "t0", "disposition": "existing-case", "caseId": "OLD"},
 			{"surfaceId": "apex:System.Changed.foo()", "scope": "t0", "disposition": "new-case", "caseId": "CHANGED"},
 		}
 	}
