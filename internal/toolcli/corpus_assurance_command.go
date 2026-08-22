@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/glade-sh/glade/tools/internal/corpusassurance"
 )
@@ -259,6 +260,32 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 			return err
 		}
 		return writeCorpusAssuranceResult(w, "surface-local-proof-plan", result.Covered, *coverage)
+	case "surface-oracle-index":
+		flags := flag.NewFlagSet("corpus assurance surface-oracle-index", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		scope, output := flags.String("scope", "", ""), flags.String("output", "", "")
+		var runtimeBatches assurancePathList
+		flags.Var(&runtimeBatches, "reviewed-runtime-batch", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], map[string]bool{"reviewed-runtime-batch": true}); err != nil {
+			return err
+		}
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*scope, *output); err != nil {
+			return err
+		}
+		if len(runtimeBatches) == 0 {
+			return errors.New("at least one reviewed runtime batch is required")
+		}
+		if err := rejectDuplicateRuntimeBatchRoots(runtimeBatches); err != nil {
+			return err
+		}
+		index, err := corpusassurance.CreateSurfaceOracleIndex(corpusassurance.SurfaceOracleIndexRequest{ScopePath: *scope, RuntimeBatchRoots: runtimeBatches, OutputPath: *output})
+		if err != nil {
+			return err
+		}
+		return writeCorpusAssuranceResult(w, "surface-oracle-index", len(index.Rows), *output)
 	case "local-proof":
 		flags := flag.NewFlagSet("corpus assurance local-proof", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -709,6 +736,38 @@ func requiredAssuranceFlags(values ...string) error {
 	return nil
 }
 
+func rejectDuplicateAssuranceFlags(args []string, repeatable map[string]bool) error {
+	seen := make(map[string]struct{})
+	for _, arg := range args {
+		if !strings.HasPrefix(arg, "--") {
+			continue
+		}
+		name := strings.TrimPrefix(arg, "--")
+		if equal := strings.IndexByte(name, '='); equal >= 0 {
+			name = name[:equal]
+		}
+		if repeatable[name] {
+			continue
+		}
+		if _, exists := seen[name]; exists {
+			return fmt.Errorf("duplicate flag --%s", name)
+		}
+		seen[name] = struct{}{}
+	}
+	return nil
+}
+
+func rejectDuplicateRuntimeBatchRoots(paths []string) error {
+	seen := make(map[string]struct{}, len(paths))
+	for _, path := range paths {
+		if _, exists := seen[path]; exists {
+			return fmt.Errorf("duplicate reviewed runtime batch: %s", path)
+		}
+		seen[path] = struct{}{}
+	}
+	return nil
+}
+
 func writeCorpusAssuranceResult(w io.Writer, command string, rows int, output string) error {
 	_, err := fmt.Fprintf(w, "%s: rows=%d output=%s\n", command, rows, output)
 	return err
@@ -742,6 +801,7 @@ Usage:
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>
   glade-tools corpus assurance surface-scope --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --output <SURFACE_ORACLE_SCOPE.json>
   glade-tools corpus assurance surface-local-proof-plan --surface-scope <SURFACE_ORACLE_SCOPE.json> --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json> --coverage-output <SURFACE_LOCAL_PROOF_COVERAGE.json>
+  glade-tools corpus assurance surface-oracle-index --scope <SURFACE_ORACLE_SCOPE.json> --reviewed-runtime-batch <root> [--reviewed-runtime-batch <root> ...] --output <SURFACE_ORACLE_INDEX.json>
   glade-tools corpus assurance local-proof-plan --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --source-profile <source-profile.json> --sealed-usage <CORPUS_USAGE.json> --ledger <ledger.json> --policy <policy.json> --decisions <USAGE_DECISIONS.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json>
   glade-tools corpus assurance local-proof --attempt <ATTEMPT.json> --profile <profile.json> --usage <usage.json> --decision <decision.json> --fixture-manifest <fixtures.json> --candidate <glade> --tools <glade-tools> --output <LOCAL_PROOF.json>
   glade-tools corpus assurance release-validate --attempt <ATTEMPT.json> --glade-root <glade-root> --candidate <glade> --tools-root <glade-tools-root> --tools <glade-tools> --tools-freeze <FINAL_TOOLS_COMMIT> --output <RELEASE_VALIDATION.json>

@@ -22,14 +22,14 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Run returned %d, stderr=%s", code, stderr.String())
 	}
-	commands := []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "surface-scope", "surface-local-proof-plan", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "org-create", "org-preflight", "salesforce-dispatch", "salesforce-run", "org-cleanup", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"}
+	commands := []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "attempt", "prepare", "usage-draft", "usage", "replay", "merge-replay", "surface-scope", "surface-local-proof-plan", "surface-oracle-index", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "org-create", "org-preflight", "salesforce-dispatch", "salesforce-run", "org-cleanup", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"}
 	for _, command := range commands {
 		if !strings.Contains(stdout.String(), "glade-tools corpus assurance "+command+" ") {
 			t.Fatalf("help omits %q:\n%s", command, stdout.String())
 		}
 	}
 	last := -1
-	for _, command := range []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "surface-scope", "surface-local-proof-plan", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "salesforce-dispatch", "salesforce-run", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"} {
+	for _, command := range []string{"campaign", "candidate-build", "candidate-authority", "attempt-init", "prepare", "usage-draft", "usage", "surface-scope", "surface-local-proof-plan", "surface-oracle-index", "local-proof-plan", "local-proof", "release-validate", "oracle-profile", "oracle-directives-draft", "oracle-plan", "exclusion-request", "authorize-exclusions", "dev-hub-authority", "oracle-bundle", "salesforce-dispatch", "salesforce-run", "salesforce-reconcile", "remote-failure-preserve", "review-index", "cleanup", "report"} {
 		position := strings.Index(stdout.String(), "glade-tools corpus assurance "+command+" ")
 		if position <= last {
 			t.Fatalf("help order moved %q after position %d:\n%s", command, last, stdout.String())
@@ -53,6 +53,80 @@ func TestCorpusAssuranceHelpListsSealedWorkflow(t *testing.T) {
 	if !strings.Contains(stdout.String(), "oracle-bundle --attempt <ATTEMPT.json> --remote-cleanup-authority <SALESFORCE_REMOTE_CLEANUP_AUTHORITY.json>") {
 		t.Fatalf("oracle-bundle help omits the bound Salesforce cleanup authority:\n%s", stdout.String())
 	}
+}
+
+func TestCorpusAssuranceSurfaceOracleIndexRejectsInvalidUsage(t *testing.T) {
+	valid := []string{
+		"corpus", "assurance", "surface-oracle-index",
+		"--scope", "/scope.json",
+		"--reviewed-runtime-batch", "/runtime-batch",
+		"--output", "/index.json",
+	}
+	for _, missing := range []string{"--scope", "--output"} {
+		t.Run("missing "+missing, func(t *testing.T) {
+			args := removeCorpusAssuranceFlag(valid, missing)
+			var stdout, stderr bytes.Buffer
+			if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "required corpus assurance flag is missing") {
+				t.Fatalf("missing %s accepted: code=%d stdout=%q stderr=%q", missing, code, stdout.String(), stderr.String())
+			}
+		})
+	}
+	missingBatch := removeCorpusAssuranceFlag(valid, "--reviewed-runtime-batch")
+	var missingBatchStdout, missingBatchStderr bytes.Buffer
+	if code := Run(context.Background(), missingBatch, &missingBatchStdout, &missingBatchStderr); code == 0 || !strings.Contains(strings.ToLower(missingBatchStderr.String()), "reviewed runtime batch") {
+		t.Fatalf("missing reviewed runtime batch accepted: code=%d stdout=%q stderr=%q", code, missingBatchStdout.String(), missingBatchStderr.String())
+	}
+	for _, missingValue := range []string{"--scope", "--reviewed-runtime-batch", "--output"} {
+		t.Run("missing value "+missingValue, func(t *testing.T) {
+			args := append(removeCorpusAssuranceFlag(valid, missingValue), missingValue)
+			var stdout, stderr bytes.Buffer
+			if code := Run(context.Background(), args, &stdout, &stderr); code == 0 {
+				t.Fatalf("missing value for %s accepted: stdout=%q stderr=%q", missingValue, stdout.String(), stderr.String())
+			}
+		})
+	}
+	for _, duplicate := range []string{"--scope", "--output"} {
+		t.Run("duplicate "+duplicate, func(t *testing.T) {
+			args := append(append([]string(nil), valid...), duplicate, "duplicate-value")
+			var stdout, stderr bytes.Buffer
+			if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(strings.ToLower(stderr.String()), "duplicate") {
+				t.Fatalf("duplicate %s accepted: code=%d stdout=%q stderr=%q", duplicate, code, stdout.String(), stderr.String())
+			}
+		})
+	}
+	duplicateRoot := append(append([]string(nil), valid...), "--reviewed-runtime-batch", "/runtime-batch")
+	var duplicateStdout, duplicateStderr bytes.Buffer
+	if code := Run(context.Background(), duplicateRoot, &duplicateStdout, &duplicateStderr); code == 0 || !strings.Contains(strings.ToLower(duplicateStderr.String()), "duplicate") {
+		t.Fatalf("duplicate reviewed runtime batch accepted: code=%d stdout=%q stderr=%q", code, duplicateStdout.String(), duplicateStderr.String())
+	}
+	distinctRoots := append(append([]string(nil), valid...), "--reviewed-runtime-batch", "/another-runtime-batch")
+	var distinctStdout, distinctStderr bytes.Buffer
+	if code := Run(context.Background(), distinctRoots, &distinctStdout, &distinctStderr); code == 0 || strings.Contains(strings.ToLower(distinctStderr.String()), "duplicate") {
+		t.Fatalf("distinct reviewed runtime batches were not accepted by the parser: code=%d stdout=%q stderr=%q", code, distinctStdout.String(), distinctStderr.String())
+	}
+	for _, unknown := range []string{"--unknown", "--predecessor"} {
+		t.Run("unknown "+unknown, func(t *testing.T) {
+			var stdout, stderr bytes.Buffer
+			args := append(append([]string(nil), valid...), unknown, "value")
+			code := Run(context.Background(), args, &stdout, &stderr)
+			message := strings.ToLower(stderr.String())
+			if code == 0 || (!strings.Contains(message, "unknown") && !strings.Contains(message, "not defined")) {
+				t.Fatalf("unknown flag %s accepted: code=%d stdout=%q stderr=%q", unknown, code, stdout.String(), stderr.String())
+			}
+		})
+	}
+}
+
+func removeCorpusAssuranceFlag(args []string, name string) []string {
+	result := make([]string, 0, len(args)-2)
+	for index := 0; index < len(args); index++ {
+		if args[index] == name {
+			index++
+			continue
+		}
+		result = append(result, args[index])
+	}
+	return result
 }
 
 func TestCorpusAssuranceSubcommandHelpPrintsUsage(t *testing.T) {
