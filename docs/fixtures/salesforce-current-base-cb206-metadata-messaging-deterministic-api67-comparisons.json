@@ -34,7 +34,7 @@
   "localFixtures": [
     {
       "path": "docs/fixtures/current-base-cb206-metadata-messaging-deterministic-api67.json",
-      "sha256": "94411eba28ba1894b737ac09eecac1a03b037bd75502b86ac7ff271fffbc44b7"
+      "sha256": "34a00fb15ffa90c26c4133b73ef852f5ee6bb91dc1034050db1185ce0f983f9e"
     }
   ],
   "comparisons": [
