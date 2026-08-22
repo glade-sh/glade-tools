@@ -1,10 +1,6 @@
 {
   "name": "core-runtime-finalizer-context-contracts",
   "evidence": [
-    {"surfaceId": "apex:System.Finalizer.execute(FinalizerContext)", "symbol": "Finalizer.execute(FinalizerContext)", "kind": "test"},
-    {"surfaceId": "apex:System.FinalizerContext.getException()", "symbol": "FinalizerContext.getException", "kind": "test"},
-    {"surfaceId": "apex:System.FinalizerContext.getRequestId()", "symbol": "FinalizerContext.getRequestId", "kind": "test"},
-    {"surfaceId": "apex:System.FinalizerContext.getResult()", "symbol": "FinalizerContext.getResult", "kind": "test"},
     {"surfaceId": "apex:System.FinalizerContextImpl.getException()", "symbol": "FinalizerContextImpl.getException", "kind": "test"},
     {"surfaceId": "apex:System.FinalizerContextImpl.getRequestId()", "symbol": "FinalizerContextImpl.getRequestId", "kind": "test"},
     {"surfaceId": "apex:System.FinalizerContextImpl.getResult()", "symbol": "FinalizerContextImpl.getResult", "kind": "test"}
