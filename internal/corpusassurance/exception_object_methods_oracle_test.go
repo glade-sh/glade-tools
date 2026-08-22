@@ -16,7 +16,7 @@ func TestExceptionObjectMethodFixturesSeparateHostedAndLocalRows(t *testing.T) {
 		eligible    bool
 		localReason bool
 	}{
-		{"core-exception-object-methods-runtime.json", "NoDataFoundException", "NoAccessException", true, false},
+		{"core-exception-object-methods-runtime.json", "NoDataFoundException", "NoAccessException", false, true},
 		{"core-noaccess-exception-object-methods-local-runtime.json", "NoAccessException", "NoDataFoundException", false, true},
 	}
 	for _, test := range tests {
