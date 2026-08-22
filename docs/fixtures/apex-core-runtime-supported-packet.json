@@ -5,12 +5,6 @@
   "evidence": [
     {
       "kind": "test",
-      "notes": "A local Batchable<Object> fixture drains execute(Database.BatchableContext, List<Object>) through Test.stopTest.",
-      "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)",
-      "symbol": "Database.Batchable.execute"
-    },
-    {
-      "kind": "test",
       "notes": "The fixture builds a local QueryLocator from a List<Object> of SObjects.",
       "surfaceId": "apex:System.Database.getQueryLocator(List<Object>)",
       "symbol": "Database.getQueryLocator"

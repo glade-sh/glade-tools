@@ -5,11 +5,6 @@
   "evidence": [
     {
       "kind": "test",
-      "surfaceId": "apex:Database.BatchableContext.getJobId()",
-      "symbol": "Database.BatchableContext.getJobId"
-    },
-    {
-      "kind": "test",
       "surfaceId": "data-reference:AsyncApexJob.TotalJobItems",
       "symbol": "AsyncApexJob.TotalJobItems"
     },

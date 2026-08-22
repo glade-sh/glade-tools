@@ -1,0 +1,40 @@
+{
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "evidenceOnly": false,
+  "command": {"kind": "test"},
+  "evidence": [
+    {"kind": "test", "surfaceId": "apex:Database.Batchable.execute(Database.BatchableContext,List<Object>)", "symbol": "Database.Batchable.execute"},
+    {"kind": "test", "surfaceId": "apex:Database.Batchable.finish(Database.BatchableContext)", "symbol": "Database.Batchable.finish"},
+    {"kind": "test", "surfaceId": "apex:Database.Batchable.start(Database.BatchableContext)", "symbol": "Database.Batchable.start"},
+    {"kind": "test", "surfaceId": "apex:Database.BatchableContext.getChildJobId()", "symbol": "Database.BatchableContext.getChildJobId"},
+    {"kind": "test", "surfaceId": "apex:Database.BatchableContext.getJobId()", "symbol": "Database.BatchableContext.getJobId"},
+    {"kind": "test", "surfaceId": "apex:Database.BatchableContextImpl", "symbol": "Database.BatchableContextImpl"},
+    {"kind": "test", "surfaceId": "apex:Database.BatchableContextImpl.BatchableContextImpl()", "symbol": "Database.BatchableContextImpl.BatchableContextImpl()"},
+    {"kind": "test", "surfaceId": "apex:System.Database.executeBatch(Object)", "symbol": "Database.executeBatch"}
+  ],
+  "expected": {"result": {"errors": 0, "failed": 0, "ok": true, "passed": 1, "total": 1}},
+  "name": "core-runtime-database-batch-async-tail-api67",
+  "notes": "Exact sealed-candidate executable lifecycle witness for Batchable callbacks, live BatchableContext IDs, passive BatchableContextImpl construction, and executeBatch(Object). The rejected Database.Batchable interface constructor is intentionally not claimed.",
+  "candidate": {
+    "commit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "sha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce"
+  },
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "database-async-context-local-evidence",
+    "selectedRowCount": 8
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The sealed local runner directly drains Batchable lifecycle and passive context contracts; this async test fixture carries zero hosted Salesforce parity.",
+  "schema": [
+    {"path": "force-app/main/default/objects/Account/Account.object-meta.xml", "content": "<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
+    {"path": "force-app/main/default/objects/Account/fields/Name.field-meta.xml", "content": "<CustomField><fullName>Name</fullName><label>Name</label><type>Text</type><required>true</required></CustomField>"}
+  ],
+  "source": [
+    {"path": "force-app/main/classes/DatabaseBatchAsyncTailProbe.cls", "content": "public class DatabaseBatchAsyncTailProbe implements Database.Batchable<Account> { public Database.QueryLocator start(Database.BatchableContext context) { System.assertNotEquals('', context.getJobId()); System.assertEquals(null, context.getChildJobId()); insert new Account(Name = 'Batch-tail-start'); return Database.getQueryLocator('SELECT Id FROM Account WHERE Name = \\'Batch-tail-seed\\''); } public void execute(Database.BatchableContext context, List<Account> scope) { System.assertNotEquals('', context.getJobId()); insert new Account(Name = 'Batch-tail-execute'); } public void finish(Database.BatchableContext context) { System.assertNotEquals('', context.getJobId()); insert new Account(Name = 'Batch-tail-finish'); } }"},
+    {"path": "force-app/main/classes/DatabaseBatchAsyncTailFixtureTest.cls", "content": "@isTest private class DatabaseBatchAsyncTailFixtureTest { @isTest static void drainsBatchLifecycleAndPassiveContext() { insert new Account(Name = 'Batch-tail-seed'); Database.BatchableContextImpl passive = new Database.BatchableContextImpl(); System.assertEquals('', passive.getJobId()); System.assertEquals('', passive.getChildJobId()); Test.startTest(); String jobId = Database.executeBatch(new DatabaseBatchAsyncTailProbe()); Test.stopTest(); System.assertNotEquals('', jobId); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Batch-tail-start']); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Batch-tail-execute']); System.assertEquals(1, [SELECT COUNT() FROM Account WHERE Name = 'Batch-tail-finish']); } }"}
+  ]
+}

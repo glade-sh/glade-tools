@@ -19,6 +19,7 @@
     }
   },
   "name": "async-batchable-contract-validation",
+  "evidenceOnly": true,
   "proofObligation": "compile-shape-required",
   "proofObligationReason": "The negative contract is a deliberate compile rejection; no local or Salesforce runtime construction is claimed.",
   "salesforceEligible": false,
