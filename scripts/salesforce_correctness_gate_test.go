@@ -243,7 +243,7 @@ func TestSalesforceCorrectnessGateSuccess(t *testing.T) {
 	if err := json.Unmarshal(proofRaw, &proof); err != nil {
 		t.Fatal(err)
 	}
-	wantCommand := []string{"go", "-C", f.gr, "test", "-json", "-count=1", "-p", "4", "-timeout=30m", "./..."}
+	wantCommand := []string{"env", "LC_ALL=C", "GLADE_LWC_COMPILE=1", "GLADE_ROOT=" + f.gr, "go", "-C", f.gr, "test", "-json", "-count=1", "-p", "1", "-timeout=30m", "./..."}
 	if !slices.Equal(proof.Command, wantCommand) {
 		t.Fatalf("proof command mismatch: got %q, want %q", proof.Command, wantCommand)
 	}
