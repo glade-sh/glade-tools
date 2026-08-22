@@ -1,5 +1,6 @@
 {
   "name": "core-string-abbreviate-offset-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.String.abbreviate(Integer,Integer)",

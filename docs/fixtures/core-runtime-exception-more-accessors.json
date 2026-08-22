@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-exception-more-accessors",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves Glade-local construction, line, stack, cause, and inaccessible-field behavior for System exceptions; it receives zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Exception.getCause()",

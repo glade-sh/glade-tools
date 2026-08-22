@@ -1,5 +1,6 @@
 {
   "name": "data-database-deleted-window-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Database.getDeleted(String,Datetime,Datetime)",

@@ -1,5 +1,6 @@
 {
   "name": "current-base-cb185-database-schema-positive-api67",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:System.Database.insert(Object)", "symbol": "Database.insert", "kind": "exec"},
     {"surfaceId": "apex:System.Database.update(Object)", "symbol": "Database.update", "kind": "exec"},

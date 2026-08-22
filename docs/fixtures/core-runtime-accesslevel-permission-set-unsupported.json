@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-accesslevel-permission-set-local",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "The fixture uses a synthetic permission-set ID and no materialized PermissionSet record, so hosted execution is org-data-dependent and receives zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.AccessLevel.withPermissionSetId(String)",

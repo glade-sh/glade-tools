@@ -1,5 +1,8 @@
 {
   "name": "integration-eventbus-change-header-accessors-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture constructs and mutates Glade's synthetic eventbus.ChangeEventHeader value, while Salesforce exposes change headers through CDC events rather than this constructor/setter path; it receives zero Salesforce parity credit.",
   "evidence": [
     {"kind":"exec","surfaceId":"apex:eventbus.ChangeEventHeader.ChangeEventHeader()","symbol":"eventbus.ChangeEventHeader.ChangeEventHeader"},
     {"kind":"exec","surfaceId":"apex:eventbus.ChangeEventHeader.equals(Object)","symbol":"eventbus.ChangeEventHeader.equals"},

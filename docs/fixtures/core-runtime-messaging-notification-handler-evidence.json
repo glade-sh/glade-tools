@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-messaging-notification-handler-evidence",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:Messaging.NotificationActionHandler.executeAction(Messaging.ActionableNotification)",
