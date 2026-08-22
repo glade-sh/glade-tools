@@ -13,3 +13,5 @@
 *.pprof
 .DS_Store
 **/.sf/
+__pycache__/
+*.pyc

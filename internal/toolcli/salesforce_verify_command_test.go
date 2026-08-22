@@ -15,7 +15,135 @@ import (
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"github.com/glade-sh/glade/tools/internal/apexrules"
 	"github.com/glade-sh/glade/tools/internal/oracleprobe"
+	"github.com/glade-sh/glade/tools/internal/releasecontract"
+	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
+
+func TestSalesforceVerifyRejectsRetiredReleaseFlags(t *testing.T) {
+	for _, flag := range []string{"--release-manifest", "--previous-release-manifest", "--previous-inventory", "--current-inventory", "--release-classifications"} {
+		if _, err := parseSalesforceVerifyFlags(append(allVerifyFlags(t), flag, "retired.json")); err == nil || !strings.Contains(err.Error(), "unknown flag") {
+			t.Fatalf("%s error = %v", flag, err)
+		}
+	}
+}
+
+func TestLoadProductTestEvidenceRequiresObservedPassAndExactHash(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module example.test/glade\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	testDir := filepath.Join(root, "internal", "demo")
+	if err := os.MkdirAll(testDir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(testDir, "demo_test.go"), []byte("package demo\nimport \"testing\"\nfunc TestVersion(t *testing.T) {}\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	commit := strings.Repeat("a", 40)
+	for _, action := range []string{"pass", "skip", "fail"} {
+		t.Run(action, func(t *testing.T) {
+			dir := t.TempDir()
+			events := []byte(`{"Action":"` + action + `","Package":"example.test/glade/internal/demo","Test":"TestVersion"}` + "\n")
+			eventsPath := filepath.Join(dir, "product-tests.jsonl")
+			if err := os.WriteFile(eventsPath, events, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			digest := sha256.Sum256(events)
+			proof := productVersionProof{SchemaVersion: 1, GladeCommit: commit, Status: "pass", Command: []string{"go", "-C", root, "test", "-json", "-count=1", "-p", "4", "./..."}, TestEvents: "product-tests.jsonl", TestEventsSHA256: fmt.Sprintf("%x", digest)}
+			proofPath := writeTempJSON(t, dir, "proof.json", proof)
+			evidence, err := loadProductTestEvidence(proofPath, root, commit)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := evidence.passed("internal/demo/demo_test.go:TestVersion"); got != (action == "pass") {
+				t.Fatalf("passed = %v", got)
+			}
+			proof.TestEventsSHA256 = strings.Repeat("0", 64)
+			proofPath = writeTempJSON(t, dir, "bad-proof.json", proof)
+			if _, err := loadProductTestEvidence(proofPath, root, commit); err == nil || !strings.Contains(err.Error(), "SHA-256") {
+				t.Fatalf("hash error = %v", err)
+			}
+		})
+	}
+}
+
+func TestReleaseEvidenceCreditKeepsProofClassesAndDenominatorsSeparate(t *testing.T) {
+	const binding = "internal/demo/demo_test.go:TestVersion"
+	classification := surfaceledger.ReleaseClassification{SurfaceID: "apex:System.Versioned", Disposition: surfaceledger.DispoExistingCase, CaseID: "case-version", ProductTests: []string{binding}}
+	analysis := releasecontract.Analysis{
+		Contract: releasecontract.Contract{
+			Windows: releasecontract.Windows{
+				Source:      []releasecontract.VersionProof{{Version: "67.0", ProofCases: []string{"case-version"}, ProductTests: []string{binding}}},
+				Endpoint:    []releasecontract.VersionProof{{Version: "67.0", ProductTests: []string{binding}}},
+				OrgProfiles: []releasecontract.ProfileProof{{Name: "default", ProductTests: []string{binding}}},
+			},
+			Behaviors:              []releasecontract.Behavior{{ID: "behavior", Outcome: "supported", ProofCases: []string{"case-version"}, ProductTests: []string{binding}}},
+			NoFallbackProductTests: []string{binding},
+		},
+		Report: releasecontract.Report{
+			Status:           "fail",
+			SurfaceDelta:     releasecontract.Denominator{Total: 1, Classified: 1},
+			BehaviorDelta:    releasecontract.Denominator{Total: 1, Classified: 1},
+			ChangeInventory:  releasecontract.ChangeInventoryDenominator{Total: 1, Routed: 1},
+			SourceVersions:   releasecontract.AxisReport{Advertised: []string{"67.0"}},
+			EndpointVersions: releasecontract.AxisReport{Advertised: []string{"67.0"}},
+			OrgProfiles:      releasecontract.AxisReport{Advertised: []string{"default"}},
+		},
+		SurfaceChanges: []releasecontract.SurfaceChange{{Classification: &classification}},
+	}
+	evidence := &productTestEvidence{passes: map[string]bool{"example.test/glade/internal/demo\x00TestVersion": true}, bindings: map[string]productTestBinding{binding: {packagePath: "example.test/glade/internal/demo", testName: "TestVersion"}}}
+	verify := verifyReport{Runtime: verifySection{Cases: []verifyCase{{ID: "case-version", Status: "pass", SurfaceIDs: []string{"apex:System.Versioned"}}}}}
+	report := creditReleaseEvidence(analysis, verify, evidence)
+	if report.Status != "pass" || report.SurfaceDelta.Proved != 1 || report.SurfaceDelta.Implemented != 1 || report.BehaviorDelta.Proved != 1 || report.SilentFallbacks != 0 {
+		t.Fatalf("report = %#v", report)
+	}
+
+	evidence.passes = map[string]bool{}
+	report = creditReleaseEvidence(analysis, verify, evidence)
+	if report.Status != "fail" || report.SilentFallbacks != 1 || report.SurfaceDelta.Proved != 0 {
+		t.Fatalf("missing product pass report = %#v", report)
+	}
+}
+
+func TestPreflightReleaseBindingsRequiresExactSurfaceID(t *testing.T) {
+	dir := t.TempDir()
+	catalogPath := writeTempJSON(t, dir, "catalog.json", apexrules.Catalog{GladeCommit: strings.Repeat("a", 40), Rules: []apexrules.Rule{{ID: "case-version", Area: "version", DocsPath: "owned", DocsLines: "1", APIVersion: 67, SourceKind: "class", Source: "public class Probe {}", Oracle: apexrules.OutcomeAccept, Owner: "sema", Status: apexrules.StatusConfirmedGap, SurfaceIDs: []string{"apex:System.Other"}}}})
+	classification := surfaceledger.ReleaseClassification{SurfaceID: "apex:System.Versioned", CaseID: "case-version"}
+	analysis := releasecontract.Analysis{SurfaceChanges: []releasecontract.SurfaceChange{{Classification: &classification}}}
+	err := preflightReleaseBindings(analysis, catalogPath, &productTestEvidence{bindings: map[string]productTestBinding{}})
+	if err == nil || !strings.Contains(err.Error(), "does not carry surface") {
+		t.Fatalf("error = %v", err)
+	}
+}
+
+func TestLoadClassificationsFileAcceptsSchema2ProductTests(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "classifications.json")
+	if err := os.WriteFile(path, []byte(`{"schemaVersion":2,"previousRelease":"Spring '26","currentRelease":"Summer '26","classifications":[{"surfaceId":"apex:System.New","scope":"t0","disposition":"new-case","productTests":["internal/x_test.go:TestProduct"]}]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	got, err := loadClassificationsFile(path)
+	if err != nil {
+		t.Fatalf("loadClassificationsFile: %v", err)
+	}
+	if got.SchemaVersion != 2 || len(got.Classifications) != 1 || len(got.Classifications[0].ProductTests) != 1 {
+		t.Fatalf("got %#v", got)
+	}
+}
+
+func TestLoadClassificationsFileRejectsDuplicateAndCaseVariantKeys(t *testing.T) {
+	for _, payload := range []string{
+		`{"schemaVersion":2,"previousRelease":"Spring '26","currentRelease":"Summer '26","classifications":[{"surfaceId":"apex:System.New","surfaceId":"apex:System.Other"}]}`,
+		`{"schemaVersion":2,"previousRelease":"Spring '26","currentRelease":"Summer '26","classifications":[{"surfaceId":"apex:System.New","ProductTests":["internal/x_test.go:TestProduct"]}]}`,
+	} {
+		path := filepath.Join(t.TempDir(), "classifications.json")
+		if err := os.WriteFile(path, []byte(payload), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := loadClassificationsFile(path); err == nil {
+			t.Fatal("loadClassificationsFile unexpectedly succeeded")
+		}
+	}
+}
 
 // fakeSalesforceVerifyDeps replaces all external I/O with controlled results
 // so tests never touch a real Salesforce org, Glade binary, or Git repo.
@@ -327,7 +455,7 @@ func runVerifyWithDeps(t *testing.T, opts salesforceVerifyOptions, deps *fakeSal
 
 func TestSalesforceVerify_MissingRequiredFlags(t *testing.T) {
 	for _, missing := range []string{
-		"--release-manifest", "--catalog", "--runtime-cases",
+		"--release-contract", "--product-version-proof", "--catalog", "--runtime-cases",
 		"--test-project", "--target-org", "--glade-bin", "--glade-root", "--out",
 	} {
 		t.Run("missing "+missing, func(t *testing.T) {
@@ -347,7 +475,7 @@ func TestSalesforceVerify_MissingRequiredFlags(t *testing.T) {
 
 func TestSalesforceVerify_DuplicateFlags(t *testing.T) {
 	for _, flag := range []string{
-		"--release-manifest", "--catalog", "--runtime-cases",
+		"--release-contract", "--product-version-proof", "--catalog", "--runtime-cases",
 		"--test-project", "--target-org", "--glade-bin", "--glade-root", "--out",
 	} {
 		t.Run("duplicate "+flag, func(t *testing.T) {
@@ -383,14 +511,14 @@ func TestSalesforceVerify_UnknownFlag(t *testing.T) {
 func allVerifyFlags(t *testing.T) []string {
 	t.Helper()
 	dir := t.TempDir()
-	releasePath := makeReleaseManifest(t, dir)
 	catalogPath := makeCatalog(t, dir)
 	runtimePath := makeRuntimeFixture(t, dir)
 	projectPath := makeTestProject(t, dir)
 	candidatePath := makeCandidate(t, dir)
 	outPath := filepath.Join(dir, "out", "report.json")
 	return []string{
-		"--release-manifest", releasePath,
+		"--release-contract", filepath.Join(dir, "release-contract.json"),
+		"--product-version-proof", filepath.Join(dir, "product-version-proof.json"),
 		"--catalog", catalogPath,
 		"--runtime-cases", runtimePath,
 		"--test-project", projectPath,
@@ -638,6 +766,26 @@ func TestSalesforceVerify_CompilerFailureDoesNotStopRuntime(t *testing.T) {
 	}
 	if len(report.Lifecycle.Cases) == 0 {
 		t.Fatal("lifecycle section should have run even if compiler section failed")
+	}
+}
+
+func TestRunCompilerSectionLimitsReleaseModeToSourceWindow(t *testing.T) {
+	dir := t.TempDir()
+	deps := toRealDeps(allPassDeps())
+	original := deps.runSFCompiler
+	var observed []apexrules.Rule
+	deps.runSFCompiler = func(ctx context.Context, targetOrg string, rules []apexrules.Rule) (map[string]apexrules.SalesforceResult, error) {
+		observed = append([]apexrules.Rule(nil), rules...)
+		return original(ctx, targetOrg, rules)
+	}
+	section := runCompilerSection(context.Background(), salesforceVerifyOptions{
+		Catalog:               makeCatalog(t, dir),
+		TargetOrg:             "test-org",
+		GladeBin:              makeCandidate(t, dir),
+		releaseSourceVersions: []string{"67.0"},
+	}, deps)
+	if section.Status != "pass" || section.Summary.Required != 1 || len(observed) != 1 || observed[0].APIVersion != 67 {
+		t.Fatalf("section=%#v observed=%#v", section, observed)
 	}
 }
 
@@ -978,7 +1126,7 @@ func TestSalesforceVerify_GitCommitsRecorded(t *testing.T) {
 func TestSalesforceVerify_ReleaseModeRejectsDirtyRoot(t *testing.T) {
 	dir := t.TempDir()
 	dirtyRepo := makeDirtyGitRepo(t, dir)
-	releasePath := makeReleaseManifest(t, dir)
+	proofPath := writeTempFile(t, dir, "product-version-proof.json", []byte(`{}`))
 	catalogPath := makeCatalog(t, dir)
 	runtimePath := makeRuntimeFixture(t, dir)
 	projectPath := makeTestProject(t, dir)
@@ -989,7 +1137,8 @@ func TestSalesforceVerify_ReleaseModeRejectsDirtyRoot(t *testing.T) {
 	// Use the real Run to test flag parsing with dirty root
 	args := []string{
 		"salesforce", "verify",
-		"--release-manifest", releasePath,
+		"--release-contract", fixturesPath("docs/fixtures/salesforce-release-contract.json"),
+		"--product-version-proof", proofPath,
 		"--catalog", catalogPath,
 		"--runtime-cases", runtimePath,
 		"--test-project", projectPath,
@@ -1063,7 +1212,8 @@ func TestSalesforceVerify_MalformedReleaseManifestFails(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	args := []string{
 		"salesforce", "verify",
-		"--release-manifest", releasePath,
+		"--release-contract", releasePath,
+		"--product-version-proof", filepath.Join(dir, "proof.json"),
 		"--catalog", catalogPath,
 		"--runtime-cases", runtimePath,
 		"--test-project", projectPath,
@@ -1089,7 +1239,8 @@ func TestSalesforceVerify_MissingInputFileFails(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	args := []string{
 		"salesforce", "verify",
-		"--release-manifest", filepath.Join(dir, "nonexistent.json"),
+		"--release-contract", filepath.Join(dir, "nonexistent.json"),
+		"--product-version-proof", filepath.Join(dir, "proof.json"),
 		"--catalog", catalogPath,
 		"--runtime-cases", runtimePath,
 		"--test-project", projectPath,
@@ -1217,7 +1368,7 @@ func TestSalesforceVerify_HelpExposesCommand(t *testing.T) {
 	if !strings.Contains(out, "salesforce verify") {
 		t.Fatalf("help should mention 'salesforce verify':\n%s", out)
 	}
-	for _, flag := range []string{"--release-manifest", "--catalog", "--runtime-cases", "--test-project", "--target-org", "--glade-bin", "--glade-root", "--out", "--previous-release-manifest", "--previous-inventory", "--current-inventory", "--release-classifications"} {
+	for _, flag := range []string{"--release-contract", "--product-version-proof", "--catalog", "--runtime-cases", "--test-project", "--target-org", "--glade-bin", "--glade-root", "--out"} {
 		if !strings.Contains(out, flag) {
 			t.Fatalf("help should include %s:\n%s", flag, out)
 		}
@@ -2059,6 +2210,7 @@ func deltaVerifyOpts(t *testing.T, dir string, classified bool) salesforceVerify
 	if classified {
 		entries = []map[string]any{
 			{"surfaceId": "apex:System.New", "scope": "t0", "disposition": "new-case", "caseId": "NEW"},
+			{"surfaceId": "apex:System.Old", "scope": "t0", "disposition": "existing-case", "caseId": "OLD"},
 			{"surfaceId": "apex:System.Changed.foo()", "scope": "t0", "disposition": "new-case", "caseId": "CHANGED"},
 		}
 	}
@@ -2079,8 +2231,8 @@ func deltaVerifyOpts(t *testing.T, dir string, classified bool) salesforceVerify
 
 func TestSalesforceVerify_DeltaPartialFlagsReject(t *testing.T) {
 	_, err := parseSalesforceVerifyFlags(append(allVerifyFlags(t), "--previous-inventory", "previous.json"))
-	if err == nil || !strings.Contains(err.Error(), "all four") {
-		t.Fatalf("error = %v, want all-four rejection", err)
+	if err == nil || !strings.Contains(err.Error(), "unknown flag") {
+		t.Fatalf("error = %v, want retired-flag rejection", err)
 	}
 }
 
@@ -2149,5 +2301,18 @@ func TestSalesforceVerify_ClassifiedDeltaPasses(t *testing.T) {
 		if in.Kind != kind || in.SHA256 == "" {
 			t.Fatalf("delta input = %+v, want kind %s and hash", in, kind)
 		}
+	}
+}
+
+func TestSalesforceVerify_Schema2ProductTestsDoNotSupplyLegacyDeltaProof(t *testing.T) {
+	dir := t.TempDir()
+	opts := deltaVerifyOpts(t, dir, true)
+	replaceFile(t, opts.ReleaseClassifications, `"schemaVersion":1`, `"schemaVersion":2`)
+	replaceFile(t, opts.ReleaseClassifications, `"caseId":"NEW"`, `"productTests":["internal/x_test.go:TestNew"]`)
+	replaceFile(t, opts.ReleaseClassifications, `"caseId":"OLD"`, `"productTests":["internal/x_test.go:TestOld"]`)
+	replaceFile(t, opts.ReleaseClassifications, `"caseId":"CHANGED"`, `"productTests":["internal/x_test.go:TestChanged"]`)
+	report := runVerifyWithDeps(t, opts, allPassDeps())
+	if report.ReleaseDelta == nil || report.ReleaseDelta.Status != "fail" || report.Status != "fail" {
+		t.Fatalf("expected legacy proof failure: %+v", report)
 	}
 }

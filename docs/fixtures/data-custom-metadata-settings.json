@@ -14,7 +14,7 @@
   ],
   "project": {
     "namespace": "pkg",
-    "sourceApiVersion": "61.0",
+    "sourceApiVersion": "65.0",
     "packageDirectories": [
       {
         "path": "force-app",

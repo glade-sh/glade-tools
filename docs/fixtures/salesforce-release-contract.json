@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "defaults": {
+    "source": "65.0",
+    "endpoint": "65.0",
+    "orgProfile": "default"
+  },
+  "windows": {
+    "source": [
+      {
+        "version": "65.0",
+        "proofCases": [
+          "APEX-API65-ABSTRACT-DEFAULT-ACCESS"
+        ],
+        "productTests": [
+          "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/65.0",
+          "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/65.0_bundle_65.0"
+        ]
+      },
+      {
+        "version": "66.0",
+        "proofCases": [
+          "APEX-AUDIT-SECURITY-ENFORCED-API66-CONTROL"
+        ],
+        "productTests": [
+          "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/66.0",
+          "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/65.0_bundle_66.0"
+        ]
+      },
+      {
+        "version": "67.0",
+        "proofCases": [
+          "APEX-AUDIT-SECURITY-ENFORCED-API67"
+        ],
+        "productTests": [
+          "internal/gladecli/cli_test.go:TestSupportedSourceAPIVersionExecutionMatrix/67.0",
+          "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/66.0_bundle_67.0"
+        ]
+      }
+    ],
+    "endpoint": [
+      {
+        "version": "60.0",
+        "productTests": [
+          "internal/server/server_test.go:TestSupportedAPIVersionRouting/60.0"
+        ]
+      },
+      {
+        "version": "65.0",
+        "productTests": [
+          "internal/server/server_test.go:TestSupportedAPIVersionRouting/65.0"
+        ]
+      },
+      {
+        "version": "66.0",
+        "productTests": [
+          "internal/server/server_test.go:TestSupportedAPIVersionRouting/66.0"
+        ]
+      },
+      {
+        "version": "67.0",
+        "productTests": [
+          "internal/server/server_test.go:TestSupportedAPIVersionRouting/67.0"
+        ]
+      }
+    ],
+    "orgProfiles": [
+      {
+        "name": "default",
+        "productTests": [
+          "internal/vm/execution_policy_test.go:TestCurrentSourceExecutionPolicyUsesAPIVersionAndTriggerFrame"
+        ]
+      }
+    ]
+  },
+  "releases": [
+    {
+      "name": "Winter '26",
+      "apiVersion": "65.0",
+      "maturity": "ga",
+      "manifest": "salesforce-release-winter-26.json",
+      "inventory": "salesforce-docs-inventory-winter-26.json",
+      "sourceReceipt": "salesforce-release-source-winter-26.json",
+      "sourceReceiptSHA256": "c37a438db9a4eaf4180b491668b07457f8ba5e9c3780c509d719299c89f517c0"
+    },
+    {
+      "name": "Spring '26",
+      "apiVersion": "66.0",
+      "maturity": "ga",
+      "manifest": "salesforce-release-previous.json",
+      "inventory": "salesforce-docs-inventory-spring-26.json",
+      "sourceReceipt": "salesforce-release-source-spring-26.json",
+      "sourceReceiptSHA256": "40e87a534f6f1a994ede957940d58baae8dcc067a213c20bb2f2ffd9d813b35f",
+      "classifications": "salesforce-release-classifications-winter-to-spring-26.json",
+      "changeInventory": "salesforce-release-notes-inventory-spring-26.json",
+      "changeRoutes": "salesforce-release-note-routes-winter-to-spring-26.json"
+    },
+    {
+      "name": "Summer '26",
+      "apiVersion": "67.0",
+      "maturity": "ga",
+      "manifest": "salesforce-release-current.json",
+      "inventory": "salesforce-docs-inventory-summer-26.json",
+      "sourceReceipt": "salesforce-release-source-summer-26.json",
+      "sourceReceiptSHA256": "f4f3eb89dce9b9b90d8a0ab20b742717ad4a45f9103b6dc8c41f8e24ad2d5710",
+      "classifications": "salesforce-release-classifications-spring-to-summer-26.json",
+      "changeInventory": "salesforce-release-notes-inventory-summer-26.json",
+      "changeRoutes": "salesforce-release-note-routes-spring-to-summer-26.json"
+    }
+  ],
+  "surfaceCorrections": "salesforce-release-surface-corrections.json",
+  "behaviors": [
+    {
+      "id": "lwc.framework-version.selection",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "59.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix"
+      ]
+    },
+    {
+      "id": "lwc.template.complex-expressions",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "beta",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_cte.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestComplexTemplateExpressionsFollowBundleAPIVersion"
+      ]
+    },
+    {
+      "id": "apex.pagination-cursor.governor-accounting",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_cursors.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/vm/platform_test.go:TestExecPaginationCursorGovernorAccounting"
+      ]
+    },
+    {
+      "id": "apex.cursor.aura-serialization",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_cursors.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/vm/ui_invocation_test.go:TestPaginationCursorAuraSerialization"
+      ]
+    },
+    {
+      "id": "apex.soql.user-mode.automated-process",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_WithUserModeQuery.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/vm/execution_policy_test.go:TestWithUserModeAutomatedProcessFollowsAPIVersion"
+      ]
+    },
+    {
+      "id": "invocable.custom-parameter.visible-no-arg-constructor",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_constructor_visibility_invocable_custom_classes_v66.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/sema/version_contracts_test.go:TestInvocableParameterConstructorVisibilityFollowsAPIVersion"
+      ]
+    },
+    {
+      "id": "apex.dataweave.nested-soql",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_DWSupportQueryResults.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/vm/stdlib_test.go:TestNestedSOQLAPIVersion65ThrowsDataWeaveScriptException",
+        "internal/vm/stdlib_test.go:TestNestedSOQLAPIVersion66"
+      ]
+    },
+    {
+      "id": "rest.invocable-parameter.constructor-validation",
+      "axis": "endpoint",
+      "kind": "changed",
+      "outcome": "explicit-non-parity",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest_constructor_visibility_invocable_action_parameters_v66.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/server/server_test.go:TestInvocableParameterConstructorValidationAPI66IsExplicitlyUnsupported"
+      ]
+    },
+    {
+      "id": "connectapi.named-credentials.external-auth-id-parameter",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "explicit-non-parity",
+      "since": "66.0",
+      "documentedIn": "66.0",
+      "maturity": "ga",
+      "surfaceIds": [
+        "apex:ConnectApi.NamedCredentials.deleteExternalAuthIdentityProvider(String)",
+        "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)"
+      ],
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_security_named_credentials_update_delete_nc.htm&language=en_US&release=260&type=5"
+      ],
+      "productTests": [
+        "internal/vm/platform_test.go:TestNamedCredentialsExternalAuthIdentityProviderChangesAreExplicitlyUnsupported"
+      ]
+    },
+    {
+      "id": "apex.query.with-security-enforced.removed",
+      "axis": "source",
+      "kind": "removed",
+      "outcome": "supported",
+      "until": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&language=en_US&release=262&type=5"
+      ],
+      "proofCases": [
+        "APEX-AUDIT-SECURITY-ENFORCED-API66-CONTROL",
+        "APEX-AUDIT-SECURITY-ENFORCED-API67"
+      ],
+      "productTests": [
+        "internal/sema/version_contracts_test.go:TestSecurityEnforcedQueryIsRejectedAtAPIVersion67AndLater"
+      ]
+    },
+    {
+      "id": "apex.database.default-user-mode",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/vm/execution_policy_test.go:TestCurrentSourceExecutionPolicyUsesAPIVersionAndTriggerFrame",
+        "internal/vm/execution_policy_test.go:TestDefaultUserModeAPI67OmittedDatabaseOperations"
+      ]
+    },
+    {
+      "id": "apex.sharing.default-with-sharing",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_enforce_sharing.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/vm/execution_policy_test.go:TestDefaultSharingAndInheritedSharingResolution",
+        "internal/vm/execution_policy_test.go:TestSharingDefaultFollowsAPIVersionInheritanceChain"
+      ]
+    },
+    {
+      "id": "apex.trigger.database-default-user-mode",
+      "axis": "source",
+      "kind": "changed",
+      "outcome": "supported",
+      "since": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_triggers_system_mode.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/vm/execution_policy_test.go:TestCurrentSourceExecutionPolicyUsesAPIVersionAndTriggerFrame"
+      ]
+    },
+    {
+      "id": "lwc.html-details-name",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_versioning.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestHTMLDetailsNameFollowsBundleAPIVersion"
+      ]
+    },
+    {
+      "id": "lwc.experience-block-builder-api",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "66.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "surfaceIds": [
+        "lwc:`experience/blockBuilderApi`"
+      ],
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_modules.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestLWCModuleAvailabilityFollowsBundleAPIVersion"
+      ]
+    },
+    {
+      "id": "apex.multiline-string-literal",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "65.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_multiline_string.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/sema/anonymous_test.go:TestMultilineStringLiteralAvailableAcrossSupportedVersions"
+      ]
+    },
+    {
+      "id": "apex.string-template-named-interpolation",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "65.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "surfaceIds": [
+        "apex:System.String.template(Map<String,Object>)"
+      ],
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_multiline_string.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/vm/stdlib_test.go:TestStringTemplateNamedInterpolation"
+      ]
+    },
+    {
+      "id": "apex.integration-test.hosted-preview",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "explicit-non-parity",
+      "since": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "preview",
+      "surfaceIds": [
+        "apex:System.IntegrationTest",
+        "apex:System.IntegrationTest.commitTestOnly()"
+      ],
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_integrations_testing.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestIntegrationTestAPI67IsExplicitlyUnsupported"
+      ]
+    },
+    {
+      "id": "tooling.platform-event-migration.hosted",
+      "axis": "endpoint",
+      "kind": "added",
+      "outcome": "explicit-non-parity",
+      "since": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "ga",
+      "surfaceIds": [
+        "tooling:PlatformEventMigration"
+      ],
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_migrate_your_standard_volume_platform_events_to_high_volume_platform_events.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/server/server_test.go:TestToolingPlatformEventMigrationAPI67IsExplicitlyUnsupported"
+      ]
+    },
+    {
+      "id": "apex.org-limits.elastic-async-keys",
+      "axis": "source",
+      "kind": "added",
+      "outcome": "supported",
+      "since": "67.0",
+      "documentedIn": "67.0",
+      "maturity": "beta",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_elastic_async_limit.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/vm/execution_policy_test.go:TestElasticAsyncLimitKeysAPI67"
+      ]
+    },
+    {
+      "id": "rest.openapi-resource-wildcards",
+      "axis": "endpoint",
+      "kind": "changed",
+      "outcome": "explicit-non-parity",
+      "since": "64.0",
+      "documentedIn": "67.0",
+      "maturity": "beta",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_rest_openapi_spec_beta.htm&language=en_US&release=262&type=5"
+      ],
+      "productTests": [
+        "internal/server/server_test.go:TestOpenAPISpecWildcardIsExplicitlyUnsupported"
+      ]
+    },
+    {
+      "id": "endpoint.execute-anonymous.before-source-window",
+      "axis": "endpoint",
+      "kind": "retired",
+      "outcome": "explicit-non-parity",
+      "until": "65.0",
+      "maturity": "ga",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=000386929&language=en_US&type=1"
+      ],
+      "productTests": [
+        "internal/server/server_test.go:TestToolingExecuteAnonymousRejectsEndpointOutsideSourceWindow",
+        "internal/server/soap_apex_test.go:TestSOAPApexExecuteAnonymousVersion60IsExplicitlyUnsupported"
+      ]
+    }
+  ],
+  "noFallbackProductTests": [
+    "internal/apexversion/version_test.go:TestResolveSourceRejectsUnsupportedWithoutFallback",
+    "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_64.0",
+    "internal/lwc/compile/compile_test.go:TestBuildCompileConfigAPIVersionMatrix/67.0_bundle_",
+    "internal/server/server_test.go:TestUnsupportedAPIVersionRouting",
+    "internal/gladecli/dap_cache_test.go:TestDAPCacheKeyIncludesSourceAPIVersion"
+  ]
+}

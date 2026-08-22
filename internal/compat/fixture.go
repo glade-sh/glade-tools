@@ -12,6 +12,7 @@ import (
 
 type Fixture struct {
 	Name           string                   `json:"name"`
+	APIVersion     string                   `json:"apiVersion,omitempty"`
 	Evidence       []FixtureEvidence        `json:"evidence,omitempty"`
 	Project        ProjectConfig            `json:"project,omitempty"`
 	Source         []SourceFile             `json:"source,omitempty"`

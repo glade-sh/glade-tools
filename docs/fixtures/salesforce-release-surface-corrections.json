@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "corrections": [
+    {
+      "surfaceId": "apex:ConnectApi.RefundSequenceItemInputRepresentation",
+      "since": "65.0",
+      "sourceApiVersion": "66.0",
+      "sourcePath": "apex/apex_connectapi_input_refund_sequence_item.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/260/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf"
+      ],
+      "reason": "The Spring reference lists the refund sequence item type in an API 65.0 property, but the Winter HTML and PDF exports omit its standalone page."
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ContentHub.getRepository(String)",
+      "since": "65.0",
+      "sourceApiVersion": "65.0",
+      "sourcePath": "apex/apex_ConnectAPI_ContentHub_static_methods.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf"
+      ],
+      "reason": "All three checked exports label this present overload as API 369.0, which is impossible inside their API 65.0 through 67.0 snapshots; moving correctness normalizes it to the supported API 65.0 baseline."
+    },
+    {
+      "surfaceId": "tooling:EngagementInsightType",
+      "since": "65.0",
+      "sourceApiVersion": "66.0",
+      "sourcePath": "tooling-api/tooling_api_objects_engagementinsighttype.md",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_api_tooling_new_and_changed_objects.htm&release=260&type=5"
+      ],
+      "reason": "The Spring reference and release note say API 65.0, while the Summer reference regresses the same object's availability label to API 66.0."
+    },
+    {
+      "surfaceId": "rest:resources_composite_composite_post.get",
+      "since": "65.0",
+      "sourceApiVersion": "65.0",
+      "sourcePath": "rest-api/resources_composite_composite_post.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/atlas.en-us.258.0.api_rest.meta/api_rest/resources_composite_composite_post.htm"
+      ],
+      "reason": "The endpoint exists throughout the supported window; its API 43.0 availability label disappears from the Spring and Summer HTML exports."
+    },
+    {
+      "surfaceId": "tooling:CleanRule",
+      "since": "65.0",
+      "sourceApiVersion": "66.0",
+      "sourcePath": "tooling-api/tooling_api_objects_cleanrule.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/atlas.en-us.260.0.api_tooling.meta/api_tooling/tooling_api_objects_cleanrule.htm"
+      ],
+      "reason": "The object exists throughout the supported window; the Winter export omits its API 38.0 availability sentence."
+    },
+    {
+      "surfaceId": "tooling:FieldMappingField",
+      "since": "65.0",
+      "sourceApiVersion": "66.0",
+      "sourcePath": "tooling-api/tooling_api_objects_fieldmappingfield.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/atlas.en-us.260.0.api_tooling.meta/api_tooling/tooling_api_objects_fieldmappingfield.htm"
+      ],
+      "reason": "The object exists throughout the supported window; the Winter export omits its API 38.0 availability sentence."
+    },
+    {
+      "surfaceId": "tooling:FieldMappingRow",
+      "since": "65.0",
+      "sourceApiVersion": "66.0",
+      "sourcePath": "tooling-api/tooling_api_objects_fieldmappingrow.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/atlas.en-us.260.0.api_tooling.meta/api_tooling/tooling_api_objects_fieldmappingrow.htm"
+      ],
+      "reason": "The object exists throughout the supported window; the Winter export omits its API 38.0 availability sentence."
+    },
+    {
+      "surfaceId": "apex:Database.DeleteFilter",
+      "since": "65.0",
+      "until": "67.0",
+      "sourceApiVersion": "65.0",
+      "sourcePath": "apex/apex_enum_Database_DeleteFilter.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf"
+      ],
+      "reason": "The Winter reference contains this enum and the Summer reference removes it; the Spring export omits the page."
+    },
+    {
+      "surfaceId": "apex:System.Finalizer",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_interface_System_Finalizer.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this interface, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.Finalizer.execute(FinalizerContext)",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_interface_System_Finalizer.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this exact interface method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this interface, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getAsyncApexJobId()",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getException()",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getRequestId()",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.FinalizerContext.getResult()",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_interface_System_FinalizerContext.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this exact method, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.ParentJobResult",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_enum_System_ParentJobResult.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents this enum as FinalizerContext.getResult's return type, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:System.String.template(Map<String,Object>)",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_methods_system_string.md",
+      "sourceRefs": [
+        "https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_multiline_string.htm&release=262&type=5"
+      ],
+      "reason": "The Summer release note says this method is available in all API versions, while earlier reference exports omit it."
+    },
+    {
+      "surfaceId": "apex:System.System.attachFinalizer(Object)",
+      "since": "65.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_methods_system_system.md",
+      "sourceRefs": [
+        "https://resources.docs.salesforce.com/258/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf"
+      ],
+      "reason": "The API 65.0 developer guide documents System.attachFinalizer, but the API 65.0 and 66.0 Apex reference exports omit its page."
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.order(List<List<String>>)",
+      "since": "66.0",
+      "sourceApiVersion": "67.0",
+      "sourcePath": "apex/apex_class_wave_QueryNode.md",
+      "sourceRefs": [
+        "https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_wave_QueryNode.htm"
+      ],
+      "reason": "The Spring reference heading has the nested-list overload but its declaration flattens the parameter to List<String>; the Summer reference repairs the exact API 66.0 signature."
+    }
+  ]
+}

@@ -34,6 +34,7 @@ type Rule struct {
 	Oracle             Outcome      `json:"oracle"`
 	Owner              string       `json:"owner"`
 	Status             string       `json:"status"`
+	SurfaceIDs         []string     `json:"surfaceIds,omitempty"`
 	ProductTest        string       `json:"productTest,omitempty"`
 	ProductTestAliasOf string       `json:"productTestAliasOf,omitempty"`
 }

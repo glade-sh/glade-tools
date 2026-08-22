@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "release": "Spring '26",
   "apiVersion": "66.0",
-  "digest": "5027360634685096ec3144da477673445270c58f510b604346b11fdcfaf7d22e",
-  "acquisition": "glade-tools owned six-family docs scrape, Atlas Spring 260.0",
+  "digest": "fb9752440ce2a1189edc69c12b1c2ce57050b435655c0df6a77d53579d0a7813",
+  "acquisition": "Glade Tools owned five-family Atlas Spring 260.0 scrape; LWC current-reference availability filtered to API 66.0",
   "sourceFamilies": [
     "apex-reference",
     "aura-reference",

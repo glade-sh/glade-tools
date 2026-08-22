@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-messaging-action-error-local",
+  "apiVersion": "66.0",
   "evidence": [
     {
       "surfaceId": "apex:Messaging.ActionError.ACCESS_DENIED",

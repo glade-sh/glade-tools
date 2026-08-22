@@ -44,6 +44,9 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		return 0
 	}
 	if args[0] == "salesforce" {
+		if len(args) > 1 && args[1] == "release" {
+			return runSalesforceRelease(args[2:], stdout, stderr)
+		}
 		return runSalesforceVerify(ctx, args[1:], stdout, stderr)
 	}
 	if args[0] == "accepted-evidence" {
@@ -113,6 +116,7 @@ Commands:
   oracle-stdlib      Run scratch-org standard-library oracle probes.
   apex-rules         Compare checked Apex language-rule probes with Salesforce.
   orgpackage         Capture installed package artifacts from a Salesforce org.
+  salesforce release  Analyze adjacent Salesforce release contracts.
   salesforce verify  Run unified Salesforce correctness verification.
 
 Compatibility:

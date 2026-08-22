@@ -10,6 +10,9 @@ func ApexTypeID(namespace, typeName string) string {
 	return "apex:" + qualifiedName(namespace, typeName)
 }
 
+// CanonicalSurfaceIDKey exposes the ledger's join key to release consumers.
+func CanonicalSurfaceIDKey(id string) string { return surfaceIDKey(id) }
+
 func ApexMemberID(namespace, typeName, memberName string, parameters []string) string {
 	namespace, typeName = canonicalApexQualifiedParts(namespace, typeName)
 	id := ApexTypeID(namespace, typeName) + "." + canonicalApexMemberNameForType(typeName, memberName)

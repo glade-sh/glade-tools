@@ -45,11 +45,12 @@ const (
 
 // ReleaseClassification records an explicit decision for one surface.
 type ReleaseClassification struct {
-	SurfaceID   string
-	Scope       ReleaseScope
-	Disposition ReleaseDisposition
-	CaseID      string // required for existing-case, new-case
-	ReasonRef   string // required for deterministic-mock, explicit-unsupported
+	SurfaceID    string             `json:"surfaceId"`
+	Scope        ReleaseScope       `json:"scope"`
+	Disposition  ReleaseDisposition `json:"disposition"`
+	CaseID       string             `json:"caseId,omitempty"`    // existing-case/new-case require this or ProductTests
+	ReasonRef    string             `json:"reasonRef,omitempty"` // required for deterministic-mock, explicit-unsupported
+	ProductTests []string           `json:"productTests,omitempty"`
 }
 
 // ComputeReleaseDelta produces added, removed, changed, and unchanged lists
@@ -57,6 +58,66 @@ type ReleaseClassification struct {
 // It fails on duplicate IDs, missing required classifications, stale
 // classifications, and invalid scope or disposition values.
 func ComputeReleaseDelta(prev, current []SurfaceLedgerRow, classifications []ReleaseClassification) (
+	added, removed, changed, unchanged []DeltaEntry, err error,
+) {
+	added, removed, changed, unchanged, err = DiffReleaseRows(prev, current)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	// Index classifications by canonical key; fail on empty IDs or duplicates.
+	classByKey := make(map[string]ReleaseClassification, len(classifications))
+	for _, c := range classifications {
+		key := surfaceIDKey(c.SurfaceID)
+		if key == "" {
+			return nil, nil, nil, nil, fmt.Errorf("empty canonical SurfaceID in classification: %q", c.SurfaceID)
+		}
+		if _, exists := classByKey[key]; exists {
+			return nil, nil, nil, nil, fmt.Errorf("duplicate classification for: %s", key)
+		}
+		classByKey[key] = c
+	}
+
+	// Validate every added, removed, and changed row against its classification.
+	classifiedKeys := make(map[string]struct{}, len(added)+len(removed)+len(changed))
+	for _, group := range []struct {
+		entries []DeltaEntry
+		name    string
+	}{
+		{entries: added, name: "added"},
+		{entries: removed, name: "removed"},
+		{entries: changed, name: "changed"},
+	} {
+		for _, entry := range group.entries {
+			key := surfaceIDKey(entry.SurfaceID)
+			c, ok := classByKey[key]
+			if !ok {
+				return added, removed, changed, unchanged, fmt.Errorf("missing classification for %s row: %s", group.name, key)
+			}
+			if err := ValidateReleaseClassification(c); err != nil {
+				return added, removed, changed, unchanged, err
+			}
+			classifiedKeys[key] = struct{}{}
+		}
+	}
+
+	var staleKeys []string
+	for key := range classByKey {
+		if _, ok := classifiedKeys[key]; !ok {
+			staleKeys = append(staleKeys, key)
+		}
+	}
+	if len(staleKeys) > 0 {
+		sort.Strings(staleKeys)
+		return added, removed, changed, unchanged, fmt.Errorf("classification for row not in added, removed, or changed: %s", staleKeys[0])
+	}
+
+	return added, removed, changed, unchanged, nil
+}
+
+// DiffReleaseRows joins previous and current ledger rows on canonical
+// SurfaceID and returns all four deterministic delta lists.
+func DiffReleaseRows(prev, current []SurfaceLedgerRow) (
 	added, removed, changed, unchanged []DeltaEntry, err error,
 ) {
 	// Build prev index; fail on empty IDs or duplicate canonical keys.
@@ -83,19 +144,6 @@ func ComputeReleaseDelta(prev, current []SurfaceLedgerRow, classifications []Rel
 			return nil, nil, nil, nil, fmt.Errorf("duplicate canonical SurfaceID in current: %s", key)
 		}
 		currByKey[key] = row
-	}
-
-	// Index classifications by canonical key; fail on empty IDs or duplicates.
-	classByKey := make(map[string]ReleaseClassification, len(classifications))
-	for _, c := range classifications {
-		key := surfaceIDKey(c.SurfaceID)
-		if key == "" {
-			return nil, nil, nil, nil, fmt.Errorf("empty canonical SurfaceID in classification: %q", c.SurfaceID)
-		}
-		if _, exists := classByKey[key]; exists {
-			return nil, nil, nil, nil, fmt.Errorf("duplicate classification for: %s", key)
-		}
-		classByKey[key] = c
 	}
 
 	// Classify each canonical key into one of the four lists.
@@ -131,34 +179,6 @@ func ComputeReleaseDelta(prev, current []SurfaceLedgerRow, classifications []Rel
 	removed = buildEntries(removedKeys, prevByKey, nil, DeltaRemoved)
 	changed = buildEntries(changedKeys, prevByKey, currByKey, DeltaChanged)
 	unchanged = buildEntries(unchangedKeys, prevByKey, currByKey, DeltaUnchanged)
-
-	// Validate: every added/changed row must have a valid classification.
-	for _, key := range addedKeys {
-		c, ok := classByKey[key]
-		if !ok {
-			return added, removed, changed, unchanged, fmt.Errorf("missing classification for added row: %s", key)
-		}
-		if err := validateClassification(c); err != nil {
-			return added, removed, changed, unchanged, err
-		}
-	}
-	for _, key := range changedKeys {
-		c, ok := classByKey[key]
-		if !ok {
-			return added, removed, changed, unchanged, fmt.Errorf("missing classification for changed row: %s", key)
-		}
-		if err := validateClassification(c); err != nil {
-			return added, removed, changed, unchanged, err
-		}
-	}
-
-	// Validate: no stale classifications (must match added or changed row).
-	for key := range classByKey {
-		if !stringSliceContains(addedKeys, key) && !stringSliceContains(changedKeys, key) {
-			return added, removed, changed, unchanged, fmt.Errorf("classification for row not in added or changed: %s", key)
-		}
-	}
-
 	return added, removed, changed, unchanged, nil
 }
 
@@ -166,6 +186,7 @@ func ComputeReleaseDelta(prev, current []SurfaceLedgerRow, classifications []Rel
 // Display/order noise fields are ignored.
 func contractEqual(a, b SurfaceLedgerRow) bool {
 	return a.Product == b.Product &&
+		a.APIVersion == b.APIVersion &&
 		a.Area == b.Area &&
 		a.Namespace == b.Namespace &&
 		a.TypeName == b.TypeName &&
@@ -189,8 +210,8 @@ func contractEqual(a, b SurfaceLedgerRow) bool {
 		a.Evidence == b.Evidence
 }
 
-// validateClassification checks scope, disposition, and required fields.
-func validateClassification(c ReleaseClassification) error {
+// ValidateReleaseClassification checks scope, disposition, and required fields.
+func ValidateReleaseClassification(c ReleaseClassification) error {
 	switch c.Scope {
 	case ScopeT0, ScopeT1, ScopeT2, ScopeOutsideClaim:
 		// valid
@@ -200,8 +221,8 @@ func validateClassification(c ReleaseClassification) error {
 
 	switch c.Disposition {
 	case DispoExistingCase, DispoNewCase:
-		if c.CaseID == "" {
-			return fmt.Errorf("%s requires non-empty case ID for %s", c.Disposition, c.SurfaceID)
+		if c.CaseID == "" && len(c.ProductTests) == 0 {
+			return fmt.Errorf("%s requires a case ID or product test for %s", c.Disposition, c.SurfaceID)
 		}
 	case DispoDeterministicMock, DispoExplicitUnsupported:
 		if c.ReasonRef == "" {
@@ -239,15 +260,6 @@ func buildEntries(keys []string, oldByKey, newByKey map[string]SurfaceLedgerRow,
 func copyRowPtr(row SurfaceLedgerRow) *SurfaceLedgerRow {
 	r := row
 	return &r
-}
-
-func stringSliceContains(slice []string, target string) bool {
-	for _, s := range slice {
-		if s == target {
-			return true
-		}
-	}
-	return false
 }
 
 func stringSlicesEqual(a, b []string) bool {

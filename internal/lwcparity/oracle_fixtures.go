@@ -74,7 +74,7 @@ func writeOracleProjectScaffold(outDir string) error {
       "default": true
     }
   ],
-  "sourceApiVersion": "61.0"
+  "sourceApiVersion": "65.0"
 }
 `
 	files := map[string]string{

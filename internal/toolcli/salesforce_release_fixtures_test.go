@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/glade-sh/glade/tools/internal/releasecontract"
 )
 
 var workspaceRoot = "../.."
@@ -18,9 +20,6 @@ func fixturesPath(rel string) string {
 func TestSalesforceReleaseFixtures(t *testing.T) {
 	prevManifestPath := fixturesPath("docs/fixtures/salesforce-release-previous.json")
 	currManifestPath := fixturesPath("docs/fixtures/salesforce-release-current.json")
-	prevInvPath := fixturesPath("docs/fixtures/salesforce-docs-inventory-spring-26.json")
-	currInvPath := fixturesPath("docs/fixtures/salesforce-docs-inventory-summer-26.json")
-	classPath := fixturesPath("docs/fixtures/salesforce-release-classifications-spring-to-summer-26.json")
 
 	// Stale next manifest must not exist.
 	nextPath := fixturesPath("docs/fixtures/salesforce-release-next.json")
@@ -71,8 +70,8 @@ func TestSalesforceReleaseFixtures(t *testing.T) {
 		t.Errorf("curr acquisition should mention Summer 262.0: %q", currManifest.Acquisition)
 	}
 
-	expectedSpring := "5027360634685096ec3144da477673445270c58f510b604346b11fdcfaf7d22e"
-	expectedSummer := "a0b3d7cb6bde10acdd719ee93cb54d5daed6facb0b34a34377d0d42697f81d7c"
+	expectedSpring := "fb9752440ce2a1189edc69c12b1c2ce57050b435655c0df6a77d53579d0a7813"
+	expectedSummer := "ff9c3e06f85100754143a4bcfd82a3c40a24dd81c6248e5da5f7ee691cf9cf99"
 
 	if prevManifest.Digest != expectedSpring {
 		t.Errorf("Spring digest: got %s, want %s", prevManifest.Digest, expectedSpring)
@@ -81,29 +80,42 @@ func TestSalesforceReleaseFixtures(t *testing.T) {
 		t.Errorf("Summer digest: got %s, want %s", currManifest.Digest, expectedSummer)
 	}
 
-	delta, err := computeReleaseDelta(salesforceVerifyOptions{
-		PreviousReleaseManifest: prevManifestPath,
-		PreviousInventory:       prevInvPath,
-		CurrentInventory:        currInvPath,
-		ReleaseClassifications:  classPath,
-	}, currManifest)
+	analysis, err := releasecontract.Analyze(fixturesPath("docs/fixtures/salesforce-release-contract.json"))
 	if err != nil {
-		t.Fatalf("compute release delta: %v", err)
+		t.Fatalf("analyze checked release contract: %v", err)
 	}
-	if delta.Status != "pass" {
-		t.Fatalf("release delta status = %s: %s", delta.Status, delta.Error)
+	if analysis.Report.Status != "fail" {
+		t.Fatalf("static release status = %s, want fail before evidence execution", analysis.Report.Status)
 	}
+	if got := analysis.Report.SurfaceDelta; got.Total != 519 || got.Classified != 519 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 3 {
+		t.Errorf("surface delta = %#v", got)
+	}
+	if got := analysis.Report.BehaviorDelta; got.Total != 22 || got.Classified != 22 || got.Implemented != 0 || got.Proved != 0 || got.ExplicitNonParity != 6 {
+		t.Errorf("behavior delta = %#v", got)
+	}
+	if got := analysis.Report.ChangeInventory; got.Total != 3990 || got.Routed != 3990 || got.OutOfScope != 3962 {
+		t.Errorf("change inventory = %#v", got)
+	}
+	if len(analysis.Report.Unclassified) != 0 {
+		t.Errorf("unclassified = %v", analysis.Report.Unclassified)
+	}
+}
 
-	if len(delta.Added) != 171 {
-		t.Errorf("added: %d, want 171", len(delta.Added))
+func TestSalesforceReleaseCaseBindingsPreflight(t *testing.T) {
+	analysis, err := releasecontract.Analyze(fixturesPath("docs/fixtures/salesforce-release-contract.json"))
+	if err != nil {
+		t.Fatal(err)
 	}
-	if len(delta.Removed) != 0 {
-		t.Errorf("removed: %d, want 0", len(delta.Removed))
+	gladeRoot, err := filepath.Abs(filepath.Join(workspaceRoot, "..", "glade"))
+	if err != nil {
+		t.Fatal(err)
 	}
-	if len(delta.Changed) != 0 {
-		t.Errorf("changed: %d, want 0", len(delta.Changed))
+	module, err := goModulePath(gladeRoot)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if len(delta.Unchanged) != 8081 {
-		t.Errorf("unchanged: %d, want 8081", len(delta.Unchanged))
+	evidence := &productTestEvidence{gladeRoot: gladeRoot, module: module, bindings: map[string]productTestBinding{}}
+	if err := preflightReleaseBindings(analysis, fixturesPath("docs/fixtures/apex-language-rules.json"), evidence); err != nil {
+		t.Fatal(err)
 	}
 }

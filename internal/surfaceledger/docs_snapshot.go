@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
 )
-
-var apiVersionPattern = regexp.MustCompile(`(?i)Available in API version\s+([0-9]+(?:\.[0-9]+)?)`)
 
 func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
 	if err := validateDocsSource(source); err != nil {
@@ -21,9 +19,7 @@ func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows := RowsFromDocsInventory(inv)
-	applyApexDeclarationSignatures(rows, source)
-	rows = filterUnresolvedApexHeadingRows(rows)
+	rows := ReleaseRowsFromDocsInventory(inv)
 	if len(rows) == 0 {
 		return nil, fmt.Errorf("docs source produced zero inventory rows: %s", source)
 	}
@@ -35,12 +31,6 @@ func BuildDocsSnapshot(source string) ([]SurfaceLedgerRow, error) {
 	}
 	if apexRows == 0 {
 		return nil, fmt.Errorf("docs source produced no Apex inventory rows: %s", source)
-	}
-	for i := range rows {
-		if rows[i].DocsSource == "" {
-			continue
-		}
-		rows[i].APIVersion = readAPIVersion(filepath.Join(source, filepath.FromSlash(rows[i].DocsSource)))
 	}
 	return rows, nil
 }
@@ -76,138 +66,15 @@ func validateDocsSource(source string) error {
 	return nil
 }
 
-func applyApexDeclarationSignatures(rows []SurfaceLedgerRow, source string) {
-	cache := map[string]map[string][]string{}
-	for i := range rows {
-		row := &rows[i]
-		if row.Product != ProductApex || row.Kind != KindMethod || row.MemberName == "" || row.DocsSource == "" {
-			continue
-		}
-		signatures, ok := cache[row.DocsSource]
-		if !ok {
-			signatures = apexDeclarationSignatures(filepath.Join(source, filepath.FromSlash(row.DocsSource)))
-			cache[row.DocsSource] = signatures
-		}
-		signature := matchingSignature(signatures[row.MemberName], len(row.Parameters))
-		if signature == "" {
-			continue
-		}
-		params := parametersFromSignature(signature)
-		if len(params) == 0 && strings.Contains(signature, "()") {
-			params = []string{}
-		}
-		if params == nil {
-			continue
-		}
-		row.Signature = signature
-		row.Parameters = params
-		row.DocsParameters = append([]string(nil), params...)
-		row.SurfaceID = ApexMemberID(row.Namespace, row.TypeName, row.MemberName, params)
-	}
-	sortRows(rows)
-}
-
 func filterUnresolvedApexHeadingRows(rows []SurfaceLedgerRow) []SurfaceLedgerRow {
 	out := rows[:0]
 	for _, row := range rows {
-		if row.Product == ProductApex && row.Kind == KindMethod && isApexHeadingOnlySignature(row.Signature) {
+		if row.Product == ProductApex && row.Kind == KindMethod && row.ReturnType == "" && isApexHeadingOnlySignature(row.Signature) {
 			continue
 		}
 		out = append(out, row)
 	}
 	return out
-}
-
-func apexDeclarationSignatures(path string) map[string][]string {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil
-	}
-	lines := strings.Split(string(data), "\n")
-	signatures := map[string][]string{}
-	titleMember := ""
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "# ") {
-			titleMember = memberNameFromHeading(strings.TrimSpace(strings.TrimPrefix(line, "# ")))
-			break
-		}
-	}
-	for i := 0; i < len(lines); i++ {
-		line := strings.TrimSpace(lines[i])
-		if line == "## Signature" && titleMember != "" {
-			if signature := readInlineCodeBlock(lines[i+1:]); signature != "" {
-				signatures[titleMember] = append(signatures[titleMember], signature)
-			}
-			continue
-		}
-		if !strings.HasPrefix(line, "### ") {
-			continue
-		}
-		member := memberNameFromHeading(strings.TrimSpace(strings.TrimPrefix(line, "### ")))
-		if member == "" {
-			continue
-		}
-		for j := i + 1; j < len(lines); j++ {
-			next := strings.TrimSpace(lines[j])
-			if strings.HasPrefix(next, "### ") {
-				break
-			}
-			if next != "#### Signature" {
-				continue
-			}
-			if signature := readInlineCodeBlock(lines[j+1:]); signature != "" {
-				signatures[member] = append(signatures[member], signature)
-			}
-			break
-		}
-	}
-	return signatures
-}
-
-func matchingSignature(signatures []string, parameterCount int) string {
-	for _, signature := range signatures {
-		if len(parametersFromSignature(signature)) == parameterCount {
-			return signature
-		}
-	}
-	if len(signatures) == 1 {
-		return signatures[0]
-	}
-	return ""
-}
-
-func memberNameFromHeading(heading string) string {
-	if idx := strings.Index(heading, "("); idx > 0 {
-		return strings.TrimSpace(heading[:idx])
-	}
-	return strings.TrimSpace(heading)
-}
-
-func readInlineCodeBlock(lines []string) string {
-	var b strings.Builder
-	inCode := false
-	for _, line := range lines {
-		if strings.HasPrefix(strings.TrimSpace(line), "#### ") || strings.HasPrefix(strings.TrimSpace(line), "### ") {
-			break
-		}
-		for _, r := range line {
-			if r == '`' {
-				if inCode {
-					return strings.Join(strings.Fields(b.String()), " ")
-				}
-				inCode = true
-				continue
-			}
-			if inCode {
-				b.WriteRune(r)
-			}
-		}
-		if inCode {
-			b.WriteByte(' ')
-		}
-	}
-	return ""
 }
 
 func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
@@ -217,6 +84,7 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 		if !shouldIncludeDocsSurface(product, doc) {
 			continue
 		}
+		apiVersion := doc.APIVersion
 		namespace := docsNamespace(product, doc)
 		typeName := doc.Name
 		if product == ProductDataRef {
@@ -237,6 +105,7 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 					Kind:       identity.kind,
 					Signature:  identity.signature,
 					Parameters: identity.parameters,
+					APIVersion: apiVersion,
 					DocsSource: doc.SourcePath,
 					DocsTitle:  doc.Title,
 					Sources:    []string{"docs"},
@@ -256,6 +125,7 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 				Namespace:  namespace,
 				TypeName:   typeName,
 				Kind:       docsDocumentKind(product, doc.Kind),
+				APIVersion: apiVersion,
 				DocsSource: doc.SourcePath,
 				DocsTitle:  doc.Title,
 				Sources:    []string{"docs"},
@@ -272,8 +142,12 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 					continue
 				}
 			}
-			params := docsMemberParameters(member)
+			params := canonicalDocsParameters(namespace, docsMemberParameters(member))
 			returnType := docsMemberReturnType(member)
+			memberAPIVersion := apiVersion
+			if member.APIVersion != "" {
+				memberAPIVersion = member.APIVersion
+			}
 			surfaceID := docsSurfaceID(product, doc, member)
 			if product == ProductApex {
 				surfaceID = ApexMemberID(namespace, typeName, member.Name, params)
@@ -289,6 +163,7 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 				Signature:  member.Signature,
 				ReturnType: returnType,
 				Parameters: params,
+				APIVersion: memberAPIVersion,
 				DocsSource: doc.SourcePath,
 				DocsTitle:  doc.Title,
 				Sources:    []string{"docs"},
@@ -297,6 +172,12 @@ func RowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
 	}
 	sortRows(rows)
 	return rows
+}
+
+// ReleaseRowsFromDocsInventory drops heading-only Apex guesses that a checked
+// release inventory cannot resolve to a declaration signature.
+func ReleaseRowsFromDocsInventory(inv apexdocs.Inventory) []SurfaceLedgerRow {
+	return filterUnresolvedApexHeadingRows(RowsFromDocsInventory(inv))
 }
 
 func rowFromDocsSnapshot(row SurfaceLedgerRow) SurfaceLedgerRow {
@@ -369,8 +250,12 @@ func apexDocsIdentity(doc apexdocs.Document) apexDocsDocumentIdentity {
 		return identity
 	}
 	identity.memberName = memberName
-	identity.signature = doc.Name
-	identity.parameters = parametersFromSignature(doc.Name)
+	identity.signature = doc.Signature
+	if identity.signature == "" {
+		identity.signature = doc.Name
+	}
+	identity.parameters = parametersFromSignature(identity.signature)
+	identity.parameters = canonicalDocsParameters(identity.namespace, identity.parameters)
 	identity.kind = memberKind
 	return identity
 }
@@ -408,6 +293,9 @@ func isApexRealSignature(signature string) bool {
 }
 
 func shouldIncludeDocsSurface(product string, doc apexdocs.Document) bool {
+	if doc.InternalOnly {
+		return false
+	}
 	if product == ProductUnknown && strings.EqualFold(sourceStemBase(doc.SourcePath), "apex_cursors_versus_batch") {
 		return false
 	}
@@ -417,8 +305,12 @@ func shouldIncludeDocsSurface(product string, doc apexdocs.Document) bool {
 		return stem != "cli-reference"
 	case ProductConnectRESTAPI:
 		return !isConnectRESTAPIRollup(doc.SourcePath)
+	case ProductREST:
+		return !hasAnySuffix(stem, "_intro", "_setup", "_vscode")
 	case ProductServiceConnectorAPIRef:
 		return stem != "index"
+	case ProductTooling:
+		return strings.HasPrefix(stem, "tooling_api_objects_")
 	}
 	if product != ProductApex {
 		return true
@@ -761,7 +653,7 @@ func inferApexIdentityFromSource(sourcePath, name string) (string, string, strin
 	base := sourceStemBase(sourcePath)
 	lower := strings.ToLower(base)
 	switch lower {
-	case "apex_commercepay_postauthapipaymethodreq_altpaymethod":
+	case "apex_commercepay_postauthapipaymethodreq_altpaymethod", "apex_commercepayments_postauthapipaymentmethodrequest_alternativepaymentmethod":
 		return "commercepayments", "PostAuthApiPaymentMethodRequest", "alternativePaymentMethod", KindProperty, true
 	case "apex_commercepay_postauthresp_setauthexpirationdate":
 		return "commercepayments", "PostAuthorizationResponse", "setAuthorizationExpirationDate", KindMethod, true
@@ -790,6 +682,32 @@ func inferApexIdentityFromSource(sourcePath, name string) (string, string, strin
 		return prefix.namespace, typeName, memberName, KindMethod, true
 	}
 	return "", "", "", "", false
+}
+
+func canonicalDocsParameters(namespace string, parameters []string) []string {
+	if parameters == nil {
+		return nil
+	}
+	out := append([]string{}, parameters...)
+	for i, parameter := range out {
+		if len(namespace) == 0 || len(parameter) <= len(namespace) || parameter[:len(namespace)] != strings.ToLower(namespace) {
+			continue
+		}
+		next, _ := utf8.DecodeRuneInString(parameter[len(namespace):])
+		if unicode.IsUpper(next) {
+			out[i] = namespace + "." + parameter[len(namespace):]
+		}
+	}
+	return out
+}
+
+func hasAnySuffix(value string, suffixes ...string) bool {
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(value, suffix) {
+			return true
+		}
+	}
+	return false
 }
 
 func apexTypeAndMemberFromStem(rest, name string) (string, string) {
@@ -940,16 +858,4 @@ func sourceStem(sourcePath string) string {
 		sourcePath = strings.Join(parts[1:], "/")
 	}
 	return cleanIdentityPart(sourcePath)
-}
-
-func readAPIVersion(path string) string {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return ""
-	}
-	match := apiVersionPattern.FindStringSubmatch(string(data))
-	if len(match) < 2 {
-		return ""
-	}
-	return match[1]
 }

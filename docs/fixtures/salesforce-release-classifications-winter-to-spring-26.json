@@ -1,0 +1,1279 @@
+{
+  "schemaVersion": 2,
+  "previousRelease": "Winter '26",
+  "currentRelease": "Spring '26",
+  "classifications": [
+    {
+      "surfaceId": "apex:commercepayments.AbstractResponse.setRetryCategory(commercepayments.RetryCategory)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.abstractresponse.setretrycategory(commercepayments.retrycategory)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.AbstractResponse.setRetryDecision(commercepayments.RetryDecision)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.abstractresponse.setretrydecision(commercepayments.retrydecision)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.AuthorizationResponse.setAsync(Boolean)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.authorizationresponse.setasync(boolean)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.BaseApiPaymentMethodRequest.idType",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.baseapipaymentmethodrequest.idtype"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.BaseNotification.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.basenotification.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.CaptureNotification.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.capturenotification.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentMethodIdType",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.paymentmethodidtype"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PaymentMethodTokenizationRequest.savedByMerchant",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.paymentmethodtokenizationrequest.savedbymerchant"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setAmount(Double)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setamount(double)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setCardPaymentMethodResponse(commercepayments.CardPaymentMethodResponse)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setcardpaymentmethodresponse(commercepayments.cardpaymentmethodresponse)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayDate(Datetime)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewaydate(datetime)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayMessage(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewaymessage(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceDetails(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayreferencedetails(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayReferenceNumber(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayreferencenumber(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayresultcode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setGatewayResultCodeDescription(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setgatewayresultcodedescription(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetails(commercepayments.PaymentMethodDetailsResponse)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setpaymentmethoddetails(commercepayments.paymentmethoddetailsresponse)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setPaymentMethodDetailsResponse(commercepayments.PaymentMethodDetailsResponse)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setpaymentmethoddetailsresponse(commercepayments.paymentmethoddetailsresponse)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.PostAuthorizationResponse.setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.postauthorizationresponse.setsalesforceresultcodeinfo(commercepayments.salesforceresultcodeinfo)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.ReferencedRefundNotification.setGatewayAvsCode(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.referencedrefundnotification.setgatewayavscode(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.ReferencedRefundResponse.setAsync(Boolean)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.referencedrefundresponse.setasync(boolean)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryCategory",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.retrycategory"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.RetryDecision",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.retrydecision"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleNotification.setRetryCategory(commercepayments.RetryCategory)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salenotification.setretrycategory(commercepayments.retrycategory)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleNotification.setRetryDecision(commercepayments.RetryDecision)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salenotification.setretrydecision(commercepayments.retrydecision)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleRequest.submittedByMerchant",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salerequest.submittedbymerchant"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleResponse.setRetryCategory(commercepayments.RetryCategory)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.saleresponse.setretrycategory(commercepayments.retrycategory)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercepayments.SaleResponse.setRetryDecision(commercepayments.RetryDecision)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.saleresponse.setretrydecision(commercepayments.retrydecision)"
+      ]
+    },
+    {
+      "surfaceId": "apex:commercetax.CalculateTaxRequest.isHeaderTaxRequested",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercetax.calculatetaxrequest.isheadertaxrequested"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.AbstractPicklistValueAttributes",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.abstractpicklistvalueattributes"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.BuyerProductSummaryRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.buyerproductsummaryrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CaseStatusPicklistValueAttributes",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.casestatuspicklistvalueattributes"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQuery.getMetadataEntities()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquery.getmetadataentities()"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquery.getmetadataentities(string,string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQuery.getMetadataEntities(String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquery.getmetadataentities(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQueryMetadataEntitiesOutput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquerymetadataentitiesoutput"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CdpQueryMetadataEntityOutput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cdpquerymetadataentityoutput"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderAdjustmentGroupSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderadjustmentgroupsummaryinputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderDeliveryGroupSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderdeliverygroupsummaryinputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderItemAdjustmentLineSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderitemadjustmentlinesummaryinputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderItemSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderitemsummaryinputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderItemTaxLineItemSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeorderitemtaxlineitemsummaryinputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ChangeOrderSummaryInputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.changeordersummaryinputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCart.createQuoteFromCart(String,String,ConnectApi.CreateQuoteFromCartInput)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercecart.createquotefromcart(string,string,connectapi.createquotefromcartinput)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceCatalog.getProductChildCollection(String,String,String,List<String>,List<String>,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,Boolean,String,Integer,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercecatalog.getproductchildcollection(string,string,string,list<string>,list<string>,boolean,boolean,boolean,boolean,boolean,boolean,boolean,string,integer,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceNote",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercenote"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteCollection",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotecollection"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteDetail",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotedetail"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteLineItem",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotelineitem"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuotes",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuotes.getQuoteDetail(String,String,String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes.getquotedetail(string,string,string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuotes.getQuotes(String,String,String,ConnectApi.CommereQuotesSortOrder,Integer,String,String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes.getquotes(string,string,string,connectapi.commerequotessortorder,integer,string,string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CommerceQuoteWithProductDetail",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotewithproductdetail"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreatedFile",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createdfile"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromCartInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createquotefromcartinput"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromCartOutput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createquotefromcartoutput"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.fetchFilesInput",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.fetchfilesinput"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FetchFilesOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.fetchfilesoutputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FlowApprovalProcess",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocess"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FlowApprovalProcessAction",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocessaction"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FlowApprovalProcessCollection",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocesscollection"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FlowApprovalProcesses",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocesses"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.FlowApprovalProcesses.getFlowApprovalProcessWithStatus(String,List<String>)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.flowapprovalprocesses.getflowapprovalprocesswithstatus(string,list<string>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.LeadStatusPicklistValueAttributes",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.leadstatuspicklistvalueattributes"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContent.getManagedContentProvidersForSpace(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.managedcontent.getmanagedcontentprovidersforspace(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.ManagedContent.updateManagedContentProviderInstance(String,ConnectApi.ManagedContentProviderInput)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.managedcontent.updatemanagedcontentproviderinstance(string,connectapi.managedcontentproviderinput)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.NamedCredentials.deleteExternalAuthIdentityProvider(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.deleteexternalauthidentityprovider(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.NamedCredentials.deleteExternalCredential(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.deleteexternalcredential(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.NamedCredentials.deleteNamedCredential(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.deletenamedcredential(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.NamedCredentials.updateExternalAuthIdentityProvider(String,ConnectApi.ExternalAuthIdentityProviderInput)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.updateexternalauthidentityprovider(string,connectapi.externalauthidentityproviderinput)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.NamedCredentials.updateExternalCredential(String,ConnectApi.ExternalCredentialInput)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.updateexternalcredential(string,connectapi.externalcredentialinput)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.NamedCredentials.updateNamedCredential(String,ConnectApi.NamedCredentialInput)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.namedcredentials.updatenamedcredential(string,connectapi.namedcredentialinput)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.OpportunityStagePicklistValueAttributes",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.opportunitystagepicklistvalueattributes"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.OptimizationFiles",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.optimizationfiles"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.OptimizationFiles.FetchOptimizationFiles(ConnectApi.fetchFilesInput)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.optimizationfiles.fetchoptimizationfiles(connectapi.fetchfilesinput)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.Orchestration.getOrchestrationInstanceCollection(String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.orchestration.getorchestrationinstancecollection(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.OrderSummary.previewChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.ordersummary.previewchange(string,connectapi.changeordersummaryinputrepresentation)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.OrderSummary.submitChange(String,ConnectApi.ChangeOrderSummaryInputRepresentation)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.ordersummary.submitchange(string,connectapi.changeordersummaryinputrepresentation)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PicklistValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.picklistvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PicklistValues",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.picklistvalues"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PicklistValuesCollection",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.picklistvaluescollection"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.PreviewChangeOrderSummaryOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.previewchangeordersummaryoutputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.QuoteError",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.quoteerror"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordUi",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.recordui"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.RecordUi.getPicklistValuesByRecordType(String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.recordui.getpicklistvaluesbyrecordtype(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.SubmitChangeOrderSummaryOutputRepresentation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.submitchangeordersummaryoutputrepresentation"
+      ]
+    },
+    {
+      "surfaceId": "apex:ConnectApi.WorkStepPicklistValueAttribute",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.worksteppicklistvalueattribute"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.CursorFetchResult",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.CursorFetchResult.getNextIndex()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.getnextindex()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.CursorFetchResult.getNumDeletedRecords()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.getnumdeletedrecords()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.CursorFetchResult.getRecords()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.getrecords()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.CursorFetchResult.isDone()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.cursorfetchresult.isdone()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.PaginationCursor",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.PaginationCursor.fetchDeleted(Integer,Integer)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor.fetchdeleted(integer,integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.PaginationCursor.fetchPage(Integer,Integer)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor.fetchpage(integer,integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Database.PaginationCursor.getNumRecords()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.paginationcursor.getnumrecords()"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap.ApexMap()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.apexmap()"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.ApexMap.ApexMap(String,String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.apexmap.apexmap(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation()",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.recordapexrepresentation()"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.RecordApexRepresentation(String,List<embeddedai.ApexMap>,List<embeddedai.RecordApexRepresentation>)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.recordapexrepresentation(string,list<embeddedai.apexmap>,list<embeddedai.recordapexrepresentation>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:embeddedai.RecordApexRepresentation.toRecordApexRep(String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:embeddedai.recordapexrepresentation.torecordapexrep(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.createCustomAction(String,String,String,String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.createcustomaction(string,string,string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.createStandardAction(String,String)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.createstandardaction(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Invocable.Action.getVersion()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.getversion()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.build()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.build()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withActionIdentifier(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withactionidentifier(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withNotificationTypeId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withnotificationtypeid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withRecipientId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withrecipientid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withSenderId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withsenderid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withTargetId(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withtargetid(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.Builder.withTargetPageRef(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.builder.withtargetpageref(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getActionIdentifier()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getactionidentifier()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getNotificationTypeId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getnotificationtypeid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getRecipientId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getrecipientid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getSenderId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.getsenderid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getTargetId()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.gettargetid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionableNotification.getTargetPageRef()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionablenotification.gettargetpageref()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionError",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionerror"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.Builder",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.Builder.build()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.build()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.Builder.withErrorCode(Messaging.ActionError)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.witherrorcode(messaging.actionerror)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.Builder.withMessage(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.withmessage(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.Builder.withSuccess(Boolean)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.builder.withsuccess(boolean)"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.getErrorCode()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.geterrorcode()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.getMessage()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.getmessage()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.ActionResult.isSuccess()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.actionresult.issuccess()"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.NotificationActionHandler",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.notificationactionhandler"
+      ]
+    },
+    {
+      "surfaceId": "apex:Messaging.NotificationActionHandler.executeAction(Messaging.ActionableNotification)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.notificationactionhandler.executeaction(messaging.actionablenotification)"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessFormHandler",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processformhandler"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessFormHandler.processFormRequest(RichMessaging.ProcessFormResponse)",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processformhandler.processformrequest(richmessaging.processformresponse)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.getPaginationCursor(String,Object)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getpaginationcursor(string,object)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.getPaginationCursor(String)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getpaginationcursor(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.getPaginationCursorWithBinds(String,Map,Object)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.getpaginationcursorwithbinds(string,map,object)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Limits.getApexCursors()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getapexcursors()"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Limits.getApexPaginationCursorRows()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getapexpaginationcursorrows()"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Limits.getApexPaginationCursors()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getapexpaginationcursors()"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Limits.getLimitApexCursors()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getlimitapexcursors()"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Limits.getLimitApexPaginationCursorRows()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getlimitapexpaginationcursorrows()"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Limits.getLimitApexPaginationCursors()",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.limits.getlimitapexpaginationcursors()"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.System.purgeOldAsyncJobs(Date,Integer)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.system.purgeoldasyncjobs(date,integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Test.testNotificationActionHandler(Messaging.NotificationActionHandler,Messaging.ActionableNotification)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.test.testnotificationactionhandler(messaging.notificationactionhandler,messaging.actionablenotification)"
+      ]
+    },
+    {
+      "surfaceId": "apex:wave.QueryNode.order(List<List<String>>)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:wave.querynode.order(list<list<string>>)"
+      ]
+    },
+    {
+      "surfaceId": "lwc:`experience/blockBuilderApi`",
+      "scope": "t1",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#lwc-version-gated-module",
+      "productTests": [
+        "internal/lwc/compile/compile_test.go:TestLWCModuleAvailabilityFollowsBundleAPIVersion"
+      ]
+    },
+    {
+      "surfaceId": "tooling:CustomNotifActionDef",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "productTests": [
+        "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:customnotifactiondef"
+      ]
+    },
+    {
+      "surfaceId": "tooling:CustomNotificationActionGroup",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "productTests": [
+        "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:customnotificationactiongroup"
+      ]
+    },
+    {
+      "surfaceId": "tooling:ExtConvParticipantIntegDef",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "productTests": [
+        "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:extconvparticipantintegdef"
+      ]
+    },
+    {
+      "surfaceId": "tooling:SandboxProcessStage",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api",
+      "productTests": [
+        "internal/server/server_test.go:TestToolingAPIVersionAvailability/tooling:sandboxprocessstage"
+      ]
+    }
+  ]
+}

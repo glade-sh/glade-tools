@@ -299,7 +299,7 @@
   "salesforceExclusionReason": "API 67 clean-org rejects the deprecated SObject.recalculateFormulas call; retained as local runtime evidence and excluded from hosted parity.",
   "source": [
     {
-      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}",
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"65.0\"}",
       "path": "sfdx-project.json"
     },
     {
