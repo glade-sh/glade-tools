@@ -1,5 +1,6 @@
 {
   "name": "current-base-cb190-schema-broad-positive-api67",
+  "salesforceEligible": true,
   "evidence": [
     {"surfaceId": "apex:Schema.SObjectType", "symbol": "Schema.SObjectType", "kind": "exec"},
     {"surfaceId": "apex:Schema.SObjectType.getDescribe()", "symbol": "Schema.SObjectType.getDescribe", "kind": "exec"},

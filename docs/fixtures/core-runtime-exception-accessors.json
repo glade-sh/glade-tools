@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-exception-accessors",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The command asserts Glade-local exception line numbers and empty stack traces for constructed AssertException and AsyncException values; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.AssertException.getCause()",

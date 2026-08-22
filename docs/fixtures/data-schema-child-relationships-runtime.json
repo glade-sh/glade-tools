@@ -1,5 +1,8 @@
 {
   "name": "data-schema-child-relationships-runtime",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "org-configuration-required",
+  "salesforceExclusionReason": "The fixture requires synthetic polymorphic custom-lookup metadata that is not portable to the fixed Salesforce org; it grants zero Salesforce parity credit.",
   "evidence": [
     {"surfaceId":"apex:Schema.ChildRelationship.getRelationshipName()","symbol":"Schema.ChildRelationship.getRelationshipName()","kind":"exec"},
     {"surfaceId":"apex:Schema.ChildRelationship.getField()","symbol":"Schema.ChildRelationship.getField()","kind":"exec"},

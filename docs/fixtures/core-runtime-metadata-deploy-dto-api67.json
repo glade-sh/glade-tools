@@ -1,5 +1,6 @@
 {
   "name": "core-runtime-metadata-deploy-dto-api67",
+  "salesforceEligible": true,
   "command": {
     "kind": "exec",
     "args": [

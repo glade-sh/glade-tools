@@ -1,5 +1,8 @@
 {
   "name": "core-url-current-request",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The command asserts Glade's synthetic local request URL rather than a Salesforce request-context URL; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.URL.getCurrentRequestUrl()",

@@ -1,5 +1,8 @@
 {
   "name": "core-blob-crypto-aes-key",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The command asserts a fixed AES key, while Salesforce generates nondeterministic key bytes; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "Crypto.generateAESKey",

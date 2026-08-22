@@ -1,5 +1,8 @@
 {
   "name": "async-execute-batch-scope-validation",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The anonymous command references an unmaterialized BatchWorker and asserts Glade's local scope-validation error; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "symbol": "Database.executeBatch",

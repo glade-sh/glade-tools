@@ -1,5 +1,6 @@
 {
   "name": "integration-pagereference-accessors-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.PageReference.getUrl()",

@@ -1,5 +1,6 @@
 {
   "name": "data-database-empty-recycle-bin-runtime",
+  "salesforceEligible": true,
   "evidence": [
     {
       "surfaceId": "apex:System.Database.emptyRecycleBin(Id)",

@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-invocable-process-plugin-constructors",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The test exercises deterministic local Process.PluginDescribeResult parameter DTO construction rather than a hosted process invocation; it grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:Process.PluginDescribeResult.InputParameter.PluginDescribeResult.InputParameter(String,Process.PluginDescribeResult.ParameterType,Boolean)",

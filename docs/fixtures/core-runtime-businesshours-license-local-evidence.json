@@ -1,5 +1,8 @@
 {
   "name": "core-runtime-businesshours-license-local-evidence",
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The command relies on synthetic BusinessHours and package-license IDs that the adapter does not materialize in Salesforce; this fixture is policy-local-only and grants zero Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:BusinessHours.add(Id,Datetime,Long)",
