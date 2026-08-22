@@ -316,6 +316,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-sobjectfield-describe-runtime.json", 1},
 		{"core-cache-email-runtime.json", 3},
 		{"core-system-enum-types-runtime.json", 2},
+		{"core-runtime-system-enum-families-api67.json", 104},
 		{"core-messaging-sendemail-error-fields-runtime.json", 2},
 		{"core-messaging-mass-email-fields-runtime.json", 3},
 		{"integration-pagereference-accessors-runtime.json", 3},
