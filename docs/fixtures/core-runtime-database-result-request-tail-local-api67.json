@@ -1,0 +1,24 @@
+{
+  "apiVersion":"67.0",
+  "command":{"kind":"exec","args":["Database.LeadConvertResult result = new Database.LeadConvertResult();\nresult.errors = new List<Database.Error>();\nresult.relatedpersonaccountid = '001000000000002AAA';\nSystem.assertEquals(0, result.getErrors().size());\nSystem.assertEquals('001000000000002AAA', result.getRelatedPersonAccountId());\nDatabase.LocaleOptions locale = new Database.LocaleOptions();\nSystem.assertNotEquals(null, locale);\nDatabase.MergeRequest request = new Database.MergeRequest();\nrequest.masterrecord = new Account(Name = 'Master');\nrequest.recordtomergeids = new List<String>{'001000000000001AAA', '001000000000002AAA'};\nrequest.additionalinformationmap = new List<Datacloud.AdditionalInformationMap>();\nSystem.assertEquals(2, request.recordtomergeids.size());\nSystem.assertNotEquals(null, request.masterrecord);\nSystem.assertEquals(0, request.additionalinformationmap.size());\nDatabase.MergeResult mergeResult = new Database.MergeResult();\nSystem.assertEquals(0, mergeResult.getErrors().size());"]},
+  "evidence":[
+    {"kind":"exec","surfaceId":"apex:Database.LeadConvertResult.getErrors()","symbol":"Database.LeadConvertResult.getErrors"},
+    {"kind":"exec","surfaceId":"apex:Database.LeadConvertResult.getRelatedPersonAccountId()","symbol":"Database.LeadConvertResult.getRelatedPersonAccountId"},
+    {"kind":"exec","surfaceId":"apex:Database.LocaleOptions","symbol":"Database.LocaleOptions"},
+    {"kind":"exec","surfaceId":"apex:Database.LocaleOptions.LocaleOptions()","symbol":"Database.LocaleOptions"},
+    {"kind":"exec","surfaceId":"apex:Database.MergeRequest.additionalinformationmap","symbol":"Database.MergeRequest.additionalinformationmap"},
+    {"kind":"exec","surfaceId":"apex:Database.MergeRequest.masterrecord","symbol":"Database.MergeRequest.masterrecord"},
+    {"kind":"exec","surfaceId":"apex:Database.MergeRequest.recordtomergeids","symbol":"Database.MergeRequest.recordtomergeids"},
+    {"kind":"exec","surfaceId":"apex:Database.MergeResult.getErrors()","symbol":"Database.MergeResult.getErrors"}
+  ],
+  "evidenceOnly":false,
+  "mode":"local-runtime",
+  "name":"core-runtime-database-result-request-tail-local-api67",
+  "notes":"Exact-candidate executable local-runtime witness for locally constructed Database result/option DTOs and request fields. This fixture is local-only: API 67 hosted execution of the MergeRequest path returns an Internal Salesforce Error; no hosted Salesforce execution or parity claim is recorded.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"database-options-local-evidence","selectedRowCount":8},
+  "salesforceEligible":false,
+  "salesforceExclusionClass":"policy-local-only",
+  "salesforceExclusionReason":"Locally constructed Database result and option DTOs have direct local-runtime evidence, but API 67 hosted execution of the MergeRequest path returns an Internal Salesforce Error; this fixture records no hosted Salesforce execution or parity claim.",
+  "source":[{"path":"anonymous.apex","content":"Database.LeadConvertResult result = new Database.LeadConvertResult();\nresult.errors = new List<Database.Error>();\nresult.relatedpersonaccountid = '001000000000002AAA';\nSystem.assertEquals(0, result.getErrors().size());\nSystem.assertEquals('001000000000002AAA', result.getRelatedPersonAccountId());\nDatabase.LocaleOptions locale = new Database.LocaleOptions();\nSystem.assertNotEquals(null, locale);\nDatabase.MergeRequest request = new Database.MergeRequest();\nrequest.masterrecord = new Account(Name = 'Master');\nrequest.recordtomergeids = new List<String>{'001000000000001AAA', '001000000000002AAA'};\nrequest.additionalinformationmap = new List<Datacloud.AdditionalInformationMap>();\nSystem.assertEquals(2, request.recordtomergeids.size());\nSystem.assertNotEquals(null, request.masterrecord);\nSystem.assertEquals(0, request.additionalinformationmap.size());\nDatabase.MergeResult mergeResult = new Database.MergeResult();\nSystem.assertEquals(0, mergeResult.getErrors().size());"}],
+  "title":"API 67 Database result and request local-only executable evidence"
+}

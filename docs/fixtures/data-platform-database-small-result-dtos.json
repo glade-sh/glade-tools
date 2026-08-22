@@ -3,12 +3,6 @@
     "kind": "test"
   },
   "evidence": [
-    {
-      "kind": "test",
-      "notes": "MergeResult exposes the Salesforce-shaped nullable Database result errors value.",
-      "surfaceId": "apex:Database.MergeResult.getErrors()",
-      "symbol": "Database.MergeResult.getErrors"
-    }
   ],
   "expected": {
     "result": {

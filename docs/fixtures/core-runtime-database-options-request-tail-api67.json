@@ -1,0 +1,20 @@
+{
+  "apiVersion":"67.0",
+  "command":{"kind":"exec","args":["Database.DMLOptions options = new Database.DMLOptions();\noptions.assignmentRuleHeader.assignmentRuleID = '01Q000000000001AAA';\noptions.assignmentRuleHeader.useDefaultRule = true;\noptions.emailHeader.triggerAutoResponseEmail = true;\noptions.emailHeader.triggerOtherEmail = true;\noptions.emailHeader.triggerUserEmail = true;\nSystem.assertEquals('01Q000000000001AAA', options.assignmentRuleHeader.assignmentRuleID);\nSystem.assertEquals(true, options.assignmentRuleHeader.useDefaultRule);\nSystem.assertEquals(true, options.emailHeader.triggerAutoResponseEmail);\nSystem.assertEquals(true, options.emailHeader.triggerOtherEmail);\nSystem.assertEquals(true, options.emailHeader.triggerUserEmail);\nDatabase.LeadConvert convert = new Database.LeadConvert();\nconvert.relatedpersonaccountid = '001000000000002AAA';\nSystem.assertEquals('001000000000002AAA', convert.relatedpersonaccountid);"]},
+  "evidence":[
+    {"kind":"exec","surfaceId":"apex:Database.DmlOptions.AssignmentRuleHeader.assignmentRuleID","symbol":"assignmentRuleHeader.assignmentRuleID"},
+    {"kind":"exec","surfaceId":"apex:Database.DmlOptions.AssignmentRuleHeader.useDefaultRule","symbol":"assignmentRuleHeader.useDefaultRule"},
+    {"kind":"exec","surfaceId":"apex:Database.DmlOptions.EmailHeader.triggerAutoResponseEmail","symbol":"emailHeader.triggerAutoResponseEmail"},
+    {"kind":"exec","surfaceId":"apex:Database.DmlOptions.EmailHeader.triggerOtherEmail","symbol":"emailHeader.triggerOtherEmail"},
+    {"kind":"exec","surfaceId":"apex:Database.DmlOptions.EmailHeader.triggerUserEmail","symbol":"emailHeader.triggerUserEmail"},
+    {"kind":"exec","surfaceId":"apex:Database.LeadConvert.relatedpersonaccountid","symbol":"Database.LeadConvert.relatedpersonaccountid"}
+  ],
+  "evidenceOnly":false,
+  "mode":"local-runtime",
+  "name":"core-runtime-database-options-request-tail-api67",
+  "notes":"Exact-candidate executable local-runtime witness for five Database DmlOptions header fields and LeadConvert.relatedpersonaccountid. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "profile":{"candidateCommit":"3409c4c85827b19712e9df83fc8905aa02bd1dc8","candidateSha256":"960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce","laneId":"database-options-local-evidence","selectedRowCount":6},
+  "salesforceEligible":true,
+  "source":[{"path":"anonymous.apex","content":"Database.DMLOptions options = new Database.DMLOptions();\noptions.assignmentRuleHeader.assignmentRuleID = '01Q000000000001AAA';\noptions.assignmentRuleHeader.useDefaultRule = true;\noptions.emailHeader.triggerAutoResponseEmail = true;\noptions.emailHeader.triggerOtherEmail = true;\noptions.emailHeader.triggerUserEmail = true;\nSystem.assertEquals('01Q000000000001AAA', options.assignmentRuleHeader.assignmentRuleID);\nSystem.assertEquals(true, options.assignmentRuleHeader.useDefaultRule);\nSystem.assertEquals(true, options.emailHeader.triggerAutoResponseEmail);\nSystem.assertEquals(true, options.emailHeader.triggerOtherEmail);\nSystem.assertEquals(true, options.emailHeader.triggerUserEmail);\nDatabase.LeadConvert convert = new Database.LeadConvert();\nconvert.relatedpersonaccountid = '001000000000002AAA';\nSystem.assertEquals('001000000000002AAA', convert.relatedpersonaccountid);"}],
+  "title":"API 67 Database options request executable local evidence"
+}

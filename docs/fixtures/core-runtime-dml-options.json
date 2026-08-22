@@ -23,12 +23,7 @@
     {"surfaceId":"apex:System.Database.update(Object,Database.DMLOptions,AccessLevel)","symbol":"Database.update","kind":"test","notes":"Database.update single-record DMLOptions plus AccessLevel uses local DML."},
     {"surfaceId":"apex:System.Database.update(List<Object>,Database.DMLOptions,AccessLevel)","symbol":"Database.update","kind":"test","notes":"Database.update list DMLOptions plus AccessLevel returns ordered local SaveResult rows."},
     {"surfaceId":"apex:Database.DMLOptions.LocalizeErrors","symbol":"Database.DMLOptions.LocalizeErrors","kind":"shape","notes":"LocalizeErrors retains DTO shape; configured use is rejected before local DML."},
-    {"surfaceId":"apex:Database.DMLOptions.clone()","symbol":"Database.DMLOptions.clone","kind":"test","notes":"DMLOptions clone preserves local option and header fields."},
-    {"surfaceId":"apex:Database.DmlOptions.AssignmentRuleHeader.useDefaultRule","symbol":"Database.DMLOptions.AssignmentRuleHeader.useDefaultRule","kind":"shape","notes":"AssignmentRuleHeader.useDefaultRule retains DTO shape without assignment-rule side effects."},
-    {"surfaceId":"apex:Database.DmlOptions.AssignmentRuleHeader.assignmentRuleID","symbol":"Database.DMLOptions.AssignmentRuleHeader.assignmentRuleID","kind":"shape","notes":"AssignmentRuleHeader.assignmentRuleID retains DTO shape without assignment-rule side effects."},
-    {"surfaceId":"apex:Database.DmlOptions.EmailHeader.triggerUserEmail","symbol":"Database.DMLOptions.EmailHeader.triggerUserEmail","kind":"shape","notes":"EmailHeader.triggerUserEmail retains DTO shape without sending email."},
-    {"surfaceId":"apex:Database.DmlOptions.EmailHeader.triggerAutoResponseEmail","symbol":"Database.DMLOptions.EmailHeader.triggerAutoResponseEmail","kind":"shape","notes":"EmailHeader.triggerAutoResponseEmail retains DTO shape without sending email."},
-    {"surfaceId":"apex:Database.DmlOptions.EmailHeader.triggerOtherEmail","symbol":"Database.DMLOptions.EmailHeader.triggerOtherEmail","kind":"shape","notes":"EmailHeader.triggerOtherEmail retains DTO shape without sending email."}
+    {"surfaceId":"apex:Database.DMLOptions.clone()","symbol":"Database.DMLOptions.clone","kind":"test","notes":"DMLOptions clone preserves local option and header fields."}
   ],
   "source": [
     {"path":"force-app/main/default/objects/Account/Account.object-meta.xml","content":"<CustomObject><label>Account</label><pluralLabel>Accounts</pluralLabel><sharingModel>ReadWrite</sharingModel></CustomObject>"},
