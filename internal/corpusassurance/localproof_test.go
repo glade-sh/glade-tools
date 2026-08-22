@@ -599,7 +599,7 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"core-runtime-system-001-wave19-runtime.json", 11},
 		{"core-runtime-system-002-wave19-runtime.json", 4},
 		{"core-runtime-system-primitive-tail-api67.json", 33},
-		{"core-runtime-system-scalar-adderror-tail-api67.json", 36},
+		{"core-runtime-system-scalar-adderror-tail-api67.json", 40},
 		{"core-runtime-utility-crypto-api67.json", 2},
 		{"core-runtime-utility-exception-tail-api67.json", 2},
 		{"core-runtime-utility-http-mock-api67.json", 2},
