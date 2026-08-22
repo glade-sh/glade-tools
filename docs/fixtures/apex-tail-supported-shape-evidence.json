@@ -47,30 +47,6 @@
     },
     {
       "kind": "shape",
-      "notes": "Schema field set maps expose typed get(String) shape for local describe metadata.",
-      "surfaceId": "apex:Schema.SObjectTypeFieldSets.get(String)",
-      "symbol": "Schema.SObjectTypeFieldSets.get"
-    },
-    {
-      "kind": "shape",
-      "notes": "Schema field set maps expose typed getMap() shape for local describe metadata.",
-      "surfaceId": "apex:Schema.SObjectTypeFieldSets.getMap()",
-      "symbol": "Schema.SObjectTypeFieldSets.getMap"
-    },
-    {
-      "kind": "shape",
-      "notes": "Schema fields maps expose typed get(String) shape for local describe metadata.",
-      "surfaceId": "apex:Schema.SObjectTypeFields.get(String)",
-      "symbol": "Schema.SObjectTypeFields.get"
-    },
-    {
-      "kind": "shape",
-      "notes": "Schema fields maps expose typed getMap() shape for local describe metadata.",
-      "surfaceId": "apex:Schema.SObjectTypeFields.getMap()",
-      "symbol": "Schema.SObjectTypeFields.getMap"
-    },
-    {
-      "kind": "shape",
       "notes": "Local Address support exposes getDistance as a deterministic value object helper shape.",
       "surfaceId": "apex:System.Address.getDistance(Location,String)",
       "symbol": "Address.getDistance(Location,String)"

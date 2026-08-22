@@ -18,11 +18,6 @@
       "kind": "test",
       "surfaceId": "apex:Schema.SObjectField.isUpdateable()",
       "symbol": "Schema.SObjectField.isUpdateable()"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Schema.Schema.Schema()",
-      "symbol": "Schema.Schema.Schema()"
     }
   ],
   "expected": {
