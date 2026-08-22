@@ -14,7 +14,7 @@
       "symbol": "System.UninstallContext"
     },
     {
-      "kind": "shape",
+      "kind": "unsupported",
       "surfaceId": "apex:System.UninstallContext.OrganizationId",
       "symbol": "System.UninstallContext.OrganizationId"
     },

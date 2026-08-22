@@ -24,7 +24,7 @@
       "symbol": "InstallContext.installerId"
     },
     {
-      "kind": "test",
+      "kind": "unsupported",
       "surfaceId": "apex:System.InstallContext.InstallerId",
       "symbol": "InstallContext.InstallerId"
     }
