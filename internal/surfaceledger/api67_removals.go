@@ -46,9 +46,30 @@ var api67RemovedSurfaceKeys = map[string]struct{}{
 	"apex:metadata.deploystatus.in_progress": {},
 }
 
+var api67GatedSurfaceKeys = map[string]struct{}{
+	"apex:database.deletefilter":                         {},
+	"apex:database.deletefilter.deleted_rows_only":       {},
+	"apex:database.deletefilter.no_deleted_rows":         {},
+	"apex:database.deletefilter.no_deleted_sharing_rows": {},
+	"apex:database.deletefilter.no_filter":               {},
+	"apex:database.deletefilter.equals(object)":          {},
+	"apex:database.deletefilter.hashcode":                {},
+	"apex:database.deletefilter.ordinal":                 {},
+	"apex:database.deletefilter.valueof(string)":         {},
+	"apex:database.deletefilter.values":                  {},
+	"apex:metadata.deploystatus.in_progress":             {},
+}
+
 func isAPI67RemovedSurfaceID(id string) bool {
 	key := surfaceIDKey(id)
 	key = strings.TrimSuffix(key, "()")
 	_, removed := api67RemovedSurfaceKeys[key]
 	return removed
+}
+
+func isAPI67GatedSurfaceID(id string) bool {
+	key := surfaceIDKey(id)
+	key = strings.TrimSuffix(key, "()")
+	_, gated := api67GatedSurfaceKeys[key]
+	return gated
 }

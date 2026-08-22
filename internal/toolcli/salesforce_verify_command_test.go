@@ -17,6 +17,35 @@ import (
 	"github.com/glade-sh/glade/tools/internal/oracleprobe"
 )
 
+func TestLoadClassificationsFileAcceptsSchema2ProductTests(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "classifications.json")
+	if err := os.WriteFile(path, []byte(`{"schemaVersion":2,"previousRelease":"Spring '26","currentRelease":"Summer '26","classifications":[{"surfaceId":"apex:System.New","scope":"t0","disposition":"new-case","productTests":["internal/x_test.go:TestProduct"]}]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	got, err := loadClassificationsFile(path)
+	if err != nil {
+		t.Fatalf("loadClassificationsFile: %v", err)
+	}
+	if got.SchemaVersion != 2 || len(got.Classifications) != 1 || len(got.Classifications[0].ProductTests) != 1 {
+		t.Fatalf("got %#v", got)
+	}
+}
+
+func TestLoadClassificationsFileRejectsDuplicateAndCaseVariantKeys(t *testing.T) {
+	for _, payload := range []string{
+		`{"schemaVersion":2,"previousRelease":"Spring '26","currentRelease":"Summer '26","classifications":[{"surfaceId":"apex:System.New","surfaceId":"apex:System.Other"}]}`,
+		`{"schemaVersion":2,"previousRelease":"Spring '26","currentRelease":"Summer '26","classifications":[{"surfaceId":"apex:System.New","ProductTests":["internal/x_test.go:TestProduct"]}]}`,
+	} {
+		path := filepath.Join(t.TempDir(), "classifications.json")
+		if err := os.WriteFile(path, []byte(payload), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := loadClassificationsFile(path); err == nil {
+			t.Fatal("loadClassificationsFile unexpectedly succeeded")
+		}
+	}
+}
+
 // fakeSalesforceVerifyDeps replaces all external I/O with controlled results
 // so tests never touch a real Salesforce org, Glade binary, or Git repo.
 type fakeSalesforceVerifyDeps struct {
@@ -2153,5 +2182,18 @@ func TestSalesforceVerify_ClassifiedDeltaPasses(t *testing.T) {
 		if in.Kind != kind || in.SHA256 == "" {
 			t.Fatalf("delta input = %+v, want kind %s and hash", in, kind)
 		}
+	}
+}
+
+func TestSalesforceVerify_Schema2ProductTestsDoNotSupplyLegacyDeltaProof(t *testing.T) {
+	dir := t.TempDir()
+	opts := deltaVerifyOpts(t, dir, true)
+	replaceFile(t, opts.ReleaseClassifications, `"schemaVersion":1`, `"schemaVersion":2`)
+	replaceFile(t, opts.ReleaseClassifications, `"caseId":"NEW"`, `"productTests":["internal/x_test.go:TestNew"]`)
+	replaceFile(t, opts.ReleaseClassifications, `"caseId":"OLD"`, `"productTests":["internal/x_test.go:TestOld"]`)
+	replaceFile(t, opts.ReleaseClassifications, `"caseId":"CHANGED"`, `"productTests":["internal/x_test.go:TestChanged"]`)
+	report := runVerifyWithDeps(t, opts, allPassDeps())
+	if report.ReleaseDelta == nil || report.ReleaseDelta.Status != "fail" || report.Status != "fail" {
+		t.Fatalf("expected legacy proof failure: %+v", report)
 	}
 }

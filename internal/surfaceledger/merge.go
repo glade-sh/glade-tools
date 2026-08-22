@@ -1,17 +1,34 @@
 package surfaceledger
 
 import (
+	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 func Merge(docs, org, glade, evidence []SurfaceLedgerRow) SurfaceLedger {
+	return merge(docs, org, glade, evidence, false)
+}
+
+// MergeReleaseSnapshot applies the current merge rules while retaining only
+// the explicitly API-67-gated aliases for pre-67 release snapshots.
+func MergeReleaseSnapshot(docs []SurfaceLedgerRow, apiVersion string) (SurfaceLedger, error) {
+	trimmed := strings.TrimSpace(apiVersion)
+	api, err := strconv.Atoi(strings.TrimSuffix(trimmed, ".0"))
+	if err != nil || api < 1 || !strings.HasSuffix(trimmed, ".0") || strconv.Itoa(api)+".0" != trimmed {
+		return SurfaceLedger{}, fmt.Errorf("invalid release apiVersion %q", apiVersion)
+	}
+	return merge(docs, nil, nil, nil, api < 67), nil
+}
+
+func merge(docs, org, glade, evidence []SurfaceLedgerRow, preserveAPI67 bool) SurfaceLedger {
 	byID := map[string]SurfaceLedgerRow{}
 	for _, group := range [][]SurfaceLedgerRow{docs, org, glade, evidence} {
 		for _, row := range group {
 			row = withDefaults(row)
 			row = normalizeEventBusSurfaceRow(row)
-			if isAPI67RemovedSurfaceID(row.SurfaceID) {
+			if isAPI67RemovedSurfaceID(row.SurfaceID) && !(preserveAPI67 && isAPI67GatedSurfaceID(row.SurfaceID)) {
 				continue
 			}
 			if isNonCanonicalGeneratedSurfaceID(row.SurfaceID) {

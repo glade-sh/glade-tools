@@ -80,19 +80,7 @@ func Load(path string) (Contract, string, error) {
 		return Contract{}, "", err
 	}
 	var contract Contract
-	if err := validateExactJSON(data, reflect.TypeOf(contract)); err != nil {
-		return Contract{}, "", err
-	}
-	decoder := json.NewDecoder(strings.NewReader(string(data)))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&contract); err != nil {
-		return Contract{}, "", err
-	}
-	var trailing any
-	if err := decoder.Decode(&trailing); err != io.EOF {
-		if err == nil {
-			return Contract{}, "", fmt.Errorf("trailing JSON")
-		}
+	if err := DecodeExactJSON(data, &contract); err != nil {
 		return Contract{}, "", err
 	}
 	root, err := filepath.Abs(filepath.Dir(path))
@@ -409,6 +397,31 @@ func validateSalesforceURL(field, value string) error {
 	return nil
 }
 
+// DecodeExactJSON validates exact key spelling, nested duplicate keys, and a
+// single JSON value before decoding with unknown-field rejection.
+func DecodeExactJSON(data []byte, value any) error {
+	typeOf := reflect.TypeOf(value)
+	if typeOf == nil || typeOf.Kind() != reflect.Ptr {
+		return fmt.Errorf("exact JSON destination must be a pointer")
+	}
+	if err := validateExactJSON(data, typeOf.Elem()); err != nil {
+		return err
+	}
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(value); err != nil {
+		return err
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		if err == nil {
+			return fmt.Errorf("multiple JSON values")
+		}
+		return err
+	}
+	return nil
+}
+
 func validateExactJSON(data []byte, typeOf reflect.Type) error {
 	if typeOf.Kind() == reflect.Ptr {
 		typeOf = typeOf.Elem()
@@ -428,7 +441,7 @@ func validateExactJSON(data []byte, typeOf reflect.Type) error {
 			return fmt.Errorf("expected JSON object")
 		}
 		fields := exactJSONFields(typeOf)
-		seen := make(map[string]struct{}, len(fields))
+		seen := map[string]struct{}{}
 		for decoder.More() {
 			token, err := decoder.Token()
 			if err != nil {
@@ -489,7 +502,7 @@ func validateExactJSON(data []byte, typeOf reflect.Type) error {
 }
 
 func exactJSONFields(typeOf reflect.Type) map[string]reflect.Type {
-	fields := make(map[string]reflect.Type, typeOf.NumField())
+	fields := map[string]reflect.Type{}
 	for index := 0; index < typeOf.NumField(); index++ {
 		field := typeOf.Field(index)
 		if field.PkgPath != "" {

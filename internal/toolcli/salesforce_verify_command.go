@@ -18,6 +18,7 @@ import (
 	"github.com/glade-sh/glade/tools/internal/apexdocs"
 	"github.com/glade-sh/glade/tools/internal/apexrules"
 	"github.com/glade-sh/glade/tools/internal/oracleprobe"
+	"github.com/glade-sh/glade/tools/internal/releasecontract"
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
 
@@ -137,11 +138,12 @@ type releaseClassificationsFile struct {
 }
 
 type releaseClassificationEntry struct {
-	SurfaceID   string `json:"surfaceId"`
-	Scope       string `json:"scope"`
-	Disposition string `json:"disposition"`
-	CaseID      string `json:"caseId,omitempty"`
-	ReasonRef   string `json:"reasonRef,omitempty"`
+	SurfaceID    string   `json:"surfaceId"`
+	Scope        string   `json:"scope"`
+	Disposition  string   `json:"disposition"`
+	CaseID       string   `json:"caseId,omitempty"`
+	ReasonRef    string   `json:"reasonRef,omitempty"`
+	ProductTests []string `json:"productTests,omitempty"`
 }
 
 type verifyGitProvenance struct {
@@ -823,12 +825,8 @@ func hashTestProjectDir(root string) (string, error) {
 // ----- release manifest -----
 
 func loadReleaseManifest(path string) (releaseManifest, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return releaseManifest{}, err
-	}
 	var rm releaseManifest
-	if err := json.Unmarshal(data, &rm); err != nil {
+	if err := readExactJSONFile(path, &rm); err != nil {
 		return releaseManifest{}, fmt.Errorf("invalid release manifest JSON: %w", err)
 	}
 	if rm.SchemaVersion != 1 {
@@ -894,12 +892,11 @@ func computeReleaseDelta(opts salesforceVerifyOptions, curr releaseManifest) (*v
 	if prevAPI >= currAPI {
 		return nil, fmt.Errorf("prev API %s not lower than current %s", prev.APIVersion, curr.APIVersion)
 	}
-	prevInv, err := apexdocs.ReadInventory(opts.PreviousInventory)
-	if err != nil {
+	var prevInv, currInv apexdocs.Inventory
+	if err := readExactJSONFile(opts.PreviousInventory, &prevInv); err != nil {
 		return nil, fmt.Errorf("previous inventory: %w", err)
 	}
-	currInv, err := apexdocs.ReadInventory(opts.CurrentInventory)
-	if err != nil {
+	if err := readExactJSONFile(opts.CurrentInventory, &currInv); err != nil {
 		return nil, fmt.Errorf("current inventory: %w", err)
 	}
 	if d := apexdocs.CanonicalDigest(prevInv); d != prev.Digest {
@@ -908,14 +905,22 @@ func computeReleaseDelta(opts salesforceVerifyOptions, curr releaseManifest) (*v
 	if d := apexdocs.CanonicalDigest(currInv); d != curr.Digest {
 		return nil, fmt.Errorf("current inventory digest != manifest")
 	}
-	prevRows := surfaceledger.Merge(surfaceledger.RowsFromDocsInventory(prevInv), nil, nil, nil).Rows
-	currRows := surfaceledger.Merge(surfaceledger.RowsFromDocsInventory(currInv), nil, nil, nil).Rows
+	prevLedger, err := surfaceledger.MergeReleaseSnapshot(surfaceledger.RowsFromDocsInventory(prevInv), prev.APIVersion)
+	if err != nil {
+		return nil, fmt.Errorf("previous inventory snapshot: %w", err)
+	}
+	currLedger, err := surfaceledger.MergeReleaseSnapshot(surfaceledger.RowsFromDocsInventory(currInv), curr.APIVersion)
+	if err != nil {
+		return nil, fmt.Errorf("current inventory snapshot: %w", err)
+	}
+	prevRows := prevLedger.Rows
+	currRows := currLedger.Rows
 	classFile, err := loadClassificationsFile(opts.ReleaseClassifications)
 	if err != nil {
 		return nil, err
 	}
-	if classFile.SchemaVersion != 1 {
-		return nil, fmt.Errorf("classifications schemaVersion must be 1")
+	if classFile.SchemaVersion != 1 && classFile.SchemaVersion != 2 {
+		return nil, fmt.Errorf("classifications schemaVersion must be 1 or 2")
 	}
 	if classFile.PreviousRelease != prev.Release || classFile.CurrentRelease != curr.Release {
 		return nil, fmt.Errorf("classifications release names mismatch")
@@ -969,15 +974,19 @@ func deltaIDs(entries []surfaceledger.DeltaEntry) []string {
 }
 
 func loadClassificationsFile(path string) (releaseClassificationsFile, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return releaseClassificationsFile{}, err
-	}
 	var f releaseClassificationsFile
-	if err := json.Unmarshal(data, &f); err != nil {
+	if err := readExactJSONFile(path, &f); err != nil {
 		return releaseClassificationsFile{}, fmt.Errorf("invalid classifications JSON: %w", err)
 	}
 	return f, nil
+}
+
+func readExactJSONFile(path string, value any) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return releasecontract.DecodeExactJSON(data, value)
 }
 
 // ----- atomic write -----
