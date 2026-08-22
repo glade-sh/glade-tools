@@ -11,8 +11,6 @@
     {"surfaceId":"apex:System.ConnectedApplication","symbol":"System.ConnectedApplication","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.ContactPointPrefEnum","symbol":"System.ContactPointPrefEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.ContactPointTypeRepresentationEnum","symbol":"System.ContactPointTypeRepresentationEnum","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.Comparable","symbol":"System.Comparable","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
-    {"surfaceId":"apex:System.Comparator","symbol":"System.Comparator","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.ContentDocumentLink","symbol":"System.ContentDocumentLink","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.CronJobDetail","symbol":"System.CronJobDetail","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},
     {"surfaceId":"apex:System.CronTrigger","symbol":"System.CronTrigger","kind":"shape","notes":"Local compile-shape declaration only; no Salesforce identity or parity is claimed."},

@@ -1,5 +1,20 @@
 {
   "name": "core-runtime-callable-interface-dispatch",
+  "apiVersion": "67.0",
+  "mode": "local-runtime",
+  "candidate": {
+    "commit": "693bc1b8652907eee1c40c1c9f4604637f06a172",
+    "sha256": "235ef5f5fd6b35a9eec2ab81c129c2639c0282ff66573e8dbace80e991481bc3"
+  },
+  "profile": {
+    "candidateCommit": "693bc1b8652907eee1c40c1c9f4604637f06a172",
+    "candidateSha256": "235ef5f5fd6b35a9eec2ab81c129c2639c0282ff66573e8dbace80e991481bc3",
+    "laneId": "core-runtime-callable-interface-dispatch",
+    "selectedRowCount": 1
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "Exact-candidate local-runtime evidence with zero hosted Salesforce parity credit.",
   "evidence": [
     {
       "surfaceId": "apex:System.Callable.call(String,Map<String,Object>)",
@@ -28,5 +43,6 @@
       "failed": 0,
       "errors": 0
     }
-  }
+  },
+  "notes": "A user implementation is invoked through the System.Callable interface."
 }
