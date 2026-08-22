@@ -49,7 +49,7 @@ func TestLoadProductTestEvidenceRequiresObservedPassAndExactHash(t *testing.T) {
 				t.Fatal(err)
 			}
 			digest := sha256.Sum256(events)
-			proof := productVersionProof{SchemaVersion: 1, GladeCommit: commit, Status: "pass", Command: []string{"go", "-C", root, "test", "-json", "-count=1", "-p", "4", "./..."}, TestEvents: "product-tests.jsonl", TestEventsSHA256: fmt.Sprintf("%x", digest)}
+			proof := productVersionProof{SchemaVersion: 1, GladeCommit: commit, Status: "pass", Command: []string{"go", "-C", root, "test", "-json", "-count=1", "-p", "4", "-timeout=30m", "./..."}, TestEvents: "product-tests.jsonl", TestEventsSHA256: fmt.Sprintf("%x", digest)}
 			proofPath := writeTempJSON(t, dir, "proof.json", proof)
 			evidence, err := loadProductTestEvidence(proofPath, root, commit)
 			if err != nil {
