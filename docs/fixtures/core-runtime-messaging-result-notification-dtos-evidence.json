@@ -433,6 +433,7 @@
     }
   },
   "name": "core-runtime-messaging-result-notification-dtos-evidence",
+  "apiVersion": "66.0",
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",
   "salesforceExclusionReason": "Salesforce API 67 does not expose the generic Messaging.Builder shape exercised here, and CustomNotification delivery is a local deterministic mock; this fixture grants zero Salesforce parity.",

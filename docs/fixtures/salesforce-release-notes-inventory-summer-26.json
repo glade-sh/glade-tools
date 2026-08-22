@@ -786,7 +786,8 @@
       "sourcePath": "rn_apex_elastic_async_limit.md",
       "kind": "document",
       "name": "Avoid",
-      "title": "Avoid Workflow Disruptions by Enabling Elastic Limits for Asynchronous Jobs (Beta)"
+      "title": "Avoid Workflow Disruptions by Enabling Elastic Limits for Asynchronous Jobs (Beta)",
+      "apiVersion": "67.0"
     },
     {
       "sourcePath": "rn_apex_integrations_testing.md",

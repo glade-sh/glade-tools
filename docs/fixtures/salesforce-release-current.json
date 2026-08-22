@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "release": "Summer '26",
   "apiVersion": "67.0",
-  "digest": "a0b3d7cb6bde10acdd719ee93cb54d5daed6facb0b34a34377d0d42697f81d7c",
-  "acquisition": "glade-tools owned six-family docs scrape, Atlas Summer 262.0",
+  "digest": "ff9c3e06f85100754143a4bcfd82a3c40a24dd81c6248e5da5f7ee691cf9cf99",
+  "acquisition": "Glade Tools owned five-family Atlas Summer 262.0 scrape; LWC current-reference availability filtered to API 67.0",
   "sourceFamilies": [
     "apex-reference",
     "aura-reference",

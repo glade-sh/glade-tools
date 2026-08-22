@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "release": "Winter '26",
+  "apiVersion": "65.0",
+  "digest": "88a536b285f8136e1402c809b0bd391e06084554f371d9a89693ad5f90f8bd94",
+  "acquisition": "Glade Tools owned five-family Atlas Winter 258.0 scrape; LWC current-reference availability filtered to API 65.0",
+  "sourceFamilies": [
+    "apex-reference",
+    "aura-reference",
+    "lwc-reference",
+    "rest-api-reference",
+    "tooling-api-reference",
+    "visualforce-reference"
+  ]
+}

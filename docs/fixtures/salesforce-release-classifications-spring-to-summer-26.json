@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "previousRelease": "Spring '26",
   "currentRelease": "Summer '26",
   "classifications": [
@@ -7,1011 +7,3264 @@
       "surfaceId": "apex:commercepayments.AuthorizationRequest.paymentMethodData",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-REQUEST"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.authorizationrequest.paymentmethoddata"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.additionalAttributes",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.additionalattributes"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.discountAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.discountamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.dutyAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.dutyamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.equals(Object)",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.equals(object)"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.hashCode()",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.hashcode()"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.invoiceNumber",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.invoicenumber"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.lineItems",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.lineitems"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.referenceId",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.referenceid"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.salesTaxAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.salestaxamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shipFromZip",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.shipfromzip"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shippingAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.shippingamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shipToCountry",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.shiptocountry"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.shipToZip",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.shiptozip"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.taxRate",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.taxrate"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.toString()",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.tostring()"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.EnhancedPaymentDataInput.totalTaxAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-DATA"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.enhancedpaymentdatainput.totaltaxamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.additionalAttributes",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.additionalattributes"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.commodityCode",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.commoditycode"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.description",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.description"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.discount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.discount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.discountIndicator",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.discountindicator"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.dutyAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.dutyamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.equals(Object)",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.equals(object)"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.grossNetIndicator",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.grossnetindicator"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.hashCode()",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.hashcode()"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.lineItemId",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.lineitemid"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.lineItemTotal",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.lineitemtotal"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.name",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.name"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.quantity",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.quantity"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.shippingAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.shippingamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.sku",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.sku"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.taxAmount",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.taxamount"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.taxRate",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.taxrate"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.toString()",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.tostring()"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.unitPrice",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.unitprice"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.LineItemInput.uom",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-LINE-ITEM"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.lineiteminput.uom"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.SaleRequest.enhancedPaymentData",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-REQUEST"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salerequest.enhancedpaymentdata"
+      ]
     },
     {
       "surfaceId": "apex:commercepayments.SaleRequest.paymentInitiationSourceId",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-COMMERCE-PAYMENT-REQUEST"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:commercepayments.salerequest.paymentinitiationsourceid"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.assignedresourcesinput",
+      "surfaceId": "apex:ConnectApi.BestLocationPerSKUOutputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.bestlocationperskuoutputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.cartfromquoteinput",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.changeorderadjustmentgroupsummaryinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.changeorderdeliverygroupsummaryinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.changeorderitemadjustmentlinesummaryinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.changeorderitemsummaryinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.changeorderitemtaxlineitemsummaryinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.changeordersummaryinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.commercenoteinput",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.compositecommercevariationinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.createquotefromcartinput",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.createquotefromproductinput",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.deliveryroutingengineinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.fetchfilesinput",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.locationlistinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.routingproductinputrepresentation",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.updatequoteinput",
-      "scope": "t2", "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.bestlocationperskuoutputrepresentation",
+      "surfaceId": "apex:ConnectApi.CartFromQuoteInput",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cartfromquoteinput"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.buyerproductsummaryrepresentation",
+      "surfaceId": "apex:ConnectApi.CartFromQuoteOutput",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.cartfromquoteoutput"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.cartfromquoteoutput",
+      "surfaceId": "apex:ConnectApi.CommerceCart.createCartFromQuote(String,String,ConnectApi.CartFromQuoteInput)",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercecart.createcartfromquote(string,string,connectapi.cartfromquoteinput)"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.commercenote",
+      "surfaceId": "apex:ConnectApi.CommerceNoteInput",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercenoteinput"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.commercequotecollection",
+      "surfaceId": "apex:ConnectApi.CommerceQuotes.createQuoteFromProduct(String,String,ConnectApi.CreateQuoteFromProductInput)",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes.createquotefromproduct(string,string,connectapi.createquotefromproductinput)"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.commercequotedetail",
+      "surfaceId": "apex:ConnectApi.CommerceQuotes.updateQuote(String,String,ConnectApi.updateQuoteInput)",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.commercequotes.updatequote(string,string,connectapi.updatequoteinput)"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.commercequotelineitem",
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromProductInput",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createquotefromproductinput"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.commercequotewithproductdetail",
+      "surfaceId": "apex:ConnectApi.CreateQuoteFromProductOutput",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.createquotefromproductoutput"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.createquotefromcartoutput",
+      "surfaceId": "apex:ConnectApi.DeliveryRoutingEngineInputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.deliveryroutingengineinputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.createquotefromproductoutput",
+      "surfaceId": "apex:ConnectApi.DeliveryRoutingEngineOutputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.deliveryroutingengineoutputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.deliveryroutingengineoutputrepresentation",
+      "surfaceId": "apex:ConnectApi.LocationListInputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.locationlistinputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.einsteinprompttemplateattachmentexclusioninfo",
+      "surfaceId": "apex:ConnectApi.RouteLocationOutputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.routelocationoutputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.einsteinprompttemplatemergefieldinformationcontext",
+      "surfaceId": "apex:ConnectApi.RouteOutputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.routeoutputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.fetchfilesoutputrepresentation",
+      "surfaceId": "apex:ConnectApi.RouteProductOutputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.routeproductoutputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.previewchangeordersummaryoutputrepresentation",
+      "surfaceId": "apex:ConnectApi.RoutingProductInputRepresentation",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.routingproductinputrepresentation"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.productvariationattributesrepresentation",
+      "surfaceId": "apex:ConnectApi.updateQuoteInput",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.updatequoteinput"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.quoteerror",
+      "surfaceId": "apex:ConnectApi.UpdateQuoteOutput",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:connectapi.updatequoteoutput"
+      ]
     },
     {
-      "surfaceId": "apex:connectapi.routelocationoutputrepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.routeoutputrepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.routeproductoutputrepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.submitchangeordersummaryoutputrepresentation",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
-    },
-    {
-      "surfaceId": "apex:connectapi.updatequoteoutput",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-connectapi"
+      "surfaceId": "apex:Database.DeleteFilter",
+      "scope": "t0",
+      "disposition": "new-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:database.deletefilter"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getApexClass()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getapexclass()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getDataType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getdatatype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getIsCollection()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getiscollection()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValue()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalue()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsBooleanList()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalueasbooleanlist()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsDateList()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalueasdatelist()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsDoubleList()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalueasdoublelist()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsIntegerList()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalueasintegerlist()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsList()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalueaslist()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsLongList()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalueaslonglist()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.AdditionalAttribute.getValueAsStringList()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.additionalattribute.getvalueasstringlist()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getAction()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getaction()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getAllowsTransactionControl()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getallowstransactioncontrol()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getCapabilityTypes()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getcapabilitytypes()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getCategory()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getcategory()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getConfigurationEditor()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getconfigurationeditor()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getDescription()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getdescription()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getGenericTypes()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getgenerictypes()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getHasCallout()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.gethascallout()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getHasSystemGeneratedOutput()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.gethassystemgeneratedoutput()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getIconId()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.geticonid()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getIconName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.geticonname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getInputs()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getinputs()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getLabel()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getlabel()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getMethodDescription()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getmethoddescription()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getMethodLabel()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getmethodlabel()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getMethodName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getmethodname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getOutputs()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.getoutputs()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getTargetEntityName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.gettargetentityname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.DescribeResult.getType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.describeresult.gettype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.GenericType",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.generictype"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.GenericType.getDescription()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.generictype.getdescription()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.GenericType.getLabel()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.generictype.getlabel()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.GenericType.getName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.generictype.getname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.GenericType.getSuperType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.generictype.getsupertype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.getDescribe()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.getdescribe()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getAdditionalAttributes()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getadditionalattributes()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getApexClass()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getapexclass()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getByteLength()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getbytelength()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getConfiguration()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getconfiguration()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getDefaultValue()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getdefaultvalue()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getDescription()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getdescription()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getLabel()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getlabel()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getMaxOccurs()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getmaxoccurs()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getPicklistValues()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getpicklistvalues()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getPlaceholderText()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getplaceholdertext()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getRequired()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getrequired()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getSetupReferenceType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getsetupreferencetype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getSObjectType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.getsobjecttype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getToolingType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.gettoolingtype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.InputParameter.getType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.inputparameter.gettype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getAdditionalAttributes()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getadditionalattributes()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getApexClass()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getapexclass()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getDescription()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getdescription()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getLabel()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getlabel()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getMaxOccurs()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getmaxoccurs()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getName()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getname()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getPicklistValues()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getpicklistvalues()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getSObjectType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.getsobjecttype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.OutputParameter.getType()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.outputparameter.gettype()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.PicklistValue",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.picklistvalue"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.PicklistValue.getActive()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.picklistvalue.getactive()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.PicklistValue.getDefaultValue()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.picklistvalue.getdefaultvalue()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.PicklistValue.getLabel()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.picklistvalue.getlabel()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.PicklistValue.getValidFor()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.picklistvalue.getvalidfor()"
+      ]
     },
     {
       "surfaceId": "apex:Invocable.Action.PicklistValue.getValue()",
       "scope": "t2",
       "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-invocable-action-metadata"
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:invocable.action.picklistvalue.getvalue()"
+      ]
     },
     {
-      "surfaceId": "apex:System.Database.convertLead(leadsToConvert,accessLevel)",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.getCustomHeaders()",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-DATABASE-CONVERT-LEAD-ACCESS"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.singleemailmessage.getcustomheaders()"
+      ]
     },
     {
-      "surfaceId": "apex:System.Database.convertLead(leadToConvert,accessLevel)",
+      "surfaceId": "apex:Messaging.SingleEmailMessage.setCustomHeaders(Map<String,String>)",
       "scope": "t0",
       "disposition": "new-case",
-      "caseId": "SF67-DATABASE-CONVERT-LEAD-ACCESS"
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:messaging.singleemailmessage.setcustomheaders(map<string,string>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.addressLines",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.addresslines"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.addressLinesValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.addresslinesvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.administrativeArea",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.administrativearea"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.administrativeAreaValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.administrativeareavalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.country",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.country"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.countryCode",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.countrycode"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.countryCodeValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.countrycodevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.countryValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.countryvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.locality",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.locality"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.localityValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.localityvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.postalCode",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.postalcode"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.postalCodeValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.postalcodevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.subAdministrativeArea",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.subadministrativearea"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.subAdministrativeAreaValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.subadministrativeareavalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.subLocality",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.sublocality"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Address.subLocalityValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.address.sublocalityvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.CurrencyAmount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.currencyamount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.CurrencyAmount.amount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.currencyamount.amount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.CurrencyAmount.currency",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.currencyamount.currency"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderBeneficiary",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderbeneficiary"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderBeneficiary.legalName",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderbeneficiary.legalname"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderBeneficiary.legalNameValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderbeneficiary.legalnamevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderBeneficiary.taxIdentifierType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderbeneficiary.taxidentifiertype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderBeneficiary.taxIdentifierTypeValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderbeneficiary.taxidentifiertypevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderBeneficiary.taxIdentifierValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderbeneficiary.taxidentifiervalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderBeneficiary.taxIdentifierValueValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderbeneficiary.taxidentifiervaluevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.orderBeneficiary",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.orderbeneficiary"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.orderBeneficiaryValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.orderbeneficiaryvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.orderExpiration",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.orderexpiration"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.orderExpirationValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.orderexpirationvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.orderType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.ordertype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.orderTypeValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.ordertypevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.paymentCheckoutBehavior",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.paymentcheckoutbehavior"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.paymentCheckoutBehaviorValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.paymentcheckoutbehaviorvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.paymentInitiation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.paymentinitiation"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.paymentInitiationValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.paymentinitiationvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.paymentMethodHints",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.paymentmethodhints"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderContext.paymentMethodHintsValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordercontext.paymentmethodhintsvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderExpiration",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderexpiration"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderExpiration.durationFromCreation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderexpiration.durationfromcreation"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderExpiration.durationFromCreationValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderexpiration.durationfromcreationvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderExpiration.expirationDateTime",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderexpiration.expirationdatetime"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderExpiration.expirationDateTimeValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderexpiration.expirationdatetimevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCategory",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcategory"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCommerceAttributes",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcommerceattributes"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCommerceAttributes.category",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcommerceattributes.category"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCommerceAttributes.categoryValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcommerceattributes.categoryvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCommerceAttributes.importer",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcommerceattributes.importer"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCommerceAttributes.importerValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcommerceattributes.importervalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCommerceAttributes.retailerId",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcommerceattributes.retailerid"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemCommerceAttributes.retailerIdValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemcommerceattributes.retaileridvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemImporter",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemimporter"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemImporter.address",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemimporter.address"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemImporter.addressValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemimporter.addressvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemImporter.countryOfOrigin",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemimporter.countryoforigin"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemImporter.countryOfOriginValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemimporter.countryoforiginvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemImporter.name",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemimporter.name"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderItemImporter.nameValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.orderitemimporter.namevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.OrderType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.ordertype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentCheckoutBehavior",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentcheckoutbehavior"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentError",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenterror"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentError.code",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenterror.code"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentError.message",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenterror.message"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentGatewayProperties",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentgatewayproperties"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentGatewayProperties.callbackUrl",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentgatewayproperties.callbackurl"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentGatewayProperties.callbackUrlValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentgatewayproperties.callbackurlvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentGatewayProperties.returnUrl",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentgatewayproperties.returnurl"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentGatewayProperties.returnUrlValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentgatewayproperties.returnurlvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.boleto",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.boleto"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.boletoValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.boletovalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.gateway",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.gateway"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.gatewayValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.gatewayvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.initiationMode",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.initiationmode"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.initiationModeValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.initiationmodevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.pix",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.pix"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiation.pixValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiation.pixvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationBoleto",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationboleto"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationBoleto.documentNumber",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationboleto.documentnumber"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationBoleto.documentNumberValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationboleto.documentnumbervalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.amount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.amount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.amountValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.amountvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.currency",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.currency"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.currencyValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.currencyvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.gatewayProperties",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.gatewayproperties"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.gatewayPropertiesValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.gatewaypropertiesvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.metadata",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.metadata"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.metadataValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.metadatavalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.orderId",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.orderid"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.orderIdValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.orderidvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.signature",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.signature"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationGateway.signatureValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationgateway.signaturevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationMode",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationmode"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPix",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpix"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPix.endToEndId",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpix.endtoendid"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPix.endToEndIdValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpix.endtoendidvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPix.key",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpix.key"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPix.keyType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpix.keytype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPix.keyTypeValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpix.keytypevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPix.keyValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpix.keyvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentInitiationPixKeyType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentinitiationpixkeytype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.commerce",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.commerce"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.commerceValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.commercevalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.discount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.discount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.discountValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.discountvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.quantity",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.quantity"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.quantityValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.quantityvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.saleAmount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.saleamount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentLineItem.saleAmountValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentlineitem.saleamountvalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentMethodHint",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymentmethodhint"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction.amount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction.amount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction.gatewayReference",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction.gatewayreference"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction.refunds",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction.refunds"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction.status",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction.status"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction.timestamp",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction.timestamp"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction.transactionId",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction.transactionid"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransaction.transactionType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransaction.transactiontype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransactionStatus",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransactionstatus"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.PaymentTransactionType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.paymenttransactiontype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusHandler",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatushandler"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusHandler.processPaymentStatus(RichMessaging.ProcessPaymentStatusRequest)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatushandler.processpaymentstatus(richmessaging.processpaymentstatusrequest)"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.amount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.amount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.error",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.error"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.orderId",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.orderid"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.paymentMethod",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.paymentmethod"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.paymentTransaction",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.paymenttransaction"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.transactionId",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.transactionid"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.transactionStatus",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.transactionstatus"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusRequest.transactionType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusrequest.transactiontype"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusResult",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusresult"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusResult.message",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusresult.message"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.ProcessPaymentStatusResult.status",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.processpaymentstatusresult.status"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Refund",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.refund"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Refund.amount",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.refund.amount"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Refund.gatewayReference",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.refund.gatewayreference"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Refund.reason",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.refund.reason"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Refund.refundId",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.refund.refundid"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Refund.status",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.refund.status"
+      ]
+    },
+    {
+      "surfaceId": "apex:RichMessaging.Refund.timestamp",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:richmessaging.refund.timestamp"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionAlert",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptionalert"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionAlert.alertTriggerType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptionalert.alerttriggertype"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionAlert.alertTriggerValue",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptionalert.alerttriggervalue"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionAlert.ConsumptionAlert(String,Integer,Boolean,Datetime)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptionalert.consumptionalert(string,integer,boolean,datetime)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionAlert.createdDate",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptionalert.createddate"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionAlert.isNotificationSent",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptionalert.isnotificationsent"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard.businessEnvType",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard.businessenvtype"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard.cardDefinitionDeveloperName",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard.carddefinitiondevelopername"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard.consumptionAlerts",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard.consumptionalerts"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard.ConsumptionCard(String,String,String,Double,Double,List<sfdw.ConsumptionAlert>)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard.consumptioncard(string,string,string,double,double,list<sfdw.consumptionalert>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard.totalEntitlement",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard.totalentitlement"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard.unitsConsumed",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard.unitsconsumed"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfdw.ConsumptionCard.usageModel",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfdw.consumptioncard.usagemodel"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.queryhandle"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.create(String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.queryhandle.create(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.toString()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.queryhandle.tostring()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.withOffset(Long)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.queryhandle.withoffset(long)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.QueryHandle.withWorkloadName(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.queryhandle.withworkloadname(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getBoolean(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getboolean(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getBoolean(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getboolean(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getColumnIndex(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getcolumnindex(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDate(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdate(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDate(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdate(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDateTime(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdatetime(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDateTime(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdatetime(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDecimal(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdecimal(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDecimal(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdecimal(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDouble(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdouble(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getDouble(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getdouble(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getInteger(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getinteger(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getInteger(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getinteger(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getList(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getlist(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getList(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getlist(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getLong(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getlong(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getLong(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getlong(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getObject(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getobject(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getObject(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getobject(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getRawRow()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getrawrow()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getString(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getstring(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getString(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.getstring(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getTime(Integer)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.gettime(integer)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.getTime(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.gettime(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.Row(ConnectApi.QuerySqlRow,List<ConnectApi.QuerySqlMetadataItem>)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.row(connectapi.querysqlrow,list<connectapi.querysqlmetadataitem>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.Row.toString()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.row.tostring()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.cancel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.cancel()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.chainNextJob(sfsqlquery.QueryHandle)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.chainnextjob(sfsqlquery.queryhandle)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getColumnNames()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.getcolumnnames()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getMetadata()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.getmetadata()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getPageOutput()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.getpageoutput()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getQueryId()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.getqueryid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.getRows()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.getrows()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.processDataChunk()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.processdatachunk()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.SqlQueueable(sfsqlquery.QueryHandle)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.sqlqueueable(sfsqlquery.queryhandle)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.SqlQueueable(sfsqlquery.SqlStatement)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.sqlqueueable(sfsqlquery.sqlstatement)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlQueueable.toString()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlqueueable.tostring()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.cancel()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.cancel()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.getColumnNames()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.getcolumnnames()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.getMetadata()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.getmetadata()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.getQueryId()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.getqueryid()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.hasNext()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.hasnext()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.iterator()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.iterator()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.next()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.next()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.SqlRowIterator(sfsqlquery.QueryHandle)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.sqlrowiterator(sfsqlquery.queryhandle)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.SqlRowIterator(sfsqlquery.SqlStatement)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.sqlrowiterator(sfsqlquery.sqlstatement)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlRowIterator.toString()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlrowiterator.tostring()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlstatement"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.create(ConnectApi.QuerySqlInput,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlstatement.create(connectapi.querysqlinput,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.create(String,String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlstatement.create(string,string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.execute()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlstatement.execute()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.toString()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlstatement.tostring()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlStatement.withWorkloadName(String)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqlstatement.withworkloadname(string)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqltester"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.clearMocks()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqltester.clearmocks()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.enqueueMockRows(List<ConnectApi.QuerySqlRow>)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqltester.enqueuemockrows(list<connectapi.querysqlrow>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.isRunningTest()",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqltester.isrunningtest()"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.setMockMetadata(List<ConnectApi.QuerySqlMetadataItem>)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqltester.setmockmetadata(list<connectapi.querysqlmetadataitem>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:sfsqlquery.SqlTester.setMockRows(List<ConnectApi.QuerySqlRow>)",
+      "scope": "t2",
+      "disposition": "deterministic-mock",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-hosted-apex-namespaces",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:sfsqlquery.sqltester.setmockrows(list<connectapi.querysqlrow>)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.convertLead(Database.LeadConvert,AccessLevel)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.convertlead(database.leadconvert,accesslevel)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.Database.convertLead(List<Database.LeadConvert>,AccessLevel)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.database.convertlead(list<database.leadconvert>,accesslevel)"
+      ]
+    },
+    {
+      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<SObject>,AccessLevel)",
+      "scope": "t0",
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.eventbus.publishwithaccesslevel(list<sobject>,accesslevel)"
+      ]
     },
     {
       "surfaceId": "apex:System.EventBus.publishWithAccessLevel(List<SObject>,Object,AccessLevel)",
       "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-EVENTBUS-PUBLISH-ACCESS"
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.eventbus.publishwithaccesslevel(list<sobject>,object,accesslevel)"
+      ]
     },
     {
-      "surfaceId": "apex:system.eventbus.publishwithaccesslevel(event,callback,accesslevel)",
+      "surfaceId": "apex:System.EventBus.publishWithAccessLevel(SObject,AccessLevel)",
       "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-EVENTBUS-PUBLISH-ACCESS"
-    },
-    {
-      "surfaceId": "apex:System.Finalizer",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "apex:System.Finalizer.execute(finalizerContext)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getAsyncApexJobId()",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getException()",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getRequestId()",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "apex:System.FinalizerContext.getResult()",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
+      "disposition": "existing-case",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.eventbus.publishwithaccesslevel(sobject,accesslevel)"
+      ]
     },
     {
       "surfaceId": "apex:System.IntegrationTest",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-INTEGRATION-TEST"
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#explicitly-unsupported-integrationtest-preview",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.integrationtest"
+      ]
     },
     {
       "surfaceId": "apex:System.IntegrationTest.commitTestOnly()",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-INTEGRATION-TEST"
-    },
-    {
-      "surfaceId": "apex:System.ParentJobResult",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "apex:System.String.template(valueMap)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-STRING-TEMPLATE"
-    },
-    {
-      "surfaceId": "apex:System.System.attachFinalizer(finalizer)",
-      "scope": "t0",
-      "disposition": "new-case",
-      "caseId": "SF67-FINALIZER"
-    },
-    {
-      "surfaceId": "lwc:`experience/blockBuilderApi`",
-      "scope": "t1",
-      "disposition": "new-case",
-      "caseId": "SF67-LWC-BLOCK-BUILDER"
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#explicitly-unsupported-integrationtest-preview",
+      "productTests": [
+        "internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:system.integrationtest.committestonly()"
+      ]
     },
     {
       "surfaceId": "tooling:PlatformEventMigration",
-      "scope": "t2",
-      "disposition": "deterministic-mock",
-      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#deterministic-mock-for-tooling-api"
+      "scope": "outside-claim",
+      "disposition": "explicit-unsupported",
+      "reasonRef": "docs/SALESFORCE_RELEASE_SCOPE.md#explicitly-unsupported-tooling-platform-event-migration",
+      "productTests": [
+        "internal/server/server_test.go:TestToolingPlatformEventMigrationAPI67IsExplicitlyUnsupported"
+      ]
     }
   ]
 }

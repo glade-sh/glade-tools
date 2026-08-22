@@ -448,6 +448,20 @@ func TestReleaseDelta_T1ValidClassifications(t *testing.T) {
 	}
 }
 
+func TestReleaseDelta_NewCaseAcceptsExactProductTestBinding(t *testing.T) {
+	prev := []SurfaceLedgerRow{}
+	current := []SurfaceLedgerRow{{SurfaceID: "apex:T.Class", Signature: "v1"}}
+	cls := []ReleaseClassification{{
+		SurfaceID:    "apex:T.Class",
+		Scope:        ScopeT1,
+		Disposition:  DispoNewCase,
+		ProductTests: []string{"internal/sema/platform_availability_test.go:TestGeneratedPlatformAvailabilitySurface/apex:t.class"},
+	}}
+	if _, _, _, _, err := ComputeReleaseDelta(prev, current, cls); err != nil {
+		t.Fatalf("exact product-test binding: %v", err)
+	}
+}
+
 // --- test case 12: T2 and outside-claim rows still require explicit decision and reason ---
 
 func TestReleaseDelta_T2RequiresDecision(t *testing.T) {

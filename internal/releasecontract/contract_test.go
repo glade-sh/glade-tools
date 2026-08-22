@@ -28,9 +28,9 @@ func validContract() Contract {
 			OrgProfiles: []ProfileProof{{Name: "default", ProductTests: []string{"internal/vm/execution_policy_test.go:TestCurrentSourceExecutionPolicyUsesAPIVersionAndTriggerFrame"}}},
 		},
 		Releases: []Release{
-			{Name: "Winter '26", APIVersion: "65.0", Maturity: "ga", Manifest: "winter.json", Inventory: "winter-inventory.json"},
-			{Name: "Spring '26", APIVersion: "66.0", Maturity: "ga", Manifest: "spring.json", Inventory: "spring-inventory.json", Classifications: "winter-to-spring.json", ChangeInventory: "spring-notes.json", ChangeRoutes: "winter-to-spring-routes.json"},
-			{Name: "Summer '26", APIVersion: "67.0", Maturity: "ga", Manifest: "summer.json", Inventory: "summer-inventory.json", Classifications: "spring-to-summer.json", ChangeInventory: "summer-notes.json", ChangeRoutes: "spring-to-summer-routes.json"},
+			{Name: "Winter '26", APIVersion: "65.0", Maturity: "ga", Manifest: "winter.json", Inventory: "winter-inventory.json", SourceReceipt: "winter-source.json", SourceReceiptSHA256: strings.Repeat("a", 64)},
+			{Name: "Spring '26", APIVersion: "66.0", Maturity: "ga", Manifest: "spring.json", Inventory: "spring-inventory.json", SourceReceipt: "spring-source.json", SourceReceiptSHA256: strings.Repeat("b", 64), Classifications: "winter-to-spring.json", ChangeInventory: "spring-notes.json", ChangeRoutes: "winter-to-spring-routes.json"},
+			{Name: "Summer '26", APIVersion: "67.0", Maturity: "ga", Manifest: "summer.json", Inventory: "summer-inventory.json", SourceReceipt: "summer-source.json", SourceReceiptSHA256: strings.Repeat("c", 64), Classifications: "spring-to-summer.json", ChangeInventory: "summer-notes.json", ChangeRoutes: "spring-to-summer-routes.json"},
 		},
 		Behaviors: []Behavior{{
 			ID: "apex.query.with-security-enforced.removed", Axis: "source", Kind: "removed", Outcome: "supported", Until: "67.0", Maturity: "ga",
@@ -94,6 +94,9 @@ func TestValidateRejectsInvalidContractFields(t *testing.T) {
 		{"absolute release path", func(c *Contract) { c.Releases[0].Manifest = "/tmp/winter.json" }},
 		{"escaping release path", func(c *Contract) { c.Releases[0].Inventory = "../winter-inventory.json" }},
 		{"backslash release path", func(c *Contract) { c.Releases[0].Manifest = `..\outside.json` }},
+		{"missing source receipt", func(c *Contract) { c.Releases[0].SourceReceipt = "" }},
+		{"invalid source receipt SHA", func(c *Contract) { c.Releases[0].SourceReceiptSHA256 = "not-a-sha" }},
+		{"absolute surface corrections path", func(c *Contract) { c.SurfaceCorrections = "/tmp/corrections.json" }},
 		{"duplicate behavior ID", func(c *Contract) { c.Behaviors = append(c.Behaviors, c.Behaviors[0]) }},
 		{"behavior without proof", func(c *Contract) { c.Behaviors[0].ProofCases = nil; c.Behaviors[0].ProductTests = nil }},
 		{"non-Salesforce source URL", func(c *Contract) { c.Behaviors[0].SourceRefs = []string{"https://example.com/release"} }},

@@ -34,6 +34,9 @@ type RunResult struct {
 }
 
 func Run(fixture Fixture) (RunResult, error) {
+	if fixture.Project.SourceAPIVersion == "" {
+		fixture.Project.SourceAPIVersion = fixture.APIVersion
+	}
 	if err := Validate(fixture); err != nil {
 		return RunResult{Name: fixture.Name, Kind: fixture.Command.Kind}, err
 	}

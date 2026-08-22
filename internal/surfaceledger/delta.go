@@ -48,7 +48,7 @@ type ReleaseClassification struct {
 	SurfaceID    string             `json:"surfaceId"`
 	Scope        ReleaseScope       `json:"scope"`
 	Disposition  ReleaseDisposition `json:"disposition"`
-	CaseID       string             `json:"caseId,omitempty"`    // required for existing-case, new-case
+	CaseID       string             `json:"caseId,omitempty"`    // existing-case/new-case require this or ProductTests
 	ReasonRef    string             `json:"reasonRef,omitempty"` // required for deterministic-mock, explicit-unsupported
 	ProductTests []string           `json:"productTests,omitempty"`
 }
@@ -221,8 +221,8 @@ func ValidateReleaseClassification(c ReleaseClassification) error {
 
 	switch c.Disposition {
 	case DispoExistingCase, DispoNewCase:
-		if c.CaseID == "" {
-			return fmt.Errorf("%s requires non-empty case ID for %s", c.Disposition, c.SurfaceID)
+		if c.CaseID == "" && len(c.ProductTests) == 0 {
+			return fmt.Errorf("%s requires a case ID or product test for %s", c.Disposition, c.SurfaceID)
 		}
 	case DispoDeterministicMock, DispoExplicitUnsupported:
 		if c.ReasonRef == "" {

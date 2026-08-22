@@ -6,7 +6,7 @@
     {"surfaceId":"apex:ApexPages.StandardController.edit()","symbol":"ApexPages.StandardController.edit()","kind":"exec"},
     {"surfaceId":"apex:ApexPages.StandardController.cancel()","symbol":"ApexPages.StandardController.cancel()","kind":"exec"}
   ],
-  "project":{"sourceApiVersion":"64.0","packageDirectories":[{"path":"force-app","default":true}]},
+  "project":{"sourceApiVersion":"65.0","packageDirectories":[{"path":"force-app","default":true}]},
   "source":[
     {"path":"anonymous.apex","content":"Account account = new Account(Name = 'Action Seed'); insert account; ApexPages.StandardController controller = new ApexPages.StandardController(account); account.Name = 'Action Updated'; PageReference quick = controller.quickSave(); System.assertNotEquals(null, quick); Account saved = [SELECT Id, Name FROM Account WHERE Id = :account.Id]; System.assertEquals('Action Updated', saved.Name); String expectedUrl = '/' + String.valueOf(account.Id); PageReference viewed = controller.view(); System.assertEquals(expectedUrl, viewed.getUrl()); PageReference edited = controller.edit(); System.assertEquals(expectedUrl, edited.getUrl()); PageReference cancelled = controller.cancel(); System.assertEquals(expectedUrl, cancelled.getUrl());"}
   ],

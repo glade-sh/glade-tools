@@ -1,11 +1,15 @@
 package toolcli
 
 import (
+	"bufio"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"io"
 	"os"
 	"os/exec"
@@ -27,9 +31,11 @@ import (
 // salesforceVerifyOptions holds the parsed CLI arguments for salesforce verify.
 type salesforceVerifyOptions struct {
 	ReleaseManifest, Catalog, RuntimeCases, TestProject                                  string
+	ReleaseContract, ProductVersionProof                                                 string
 	TargetOrg, GladeBin, GladeRoot, Out                                                  string
 	Developer                                                                            bool
 	PreviousReleaseManifest, PreviousInventory, CurrentInventory, ReleaseClassifications string
+	releaseSourceVersions                                                                []string
 }
 
 func (o salesforceVerifyOptions) deltaMode() bool {
@@ -97,22 +103,23 @@ func realDeps() *salesforceVerifyDeps {
 
 // ----- report schema -----
 
-const verifyReportSchemaVersion = 1
+const verifyReportSchemaVersion = 2
 
 type verifyReport struct {
-	SchemaVersion int                 `json:"schemaVersion"`
-	Release       string              `json:"release"`
-	APIVersion    string              `json:"apiVersion"`
-	Status        string              `json:"status"`
-	Glade         verifyGitProvenance `json:"glade"`
-	GladeTools    verifyGitProvenance `json:"gladeTools"`
-	Candidate     verifyCandidate     `json:"candidate"`
-	Inputs        []verifyInput       `json:"inputs"`
-	ReleaseDelta  *verifyReleaseDelta `json:"releaseDelta,omitempty"`
-	Compiler      verifySection       `json:"compiler"`
-	Runtime       verifySection       `json:"runtime"`
-	Lifecycle     verifySection       `json:"lifecycle"`
-	Summary       verifySummary       `json:"summary"`
+	SchemaVersion       int                    `json:"schemaVersion"`
+	Release             string                 `json:"release"`
+	APIVersion          string                 `json:"apiVersion"`
+	Status              string                 `json:"status"`
+	Glade               verifyGitProvenance    `json:"glade"`
+	GladeTools          verifyGitProvenance    `json:"gladeTools"`
+	Candidate           verifyCandidate        `json:"candidate"`
+	Inputs              []verifyInput          `json:"inputs"`
+	ReleaseDelta        *verifyReleaseDelta    `json:"releaseDelta,omitempty"`
+	ReleaseCompleteness releasecontract.Report `json:"releaseCompleteness"`
+	Compiler            verifySection          `json:"compiler"`
+	Runtime             verifySection          `json:"runtime"`
+	Lifecycle           verifySection          `json:"lifecycle"`
+	Summary             verifySummary          `json:"summary"`
 }
 
 type verifyReleaseDelta struct {
@@ -181,9 +188,31 @@ type verifyCase struct {
 }
 
 type verifySummary struct {
+	Required     int `json:"required"`
 	Pass         int `json:"pass"`
 	Fail         int `json:"fail"`
 	Inconclusive int `json:"inconclusive"`
+}
+
+type productVersionProof struct {
+	SchemaVersion    int      `json:"schemaVersion"`
+	GladeCommit      string   `json:"gladeCommit"`
+	Status           string   `json:"status"`
+	Command          []string `json:"command"`
+	TestEvents       string   `json:"testEvents"`
+	TestEventsSHA256 string   `json:"testEventsSHA256"`
+}
+
+type productTestEvidence struct {
+	gladeRoot string
+	module    string
+	passes    map[string]bool
+	bindings  map[string]productTestBinding
+}
+
+type productTestBinding struct {
+	packagePath string
+	testName    string
 }
 
 // ----- release manifest schema -----
@@ -259,10 +288,8 @@ func parseSalesforceVerifyFlags(args []string) (salesforceVerifyOptions, error) 
 		}
 		flag := args[i]
 		switch flag {
-		case "--release-manifest", "--catalog", "--runtime-cases", "--test-project",
-			"--target-org", "--glade-bin", "--glade-root", "--out",
-			"--previous-release-manifest", "--previous-inventory",
-			"--current-inventory", "--release-classifications":
+		case "--release-contract", "--product-version-proof", "--catalog", "--runtime-cases", "--test-project",
+			"--target-org", "--glade-bin", "--glade-root", "--out":
 			if seen[flag] {
 				return opts, fmt.Errorf("duplicate flag: %s", flag)
 			}
@@ -271,8 +298,10 @@ func parseSalesforceVerifyFlags(args []string) (salesforceVerifyOptions, error) 
 			}
 			val := args[i+1]
 			switch flag {
-			case "--release-manifest":
-				opts.ReleaseManifest = val
+			case "--release-contract":
+				opts.ReleaseContract = val
+			case "--product-version-proof":
+				opts.ProductVersionProof = val
 			case "--catalog":
 				opts.Catalog = val
 			case "--runtime-cases":
@@ -287,14 +316,6 @@ func parseSalesforceVerifyFlags(args []string) (salesforceVerifyOptions, error) 
 				opts.GladeRoot = val
 			case "--out":
 				opts.Out = val
-			case "--previous-release-manifest":
-				opts.PreviousReleaseManifest = val
-			case "--previous-inventory":
-				opts.PreviousInventory = val
-			case "--current-inventory":
-				opts.CurrentInventory = val
-			case "--release-classifications":
-				opts.ReleaseClassifications = val
 			}
 			seen[flag] = true
 			i += 2
@@ -308,17 +329,12 @@ func parseSalesforceVerifyFlags(args []string) (salesforceVerifyOptions, error) 
 
 	// Validate required flags
 	for _, required := range []string{
-		"--release-manifest", "--catalog", "--runtime-cases",
+		"--release-contract", "--product-version-proof", "--catalog", "--runtime-cases",
 		"--test-project", "--target-org", "--glade-bin", "--glade-root", "--out",
 	} {
 		if !seen[required] {
 			return opts, fmt.Errorf("required flag missing: %s", required)
 		}
-	}
-
-	if opts.deltaMode() && (opts.PreviousReleaseManifest == "" || opts.PreviousInventory == "" ||
-		opts.CurrentInventory == "" || opts.ReleaseClassifications == "") {
-		return opts, fmt.Errorf("release-delta requires all four flags: --previous-release-manifest, --previous-inventory, --current-inventory, --release-classifications")
 	}
 
 	return opts, nil
@@ -333,6 +349,26 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 	report := verifyReport{
 		SchemaVersion: verifyReportSchemaVersion,
 	}
+	var releaseAnalysis *releasecontract.Analysis
+	if opts.ReleaseContract != "" {
+		analysis, err := releasecontract.Analyze(opts.ReleaseContract)
+		if err != nil {
+			return report, fmt.Errorf("release contract: %w", err)
+		}
+		if len(analysis.Contract.Releases) == 0 {
+			return report, fmt.Errorf("release contract has no releases")
+		}
+		contractRoot, err := filepath.Abs(filepath.Dir(opts.ReleaseContract))
+		if err != nil {
+			return report, err
+		}
+		opts.ReleaseManifest = filepath.Join(contractRoot, analysis.Contract.Releases[len(analysis.Contract.Releases)-1].Manifest)
+		releaseAnalysis = &analysis
+		report.ReleaseCompleteness = analysis.Report
+		for _, version := range analysis.Contract.Windows.Source {
+			opts.releaseSourceVersions = append(opts.releaseSourceVersions, version.Version)
+		}
+	}
 
 	// 1. Validate input files exist
 	for _, path := range []string{opts.ReleaseManifest, opts.Catalog, opts.RuntimeCases} {
@@ -342,6 +378,13 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 	}
 	if info, err := os.Stat(opts.TestProject); err != nil || !info.IsDir() {
 		return report, fmt.Errorf("test project not found: %s", opts.TestProject)
+	}
+	if releaseAnalysis != nil {
+		for _, path := range []string{opts.ReleaseContract, opts.ProductVersionProof} {
+			if _, err := os.Stat(path); err != nil {
+				return report, fmt.Errorf("input file not found: %s", path)
+			}
+		}
 	}
 
 	// 2. Load and validate release manifest
@@ -353,7 +396,7 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 	report.APIVersion = rm.APIVersion
 
 	var releaseDelta *verifyReleaseDelta
-	if opts.deltaMode() {
+	if releaseAnalysis == nil && opts.deltaMode() {
 		delta, err := computeReleaseDelta(opts, rm)
 		if err != nil {
 			return report, err
@@ -373,6 +416,7 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 		return report, fmt.Errorf("glade git provenance: %v", err)
 	}
 	report.Glade = verifyGitProvenance{Commit: gladeCommit, Dirty: gladeDirty}
+	var productEvidence *productTestEvidence
 
 	toolsRoot, err := discoverToolsRoot(ctx)
 	if err != nil {
@@ -391,6 +435,16 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 		}
 		if report.GladeTools.Dirty {
 			return report, fmt.Errorf("release mode rejects dirty glade-tools root")
+		}
+	}
+	if releaseAnalysis != nil {
+		evidence, err := loadProductTestEvidence(opts.ProductVersionProof, opts.GladeRoot, gladeCommit)
+		if err != nil {
+			return report, fmt.Errorf("product version proof: %w", err)
+		}
+		productEvidence = &evidence
+		if err := preflightReleaseBindings(*releaseAnalysis, opts.Catalog, productEvidence); err != nil {
+			return report, fmt.Errorf("release bindings: %w", err)
 		}
 	}
 
@@ -428,6 +482,20 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 		{Kind: "runtime-cases", SHA256: rtSha},
 		{Kind: "test-project", SHA256: projSha},
 	}
+	if releaseAnalysis != nil {
+		contractSHA, err := sha256File(opts.ReleaseContract)
+		if err != nil {
+			return report, err
+		}
+		proofSHA, err := sha256File(opts.ProductVersionProof)
+		if err != nil {
+			return report, err
+		}
+		report.Inputs = append(report.Inputs,
+			verifyInput{Kind: "release-contract", SHA256: contractSHA},
+			verifyInput{Kind: "product-version-proof", SHA256: proofSHA},
+		)
+	}
 	if opts.deltaMode() {
 		for _, p := range [][2]string{
 			{"previous-release-manifest", opts.PreviousReleaseManifest},
@@ -454,6 +522,9 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 	// 9. Lifecycle section
 	lifecycleSection := runLifecycleSection(ctx, opts, deps)
 	report.Lifecycle = lifecycleSection
+	if releaseAnalysis != nil {
+		report.ReleaseCompleteness = creditReleaseEvidence(*releaseAnalysis, report, productEvidence)
+	}
 
 	// 10. Candidate identity: SHA256 after
 	candidateAfter, err := sha256File(opts.GladeBin)
@@ -464,6 +535,7 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 
 	// 11. Overall status and summary
 	report.Summary = verifySummary{
+		Required:     report.Compiler.Summary.Required + report.Runtime.Summary.Required + report.Lifecycle.Summary.Required,
 		Pass:         report.Compiler.Summary.Pass + report.Runtime.Summary.Pass + report.Lifecycle.Summary.Pass,
 		Fail:         report.Compiler.Summary.Fail + report.Runtime.Summary.Fail + report.Lifecycle.Summary.Fail,
 		Inconclusive: report.Compiler.Summary.Inconclusive + report.Runtime.Summary.Inconclusive + report.Lifecycle.Summary.Inconclusive,
@@ -474,6 +546,8 @@ func executeSalesforceVerify(ctx context.Context, opts salesforceVerifyOptions, 
 	} else if report.Summary.Inconclusive > 0 {
 		report.Status = "inconclusive"
 	} else if report.Candidate.SHA256Before != report.Candidate.SHA256After {
+		report.Status = "fail"
+	} else if releaseAnalysis != nil && report.ReleaseCompleteness.Status != "pass" {
 		report.Status = "fail"
 	} else {
 		report.Status = "pass"
@@ -506,6 +580,15 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 		section.Status = "inconclusive"
 		return section
 	}
+	if len(opts.releaseSourceVersions) > 0 {
+		filtered := catalog.Rules[:0]
+		for _, rule := range catalog.Rules {
+			if slices.Contains(opts.releaseSourceVersions, fmt.Sprintf("%.1f", rule.APIVersion)) {
+				filtered = append(filtered, rule)
+			}
+		}
+		catalog.Rules = filtered
+	}
 	if len(catalog.Rules) == 0 {
 		section.Status = "inconclusive"
 		return section
@@ -519,6 +602,7 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 		}
 		section.Cases = errorCases(ids)
 		section.Status = "inconclusive"
+		section.Summary.Required = len(catalog.Rules)
 		section.Summary.Inconclusive = len(catalog.Rules)
 		return section
 	}
@@ -531,11 +615,16 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 		}
 		section.Cases = errorCases(ids)
 		section.Status = "inconclusive"
+		section.Summary.Required = len(catalog.Rules)
 		section.Summary.Inconclusive = len(catalog.Rules)
 		return section
 	}
 
 	results := apexrules.CompareObserved(catalog.Rules, sfResults, gladeResults)
+	rulesByID := make(map[string]apexrules.Rule, len(catalog.Rules))
+	for _, rule := range catalog.Rules {
+		rulesByID[rule.ID] = rule
+	}
 	cases := make([]verifyCase, len(results))
 	oracleDrift := false
 	pass, fail, inconclusive := 0, 0, 0
@@ -569,6 +658,7 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 			Category:              cat,
 			SalesforceObservation: sfObs,
 			GladeObservation:      glObs,
+			SurfaceIDs:            append([]string(nil), rulesByID[r.ID].SurfaceIDs...),
 		}
 		switch status {
 		case "pass":
@@ -581,7 +671,7 @@ func runCompilerSection(ctx context.Context, opts salesforceVerifyOptions, deps 
 	}
 	section.Cases = cases
 	section.OracleDrift = oracleDrift
-	section.Summary = verifySummary{Pass: pass, Fail: fail, Inconclusive: inconclusive}
+	section.Summary = verifySummary{Required: len(catalog.Rules), Pass: pass, Fail: fail, Inconclusive: inconclusive}
 	if fail > 0 || oracleDrift {
 		section.Status = "fail"
 	} else if inconclusive > 0 {
@@ -637,7 +727,7 @@ func runRuntimeSection(ctx context.Context, opts salesforceVerifyOptions, deps *
 		}
 	}
 	section.Cases = verCases
-	section.Summary = verifySummary{Pass: pass, Fail: fail, Inconclusive: inconclusive}
+	section.Summary = verifySummary{Required: len(cases), Pass: pass, Fail: fail, Inconclusive: inconclusive}
 	if fail > 0 {
 		section.Status = "fail"
 	} else if inconclusive > 0 {
@@ -687,7 +777,7 @@ func runLifecycleSection(ctx context.Context, opts salesforceVerifyOptions, deps
 		return verifySection{
 			Status:  "inconclusive",
 			Cases:   fixtureCases,
-			Summary: verifySummary{Inconclusive: len(cases)},
+			Summary: verifySummary{Required: len(cases), Inconclusive: len(cases)},
 		}
 	}
 
@@ -724,13 +814,231 @@ func runLifecycleSection(ctx context.Context, opts salesforceVerifyOptions, deps
 		}
 	}
 	section.Cases = verCases
-	section.Summary = verifySummary{Pass: pass, Fail: fail, Inconclusive: inconclusive}
+	section.Summary = verifySummary{Required: len(cases), Pass: pass, Fail: fail, Inconclusive: inconclusive}
 	if fail > 0 {
 		section.Status = "fail"
 	} else if inconclusive > 0 {
 		section.Status = "inconclusive"
 	}
 	return section
+}
+
+type releaseCaseDefinition struct {
+	surfaceIDs []string
+}
+
+func preflightReleaseBindings(analysis releasecontract.Analysis, catalogPath string, evidence *productTestEvidence) error {
+	catalog, err := apexrules.LoadCatalog(catalogPath)
+	if err != nil {
+		return err
+	}
+	definitions := map[string][]releaseCaseDefinition{}
+	for _, rule := range catalog.Rules {
+		definitions[rule.ID] = append(definitions[rule.ID], releaseCaseDefinition{surfaceIDs: rule.SurfaceIDs})
+	}
+	for _, cases := range [][]oracleprobe.Case{oracleprobe.StdlibCases(), oracleprobe.ProjectOracleCases()} {
+		for _, item := range cases {
+			definitions[item.ID] = append(definitions[item.ID], releaseCaseDefinition{surfaceIDs: item.SurfaceIDs})
+		}
+	}
+	requireCase := func(id string) (releaseCaseDefinition, error) {
+		matches := definitions[id]
+		if len(matches) != 1 {
+			return releaseCaseDefinition{}, fmt.Errorf("case %q has %d definitions", id, len(matches))
+		}
+		return matches[0], nil
+	}
+	for _, change := range analysis.SurfaceChanges {
+		classification := change.Classification
+		if classification == nil || classification.CaseID == "" {
+			continue
+		}
+		definition, err := requireCase(classification.CaseID)
+		if err != nil {
+			return err
+		}
+		if !containsCanonicalSurface(definition.surfaceIDs, classification.SurfaceID) {
+			return fmt.Errorf("case %q does not carry surface %q", classification.CaseID, classification.SurfaceID)
+		}
+	}
+	for _, behavior := range analysis.Contract.Behaviors {
+		for _, id := range behavior.ProofCases {
+			if _, err := requireCase(id); err != nil {
+				return err
+			}
+		}
+	}
+	for _, window := range [][]releasecontract.VersionProof{analysis.Contract.Windows.Source, analysis.Contract.Windows.Endpoint} {
+		for _, entry := range window {
+			for _, id := range entry.ProofCases {
+				if _, err := requireCase(id); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	for _, profile := range analysis.Contract.Windows.OrgProfiles {
+		for _, id := range profile.ProofCases {
+			if _, err := requireCase(id); err != nil {
+				return err
+			}
+		}
+	}
+	for _, binding := range releaseProductTests(analysis) {
+		if _, err := evidence.binding(binding); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func releaseProductTests(analysis releasecontract.Analysis) []string {
+	var out []string
+	for _, change := range analysis.SurfaceChanges {
+		if change.Classification != nil {
+			out = append(out, change.Classification.ProductTests...)
+		}
+	}
+	for _, behavior := range analysis.Contract.Behaviors {
+		out = append(out, behavior.ProductTests...)
+	}
+	for _, entry := range analysis.Contract.Windows.Source {
+		out = append(out, entry.ProductTests...)
+	}
+	for _, entry := range analysis.Contract.Windows.Endpoint {
+		out = append(out, entry.ProductTests...)
+	}
+	for _, entry := range analysis.Contract.Windows.OrgProfiles {
+		out = append(out, entry.ProductTests...)
+	}
+	out = append(out, analysis.Contract.NoFallbackProductTests...)
+	slices.Sort(out)
+	return slices.Compact(out)
+}
+
+func creditReleaseEvidence(analysis releasecontract.Analysis, verify verifyReport, evidence *productTestEvidence) releasecontract.Report {
+	report := analysis.Report
+	report.SurfaceDelta.Implemented = 0
+	report.SurfaceDelta.Proved = 0
+	report.BehaviorDelta.Implemented = 0
+	report.BehaviorDelta.Proved = 0
+	passedCases := map[string][]verifyCase{}
+	for _, section := range []verifySection{verify.Compiler, verify.Runtime, verify.Lifecycle} {
+		for _, item := range section.Cases {
+			passedCases[item.ID] = append(passedCases[item.ID], item)
+		}
+	}
+	casePasses := func(id string) bool {
+		matches := passedCases[id]
+		return len(matches) == 1 && matches[0].Status == "pass"
+	}
+	caseProvesSurface := func(id, surfaceID string) bool {
+		matches := passedCases[id]
+		return len(matches) == 1 && matches[0].Status == "pass" && containsCanonicalSurface(matches[0].SurfaceIDs, surfaceID)
+	}
+	testsPass := func(bindings []string) bool {
+		for _, binding := range bindings {
+			if !evidence.passed(binding) {
+				return false
+			}
+		}
+		return true
+	}
+	for _, change := range analysis.SurfaceChanges {
+		classification := change.Classification
+		if classification == nil {
+			continue
+		}
+		proved := testsPass(classification.ProductTests)
+		if classification.CaseID != "" {
+			proved = proved && caseProvesSurface(classification.CaseID, classification.SurfaceID)
+		}
+		if !proved {
+			continue
+		}
+		report.SurfaceDelta.Proved++
+		if classification.Disposition != surfaceledger.DispoExplicitUnsupported {
+			report.SurfaceDelta.Implemented++
+		}
+	}
+	for _, behavior := range analysis.Contract.Behaviors {
+		proved := testsPass(behavior.ProductTests)
+		for _, id := range behavior.ProofCases {
+			proved = proved && casePasses(id)
+		}
+		if !proved {
+			continue
+		}
+		report.BehaviorDelta.Proved++
+		if behavior.Outcome != "explicit-non-parity" {
+			report.BehaviorDelta.Implemented++
+		}
+	}
+	report.SourceVersions.Passing = passingVersions(analysis.Contract.Windows.Source, casePasses, testsPass)
+	report.EndpointVersions.Passing = passingVersions(analysis.Contract.Windows.Endpoint, casePasses, testsPass)
+	for _, profile := range analysis.Contract.Windows.OrgProfiles {
+		if proofsPass(profile.ProofCases, profile.ProductTests, casePasses, testsPass) {
+			report.OrgProfiles.Passing = append(report.OrgProfiles.Passing, profile.Name)
+		}
+	}
+	report.SilentFallbacks = 0
+	for _, binding := range analysis.Contract.NoFallbackProductTests {
+		if !evidence.passed(binding) {
+			report.SilentFallbacks++
+		}
+	}
+	if releaseCompletenessClosed(report) {
+		report.Status = "pass"
+	} else {
+		report.Status = "fail"
+	}
+	return report
+}
+
+func passingVersions(entries []releasecontract.VersionProof, casePasses func(string) bool, testsPass func([]string) bool) []string {
+	var passing []string
+	for _, entry := range entries {
+		if proofsPass(entry.ProofCases, entry.ProductTests, casePasses, testsPass) {
+			passing = append(passing, entry.Version)
+		}
+	}
+	return passing
+}
+
+func proofsPass(caseIDs, productTests []string, casePasses func(string) bool, testsPass func([]string) bool) bool {
+	if !testsPass(productTests) {
+		return false
+	}
+	for _, id := range caseIDs {
+		if !casePasses(id) {
+			return false
+		}
+	}
+	return true
+}
+
+func containsCanonicalSurface(surfaceIDs []string, expected string) bool {
+	expected = surfaceledger.CanonicalSurfaceIDKey(expected)
+	for _, surfaceID := range surfaceIDs {
+		if surfaceledger.CanonicalSurfaceIDKey(surfaceID) == expected {
+			return true
+		}
+	}
+	return false
+}
+
+func releaseCompletenessClosed(report releasecontract.Report) bool {
+	return report.SurfaceDelta.Total == report.SurfaceDelta.Classified &&
+		report.SurfaceDelta.Total == report.SurfaceDelta.Proved &&
+		report.SurfaceDelta.Total == report.SurfaceDelta.Implemented+report.SurfaceDelta.ExplicitNonParity &&
+		report.BehaviorDelta.Total == report.BehaviorDelta.Classified &&
+		report.BehaviorDelta.Total == report.BehaviorDelta.Proved &&
+		report.BehaviorDelta.Total == report.BehaviorDelta.Implemented+report.BehaviorDelta.ExplicitNonParity &&
+		report.ChangeInventory.Total == report.ChangeInventory.Routed &&
+		slices.Equal(report.SourceVersions.Advertised, report.SourceVersions.Passing) &&
+		slices.Equal(report.EndpointVersions.Advertised, report.EndpointVersions.Passing) &&
+		slices.Equal(report.OrgProfiles.Advertised, report.OrgProfiles.Passing) &&
+		report.SilentFallbacks == 0 && len(report.Unclassified) == 0
 }
 
 // ----- git helpers -----
@@ -820,6 +1128,140 @@ func hashTestProjectDir(root string) (string, error) {
 		h.Write(entry.bytes)
 	}
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
+}
+
+func loadProductTestEvidence(proofPath, gladeRoot, gladeCommit string) (productTestEvidence, error) {
+	var proof productVersionProof
+	if err := readExactJSONFile(proofPath, &proof); err != nil {
+		return productTestEvidence{}, err
+	}
+	root, err := filepath.Abs(gladeRoot)
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	root = filepath.Clean(root)
+	if proof.SchemaVersion != 1 || proof.Status != "pass" || proof.GladeCommit != gladeCommit {
+		return productTestEvidence{}, fmt.Errorf("proof identity or status mismatch")
+	}
+	wantCommand := []string{"go", "-C", root, "test", "-json", "-count=1", "-p", "4", "./..."}
+	if !slices.Equal(proof.Command, wantCommand) {
+		return productTestEvidence{}, fmt.Errorf("proof command must be %q", wantCommand)
+	}
+	if filepath.IsAbs(proof.TestEvents) || strings.TrimSpace(proof.TestEvents) == "" {
+		return productTestEvidence{}, fmt.Errorf("testEvents must be a relative path")
+	}
+	eventsPath, err := pathBelow(filepath.Dir(proofPath), proof.TestEvents)
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	digest, err := sha256File(eventsPath)
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	if digest != proof.TestEventsSHA256 {
+		return productTestEvidence{}, fmt.Errorf("testEvents SHA-256 mismatch")
+	}
+	module, err := goModulePath(root)
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	file, err := os.Open(eventsPath)
+	if err != nil {
+		return productTestEvidence{}, err
+	}
+	defer file.Close()
+	passes := map[string]bool{}
+	scanner := bufio.NewScanner(file)
+	scanner.Buffer(make([]byte, 64*1024), 4*1024*1024)
+	for scanner.Scan() {
+		var event struct {
+			Action  string `json:"Action"`
+			Package string `json:"Package"`
+			Test    string `json:"Test"`
+		}
+		if err := json.Unmarshal(scanner.Bytes(), &event); err != nil {
+			return productTestEvidence{}, fmt.Errorf("invalid go test event: %w", err)
+		}
+		if event.Action == "pass" && event.Package != "" && event.Test != "" {
+			passes[event.Package+"\x00"+event.Test] = true
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return productTestEvidence{}, err
+	}
+	return productTestEvidence{gladeRoot: root, module: module, passes: passes, bindings: map[string]productTestBinding{}}, nil
+}
+
+func (e *productTestEvidence) binding(raw string) (productTestBinding, error) {
+	if binding, ok := e.bindings[raw]; ok {
+		return binding, nil
+	}
+	fileName, testName, ok := strings.Cut(raw, ":")
+	if !ok || strings.TrimSpace(fileName) == "" || strings.TrimSpace(testName) == "" {
+		return productTestBinding{}, fmt.Errorf("invalid product test binding %q", raw)
+	}
+	path, err := pathBelow(e.gladeRoot, fileName)
+	if err != nil {
+		return productTestBinding{}, err
+	}
+	parsed, err := parser.ParseFile(token.NewFileSet(), path, nil, 0)
+	if err != nil {
+		return productTestBinding{}, fmt.Errorf("parse product test %q: %w", raw, err)
+	}
+	topLevel := strings.Split(testName, "/")[0]
+	object := parsed.Scope.Lookup(topLevel)
+	if object == nil {
+		return productTestBinding{}, fmt.Errorf("product test %q is not a top-level Test function", raw)
+	}
+	declaration, isFunction := object.Decl.(*ast.FuncDecl)
+	if !isFunction || object.Kind != ast.Fun || declaration.Recv != nil || !strings.HasPrefix(topLevel, "Test") {
+		return productTestBinding{}, fmt.Errorf("product test %q is not a top-level Test function", raw)
+	}
+	directory, err := filepath.Rel(e.gladeRoot, filepath.Dir(path))
+	if err != nil {
+		return productTestBinding{}, err
+	}
+	packagePath := e.module
+	if directory != "." {
+		packagePath += "/" + filepath.ToSlash(directory)
+	}
+	binding := productTestBinding{packagePath: packagePath, testName: testName}
+	e.bindings[raw] = binding
+	return binding, nil
+}
+
+func (e *productTestEvidence) passed(raw string) bool {
+	binding, err := e.binding(raw)
+	return err == nil && e.passes[binding.packagePath+"\x00"+binding.testName]
+}
+
+func pathBelow(root, relative string) (string, error) {
+	root, err := filepath.Abs(root)
+	if err != nil {
+		return "", err
+	}
+	if filepath.IsAbs(relative) {
+		return "", fmt.Errorf("path %q must be relative", relative)
+	}
+	path := filepath.Join(root, filepath.Clean(relative))
+	rel, err := filepath.Rel(root, path)
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return "", fmt.Errorf("path %q escapes root", relative)
+	}
+	return path, nil
+}
+
+func goModulePath(root string) (string, error) {
+	data, err := os.ReadFile(filepath.Join(root, "go.mod"))
+	if err != nil {
+		return "", err
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		if fields := strings.Fields(line); len(fields) == 2 && fields[0] == "module" {
+			return fields[1], nil
+		}
+	}
+	return "", fmt.Errorf("go.mod has no module directive")
 }
 
 // ----- release manifest -----
@@ -1041,12 +1483,13 @@ var validStatuses = map[string]bool{"pass": true, "fail": true, "inconclusive": 
 
 func validateReport(r verifyReport) error {
 	for _, s := range []verifySection{r.Compiler, r.Runtime, r.Lifecycle} {
-		if err := validateSection(s); err != nil {
+		if err := validateSection(s, r.SchemaVersion >= 2); err != nil {
 			return err
 		}
 	}
 	counts := verifySummary{}
 	for _, s := range []verifySection{r.Compiler, r.Runtime, r.Lifecycle} {
+		counts.Required += s.Summary.Required
 		counts.Pass += s.Summary.Pass
 		counts.Fail += s.Summary.Fail
 		counts.Inconclusive += s.Summary.Inconclusive
@@ -1060,7 +1503,7 @@ func validateReport(r verifyReport) error {
 	return nil
 }
 
-func validateSection(s verifySection) error {
+func validateSection(s verifySection, requireRequired bool) error {
 	if len(s.Cases) == 0 {
 		return fmt.Errorf("section has zero required cases")
 	}
@@ -1090,6 +1533,9 @@ func validateSection(s verifySection) error {
 		case "inconclusive":
 			statusCounts.Inconclusive++
 		}
+	}
+	if requireRequired {
+		statusCounts.Required = len(s.Cases)
 	}
 	if statusCounts != s.Summary {
 		return fmt.Errorf("section summary mismatch: summary %+v != cases %+v", s.Summary, statusCounts)
@@ -1240,7 +1686,7 @@ func inconclusiveSection(required []oracleprobe.Case) verifySection {
 	return verifySection{
 		Status:  "inconclusive",
 		Cases:   cases,
-		Summary: verifySummary{Inconclusive: len(required)},
+		Summary: verifySummary{Required: len(required), Inconclusive: len(required)},
 	}
 }
 
@@ -1285,7 +1731,8 @@ Usage:
   glade-tools salesforce verify [flags]
 
 Required flags:
-  --release-manifest <path>   Release manifest (salesforce-release-current.json).
+  --release-contract <path>   Salesforce release contract JSON.
+  --product-version-proof <path>  Passing Glade product-test proof JSON.
   --catalog <path>            Compiler catalog JSON.
   --runtime-cases <path>      Runtime fixture/provenance file.
   --test-project <path>       Project root for lifecycle oracle probes.
@@ -1295,12 +1742,6 @@ Required flags:
   --out <path>                Output JSON artifact path.
 
 Optional flags:
-  --developer                       Permit dirty source roots (recorded in artifact).
-  --previous-release-manifest <path>  Previous release manifest for delta mode.
-  --previous-inventory <path>         Previous docs inventory for delta mode.
-  --current-inventory <path>          Current docs inventory for delta mode.
-  --release-classifications <path>    Added/removed/changed surface classifications.
-
-All four delta-mode flags must be supplied together.
+  --developer                 Permit dirty source roots (recorded in artifact).
 `)
 }

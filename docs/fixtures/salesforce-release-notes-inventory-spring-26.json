@@ -488,7 +488,8 @@
       "sourcePath": "rn_apex_DWSupportQueryResults.md",
       "kind": "document",
       "name": "Use",
-      "title": "Use DataWeave in Transformations with Nested SOQL Queries"
+      "title": "Use DataWeave in Transformations with Nested SOQL Queries",
+      "apiVersion": "66.0"
     },
     {
       "sourcePath": "rn_apex_WithUserModeQuery.md",
@@ -512,7 +513,8 @@
       "sourcePath": "rn_apex_cursors.md",
       "kind": "document",
       "name": "Use",
-      "title": "Use Apex Cursors for Expanded SOQL Query Result Support (Generally Available)"
+      "title": "Use Apex Cursors for Expanded SOQL Query Result Support (Generally Available)",
+      "apiVersion": "66.0"
     },
     {
       "sourcePath": "rn_apex_extract_picklist_values.md",
@@ -625,13 +627,15 @@
       "sourcePath": "rn_apex_purgeOldAsyncJobs_overload.md",
       "kind": "document",
       "name": "Specify",
-      "title": "Specify the Number of Async Jobs to Delete"
+      "title": "Specify the Number of Async Jobs to Delete",
+      "apiVersion": "66.0"
     },
     {
       "sourcePath": "rn_apex_run_relevant_tests.md",
       "kind": "document",
       "name": "Deploy",
-      "title": "Deploy Apex Components Faster by Running Only Relevant Tests (Beta)"
+      "title": "Deploy Apex Components Faster by Running Only Relevant Tests (Beta)",
+      "apiVersion": "66.0"
     },
     {
       "sourcePath": "rn_apex_sharing_ru.md",
@@ -649,7 +653,8 @@
       "sourcePath": "rn_apex_unified_testing_category.md",
       "kind": "document",
       "name": "Filter",
-      "title": "Filter Test Discovery API Results by Test Category"
+      "title": "Filter Test Discovery API Results by Test Category",
+      "apiVersion": "66.0"
     },
     {
       "sourcePath": "rn_apexguru.md",
@@ -3709,7 +3714,7 @@
           "name": "Week",
           "signature": "Week of March 2, 2026",
           "section": "Sales Changes",
-          "description": "[Accelerate Transcription and Insights with Vendor Transcripts](rn_sales_eci_vendor_transcripts.md \"With Vendor Transcript Processing, your sales teams can quickly access call summaries and critical call insights. Sales managers can quickly deliver coaching tips to their reps and see how they’re doing. Existing ECI customers can toggle the feature on. New customers have it auto-enabled and can\ufffd\ufffd"
+          "description": "[Accelerate Transcription and Insights with Vendor Transcripts](rn_sales_eci_vendor_transcripts.md \"With Vendor Transcript Processing, your sales teams can quickly access call summaries and critical call insights. Sales managers can quickly deliver coaching tips to their reps and see how they’re doing. Existing ECI customers can toggle the feature on. New customers have it auto-enabled and can"
         },
         {
           "kind": "member",

@@ -430,12 +430,32 @@ func TestRunExecFixture(t *testing.T) {
 
 func TestRunExecFixtureUsesProjectSourceAPIVersion(t *testing.T) {
 	fixture := Fixture{
-		Name: "exec-project-api-version",
+		Name:       "exec-project-api-version",
+		APIVersion: "65.0",
 		Project: ProjectConfig{
 			SourceAPIVersion: "67.0",
 		},
 		Source:  []SourceFile{{Path: "anonymous.apex", Content: "System.assertEquals('67.0.0', System.requestVersion().toString());"}},
 		Command: Invocation{Kind: "exec", Args: []string{"System.assertEquals('67.0.0', System.requestVersion().toString());"}},
+		Expected: ExpectedBehavior{
+			Result: json.RawMessage(`{"debug":null,"ok":true}`),
+		},
+	}
+	result, err := Run(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.OK {
+		t.Fatalf("result = %#v", result)
+	}
+}
+
+func TestRunExecFixtureUsesTopLevelAPIVersion(t *testing.T) {
+	fixture := Fixture{
+		Name:       "exec-release-api-version",
+		APIVersion: "67.0",
+		Source:     []SourceFile{{Path: "anonymous.apex", Content: "System.assertEquals('67.0.0', System.requestVersion().toString());"}},
+		Command:    Invocation{Kind: "exec", Args: []string{"System.assertEquals('67.0.0', System.requestVersion().toString());"}},
 		Expected: ExpectedBehavior{
 			Result: json.RawMessage(`{"debug":null,"ok":true}`),
 		},
@@ -503,7 +523,7 @@ func TestRunExecFixtureLoadsProjectMetadata(t *testing.T) {
 	fixture := Fixture{
 		Name: "exec-project-metadata",
 		Project: ProjectConfig{
-			SourceAPIVersion:   "64.0",
+			SourceAPIVersion:   "65.0",
 			PackageDirectories: []PackageDirectory{{Path: "force-app", Default: true}},
 		},
 		Source: []SourceFile{{

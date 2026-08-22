@@ -27,14 +27,25 @@ func runSalesforceRelease(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "glade-tools: %v\n", err)
 		return 1
 	}
-	if opts.Write || opts.Check {
-		fmt.Fprintln(stderr, "glade-tools: release generation is not available until the generator is added")
-		return 1
-	}
 	analysis, err := releasecontract.Analyze(opts.Contract)
 	if err != nil {
 		fmt.Fprintf(stderr, "glade-tools: %v\n", err)
 		return 1
+	}
+	if opts.Write || opts.Check {
+		paths, err := releasecontract.Generate(analysis, opts.GladeRoot, opts.Write)
+		if err != nil {
+			fmt.Fprintf(stderr, "glade-tools: %v\n", err)
+			return 1
+		}
+		action := "current"
+		if opts.Write {
+			action = "wrote"
+		}
+		for _, path := range paths {
+			fmt.Fprintf(stdout, "%s: %s\n", action, path)
+		}
+		return 0
 	}
 	if opts.JSON {
 		if err := json.NewEncoder(stdout).Encode(analysis.Report); err != nil {

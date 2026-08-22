@@ -18,6 +18,7 @@ type Contract struct {
 	Defaults               Defaults   `json:"defaults"`
 	Windows                Windows    `json:"windows"`
 	Releases               []Release  `json:"releases"`
+	SurfaceCorrections     string     `json:"surfaceCorrections,omitempty"`
 	Behaviors              []Behavior `json:"behaviors"`
 	NoFallbackProductTests []string   `json:"noFallbackProductTests"`
 }
@@ -47,14 +48,16 @@ type ProfileProof struct {
 }
 
 type Release struct {
-	Name            string `json:"name"`
-	APIVersion      string `json:"apiVersion"`
-	Maturity        string `json:"maturity"`
-	Manifest        string `json:"manifest"`
-	Inventory       string `json:"inventory"`
-	Classifications string `json:"classifications,omitempty"`
-	ChangeInventory string `json:"changeInventory,omitempty"`
-	ChangeRoutes    string `json:"changeRoutes,omitempty"`
+	Name                string `json:"name"`
+	APIVersion          string `json:"apiVersion"`
+	Maturity            string `json:"maturity"`
+	Manifest            string `json:"manifest"`
+	Inventory           string `json:"inventory"`
+	SourceReceipt       string `json:"sourceReceipt"`
+	SourceReceiptSHA256 string `json:"sourceReceiptSHA256"`
+	Classifications     string `json:"classifications,omitempty"`
+	ChangeInventory     string `json:"changeInventory,omitempty"`
+	ChangeRoutes        string `json:"changeRoutes,omitempty"`
 }
 
 type Behavior struct {
@@ -73,7 +76,10 @@ type Behavior struct {
 	ProductTests []string `json:"productTests,omitempty"`
 }
 
-var apiVersionPattern = regexp.MustCompile(`^[1-9][0-9]*[.]0$`)
+var (
+	apiVersionPattern = regexp.MustCompile(`^[1-9][0-9]*[.]0$`)
+	sha256Pattern     = regexp.MustCompile(`^[0-9a-f]{64}$`)
+)
 
 func Load(path string) (Contract, string, error) {
 	data, err := os.ReadFile(path)
@@ -128,6 +134,11 @@ func (c Contract) Validate(root string) error {
 	}
 	if err := validateReleases(root, c.Releases, c.Windows.Source); err != nil {
 		return err
+	}
+	if c.SurfaceCorrections != "" {
+		if err := validateRepositoryPath(root, "surfaceCorrections", c.SurfaceCorrections); err != nil {
+			return err
+		}
 	}
 	if err := validateBehaviors(root, c.Behaviors, c.Windows.Source, c.Windows.Endpoint, c.Releases); err != nil {
 		return err
@@ -225,10 +236,13 @@ func validateReleases(root string, releases []Release, sourceWindow []VersionPro
 		for _, path := range []struct {
 			name  string
 			value string
-		}{{"manifest", release.Manifest}, {"inventory", release.Inventory}} {
+		}{{"manifest", release.Manifest}, {"inventory", release.Inventory}, {"sourceReceipt", release.SourceReceipt}} {
 			if err := validateRepositoryPath(root, fmt.Sprintf("releases[%d].%s", index, path.name), path.value); err != nil {
 				return err
 			}
+		}
+		if !sha256Pattern.MatchString(release.SourceReceiptSHA256) {
+			return fmt.Errorf("releases[%d].sourceReceiptSHA256 must be a lowercase SHA-256", index)
 		}
 		if index == 0 {
 			if strings.TrimSpace(release.Classifications) != "" || strings.TrimSpace(release.ChangeInventory) != "" || strings.TrimSpace(release.ChangeRoutes) != "" {
@@ -369,8 +383,8 @@ func validateProductTest(root, field, value string) error {
 	if strings.TrimSpace(value) == "" {
 		return fmt.Errorf("%s is empty", field)
 	}
-	separator := strings.LastIndexByte(value, ':')
-	if separator <= 0 || separator == len(value)-1 || strings.Contains(value[separator+1:], ":") {
+	separator := strings.IndexByte(value, ':')
+	if separator <= 0 || separator == len(value)-1 {
 		return fmt.Errorf("%s must be relative/path_test.go:TestName", field)
 	}
 	path, testName := value[:separator], value[separator+1:]

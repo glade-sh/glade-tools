@@ -3,7 +3,7 @@
   "apiVersion": "67.0",
   "mode": "local-runtime",
   "project": {
-    "sourceApiVersion": "64.0",
+    "sourceApiVersion": "65.0",
     "packageDirectories": [
       {
         "path": "force-app",
@@ -47,7 +47,7 @@
   "source": [
     {
       "path": "sfdx-project.json",
-      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"64.0\"}"
+      "content": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"65.0\"}"
     },
     {
       "path": "force-app/main/default/objects/Account/fieldSets/Summary.fieldSet-meta.xml",

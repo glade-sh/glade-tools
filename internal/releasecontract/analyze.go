@@ -1,9 +1,11 @@
 package releasecontract
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -87,6 +89,88 @@ type ReleaseNoteRoute struct {
 	OutOfScopeReason string   `json:"outOfScopeReason,omitempty"`
 }
 
+type SurfaceCorrectionsFile struct {
+	SchemaVersion int                 `json:"schemaVersion"`
+	Corrections   []SurfaceCorrection `json:"corrections"`
+}
+
+type SurfaceCorrection struct {
+	SurfaceID        string   `json:"surfaceId"`
+	Since            string   `json:"since"`
+	Until            string   `json:"until,omitempty"`
+	SourceAPIVersion string   `json:"sourceApiVersion"`
+	SourcePath       string   `json:"sourcePath"`
+	SourceRefs       []string `json:"sourceRefs"`
+	Reason           string   `json:"reason"`
+}
+
+type ReleaseSourceReceipt struct {
+	SchemaVersion   int                   `json:"schemaVersion"`
+	Release         string                `json:"release"`
+	APIVersion      string                `json:"apiVersion"`
+	ManifestDigest  string                `json:"manifestDigest"`
+	InventorySHA256 string                `json:"inventorySHA256"`
+	Generator       SourceToolReceipt     `json:"generator"`
+	Snapshot        SourceSnapshotReceipt `json:"snapshot"`
+}
+
+type SourceToolReceipt struct {
+	Path   string `json:"path"`
+	SHA256 string `json:"sha256"`
+}
+
+type SourceSnapshotReceipt struct {
+	SHA256                string                `json:"sha256"`
+	MetadataSHA256        string                `json:"metadataSHA256"`
+	AtlasVersion          string                `json:"atlasVersion"`
+	AtlasVersionLabel     string                `json:"atlasVersionLabel"`
+	TargetAPIVersion      string                `json:"targetAPIVersion"`
+	TotalPages            int                   `json:"totalPages"`
+	Assembler             SourceToolReceipt     `json:"assembler"`
+	VersionedSourceSHA256 string                `json:"versionedSourceSHA256"`
+	Families              []SourceFamilyReceipt `json:"families"`
+	LWC                   LWCSourceReceipt      `json:"lwc"`
+	Limitations           []string              `json:"limitations"`
+}
+
+type SourceFamilyReceipt struct {
+	Name      string `json:"name"`
+	Version   string `json:"version"`
+	FileCount int    `json:"fileCount"`
+	SHA256    string `json:"sha256"`
+}
+
+type LWCSourceReceipt struct {
+	FilterReceiptSHA256     string                      `json:"filterReceiptSHA256"`
+	SourceVersion           string                      `json:"sourceVersion"`
+	SourceVersionSHA256     string                      `json:"sourceVersionSHA256"`
+	SourceVersionMetadata   LWCSourceVersionReceipt     `json:"sourceVersionMetadata"`
+	AvailabilityTable       string                      `json:"availabilityTable"`
+	AvailabilityTableSHA256 string                      `json:"availabilityTableSHA256"`
+	CopiedMarkdownFiles     int                         `json:"copiedMarkdownFiles"`
+	Copied                  []SourceFileReceipt         `json:"copied"`
+	Excluded                []ExcludedSourceFileReceipt `json:"excluded"`
+	Limitation              string                      `json:"limitation"`
+}
+
+type LWCSourceVersionReceipt struct {
+	File    string `json:"file"`
+	Version string `json:"version"`
+	SHA256  string `json:"sha256"`
+}
+
+type SourceFileReceipt struct {
+	Path   string `json:"path"`
+	SHA256 string `json:"sha256"`
+}
+
+type ExcludedSourceFileReceipt struct {
+	File                     string `json:"file"`
+	SourceSHA256             string `json:"sourceSHA256"`
+	Module                   string `json:"module"`
+	FirstAvailableAPIVersion string `json:"firstAvailableAPIVersion"`
+}
+
 // Analyze checks the cross-file bindings in a release contract and returns a
 // static report. It deliberately leaves evidence credit at zero: runtime and
 // product-test proof belongs to the verifier.
@@ -116,10 +200,29 @@ func Analyze(contractPath string) (Analysis, error) {
 		if digest := apexdocs.CanonicalDigest(inv); digest != manifest.Digest {
 			return a, fmt.Errorf("release %s inventory digest %s does not match manifest %s", release.Name, digest, manifest.Digest)
 		}
+		receiptPath := filepath.Join(root, release.SourceReceipt)
+		receiptSHA256, err := sourceFileSHA256(receiptPath)
+		if err != nil {
+			return a, fmt.Errorf("release %s source receipt: %w", release.Name, err)
+		}
+		if receiptSHA256 != release.SourceReceiptSHA256 {
+			return a, fmt.Errorf("release %s source receipt SHA-256 mismatch", release.Name)
+		}
+		var receipt ReleaseSourceReceipt
+		if err := readStrict(receiptPath, &receipt); err != nil {
+			return a, fmt.Errorf("release %s source receipt: %w", release.Name, err)
+		}
+		inventorySHA256, err := sourceFileSHA256(filepath.Join(root, release.Inventory))
+		if err != nil {
+			return a, err
+		}
+		if err := validateReleaseSourceReceipt(root, release, manifest, inventorySHA256, receipt); err != nil {
+			return a, fmt.Errorf("release %s source receipt: %w", release.Name, err)
+		}
 		if inv.SchemaVersion != apexdocs.InventorySchemaVersion {
 			return a, fmt.Errorf("release %s inventory schemaVersion must be %d", release.Name, apexdocs.InventorySchemaVersion)
 		}
-		rows, err := surfaceledger.MergeReleaseSnapshot(surfaceledger.RowsFromDocsInventory(inv), release.APIVersion)
+		rows, err := surfaceledger.MergeReleaseSnapshot(surfaceledger.ReleaseRowsFromDocsInventory(inv), release.APIVersion)
 		if err != nil {
 			return a, fmt.Errorf("release %s snapshot: %w", release.Name, err)
 		}
@@ -127,6 +230,18 @@ func Analyze(contractPath string) (Analysis, error) {
 		if i > 0 && !sameStrings(releases[i-1].manifest.SourceFamilies, manifest.SourceFamilies) {
 			return a, fmt.Errorf("source families differ between releases")
 		}
+	}
+	if contract.SurfaceCorrections != "" {
+		corrections, err := loadSurfaceCorrections(filepath.Join(root, contract.SurfaceCorrections))
+		if err != nil {
+			return a, err
+		}
+		if err := applySurfaceCorrections(releases, corrections); err != nil {
+			return a, err
+		}
+	}
+	if err := backfillDocumentedRows(releases); err != nil {
+		return a, err
 	}
 
 	presence := make(map[string][]bool)
@@ -246,10 +361,10 @@ func Analyze(contractPath string) (Analysis, error) {
 			if err := validateRoute(route, allIDs, behaviorByID, curr.release.APIVersion); err != nil {
 				return a, err
 			}
+			a.Report.ChangeInventory.Routed++
 			if strings.TrimSpace(route.OutOfScopeReason) != "" {
 				a.Report.ChangeInventory.OutOfScope++
 			} else {
-				a.Report.ChangeInventory.Routed++
 				for _, id := range route.BehaviorIDs {
 					reachedBehaviors[id] = true
 				}
@@ -298,6 +413,250 @@ type loadedRelease struct {
 	manifest  apexdocs.ReleaseManifest
 	inventory apexdocs.Inventory
 	rows      []surfaceledger.SurfaceLedgerRow
+}
+
+// backfillDocumentedRows repairs an earlier captured snapshot only when a
+// later exact row carries an official API availability boundary. It never
+// fills a later absence, which remains a possible removal.
+func backfillDocumentedRows(releases []loadedRelease) error {
+	indexes := make([]map[string]bool, len(releases))
+	for i := range releases {
+		indexes[i] = make(map[string]bool, len(releases[i].rows))
+		for _, row := range releases[i].rows {
+			indexes[i][surfaceledger.CanonicalSurfaceIDKey(row.SurfaceID)] = true
+		}
+	}
+	for sourceIndex := range releases {
+		for _, row := range releases[sourceIndex].rows {
+			if row.APIVersion == "" {
+				continue
+			}
+			if err := validateAPIVersion("documented surface "+row.SurfaceID, row.APIVersion); err != nil {
+				return err
+			}
+			if compareAPIVersions(row.APIVersion, releases[sourceIndex].release.APIVersion) > 0 {
+				return fmt.Errorf("documented surface %s requires API %s after source release %s", row.SurfaceID, row.APIVersion, releases[sourceIndex].release.APIVersion)
+			}
+			key := surfaceledger.CanonicalSurfaceIDKey(row.SurfaceID)
+			for targetIndex := 0; targetIndex < sourceIndex; targetIndex++ {
+				if compareAPIVersions(releases[targetIndex].release.APIVersion, row.APIVersion) < 0 || indexes[targetIndex][key] {
+					continue
+				}
+				releases[targetIndex].rows = append(releases[targetIndex].rows, row)
+				indexes[targetIndex][key] = true
+			}
+		}
+	}
+	for i := range releases {
+		sort.SliceStable(releases[i].rows, func(left, right int) bool {
+			return releases[i].rows[left].SurfaceID < releases[i].rows[right].SurfaceID
+		})
+	}
+	return nil
+}
+
+func loadSurfaceCorrections(path string) (SurfaceCorrectionsFile, error) {
+	var file SurfaceCorrectionsFile
+	if err := readStrict(path, &file); err != nil {
+		return file, fmt.Errorf("surface corrections: %w", err)
+	}
+	return file, nil
+}
+
+// applySurfaceCorrections fills exact rows that a reviewed historical export
+// omitted. The checked range is authoritative; no row shape is synthesized.
+func applySurfaceCorrections(releases []loadedRelease, file SurfaceCorrectionsFile) error {
+	if file.SchemaVersion != 1 {
+		return fmt.Errorf("surface corrections schemaVersion must be 1")
+	}
+	releaseByAPI := make(map[string]int, len(releases))
+	indexes := make([]map[string]int, len(releases))
+	for releaseIndex := range releases {
+		releaseByAPI[releases[releaseIndex].release.APIVersion] = releaseIndex
+		indexes[releaseIndex] = make(map[string]int, len(releases[releaseIndex].rows))
+		for rowIndex, row := range releases[releaseIndex].rows {
+			indexes[releaseIndex][surfaceledger.CanonicalSurfaceIDKey(row.SurfaceID)] = rowIndex
+		}
+	}
+	seen := make(map[string]bool, len(file.Corrections))
+	for correctionIndex, correction := range file.Corrections {
+		label := fmt.Sprintf("surface corrections[%d]", correctionIndex)
+		key := surfaceledger.CanonicalSurfaceIDKey(correction.SurfaceID)
+		if key == "" {
+			return fmt.Errorf("%s surfaceId is empty", label)
+		}
+		if seen[key] {
+			return fmt.Errorf("duplicate surface correction for %s", correction.SurfaceID)
+		}
+		seen[key] = true
+		if err := validateAPIVersion(label+".since", correction.Since); err != nil {
+			return err
+		}
+		if _, ok := releaseByAPI[correction.Since]; !ok {
+			return fmt.Errorf("%s since %s has no release", label, correction.Since)
+		}
+		if correction.Until != "" {
+			if err := validateAPIVersion(label+".until", correction.Until); err != nil {
+				return err
+			}
+			if _, ok := releaseByAPI[correction.Until]; !ok {
+				return fmt.Errorf("%s until %s has no release", label, correction.Until)
+			}
+			if compareAPIVersions(correction.Since, correction.Until) >= 0 {
+				return fmt.Errorf("%s since must be before until", label)
+			}
+		}
+		if err := validateAPIVersion(label+".sourceApiVersion", correction.SourceAPIVersion); err != nil {
+			return err
+		}
+		sourceIndex, ok := releaseByAPI[correction.SourceAPIVersion]
+		if !ok {
+			return fmt.Errorf("%s sourceApiVersion %s has no release", label, correction.SourceAPIVersion)
+		}
+		if compareAPIVersions(correction.SourceAPIVersion, correction.Since) < 0 || correction.Until != "" && compareAPIVersions(correction.SourceAPIVersion, correction.Until) >= 0 {
+			return fmt.Errorf("%s sourceApiVersion is outside correction range", label)
+		}
+		sourceRowIndex, ok := indexes[sourceIndex][key]
+		if !ok {
+			return fmt.Errorf("%s sourceApiVersion has no exact row %s", label, correction.SurfaceID)
+		}
+		sourceRow := releases[sourceIndex].rows[sourceRowIndex]
+		if sourceRow.SurfaceID != correction.SurfaceID {
+			return fmt.Errorf("%s surfaceId must exactly match source row %s", label, sourceRow.SurfaceID)
+		}
+		if strings.TrimSpace(correction.SourcePath) == "" || sourceRow.DocsSource != correction.SourcePath {
+			return fmt.Errorf("%s sourcePath does not match source row", label)
+		}
+		if strings.TrimSpace(correction.Reason) == "" {
+			return fmt.Errorf("%s reason is empty", label)
+		}
+		if len(correction.SourceRefs) == 0 {
+			return fmt.Errorf("%s sourceRefs is empty", label)
+		}
+		for sourceRefIndex, sourceRef := range correction.SourceRefs {
+			if err := validateSalesforceURL(fmt.Sprintf("%s.sourceRefs[%d]", label, sourceRefIndex), sourceRef); err != nil {
+				return err
+			}
+		}
+		sourceRow.APIVersion = correction.Since
+		for targetIndex := range releases {
+			targetAPI := releases[targetIndex].release.APIVersion
+			if compareAPIVersions(targetAPI, correction.Since) < 0 || correction.Until != "" && compareAPIVersions(targetAPI, correction.Until) >= 0 {
+				continue
+			}
+			if rowIndex, exists := indexes[targetIndex][key]; exists {
+				releases[targetIndex].rows[rowIndex].APIVersion = correction.Since
+				continue
+			}
+			releases[targetIndex].rows = append(releases[targetIndex].rows, sourceRow)
+			indexes[targetIndex][key] = len(releases[targetIndex].rows) - 1
+		}
+	}
+	for releaseIndex := range releases {
+		sort.SliceStable(releases[releaseIndex].rows, func(left, right int) bool {
+			return releases[releaseIndex].rows[left].SurfaceID < releases[releaseIndex].rows[right].SurfaceID
+		})
+	}
+	return nil
+}
+
+func sourceFileSHA256(path string) (string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", sha256.Sum256(data)), nil
+}
+
+func validateReleaseSourceReceipt(root string, release Release, manifest apexdocs.ReleaseManifest, inventorySHA256 string, receipt ReleaseSourceReceipt) error {
+	if receipt.SchemaVersion != 1 || receipt.Release != release.Name || receipt.APIVersion != release.APIVersion || receipt.Snapshot.TargetAPIVersion != release.APIVersion {
+		return fmt.Errorf("identity mismatch")
+	}
+	if receipt.ManifestDigest != manifest.Digest || receipt.InventorySHA256 != inventorySHA256 {
+		return fmt.Errorf("manifest or inventory binding mismatch")
+	}
+	wantManifestFamilies := []string{"apex-reference", "aura-reference", "lwc-reference", "rest-api-reference", "tooling-api-reference", "visualforce-reference"}
+	if !sameStrings(manifest.SourceFamilies, wantManifestFamilies) {
+		return fmt.Errorf("manifest source families do not match the receipted six-family snapshot")
+	}
+	wantAtlasVersion := fmt.Sprintf("%d.0", 2*apiInt(release.APIVersion)+128)
+	if receipt.Snapshot.AtlasVersion != wantAtlasVersion || !strings.Contains(receipt.Snapshot.AtlasVersionLabel, "API v"+release.APIVersion) || receipt.Snapshot.TotalPages <= 0 {
+		return fmt.Errorf("Atlas source identity mismatch")
+	}
+	if receipt.Generator.Path != "scripts/salesforce-release/export_source_receipt.py" || receipt.Snapshot.Assembler.Path != "scripts/salesforce-release/assemble_versioned_docs.py" {
+		return fmt.Errorf("source tool path mismatch")
+	}
+	for label, value := range map[string]string{
+		"generator":              receipt.Generator.SHA256,
+		"snapshot":               receipt.Snapshot.SHA256,
+		"snapshot metadata":      receipt.Snapshot.MetadataSHA256,
+		"assembler":              receipt.Snapshot.Assembler.SHA256,
+		"versioned source":       receipt.Snapshot.VersionedSourceSHA256,
+		"LWC filter receipt":     receipt.Snapshot.LWC.FilterReceiptSHA256,
+		"LWC source":             receipt.Snapshot.LWC.SourceVersionSHA256,
+		"LWC version metadata":   receipt.Snapshot.LWC.SourceVersionMetadata.SHA256,
+		"LWC availability table": receipt.Snapshot.LWC.AvailabilityTableSHA256,
+	} {
+		if !sha256Pattern.MatchString(value) {
+			return fmt.Errorf("%s SHA-256 is invalid", label)
+		}
+	}
+
+	wantFamilies := []string{"apex", "lightning-aura", "rest-api", "tooling-api", "visualforce"}
+	if len(receipt.Snapshot.Families) != len(wantFamilies) {
+		return fmt.Errorf("Atlas family count mismatch")
+	}
+	seenFamilies := map[string]bool{}
+	for _, family := range receipt.Snapshot.Families {
+		if seenFamilies[family.Name] || !slices.Contains(wantFamilies, family.Name) || family.Version != wantAtlasVersion || family.FileCount <= 0 || !sha256Pattern.MatchString(family.SHA256) {
+			return fmt.Errorf("invalid Atlas family %q", family.Name)
+		}
+		seenFamilies[family.Name] = true
+	}
+
+	lwc := receipt.Snapshot.LWC
+	if lwc.SourceVersion != "latest" || lwc.SourceVersionMetadata.Version != "latest" || lwc.SourceVersionMetadata.File != "_version.json" || lwc.AvailabilityTable != "reference-api-modules.md" {
+		return fmt.Errorf("LWC source must retain latest current-only provenance")
+	}
+	if !strings.Contains(lwc.Limitation, "current-release-only") || !strings.Contains(lwc.Limitation, "availability-filtered") {
+		return fmt.Errorf("LWC limitation is incomplete")
+	}
+	foundLimitation := false
+	for _, limitation := range receipt.Snapshot.Limitations {
+		foundLimitation = foundLimitation || limitation == lwc.Limitation
+	}
+	if !foundLimitation {
+		return fmt.Errorf("snapshot does not retain the LWC limitation")
+	}
+	copiedMarkdown := 0
+	seenCopied := map[string]bool{}
+	for index, file := range lwc.Copied {
+		if err := validateRepositoryPath(root, fmt.Sprintf("copied[%d].path", index), file.Path); err != nil {
+			return err
+		}
+		if seenCopied[file.Path] || !sha256Pattern.MatchString(file.SHA256) {
+			return fmt.Errorf("invalid copied LWC file %q", file.Path)
+		}
+		seenCopied[file.Path] = true
+		if strings.HasSuffix(file.Path, ".md") {
+			copiedMarkdown++
+		}
+	}
+	if copiedMarkdown == 0 || copiedMarkdown != lwc.CopiedMarkdownFiles {
+		return fmt.Errorf("copied LWC Markdown count mismatch")
+	}
+	for index, file := range lwc.Excluded {
+		if err := validateRepositoryPath(root, fmt.Sprintf("excluded[%d].file", index), file.File); err != nil {
+			return err
+		}
+		if !sha256Pattern.MatchString(file.SourceSHA256) || strings.TrimSpace(file.Module) == "" {
+			return fmt.Errorf("invalid excluded LWC file %q", file.File)
+		}
+		if err := validateAPIVersion(fmt.Sprintf("excluded[%d].firstAvailableAPIVersion", index), file.FirstAvailableAPIVersion); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func loadManifest(path string) (apexdocs.ReleaseManifest, error) {
