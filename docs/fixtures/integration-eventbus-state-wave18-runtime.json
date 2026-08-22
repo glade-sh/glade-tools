@@ -1,0 +1,114 @@
+{
+  "apiVersion": "67.0",
+  "project": {
+    "sourceApiVersion": "67.0"
+  },
+  "command": {
+    "kind": "exec",
+    "args": [
+      "eventbus.InvalidReplayIdException invalid = new eventbus.InvalidReplayIdException('wave18-invalid'); eventbus.InvalidReplayIdException invalidClone = (eventbus.InvalidReplayIdException)invalid.clone(); System.assertNotEquals(invalid, invalidClone); System.assertEquals(invalid.getMessage(), invalidClone.getMessage()); eventbus.RetryableException retry = new eventbus.RetryableException('wave18-retry'); eventbus.RetryableException retryClone = (eventbus.RetryableException)retry.clone(); System.assertNotEquals(retry, retryClone); System.assertEquals(retry.getMessage(), retryClone.getMessage()); eventbus.TestBroker broker = new eventbus.TestBroker(); broker.deliver(); broker.fail(); eventbus.TestEventService service = new eventbus.TestEventService(); eventbus.TriggerContext context = new eventbus.TriggerContext(); context.lastError = 'wave18-error'; context.retries = 3; eventbus.TriggerContext contextClone = (eventbus.TriggerContext)context.clone(); System.assertEquals('wave18-error', context.lastError); System.assertEquals(3, context.retries); System.assertNotEquals(context, contextClone); System.assertEquals(context.lastError, contextClone.lastError); System.assertEquals(context.retries, contextClone.retries);"
+    ]
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException",
+      "symbol": "eventbus.InvalidReplayIdException",
+      "notes": "Anonymous execution constructs the exception with a non-default message before cloning it."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.InvalidReplayIdException.clone()",
+      "symbol": "eventbus.InvalidReplayIdException.clone()",
+      "notes": "Anonymous execution observes a distinct clone preserving the non-default InvalidReplayIdException message."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.RetryableException",
+      "symbol": "eventbus.RetryableException",
+      "notes": "Anonymous execution constructs the exception with a non-default message before cloning it."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.RetryableException.clone()",
+      "symbol": "eventbus.RetryableException.clone()",
+      "notes": "Anonymous execution observes a distinct clone preserving the non-default RetryableException message."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TestBroker",
+      "symbol": "eventbus.TestBroker",
+      "notes": "Anonymous execution constructs the local event broker and exercises its state transitions."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TestBroker.TestBroker()",
+      "symbol": "eventbus.TestBroker.TestBroker()",
+      "notes": "Anonymous execution constructs the local event broker."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TestEventService",
+      "symbol": "eventbus.TestEventService",
+      "notes": "Anonymous execution constructs the local event service."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TestEventService.TestEventService()",
+      "symbol": "eventbus.TestEventService.TestEventService()",
+      "notes": "Anonymous execution constructs the local event service."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TriggerContext",
+      "symbol": "eventbus.TriggerContext",
+      "notes": "Anonymous execution constructs a trigger context and writes non-default retry state."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TriggerContext.TriggerContext()",
+      "symbol": "eventbus.TriggerContext.TriggerContext()",
+      "notes": "Anonymous execution constructs a trigger context before setting state."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TriggerContext.clone()",
+      "symbol": "eventbus.TriggerContext.clone()",
+      "notes": "Anonymous execution observes a distinct clone preserving non-default lastError and retries state."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TriggerContext.lastError",
+      "symbol": "eventbus.TriggerContext.lastError",
+      "notes": "Anonymous execution round-trips a non-default trigger error value."
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:eventbus.TriggerContext.retries",
+      "symbol": "eventbus.TriggerContext.retries",
+      "notes": "Anonymous execution round-trips a non-default retry count."
+    }
+  ],
+  "expected": {
+    "result": {
+      "debug": null,
+      "ok": true
+    }
+  },
+  "mode": "local-runtime",
+  "name": "integration-eventbus-state-wave18-runtime",
+  "notes": "Wave18 local-only EventBus state, broker, service, and trigger-context behavior. SuccessResult rows are omitted because anonymous callback delivery exposes only default-empty result state; broker/service clone rows are omitted because they have no non-default state to preserve; resume-checkpoint/current-context rows remain unclaimed because anonymous execution cannot substantively observe them.",
+  "profile": {
+    "laneId": "wave18-integration-eventbus-state",
+    "selectedRowCount": 13
+  },
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "This fixture proves sealed local anonymous execution over deterministic EventBus object state; it makes no hosted Salesforce parity claim.",
+  "source": [
+    {
+      "path": "anonymous.apex",
+      "content": "eventbus.InvalidReplayIdException invalid = new eventbus.InvalidReplayIdException('wave18-invalid'); eventbus.InvalidReplayIdException invalidClone = (eventbus.InvalidReplayIdException)invalid.clone(); System.assertNotEquals(invalid, invalidClone); System.assertEquals(invalid.getMessage(), invalidClone.getMessage()); eventbus.RetryableException retry = new eventbus.RetryableException('wave18-retry'); eventbus.RetryableException retryClone = (eventbus.RetryableException)retry.clone(); System.assertNotEquals(retry, retryClone); System.assertEquals(retry.getMessage(), retryClone.getMessage()); eventbus.TestBroker broker = new eventbus.TestBroker(); broker.deliver(); broker.fail(); eventbus.TestEventService service = new eventbus.TestEventService(); eventbus.TriggerContext context = new eventbus.TriggerContext(); context.lastError = 'wave18-error'; context.retries = 3; eventbus.TriggerContext contextClone = (eventbus.TriggerContext)context.clone(); System.assertEquals('wave18-error', context.lastError); System.assertEquals(3, context.retries); System.assertNotEquals(context, contextClone); System.assertEquals(context.lastError, contextClone.lastError); System.assertEquals(context.retries, contextClone.retries);"
+    }
+  ]
+}

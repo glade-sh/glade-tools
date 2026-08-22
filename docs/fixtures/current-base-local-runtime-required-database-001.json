@@ -21,78 +21,13 @@
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.CursorFetchResult",
-      "symbol": "Database.CursorFetchResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.CursorFetchResult.CursorFetchResult()",
-      "symbol": "Database.CursorFetchResult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.CursorFetchResult.clone()",
-      "symbol": "Database.CursorFetchResult.clone"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.DeleteResult.DeleteResult()",
       "symbol": "Database.DeleteResult"
     },
     {
       "kind": "test",
-      "surfaceId": "apex:Database.DeletedRecord.deleteddate",
-      "symbol": "Database.DeletedRecord.deleteddate"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DeletedRecord.equals(Object)",
-      "symbol": "Database.DeletedRecord.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DeletedRecord.hashCode()",
-      "symbol": "Database.DeletedRecord.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DeletedRecord.id",
-      "symbol": "Database.DeletedRecord.id"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DeletedRecord.toString()",
-      "symbol": "Database.DeletedRecord.toString"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateError",
-      "symbol": "Database.DuplicateError"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateError.DuplicateError()",
-      "symbol": "Database.DuplicateError"
-    },
-    {
-      "kind": "test",
       "surfaceId": "apex:Database.DuplicateError.duplicateresult",
       "symbol": "Database.DuplicateError.duplicateresult"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateError.equals(Object)",
-      "symbol": "Database.DuplicateError.equals"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateError.hashCode()",
-      "symbol": "Database.DuplicateError.hashCode"
-    },
-    {
-      "kind": "test",
-      "surfaceId": "apex:Database.DuplicateError.toString()",
-      "symbol": "Database.DuplicateError.toString"
     },
     {
       "kind": "test",
@@ -111,10 +46,10 @@
   },
   "mode": "local-runtime",
   "name": "current-base-local-runtime-required-Database-001",
-  "notes": "Current-base lane current-base-local-runtime-required-Database-001: deterministic local constructor, field, clone, equality, and passive-result contracts for the missing surface rows.",
+  "notes": "Current-base lane current-base-local-runtime-required-Database-001: retained Cursor type/constructor/clone plus passive result constructors and DuplicateError result-field shape.",
   "profile": {
     "laneId": "current-base-local-runtime-required-Database-001",
-    "selectedRowCount": 19
+    "selectedRowCount": 6
   },
   "salesforceEligible": false,
   "salesforceExclusionClass": "policy-local-only",

@@ -37,7 +37,34 @@ func databaseResultDTODepthIDs() []string {
 }
 
 func TestDatabaseResultDTOsHaveExactLocalOnlyEvidence(t *testing.T) {
-	const owner = "fixture:core-runtime-database-result-dto-local-evidence"
+	const (
+		legacyOwner     = "fixture:core-runtime-database-result-dto-local-evidence"
+		fieldStateOwner = "fixture:data-database-result-field-state-runtime"
+		runtimeOwner    = "fixture:data-platform-database-result-dto-wave18-runtime"
+	)
+	legacyIDs := map[string]struct{}{
+		"apex:Database.DeleteResult.errors":          {},
+		"apex:Database.DeleteResult.id":              {},
+		"apex:Database.DeleteResult.success":         {},
+		"apex:Database.EmptyRecycleBinResult.errors": {},
+		"apex:Database.SaveResult.errors":            {},
+		"apex:Database.SaveResult.id":                {},
+		"apex:Database.SaveResult.success":           {},
+		"apex:Database.UndeleteResult.errors":        {},
+		"apex:Database.UndeleteResult.id":            {},
+		"apex:Database.UndeleteResult.success":       {},
+	}
+	fieldStateIDs := map[string]struct{}{
+		"apex:Database.DeleteResult.errors":    {},
+		"apex:Database.DeleteResult.id":        {},
+		"apex:Database.DeleteResult.success":   {},
+		"apex:Database.SaveResult.errors":      {},
+		"apex:Database.SaveResult.id":          {},
+		"apex:Database.SaveResult.success":     {},
+		"apex:Database.UndeleteResult.errors":  {},
+		"apex:Database.UndeleteResult.id":      {},
+		"apex:Database.UndeleteResult.success": {},
+	}
 	wantIDs := databaseResultDTODepthIDs()
 	if len(wantIDs) != 40 {
 		t.Fatalf("frozen Database result set = %d, want 40", len(wantIDs))
@@ -51,22 +78,39 @@ func TestDatabaseResultDTOsHaveExactLocalOnlyEvidence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := make(map[string]struct{}, len(wantIDs))
+	expectedOwners := make(map[string]map[string]struct{}, len(wantIDs))
 	for _, id := range wantIDs {
-		want[id] = struct{}{}
+		expectedOwners[id] = map[string]struct{}{runtimeOwner: {}}
 	}
-	var selected []SurfaceLedgerRow
+	for id := range legacyIDs {
+		expectedOwners[id] = map[string]struct{}{legacyOwner: {}}
+	}
+	for id := range fieldStateIDs {
+		expectedOwners[id][fieldStateOwner] = struct{}{}
+	}
+	selectedByID := make(map[string]SurfaceLedgerRow, len(wantIDs))
 	for _, row := range rows {
-		if _, ok := want[row.SurfaceID]; ok {
+		owners, ok := expectedOwners[row.SurfaceID]
+		if !ok {
+			continue
+		}
+		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported || len(row.Sources) != 1 {
+			t.Fatalf("%s evidence/behavior/source = %s/%s/%v", row.SurfaceID, row.Evidence, row.GladeBehavior, row.Sources)
+		}
+		if _, ok := owners[row.Sources[0]]; !ok {
+			t.Fatalf("%s source = %v, want one of %v", row.SurfaceID, row.Sources, owners)
+		}
+		if _, seen := selectedByID[row.SurfaceID]; !seen {
+			selectedByID[row.SurfaceID] = row
+		}
+	}
+	selected := make([]SurfaceLedgerRow, 0, len(wantIDs))
+	for _, id := range wantIDs {
+		if row, ok := selectedByID[id]; ok {
 			selected = append(selected, row)
 		}
 	}
 	assertExactSurfaceSet(t, selected, wantIDs)
-	for _, row := range selected {
-		if row.Evidence != EvidenceFixture || row.GladeBehavior != BehaviorSupported || len(row.Sources) != 1 || row.Sources[0] != owner {
-			t.Fatalf("%s evidence/behavior/source = %s/%s/%v", row.SurfaceID, row.Evidence, row.GladeBehavior, row.Sources)
-		}
-	}
 
 	fixturePath := filepath.Join(root, "docs", "fixtures", "core-runtime-database-result-dto-local-evidence.json")
 	fixture, err := compat.LoadFile(fixturePath)

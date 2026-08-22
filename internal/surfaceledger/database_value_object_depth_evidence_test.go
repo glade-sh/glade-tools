@@ -12,21 +12,21 @@ import (
 
 func TestDatabaseValueObjectsHaveExactExecutableLocalEvidence(t *testing.T) {
 	owners := map[string]string{
-		"apex:Database.Cursor":                          "fixture:current-base-local-runtime-required-Database-001",
-		"apex:Database.DeletedRecord.deleteddate":       "fixture:current-base-local-runtime-required-Database-001",
-		"apex:Database.DeletedRecord.id":                "fixture:current-base-local-runtime-required-Database-001",
-		"apex:Database.Error.equals(Object)":            "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.Error.hashCode()":                "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.Error.toString()":                "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.GetDeletedResult.equals(Object)": "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.GetDeletedResult.hashCode()":     "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.GetDeletedResult.toString()":     "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.GetUpdatedResult.equals(Object)": "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.GetUpdatedResult.hashCode()":     "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.GetUpdatedResult.toString()":     "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.MergeRequest.equals(Object)":     "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.MergeRequest.hashCode()":         "fixture:current-base-local-runtime-required-Database-002",
-		"apex:Database.MergeRequest.toString()":         "fixture:current-base-local-runtime-required-Database-002",
+		"apex:Database.Cursor":                          "fixture:data-database-cursor-object-runtime-depth",
+		"apex:Database.DeletedRecord.deleteddate":       "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.DeletedRecord.id":                "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.Error.equals(Object)":            "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.Error.hashCode()":                "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.Error.toString()":                "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.GetDeletedResult.equals(Object)": "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.GetDeletedResult.hashCode()":     "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.GetDeletedResult.toString()":     "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.GetUpdatedResult.equals(Object)": "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.GetUpdatedResult.hashCode()":     "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.GetUpdatedResult.toString()":     "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.MergeRequest.equals(Object)":     "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.MergeRequest.hashCode()":         "fixture:data-platform-database-dto-wave18-runtime",
+		"apex:Database.MergeRequest.toString()":         "fixture:data-platform-database-dto-wave18-runtime",
 	}
 	root := filepath.Join("..", "..")
 	paths, err := filepath.Glob(filepath.Join(root, "docs", "fixtures", "*.json"))
@@ -54,18 +54,26 @@ func TestDatabaseValueObjectsHaveExactExecutableLocalEvidence(t *testing.T) {
 	}
 
 	fixtures := map[string][]string{
+		"data-database-cursor-object-runtime-depth.json": {
+			"Database.Cursor cursor = Database.getCursor('SELECT Id, Name FROM Account ORDER BY Name');",
+		},
 		"current-base-local-runtime-required-database-001.json": {
 			"Database.Cursor cursor = new Database.Cursor();",
-			"deletedRecord.deleteddate = Date.today();",
-			"deletedRecord.id = '001000000000001AAA';",
-			"System.assertEquals(Date.today(), deletedRecord.deleteddate);",
-			"System.assertEquals('001000000000001AAA', deletedRecord.id);",
 		},
 		"current-base-local-runtime-required-database-002.json": {
-			"error.equals(error)", "error.equals(null)", "error.hashCode()", "error.toString()",
-			"deleted.equals(deleted)", "deleted.equals(null)", "deleted.hashCode()", "deleted.toString()",
-			"updated.equals(updated)", "updated.equals(null)", "updated.hashCode()", "updated.toString()",
-			"mergeRequest.equals(mergeRequest)", "mergeRequest.equals(null)", "mergeRequest.hashCode()", "mergeRequest.toString()",
+			"Object errorsType = (Database.Errors)null;", "Database.LocaleOptions locale = new Database.LocaleOptions();",
+		},
+		"current-base-local-runtime-required-database-003.json": {
+			"Database.SaveResult saveResult = new Database.SaveResult();", "Object savepoint = (Database.Savepoint)null;", "Database.UndeleteResult undeleteResult = new Database.UndeleteResult();",
+		},
+		"data-platform-database-dto-wave18-runtime.json": {
+			"deletedA.deleteddate = Date.newInstance(2026,1,2);", "deletedA.equals(deletedB)", "deletedA.hashCode()", "deletedA.toString()",
+			"duplicateA.equals(duplicateB)", "duplicateA.hashCode()", "duplicateA.toString()",
+			"errorA.equals(errorB)", "errorA.hashCode()", "errorA.toString()",
+			"deletedResultA.earliestdateavailable", "deletedResultA.equals(deletedResultB)", "deletedResultA.hashCode()", "deletedResultA.toString()",
+			"updatedA.equals(updatedB)", "updatedA.hashCode()", "updatedA.toString()",
+			"mergeA.equals(mergeB)", "mergeA.hashCode()", "mergeA.toString()",
+			"mergeResult.errors", "fetch.clone()", "pagination.clone()", "work.clone()",
 		},
 	}
 	for name, witnesses := range fixtures {
@@ -99,14 +107,14 @@ func TestDatabaseValueObjectsHaveExactExecutableLocalEvidence(t *testing.T) {
 			SalesforceEligible        *bool  `json:"salesforceEligible"`
 			SalesforceExclusionClass  string `json:"salesforceExclusionClass"`
 			SalesforceExclusionReason string `json:"salesforceExclusionReason"`
-			Profile                   struct {
+			Profile                   *struct {
 				SelectedRowCount int `json:"selectedRowCount"`
 			} `json:"profile"`
 		}
 		if err := json.Unmarshal(data, &policy); err != nil {
 			t.Fatal(err)
 		}
-		if policy.SalesforceEligible == nil || *policy.SalesforceEligible || policy.SalesforceExclusionClass != "policy-local-only" || policy.SalesforceExclusionReason == "" || policy.Profile.SelectedRowCount != len(fixture.Evidence) {
+		if policy.SalesforceEligible == nil || *policy.SalesforceEligible || policy.SalesforceExclusionClass != "policy-local-only" || policy.SalesforceExclusionReason == "" || (policy.Profile != nil && policy.Profile.SelectedRowCount != len(fixture.Evidence)) {
 			t.Fatalf("%s policy = %#v", name, policy)
 		}
 	}

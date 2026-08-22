@@ -10,12 +10,6 @@
   "expected": {},
   "evidence": [
     {
-      "surfaceId": "apex:System.NoAccessException.NoAccessException()",
-      "symbol": "apex:System.NoAccessException.NoAccessException()",
-      "kind": "exec",
-      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
-    },
-    {
       "surfaceId": "apex:System.NoAccessException.equals(Object)",
       "symbol": "apex:System.NoAccessException.equals(Object)",
       "kind": "exec",
@@ -78,12 +72,6 @@
     {
       "surfaceId": "apex:System.NoAccessException.toString()",
       "symbol": "apex:System.NoAccessException.toString()",
-      "kind": "exec",
-      "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
-    },
-    {
-      "surfaceId": "apex:System.NoDataFoundException.NoDataFoundException()",
-      "symbol": "apex:System.NoDataFoundException.NoDataFoundException()",
       "kind": "exec",
       "notes": "Local candidate bulk probe executed this exact surface; volatile values are normalized in the linked Salesforce comparison."
     },

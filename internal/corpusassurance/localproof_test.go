@@ -436,6 +436,11 @@ func TestCoreRuntimeFixturesAreFullyCandidateRunnable(t *testing.T) {
 		{"data-platform-schema-presentation-results-wave17-runtime.json", 42},
 		{"data-platform-schema-record-type-info-wave17-runtime.json", 8},
 		{"integration-metadata-core-dtos-wave17-runtime.json", 21},
+		{"core-runtime-exception-constructor-family-wave18-runtime.json", 26},
+		{"data-platform-database-dto-wave18-runtime.json", 31},
+		{"data-platform-database-result-dto-wave18-runtime.json", 30},
+		{"integration-eventbus-state-wave18-runtime.json", 13},
+		{"ui-apexpages-idea-controller-wave18-runtime.json", 6},
 	} {
 		t.Run(test.filename, func(t *testing.T) {
 			data, err := os.ReadFile(filepath.Join(root, test.filename))
