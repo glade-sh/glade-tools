@@ -1,0 +1,550 @@
+{
+  "apiVersion": "67.0",
+  "command": {
+    "args": [
+      "System.AccessType accessTypeValue = System.AccessType.READABLE;\naccessTypeValue = System.AccessType.UPSERTABLE;\nSystem.assert(System.AccessType.values().size() > 0);\naccessTypeValue = System.AccessType.READABLE;\nSystem.assert(accessTypeValue.equals(accessTypeValue));\nSystem.assertEquals(accessTypeValue.ordinal(), System.AccessType.valueOf('READABLE').ordinal());\nSystem.assert(accessTypeValue.ordinal() >= 0);\nSystem.assertEquals(accessTypeValue.hashCode(), accessTypeValue.hashCode());\n\nSystem.JSONToken jsonTokenValue = System.JSONToken.END_ARRAY;\njsonTokenValue = System.JSONToken.END_OBJECT;\njsonTokenValue = System.JSONToken.FIELD_NAME;\njsonTokenValue = System.JSONToken.NOT_AVAILABLE;\njsonTokenValue = System.JSONToken.START_ARRAY;\njsonTokenValue = System.JSONToken.START_OBJECT;\njsonTokenValue = System.JSONToken.VALUE_EMBEDDED_OBJECT;\njsonTokenValue = System.JSONToken.VALUE_FALSE;\njsonTokenValue = System.JSONToken.VALUE_NULL;\njsonTokenValue = System.JSONToken.VALUE_NUMBER_FLOAT;\njsonTokenValue = System.JSONToken.VALUE_NUMBER_INT;\njsonTokenValue = System.JSONToken.VALUE_STRING;\njsonTokenValue = System.JSONToken.VALUE_TRUE;\nSystem.assert(System.JSONToken.values().size() > 0);\njsonTokenValue = System.JSONToken.END_ARRAY;\nSystem.assert(jsonTokenValue.equals(jsonTokenValue));\nSystem.assertEquals(jsonTokenValue.ordinal(), System.JSONToken.valueOf('END_ARRAY').ordinal());\nSystem.assert(jsonTokenValue.ordinal() >= 0);\nSystem.assertEquals(jsonTokenValue.hashCode(), jsonTokenValue.hashCode());\n\nSystem.LoggingLevel loggingLevelValue = System.LoggingLevel.FINE;\nloggingLevelValue = System.LoggingLevel.FINER;\nloggingLevelValue = System.LoggingLevel.FINEST;\nloggingLevelValue = System.LoggingLevel.INTERNAL;\nSystem.assert(System.LoggingLevel.values().size() > 0);\nloggingLevelValue = System.LoggingLevel.FINE;\nSystem.assert(loggingLevelValue.equals(loggingLevelValue));\nSystem.assertEquals(loggingLevelValue.ordinal(), System.LoggingLevel.valueOf('FINE').ordinal());\nSystem.assert(loggingLevelValue.ordinal() >= 0);\nSystem.assertEquals(loggingLevelValue.hashCode(), loggingLevelValue.hashCode());\nSystem.assertNotEquals(null, loggingLevelValue.name());\nSystem.assertNotEquals(null, loggingLevelValue.toString());\n\nSystem.Quiddity quiddityValue = System.Quiddity.ANONYMOUS;\nquiddityValue = System.Quiddity.BATCH_ACS;\nquiddityValue = System.Quiddity.BATCH_APEX;\nquiddityValue = System.Quiddity.BATCH_CHUNK_PARALLEL;\nquiddityValue = System.Quiddity.BATCH_CHUNK_SERIAL;\nquiddityValue = System.Quiddity.BULK_API;\nquiddityValue = System.Quiddity.COMMERCE_INTEGRATION;\nquiddityValue = System.Quiddity.DISCOVERABLE_LOGIN;\nquiddityValue = System.Quiddity.EXTERNAL_SERVICE_CALLBACK;\nquiddityValue = System.Quiddity.FUNCTION_CALLBACK;\nquiddityValue = System.Quiddity.FUTURE;\nquiddityValue = System.Quiddity.INBOUND_EMAIL_SERVICE;\nquiddityValue = System.Quiddity.INVOCABLE_ACTION;\nquiddityValue = System.Quiddity.IOT;\nquiddityValue = System.Quiddity.PLATFORM_EVENT_PUBLISH_CALLBACK;\nquiddityValue = System.Quiddity.POST_INSTALL_SCRIPT;\nquiddityValue = System.Quiddity.QUEUEABLE;\nquiddityValue = System.Quiddity.REMOTE_ACTION;\nquiddityValue = System.Quiddity.REST;\nquiddityValue = System.Quiddity.RUNTEST_ASYNC;\nquiddityValue = System.Quiddity.RUNTEST_DEPLOY;\nquiddityValue = System.Quiddity.RUNTEST_SYNC;\nquiddityValue = System.Quiddity.RUN_INTEGRATION_TESTS;\nquiddityValue = System.Quiddity.SCHEDULED;\nquiddityValue = System.Quiddity.SOAP;\nquiddityValue = System.Quiddity.SYNCHRONOUS;\nquiddityValue = System.Quiddity.TRANSACTION_FINALIZER_QUEUEABLE;\nquiddityValue = System.Quiddity.TRANSACTION_SECURITY_POLICY;\nquiddityValue = System.Quiddity.UNDEFINED;\nSystem.assert(System.Quiddity.values().size() > 0);\nquiddityValue = System.Quiddity.ANONYMOUS;\nSystem.assert(quiddityValue.equals(quiddityValue));\nSystem.assertEquals(quiddityValue.ordinal(), System.Quiddity.valueOf('ANONYMOUS').ordinal());\nSystem.assert(quiddityValue.ordinal() >= 0);\nSystem.assertEquals(quiddityValue.hashCode(), quiddityValue.hashCode());\n\nSystem.TriggerOperation triggerOperationValue = System.TriggerOperation.AFTER_DELETE;\ntriggerOperationValue = System.TriggerOperation.AFTER_INSERT;\ntriggerOperationValue = System.TriggerOperation.AFTER_UNDELETE;\ntriggerOperationValue = System.TriggerOperation.AFTER_UPDATE;\ntriggerOperationValue = System.TriggerOperation.BEFORE_DELETE;\ntriggerOperationValue = System.TriggerOperation.BEFORE_INSERT;\ntriggerOperationValue = System.TriggerOperation.BEFORE_UPDATE;\nSystem.assert(System.TriggerOperation.values().size() > 0);\ntriggerOperationValue = System.TriggerOperation.AFTER_DELETE;\nSystem.assert(triggerOperationValue.equals(triggerOperationValue));\nSystem.assertEquals(triggerOperationValue.ordinal(), System.TriggerOperation.valueOf('AFTER_DELETE').ordinal());\nSystem.assert(triggerOperationValue.ordinal() >= 0);\nSystem.assertEquals(triggerOperationValue.hashCode(), triggerOperationValue.hashCode());\n\nSystem.XmlTag xmlTagValue = System.XmlTag.ATTRIBUTE;\nxmlTagValue = System.XmlTag.CDATA;\nxmlTagValue = System.XmlTag.CHARACTERS;\nxmlTagValue = System.XmlTag.COMMENT;\nxmlTagValue = System.XmlTag.DTD;\nxmlTagValue = System.XmlTag.END_DOCUMENT;\nxmlTagValue = System.XmlTag.END_ELEMENT;\nxmlTagValue = System.XmlTag.ENTITY_DECLARATION;\nxmlTagValue = System.XmlTag.ENTITY_REFERENCE;\nxmlTagValue = System.XmlTag.NAMESPACE;\nxmlTagValue = System.XmlTag.NOTATION_DECLARATION;\nxmlTagValue = System.XmlTag.PROCESSING_INSTRUCTION;\nxmlTagValue = System.XmlTag.SPACE;\nxmlTagValue = System.XmlTag.START_DOCUMENT;\nxmlTagValue = System.XmlTag.START_ELEMENT;\nSystem.assert(System.XmlTag.values().size() > 0);\nxmlTagValue = System.XmlTag.ATTRIBUTE;\nSystem.assert(xmlTagValue.equals(xmlTagValue));\nSystem.assertEquals(xmlTagValue.ordinal(), System.XmlTag.valueOf('ATTRIBUTE').ordinal());\nSystem.assert(xmlTagValue.ordinal() >= 0);\nSystem.assertEquals(xmlTagValue.hashCode(), xmlTagValue.hashCode());\n"
+    ],
+    "kind": "exec"
+  },
+  "evidence": [
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.AccessType.READABLE",
+      "symbol": "apex:System.AccessType.READABLE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.AccessType.UPSERTABLE",
+      "symbol": "apex:System.AccessType.UPSERTABLE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.AccessType.equals(Object)",
+      "symbol": "apex:System.AccessType.equals(Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.AccessType.hashCode()",
+      "symbol": "apex:System.AccessType.hashCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.AccessType.ordinal()",
+      "symbol": "apex:System.AccessType.ordinal()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.AccessType.valueOf(String)",
+      "symbol": "apex:System.AccessType.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.AccessType.values()",
+      "symbol": "apex:System.AccessType.values()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.END_ARRAY",
+      "symbol": "apex:System.JSONToken.END_ARRAY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.END_OBJECT",
+      "symbol": "apex:System.JSONToken.END_OBJECT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.FIELD_NAME",
+      "symbol": "apex:System.JSONToken.FIELD_NAME"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.NOT_AVAILABLE",
+      "symbol": "apex:System.JSONToken.NOT_AVAILABLE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.START_ARRAY",
+      "symbol": "apex:System.JSONToken.START_ARRAY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.START_OBJECT",
+      "symbol": "apex:System.JSONToken.START_OBJECT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.VALUE_EMBEDDED_OBJECT",
+      "symbol": "apex:System.JSONToken.VALUE_EMBEDDED_OBJECT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.VALUE_FALSE",
+      "symbol": "apex:System.JSONToken.VALUE_FALSE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.VALUE_NULL",
+      "symbol": "apex:System.JSONToken.VALUE_NULL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.VALUE_NUMBER_FLOAT",
+      "symbol": "apex:System.JSONToken.VALUE_NUMBER_FLOAT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.VALUE_NUMBER_INT",
+      "symbol": "apex:System.JSONToken.VALUE_NUMBER_INT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.VALUE_STRING",
+      "symbol": "apex:System.JSONToken.VALUE_STRING"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.VALUE_TRUE",
+      "symbol": "apex:System.JSONToken.VALUE_TRUE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.equals(Object)",
+      "symbol": "apex:System.JSONToken.equals(Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.hashCode()",
+      "symbol": "apex:System.JSONToken.hashCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.ordinal()",
+      "symbol": "apex:System.JSONToken.ordinal()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.valueOf(String)",
+      "symbol": "apex:System.JSONToken.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.JSONToken.values()",
+      "symbol": "apex:System.JSONToken.values()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.FINE",
+      "symbol": "apex:System.LoggingLevel.FINE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.FINER",
+      "symbol": "apex:System.LoggingLevel.FINER"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.FINEST",
+      "symbol": "apex:System.LoggingLevel.FINEST"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.INTERNAL",
+      "symbol": "apex:System.LoggingLevel.INTERNAL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.equals(Object)",
+      "symbol": "apex:System.LoggingLevel.equals(Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.hashCode()",
+      "symbol": "apex:System.LoggingLevel.hashCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.name()",
+      "symbol": "apex:System.LoggingLevel.name()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.ordinal()",
+      "symbol": "apex:System.LoggingLevel.ordinal()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.toString()",
+      "symbol": "apex:System.LoggingLevel.toString()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.valueOf(String)",
+      "symbol": "apex:System.LoggingLevel.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.LoggingLevel.values()",
+      "symbol": "apex:System.LoggingLevel.values()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.ANONYMOUS",
+      "symbol": "apex:System.Quiddity.ANONYMOUS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.BATCH_ACS",
+      "symbol": "apex:System.Quiddity.BATCH_ACS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.BATCH_APEX",
+      "symbol": "apex:System.Quiddity.BATCH_APEX"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.BATCH_CHUNK_PARALLEL",
+      "symbol": "apex:System.Quiddity.BATCH_CHUNK_PARALLEL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.BATCH_CHUNK_SERIAL",
+      "symbol": "apex:System.Quiddity.BATCH_CHUNK_SERIAL"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.BULK_API",
+      "symbol": "apex:System.Quiddity.BULK_API"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.COMMERCE_INTEGRATION",
+      "symbol": "apex:System.Quiddity.COMMERCE_INTEGRATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.DISCOVERABLE_LOGIN",
+      "symbol": "apex:System.Quiddity.DISCOVERABLE_LOGIN"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.EXTERNAL_SERVICE_CALLBACK",
+      "symbol": "apex:System.Quiddity.EXTERNAL_SERVICE_CALLBACK"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.FUNCTION_CALLBACK",
+      "symbol": "apex:System.Quiddity.FUNCTION_CALLBACK"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.FUTURE",
+      "symbol": "apex:System.Quiddity.FUTURE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.INBOUND_EMAIL_SERVICE",
+      "symbol": "apex:System.Quiddity.INBOUND_EMAIL_SERVICE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.INVOCABLE_ACTION",
+      "symbol": "apex:System.Quiddity.INVOCABLE_ACTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.IOT",
+      "symbol": "apex:System.Quiddity.IOT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.PLATFORM_EVENT_PUBLISH_CALLBACK",
+      "symbol": "apex:System.Quiddity.PLATFORM_EVENT_PUBLISH_CALLBACK"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.POST_INSTALL_SCRIPT",
+      "symbol": "apex:System.Quiddity.POST_INSTALL_SCRIPT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.QUEUEABLE",
+      "symbol": "apex:System.Quiddity.QUEUEABLE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.REMOTE_ACTION",
+      "symbol": "apex:System.Quiddity.REMOTE_ACTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.REST",
+      "symbol": "apex:System.Quiddity.REST"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.RUNTEST_ASYNC",
+      "symbol": "apex:System.Quiddity.RUNTEST_ASYNC"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.RUNTEST_DEPLOY",
+      "symbol": "apex:System.Quiddity.RUNTEST_DEPLOY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.RUNTEST_SYNC",
+      "symbol": "apex:System.Quiddity.RUNTEST_SYNC"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.RUN_INTEGRATION_TESTS",
+      "symbol": "apex:System.Quiddity.RUN_INTEGRATION_TESTS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.SCHEDULED",
+      "symbol": "apex:System.Quiddity.SCHEDULED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.SOAP",
+      "symbol": "apex:System.Quiddity.SOAP"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.SYNCHRONOUS",
+      "symbol": "apex:System.Quiddity.SYNCHRONOUS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.TRANSACTION_FINALIZER_QUEUEABLE",
+      "symbol": "apex:System.Quiddity.TRANSACTION_FINALIZER_QUEUEABLE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.TRANSACTION_SECURITY_POLICY",
+      "symbol": "apex:System.Quiddity.TRANSACTION_SECURITY_POLICY"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.UNDEFINED",
+      "symbol": "apex:System.Quiddity.UNDEFINED"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.equals(Object)",
+      "symbol": "apex:System.Quiddity.equals(Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.hashCode()",
+      "symbol": "apex:System.Quiddity.hashCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.ordinal()",
+      "symbol": "apex:System.Quiddity.ordinal()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.valueOf(String)",
+      "symbol": "apex:System.Quiddity.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.Quiddity.values()",
+      "symbol": "apex:System.Quiddity.values()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation",
+      "symbol": "apex:System.TriggerOperation"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.AFTER_DELETE",
+      "symbol": "apex:System.TriggerOperation.AFTER_DELETE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.AFTER_INSERT",
+      "symbol": "apex:System.TriggerOperation.AFTER_INSERT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.AFTER_UNDELETE",
+      "symbol": "apex:System.TriggerOperation.AFTER_UNDELETE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.AFTER_UPDATE",
+      "symbol": "apex:System.TriggerOperation.AFTER_UPDATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.BEFORE_DELETE",
+      "symbol": "apex:System.TriggerOperation.BEFORE_DELETE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.BEFORE_INSERT",
+      "symbol": "apex:System.TriggerOperation.BEFORE_INSERT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.BEFORE_UPDATE",
+      "symbol": "apex:System.TriggerOperation.BEFORE_UPDATE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.equals(Object)",
+      "symbol": "apex:System.TriggerOperation.equals(Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.hashCode()",
+      "symbol": "apex:System.TriggerOperation.hashCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.ordinal()",
+      "symbol": "apex:System.TriggerOperation.ordinal()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.valueOf(String)",
+      "symbol": "apex:System.TriggerOperation.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.TriggerOperation.values()",
+      "symbol": "apex:System.TriggerOperation.values()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag",
+      "symbol": "apex:System.XmlTag"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.ATTRIBUTE",
+      "symbol": "apex:System.XmlTag.ATTRIBUTE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.CDATA",
+      "symbol": "apex:System.XmlTag.CDATA"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.CHARACTERS",
+      "symbol": "apex:System.XmlTag.CHARACTERS"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.COMMENT",
+      "symbol": "apex:System.XmlTag.COMMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.DTD",
+      "symbol": "apex:System.XmlTag.DTD"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.END_DOCUMENT",
+      "symbol": "apex:System.XmlTag.END_DOCUMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.END_ELEMENT",
+      "symbol": "apex:System.XmlTag.END_ELEMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.ENTITY_DECLARATION",
+      "symbol": "apex:System.XmlTag.ENTITY_DECLARATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.ENTITY_REFERENCE",
+      "symbol": "apex:System.XmlTag.ENTITY_REFERENCE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.NAMESPACE",
+      "symbol": "apex:System.XmlTag.NAMESPACE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.NOTATION_DECLARATION",
+      "symbol": "apex:System.XmlTag.NOTATION_DECLARATION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.PROCESSING_INSTRUCTION",
+      "symbol": "apex:System.XmlTag.PROCESSING_INSTRUCTION"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.SPACE",
+      "symbol": "apex:System.XmlTag.SPACE"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.START_DOCUMENT",
+      "symbol": "apex:System.XmlTag.START_DOCUMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.START_ELEMENT",
+      "symbol": "apex:System.XmlTag.START_ELEMENT"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.equals(Object)",
+      "symbol": "apex:System.XmlTag.equals(Object)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.hashCode()",
+      "symbol": "apex:System.XmlTag.hashCode()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.ordinal()",
+      "symbol": "apex:System.XmlTag.ordinal()"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.valueOf(String)",
+      "symbol": "apex:System.XmlTag.valueOf(String)"
+    },
+    {
+      "kind": "exec",
+      "surfaceId": "apex:System.XmlTag.values()",
+      "symbol": "apex:System.XmlTag.values()"
+    }
+  ],
+  "evidenceOnly": false,
+  "mode": "local-runtime",
+  "name": "core-runtime-system-enum-families-api67",
+  "notes": "Exact-candidate executable local-runtime witness for six deterministic API 67 System enum families. Salesforce-eligible, but this fixture records no hosted Salesforce execution or parity claim.",
+  "packetId": "CB191",
+  "profile": {
+    "candidateCommit": "3409c4c85827b19712e9df83fc8905aa02bd1dc8",
+    "candidateSha256": "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce",
+    "laneId": "system-enums-local-evidence",
+    "selectedRowCount": 104
+  },
+  "salesforceEligible": true,
+  "source": [
+    {
+      "content": "System.AccessType accessTypeValue = System.AccessType.READABLE;\naccessTypeValue = System.AccessType.UPSERTABLE;\nSystem.assert(System.AccessType.values().size() > 0);\naccessTypeValue = System.AccessType.READABLE;\nSystem.assert(accessTypeValue.equals(accessTypeValue));\nSystem.assertEquals(accessTypeValue.ordinal(), System.AccessType.valueOf('READABLE').ordinal());\nSystem.assert(accessTypeValue.ordinal() >= 0);\nSystem.assertEquals(accessTypeValue.hashCode(), accessTypeValue.hashCode());\n\nSystem.JSONToken jsonTokenValue = System.JSONToken.END_ARRAY;\njsonTokenValue = System.JSONToken.END_OBJECT;\njsonTokenValue = System.JSONToken.FIELD_NAME;\njsonTokenValue = System.JSONToken.NOT_AVAILABLE;\njsonTokenValue = System.JSONToken.START_ARRAY;\njsonTokenValue = System.JSONToken.START_OBJECT;\njsonTokenValue = System.JSONToken.VALUE_EMBEDDED_OBJECT;\njsonTokenValue = System.JSONToken.VALUE_FALSE;\njsonTokenValue = System.JSONToken.VALUE_NULL;\njsonTokenValue = System.JSONToken.VALUE_NUMBER_FLOAT;\njsonTokenValue = System.JSONToken.VALUE_NUMBER_INT;\njsonTokenValue = System.JSONToken.VALUE_STRING;\njsonTokenValue = System.JSONToken.VALUE_TRUE;\nSystem.assert(System.JSONToken.values().size() > 0);\njsonTokenValue = System.JSONToken.END_ARRAY;\nSystem.assert(jsonTokenValue.equals(jsonTokenValue));\nSystem.assertEquals(jsonTokenValue.ordinal(), System.JSONToken.valueOf('END_ARRAY').ordinal());\nSystem.assert(jsonTokenValue.ordinal() >= 0);\nSystem.assertEquals(jsonTokenValue.hashCode(), jsonTokenValue.hashCode());\n\nSystem.LoggingLevel loggingLevelValue = System.LoggingLevel.FINE;\nloggingLevelValue = System.LoggingLevel.FINER;\nloggingLevelValue = System.LoggingLevel.FINEST;\nloggingLevelValue = System.LoggingLevel.INTERNAL;\nSystem.assert(System.LoggingLevel.values().size() > 0);\nloggingLevelValue = System.LoggingLevel.FINE;\nSystem.assert(loggingLevelValue.equals(loggingLevelValue));\nSystem.assertEquals(loggingLevelValue.ordinal(), System.LoggingLevel.valueOf('FINE').ordinal());\nSystem.assert(loggingLevelValue.ordinal() >= 0);\nSystem.assertEquals(loggingLevelValue.hashCode(), loggingLevelValue.hashCode());\nSystem.assertNotEquals(null, loggingLevelValue.name());\nSystem.assertNotEquals(null, loggingLevelValue.toString());\n\nSystem.Quiddity quiddityValue = System.Quiddity.ANONYMOUS;\nquiddityValue = System.Quiddity.BATCH_ACS;\nquiddityValue = System.Quiddity.BATCH_APEX;\nquiddityValue = System.Quiddity.BATCH_CHUNK_PARALLEL;\nquiddityValue = System.Quiddity.BATCH_CHUNK_SERIAL;\nquiddityValue = System.Quiddity.BULK_API;\nquiddityValue = System.Quiddity.COMMERCE_INTEGRATION;\nquiddityValue = System.Quiddity.DISCOVERABLE_LOGIN;\nquiddityValue = System.Quiddity.EXTERNAL_SERVICE_CALLBACK;\nquiddityValue = System.Quiddity.FUNCTION_CALLBACK;\nquiddityValue = System.Quiddity.FUTURE;\nquiddityValue = System.Quiddity.INBOUND_EMAIL_SERVICE;\nquiddityValue = System.Quiddity.INVOCABLE_ACTION;\nquiddityValue = System.Quiddity.IOT;\nquiddityValue = System.Quiddity.PLATFORM_EVENT_PUBLISH_CALLBACK;\nquiddityValue = System.Quiddity.POST_INSTALL_SCRIPT;\nquiddityValue = System.Quiddity.QUEUEABLE;\nquiddityValue = System.Quiddity.REMOTE_ACTION;\nquiddityValue = System.Quiddity.REST;\nquiddityValue = System.Quiddity.RUNTEST_ASYNC;\nquiddityValue = System.Quiddity.RUNTEST_DEPLOY;\nquiddityValue = System.Quiddity.RUNTEST_SYNC;\nquiddityValue = System.Quiddity.RUN_INTEGRATION_TESTS;\nquiddityValue = System.Quiddity.SCHEDULED;\nquiddityValue = System.Quiddity.SOAP;\nquiddityValue = System.Quiddity.SYNCHRONOUS;\nquiddityValue = System.Quiddity.TRANSACTION_FINALIZER_QUEUEABLE;\nquiddityValue = System.Quiddity.TRANSACTION_SECURITY_POLICY;\nquiddityValue = System.Quiddity.UNDEFINED;\nSystem.assert(System.Quiddity.values().size() > 0);\nquiddityValue = System.Quiddity.ANONYMOUS;\nSystem.assert(quiddityValue.equals(quiddityValue));\nSystem.assertEquals(quiddityValue.ordinal(), System.Quiddity.valueOf('ANONYMOUS').ordinal());\nSystem.assert(quiddityValue.ordinal() >= 0);\nSystem.assertEquals(quiddityValue.hashCode(), quiddityValue.hashCode());\n\nSystem.TriggerOperation triggerOperationValue = System.TriggerOperation.AFTER_DELETE;\ntriggerOperationValue = System.TriggerOperation.AFTER_INSERT;\ntriggerOperationValue = System.TriggerOperation.AFTER_UNDELETE;\ntriggerOperationValue = System.TriggerOperation.AFTER_UPDATE;\ntriggerOperationValue = System.TriggerOperation.BEFORE_DELETE;\ntriggerOperationValue = System.TriggerOperation.BEFORE_INSERT;\ntriggerOperationValue = System.TriggerOperation.BEFORE_UPDATE;\nSystem.assert(System.TriggerOperation.values().size() > 0);\ntriggerOperationValue = System.TriggerOperation.AFTER_DELETE;\nSystem.assert(triggerOperationValue.equals(triggerOperationValue));\nSystem.assertEquals(triggerOperationValue.ordinal(), System.TriggerOperation.valueOf('AFTER_DELETE').ordinal());\nSystem.assert(triggerOperationValue.ordinal() >= 0);\nSystem.assertEquals(triggerOperationValue.hashCode(), triggerOperationValue.hashCode());\n\nSystem.XmlTag xmlTagValue = System.XmlTag.ATTRIBUTE;\nxmlTagValue = System.XmlTag.CDATA;\nxmlTagValue = System.XmlTag.CHARACTERS;\nxmlTagValue = System.XmlTag.COMMENT;\nxmlTagValue = System.XmlTag.DTD;\nxmlTagValue = System.XmlTag.END_DOCUMENT;\nxmlTagValue = System.XmlTag.END_ELEMENT;\nxmlTagValue = System.XmlTag.ENTITY_DECLARATION;\nxmlTagValue = System.XmlTag.ENTITY_REFERENCE;\nxmlTagValue = System.XmlTag.NAMESPACE;\nxmlTagValue = System.XmlTag.NOTATION_DECLARATION;\nxmlTagValue = System.XmlTag.PROCESSING_INSTRUCTION;\nxmlTagValue = System.XmlTag.SPACE;\nxmlTagValue = System.XmlTag.START_DOCUMENT;\nxmlTagValue = System.XmlTag.START_ELEMENT;\nSystem.assert(System.XmlTag.values().size() > 0);\nxmlTagValue = System.XmlTag.ATTRIBUTE;\nSystem.assert(xmlTagValue.equals(xmlTagValue));\nSystem.assertEquals(xmlTagValue.ordinal(), System.XmlTag.valueOf('ATTRIBUTE').ordinal());\nSystem.assert(xmlTagValue.ordinal() >= 0);\nSystem.assertEquals(xmlTagValue.hashCode(), xmlTagValue.hashCode());\n",
+      "path": "anonymous.apex"
+    }
+  ],
+  "title": "API 67 System enum families executable local evidence"
+}

@@ -96,30 +96,6 @@
       "notes": "Returns false in the local non-async VM context."
     },
     {
-      "surfaceId": "apex:System.LoggingLevel.values()",
-      "symbol": "LoggingLevel.values",
-      "kind": "exec",
-      "notes": "Covers deterministic built-in enum ordering and name/ordinal/toString members."
-    },
-    {
-      "surfaceId": "apex:System.LoggingLevel.name()",
-      "symbol": "LoggingLevel.name",
-      "kind": "exec",
-      "notes": "Covers deterministic built-in enum member text."
-    },
-    {
-      "surfaceId": "apex:System.LoggingLevel.ordinal()",
-      "symbol": "LoggingLevel.ordinal",
-      "kind": "exec",
-      "notes": "Covers deterministic built-in enum ordinal values."
-    },
-    {
-      "surfaceId": "apex:System.LoggingLevel.toString()",
-      "symbol": "LoggingLevel.toString",
-      "kind": "exec",
-      "notes": "Covers deterministic built-in enum member text."
-    },
-    {
       "surfaceId": "apex:System.Exception.getCause()",
       "symbol": "Exception.getCause",
       "kind": "exec",

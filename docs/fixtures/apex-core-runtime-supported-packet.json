@@ -78,12 +78,6 @@
     {
       "kind": "test",
       "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.AccessType.values()",
-      "symbol": "AccessType.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.CallbackStatus.values()",
       "symbol": "CallbackStatus.values"
     },
@@ -98,18 +92,6 @@
       "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.DomainType.values()",
       "symbol": "DomainType.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.JSONToken.values()",
-      "symbol": "JSONToken.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Built-in enum values execute locally.",
-      "surfaceId": "apex:System.LoggingLevel.values()",
-      "symbol": "LoggingLevel.values"
     },
     {
       "kind": "test",
@@ -138,26 +120,8 @@
     {
       "kind": "test",
       "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.Quiddity.values()",
-      "symbol": "Quiddity.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
       "surfaceId": "apex:System.SetupScope.values()",
       "symbol": "SetupScope.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.TriggerOperation.values()",
-      "symbol": "TriggerOperation.values"
-    },
-    {
-      "kind": "test",
-      "notes": "Generated platform enum values execute locally.",
-      "surfaceId": "apex:System.XmlTag.values()",
-      "symbol": "XmlTag.values"
     },
     {
       "kind": "test",
