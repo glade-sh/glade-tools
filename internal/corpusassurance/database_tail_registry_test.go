@@ -129,7 +129,7 @@ func TestDatabaseTailHasExactExecutableLocalOwners(t *testing.T) {
 		if err := json.Unmarshal(data, &envelope); err != nil {
 			t.Fatal(err)
 		}
-		if envelope.Candidate.Commit != "3409c4c85827b19712e9df83fc8905aa02bd1dc8" || envelope.Candidate.SHA256 != "960ac9f26fa92aae6054cbe0e59f9c4ab1f84397df67bd8a89528068d02a1fce" || !strings.Contains(strings.ToLower(envelope.SalesforceExclusionReason), "zero salesforce parity") {
+		if envelope.Candidate.Commit != "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5" || envelope.Candidate.SHA256 != "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a" || !strings.Contains(strings.ToLower(envelope.SalesforceExclusionReason), "zero salesforce parity") {
 			t.Fatalf("%s provenance = %#v", fixture.Name, envelope)
 		}
 		if result, err := compat.Run(fixture); err != nil || !result.OK {
