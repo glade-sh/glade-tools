@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves Glade's lowercase ChildRelationship alias fields; Salesforce exposes the get/is method contract instead, so it grants zero Salesforce parity credit.",
   "name": "data-schema-child-relationship-aliases-runtime",
   "evidence": [
     {"surfaceId":"apex:Schema.ChildRelationship.cascadedelete","symbol":"Schema.ChildRelationship.cascadedelete","kind":"exec"},

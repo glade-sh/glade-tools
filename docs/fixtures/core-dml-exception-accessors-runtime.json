@@ -1,4 +1,5 @@
 {
+  "salesforceEligible": true,
   "name": "core-dml-exception-accessors-runtime",
   "evidence": [
     {"surfaceId": "apex:System.DmlException.getDmlFieldNames(Integer)", "symbol": "DmlException.getDmlFieldNames", "kind": "exec"},

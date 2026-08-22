@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The exact test mixes Salesforce EmailFileAttachment behavior with the local Messaging.EmailAttachment base DTO, so the whole fixture is local-only and grants zero Salesforce parity credit.",
   "name": "core-runtime-messaging-attachment-accessors-evidence",
   "evidence": [
     {"surfaceId": "apex:Messaging.EmailAttachment.getBody()", "symbol": "Messaging.EmailAttachment.getBody", "kind": "test"},

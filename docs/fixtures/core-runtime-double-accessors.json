@@ -1,4 +1,5 @@
 {
+  "salesforceEligible": true,
   "name": "core-runtime-double-accessors",
   "evidence": [
     {"surfaceId": "apex:System.Double.intValue()", "symbol": "Double.intValue", "kind": "exec"},

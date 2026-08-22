@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture directly constructs ChangeEventHeader and calls local setX aliases that are not the hosted event-delivery property contract; it grants zero Salesforce parity credit.",
   "name": "integration-eventbus-change-header-properties-runtime",
   "evidence": [
     {"surfaceId":"apex:eventbus.ChangeEventHeader.changedfields","symbol":"eventbus.ChangeEventHeader.changedfields","kind":"exec"},

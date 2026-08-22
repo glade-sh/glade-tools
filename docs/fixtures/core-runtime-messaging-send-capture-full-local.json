@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The test asserts deterministic success for fabricated recipients, templates, and attachments through Glade's local email capture; it makes no hosted send claim and grants zero Salesforce parity credit.",
   "name": "core-runtime-messaging-send-capture-full-local",
   "evidence": [
     {

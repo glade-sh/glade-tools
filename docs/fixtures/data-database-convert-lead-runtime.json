@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture relies on the deterministic local Qualified lead-conversion status, which is not portable to the clean target org's LeadStatus set; it grants zero Salesforce parity credit.",
   "name": "data-database-convert-lead-runtime",
   "evidence": [
     {"surfaceId": "apex:System.Database.convertLead", "symbol": "Database.convertLead", "kind": "exec", "notes": "Direct org-state execution converts a LeadConvert and returns a successful LeadConvertResult."},

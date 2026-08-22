@@ -1,4 +1,7 @@
 {
+  "salesforceEligible": false,
+  "salesforceExclusionClass": "policy-local-only",
+  "salesforceExclusionReason": "The fixture proves Glade's in-memory clone-source bookkeeping from a fabricated record ID, not a hosted Salesforce record-clone observation, and grants zero Salesforce parity credit.",
   "name": "core-runtime-sobject-clone-source",
   "evidence": [
     {

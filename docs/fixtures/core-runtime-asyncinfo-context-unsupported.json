@@ -1,4 +1,5 @@
 {
+  "salesforceEligible": true,
   "name": "core-runtime-asyncinfo-context-unsupported",
   "evidence": [
     {
