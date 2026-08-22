@@ -1,5 +1,9 @@
 {
   "apiVersion": "67.0",
+  "candidate": {
+    "commit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "sha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a"
+  },
   "command": {
     "kind": "test"
   },
@@ -23,9 +27,9 @@
   "name": "current-base-system-002-local-runtime-api67",
   "notes": "Retains the exact Test.testInstall runtime owner for InstallHandler.onInstall. Unsupported rows remain historical-only; the four strengthened rows are transferred to core-runtime-system-002-wave19-runtime.",
   "profile": {
-    "candidateCommit": "1933ae6ea107e255f476a863c480c5d574e03254",
-    "candidateSha256": "0a330acef06babae612a03234fcd9f3cc52378447f6f477461eb99ea5120b8d5",
-    "laneId": "current-base-local-runtime-required-System-002",
+    "candidateCommit": "86ec4226e33f205bf7a42f6f00cc40aa57fc11b5",
+    "candidateSha256": "0aa758618a8908550aa468c4c9eabd1fcdd06f9f6a7d317ccce45a077380d29a",
+    "laneId": "lifecycle-local13",
     "path": "evidence/current-base/recovery-dispatch-20260807/wave31/canonical/apex-support-profile.json",
     "selectedRowCount": 1,
     "sha256": "1a280a8dcacd0666de532d9cbbedd0b64bc69d68648d817ad250ffafae95cb81"
