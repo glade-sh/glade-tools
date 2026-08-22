@@ -312,6 +312,7 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 		return command == "exec" || (command == "test" && (strings.HasPrefix(surfaceID, "apex:Database.Batchable") || surfaceID == "apex:System.Database.executeBatch(Object)" || strings.HasPrefix(surfaceID, "apex:System.Test.") ||
 			surfaceID == "apex:System.ExternalServiceTest.sendCallback(HttpRequest)" || surfaceID == "apex:System.System.attachFinalizer(finalizer)" || surfaceID == "apex:System.TestAsyncHttp.executeHttpRequest(HttpRequest)" ||
 			localRuntimeScalarAdderrorTestSurface(surfaceID) ||
+			localRuntimeUserClassTestSurface(surfaceID) ||
 			surfaceID == "apex:System.Trigger" || strings.HasPrefix(surfaceID, "apex:System.Trigger.") ||
 			surfaceID == "apex:System.Queueable" || strings.HasPrefix(surfaceID, "apex:System.Queueable.") ||
 			surfaceID == "apex:System.QueueableContext" || strings.HasPrefix(surfaceID, "apex:System.QueueableContext.") ||
@@ -330,6 +331,18 @@ func localProofCommandMatchesDisposition(disposition, command, surfaceID string)
 		return command == "exec" || command == "test"
 	case compileShapeRequired:
 		return command == "check"
+	default:
+		return false
+	}
+}
+
+func localRuntimeUserClassTestSurface(surfaceID string) bool {
+	switch surfaceID {
+	case "apex-language:NamespaceClassVariablePrecedence",
+		"apex:System.Callable.call(String,Map<String,Object>)",
+		"apex:System.Comparable", "apex:System.Comparable.compareTo(Object)",
+		"apex:System.Comparator", "apex:System.Comparator.compare(Object,Object)":
+		return true
 	default:
 		return false
 	}
