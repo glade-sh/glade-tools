@@ -117,6 +117,78 @@ func TestCorpusAssuranceOrchestratorCleanupCloseIsNotPublic(t *testing.T) {
 	}
 }
 
+func TestCorpusAssuranceOrchestratorWorkerTransferValidatesTypedInputs(t *testing.T) {
+	root := t.TempDir()
+	planPath := filepath.Join(root, "plan.json")
+	leasePath := filepath.Join(root, "lease.json")
+	oraclePath := filepath.Join(root, "oracle-plan.json")
+	outputPath := filepath.Join(root, "transfer.json")
+	if err := os.WriteFile(leasePath, []byte(`{}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(oraclePath, []byte(`{}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name          string
+		plan          string
+		args          []string
+		relativePaths bool
+		wantErr       string
+	}{
+		{name: "unknown JSON key", plan: `{"unknown":true}`, wantErr: "unknown JSON key"},
+		{name: "trailing JSON value", plan: `{} {}`, wantErr: "multiple JSON values"},
+		{name: "relative transfer path", plan: `{}`, relativePaths: true, wantErr: "absolute worker transfer paths are required"},
+		{name: "trailing CLI argument", plan: `{}`, args: []string{"trailing"}, wantErr: "unexpected argument"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if err := os.WriteFile(planPath, []byte(test.plan), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			args := []string{"corpus", "assurance", "orchestrator", "worker-transfer", "--plan", planPath, "--lease", leasePath, "--source-batch", filepath.Join(root, "batch"), "--evidence-root", filepath.Join(root, "evidence"), "--oracle-plan", oraclePath, "--output", outputPath}
+			if test.relativePaths {
+				args = []string{"corpus", "assurance", "orchestrator", "worker-transfer", "--plan", planPath, "--lease", leasePath, "--source-batch", "relative-batch", "--evidence-root", "relative-evidence", "--oracle-plan", "relative-oracle", "--output", outputPath}
+			}
+			args = append(args, test.args...)
+			var stdout, stderr bytes.Buffer
+			if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), test.wantErr) {
+				t.Fatalf("worker transfer validation: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+			}
+		})
+	}
+}
+
+func TestCorpusAssuranceOrchestratorWorkerTransferPreflightsOutput(t *testing.T) {
+	root := t.TempDir()
+	planPath := filepath.Join(root, "plan.json")
+	leasePath := filepath.Join(root, "lease.json")
+	oraclePath := filepath.Join(root, "oracle-plan.json")
+	if err := os.WriteFile(planPath, []byte(`{"unknown":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	args := []string{"corpus", "assurance", "orchestrator", "worker-transfer", "--plan", planPath, "--lease", leasePath, "--source-batch", filepath.Join(root, "batch"), "--evidence-root", filepath.Join(root, "evidence"), "--oracle-plan", oraclePath}
+
+	t.Run("existing output before plan validation", func(t *testing.T) {
+		outputPath := filepath.Join(root, "existing.json")
+		if err := os.WriteFile(outputPath, []byte(`{}\n`), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		var stdout, stderr bytes.Buffer
+		if code := Run(context.Background(), append(append([]string{}, args...), "--output", outputPath), &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "worker transfer output already exists") {
+			t.Fatalf("existing output was not preflighted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+		}
+	})
+
+	t.Run("relative output before plan validation", func(t *testing.T) {
+		var stdout, stderr bytes.Buffer
+		if code := Run(context.Background(), append(append([]string{}, args...), "--output", "relative-transfer.json"), &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "absolute clean worker transfer output path is required") {
+			t.Fatalf("relative output was not preflighted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+		}
+	})
+}
+
 func writeOrchestratorCLIJSON(t *testing.T, path string, value any) {
 	t.Helper()
 	data, err := json.Marshal(value)
