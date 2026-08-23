@@ -300,8 +300,11 @@ func writeReconciliationPacket(output string, files []reconciliationPacketFile) 
 		if file.Name == "" || file.Name == reconciliationPacketManifestName || filepath.IsAbs(file.Name) || filepath.ToSlash(filepath.Clean(file.Name)) != file.Name || seen[file.Name] || !file.Mode.IsRegular() {
 			return "", fmt.Errorf("invalid retained Salesforce packet file %q", file.Name)
 		}
+		path, pathErr := rootedPath(temp, filepath.FromSlash(file.Name))
+		if pathErr != nil {
+			return "", fmt.Errorf("invalid retained Salesforce packet file %q", file.Name)
+		}
 		seen[file.Name] = true
-		path := filepath.Join(temp, filepath.FromSlash(file.Name))
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 			return "", err
 		}
@@ -339,7 +342,11 @@ func readReconciliationPacket(packetPath, expectedManifestSHA string) (map[strin
 		if entry.Name == "" || filepath.IsAbs(entry.Name) || filepath.ToSlash(filepath.Clean(entry.Name)) != entry.Name || files[entry.Name].Data != nil {
 			return nil, fmt.Errorf("invalid retained Salesforce packet manifest entry")
 		}
-		snapshot, err := readRegularFileSnapshot(filepath.Join(packetPath, filepath.FromSlash(entry.Name)))
+		entryPath, pathErr := rootedPath(packetPath, filepath.FromSlash(entry.Name))
+		if pathErr != nil {
+			return nil, fmt.Errorf("invalid retained Salesforce packet manifest entry")
+		}
+		snapshot, err := readRegularFileSnapshot(entryPath)
 		if err != nil || snapshot.Mode.Perm() != entry.Mode.Perm() || replayBytesSHA256(snapshot.Data) != entry.SHA256 {
 			return nil, fmt.Errorf("retained Salesforce packet changed")
 		}

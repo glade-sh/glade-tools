@@ -274,7 +274,10 @@ func retainReportPacket(output string, paths []string, hashes map[string]string,
 		if name == "" || filepath.IsAbs(name) || filepath.ToSlash(filepath.Clean(name)) != name || name == "MANIFEST.json" || !snapshot.Mode.IsRegular() || replayBytesSHA256(snapshot.Data) != expectedSHA256 {
 			return fmt.Errorf("invalid assurance packet input %s", name)
 		}
-		retainedPath := filepath.Join(output, filepath.FromSlash(name))
+		retainedPath, err := rootedPath(output, filepath.FromSlash(name))
+		if err != nil {
+			return fmt.Errorf("invalid assurance packet input %s", name)
+		}
 		if err := os.MkdirAll(filepath.Dir(retainedPath), 0o700); err != nil {
 			return err
 		}
