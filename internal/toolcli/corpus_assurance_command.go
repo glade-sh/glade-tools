@@ -228,16 +228,30 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 	case "surface-scope":
 		flags := flag.NewFlagSet("corpus assurance surface-scope", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
-		profile := flags.String("source-profile", "", "")
+		sourceProfile, profile := flags.String("source-profile", "", ""), flags.String("profile", "", "")
+		oraclePlan := flags.String("oracle-plan", "", "")
 		ledger, policy := flags.String("ledger", "", ""), flags.String("policy", "", "")
 		output := flags.String("output", "", "")
 		if err := flags.Parse(args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*profile, *ledger, *policy, *output); err != nil {
+		if *oraclePlan != "" || *profile != "" {
+			if *sourceProfile != "" || *ledger != "" || *policy != "" {
+				return errors.New("Oracle-plan and source-profile surface-scope modes cannot be combined")
+			}
+			if err := requiredAssuranceFlags(*oraclePlan, *profile, *output); err != nil {
+				return err
+			}
+			scope, err := corpusassurance.BuildSurfaceOracleCampaignScope(*oraclePlan, *profile, *output)
+			if err != nil {
+				return err
+			}
+			return writeCorpusAssuranceResult(w, "surface-scope", scope.Total, *output)
+		}
+		if err := requiredAssuranceFlags(*sourceProfile, *ledger, *policy, *output); err != nil {
 			return err
 		}
-		scope, err := corpusassurance.BuildSurfaceOracleScope(*profile, *ledger, *policy, *output)
+		scope, err := corpusassurance.BuildSurfaceOracleScope(*sourceProfile, *ledger, *policy, *output)
 		if err != nil {
 			return err
 		}
@@ -825,6 +839,7 @@ Usage:
   glade-tools corpus assurance replay --host <local|replay-worker> --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --candidate <glade> --tools <glade-tools> --output <REPLAY_SHARD.json>
   glade-tools corpus assurance merge-replay --inventory-spec <IN_SCOPE.json> --root-manifest <MANIFEST.json> --host-manifest <manifest.json> --host-manifest <manifest.json> --shard <REPLAY_SHARD.json> --shard <REPLAY_SHARD.json> --output <REPLAY.json>
   glade-tools corpus assurance surface-scope --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --output <SURFACE_ORACLE_SCOPE.json>
+  glade-tools corpus assurance surface-scope --oracle-plan <ORACLE_PLAN.json> --profile <ASSURANCE_PROFILE.json> --output <SURFACE_ORACLE_SCOPE.json>
   glade-tools corpus assurance surface-terminal-authority --surface-scope <SURFACE_ORACLE_SCOPE.json> --coverage <SURFACE_LOCAL_PROOF_COVERAGE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --classifications <EXCLUSION_POLICY.json> --output <SURFACE_TERMINAL_AUTHORITY.json>
   glade-tools corpus assurance surface-local-proof-plan --surface-scope <SURFACE_ORACLE_SCOPE.json> --source-profile <SOURCE_PROFILE.json> --ledger <SURFACE_LEDGER.json> --policy <support-policy.json> --fixture-root <docs/fixtures> --profile-output <profile.json> --usage-output <usage.json> --decision-output <decision.json> --manifest-output <fixtures.json> --coverage-output <SURFACE_LOCAL_PROOF_COVERAGE.json> [--terminal-authority <SURFACE_TERMINAL_AUTHORITY.json>]
   glade-tools corpus assurance surface-oracle-index --scope <SURFACE_ORACLE_SCOPE.json> --reviewed-runtime-batch <root> [--reviewed-runtime-batch <root> ...] --output <SURFACE_ORACLE_INDEX.json>

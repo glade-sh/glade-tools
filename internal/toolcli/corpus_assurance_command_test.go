@@ -160,6 +160,56 @@ func TestCorpusAssuranceSurfaceScope(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "surface-local-proof-plan")
 }
 
+func TestCorpusAssuranceSurfaceScopeFromOraclePlan(t *testing.T) {
+	root := t.TempDir()
+	profilePath := filepath.Join(root, "profile.json")
+	profile := corpusassurance.AssuranceProfile{
+		SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("1", 64), LedgerSHA256: strings.Repeat("2", 64), PolicySHA256: strings.Repeat("3", 64),
+		Total: 5, ByDisposition: map[string]int{"local-runtime-required": 2, "deterministic-mock-required": 2, "compile-shape-required": 1},
+		Rows: []corpusassurance.AssuranceProfileRow{
+			{SurfaceID: "apex:System.Boolean", Disposition: "local-runtime-required"},
+			{SurfaceID: "apex:System.Integer", Disposition: "local-runtime-required"},
+			{SurfaceID: "apex:System.Long", Disposition: "deterministic-mock-required"},
+			{SurfaceID: "apex:System.String", Disposition: "deterministic-mock-required"},
+			{SurfaceID: "apex:System.System", Disposition: "compile-shape-required"},
+		},
+	}
+	writeCorpusAssuranceJSON(t, profilePath, profile)
+	artifact := corpusassurance.RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	planPath := filepath.Join(root, "ORACLE_PLAN.json")
+	writeCorpusAssuranceJSON(t, planPath, corpusassurance.OraclePlan{
+		Candidate: artifact, Tools: artifact, ProfileSHA256: corpusAssuranceFileSHA256(t, profilePath),
+		Rows: []corpusassurance.OraclePlanRow{
+			{SurfaceID: "apex:System.Boolean", Action: "runtime"},
+			{SurfaceID: "apex:System.Integer", Action: "local-contract-only", ExclusionClass: "local-only", ExclusionReason: "not Salesforce parity"},
+			{SurfaceID: "apex:System.Long", Action: "local-contract-only", ExclusionClass: "local-only", ExclusionReason: "not Salesforce parity"},
+			{SurfaceID: "apex:System.String", Action: "local-contract-only", ExclusionClass: "local-only", ExclusionReason: "not Salesforce parity"},
+			{SurfaceID: "apex:System.System", Action: "compile"},
+		},
+	})
+	outputPath := filepath.Join(root, "scope.json")
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), []string{"corpus", "assurance", "surface-scope", "--oracle-plan", planPath, "--profile", profilePath, "--output", outputPath}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("surface-scope code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	var scope corpusassurance.SurfaceOracleScope
+	data, err := os.ReadFile(outputPath)
+	if err != nil || json.Unmarshal(data, &scope) != nil {
+		t.Fatalf("read campaign scope: %v", err)
+	}
+	if scope.Kind != "oracle-plan" || scope.Total != 2 || len(scope.Rows) != 2 || scope.Rows[0].Action != "runtime" || scope.Rows[1].SurfaceID != "apex:System.System" || scope.Rows[1].Disposition != "compile-shape-required" || scope.Rows[1].Action != "compile" {
+		t.Fatalf("campaign scope = %#v", scope)
+	}
+
+	stdout.Reset()
+	stderr.Reset()
+	code = Run(context.Background(), []string{"corpus", "assurance", "surface-scope", "--oracle-plan", planPath, "--profile", profilePath, "--source-profile", profilePath, "--output", filepath.Join(root, "mixed.json")}, &stdout, &stderr)
+	if code == 0 || !strings.Contains(stderr.String(), "cannot be combined") {
+		t.Fatalf("mixed surface-scope modes: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
 func TestCorpusAssuranceAttempt(t *testing.T) {
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "attempt-init")
 	assertCorpusAssuranceCommandRejectsMissingFlags(t, "attempt")

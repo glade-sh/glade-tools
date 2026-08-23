@@ -2,11 +2,230 @@ package corpusassurance
 
 import (
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/glade-sh/glade/tools/internal/surfaceledger"
 )
+
+func TestBuildSurfaceOracleCampaignScopePartitionsExactOraclePlan(t *testing.T) {
+	root := t.TempDir()
+	profilePath := filepath.Join(root, "profile.json")
+	planPath := filepath.Join(root, "ORACLE_PLAN.json")
+	outputPath := filepath.Join(root, "scope.json")
+	profile := AssuranceProfile{
+		SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("1", 64), LedgerSHA256: strings.Repeat("2", 64), PolicySHA256: strings.Repeat("3", 64),
+		Total: 5, ByDisposition: map[string]int{localRuntimeRequired: 2, deterministicMockRequired: 2, compileShapeRequired: 1},
+		Rows: []AssuranceProfileRow{
+			{SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired},
+			{SurfaceID: "apex:System.Integer", Disposition: localRuntimeRequired},
+			{SurfaceID: "apex:System.Long", Disposition: deterministicMockRequired},
+			{SurfaceID: "apex:System.String", Disposition: deterministicMockRequired},
+			{SurfaceID: "apex:System.System", Disposition: compileShapeRequired},
+		},
+	}
+	if err := WriteNewJSON(profilePath, profile); err != nil {
+		t.Fatal(err)
+	}
+	artifact := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	oraclePlan := OraclePlan{
+		Candidate: artifact, Tools: artifact, ProfileSHA256: sha256FileForTest(t, profilePath),
+		Rows: []OraclePlanRow{
+			{SurfaceID: "apex:System.Boolean", Action: oracleRuntime},
+			{SurfaceID: "apex:System.Integer", Action: oracleRuntime},
+			{SurfaceID: "apex:System.Long", Action: oracleLocalContractOnly, ExclusionClass: "local-only", ExclusionReason: "not Salesforce parity"},
+			{SurfaceID: "apex:System.String", Action: oracleLocalContractOnly, ExclusionClass: "local-only", ExclusionReason: "not Salesforce parity"},
+			{SurfaceID: "apex:System.System", Action: oracleLocalContractOnly, ExclusionClass: "local-only", ExclusionReason: "not Salesforce parity"},
+		},
+	}
+	if err := WriteNewJSON(planPath, oraclePlan); err != nil {
+		t.Fatal(err)
+	}
+
+	scope, err := BuildSurfaceOracleCampaignScope(planPath, profilePath, outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if scope.Kind != "oracle-plan" || scope.OraclePlanSHA256 != sha256FileForTest(t, planPath) || scope.Total != 2 {
+		t.Fatalf("campaign scope binding = %#v", scope)
+	}
+	if scope.SourceProfileSHA256 != profile.SourceProfileSHA256 || scope.LedgerSHA256 != profile.LedgerSHA256 || scope.PolicySHA256 != profile.PolicySHA256 {
+		t.Fatalf("campaign scope authority = %#v", scope)
+	}
+	if got := scope.Rows; len(got) != 2 || got[0] != (SurfaceOracleScopeRow{SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime}) || got[1] != (SurfaceOracleScopeRow{SurfaceID: "apex:System.Integer", Disposition: localRuntimeRequired, Action: oracleRuntime}) {
+		t.Fatalf("campaign scope rows = %#v", got)
+	}
+	if scope.ByDisposition[localRuntimeRequired] != 2 || scope.ByDisposition[compileShapeRequired] != 0 || scope.ByDisposition[deterministicMockRequired] != 0 {
+		t.Fatalf("campaign scope dispositions = %#v", scope.ByDisposition)
+	}
+
+	definition := OrchestratorCampaignDefinition{
+		Candidate: OrchestratorArtifact{Commit: artifact.Commit, SHA256: artifact.SHA256},
+		Tools:     OrchestratorArtifact{Commit: artifact.Commit, SHA256: artifact.SHA256},
+		ScopePath: outputPath, ScopeSHA256: sha256FileForTest(t, outputPath),
+		ControlledInputSHA256: map[string]string{"oracle-plan": sha256FileForTest(t, planPath)},
+		Shards:                [2][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}},
+	}
+	forged := definition
+	forged.ControlledInputSHA256 = map[string]string{"oracle-plan": strings.Repeat("f", 64)}
+	if _, err := PlanOrchestratorCampaign(forged); err == nil {
+		t.Fatal("orchestrator accepted a campaign scope bound to a different Oracle plan")
+	}
+	campaign, err := PlanOrchestratorCampaign(definition)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var union []string
+	for _, job := range campaign.Jobs {
+		lease := OrchestratorLease{CampaignID: campaign.CampaignID, JobID: job.ID, Kind: job.Kind, ShardIndex: job.ShardIndex, SurfaceIDs: job.SurfaceIDs, Generation: 1, Worker: "worker-a", DurationMS: 1}
+		ids, err := orchestratorSalesforceExpectedSurfaceIDs(oraclePlan, campaign, lease)
+		if err != nil {
+			t.Fatal(err)
+		}
+		union = append(union, ids...)
+	}
+	wantKinds, err := oracleSalesforceResultKinds(oraclePlan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := map[string]bool{}, map[string]bool{}; func() bool {
+		for _, id := range union {
+			got[id] = true
+		}
+		for id := range wantKinds {
+			want[id] = true
+		}
+		return reflect.DeepEqual(got, want)
+	}() == false {
+		t.Fatalf("orchestrator Salesforce union = %#v, want exact Oracle plan %#v", got, want)
+	}
+
+	planCampaign := func(name string, rows []SurfaceOracleScopeRow, shards [2][]string) (OrchestratorCampaignPlan, error) {
+		t.Helper()
+		path := filepath.Join(root, name+".json")
+		value := SurfaceOracleScope{
+			SchemaVersion: 1, Kind: "oracle-plan", OraclePlanSHA256: sha256FileForTest(t, planPath),
+			SourceProfileSHA256: profile.SourceProfileSHA256, LedgerSHA256: profile.LedgerSHA256, PolicySHA256: profile.PolicySHA256,
+			Total: len(rows), ByDisposition: map[string]int{localRuntimeRequired: 0, deterministicMockRequired: 0, compileShapeRequired: 0}, Rows: rows,
+		}
+		for _, row := range rows {
+			value.ByDisposition[row.Disposition]++
+		}
+		if err := WriteNewJSON(path, value); err != nil {
+			t.Fatal(err)
+		}
+		candidate := definition
+		candidate.ScopePath, candidate.ScopeSHA256, candidate.Shards = path, sha256FileForTest(t, path), shards
+		return PlanOrchestratorCampaign(candidate)
+	}
+	for name, test := range map[string]struct {
+		rows   []SurfaceOracleScopeRow
+		shards [2][]string
+	}{
+		"missing projection row": {
+			rows:   []SurfaceOracleScopeRow{{SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime}, {SurfaceID: "apex:System.Long", Disposition: deterministicMockRequired, Action: oracleCompile}},
+			shards: [2][]string{{"apex:System.Boolean"}, {"apex:System.Long"}},
+		},
+		"extra excluded row": {
+			rows: []SurfaceOracleScopeRow{
+				{SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime},
+				{SurfaceID: "apex:System.Integer", Disposition: localRuntimeRequired, Action: oracleRuntime},
+				{SurfaceID: "apex:System.Long", Disposition: deterministicMockRequired, Action: oracleCompile},
+			},
+			shards: [2][]string{{"apex:System.Boolean", "apex:System.Integer"}, {"apex:System.Long"}},
+		},
+		"action mismatch": {
+			rows:   []SurfaceOracleScopeRow{{SurfaceID: "apex:System.Boolean", Disposition: deterministicMockRequired, Action: oracleCompile}, {SurfaceID: "apex:System.Integer", Disposition: localRuntimeRequired, Action: oracleRuntime}},
+			shards: [2][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}},
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			forgedCampaign, err := planCampaign(strings.ReplaceAll(name, " ", "-"), test.rows, test.shards)
+			if err != nil {
+				t.Fatal(err)
+			}
+			job := forgedCampaign.Jobs[0]
+			lease := OrchestratorLease{CampaignID: forgedCampaign.CampaignID, JobID: job.ID, Kind: job.Kind, ShardIndex: job.ShardIndex, SurfaceIDs: job.SurfaceIDs, Generation: 1, Worker: "worker-a", DurationMS: 1}
+			if _, err := orchestratorSalesforceExpectedSurfaceIDs(oraclePlan, forgedCampaign, lease); err == nil {
+				t.Fatal("forged campaign scope matched the Oracle plan")
+			}
+		})
+	}
+	for name, rows := range map[string][]SurfaceOracleScopeRow{
+		"duplicate": {{SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime}, {SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime}},
+		"unsorted":  {{SurfaceID: "apex:System.System", Disposition: compileShapeRequired, Action: oracleCompile}, {SurfaceID: "apex:System.Boolean", Disposition: localRuntimeRequired, Action: oracleRuntime}},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if _, err := planCampaign(name, rows, [2][]string{{"apex:System.Boolean"}, {"apex:System.Integer"}}); err == nil {
+				t.Fatal("invalid campaign scope was accepted")
+			}
+		})
+	}
+}
+
+func TestBuildSurfaceOracleCampaignScopePreservesCompileAction(t *testing.T) {
+	root := t.TempDir()
+	profilePath := filepath.Join(root, "profile.json")
+	profile := AssuranceProfile{
+		SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("1", 64), LedgerSHA256: strings.Repeat("2", 64), PolicySHA256: strings.Repeat("3", 64),
+		Total: 1, ByDisposition: map[string]int{compileShapeRequired: 1}, Rows: []AssuranceProfileRow{{SurfaceID: "apex:System.System", Disposition: compileShapeRequired}},
+	}
+	if err := WriteNewJSON(profilePath, profile); err != nil {
+		t.Fatal(err)
+	}
+	artifact := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+	planPath := filepath.Join(root, "ORACLE_PLAN.json")
+	if err := WriteNewJSON(planPath, OraclePlan{Candidate: artifact, Tools: artifact, ProfileSHA256: sha256FileForTest(t, profilePath), Rows: []OraclePlanRow{{SurfaceID: "apex:System.System", Action: oracleCompile}}}); err != nil {
+		t.Fatal(err)
+	}
+	scope, err := BuildSurfaceOracleCampaignScope(planPath, profilePath, filepath.Join(root, "scope.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(scope.Rows) != 1 || scope.Rows[0].Action != oracleCompile || scope.Rows[0].Disposition != compileShapeRequired {
+		t.Fatalf("compile campaign scope = %#v", scope)
+	}
+}
+
+func TestBuildSurfaceOracleCampaignScopeRejectsInvalidPlanRows(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		rows []OraclePlanRow
+	}{
+		{name: "empty", rows: []OraclePlanRow{{SurfaceID: "", Action: oracleRuntime}}},
+		{name: "duplicate", rows: []OraclePlanRow{{SurfaceID: "apex:System.Boolean", Action: oracleRuntime}, {SurfaceID: "apex:System.Boolean", Action: oracleRuntime}}},
+		{name: "malformed action", rows: []OraclePlanRow{{SurfaceID: "apex:System.Boolean", Action: "selected"}}},
+		{name: "false disposition", rows: []OraclePlanRow{{SurfaceID: "apex:System.System", Action: oracleRuntime}}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			profilePath := filepath.Join(root, "profile.json")
+			profile := AssuranceProfile{
+				SchemaVersion: 1, SourceProfileSHA256: strings.Repeat("1", 64), LedgerSHA256: strings.Repeat("2", 64), PolicySHA256: strings.Repeat("3", 64),
+				Total: len(test.rows), ByDisposition: map[string]int{localRuntimeRequired: len(test.rows)}, Rows: make([]AssuranceProfileRow, len(test.rows)),
+			}
+			for i, row := range test.rows {
+				profile.Rows[i] = AssuranceProfileRow{SurfaceID: row.SurfaceID, Disposition: localRuntimeRequired}
+				if row.SurfaceID == "apex:System.System" {
+					profile.Rows[i].Disposition = compileShapeRequired
+					profile.ByDisposition = map[string]int{compileShapeRequired: 1}
+				}
+			}
+			if err := WriteNewJSON(profilePath, profile); err != nil {
+				t.Fatal(err)
+			}
+			artifact := RuntimeArtifact{Commit: strings.Repeat("a", 40), OS: "darwin", Arch: "arm64", SHA256: strings.Repeat("b", 64)}
+			planPath := filepath.Join(root, "ORACLE_PLAN.json")
+			if err := WriteNewJSON(planPath, OraclePlan{Candidate: artifact, Tools: artifact, ProfileSHA256: sha256FileForTest(t, profilePath), Rows: test.rows}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := BuildSurfaceOracleCampaignScope(planPath, profilePath, filepath.Join(root, "scope.json")); err == nil {
+				t.Fatal("invalid Oracle plan rows produced a campaign scope")
+			}
+		})
+	}
+}
 
 func TestBuildSurfaceOracleScopeDerivesEveryRuntimeRow(t *testing.T) {
 	root := t.TempDir()

@@ -11,10 +11,13 @@ import (
 )
 
 func TestAcceptOrchestratorRawCanaryClosesCleanupWithoutProofCredit(t *testing.T) {
-	fixture := newOrchestratorSalesforceReconciliationFixture(t)
+	fixture := withOraclePlanCampaignScope(t, newOrchestratorSalesforceReconciliationFixture(t))
 	retained := t.TempDir()
 	receiptPath, packetPath := filepath.Join(retained, "receipt.json"), filepath.Join(retained, "packet")
 	if _, err := CreateOrchestratorSalesforceReconciliation(OrchestratorSalesforceReconciliationRequest{Plan: fixture.plan, Lease: fixture.lease, OraclePlanPath: fixture.oraclePlanPath, BindingPath: fixture.bindingPath, ShardFiles: fixture.files, PacketOutput: packetPath, OutputPath: receiptPath}); err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifyOrchestratorSalesforceReconciliation(fixture.plan, fixture.lease, receiptPath, packetPath); err != nil {
 		t.Fatal(err)
 	}
 	orchestrator := openTestOrchestrator(t)
@@ -47,6 +50,9 @@ func TestAcceptOrchestratorRawCanaryClosesCleanupWithoutProofCredit(t *testing.T
 	reconciliation, _, err := readExactJSONBytes[SalesforceReconciliation](receiptPath)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if len(reconciliation.Rows) != 1 || reconciliation.Rows[0].SurfaceID != "apex:Runtime.run" || reconciliation.Rows[0].Action != oracleRuntime {
+		t.Fatalf("Oracle-plan reconciliation rows = %#v", reconciliation.Rows)
 	}
 	sshReceipt := OrchestratorSSHDispatchReceipt{SchemaVersion: 1, CampaignID: lease.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "worker-complete", Passed: true, ExitCode: 0, SpecSHA256: fixture.plan.SpecSHA256, PlanSHA256: replayBytesSHA256(planBytes), LeaseSHA256: replayBytesSHA256(leaseBytes), CommandSHA256: strings.Repeat("1", 64), StdoutSHA256: strings.Repeat("2", 64), StderrSHA256: strings.Repeat("3", 64), OrchestratorBindingSHA256: reconciliation.OrchestratorBindingSHA256, SalesforceShardSHA256: reconciliation.Shards[0].InputSHA256["shard"], OrgCleanupSHA256: reconciliation.Shards[0].InputSHA256["cleanup"]}
 	sshPath := filepath.Join(retained, "ssh-receipt.json")

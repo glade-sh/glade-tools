@@ -217,6 +217,11 @@ sealed workflow below. Do not run them per fixture family.
 source profile. It includes every `deterministic-mock-required` and
 `local-runtime-required` SurfaceID and grants no parity credit.
 
+With `--oracle-plan` and `--profile`, `surface-scope` instead emits the exact
+Salesforce-required runtime/compile projection for that sealed plan. The scope
+retains the plan, profile, ledger, and policy bindings; excluded local-contract
+rows remain outside the campaign and receive no Salesforce credit.
+
 `surface-local-proof-plan` passes that denominator through the existing strict
 fixture planner. Its coverage output retains the exact missing SurfaceIDs when
 the plan is incomplete; authoritative local-proof inputs are written only at

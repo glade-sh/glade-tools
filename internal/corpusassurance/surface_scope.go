@@ -13,6 +13,7 @@ import (
 type SurfaceOracleScope struct {
 	SchemaVersion       int                     `json:"schemaVersion"`
 	Kind                string                  `json:"kind"`
+	OraclePlanSHA256    string                  `json:"oraclePlanSha256,omitempty"`
 	SourceProfileSHA256 string                  `json:"sourceProfileSha256"`
 	LedgerSHA256        string                  `json:"ledgerSha256"`
 	PolicySHA256        string                  `json:"policySha256"`
@@ -24,6 +25,121 @@ type SurfaceOracleScope struct {
 type SurfaceOracleScopeRow struct {
 	SurfaceID   string `json:"surfaceId"`
 	Disposition string `json:"disposition"`
+	Action      string `json:"action,omitempty"`
+}
+
+// BuildSurfaceOracleCampaignScope derives the exact no-credit Salesforce
+// campaign projection from a sealed Oracle plan and its bound profile.
+func BuildSurfaceOracleCampaignScope(planPath, profilePath, outputPath string) (SurfaceOracleScope, error) {
+	for _, path := range []string{planPath, profilePath, outputPath} {
+		if !filepath.IsAbs(path) {
+			return SurfaceOracleScope{}, fmt.Errorf("absolute surface-scope paths are required")
+		}
+	}
+	if _, err := os.Lstat(outputPath); err == nil {
+		return SurfaceOracleScope{}, fmt.Errorf("surface-scope output already exists: %s", outputPath)
+	} else if !os.IsNotExist(err) {
+		return SurfaceOracleScope{}, err
+	}
+	planFile, err := readRegularFileSnapshot(planPath)
+	if err != nil {
+		return SurfaceOracleScope{}, err
+	}
+	profileFile, err := readRegularFileSnapshot(profilePath)
+	if err != nil {
+		return SurfaceOracleScope{}, err
+	}
+	var plan OraclePlan
+	var profile AssuranceProfile
+	if err := decodeExactJSON(planFile.Data, &plan); err != nil {
+		return SurfaceOracleScope{}, fmt.Errorf("oracle plan: %w", err)
+	}
+	if err := decodeExactJSON(profileFile.Data, &profile); err != nil {
+		return SurfaceOracleScope{}, fmt.Errorf("assurance profile: %w", err)
+	}
+	profileSHA := replayBytesSHA256(profileFile.Data)
+	if plan.ProfileSHA256 != profileSHA || profile.SchemaVersion != 1 || profile.Total != len(profile.Rows) || !sha256Pattern.MatchString(profile.SourceProfileSHA256) || !sha256Pattern.MatchString(profile.LedgerSHA256) || !sha256Pattern.MatchString(profile.PolicySHA256) {
+		return SurfaceOracleScope{}, fmt.Errorf("oracle plan and assurance profile do not bind")
+	}
+	salesforceKinds, err := oracleSalesforceResultKinds(plan)
+	if err != nil {
+		return SurfaceOracleScope{}, err
+	}
+	profileByID := make(map[string]AssuranceProfileRow, len(profile.Rows))
+	profileCounts := make(map[string]int)
+	for _, row := range profile.Rows {
+		if strings.TrimSpace(row.SurfaceID) == "" || profileByID[row.SurfaceID].SurfaceID != "" || !oracleProfileDispositionAllowed(row.Disposition) {
+			return SurfaceOracleScope{}, fmt.Errorf("invalid or duplicate assurance profile surface %q", row.SurfaceID)
+		}
+		profileByID[row.SurfaceID] = row
+		profileCounts[row.Disposition]++
+	}
+	if len(profile.ByDisposition) != len(profileCounts) {
+		return SurfaceOracleScope{}, fmt.Errorf("assurance profile disposition counts do not reconcile")
+	}
+	for disposition, count := range profileCounts {
+		if profile.ByDisposition[disposition] != count {
+			return SurfaceOracleScope{}, fmt.Errorf("assurance profile disposition counts do not reconcile")
+		}
+	}
+	if len(plan.Rows) != len(profileByID) {
+		return SurfaceOracleScope{}, fmt.Errorf("oracle plan does not cover the exact assurance profile")
+	}
+	scope := SurfaceOracleScope{
+		SchemaVersion: 1, Kind: "oracle-plan", OraclePlanSHA256: replayBytesSHA256(planFile.Data),
+		SourceProfileSHA256: profile.SourceProfileSHA256, LedgerSHA256: profile.LedgerSHA256, PolicySHA256: profile.PolicySHA256,
+		ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 0, compileShapeRequired: 0},
+	}
+	for _, row := range plan.Rows {
+		profileRow, ok := profileByID[row.SurfaceID]
+		if !ok || !oracleActionMatchesDisposition(row.Action, profileRow.Disposition) {
+			return SurfaceOracleScope{}, fmt.Errorf("oracle plan surface %q does not match assurance profile disposition", row.SurfaceID)
+		}
+		delete(profileByID, row.SurfaceID)
+		if salesforceKinds[row.SurfaceID] == "" {
+			continue
+		}
+		scope.Rows = append(scope.Rows, SurfaceOracleScopeRow{SurfaceID: row.SurfaceID, Disposition: profileRow.Disposition, Action: salesforceKinds[row.SurfaceID]})
+		scope.ByDisposition[profileRow.Disposition]++
+	}
+	if len(profileByID) != 0 {
+		return SurfaceOracleScope{}, fmt.Errorf("oracle plan does not cover the exact assurance profile")
+	}
+	sort.Slice(scope.Rows, func(i, j int) bool { return scope.Rows[i].SurfaceID < scope.Rows[j].SurfaceID })
+	scope.Total = len(scope.Rows)
+	if err := validateSurfaceOracleScope(scope); err != nil {
+		return SurfaceOracleScope{}, err
+	}
+	for _, input := range []struct {
+		path string
+		sha  string
+	}{{planPath, scope.OraclePlanSHA256}, {profilePath, profileSHA}} {
+		data, err := os.ReadFile(input.path)
+		if err != nil || replayBytesSHA256(data) != input.sha {
+			return SurfaceOracleScope{}, fmt.Errorf("surface-scope input changed during planning")
+		}
+	}
+	if err := WriteNewJSON(outputPath, scope); err != nil {
+		return SurfaceOracleScope{}, err
+	}
+	return scope, nil
+}
+
+func oracleActionMatchesDisposition(action, disposition string) bool {
+	switch disposition {
+	case localRuntimeRequired:
+		return action == oracleRuntime || action == oracleLocalContractOnly
+	case deterministicMockRequired, compileShapeRequired:
+		return action == oracleCompile || action == oracleLocalContractOnly
+	case "hosted-deferred":
+		return action == oracleWaiver
+	default:
+		return false
+	}
+}
+
+func oracleProfileDispositionAllowed(disposition string) bool {
+	return disposition == localRuntimeRequired || disposition == deterministicMockRequired || disposition == compileShapeRequired || disposition == "hosted-deferred"
 }
 
 func BuildSurfaceOracleScope(profilePath, ledgerPath, policyPath, outputPath string) (SurfaceOracleScope, error) {

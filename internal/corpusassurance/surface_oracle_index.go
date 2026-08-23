@@ -368,6 +368,9 @@ func CreateSurfaceOracleIndex(request SurfaceOracleIndexRequest) (SurfaceOracleI
 	if err := validateSurfaceOracleScope(scope); err != nil {
 		return SurfaceOracleIndex{}, err
 	}
+	if scope.Kind != "all-runtime" {
+		return SurfaceOracleIndex{}, fmt.Errorf("surface oracle index requires an all-runtime scope")
+	}
 	credited := make(map[string]bool)
 	batches := make([]SurfaceOracleIndexRuntimeBatch, 0, len(request.RuntimeBatchRoots))
 	var candidate, tools SurfaceOracleIndexArtifact
@@ -466,22 +469,50 @@ func ValidateSurfaceOracleIndex(index SurfaceOracleIndex) error {
 }
 
 func validateSurfaceOracleScope(scope SurfaceOracleScope) error {
-	if scope.SchemaVersion != 1 || scope.Kind != "all-runtime" || !sha256Pattern.MatchString(scope.SourceProfileSHA256) || !sha256Pattern.MatchString(scope.LedgerSHA256) || !sha256Pattern.MatchString(scope.PolicySHA256) || scope.Total != len(scope.Rows) {
+	if scope.SchemaVersion != 1 || !sha256Pattern.MatchString(scope.SourceProfileSHA256) || !sha256Pattern.MatchString(scope.LedgerSHA256) || !sha256Pattern.MatchString(scope.PolicySHA256) || scope.Total != len(scope.Rows) {
 		return fmt.Errorf("invalid surface scope bindings")
 	}
-	counts := map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 0}
+	counts := map[string]int{}
+	switch scope.Kind {
+	case "all-runtime":
+		if scope.OraclePlanSHA256 != "" {
+			return fmt.Errorf("invalid surface scope bindings")
+		}
+		counts[deterministicMockRequired], counts[localRuntimeRequired] = 0, 0
+	case "oracle-plan":
+		if !sha256Pattern.MatchString(scope.OraclePlanSHA256) {
+			return fmt.Errorf("invalid surface scope bindings")
+		}
+		for _, disposition := range []string{deterministicMockRequired, localRuntimeRequired, compileShapeRequired} {
+			counts[disposition] = 0
+		}
+	default:
+		return fmt.Errorf("invalid surface scope bindings")
+	}
 	seen := make(map[string]bool, len(scope.Rows))
 	for i, row := range scope.Rows {
-		if strings.TrimSpace(row.SurfaceID) == "" || seen[row.SurfaceID] || (row.Disposition != deterministicMockRequired && row.Disposition != localRuntimeRequired) || (i > 0 && scope.Rows[i-1].SurfaceID >= row.SurfaceID) {
+		if strings.TrimSpace(row.SurfaceID) == "" || seen[row.SurfaceID] || !surfaceScopeDispositionAllowed(scope.Kind, row.Disposition) || scope.Kind == "all-runtime" && row.Action != "" || scope.Kind == "oracle-plan" && (row.Action != oracleRuntime && row.Action != oracleCompile || !oracleActionMatchesDisposition(row.Action, row.Disposition)) || (i > 0 && scope.Rows[i-1].SurfaceID >= row.SurfaceID) {
 			return fmt.Errorf("invalid or unsorted surface scope row %q", row.SurfaceID)
 		}
 		seen[row.SurfaceID] = true
 		counts[row.Disposition]++
 	}
-	if len(scope.ByDisposition) != 2 || scope.ByDisposition[deterministicMockRequired] != counts[deterministicMockRequired] || scope.ByDisposition[localRuntimeRequired] != counts[localRuntimeRequired] {
+	if len(scope.ByDisposition) != len(counts) {
 		return fmt.Errorf("surface scope counts do not reconcile")
 	}
+	for disposition, count := range counts {
+		if scope.ByDisposition[disposition] != count {
+			return fmt.Errorf("surface scope counts do not reconcile")
+		}
+	}
 	return nil
+}
+
+func surfaceScopeDispositionAllowed(kind, disposition string) bool {
+	if disposition == deterministicMockRequired || disposition == localRuntimeRequired {
+		return true
+	}
+	return kind == "oracle-plan" && disposition == compileShapeRequired
 }
 
 func validateSurfaceRuntimeBatch(root string, scope SurfaceOracleScope) (SurfaceOracleIndexRuntimeBatch, map[string]bool, error) {
