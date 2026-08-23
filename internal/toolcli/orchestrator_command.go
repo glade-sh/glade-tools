@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/glade-sh/glade/tools/internal/corpusassurance"
@@ -19,10 +20,47 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-transfer|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
+	case "worker-transfer":
+		flags := orchestratorFlags("worker-transfer")
+		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		sourceBatch, evidenceRoot := flags.String("source-batch", "", ""), flags.String("evidence-root", "", "")
+		oraclePlan, output := flags.String("oracle-plan", "", ""), flags.String("output", "", "")
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*planPath, *leasePath, *sourceBatch, *evidenceRoot, *oraclePlan, *output); err != nil {
+			return err
+		}
+		if !filepath.IsAbs(*output) || filepath.Clean(*output) != *output {
+			return errors.New("absolute clean worker transfer output path is required")
+		}
+		if _, err := os.Lstat(*output); err == nil {
+			return errors.New("worker transfer output already exists")
+		} else if !os.IsNotExist(err) {
+			return err
+		}
+		var plan corpusassurance.OrchestratorCampaignPlan
+		if err := readOrchestratorJSON(*planPath, &plan); err != nil {
+			return err
+		}
+		var lease corpusassurance.OrchestratorLease
+		if err := readOrchestratorJSON(*leasePath, &lease); err != nil {
+			return err
+		}
+		transfer, err := corpusassurance.TransferOrchestratorWorkerBatch(corpusassurance.OrchestratorWorkerTransferRequest{
+			Plan: plan, Lease: lease, SourceBatchRoot: *sourceBatch, EvidenceRoot: *evidenceRoot, OraclePlanPath: *oraclePlan,
+		})
+		if err != nil {
+			return err
+		}
+		if err := writeOrchestratorJSON(*output, transfer); err != nil {
+			return err
+		}
+		return writeOrchestratorOutput(w, transfer)
 	case "cleanup-takeover":
 		flags := orchestratorFlags("cleanup-takeover")
 		database, requestPath := flags.String("db", "", ""), flags.String("request", "", "")
