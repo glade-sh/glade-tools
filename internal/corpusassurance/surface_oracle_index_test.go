@@ -180,7 +180,7 @@ func writeSurfaceOracleBatch(t *testing.T, root, name string, ids []string) stri
 	profilePath := filepath.Join(batch, "inputs", "RUNTIME_BATCH_PROFILE.json")
 	writeJSONValue(t, profilePath, map[string]any{"profile": "synthetic"})
 	fixturePath := filepath.Join(batch, "source", "glade-tools", "docs", "fixtures", "fixture-one.json")
-	writeJSONValue(t, fixturePath, map[string]any{"fixture": "synthetic"})
+	writeJSONValue(t, fixturePath, map[string]any{"fixture": "synthetic", "command": map[string]any{"kind": "exec"}})
 	writeJSONValue(t, filepath.Join(batch, "inputs", "RUNTIME_BATCH_MANIFEST.json"), map[string]any{
 		"schemaVersion": 1, "selectionPolicy": "whole, disjoint, inline anonymous-runtime fixtures with assertion-bearing programs", "surfaceRowCount": len(ids),
 		"fixtures": []any{map[string]any{"fixture": "fixture-one", "path": "docs/fixtures/fixture-one.json", "rowCount": len(ids), "salesforceEligible": true, "sha256": surfaceOracleFileSHA256(t, fixturePath), "sourceFiles": []any{}, "surfaceIds": idsJSON}},

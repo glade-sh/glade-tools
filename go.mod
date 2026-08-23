@@ -4,7 +4,10 @@ go 1.26
 
 require github.com/glade-sh/glade v0.0.0
 
-require golang.org/x/mod v0.33.0
+require (
+	golang.org/x/mod v0.33.0
+	modernc.org/sqlite v1.50.0
+)
 
 require (
 	github.com/dlclark/regexp2 v1.12.0 // indirect
@@ -23,7 +26,6 @@ require (
 	modernc.org/libc v1.72.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.50.0 // indirect
 )
 
 replace github.com/glade-sh/glade => ../glade
