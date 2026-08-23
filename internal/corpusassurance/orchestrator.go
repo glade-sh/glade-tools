@@ -61,6 +61,7 @@ type OrchestratorLease struct {
 	Generation int                 `json:"generation"`
 	Worker     string              `json:"worker"`
 	LeaseUntil time.Time           `json:"leaseUntil"`
+	DurationMS int64               `json:"durationMs"`
 }
 
 type OrchestratorCleanupClaim struct {
@@ -289,6 +290,7 @@ func (o *Orchestrator) Lease(campaignID, worker string, now time.Time, duration 
 	lease.CampaignID, lease.Kind, lease.Worker = campaignID, OrchestratorJobKind(kind), worker
 	lease.Generation++
 	lease.LeaseUntil = now.UTC().Add(duration)
+	lease.DurationMS = duration.Milliseconds()
 	if err := json.Unmarshal([]byte(surfaces), &lease.SurfaceIDs); err != nil {
 		return OrchestratorLease{}, err
 	}
@@ -307,10 +309,21 @@ func (o *Orchestrator) Lease(campaignID, worker string, now time.Time, duration 
 	if _, err := tx.Exec(`INSERT INTO attempts (campaign_id, job_id, generation, worker, status, leased_at, lease_until, heartbeat_at) VALUES (?, ?, ?, ?, 'running', ?, ?, ?)`, campaignID, lease.JobID, lease.Generation, worker, now.UTC().UnixMilli(), lease.LeaseUntil.UnixMilli(), now.UTC().UnixMilli()); err != nil {
 		return OrchestratorLease{}, fmt.Errorf("record campaign-bound attempt: %w", err)
 	}
+	if _, err := tx.Exec(`INSERT INTO lease_terms (campaign_id, job_id, generation, duration_ms) VALUES (?, ?, ?, ?)`, campaignID, lease.JobID, lease.Generation, lease.DurationMS); err != nil {
+		return OrchestratorLease{}, fmt.Errorf("record campaign-bound lease term: %w", err)
+	}
 	if err := tx.Commit(); err != nil {
 		return OrchestratorLease{}, err
 	}
 	return lease, nil
+}
+
+func (o *Orchestrator) issuedLeaseDuration(lease OrchestratorLease) (time.Duration, error) {
+	var milliseconds int64
+	if err := o.db.QueryRow(`SELECT duration_ms FROM lease_terms WHERE campaign_id = ? AND job_id = ? AND generation = ?`, lease.CampaignID, lease.JobID, lease.Generation).Scan(&milliseconds); err != nil || milliseconds < 1 {
+		return 0, fmt.Errorf("issued orchestrator lease term not found")
+	}
+	return time.Duration(milliseconds) * time.Millisecond, nil
 }
 
 func (o *Orchestrator) Heartbeat(lease OrchestratorLease, now time.Time, duration time.Duration) error {
@@ -410,6 +423,40 @@ func (o *Orchestrator) ClaimCleanup(campaignID, worker string, now time.Time, du
 	return claim, nil
 }
 
+// ClaimCleanupForLease claims only the allocation reserved by the current
+// lease. Campaign-wide ClaimCleanup remains the expired-lease takeover path.
+func (o *Orchestrator) ClaimCleanupForLease(lease OrchestratorLease, allocationAlias string, now time.Time, duration time.Duration) (OrchestratorCleanupClaim, error) {
+	if !safeOrchestratorToken(lease.Worker) || !safeOrchestratorToken(allocationAlias) || duration <= 0 {
+		return OrchestratorCleanupClaim{}, fmt.Errorf("current lease, safe allocation, and positive cleanup lease are required")
+	}
+	tx, err := o.db.Begin()
+	if err != nil {
+		return OrchestratorCleanupClaim{}, err
+	}
+	defer tx.Rollback()
+	claim := OrchestratorCleanupClaim{
+		CampaignID: lease.CampaignID, JobID: lease.JobID, Generation: lease.Generation,
+		AllocationAlias: allocationAlias, Worker: lease.Worker, ClaimUntil: now.UTC().Add(duration),
+	}
+	if err := tx.QueryRow(`SELECT a.hub_alias FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND c.state = 'pending' AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until > ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker, now.UTC().UnixMilli()).Scan(&claim.HubAlias); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return OrchestratorCleanupClaim{}, fmt.Errorf("current lease cleanup journal is not claimable")
+		}
+		return OrchestratorCleanupClaim{}, err
+	}
+	result, err := tx.Exec(`UPDATE cleanup_journal SET state = 'running', claimed_by = ?, claim_until = ? WHERE allocation_alias = ? AND campaign_id = ? AND job_id = ? AND generation = ? AND state = 'pending'`, lease.Worker, claim.ClaimUntil.UnixMilli(), allocationAlias, lease.CampaignID, lease.JobID, lease.Generation)
+	if err != nil {
+		return OrchestratorCleanupClaim{}, err
+	}
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return OrchestratorCleanupClaim{}, fmt.Errorf("current lease cleanup journal changed concurrently")
+	}
+	if err := tx.Commit(); err != nil {
+		return OrchestratorCleanupClaim{}, err
+	}
+	return claim, nil
+}
+
 func (o *Orchestrator) CloseCleanup(claim OrchestratorCleanupClaim, now time.Time) error {
 	tx, err := o.db.Begin()
 	if err != nil {
@@ -449,9 +496,10 @@ func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now tim
 		return OrchestratorReceipt{}, fmt.Errorf("absolute coordinator-local batch root is required")
 	}
 	lease := request.Lease
-	var scopePath, scopeSHA, specSHA, candidateCommit, candidateSHA, toolsCommit, toolsSHA, inputsJSON, surfacesJSON, jobStatus, jobKind string
+	var scopePath, scopeSHA, specSHA, candidateCommit, candidateSHA, toolsCommit, toolsSHA, inputsJSON, surfacesJSON, jobStatus, jobKind, attemptStatus string
 	var shardIndex int
-	err := o.db.QueryRow(`SELECT c.scope_path, c.scope_sha256, c.spec_sha256, c.candidate_commit, c.candidate_sha256, c.tools_commit, c.tools_sha256, c.controlled_inputs_json, j.surface_ids_json, j.status, j.kind, j.shard_index FROM campaigns c JOIN jobs j ON j.campaign_id = c.id JOIN attempts a ON a.campaign_id = j.campaign_id AND a.job_id = j.id AND a.generation = j.generation WHERE c.id = ? AND j.id = ? AND j.generation = ? AND a.worker = ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker).Scan(&scopePath, &scopeSHA, &specSHA, &candidateCommit, &candidateSHA, &toolsCommit, &toolsSHA, &inputsJSON, &surfacesJSON, &jobStatus, &jobKind, &shardIndex)
+	var jobLeaseUntil, attemptLeaseUntil int64
+	err := o.db.QueryRow(`SELECT c.scope_path, c.scope_sha256, c.spec_sha256, c.candidate_commit, c.candidate_sha256, c.tools_commit, c.tools_sha256, c.controlled_inputs_json, j.surface_ids_json, j.status, j.kind, j.shard_index, j.lease_until, a.status, a.lease_until FROM campaigns c JOIN jobs j ON j.campaign_id = c.id JOIN attempts a ON a.campaign_id = j.campaign_id AND a.job_id = j.id AND a.generation = j.generation WHERE c.id = ? AND j.id = ? AND j.generation = ? AND a.worker = ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker).Scan(&scopePath, &scopeSHA, &specSHA, &candidateCommit, &candidateSHA, &toolsCommit, &toolsSHA, &inputsJSON, &surfacesJSON, &jobStatus, &jobKind, &shardIndex, &jobLeaseUntil, &attemptStatus, &attemptLeaseUntil)
 	if err != nil {
 		return OrchestratorReceipt{}, fmt.Errorf("receipt requires current campaign attempt")
 	}
@@ -528,8 +576,8 @@ func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now tim
 		}
 		return existing, nil
 	}
-	if jobStatus != "running" {
-		return OrchestratorReceipt{}, fmt.Errorf("new receipt requires running campaign attempt")
+	if jobStatus != "running" || attemptStatus != "running" || jobLeaseUntil <= now.UTC().UnixMilli() || attemptLeaseUntil <= now.UTC().UnixMilli() {
+		return OrchestratorReceipt{}, fmt.Errorf("new receipt requires current running campaign attempt")
 	}
 	tx, err := o.db.Begin()
 	if err != nil {
@@ -552,15 +600,19 @@ func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now tim
 			return OrchestratorReceipt{}, fmt.Errorf("record unique campaign credit: %w", err)
 		}
 	}
-	result, err = tx.Exec(`UPDATE jobs SET status = 'closed' WHERE campaign_id = ? AND id = ? AND generation = ? AND leased_by = ? AND status = 'running'`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker)
+	result, err = tx.Exec(`UPDATE jobs SET status = 'closed' WHERE campaign_id = ? AND id = ? AND generation = ? AND leased_by = ? AND status = 'running' AND lease_until > ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker, now.UTC().UnixMilli())
 	if err != nil {
 		return OrchestratorReceipt{}, err
 	}
 	if rows, _ := result.RowsAffected(); rows != 1 {
 		return OrchestratorReceipt{}, fmt.Errorf("receipt attempt changed concurrently")
 	}
-	if _, err := tx.Exec(`UPDATE attempts SET status = 'closed' WHERE campaign_id = ? AND job_id = ? AND generation = ? AND worker = ? AND status = 'running'`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker); err != nil {
+	result, err = tx.Exec(`UPDATE attempts SET status = 'closed' WHERE campaign_id = ? AND job_id = ? AND generation = ? AND worker = ? AND status = 'running' AND lease_until > ?`, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker, now.UTC().UnixMilli())
+	if err != nil {
 		return OrchestratorReceipt{}, err
+	}
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return OrchestratorReceipt{}, fmt.Errorf("receipt attempt is not current and running")
 	}
 	if err := tx.Commit(); err != nil {
 		return OrchestratorReceipt{}, err
@@ -746,6 +798,14 @@ CREATE TABLE IF NOT EXISTS attempts (
   heartbeat_at INTEGER NOT NULL,
   PRIMARY KEY (campaign_id, job_id, generation),
   FOREIGN KEY (campaign_id, job_id) REFERENCES jobs(campaign_id, id)
+);
+CREATE TABLE IF NOT EXISTS lease_terms (
+  campaign_id TEXT NOT NULL,
+  job_id TEXT NOT NULL,
+  generation INTEGER NOT NULL,
+  duration_ms INTEGER NOT NULL CHECK (duration_ms > 0),
+  PRIMARY KEY (campaign_id, job_id, generation),
+  FOREIGN KEY (campaign_id, job_id, generation) REFERENCES attempts(campaign_id, job_id, generation)
 );
 CREATE TABLE IF NOT EXISTS hub_observations (
   id INTEGER PRIMARY KEY,
