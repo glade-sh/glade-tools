@@ -5,8 +5,71 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 )
+
+func TestWriteNewJSONLeavesNoFinalOnEncodeFailure(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "receipt.json")
+	if err := WriteNewJSON(path, make(chan int)); err == nil {
+		t.Fatal("WriteNewJSON accepted an unsupported value")
+	}
+	if _, err := os.Lstat(path); !os.IsNotExist(err) {
+		t.Fatalf("failed write left final path: %v", err)
+	}
+	if matches, err := filepath.Glob(filepath.Join(filepath.Dir(path), "."+filepath.Base(path)+".tmp-*")); err != nil || len(matches) != 0 {
+		t.Fatalf("failed write left temporary paths: %v", matches)
+	}
+}
+
+func TestWriteNewJSONConcurrentWritersHaveOneCompleteWinner(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "receipt.json")
+	results := make(chan error, 2)
+	var wait sync.WaitGroup
+	for _, status := range []string{"one", "two"} {
+		wait.Add(1)
+		go func(status string) {
+			defer wait.Done()
+			results <- WriteNewJSON(path, map[string]string{"status": status})
+		}(status)
+	}
+	wait.Wait()
+	close(results)
+	var successes int
+	for err := range results {
+		if err == nil {
+			successes++
+		}
+	}
+	if successes != 1 {
+		t.Fatalf("concurrent writers succeeded %d times, want one", successes)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var decoded map[string]string
+	if err := json.Unmarshal(data, &decoded); err != nil || decoded["status"] == "" {
+		t.Fatalf("winner is not one complete JSON document: %q, %v", data, err)
+	}
+}
+
+func TestWriteNewJSONNeverOverwritesDestination(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "receipt.json")
+	if err := os.WriteFile(path, []byte("old\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(path, map[string]string{"status": "new"}); err == nil {
+		t.Fatal("WriteNewJSON overwrote an existing destination")
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(data) != "old\n" {
+		t.Fatalf("existing destination changed to %q", data)
+	}
+}
 
 func TestManifestRejectsUnsafeInventory(t *testing.T) {
 	valid := InventorySpec{

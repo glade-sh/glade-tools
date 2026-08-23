@@ -370,6 +370,53 @@ func TestOrchestratorRecordsConfirmedMismatchAsRejected(t *testing.T) {
 	}
 }
 
+func TestOrchestratorRecoveredCleanupCannotRecordReceipt(t *testing.T) {
+	root := t.TempDir()
+	scope, _ := writeSurfaceOracleIndexInputs(t, root)
+	batch := writeSurfaceOracleBatch(t, root, "recovered", []string{"apex:System.One"})
+	definition := testOrchestratorDefinition(t, scope, [2][]string{{"apex:System.One"}, {"apex:System.Two", "apex:System.Three"}})
+	definition.Candidate = OrchestratorArtifact{Commit: strings.Repeat("1", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-sealed"))}
+	definition.Tools = OrchestratorArtifact{Commit: strings.Repeat("2", 40), SHA256: surfaceOracleFileSHA256(t, filepath.Join(batch, "bin", "glade-tools"))}
+	orchestrator, plan, lease, now := readyOrchestratorReceiptWithoutCleanup(t, definition, batch)
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.closeCleanup(claim, now.Add(time.Second), false); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := orchestrator.RecordReceipt(OrchestratorReceiptRequest{Lease: lease, BatchRoot: batch}, now.Add(2*time.Second)); err == nil || !strings.Contains(err.Error(), "proof-ineligible") {
+		t.Fatalf("recovered cleanup recorded receipt: %v", err)
+	}
+}
+
+func readyOrchestratorReceiptWithoutCleanup(t *testing.T, definition OrchestratorCampaignDefinition, batch string) (*Orchestrator, OrchestratorCampaignPlan, OrchestratorLease, time.Time) {
+	t.Helper()
+	plan, err := PlanOrchestratorCampaign(definition)
+	if err != nil {
+		t.Fatal(err)
+	}
+	orchestrator := openTestOrchestrator(t)
+	if err := orchestrator.InitCampaign(plan); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
+	lease, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-"+filepath.Base(batch), now); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := WriteOrchestratorBatchBinding(filepath.Join(batch, "evidence", "ORCHESTRATOR_BINDING.json"), plan, lease); err != nil {
+		t.Fatal(err)
+	}
+	return orchestrator, plan, lease, now.Add(2 * time.Second)
+}
+
 func TestOrchestratorLeavesInconclusiveBatchUnseen(t *testing.T) {
 	root := t.TempDir()
 	scope, _ := writeSurfaceOracleIndexInputs(t, root)

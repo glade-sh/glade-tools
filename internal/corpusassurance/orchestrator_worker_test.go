@@ -429,6 +429,544 @@ func TestOrchestratorCleanupTakeoverClosesExactAction(t *testing.T) {
 	}
 }
 
+func TestOrchestratorCleanupTakeoverRunsTypedSalesforceCleanupBeforeClosingJournal(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-takeover-typed", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	root := t.TempDir()
+	cleanupRequest := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), PreflightPath: filepath.Join(root, "preflight.json"), TargetOrg: "scratch-takeover-typed", SFBin: filepath.Join(root, "sf"), OutputPath: filepath.Join(root, "cleanup.json")}
+	var got SalesforceOrgCleanupRequest
+	if err := runOrchestratorCleanupTakeover(orchestrator, cleanupRequest, now.Add(2*time.Minute), func(request SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		got = request
+		writeValidCleanupTakeoverFiles(t, root, cleanupRequest.TargetOrg)
+		cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](cleanupRequest.OutputPath)
+		return cleanup, err
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if !called {
+		t.Fatal("typed Salesforce cleanup was not called")
+	}
+	if got.BundlePath != cleanupRequest.BundlePath || got.CreationPath != cleanupRequest.CreationPath || got.PreflightPath != cleanupRequest.PreflightPath || got.TargetOrg != cleanupRequest.TargetOrg || got.SFBin != cleanupRequest.SFBin || got.OutputPath != cleanupRequest.OutputPath {
+		t.Fatalf("cleanup request propagation = %#v", got)
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE campaign_id = ? AND job_id = ? AND generation = ?`, plan.CampaignID, lease.JobID, lease.Generation).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state != "closed" {
+		t.Fatalf("cleanup state=%q, want closed", state)
+	}
+}
+
+func TestOrchestratorCleanupTakeoverKeepsJournalOpenWhenResidueRemains(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-takeover-failed", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), PreflightPath: filepath.Join(root, "preflight.json"), TargetOrg: "scratch-takeover-failed", SFBin: filepath.Join(root, "sf"), OutputPath: filepath.Join(root, "cleanup.json")}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		writeValidCleanupTakeoverFiles(t, root, request.TargetOrg)
+		cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](request.OutputPath)
+		if err := os.Remove(request.OutputPath); err != nil {
+			return SalesforceOrgCleanup{}, err
+		}
+		cleanup.ResidueAbsent = false
+		if err == nil {
+			err = WriteNewJSON(request.OutputPath, cleanup)
+		}
+		return cleanup, err
+	}); err == nil {
+		t.Fatal("cleanup takeover succeeded while residue remained")
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state == "closed" {
+		t.Fatal("cleanup journal closed after typed cleanup failure")
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRequiresWrittenReceiptAfterCallback(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-receipt-required", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), PreflightPath: filepath.Join(root, "preflight.json"), TargetOrg: claim.AllocationAlias, SFBin: filepath.Join(root, "sf"), OutputPath: filepath.Join(root, "cleanup.json")}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+	}); err == nil {
+		t.Fatal("cleanup takeover closed without a written receipt")
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state == "closed" {
+		t.Fatal("cleanup journal closed without a written receipt")
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRejectsTargetAliasMismatch(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-claim-a", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	called := false
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), TargetOrg: "scratch-claim-b", SFBin: filepath.Join(root, "sf"), OutputPath: filepath.Join(root, "cleanup.json")}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+	}); err == nil {
+		t.Fatal("target alias mismatch succeeded")
+	}
+	if called {
+		t.Fatal("typed cleanup called for target alias mismatch")
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state == "closed" {
+		t.Fatal("claim A journal closed for target B")
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRejectsExpiredOrForgedClaimsBeforeCleanup(t *testing.T) {
+	for _, name := range []string{"expired", "forged"} {
+		t.Run(name, func(t *testing.T) {
+			orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+			if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+				t.Fatal(err)
+			}
+			if err := orchestrator.Reserve(lease, "hub-a", "scratch-claim-check", now); err != nil {
+				t.Fatal(err)
+			}
+			if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+				t.Fatal(err)
+			}
+			claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkNow := now.Add(2 * time.Minute)
+			if name == "expired" {
+				checkNow = claim.ClaimUntil.Add(time.Nanosecond)
+			} else {
+				claim.HubAlias = "hub-forged"
+			}
+			root := t.TempDir()
+			called := false
+			request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), PreflightPath: filepath.Join(root, "preflight.json"), TargetOrg: claim.AllocationAlias, SFBin: filepath.Join(root, "sf"), OutputPath: filepath.Join(root, "cleanup.json")}
+			if err := runOrchestratorCleanupTakeover(orchestrator, request, checkNow, func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+				called = true
+				return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+			}); err == nil {
+				t.Fatal("invalid claim succeeded")
+			}
+			if called {
+				t.Fatal("typed cleanup called for invalid claim")
+			}
+			var state string
+			if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+				t.Fatal(err)
+			}
+			if state == "closed" {
+				t.Fatal("invalid claim closed cleanup journal")
+			}
+		})
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRequiresPreflightReceipt(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-preflight-required", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	called := false
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), TargetOrg: claim.AllocationAlias, SFBin: filepath.Join(root, "sf"), OutputPath: filepath.Join(root, "cleanup.json")}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+	}); err == nil {
+		t.Fatal("cleanup without preflight succeeded")
+	}
+	if called {
+		t.Fatal("typed cleanup called without preflight")
+	}
+}
+
+func TestOrchestratorCleanupTakeoverValidReceiptSkipsCleanupAndCloses(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-existing-receipt", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, claim.AllocationAlias)
+	called := false
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: claim.AllocationAlias, SFBin: salesforceCLIPath, OutputPath: outputPath}
+	if err := validateExistingOrchestratorCleanup(request); err != nil {
+		t.Fatal(err)
+	}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{}, errors.New("must not delete twice")
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if called {
+		t.Fatal("typed cleanup reran for valid existing receipt")
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state != "closed" {
+		t.Fatalf("cleanup state=%q, want closed", state)
+	}
+}
+
+func TestOrchestratorCleanupTakeoverReplaysRecoveredExitZeroTimeoutReceipt(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-recovered-replay", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, claim.AllocationAlias)
+	cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cleanup.RecoveredAbsent = true
+	cleanup.Commands[0].Passed = false
+	cleanup.Commands[0].ExitCode = 0
+	cleanup.Commands[0].TimedOut = true
+	query := salesforceCommandForTest(t, bundlePath, []string{"data", "query", "--target-org", cleanup.DevHub, "--query", salesforceActiveScratchOrgQuery(cleanup.OrgID), "--json"})
+	query.Output.Stdout = []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)
+	query.StdoutSHA256 = replayBytesSHA256(query.Output.Stdout)
+	cleanup.Commands = []CommandResult{cleanup.Commands[0], query}
+	if err := os.Remove(outputPath); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteNewJSON(outputPath, cleanup); err != nil {
+		t.Fatal(err)
+	}
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: claim.AllocationAlias, SFBin: salesforceCLIPath, OutputPath: outputPath}
+	called := false
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{}, errors.New("must not delete twice")
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if called {
+		t.Fatal("typed cleanup reran for recovered receipt")
+	}
+}
+
+func TestOrchestratorCleanupTakeoverReclaimsExpiredClaimWithExistingReceipt(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-replay-after-expiry", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), PreflightPath: filepath.Join(root, "preflight.json"), TargetOrg: claim.AllocationAlias, SFBin: salesforceCLIPath, OutputPath: filepath.Join(root, "cleanup.json")}
+	closeAfterExpiry := claim.ClaimUntil.Add(time.Second)
+	clockCalls := 0
+	err = runOrchestratorCleanupTakeoverAt(orchestrator, request, func() time.Time {
+		clockCalls++
+		if clockCalls == 1 {
+			return now.Add(2 * time.Minute)
+		}
+		return closeAfterExpiry
+	}, func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		writeValidCleanupTakeoverFiles(t, root, claim.AllocationAlias)
+		cleanup, _, err := readExactJSONBytes[SalesforceOrgCleanup](request.OutputPath)
+		return cleanup, err
+	})
+	if err == nil {
+		t.Fatal("cleanup takeover succeeded after claim expiry")
+	}
+	if clockCalls != 2 {
+		t.Fatalf("clock calls=%d, want preflight and close", clockCalls)
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state == "closed" {
+		t.Fatal("expired claim closed cleanup journal")
+	}
+	reclaimNow := closeAfterExpiry.Add(time.Second)
+	reclaimed, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-c", reclaimNow, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	request.Claim = reclaimed
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, reclaimNow, func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{}, errors.New("must replay existing cleanup")
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if called {
+		t.Fatal("typed cleanup reran after reclaim")
+	}
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state != "closed" {
+		t.Fatalf("cleanup state=%q, want closed after reclaim", state)
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRejectsSymlinkedExistingReceipt(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-symlinked-receipt", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, claim.AllocationAlias)
+	receiptPath := filepath.Join(root, "cleanup-real.json")
+	if err := os.Rename(outputPath, receiptPath); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(receiptPath, outputPath); err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: claim.AllocationAlias, SFBin: salesforceCLIPath, OutputPath: outputPath}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+	}); err == nil {
+		t.Fatal("symlinked existing receipt succeeded")
+	}
+	if called {
+		t.Fatal("typed cleanup called for symlinked existing receipt")
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state == "closed" {
+		t.Fatal("symlinked existing receipt closed cleanup journal")
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRejectsWorldReadableExistingReceipt(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("sealed-dev-hub", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "sealed-dev-hub", "scratch-world-readable-receipt", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, claim.AllocationAlias)
+	if err := os.Chmod(outputPath, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: claim.AllocationAlias, SFBin: salesforceCLIPath, OutputPath: outputPath}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+	}); err == nil {
+		t.Fatal("world-readable existing receipt succeeded")
+	}
+	if called {
+		t.Fatal("typed cleanup called for world-readable existing receipt")
+	}
+}
+
+func TestOrchestratorCleanupTakeoverRejectsInvalidExistingReceipt(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-invalid-receipt", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", now.Add(2*time.Minute), time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	outputPath := filepath.Join(root, "cleanup.json")
+	if err := os.WriteFile(outputPath, []byte("{}\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	request := OrchestratorCleanupTakeoverRequest{Claim: claim, BundlePath: filepath.Join(root, "bundle.json"), CreationPath: filepath.Join(root, "creation.json"), PreflightPath: filepath.Join(root, "preflight.json"), TargetOrg: claim.AllocationAlias, SFBin: filepath.Join(root, "sf"), OutputPath: outputPath}
+	if err := runOrchestratorCleanupTakeover(orchestrator, request, now.Add(2*time.Minute), func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error) {
+		called = true
+		return SalesforceOrgCleanup{ResidueAbsent: true}, nil
+	}); err == nil {
+		t.Fatal("invalid existing receipt succeeded")
+	}
+	if called {
+		t.Fatal("typed cleanup called with invalid existing receipt")
+	}
+	var state string
+	if err := orchestrator.db.QueryRow(`SELECT state FROM cleanup_journal WHERE allocation_alias = ?`, claim.AllocationAlias).Scan(&state); err != nil {
+		t.Fatal(err)
+	}
+	if state == "closed" {
+		t.Fatal("invalid existing receipt closed cleanup journal")
+	}
+}
+
+func writeValidCleanupTakeoverFiles(t *testing.T, root, alias string) (string, string, string, string) {
+	t.Helper()
+	bundlePath := filepath.Join(root, "bundle.json")
+	creationPath := filepath.Join(root, "creation.json")
+	preflightPath := filepath.Join(root, "preflight.json")
+	outputPath := filepath.Join(root, "cleanup.json")
+	writeSyntheticDevHubBundle(t, bundlePath)
+	bundleSHA := localProofFileSHA256(t, bundlePath)
+	bundle, _, err := readExactJSONBytes[OracleBundle](bundlePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	creation := SalesforceOrgCreation{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: bundle.DevHub, DevHubOrgID: bundle.DevHubOrgID, DevHubUsername: bundle.DevHubUsername, Alias: alias, Marker: testSalesforceScratchMarker, OrgID: testSalesforceCleanupOrgID, Command: salesforceCommandForTest(t, bundlePath, salesforceOrgCreateArgs(filepath.Join(root, "corpus-assurance-scratch-def.json"), bundle.DevHub, alias, testSalesforceScratchMarker)), DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", bundle.DevHub, "--json"})}
+	creation.Command.Output.Stdout = []byte(`{"status":0,"result":{"orgId":"` + testSalesforceCleanupOrgID + `"}}`)
+	creation.Command.StdoutSHA256 = replayBytesSHA256(creation.Command.Output.Stdout)
+	creation.DevHubCommand.Output.Stdout = []byte(`{"status":0,"result":{"id":"` + bundle.DevHubOrgID + `","status":"Active","username":"` + bundle.DevHubUsername + `"}}`)
+	creation.DevHubCommand.StdoutSHA256 = replayBytesSHA256(creation.DevHubCommand.Output.Stdout)
+	if err := WriteNewJSON(creationPath, creation); err != nil {
+		t.Fatal(err)
+	}
+	preflight := salesforcePreflightForTest(t, alias, bundleSHA, bundlePath)
+	preflight.OrgID = testSalesforceCleanupOrgID
+	preflight.Commands[0].Output.Stdout = []byte(`{"status":0,"result":{"id":"` + testSalesforceCleanupOrgID + `","status":"Active","username":"` + alias + `@example.invalid"}}`)
+	preflight.Commands[0].StdoutSHA256 = replayBytesSHA256(preflight.Commands[0].Output.Stdout)
+	if err := WriteNewJSON(preflightPath, preflight); err != nil {
+		t.Fatal(err)
+	}
+	deleted := salesforceCommandForTest(t, bundlePath, []string{"org", "delete", "scratch", "--target-org", alias, "--no-prompt", "--json"})
+	absent := salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", alias, "--json"})
+	absent.ExitCode, absent.Passed = 2, false
+	absent.Output.Stdout = []byte(`{"status":1,"message":"not found"}`)
+	absent.StdoutSHA256 = replayBytesSHA256(absent.Output.Stdout)
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: bundle.DevHub, DevHubOrgID: bundle.DevHubOrgID, DevHubUsername: bundle.DevHubUsername, OrgAlias: alias, OrgID: testSalesforceCleanupOrgID, Commands: []CommandResult{deleted, absent}, DevHubCommand: salesforceCommandForTest(t, bundlePath, []string{"org", "display", "--target-org", bundle.DevHub, "--json"}), ResidueAbsent: true}
+	cleanup.DevHubCommand.Output.Stdout = []byte(`{"status":0,"result":{"id":"` + bundle.DevHubOrgID + `","status":"Active","username":"` + bundle.DevHubUsername + `"}}`)
+	cleanup.DevHubCommand.StdoutSHA256 = replayBytesSHA256(cleanup.DevHubCommand.Output.Stdout)
+	if err := WriteNewJSON(outputPath, cleanup); err != nil {
+		t.Fatal(err)
+	}
+	return bundlePath, creationPath, preflightPath, outputPath
+}
+
 func fixedOrchestratorWorkerClock(now time.Time) func() time.Time {
 	return func() time.Time { return now }
 }

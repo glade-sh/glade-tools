@@ -139,16 +139,7 @@ func readExactJSONBytes[T any](path string) (T, []byte, error) {
 	if err != nil {
 		return value, nil, err
 	}
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&value); err != nil {
-		return value, nil, err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		if err == nil {
-			return value, nil, fmt.Errorf("multiple JSON values")
-		}
+	if err := decodeExactJSON(data, &value); err != nil {
 		return value, nil, err
 	}
 	return value, data, nil
@@ -181,7 +172,13 @@ func validateExactJSONValue(data []byte, typeOf reflect.Type) error {
 	for typeOf.Kind() == reflect.Ptr {
 		typeOf = typeOf.Elem()
 	}
+	if bytes.Equal(bytes.TrimSpace(data), []byte("null")) {
+		return nil
+	}
 	if typeOf.Implements(reflect.TypeFor[json.Unmarshaler]()) || reflect.PointerTo(typeOf).Implements(reflect.TypeFor[json.Unmarshaler]()) {
+		return nil
+	}
+	if typeOf.Kind() == reflect.Slice && typeOf.Elem().Kind() == reflect.Uint8 {
 		return nil
 	}
 	switch typeOf.Kind() {

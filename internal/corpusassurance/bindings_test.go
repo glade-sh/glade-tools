@@ -1,10 +1,21 @@
 package corpusassurance
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+func TestReadExactJSONBytesRejectsNestedDuplicateReceiptKey(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "cleanup.json")
+	if err := os.WriteFile(path, []byte(`{"commands":[{"exitCode":1,"exitCode":2}]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := readExactJSONBytes[SalesforceOrgCleanup](path); err == nil || !strings.Contains(err.Error(), "duplicate") {
+		t.Fatalf("nested duplicate receipt accepted: %v", err)
+	}
+}
 
 func TestLoadSealedHostInputsBindsExactManifestFiles(t *testing.T) {
 	directory := t.TempDir()

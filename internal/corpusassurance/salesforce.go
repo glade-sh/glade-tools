@@ -240,17 +240,18 @@ type salesforceOrgReservation struct {
 }
 
 type SalesforceOrgCleanup struct {
-	SchemaVersion  int             `json:"schemaVersion"`
-	BundleSHA256   string          `json:"bundleSha256"`
-	DevHub         string          `json:"devHub"`
-	DevHubOrgID    string          `json:"devHubOrgId"`
-	DevHubUsername string          `json:"devHubUsername"`
-	OrgAlias       string          `json:"orgAlias"`
-	OrgID          string          `json:"orgId"`
-	Commands       []CommandResult `json:"commands"`
-	DevHubCommand  CommandResult   `json:"devHubCommand"`
-	ReservedOnly   bool            `json:"reservedOnly,omitempty"`
-	ResidueAbsent  bool            `json:"residueAbsent"`
+	SchemaVersion   int             `json:"schemaVersion"`
+	BundleSHA256    string          `json:"bundleSha256"`
+	DevHub          string          `json:"devHub"`
+	DevHubOrgID     string          `json:"devHubOrgId"`
+	DevHubUsername  string          `json:"devHubUsername"`
+	OrgAlias        string          `json:"orgAlias"`
+	OrgID           string          `json:"orgId"`
+	Commands        []CommandResult `json:"commands"`
+	DevHubCommand   CommandResult   `json:"devHubCommand"`
+	ReservedOnly    bool            `json:"reservedOnly,omitempty"`
+	RecoveredAbsent bool            `json:"recoveredAbsent,omitempty"`
+	ResidueAbsent   bool            `json:"residueAbsent"`
 }
 
 type SalesforceOrgCleanupRequest struct {
@@ -965,13 +966,25 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 	if err != nil || observedOrgID != devHubAuthority.OrgID || observedUsername != devHubAuthority.Username {
 		return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce Dev Hub identity does not match sealed authority")
 	}
-	_, deleted, err := runSalesforceExpectedCommand(runner, devHubAuthority.Execution, filepath.Dir(request.BundlePath), true, "org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json")
-	if err != nil {
-		return SalesforceOrgCleanup{}, err
-	}
-	_, absent, err := runSalesforceExpectedCommand(runner, devHubAuthority.Execution, filepath.Dir(request.BundlePath), false, "org", "display", "--target-org", creation.Alias, "--json")
-	if err != nil {
-		return SalesforceOrgCleanup{}, err
+	_, deleted, deleteErr := runSalesforceExpectedCommand(runner, devHubAuthority.Execution, filepath.Dir(request.BundlePath), true, "org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json")
+	recoveredAbsent := false
+	cleanupCommands := []CommandResult{deleted}
+	if deleteErr != nil {
+		serverCommands, recoveryErr := cleanupSalesforceServerOrgByID(runner, devHubAuthority, filepath.Dir(request.BundlePath), creation.OrgID)
+		if recoveryErr != nil {
+			return SalesforceOrgCleanup{}, recoveryErr
+		}
+		cleanupCommands = append(cleanupCommands, serverCommands...)
+		recoveredAbsent = true
+	} else {
+		absentOutput, absent, err := runSalesforceExpectedCommand(runner, devHubAuthority.Execution, filepath.Dir(request.BundlePath), false, "org", "display", "--target-org", creation.Alias, "--json")
+		if err != nil || !validSalesforceOrgDisplayFailure(absentOutput.Stdout) {
+			if err != nil {
+				return SalesforceOrgCleanup{}, err
+			}
+			return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce cleanup did not verify org absence")
+		}
+		cleanupCommands = append(cleanupCommands, absent)
 	}
 	if err := validate(request.BundlePath); err != nil {
 		return SalesforceOrgCleanup{}, fmt.Errorf("staged bundle changed during cleanup: %w", err)
@@ -981,7 +994,7 @@ func RunSalesforceOrgCleanup(request SalesforceOrgCleanupRequest) (SalesforceOrg
 			return SalesforceOrgCleanup{}, fmt.Errorf("Salesforce cleanup input changed during execution")
 		}
 	}
-	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, DevHubOrgID: creation.DevHubOrgID, DevHubUsername: creation.DevHubUsername, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: []CommandResult{deleted, absent}, DevHubCommand: devHubCommand, ResidueAbsent: true}
+	cleanup := SalesforceOrgCleanup{SchemaVersion: 1, BundleSHA256: bundleSHA, DevHub: request.DevHub, DevHubOrgID: creation.DevHubOrgID, DevHubUsername: creation.DevHubUsername, OrgAlias: creation.Alias, OrgID: creation.OrgID, Commands: cleanupCommands, DevHubCommand: devHubCommand, RecoveredAbsent: recoveredAbsent, ResidueAbsent: true}
 	if err := WriteNewJSON(request.OutputPath, cleanup); err != nil {
 		return SalesforceOrgCleanup{}, err
 	}
@@ -1102,37 +1115,51 @@ func runReservedSalesforceOrgCleanup(request SalesforceOrgCleanupRequest, author
 	return cleanup, nil
 }
 
+func cleanupSalesforceServerOrgByID(runner salesforceCommandRunner, authority SalesforceDevHubAuthority, workingDirectory, orgID string) ([]CommandResult, error) {
+	if !validSalesforceRecordID(orgID, "00D") {
+		return nil, fmt.Errorf("invalid Salesforce org ID")
+	}
+	activeQuery := salesforceActiveScratchOrgQuery(orgID)
+	activeOutput, activeReceipt, err := runSalesforceExpectedCommand(runner, authority.Execution, workingDirectory, true, "data", "query", "--target-org", authority.Alias, "--query", activeQuery, "--json")
+	commands := []CommandResult{activeReceipt}
+	activeRecords, parseErr := parseSalesforceActiveScratchOrg(activeOutput.Stdout)
+	if err != nil || parseErr != nil || len(activeRecords) > 1 {
+		return commands, fmt.Errorf("invalid ActiveScratchOrg result")
+	}
+	if len(activeRecords) == 0 {
+		return commands, nil
+	}
+	active := activeRecords[0]
+	if active.ScratchOrg != orgID || !validSalesforceRecordID(active.ID, "2AS") {
+		return commands, fmt.Errorf("invalid active scratch org record")
+	}
+	_, deleted, err := runSalesforceExpectedCommand(runner, authority.Execution, workingDirectory, true, "data", "delete", "record", "--target-org", authority.Alias, "--sobject", "ActiveScratchOrg", "--record-id", active.ID, "--json")
+	commands = append(commands, deleted)
+	if err != nil {
+		return commands, err
+	}
+	verifyQuery := salesforceActiveScratchOrgQuery(orgID)
+	verifyOutput, verified, err := runSalesforceExpectedCommand(runner, authority.Execution, workingDirectory, true, "data", "query", "--target-org", authority.Alias, "--query", verifyQuery, "--json")
+	commands = append(commands, verified)
+	remaining, parseErr := parseSalesforceActiveScratchOrg(verifyOutput.Stdout)
+	if err != nil || parseErr != nil || len(remaining) != 0 {
+		return commands, fmt.Errorf("active scratch org remains after server cleanup")
+	}
+	return commands, nil
+}
+
+func salesforceActiveScratchOrgQuery(orgID string) string {
+	return "SELECT Id, ScratchOrg FROM ActiveScratchOrg WHERE ScratchOrg = '" + orgID + "'"
+}
+
 func cleanupReservedSalesforceServerOrg(runner salesforceCommandRunner, authority SalesforceDevHubAuthority, workingDirectory, marker string) (string, []CommandResult, error) {
 	scratchOrgID, commands, err := inspectReservedSalesforceServerOrg(runner, authority, workingDirectory, marker)
 	if err != nil || scratchOrgID == "" {
 		return scratchOrgID, commands, err
 	}
-	activeQuery := "SELECT Id, ScratchOrg FROM ActiveScratchOrg WHERE ScratchOrg = '" + scratchOrgID + "'"
-	activeOutput, activeReceipt, err := runSalesforceExpectedCommand(runner, authority.Execution, workingDirectory, true, "data", "query", "--target-org", authority.Alias, "--query", activeQuery, "--json")
-	commands = append(commands, activeReceipt)
-	activeRecords, parseErr := parseSalesforceActiveScratchOrg(activeOutput.Stdout)
-	if err != nil || parseErr != nil || len(activeRecords) > 1 {
-		return "", commands, fmt.Errorf("invalid ActiveScratchOrg result")
-	}
-	if len(activeRecords) == 0 {
-		return scratchOrgID, commands, nil
-	}
-	active := activeRecords[0]
-	if active.ScratchOrg != scratchOrgID || !validSalesforceRecordID(active.ID, "2AS") {
-		return "", commands, fmt.Errorf("invalid active scratch org record")
-	}
-	_, deleted, err := runSalesforceExpectedCommand(runner, authority.Execution, workingDirectory, true, "data", "delete", "record", "--target-org", authority.Alias, "--sobject", "ActiveScratchOrg", "--record-id", active.ID, "--json")
-	commands = append(commands, deleted)
-	if err != nil {
-		return "", commands, err
-	}
-	verifyOutput, verified, err := runSalesforceExpectedCommand(runner, authority.Execution, workingDirectory, true, "data", "query", "--target-org", authority.Alias, "--query", activeQuery, "--json")
-	commands = append(commands, verified)
-	remaining, parseErr := parseSalesforceActiveScratchOrg(verifyOutput.Stdout)
-	if err != nil || parseErr != nil || len(remaining) != 0 {
-		return "", commands, fmt.Errorf("active scratch org remains after server cleanup")
-	}
-	return scratchOrgID, commands, nil
+	serverCommands, cleanupErr := cleanupSalesforceServerOrgByID(runner, authority, workingDirectory, scratchOrgID)
+	commands = append(commands, serverCommands...)
+	return scratchOrgID, commands, cleanupErr
 }
 
 func inspectReservedSalesforceServerOrg(runner salesforceCommandRunner, authority SalesforceDevHubAuthority, workingDirectory, marker string) (string, []CommandResult, error) {
@@ -1930,7 +1957,7 @@ func validSalesforceOrgCreation(creation SalesforceOrgCreation, bundleSHA, bundl
 }
 
 func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePath string, creation SalesforceOrgCreation) bool {
-	if cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != creation.DevHub || cleanup.DevHubOrgID != creation.DevHubOrgID || cleanup.DevHubUsername != creation.DevHubUsername || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 2 || !validSalesforceDevHubCommand(cleanup.DevHubCommand, bundlePath, creation.DevHub, creation.DevHubOrgID, creation.DevHubUsername) {
+	if cleanup.RecoveredAbsent || cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != creation.DevHub || cleanup.DevHubOrgID != creation.DevHubOrgID || cleanup.DevHubUsername != creation.DevHubUsername || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || len(cleanup.Commands) != 2 || !validSalesforceDevHubCommand(cleanup.DevHubCommand, bundlePath, creation.DevHub, creation.DevHubOrgID, creation.DevHubUsername) {
 		return false
 	}
 	expected := []struct {
@@ -1954,6 +1981,46 @@ func validSalesforceOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePa
 		}
 	}
 	return true
+}
+
+func validSalesforceRecoveredOrgCleanup(cleanup SalesforceOrgCleanup, bundleSHA, bundlePath string, creation SalesforceOrgCreation) bool {
+	if !cleanup.RecoveredAbsent || cleanup.SchemaVersion != 1 || cleanup.BundleSHA256 != bundleSHA || cleanup.DevHub != creation.DevHub || cleanup.DevHubOrgID != creation.DevHubOrgID || cleanup.DevHubUsername != creation.DevHubUsername || cleanup.OrgAlias != creation.Alias || cleanup.OrgID != creation.OrgID || !cleanup.ResidueAbsent || (len(cleanup.Commands) != 2 && len(cleanup.Commands) != 4) || !validSalesforceDevHubCommand(cleanup.DevHubCommand, bundlePath, creation.DevHub, creation.DevHubOrgID, creation.DevHubUsername) {
+		return false
+	}
+	execution, err := sealedSalesforceExecution(bundlePath)
+	if err != nil {
+		return false
+	}
+	delete := cleanup.Commands[0]
+	if !validSalesforceCommandReceipt(delete, execution, bundlePath, []string{"org", "delete", "scratch", "--target-org", creation.Alias, "--no-prompt", "--json"}) || delete.Passed {
+		return false
+	}
+	query := cleanup.Commands[1]
+	queryArgs := []string{"data", "query", "--target-org", creation.DevHub, "--query", salesforceActiveScratchOrgQuery(creation.OrgID), "--json"}
+	if !validSalesforceCommandReceipt(query, execution, bundlePath, queryArgs) || !query.Passed || query.ExitCode != 0 || query.TimedOut {
+		return false
+	}
+	activeRecords, err := parseSalesforceActiveScratchOrg(query.Output.Stdout)
+	if err != nil || len(activeRecords) > 1 {
+		return false
+	}
+	if len(activeRecords) == 0 {
+		return len(cleanup.Commands) == 2
+	}
+	active := activeRecords[0]
+	if len(cleanup.Commands) != 4 || active.ScratchOrg != creation.OrgID || !validSalesforceRecordID(active.ID, "2AS") {
+		return false
+	}
+	deleted := cleanup.Commands[2]
+	if !validSalesforceCommandReceipt(deleted, execution, bundlePath, []string{"data", "delete", "record", "--target-org", creation.DevHub, "--sobject", "ActiveScratchOrg", "--record-id", active.ID, "--json"}) || !deleted.Passed || deleted.ExitCode != 0 || deleted.TimedOut {
+		return false
+	}
+	verified := cleanup.Commands[3]
+	if !validSalesforceCommandReceipt(verified, execution, bundlePath, queryArgs) || !verified.Passed || verified.ExitCode != 0 || verified.TimedOut {
+		return false
+	}
+	remaining, err := parseSalesforceActiveScratchOrg(verified.Output.Stdout)
+	return err == nil && len(remaining) == 0
 }
 
 func validSalesforceDevHubCommand(command CommandResult, bundlePath, alias, orgID, username string) bool {
@@ -2008,9 +2075,14 @@ func retainedSalesforceOrgCreate(command CommandResult) (string, error) {
 
 func validSalesforceOrgDisplayFailure(data []byte) bool {
 	var payload struct {
-		Status int `json:"status"`
+		Status  int    `json:"status"`
+		Message string `json:"message"`
 	}
-	return json.Unmarshal(data, &payload) == nil && payload.Status != 0
+	if json.Unmarshal(data, &payload) != nil {
+		return false
+	}
+	message := strings.ToLower(strings.TrimSpace(payload.Message))
+	return payload.Status == 1 && (strings.Contains(message, "not found") || strings.Contains(message, "no authorization information found") || strings.Contains(message, "does not exist"))
 }
 
 func salesforceCommandSpecSHA256(binary string, args []string, workingDirectory string, environment []string, executableSHA256, executableAfterSHA256 string) string {

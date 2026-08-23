@@ -342,6 +342,29 @@ mode reads only the retained bytes and modes. `report` accepts the same receipt
 and packet through `--salesforce-reconciliation` and `--salesforce-packet`, so
 it does not need the deleted executor roots.
 
+## Cleanup takeover boundary
+
+Cleanup takeover is typed and runs the existing Salesforce cleanup path before
+the coordinator journal can close. Supply the exact sealed bundle, creation,
+preflight, target org, Salesforce binary, and cleanup output paths:
+
+```bash
+glade-tools corpus assurance orchestrator cleanup-takeover \
+  --db /absolute/coordinator/orchestrator.db \
+  --request /absolute/private/CLEANUP_TAKEOVER.json
+```
+
+`CLEANUP_TAKEOVER.json` is strict JSON. Unknown fields, duplicate fields,
+trailing JSON, and trailing command arguments fail. A cleanup error or a
+receipt without `residueAbsent: true` leaves the journal open and earns no
+proof credit. Only normal created-plus-preflight receipts are supported;
+reservation or invalidated takeover remains action-required. The `worker-once`
+and SSH dispatch entrypoints remain outside this slice until a DB-free typed
+worker lifecycle and fixed batch-transfer contract are available; no remote
+execution or parity credit is implied. An exact already-absent recovery receipt
+may close only the coordinator cleanup journal; it is rejected as Salesforce
+proof and earns no credit.
+
 ## Packet return format
 
 ```text

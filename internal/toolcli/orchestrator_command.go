@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/glade-sh/glade/tools/internal/corpusassurance"
+	"github.com/glade-sh/glade/tools/internal/releasecontract"
 )
 
 func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Writer) error {
@@ -18,10 +19,29 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|cleanup-claim|cleanup-close>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
+	case "cleanup-takeover":
+		flags := orchestratorFlags("cleanup-takeover")
+		database, requestPath := flags.String("db", "", ""), flags.String("request", "", "")
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*database, *requestPath); err != nil {
+			return err
+		}
+		var request corpusassurance.OrchestratorCleanupTakeoverRequest
+		if err := readOrchestratorJSON(*requestPath, &request); err != nil {
+			return err
+		}
+		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
+			if err := corpusassurance.RunOrchestratorCleanupTakeover(orchestrator, request); err != nil {
+				return err
+			}
+			return writeOrchestratorOutput(w, map[string]string{"status": "cleanup-closed", "allocation": request.Claim.AllocationAlias})
+		})
 	case "plan":
 		flags := orchestratorFlags("plan")
 		campaign, output := flags.String("campaign", "", ""), flags.String("output", "", "")
@@ -209,25 +229,6 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			}
 			return writeOrchestratorOutput(w, claim)
 		})
-	case "cleanup-close":
-		flags := orchestratorFlags("cleanup-close")
-		database, claimPath := flags.String("db", "", ""), flags.String("claim", "", "")
-		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
-			return err
-		}
-		if err := requiredAssuranceFlags(*database, *claimPath); err != nil {
-			return err
-		}
-		var claim corpusassurance.OrchestratorCleanupClaim
-		if err := readOrchestratorJSON(*claimPath, &claim); err != nil {
-			return err
-		}
-		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
-			if err := orchestrator.CloseCleanup(claim, time.Now().UTC()); err != nil {
-				return err
-			}
-			return writeOrchestratorOutput(w, map[string]string{"allocation": claim.AllocationAlias, "status": "closed"})
-		})
 	default:
 		return errors.New("unknown corpus assurance orchestrator operation")
 	}
@@ -267,16 +268,11 @@ func readOrchestratorJSON(path string, value any) error {
 		return err
 	}
 	defer file.Close()
-	decoder := json.NewDecoder(file)
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(value); err != nil {
+	data, err := io.ReadAll(file)
+	if err != nil {
 		return err
 	}
-	var extra any
-	if decoder.Decode(&extra) != io.EOF {
-		return errors.New("orchestrator JSON must contain one value")
-	}
-	return nil
+	return releasecontract.DecodeExactJSON(data, value)
 }
 
 func writeOrchestratorJSON(path string, value any) error {

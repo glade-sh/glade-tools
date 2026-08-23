@@ -453,6 +453,9 @@ func validateExactJSON(data []byte, typeOf reflect.Type) error {
 	if typeOf.Kind() == reflect.Ptr {
 		typeOf = typeOf.Elem()
 	}
+	if typeOf.Implements(reflect.TypeFor[json.Unmarshaler]()) || reflect.PointerTo(typeOf).Implements(reflect.TypeFor[json.Unmarshaler]()) {
+		return nil
+	}
 	trimmed := bytes.TrimSpace(data)
 	if bytes.Equal(trimmed, []byte("null")) {
 		return nil

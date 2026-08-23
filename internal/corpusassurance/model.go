@@ -148,10 +148,41 @@ func PublicRepositorySpec(repo RepositorySpec) (string, error) {
 }
 
 func WriteNewJSON(path string, value any) error {
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
+	directory := filepath.Dir(path)
+	temporary, err := os.CreateTemp(directory, "."+filepath.Base(path)+".tmp-")
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-	return json.NewEncoder(file).Encode(value)
+	temporaryPath := temporary.Name()
+	defer os.Remove(temporaryPath)
+	if err := temporary.Chmod(0o600); err != nil {
+		temporary.Close()
+		return err
+	}
+	if err := json.NewEncoder(temporary).Encode(value); err != nil {
+		temporary.Close()
+		return err
+	}
+	if err := temporary.Sync(); err != nil {
+		temporary.Close()
+		return err
+	}
+	if err := temporary.Close(); err != nil {
+		return err
+	}
+	if err := os.Link(temporaryPath, path); err != nil {
+		return err
+	}
+	if err := os.Remove(temporaryPath); err != nil {
+		return err
+	}
+	directoryFile, err := os.Open(directory)
+	if err != nil {
+		return err
+	}
+	if err := directoryFile.Sync(); err != nil {
+		directoryFile.Close()
+		return err
+	}
+	return directoryFile.Close()
 }
