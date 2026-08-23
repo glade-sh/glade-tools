@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -179,12 +180,16 @@ type surfaceMismatchReview struct {
 }
 
 type surfaceMismatchReviewGroup struct {
-	ConfirmedMatchRows int    `json:"confirmedMatchRows"`
-	Fixture            string `json:"fixture"`
+	ConfirmedMatchRows    int    `json:"confirmedMatchRows"`
+	ConfirmedMismatchRows int    `json:"confirmedMismatchRows,omitempty"`
+	InconclusiveRows      int    `json:"inconclusiveRows,omitempty"`
+	Fixture               string `json:"fixture"`
 }
 
 type surfaceReviewCounts struct {
-	ConfirmedMatch int `json:"confirmedMatch"`
+	ConfirmedMatch    int `json:"confirmedMatch"`
+	ConfirmedMismatch int `json:"confirmedMismatch,omitempty"`
+	Inconclusive      int `json:"inconclusive,omitempty"`
 }
 
 type surfaceMismatchReviewRow struct {
@@ -480,6 +485,21 @@ func validateSurfaceOracleScope(scope SurfaceOracleScope) error {
 }
 
 func validateSurfaceRuntimeBatch(root string, scope SurfaceOracleScope) (SurfaceOracleIndexRuntimeBatch, map[string]bool, error) {
+	batch, states, err := validateSurfaceRuntimeAdjudications(root, scope)
+	if err != nil {
+		return SurfaceOracleIndexRuntimeBatch{}, nil, err
+	}
+	credited := make(map[string]bool, len(states))
+	for id, state := range states {
+		if state != "matched" {
+			return SurfaceOracleIndexRuntimeBatch{}, nil, fmt.Errorf("runtime batch contains non-match row %q", id)
+		}
+		credited[id] = true
+	}
+	return batch, credited, nil
+}
+
+func validateSurfaceRuntimeAdjudications(root string, scope SurfaceOracleScope) (SurfaceOracleIndexRuntimeBatch, map[string]string, error) {
 	info, err := os.Lstat(root)
 	if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || info.Mode().Perm() != 0o700 {
 		return SurfaceOracleIndexRuntimeBatch{}, nil, fmt.Errorf("runtime batch root must be a directory")
@@ -543,6 +563,7 @@ func validateSurfaceRuntimeBatch(root string, scope SurfaceOracleScope) (Surface
 	if err := validateSurfaceManifest(manifest); err != nil {
 		return SurfaceOracleIndexRuntimeBatch{}, nil, err
 	}
+	fixtureKinds := make(map[string]string, len(manifest.Fixtures))
 	for _, fixture := range manifest.Fixtures {
 		sourceRoot, err := rootedPath(root, filepath.Join("source", "glade-tools"))
 		if err != nil {
@@ -552,18 +573,29 @@ func validateSurfaceRuntimeBatch(root string, scope SurfaceOracleScope) (Surface
 		if err != nil || replayBytesSHA256(snapshot.Data) != fixture.SHA256 {
 			return SurfaceOracleIndexRuntimeBatch{}, nil, fmt.Errorf("runtime batch manifest fixture %q changed", fixture.Fixture)
 		}
+		var source struct {
+			Command struct {
+				Kind string `json:"kind"`
+			} `json:"command"`
+		}
+		if err := json.Unmarshal(snapshot.Data, &source); err != nil || (source.Command.Kind != "exec" && source.Command.Kind != "test") {
+			return SurfaceOracleIndexRuntimeBatch{}, nil, fmt.Errorf("runtime batch fixture %q has invalid command kind", fixture.Fixture)
+		}
+		fixtureKinds[filepath.Base(fixture.Path)] = source.Command.Kind
 	}
 	fixtureRows := surfaceManifestRows(manifest)
-	if err := validateSurfaceLocalSummary(local, manifest, bindings); err != nil {
+	if err := validateSurfaceLocalSummary(local, manifest, bindings, fixtureKinds); err != nil {
 		return SurfaceOracleIndexRuntimeBatch{}, nil, err
 	}
-	if err := validateSurfaceOracleResults(oracle, manifest, bindings, hash("local")); err != nil {
+	oracleStates, err := validateSurfaceOracleResults(oracle, manifest, bindings, fixtureKinds, hash("local"))
+	if err != nil {
 		return SurfaceOracleIndexRuntimeBatch{}, nil, err
 	}
-	if err := validateSurfaceReconciliation(reconciliation, fixtureRows, hash("manifest")); err != nil {
+	if err := validateSurfaceReconciliation(reconciliation, fixtureRows, oracleStates, hash("manifest")); err != nil {
 		return SurfaceOracleIndexRuntimeBatch{}, nil, err
 	}
-	if err := validateSurfaceReview(review, reconciliation, fixtureRows, hash("manifest"), hash("oracle"), hash("reconciliation")); err != nil {
+	states, err := validateSurfaceReview(review, reconciliation, fixtureRows, hash("manifest"), hash("oracle"), hash("reconciliation"))
+	if err != nil {
 		return SurfaceOracleIndexRuntimeBatch{}, nil, err
 	}
 	if err := validateSurfaceFinalAudit(audit, snapshots); err != nil {
@@ -573,14 +605,12 @@ func validateSurfaceRuntimeBatch(root string, scope SurfaceOracleScope) (Surface
 	for _, row := range scope.Rows {
 		scopeIDs[row.SurfaceID] = true
 	}
-	credited := make(map[string]bool, len(review.Rows))
-	for _, row := range review.Rows {
-		if !scopeIDs[row.SurfaceID] {
-			return SurfaceOracleIndexRuntimeBatch{}, nil, fmt.Errorf("credited surface %q is not in scope", row.SurfaceID)
+	for id := range states {
+		if !scopeIDs[id] {
+			return SurfaceOracleIndexRuntimeBatch{}, nil, fmt.Errorf("adjudicated surface %q is not in scope", id)
 		}
-		credited[row.SurfaceID] = true
 	}
-	return SurfaceOracleIndexRuntimeBatch{ManifestSHA256: hash("manifest"), ProfileSHA256: hash("profile"), BindingsSHA256: hash("bindings"), LocalSummarySHA256: hash("local"), OracleResultsSHA256: hash("oracle"), RawReconciliationSHA256: hash("reconciliation"), MismatchReviewSHA256: hash("review"), FinalAuditSHA256: hash("audit"), candidateCommit: bindings.CandidateCommit, candidateSHA256: bindings.CandidateSHA256, toolsCommit: bindings.ToolsCommit, toolsSHA256: bindings.ToolsSHA256}, credited, nil
+	return SurfaceOracleIndexRuntimeBatch{ManifestSHA256: hash("manifest"), ProfileSHA256: hash("profile"), BindingsSHA256: hash("bindings"), LocalSummarySHA256: hash("local"), OracleResultsSHA256: hash("oracle"), RawReconciliationSHA256: hash("reconciliation"), MismatchReviewSHA256: hash("review"), FinalAuditSHA256: hash("audit"), candidateCommit: bindings.CandidateCommit, candidateSHA256: bindings.CandidateSHA256, toolsCommit: bindings.ToolsCommit, toolsSHA256: bindings.ToolsSHA256}, states, nil
 }
 
 func validateSurfaceManifest(manifest surfaceRuntimeManifest) error {
@@ -610,13 +640,13 @@ func validateSurfaceManifest(manifest surfaceRuntimeManifest) error {
 	return nil
 }
 
-func validateSurfaceLocalSummary(local surfaceLocalSummary, manifest surfaceRuntimeManifest, bindings surfaceRuntimeBindings) error {
+func validateSurfaceLocalSummary(local surfaceLocalSummary, manifest surfaceRuntimeManifest, bindings surfaceRuntimeBindings, fixtureKinds map[string]string) error {
 	if local.SchemaVersion != 1 || !local.Sealed || local.ManifestSHA256 != bindings.ManifestSHA256 || local.CandidateSHA256 != bindings.CandidateSHA256 || local.SelectedFixtures != len(manifest.Fixtures) || local.SelectedRows != manifest.SurfaceRowCount || len(local.Results) != len(manifest.Fixtures) {
 		return fmt.Errorf("local summary bindings or counts do not reconcile")
 	}
 	seen := map[string]bool{}
 	for _, result := range local.Results {
-		if result.CandidateExitCode != 0 || result.CandidateStatus != "passed" || result.ExitCode != 0 || result.Status != "exit-0" || result.Fixture != filepath.Base(result.Path) || !sha256Pattern.MatchString(result.StderrSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || seen[result.Path] {
+		if result.CandidateExitCode != 0 || result.CandidateStatus != "passed" || result.ExitCode != 0 || result.Status != "exit-0" || result.Fixture != filepath.Base(result.Path) || result.Kind != fixtureKinds[result.Fixture] || !sha256Pattern.MatchString(result.StderrSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || seen[result.Path] {
 			return fmt.Errorf("local summary contains an unpassed or duplicate result")
 		}
 		seen[result.Path] = true
@@ -629,84 +659,149 @@ func validateSurfaceLocalSummary(local surfaceLocalSummary, manifest surfaceRunt
 	return nil
 }
 
-func validateSurfaceOracleResults(oracle surfaceOracleResults, manifest surfaceRuntimeManifest, bindings surfaceRuntimeBindings, localHash string) error {
+func validateSurfaceOracleResults(oracle surfaceOracleResults, manifest surfaceRuntimeManifest, bindings surfaceRuntimeBindings, fixtureKinds map[string]string, localHash string) (map[string]string, error) {
 	b := oracle.Binding
 	if oracle.SchemaVersion != 1 || !oracle.Sealed || !oracle.RuntimeRequested || oracle.SelectedFixtures != len(manifest.Fixtures) || oracle.SelectedRows != manifest.SurfaceRowCount || oracle.ExcludedFixtures != 0 || oracle.ExcludedRows != 0 || len(oracle.Results) != len(manifest.Fixtures) || len(oracle.SelectedManifestIndexes) != len(manifest.Fixtures) || oracle.LocalSummarySHA256 != localHash || b.ManifestSHA256 != bindings.ManifestSHA256 || b.ProfileSHA256 != bindings.ProfileSHA256 || b.LocalSummarySHA256 != localHash || b.CandidateCommit != bindings.CandidateCommit || b.CandidateSHA256 != bindings.CandidateSHA256 || b.ToolsCommit != bindings.ToolsCommit || b.ToolsAMD64SHA256 != bindings.ToolsSHA256 || b.WorkflowScriptSHA256 != bindings.WorkflowScriptSHA256 || oracle.SelectionSHA256 != b.SelectionSHA256 || oracle.OrgPreflightSHA256 != b.OrgPreflightSHA256 {
-		return fmt.Errorf("oracle results bindings or counts do not reconcile")
+		return nil, fmt.Errorf("oracle results bindings or counts do not reconcile")
 	}
 	seen := map[int]bool{}
+	states := make(map[string]string, len(oracle.Results))
 	for _, result := range oracle.Results {
 		if result.ManifestIndex < 0 || result.ManifestIndex >= len(manifest.Fixtures) || seen[result.ManifestIndex] {
-			return fmt.Errorf("oracle results contain an invalid manifest index")
+			return nil, fmt.Errorf("oracle results contain an invalid manifest index")
 		}
 		seen[result.ManifestIndex] = true
 		fixture := manifest.Fixtures[result.ManifestIndex]
-		if result.Fixture != filepath.Base(fixture.Path) || result.FixtureSHA256 != fixture.SHA256 || result.ManifestSHA256 != bindings.ManifestSHA256 || result.CandidateCommit != bindings.CandidateCommit || result.CandidateSHA256 != bindings.CandidateSHA256 || result.ToolsCommit != bindings.ToolsCommit || result.WorkflowScriptSHA256 != bindings.WorkflowScriptSHA256 || result.Status != "Succeeded" || !result.Deployable || result.ExitCode != 0 || !result.RuntimeRequested || !result.RuntimePassed || result.RuntimeExitCode != nil || result.RuntimeStatus != "Passed" || len(result.ComponentFailures) != 0 || !equalStringSet(result.SurfaceIDs, fixture.SurfaceIDs) {
-			return fmt.Errorf("oracle result does not match manifest fixture %q", fixture.Fixture)
+		if result.Fixture != filepath.Base(fixture.Path) || result.FixtureSHA256 != fixture.SHA256 || result.ManifestSHA256 != bindings.ManifestSHA256 || result.CandidateCommit != bindings.CandidateCommit || result.CandidateSHA256 != bindings.CandidateSHA256 || result.ToolsCommit != bindings.ToolsCommit || result.WorkflowScriptSHA256 != bindings.WorkflowScriptSHA256 || !result.RuntimeRequested || result.Kind != fixtureKinds[result.Fixture] || !equalStringSet(result.SurfaceIDs, fixture.SurfaceIDs) {
+			return nil, fmt.Errorf("oracle result does not match manifest fixture %q", fixture.Fixture)
+		}
+		switch {
+		case result.Status == "Succeeded" && result.Deployable && result.ExitCode == 0 && result.RuntimePassed && result.RuntimeStatus == "Passed" && len(result.ComponentFailures) == 0 && (result.Kind == "exec" && result.RuntimeExitCode == nil || result.Kind == "test" && result.RuntimeExitCode != nil && *result.RuntimeExitCode == 0):
+			states[result.Fixture] = "matched"
+		case result.Kind == "test" && result.Status == "Succeeded" && result.Deployable && result.ExitCode == 0 && !result.RuntimePassed && result.RuntimeStatus == "Failed" && result.RuntimeExitCode != nil && *result.RuntimeExitCode != 0 && len(result.ComponentFailures) == 0:
+			states[result.Fixture] = "test-failed"
+		case result.Status == "Failed" && !result.Deployable && !result.RuntimePassed && result.RuntimeStatus == "Failed" && (result.ExitCode != 0 || len(result.ComponentFailures) != 0):
+			states[result.Fixture] = "operational-failed"
+		default:
+			return nil, fmt.Errorf("oracle result has no trusted adjudication for fixture %q", fixture.Fixture)
 		}
 	}
 	for i, index := range oracle.SelectedManifestIndexes {
 		if index != i {
-			return fmt.Errorf("oracle selected manifest indexes do not reconcile")
+			return nil, fmt.Errorf("oracle selected manifest indexes do not reconcile")
 		}
 	}
-	return nil
+	return states, nil
 }
 
-func validateSurfaceReconciliation(value surfaceRawReconciliation, rows map[string]string, manifestHash string) error {
+func validateSurfaceReconciliation(value surfaceRawReconciliation, rows map[string]string, oracleStates map[string]string, manifestHash string) error {
 	if value.SchemaVersion != 1 || !value.Sealed || !value.RuntimeRequested || !value.OrgPostflightMatched || value.RunnerError != nil || value.ManifestSHA256 != manifestHash || len(value.Rows) != len(rows) {
 		return fmt.Errorf("raw reconciliation bindings do not reconcile")
 	}
 	seen, counts := map[string]bool{}, surfaceRawCounts{}
+	fixtureClassifications := map[string]map[string]bool{}
 	for _, row := range value.Rows {
 		fixture, exists := rows[row.SurfaceID]
 		if seen[row.SurfaceID] || !exists || fixture != row.Fixture {
 			return fmt.Errorf("raw reconciliation row set does not match manifest")
 		}
 		seen[row.SurfaceID] = true
+		if fixtureClassifications[row.Fixture] == nil {
+			fixtureClassifications[row.Fixture] = map[string]bool{}
+		}
+		fixtureClassifications[row.Fixture][row.Classification] = true
 		switch row.Classification {
 		case "match":
 			counts.Match++
+			if row.Local.CandidateExitCode != 0 || row.Local.CandidateStatus != "passed" || row.Local.Status != "exit-0" || row.Reason != "local-and-salesforce-runtime-passed" || len(row.Salesforce.ComponentFailures) != 0 || !row.Salesforce.Deployable || row.Salesforce.ExitCode != 0 || row.Salesforce.RuntimeExitCode != nil && *row.Salesforce.RuntimeExitCode != 0 || !row.Salesforce.RuntimePassed || !row.Salesforce.RuntimeRequested || row.Salesforce.RuntimeStatus != "Passed" || row.Salesforce.Status != "Succeeded" {
+				return fmt.Errorf("raw reconciliation row %q is not a runtime match", row.SurfaceID)
+			}
+		case "mismatch":
+			counts.Mismatch++
+			if oracleStates[row.Fixture] != "test-failed" || row.Local.CandidateExitCode != 0 || row.Local.CandidateStatus != "passed" || row.Local.Status != "exit-0" || row.Reason != "salesforce-runtime-assertion-differed" || len(row.Salesforce.ComponentFailures) != 0 || !row.Salesforce.Deployable || row.Salesforce.ExitCode != 0 || row.Salesforce.RuntimeExitCode == nil || *row.Salesforce.RuntimeExitCode == 0 || row.Salesforce.RuntimePassed || !row.Salesforce.RuntimeRequested || row.Salesforce.RuntimeStatus != "Failed" || row.Salesforce.Status != "Succeeded" {
+				return fmt.Errorf("raw reconciliation row %q is not a proven runtime mismatch", row.SurfaceID)
+			}
+		case "environment":
+			counts.Environment++
+			if oracleStates[row.Fixture] != "test-failed" && oracleStates[row.Fixture] != "operational-failed" || row.Reason != "salesforce-runtime-infrastructure-failed" || row.Salesforce.RuntimePassed || !row.Salesforce.RuntimeRequested || row.Salesforce.RuntimeStatus != "Failed" || row.Salesforce.RuntimeExitCode == nil && row.Salesforce.Status != "Failed" && row.Salesforce.Deployable && row.Salesforce.ExitCode == 0 && len(row.Salesforce.ComponentFailures) == 0 {
+				return fmt.Errorf("raw reconciliation row %q is not operationally inconclusive", row.SurfaceID)
+			}
 		default:
-			return fmt.Errorf("raw reconciliation contains non-match row %q", row.SurfaceID)
-		}
-		if row.Local.CandidateExitCode != 0 || row.Local.CandidateStatus != "passed" || row.Local.Status != "exit-0" || row.Reason != "local-and-salesforce-runtime-passed" || len(row.Salesforce.ComponentFailures) != 0 || !row.Salesforce.Deployable || row.Salesforce.ExitCode != 0 || row.Salesforce.RuntimeExitCode != nil || !row.Salesforce.RuntimePassed || !row.Salesforce.RuntimeRequested || row.Salesforce.RuntimeStatus != "Passed" || row.Salesforce.Status != "Succeeded" {
-			return fmt.Errorf("raw reconciliation row %q is not a runtime match", row.SurfaceID)
+			return fmt.Errorf("raw reconciliation contains unknown classification %q", row.Classification)
 		}
 	}
 	if counts != value.Counts {
 		return fmt.Errorf("raw reconciliation counts do not reconcile")
 	}
+	for fixture, state := range oracleStates {
+		if state == "test-failed" && !fixtureClassifications[fixture]["mismatch"] && !fixtureClassifications[fixture]["environment"] || state == "operational-failed" && !fixtureClassifications[fixture]["environment"] {
+			return fmt.Errorf("oracle result does not reconcile with per-surface classifications")
+		}
+	}
 	return nil
 }
 
-func validateSurfaceReview(review surfaceMismatchReview, raw surfaceRawReconciliation, rows map[string]string, manifestHash, oracleHash, rawHash string) error {
+func validateSurfaceReview(review surfaceMismatchReview, raw surfaceRawReconciliation, rows map[string]string, manifestHash, oracleHash, rawHash string) (map[string]string, error) {
 	if review.SchemaVersion != 1 || !review.Sealed || review.ManifestSHA256 != manifestHash || review.OracleResultsSHA256 != oracleHash || review.RawReconciliationSHA256 != rawHash || review.RawClassifications != raw.Counts || len(review.Rows) != len(rows) {
-		return fmt.Errorf("mismatch review bindings do not reconcile")
+		return nil, fmt.Errorf("mismatch review bindings do not reconcile")
 	}
-	seen, groups := map[string]bool{}, map[string]int{}
+	rawClassifications := make(map[string]string, len(raw.Rows))
+	for _, row := range raw.Rows {
+		rawClassifications[row.SurfaceID] = row.Classification
+	}
+	seen := map[string]bool{}
+	groups := map[string]surfaceMismatchReviewGroup{}
+	counts := surfaceReviewCounts{}
+	states := make(map[string]string, len(review.Rows))
 	for _, row := range review.Rows {
 		fixture, exists := rows[row.SurfaceID]
 		if seen[row.SurfaceID] || !exists || fixture != row.Fixture {
-			return fmt.Errorf("mismatch review row set does not match manifest")
+			return nil, fmt.Errorf("mismatch review row set does not match manifest")
 		}
 		seen[row.SurfaceID] = true
-		if row.ReviewDisposition != "confirmed-match" || row.SealedClassification != "match" {
-			return fmt.Errorf("mismatch review contains an unconfirmed row")
+		if row.SealedClassification != rawClassifications[row.SurfaceID] {
+			return nil, fmt.Errorf("mismatch review classification does not match reconciliation")
 		}
-		groups[row.Fixture]++
+		group := groups[row.Fixture]
+		group.Fixture = row.Fixture
+		switch row.SealedClassification {
+		case "match":
+			if row.ReviewDisposition != "confirmed-match" {
+				return nil, fmt.Errorf("mismatch review contains an unconfirmed match")
+			}
+			counts.ConfirmedMatch++
+			group.ConfirmedMatchRows++
+			states[row.SurfaceID] = "matched"
+		case "mismatch":
+			if row.ReviewDisposition != "confirmed-mismatch" {
+				return nil, fmt.Errorf("mismatch review contains an unconfirmed mismatch")
+			}
+			counts.ConfirmedMismatch++
+			group.ConfirmedMismatchRows++
+			states[row.SurfaceID] = "product-mismatch"
+		case "environment":
+			if row.ReviewDisposition != "inconclusive" {
+				return nil, fmt.Errorf("mismatch review treats inconclusive evidence as terminal")
+			}
+			counts.Inconclusive++
+			group.InconclusiveRows++
+			states[row.SurfaceID] = "inconclusive"
+		default:
+			return nil, fmt.Errorf("mismatch review contains an unknown classification")
+		}
+		groups[row.Fixture] = group
 	}
-	if review.ReviewCounts.ConfirmedMatch != len(rows) || len(review.Groups) != len(manifestFixtureNames(rows)) {
-		return fmt.Errorf("mismatch review counts do not reconcile")
+	if review.ReviewCounts != counts || len(review.Groups) != len(manifestFixtureNames(rows)) {
+		return nil, fmt.Errorf("mismatch review counts do not reconcile")
 	}
 	seenGroups := map[string]bool{}
 	for _, group := range review.Groups {
-		if seenGroups[group.Fixture] || group.ConfirmedMatchRows != groups[group.Fixture] {
-			return fmt.Errorf("mismatch review group counts do not reconcile")
+		if seenGroups[group.Fixture] || group != groups[group.Fixture] {
+			return nil, fmt.Errorf("mismatch review group counts do not reconcile")
 		}
 		seenGroups[group.Fixture] = true
 	}
-	return nil
+	return states, nil
 }
 
 func validateSurfaceFinalAudit(audit surfaceFinalAudit, snapshots map[string]reportInputSnapshot) error {

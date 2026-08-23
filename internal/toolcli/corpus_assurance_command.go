@@ -24,6 +24,8 @@ func runCorpusAssurance(ctx context.Context, args []string, w io.Writer) error {
 		return nil
 	}
 	switch args[0] {
+	case "orchestrator":
+		return runCorpusAssuranceOrchestrator(ctx, args[1:], w)
 	case "campaign":
 		flags := flag.NewFlagSet("corpus assurance campaign", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -808,6 +810,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 	fmt.Fprint(w, `Run the sealed private-corpus assurance workflow.
 
 Usage:
+  glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|cleanup-claim|cleanup-close> [fixed flags]
   glade-tools corpus assurance campaign --spec <CAMPAIGN.json> --state <CAMPAIGN_STATE.json> [--promote --out <new-root>]
   glade-tools corpus assurance candidate-build --candidate-root <glade-root> --tools-root <glade-tools-root> --candidate-ref <ref> --tools-ref <ref> --candidate-output <glade> --tools-output <glade-tools> --receipt-output <CANDIDATE_BUILD_RECEIPT.json> --review-output <REVIEW.md> --tools-freeze-output <TOOLS_COMMIT>
   glade-tools corpus assurance candidate-authority --candidate-root <glade-root> --tools-root <glade-tools-root> --receipt <candidate-receipt.json> --review <REVIEW.md> --output <CANDIDATE_AUTHORITY.json>
