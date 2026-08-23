@@ -2075,14 +2075,22 @@ func retainedSalesforceOrgCreate(command CommandResult) (string, error) {
 
 func validSalesforceOrgDisplayFailure(data []byte) bool {
 	var payload struct {
-		Status  int    `json:"status"`
-		Message string `json:"message"`
+		Status      int    `json:"status"`
+		ExitCode    *int   `json:"exitCode"`
+		Name        string `json:"name"`
+		Code        string `json:"code"`
+		Context     string `json:"context"`
+		CommandName string `json:"commandName"`
+		Message     string `json:"message"`
 	}
 	if json.Unmarshal(data, &payload) != nil {
 		return false
 	}
 	message := strings.ToLower(strings.TrimSpace(payload.Message))
-	return payload.Status == 1 && (strings.Contains(message, "not found") || strings.Contains(message, "no authorization information found") || strings.Contains(message, "does not exist"))
+	missing := strings.Contains(message, "not found") || strings.Contains(message, "no authorization information found") || strings.Contains(message, "does not exist")
+	legacy := payload.Status == 1 && missing
+	current := payload.Status == 2 && payload.ExitCode != nil && *payload.ExitCode == 2 && payload.Name == "NamedOrgNotFoundError" && payload.Code == payload.Name && payload.Context == "OrgDisplayCommand" && payload.CommandName == payload.Context && strings.Contains(message, "no authorization information found")
+	return legacy || current
 }
 
 func salesforceCommandSpecSHA256(binary string, args []string, workingDirectory string, environment []string, executableSHA256, executableAfterSHA256 string) string {
