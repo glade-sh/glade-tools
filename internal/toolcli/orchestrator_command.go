@@ -21,7 +21,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-once|ssh-dispatch|worker-transfer|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-once|raw-ingest|raw-accept|ssh-dispatch|worker-transfer|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
@@ -80,6 +80,87 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			return err
 		}
 		return writeOrchestratorOutput(w, completion)
+	case "raw-ingest":
+		flags := orchestratorFlags("raw-ingest")
+		planPath, leasePath, oraclePlanPath := flags.String("plan", "", ""), flags.String("lease", "", ""), flags.String("oracle-plan", "", "")
+		rawRoot, packetOutput, output := flags.String("raw-root", "", ""), flags.String("packet-output", "", ""), flags.String("output", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*planPath, *leasePath, *oraclePlanPath, *rawRoot, *packetOutput, *output); err != nil {
+			return err
+		}
+		for _, path := range []string{*planPath, *leasePath, *oraclePlanPath, *rawRoot, *packetOutput, *output} {
+			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+				return errors.New("absolute clean raw-ingest paths are required")
+			}
+		}
+		var plan corpusassurance.OrchestratorCampaignPlan
+		if err := readOrchestratorJSON(*planPath, &plan); err != nil {
+			return fmt.Errorf("read orchestrator plan: %w", err)
+		}
+		var lease corpusassurance.OrchestratorLease
+		if err := readOrchestratorJSON(*leasePath, &lease); err != nil {
+			return fmt.Errorf("read orchestrator lease: %w", err)
+		}
+		if err := validateRawIngestRoot(*rawRoot); err != nil {
+			return err
+		}
+		files := corpusassurance.SalesforceShardFiles{
+			ShardPath: filepath.Join(*rawRoot, "SALESFORCE_SHARD.json"), DispatchPath: filepath.Join(*rawRoot, "SALESFORCE_DISPATCH.json"),
+			CreationPath: filepath.Join(*rawRoot, "ORG_CREATION.json"), CleanupPath: filepath.Join(*rawRoot, "ORG_CLEANUP.json"), PreflightPath: filepath.Join(*rawRoot, "ORG_PREFLIGHT.json"),
+		}
+		receipt, err := corpusassurance.CreateOrchestratorSalesforceReconciliation(corpusassurance.OrchestratorSalesforceReconciliationRequest{
+			Plan: plan, Lease: lease, OraclePlanPath: *oraclePlanPath, BindingPath: filepath.Join(*rawRoot, "ORCHESTRATOR_BINDING.json"), ShardFiles: files, PacketOutput: *packetOutput, OutputPath: *output,
+		})
+		if err != nil {
+			return err
+		}
+		return writeOrchestratorOutput(w, receipt)
+	case "raw-accept":
+		flags := orchestratorFlags("raw-accept")
+		database, planPath, leasePath := flags.String("db", "", ""), flags.String("plan", "", ""), flags.String("lease", "", "")
+		allocation, sshPath, receiptPath := flags.String("allocation", "", ""), flags.String("ssh-receipt", "", ""), flags.String("receipt", "", "")
+		packetPath, outputPath := flags.String("packet", "", ""), flags.String("output", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*database, *planPath, *leasePath, *allocation, *sshPath, *receiptPath, *packetPath, *outputPath); err != nil {
+			return err
+		}
+		for _, path := range []string{*database, *planPath, *leasePath, *sshPath, *receiptPath, *packetPath, *outputPath} {
+			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+				return errors.New("absolute clean raw-accept paths are required")
+			}
+		}
+		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
+			var planValue corpusassurance.OrchestratorCampaignPlan
+			planBytes, err := readOrchestratorJSONBytes(*planPath, &planValue)
+			if err != nil {
+				return fmt.Errorf("read orchestrator plan: %w", err)
+			}
+			var leaseValue corpusassurance.OrchestratorLease
+			leaseBytes, err := readOrchestratorJSONBytes(*leasePath, &leaseValue)
+			if err != nil {
+				return fmt.Errorf("read orchestrator lease: %w", err)
+			}
+			var sshReceipt corpusassurance.OrchestratorSSHDispatchReceipt
+			sshBytes, err := readOrchestratorJSONBytes(*sshPath, &sshReceipt)
+			if err != nil {
+				return fmt.Errorf("read SSH receipt: %w", err)
+			}
+			accepted, err := corpusassurance.AcceptOrchestratorRawCanary(corpusassurance.OrchestratorRawCanaryRequest{Coordinator: orchestrator, Plan: planValue, Lease: leaseValue, PlanSHA256: fmt.Sprintf("%x", sha256.Sum256(planBytes)), LeaseSHA256: fmt.Sprintf("%x", sha256.Sum256(leaseBytes)), SSHReceiptSHA256: fmt.Sprintf("%x", sha256.Sum256(sshBytes)), AllocationAlias: *allocation, SSHReceipt: sshReceipt, ReceiptPath: *receiptPath, PacketPath: *packetPath, OutputPath: *outputPath})
+			if err != nil {
+				return err
+			}
+			return writeOrchestratorOutput(w, accepted)
+		})
 	case "ssh-dispatch":
 		flags := orchestratorFlags("ssh-dispatch")
 		database := flags.String("db", "", "")
@@ -347,6 +428,17 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 	default:
 		return errors.New("unknown corpus assurance orchestrator operation")
 	}
+}
+
+func validateRawIngestRoot(path string) error {
+	info, err := os.Lstat(path)
+	if err != nil {
+		return fmt.Errorf("raw-ingest root: %w", err)
+	}
+	if info.Mode()&os.ModeSymlink != 0 || !info.IsDir() || info.Mode().Perm() != 0o700 {
+		return errors.New("raw-ingest root must be a mode 0700 directory")
+	}
+	return nil
 }
 
 func writeOrchestratorSSHResult(w io.Writer, receipt corpusassurance.OrchestratorSSHDispatchReceipt, runErr error) error {

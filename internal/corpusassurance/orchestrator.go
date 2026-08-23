@@ -457,6 +457,54 @@ func (o *Orchestrator) ClaimCleanupForLease(lease OrchestratorLease, allocationA
 	return claim, nil
 }
 
+// closeRawAcceptanceCleanup atomically releases the exact allocation bound to
+// a fully validated raw worker result, even after its SSH lease has expired.
+func (o *Orchestrator) closeRawAcceptanceCleanup(lease OrchestratorLease, allocationAlias string, now time.Time, proofEligible bool) error {
+	if !safeOrchestratorToken(lease.Worker) || !safeOrchestratorToken(allocationAlias) {
+		return fmt.Errorf("validated raw cleanup close is invalid")
+	}
+	tx, err := o.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	var hubAlias string
+	if err := tx.QueryRow(`SELECT s.hub_alias FROM cleanup_journal c JOIN scratch_allocations s ON s.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id JOIN attempts a ON a.campaign_id = c.campaign_id AND a.job_id = c.job_id AND a.generation = c.generation WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND c.state = 'pending' AND s.state = 'reserved' AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until = ? AND a.worker = ? AND a.status = 'running' AND a.lease_until = ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker, lease.LeaseUntil.UTC().UnixMilli(), lease.Worker, lease.LeaseUntil.UTC().UnixMilli()).Scan(&hubAlias); err != nil {
+		return fmt.Errorf("validated raw cleanup journal is not closable")
+	}
+	if !proofEligible {
+		if _, err := tx.Exec(`INSERT OR IGNORE INTO cleanup_credit_blocks (allocation_alias) VALUES (?)`, allocationAlias); err != nil {
+			return err
+		}
+	}
+	result, err := tx.Exec(`UPDATE cleanup_journal SET state = 'closed', closed_at = ? WHERE allocation_alias = ? AND campaign_id = ? AND job_id = ? AND generation = ? AND state = 'pending'`, now.UTC().UnixMilli(), allocationAlias, lease.CampaignID, lease.JobID, lease.Generation)
+	if err != nil {
+		return err
+	}
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return fmt.Errorf("validated raw cleanup journal changed concurrently")
+	}
+	result, err = tx.Exec(`UPDATE scratch_allocations SET state = 'closed' WHERE allocation_alias = ? AND state = 'reserved'`, allocationAlias)
+	if err != nil {
+		return err
+	}
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return fmt.Errorf("validated raw cleanup allocation is not reserved")
+	}
+	result, err = tx.Exec(`UPDATE hub_capacity SET reserved = reserved - 1 WHERE hub_alias = ? AND reserved > 0`, hubAlias)
+	if err != nil {
+		return err
+	}
+	if rows, _ := result.RowsAffected(); rows != 1 {
+		return fmt.Errorf("validated raw cleanup capacity is unavailable")
+	}
+	actionPrefix := fmt.Sprintf("job %s generation %d: scratch cleanup action required; journal ", lease.JobID, lease.Generation)
+	if _, err := tx.Exec(`UPDATE actions SET state = 'closed' WHERE campaign_id = ? AND state = 'open' AND substr(detail, 1, ?) = ?`, lease.CampaignID, len(actionPrefix), actionPrefix); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
 func (o *Orchestrator) CloseCleanup(claim OrchestratorCleanupClaim, now time.Time) error {
 	return o.closeCleanup(claim, now, true)
 }
