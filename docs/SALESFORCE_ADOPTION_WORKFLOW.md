@@ -380,6 +380,29 @@ grants parity credit. An exact already-absent recovery receipt
 may close only the coordinator cleanup journal; it is rejected as Salesforce
 proof and earns no credit.
 
+After a successful dispatch, return the exact raw tree before reconciliation:
+
+```bash
+glade-tools corpus assurance orchestrator ssh-fetch \
+  --plan /absolute/coordinator/PLAN.json \
+  --lease /absolute/coordinator/LEASE.json \
+  --ssh-receipt /absolute/coordinator/SSH_DISPATCH.json \
+  --host operator@worker.example.internal \
+  --worker-bin /absolute/worker/glade-tools \
+  --bundle /absolute/worker/BUNDLE.json \
+  --dev-hub sealed-hub \
+  --target-org scratch-allocation \
+  --sf-bin /absolute/worker/sf \
+  --remote-root /absolute/worker/raw \
+  --raw-root /absolute/coordinator/raw
+```
+
+`ssh-fetch` copies with the existing bounded `rsync` transport, verifies a
+checksum dry run, validates the exact file set, modes, dispatch hashes, and a
+mode-bearing tree manifest, then publishes the coordinator raw root
+atomically. A repeated call validates and reuses the fetched tree. Continue
+with `raw-ingest`, then `raw-accept`; only acceptance changes proof credit.
+
 ## Packet return format
 
 ```text

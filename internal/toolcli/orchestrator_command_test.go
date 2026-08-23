@@ -290,6 +290,15 @@ func TestCorpusAssuranceOrchestratorSSHDispatchRejectsUnsafeHostBeforeFiles(t *t
 	}
 }
 
+func TestCorpusAssuranceOrchestratorSSHFetchValidatesTypedInputs(t *testing.T) {
+	root := t.TempDir()
+	args := []string{"corpus", "assurance", "orchestrator", "ssh-fetch", "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--host", "operator@worker.example.internal", "--worker-bin", filepath.Join(root, "glade-tools"), "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--remote-root", filepath.Join(root, "remote"), "--raw-root", filepath.Join(root, "raw")}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") || strings.Contains(stderr.String(), "flag provided but not defined") || !strings.Contains(stderr.String(), "read orchestrator plan") {
+		t.Fatalf("ssh-fetch contract was not recognized: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
 func TestWriteOrchestratorSSHResultExposesActionReceiptOnError(t *testing.T) {
 	var output bytes.Buffer
 	wantErr := errors.New("receipt path changed")
@@ -305,7 +314,7 @@ func TestWriteOrchestratorSSHResultExposesActionReceiptOnError(t *testing.T) {
 
 func TestCorpusAssuranceOrchestratorNewCommandsRejectDuplicateFlagsBeforeParse(t *testing.T) {
 	root := t.TempDir()
-	for _, command := range []string{"worker-once", "ssh-dispatch"} {
+	for _, command := range []string{"worker-once", "ssh-dispatch", "ssh-fetch"} {
 		for _, first := range []string{"--plan", "-plan"} {
 			t.Run(command+first, func(t *testing.T) {
 				args := []string{"corpus", "assurance", "orchestrator", command, first, filepath.Join(root, "one"), "--plan", filepath.Join(root, "two")}
