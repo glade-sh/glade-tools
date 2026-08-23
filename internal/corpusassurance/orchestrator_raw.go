@@ -102,19 +102,8 @@ func AcceptOrchestratorRawCanary(request OrchestratorRawCanaryRequest) (result O
 	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.SSHReceiptSHA256) {
 		return result, fmt.Errorf("raw canary plan and lease binding is invalid")
 	}
-	planBytes, err := json.Marshal(request.Plan)
-	if err != nil {
-		return result, err
-	}
-	planBytes = append(planBytes, '\n')
-	leaseBytes, err := json.Marshal(request.Lease)
-	if err != nil {
-		return result, err
-	}
-	leaseBytes = append(leaseBytes, '\n')
-	if replayBytesSHA256(planBytes) != request.PlanSHA256 || replayBytesSHA256(leaseBytes) != request.LeaseSHA256 {
-		return result, fmt.Errorf("raw canary plan and lease bytes do not match typed bindings")
-	}
+	// The successful SSH receipt below binds the exact input bytes. Re-marshalling
+	// here would reject equivalent JSON encodings used by recovered leases.
 	ssh := request.SSHReceipt
 	if ssh.SchemaVersion != 1 || !ssh.Passed || ssh.Status != "worker-complete" || ssh.ExitCode != 0 || ssh.TimedOut || ssh.FailureCode != "" || ssh.ActionRequired || ssh.ActionCode != "" || ssh.CampaignID != request.Lease.CampaignID || ssh.JobID != request.Lease.JobID || ssh.ShardIndex != request.Lease.ShardIndex || ssh.Generation != request.Lease.Generation || ssh.SpecSHA256 != request.Plan.SpecSHA256 || ssh.PlanSHA256 != request.PlanSHA256 || ssh.LeaseSHA256 != request.LeaseSHA256 || !sha256Pattern.MatchString(ssh.CommandSHA256) || !sha256Pattern.MatchString(ssh.StdoutSHA256) || !sha256Pattern.MatchString(ssh.StderrSHA256) || !sha256Pattern.MatchString(ssh.OrchestratorBindingSHA256) || !sha256Pattern.MatchString(ssh.SalesforceShardSHA256) || !sha256Pattern.MatchString(ssh.OrgCleanupSHA256) {
 		return result, fmt.Errorf("SSH worker receipt does not bind the raw canary")

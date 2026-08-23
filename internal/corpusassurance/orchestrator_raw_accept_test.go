@@ -38,7 +38,13 @@ func TestAcceptOrchestratorRawCanaryClosesCleanupWithoutProofCredit(t *testing.T
 	time.Sleep(2 * time.Millisecond)
 	planPath, leasePath := filepath.Join(retained, "plan.json"), filepath.Join(retained, "lease.json")
 	writeRawAcceptJSON(t, planPath, fixture.plan)
-	writeRawAcceptJSON(t, leasePath, lease)
+	prettyLease, err := json.MarshalIndent(lease, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(leasePath, append(prettyLease, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	planBytes, err := os.ReadFile(planPath)
 	if err != nil {
 		t.Fatal(err)
