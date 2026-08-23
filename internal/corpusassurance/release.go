@@ -265,14 +265,19 @@ func releaseExecutingTools(path, commit string) (RuntimeArtifact, error) {
 func runReleaseValidationCommand(runner releaseCommandRunner, command releaseCommand) (ReleaseCommandResult, error) {
 	before, err := sha256File(command.Path)
 	if err != nil {
-		return ReleaseCommandResult{}, err
+		return ReleaseCommandResult{}, fmt.Errorf("release validation command failed: exitCode=-1 timedOut=false")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), command.Timeout)
 	defer cancel()
 	started := time.Now()
 	output, err := runner(ctx, command)
 	after, hashErr := sha256File(command.Path)
-	receipt := ReleaseCommandResult{CommandResult: CommandResult{Command: append([]string{command.Path}, command.Args...), ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: releaseCommandSpecSHA256(command), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && hashErr == nil && before == after && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}, WorkingDirectory: command.WorkingDirectory, Environment: append([]string(nil), command.Environment...), TimeoutMS: command.Timeout.Milliseconds()}
+	timedOut := ctx.Err() == context.DeadlineExceeded
+	exitCode := output.ExitCode
+	if exitCode == 0 && (err != nil || hashErr != nil || timedOut) {
+		exitCode = -1
+	}
+	receipt := ReleaseCommandResult{CommandResult: CommandResult{Command: append([]string{command.Path}, command.Args...), ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: releaseCommandSpecSHA256(command), ExitCode: exitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && hashErr == nil && before == after && output.ExitCode == 0, TimedOut: timedOut}, WorkingDirectory: command.WorkingDirectory, Environment: append([]string(nil), command.Environment...), TimeoutMS: command.Timeout.Milliseconds()}
 	if !receipt.Passed || receipt.TimedOut {
 		return ReleaseCommandResult{}, fmt.Errorf("release validation command failed: exitCode=%d timedOut=%t", receipt.ExitCode, receipt.TimedOut)
 	}
