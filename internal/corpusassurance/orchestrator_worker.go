@@ -493,8 +493,11 @@ func (o *Orchestrator) recordWorkerFailure(lease OrchestratorLease, code string,
 }
 
 func (o *Orchestrator) closeWorkerActions(lease OrchestratorLease) error {
-	prefix := fmt.Sprintf("job %s generation %d:", lease.JobID, lease.Generation)
-	_, err := o.db.Exec(`UPDATE actions SET state = 'closed' WHERE campaign_id = ? AND state = 'open' AND substr(detail, 1, ?) = ?`, lease.CampaignID, len(prefix), prefix)
+	exact := fmt.Sprintf("job %s generation %d:", lease.JobID, lease.Generation)
+	job := fmt.Sprintf("job %s generation ", lease.JobID)
+	noReservation := ": retry required; no scratch reservation recorded"
+	cleanupClosed := ": proof finalization retry required; scratch cleanup closed"
+	_, err := o.db.Exec(`UPDATE actions SET state = 'closed' WHERE campaign_id = ? AND state = 'open' AND (substr(detail, 1, ?) = ? OR (substr(detail, 1, ?) = ? AND (substr(detail, -?) = ? OR substr(detail, -?) = ?)))`, lease.CampaignID, len(exact), exact, len(job), job, len(noReservation), noReservation, len(cleanupClosed), cleanupClosed)
 	return err
 }
 

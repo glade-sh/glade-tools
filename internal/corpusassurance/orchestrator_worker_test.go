@@ -363,6 +363,47 @@ func TestOrchestratorWorkerRetryClaimsOnlyItsCleanupJournal(t *testing.T) {
 	}
 }
 
+func TestOrchestratorWorkerSuccessfulRetryClosesResolvedPriorGenerationAction(t *testing.T) {
+	orchestrator, plan, first, now, batch, oraclePlan := readyOrchestratorWorker(t)
+	evidenceRoot := filepath.Join(t.TempDir(), "evidence")
+	_, err := runOrchestratorWorkerOnce(context.Background(), orchestrator, OrchestratorWorkerRequest{
+		Plan: plan, Lease: first, HubAlias: "hub-a", HubCapacity: 1,
+		AllocationAlias: "scratch-first", EvidenceRoot: evidenceRoot, OraclePlanPath: oraclePlan,
+	}, fixedOrchestratorWorkerClock(now), func(context.Context, OrchestratorWorkerRequest) (OrchestratorWorkerRunResult, error) {
+		return OrchestratorWorkerRunResult{BatchRoot: batch}, nil
+	}, func(string, string, string) error { return nil }, func() error { return errors.New("crash before credit") })
+	if err == nil || !strings.Contains(err.Error(), "credit") {
+		t.Fatalf("first generation error = %v", err)
+	}
+	secondNow := now.Add(2 * time.Minute)
+	second, err := orchestrator.Lease(plan.CampaignID, "worker-b", secondNow, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if second.JobID != first.JobID || second.Generation != first.Generation+1 {
+		t.Fatalf("retry lease = %#v, want retry of %#v", second, first)
+	}
+	bindingPath := filepath.Join(batch, "evidence", "ORCHESTRATOR_BINDING.json")
+	if err := os.Remove(bindingPath); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := WriteOrchestratorBatchBinding(bindingPath, plan, second); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := runOrchestratorWorkerOnce(context.Background(), orchestrator, OrchestratorWorkerRequest{
+		Plan: plan, Lease: second, HubAlias: "hub-a", HubCapacity: 1,
+		AllocationAlias: "scratch-second", EvidenceRoot: evidenceRoot, OraclePlanPath: oraclePlan,
+	}, fixedOrchestratorWorkerClock(secondNow), func(context.Context, OrchestratorWorkerRequest) (OrchestratorWorkerRunResult, error) {
+		return OrchestratorWorkerRunResult{BatchRoot: batch}, nil
+	}, func(string, string, string) error { return nil }, func() error { return nil }); err != nil {
+		t.Fatalf("second generation failed: %v", err)
+	}
+	var openActions int
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM actions WHERE campaign_id = ? AND state = 'open'`, plan.CampaignID).Scan(&openActions); err != nil || openActions != 0 {
+		t.Fatalf("open actions=%d, err=%v", openActions, err)
+	}
+}
+
 func fixedOrchestratorWorkerClock(now time.Time) func() time.Time {
 	return func() time.Time { return now }
 }
