@@ -169,8 +169,14 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 	if err != nil {
 		return nil, err
 	}
+	npmBin, err := fixedReleaseBinary(env, "npm")
+	if err != nil {
+		return nil, err
+	}
+	productEnv := append(append([]string(nil), env...), "GLADE_LWC_COMPILE=1", "GLADE_ROOT="+gladeRoot)
 	commands := []releaseCommand{
-		{Path: goBin, Args: []string{"test", "-timeout", "45m", "-count=1", "./..."}, WorkingDirectory: gladeRoot, Environment: env, Timeout: productReleaseValidationTimeout},
+		{Path: npmBin, Args: []string{"ci", "--prefix", filepath.Join(gladeRoot, "third_party", "lwc")}, WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
+		{Path: goBin, Args: []string{"test", "-timeout", "45m", "-count=1", "./..."}, WorkingDirectory: gladeRoot, Environment: productEnv, Timeout: productReleaseValidationTimeout},
 		{Path: filepath.Join(gladeRoot, "scripts", "smoke.sh"), WorkingDirectory: gladeRoot, Environment: env, Timeout: releaseValidationTimeout},
 		{Path: filepath.Join(toolsRoot, "scripts", "release-check.sh"), WorkingDirectory: toolsRoot, Environment: env, Timeout: releaseValidationTimeout},
 	}
@@ -184,6 +190,14 @@ func fixedReleaseCommands(gladeRoot, toolsRoot string) ([]releaseCommand, error)
 }
 
 func fixedReleaseGoBinary(environment []string) (string, error) {
+	path, err := fixedReleaseBinary(environment, "go")
+	if err != nil {
+		return "", fmt.Errorf("release Go executable is unavailable")
+	}
+	return path, nil
+}
+
+func fixedReleaseBinary(environment []string, name string) (string, error) {
 	for _, value := range environment {
 		if !strings.HasPrefix(value, "PATH=") {
 			continue
@@ -192,13 +206,13 @@ func fixedReleaseGoBinary(environment []string) (string, error) {
 			if !filepath.IsAbs(directory) {
 				continue
 			}
-			path := filepath.Join(directory, "go")
+			path := filepath.Join(directory, name)
 			if info, err := os.Stat(path); err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0 {
 				return path, nil
 			}
 		}
 	}
-	return "", fmt.Errorf("release Go executable is unavailable")
+	return "", fmt.Errorf("release %s executable is unavailable", name)
 }
 
 func fixedReleaseEnvironment() []string {

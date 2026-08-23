@@ -369,8 +369,8 @@ func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePl
 	if validation.SchemaVersion != 1 || !filepath.IsAbs(validation.GladeRoot) || !filepath.IsAbs(validation.CandidatePath) || !filepath.IsAbs(validation.ToolsRoot) || !filepath.IsAbs(validation.ToolsPath) {
 		return fmt.Errorf("release validation schema is invalid")
 	}
-	if len(validation.Commands) != 3 {
-		return fmt.Errorf("release validation must seal three fixed release checks")
+	if len(validation.Commands) != 4 {
+		return fmt.Errorf("release validation must seal four fixed release checks")
 	}
 	if validation.Candidate != plan.Candidate || validation.Tools != plan.Tools {
 		return fmt.Errorf("release validation artifacts do not match oracle plan")
@@ -388,22 +388,48 @@ func validateOracleReleaseValidation(validation ReleaseValidation, plan OraclePl
 
 func validOracleReleaseCommand(validation ReleaseValidation, index int, result ReleaseCommandResult) bool {
 	timeout := releaseValidationTimeout
-	if index == 0 {
+	if index == 1 {
 		timeout = productReleaseValidationTimeout
 	}
-	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != timeout.Milliseconds() || len(result.Command) == 0 || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
+	if !result.Passed || result.ExitCode != 0 || result.TimedOut || result.TimeoutMS != timeout.Milliseconds() || len(result.Command) == 0 || !filepath.IsAbs(result.Command[0]) || !sha256Pattern.MatchString(result.ExecutableSHA256) || result.ExecutableAfterSHA256 != result.ExecutableSHA256 || !sha256Pattern.MatchString(result.CommandSpecSHA256) || !sha256Pattern.MatchString(result.StdoutSHA256) || !sha256Pattern.MatchString(result.StderrSHA256) {
+		return false
+	}
+	rootEntries, compileEntries := 0, 0
+	for _, value := range result.Environment {
+		if strings.HasPrefix(value, "GLADE_ROOT=") {
+			if value != "GLADE_ROOT="+validation.GladeRoot {
+				return false
+			}
+			rootEntries++
+		}
+		if strings.HasPrefix(value, "GLADE_LWC_COMPILE=") {
+			if value != "GLADE_LWC_COMPILE=1" {
+				return false
+			}
+			compileEntries++
+		}
+	}
+	if index == 1 {
+		if rootEntries != 1 || compileEntries != 1 {
+			return false
+		}
+	} else if rootEntries != 0 || compileEntries != 0 {
 		return false
 	}
 	switch index {
 	case 0:
-		if len(result.Command) != 6 || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "45m" || result.Command[4] != "-count=1" || result.Command[5] != "./..." || result.WorkingDirectory != validation.GladeRoot {
+		if len(result.Command) != 4 || filepath.Base(result.Command[0]) != "npm" || result.Command[1] != "ci" || result.Command[2] != "--prefix" || result.Command[3] != filepath.Join(validation.GladeRoot, "third_party", "lwc") || result.WorkingDirectory != validation.GladeRoot {
 			return false
 		}
 	case 1:
-		if len(result.Command) != 1 || result.Command[0] != filepath.Join(validation.GladeRoot, "scripts", "smoke.sh") || result.WorkingDirectory != validation.GladeRoot {
+		if len(result.Command) != 6 || filepath.Base(result.Command[0]) != "go" || result.Command[1] != "test" || result.Command[2] != "-timeout" || result.Command[3] != "45m" || result.Command[4] != "-count=1" || result.Command[5] != "./..." || result.WorkingDirectory != validation.GladeRoot {
 			return false
 		}
 	case 2:
+		if len(result.Command) != 1 || result.Command[0] != filepath.Join(validation.GladeRoot, "scripts", "smoke.sh") || result.WorkingDirectory != validation.GladeRoot {
+			return false
+		}
+	case 3:
 		if len(result.Command) != 1 || result.Command[0] != filepath.Join(validation.ToolsRoot, "scripts", "release-check.sh") || result.WorkingDirectory != validation.ToolsRoot {
 			return false
 		}

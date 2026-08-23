@@ -109,7 +109,7 @@ func TestRunReleaseValidationDerivesArtifactsAndFreezeFromSealedAttempt(t *testi
 	}
 }
 
-func TestRunReleaseValidationSealsThreeFixedChecks(t *testing.T) {
+func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	root := t.TempDir()
 	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
 	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/tools\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
@@ -140,23 +140,27 @@ func TestRunReleaseValidationSealsThreeFixedChecks(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RunReleaseValidation: %v", err)
 	}
-	if len(commands) != 3 || len(validation.Commands) != 3 || validation.Candidate.SHA256 != fileSHA256(t, candidatePath) || validation.Tools.SHA256 != fileSHA256(t, toolsPath) || validation.ToolsFreezeSHA256 != fileSHA256(t, freezePath) {
+	if len(commands) != 4 || len(validation.Commands) != 4 || validation.Candidate.SHA256 != fileSHA256(t, candidatePath) || validation.Tools.SHA256 != fileSHA256(t, toolsPath) || validation.ToolsFreezeSHA256 != fileSHA256(t, freezePath) {
 		t.Fatalf("validation = %#v, commands = %#v", validation, commands)
 	}
 	for index, command := range validation.Commands {
-		timeout := releaseValidationTimeout
-		if index == 0 {
-			timeout = productReleaseValidationTimeout
+		timeout := []time.Duration{releaseValidationTimeout, productReleaseValidationTimeout, releaseValidationTimeout, releaseValidationTimeout}[index]
+		environment := fixedReleaseEnvironment()
+		if index == 1 {
+			environment = append(environment, "GLADE_LWC_COMPILE=1", "GLADE_ROOT="+gladeRoot)
 		}
-		if !command.Passed || command.WorkingDirectory == "" || !equalStrings(command.Environment, fixedReleaseEnvironment()) || command.TimeoutMS != timeout.Milliseconds() {
+		if !command.Passed || command.WorkingDirectory == "" || !equalStrings(command.Environment, environment) || command.TimeoutMS != timeout.Milliseconds() {
 			t.Fatalf("release command = %#v", command)
 		}
 	}
-	if !equalStrings(commands[0].Args, []string{"test", "-timeout", "45m", "-count=1", "./..."}) {
-		t.Fatalf("Glade release command = %#v", commands[0])
+	if filepath.Base(commands[0].Path) != "npm" || !filepath.IsAbs(commands[0].Path) || commands[0].Args[0] != "ci" || !equalStrings(commands[0].Args[1:], []string{"--prefix", filepath.Join(gladeRoot, "third_party", "lwc")}) {
+		t.Fatalf("Glade LWC dependency command = %#v", commands[0])
 	}
-	if commands[2].Path != filepath.Join(toolsRoot, "scripts", "release-check.sh") {
-		t.Fatalf("tools release command = %#v", commands[2])
+	if !equalStrings(commands[1].Args, []string{"test", "-timeout", "45m", "-count=1", "./..."}) || !containsString(commands[1].Environment, "GLADE_ROOT="+gladeRoot) || !containsString(commands[1].Environment, "GLADE_LWC_COMPILE=1") {
+		t.Fatalf("Glade release command = %#v", commands[1])
+	}
+	if commands[3].Path != filepath.Join(toolsRoot, "scripts", "release-check.sh") {
+		t.Fatalf("tools release command = %#v", commands[3])
 	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
@@ -177,7 +181,7 @@ func TestFixedReleaseCommandsUseCurrentToolsGate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(commands) != 3 || commands[2].Path != filepath.Join(root, "tools", "scripts", "release-check.sh") {
+	if len(commands) != 4 || commands[3].Path != filepath.Join(root, "tools", "scripts", "release-check.sh") {
 		t.Fatalf("tools release commands = %#v", commands)
 	}
 }
@@ -196,8 +200,8 @@ func TestFixedReleaseCommandsGiveApexTestAuthoritativeBudget(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := commands[0].Args, []string{"test", "-timeout", "45m", "-count=1", "./..."}; !equalStrings(got, want) || commands[0].Timeout != 46*time.Minute {
-		t.Fatalf("Glade release command = %#v", commands[0])
+	if got, want := commands[1].Args, []string{"test", "-timeout", "45m", "-count=1", "./..."}; !equalStrings(got, want) || commands[1].Timeout != 46*time.Minute {
+		t.Fatalf("Glade release command = %#v", commands[1])
 	}
 }
 
@@ -269,6 +273,8 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 		}
 	}
 	t.Setenv("PATH", "/attacker/bin")
+	t.Setenv("GLADE_ROOT", "/attacker/glade")
+	t.Setenv("GLADE_LWC_COMPILE", "attacker")
 	commands, err := fixedReleaseCommands(filepath.Join(root, "glade"), filepath.Join(root, "tools"))
 	if err != nil {
 		t.Fatal(err)
@@ -279,6 +285,16 @@ func TestFixedReleaseCommandsDoNotInheritAmbientPATH(t *testing.T) {
 		}
 		if _, err := fixedReleaseGoBinary(command.Environment); err != nil {
 			t.Fatalf("release environment cannot resolve Go: %#v, %v", command.Environment, err)
+		}
+	}
+	for index, command := range commands {
+		environment := strings.Join(command.Environment, "\n")
+		if index == 1 {
+			if strings.Count(environment, "GLADE_ROOT=") != 1 || !strings.Contains(environment, "GLADE_ROOT="+filepath.Join(root, "glade")) || strings.Count(environment, "GLADE_LWC_COMPILE=") != 1 || !strings.Contains(environment, "GLADE_LWC_COMPILE=1") {
+				t.Fatalf("product release environment is not bound to the candidate: %#v", command.Environment)
+			}
+		} else if strings.Contains(environment, "GLADE_ROOT=") || strings.Contains(environment, "GLADE_LWC_COMPILE=") {
+			t.Fatalf("non-product release environment contains product-only values: %#v", command.Environment)
 		}
 	}
 }
