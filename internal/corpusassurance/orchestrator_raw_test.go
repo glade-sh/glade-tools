@@ -30,7 +30,7 @@ func TestRunRawSalesforceShardRunsSealedLifecycleInOrder(t *testing.T) {
 	sfBin := filepath.Join(root, "sf")
 	var phases []string
 	request := RawSalesforceShardRequest{
-		Plan: plan, Lease: lease, BundlePath: bundlePath, TargetOrg: "scratch-a", SFBin: sfBin, OutputRoot: outputRoot,
+		Plan: plan, Lease: lease, BundlePath: bundlePath, DevHub: bundle.DevHub, TargetOrg: "scratch-a", SFBin: sfBin, OutputRoot: outputRoot,
 		validateBundle: func(string) error { return nil },
 		orgCreate: func(value SalesforceOrgCreateRequest) (SalesforceOrgCreation, error) {
 			phases = append(phases, "create")
@@ -243,7 +243,7 @@ func rawSalesforceShardTestRequest(t *testing.T) (RawSalesforceShardRequest, str
 	copyRawOraclePlan(t, oraclePlanPath, filepath.Join(filepath.Dir(bundlePath), "ORACLE_PLAN.json"))
 	writeRawTransportManifest(t, filepath.Dir(bundlePath))
 	outputRoot := filepath.Join(root, "raw-output")
-	return RawSalesforceShardRequest{Plan: plan, Lease: lease, BundlePath: bundlePath, TargetOrg: "scratch-a", SFBin: filepath.Join(root, "sf"), OutputRoot: outputRoot, validateBundle: func(string) error { return nil }}, outputRoot, bundle
+	return RawSalesforceShardRequest{Plan: plan, Lease: lease, BundlePath: bundlePath, DevHub: bundle.DevHub, TargetOrg: "scratch-a", SFBin: filepath.Join(root, "sf"), OutputRoot: outputRoot, validateBundle: func(string) error { return nil }}, outputRoot, bundle
 }
 
 func copyRawOraclePlan(t *testing.T, source, destination string) {
@@ -293,8 +293,8 @@ func readyRawOrchestratorWorker(t *testing.T) (*Orchestrator, OrchestratorCampai
 	if err := orchestrator.InitCampaign(plan); err != nil {
 		t.Fatal(err)
 	}
-	now := time.Date(2026, 8, 22, 12, 0, 0, 0, time.UTC)
-	lease, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Minute)
+	now := time.Now().UTC()
+	lease, err := orchestrator.Lease(plan.CampaignID, "worker-a", now, time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -311,6 +311,7 @@ func TestRunRawSalesforceShardRejectsPlanLeaseDriftBeforeSideEffects(t *testing.
 		Plan:       OrchestratorCampaignPlan{},
 		Lease:      OrchestratorLease{},
 		BundlePath: filepath.Join(t.TempDir(), "bundle.json"),
+		DevHub:     "sealed-hub",
 		TargetOrg:  "scratch-a",
 		SFBin:      filepath.Join(t.TempDir(), "sf"),
 		OutputRoot: root,
@@ -327,5 +328,56 @@ func TestRunRawSalesforceShardRejectsPlanLeaseDriftBeforeSideEffects(t *testing.
 	}
 	if _, statErr := os.Lstat(root); !os.IsNotExist(statErr) {
 		t.Fatalf("output root exists after plan/lease drift: %v", statErr)
+	}
+}
+
+func TestRunRawSalesforceShardRejectsReservedDevHubDriftBeforeOutput(t *testing.T) {
+	request, outputRoot, _ := rawSalesforceShardTestRequest(t)
+	request.DevHub = "other-hub"
+	if _, err := RunRawSalesforceShard(request); err == nil || !strings.Contains(err.Error(), "reserved Dev Hub") {
+		t.Fatalf("Dev Hub drift error = %v", err)
+	}
+	if _, err := os.Lstat(outputRoot); !os.IsNotExist(err) {
+		t.Fatalf("output root exists after Dev Hub drift: %v", err)
+	}
+}
+
+func TestRunRawSalesforceShardRejectsUnsafeOrExpiredWorkerLeaseBeforeOutput(t *testing.T) {
+	for _, mutate := range []func(*RawSalesforceShardRequest){
+		func(request *RawSalesforceShardRequest) { request.Lease.Worker = "" },
+		func(request *RawSalesforceShardRequest) { request.Lease.Worker = "worker;unsafe" },
+		func(request *RawSalesforceShardRequest) {
+			request.Lease.LeaseUntil = time.Now().UTC().Add(-time.Second)
+		},
+		func(request *RawSalesforceShardRequest) {
+			request.Lease.LeaseUntil = time.Now().UTC().Add(time.Minute)
+		},
+	} {
+		request, outputRoot, _ := rawSalesforceShardTestRequest(t)
+		mutate(&request)
+		if _, err := RunRawSalesforceShard(request); err == nil {
+			t.Fatal("unsafe or expired worker lease accepted")
+		}
+		if _, err := os.Lstat(outputRoot); !os.IsNotExist(err) {
+			t.Fatalf("output root exists after invalid lease: %v", err)
+		}
+	}
+}
+
+func TestOrchestratorWorkerOnceCompletionFromRawBindsSpecAndLifecycleHashes(t *testing.T) {
+	_, plan, lease, _, _, _ := readyRawOrchestratorWorker(t)
+	root := t.TempDir()
+	binding, shard, cleanup := filepath.Join(root, "ORCHESTRATOR_BINDING.json"), filepath.Join(root, "SALESFORCE_SHARD.json"), filepath.Join(root, "ORG_CLEANUP.json")
+	for _, path := range []string{binding, shard, cleanup} {
+		if err := os.WriteFile(path, []byte(path), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	completion, err := OrchestratorWorkerOnceCompletionFromRaw(plan, lease, strings.Repeat("4", 64), strings.Repeat("5", 64), RawSalesforceShardResult{BindingPath: binding, SalesforceShardFiles: SalesforceShardFiles{ShardPath: shard, CleanupPath: cleanup}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if completion.SpecSHA256 != plan.SpecSHA256 || completion.PlanSHA256 != strings.Repeat("4", 64) || completion.LeaseSHA256 != strings.Repeat("5", 64) || !sha256Pattern.MatchString(completion.OrchestratorBindingSHA256) || !sha256Pattern.MatchString(completion.SalesforceShardSHA256) || !sha256Pattern.MatchString(completion.OrgCleanupSHA256) {
+		t.Fatalf("completion = %#v", completion)
 	}
 }

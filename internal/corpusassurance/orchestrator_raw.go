@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type rawSalesforceOrgCreateRunner func(SalesforceOrgCreateRequest) (SalesforceOrgCreation, error)
@@ -13,6 +14,8 @@ type rawSalesforceDispatchRunner func(SalesforceDispatchRequest) (SalesforceDisp
 type rawSalesforceShardRunner func(SalesforceShardRequest) (SalesforceShard, error)
 type rawSalesforceOrgCleanupRunner func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error)
 
+const orchestratorWorkerOnceTimeout = 45 * time.Minute
+
 // RawSalesforceShardRequest is the complete caller-controlled input for one
 // lease-bound Salesforce shard. The runner fields are package-private test
 // seams; production calls use the typed Salesforce lifecycle functions.
@@ -20,6 +23,7 @@ type RawSalesforceShardRequest struct {
 	Plan       OrchestratorCampaignPlan
 	Lease      OrchestratorLease
 	BundlePath string
+	DevHub     string
 	TargetOrg  string
 	SFBin      string
 	OutputRoot string
@@ -44,7 +48,14 @@ type RawSalesforceShardResult struct {
 }
 
 func RunRawSalesforceShard(request RawSalesforceShardRequest) (result RawSalesforceShardResult, err error) {
-	if err := validateRawSalesforceShardRequest(request); err != nil {
+	return runRawSalesforceShardAt(request, func() time.Time { return time.Now().UTC() })
+}
+
+func runRawSalesforceShardAt(request RawSalesforceShardRequest, clock func() time.Time) (result RawSalesforceShardResult, err error) {
+	if clock == nil {
+		return result, fmt.Errorf("raw Salesforce shard clock is required")
+	}
+	if err := validateRawSalesforceShardRequestAt(request, clock().UTC()); err != nil {
 		return result, err
 	}
 	validateBundle := request.validateBundle
@@ -57,6 +68,9 @@ func RunRawSalesforceShard(request RawSalesforceShardRequest) (result RawSalesfo
 	bundle, _, err := readExactJSONBytes[OracleBundle](request.BundlePath)
 	if err != nil {
 		return result, fmt.Errorf("read staged bundle: %w", err)
+	}
+	if bundle.DevHub != request.DevHub {
+		return result, fmt.Errorf("reserved Dev Hub does not match sealed bundle")
 	}
 	if err := validateRawSalesforceScope(filepath.Dir(request.BundlePath), request.Plan, request.Lease); err != nil {
 		return result, err
@@ -166,10 +180,45 @@ func rawSalesforceShardPaths(root string) rawSalesforceShardPathSet {
 }
 
 func validateRawSalesforceShardRequest(request RawSalesforceShardRequest) error {
-	if !filepath.IsAbs(request.BundlePath) || filepath.Clean(request.BundlePath) != request.BundlePath || !filepath.IsAbs(request.SFBin) || filepath.Clean(request.SFBin) != request.SFBin || !filepath.IsAbs(request.OutputRoot) || filepath.Clean(request.OutputRoot) != request.OutputRoot || !safeOrchestratorToken(request.TargetOrg) {
+	return validateRawSalesforceShardRequestAt(request, time.Now().UTC())
+}
+
+func validateRawSalesforceShardRequestAt(request RawSalesforceShardRequest, now time.Time) error {
+	if !filepath.IsAbs(request.BundlePath) || filepath.Clean(request.BundlePath) != request.BundlePath || !filepath.IsAbs(request.SFBin) || filepath.Clean(request.SFBin) != request.SFBin || !filepath.IsAbs(request.OutputRoot) || filepath.Clean(request.OutputRoot) != request.OutputRoot || !safeOrchestratorToken(request.DevHub) || !safeOrchestratorToken(request.TargetOrg) {
 		return fmt.Errorf("invalid raw Salesforce shard request")
 	}
-	return validateOrchestratorWorkerPlanLease(request.Plan, request.Lease)
+	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil {
+		return err
+	}
+	if err := validateOrchestratorLiveWorkerLease(request.Lease, now); err != nil {
+		return err
+	}
+	if request.Lease.LeaseUntil.Before(now.Add(orchestratorWorkerOnceTimeout)) {
+		return fmt.Errorf("raw Salesforce shard lease does not cover bounded lifecycle")
+	}
+	return nil
+}
+
+func validateOrchestratorLiveWorkerLease(lease OrchestratorLease, now time.Time) error {
+	if !safeOrchestratorToken(lease.Worker) || lease.LeaseUntil.IsZero() || !lease.LeaseUntil.UTC().After(now.UTC()) {
+		return fmt.Errorf("raw Salesforce shard requires a safe, live worker lease")
+	}
+	return nil
+}
+
+// OrchestratorWorkerOnceCompletionFromRaw seals only safe lifecycle hashes
+// after the raw worker has returned. It never includes paths or private data.
+func OrchestratorWorkerOnceCompletionFromRaw(plan OrchestratorCampaignPlan, lease OrchestratorLease, planSHA256, leaseSHA256 string, result RawSalesforceShardResult) (OrchestratorWorkerOnceCompletion, error) {
+	if err := validateOrchestratorWorkerPlanLease(plan, lease); err != nil || !safeOrchestratorToken(lease.Worker) || !sha256Pattern.MatchString(planSHA256) || !sha256Pattern.MatchString(leaseSHA256) {
+		return OrchestratorWorkerOnceCompletion{}, fmt.Errorf("invalid worker completion binding")
+	}
+	bindingSHA, bindingErr := sha256File(result.BindingPath)
+	shardSHA, shardErr := sha256File(result.SalesforceShardFiles.ShardPath)
+	cleanupSHA, cleanupErr := sha256File(result.SalesforceShardFiles.CleanupPath)
+	if bindingErr != nil || shardErr != nil || cleanupErr != nil || !sha256Pattern.MatchString(bindingSHA) || !sha256Pattern.MatchString(shardSHA) || !sha256Pattern.MatchString(cleanupSHA) {
+		return OrchestratorWorkerOnceCompletion{}, fmt.Errorf("worker lifecycle artifacts are incomplete")
+	}
+	return OrchestratorWorkerOnceCompletion{CampaignID: plan.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "worker-complete", SpecSHA256: plan.SpecSHA256, PlanSHA256: planSHA256, LeaseSHA256: leaseSHA256, OrchestratorBindingSHA256: bindingSHA, SalesforceShardSHA256: shardSHA, OrgCleanupSHA256: cleanupSHA}, nil
 }
 
 func validateRawSalesforceScope(bundleRoot string, plan OrchestratorCampaignPlan, lease OrchestratorLease) error {

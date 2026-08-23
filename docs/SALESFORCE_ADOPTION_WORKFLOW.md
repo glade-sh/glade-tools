@@ -359,9 +359,19 @@ trailing JSON, and trailing command arguments fail. A cleanup error or a
 receipt without `residueAbsent: true` leaves the journal open and earns no
 proof credit. Only normal created-plus-preflight receipts are supported;
 reservation or invalidated takeover remains action-required. The `worker-once`
-and SSH dispatch entrypoints remain outside this slice until a DB-free typed
-worker lifecycle and fixed batch-transfer contract are available; no remote
-execution or parity credit is implied. An exact already-absent recovery receipt
+entrypoint is DB-free, verifies its executable against the sealed Tools hash,
+requires the coordinator-reserved Dev Hub to match the sealed bundle, and runs
+one typed raw Salesforce shard. `ssh-dispatch` requires its job and attempt
+leases to exactly match the coordinator and cover the full 45-minute bound.
+The remote worker must read the exact plan and lease bytes hashed by the
+coordinator before it invokes only that fixed command over outbound BatchMode
+SSH. Its sanitized
+coordinator receipt contains no remote output or private identity. Any
+uncertain SSH failure, timeout, or malformed completion sets
+`actionRequired=true` with action code
+`inspect-remote-lifecycle-artifacts-and-close-cleanup`; inspect the remote
+lifecycle artifacts and close cleanup before retrying. Neither entrypoint
+grants parity credit. An exact already-absent recovery receipt
 may close only the coordinator cleanup journal; it is rejected as Salesforce
 proof and earns no credit.
 
