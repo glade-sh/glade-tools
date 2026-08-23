@@ -1,14 +1,13 @@
 package corpusassurance
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strings"
 )
 
 type SalesforceReconciliationRequest struct {
@@ -18,16 +17,28 @@ type SalesforceReconciliationRequest struct {
 	OutputPath     string
 }
 
+type OrchestratorSalesforceReconciliationRequest struct {
+	Plan           OrchestratorCampaignPlan
+	Lease          OrchestratorLease
+	OraclePlanPath string
+	BindingPath    string
+	ShardFiles     SalesforceShardFiles
+	PacketOutput   string
+	OutputPath     string
+}
+
 type SalesforceReconciliation struct {
-	SchemaVersion        int                             `json:"schemaVersion"`
-	Status               string                          `json:"status"`
-	Candidate            RuntimeArtifact                 `json:"candidate"`
-	Tools                RuntimeArtifact                 `json:"tools"`
-	OraclePlanSHA256     string                          `json:"oraclePlanSha256"`
-	BundleSHA256         string                          `json:"bundleSha256"`
-	Rows                 []SalesforceReconciliationRow   `json:"rows"`
-	Shards               []SalesforceReconciliationShard `json:"shards"`
-	PacketManifestSHA256 string                          `json:"packetManifestSha256"`
+	SchemaVersion             int                             `json:"schemaVersion"`
+	Status                    string                          `json:"status"`
+	Candidate                 RuntimeArtifact                 `json:"candidate"`
+	Tools                     RuntimeArtifact                 `json:"tools"`
+	OraclePlanSHA256          string                          `json:"oraclePlanSha256"`
+	OrchestratorPlanSHA256    string                          `json:"orchestratorPlanSha256,omitempty"`
+	OrchestratorBindingSHA256 string                          `json:"orchestratorBindingSha256,omitempty"`
+	BundleSHA256              string                          `json:"bundleSha256"`
+	Rows                      []SalesforceReconciliationRow   `json:"rows"`
+	Shards                    []SalesforceReconciliationShard `json:"shards"`
+	PacketManifestSHA256      string                          `json:"packetManifestSha256"`
 }
 
 type SalesforceReconciliationRow struct {
@@ -54,7 +65,55 @@ type reconciliationPacketFile struct {
 
 const reconciliationPacketManifestName = "MANIFEST.json"
 
+func CreateOrchestratorSalesforceReconciliation(request OrchestratorSalesforceReconciliationRequest) (SalesforceReconciliation, error) {
+	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil {
+		return SalesforceReconciliation{}, err
+	}
+	if !filepath.IsAbs(request.BindingPath) {
+		return SalesforceReconciliation{}, fmt.Errorf("absolute orchestrator binding path is required")
+	}
+	plan, planBytes, err := readExactJSONBytes[OraclePlan](request.OraclePlanPath)
+	if err != nil || request.Plan.Definition.ControlledInputSHA256["oracle-plan"] != replayBytesSHA256(planBytes) {
+		return SalesforceReconciliation{}, fmt.Errorf("controlled oracle plan binding drift")
+	}
+	if request.Plan.Definition.Candidate.Commit != plan.Candidate.Commit || request.Plan.Definition.Candidate.SHA256 != plan.Candidate.SHA256 || request.Plan.Definition.Tools.Commit != plan.Tools.Commit || request.Plan.Definition.Tools.SHA256 != plan.Tools.SHA256 {
+		return SalesforceReconciliation{}, fmt.Errorf("orchestrator plan does not bind oracle artifacts")
+	}
+	expected, err := orchestratorSalesforceExpectedSurfaceIDs(plan, request.Plan, request.Lease)
+	if err != nil {
+		return SalesforceReconciliation{}, err
+	}
+	bindingSnapshot, err := readRegularFileSnapshot(request.BindingPath)
+	if err != nil || bindingSnapshot.Mode.Perm() != 0o400 {
+		return SalesforceReconciliation{}, fmt.Errorf("orchestrator binding must be a mode 0400 regular file")
+	}
+	var binding OrchestratorBatchBinding
+	if err := decodeExactJSON(bindingSnapshot.Data, &binding); err != nil {
+		return SalesforceReconciliation{}, fmt.Errorf("invalid orchestrator binding: %w", err)
+	}
+	wantBinding, err := expectedOrchestratorBatchBinding(request.Plan, request.Lease)
+	if err != nil || !reflect.DeepEqual(binding, wantBinding) {
+		return SalesforceReconciliation{}, fmt.Errorf("orchestrator binding drift")
+	}
+	orchestratorPlanBytes, err := json.Marshal(request.Plan)
+	if err != nil {
+		return SalesforceReconciliation{}, err
+	}
+	orchestratorPlanBytes = append(orchestratorPlanBytes, '\n')
+	return createSalesforceReconciliation(
+		SalesforceReconciliationRequest{OraclePlanPath: request.OraclePlanPath, ShardFiles: []SalesforceShardFiles{request.ShardFiles}, PacketOutput: request.PacketOutput, OutputPath: request.OutputPath},
+		2, salesforceShardValidationScope{ExpectedSurfaceIDs: expected, LogicalShardCount: len(request.Plan.Jobs)},
+		[]reconciliationPacketFile{
+			{Name: "ORCHESTRATOR_BINDING.json", Source: request.BindingPath, Data: bindingSnapshot.Data, Mode: bindingSnapshot.Mode},
+		}, replayBytesSHA256(orchestratorPlanBytes), replayBytesSHA256(bindingSnapshot.Data),
+	)
+}
+
 func CreateSalesforceReconciliation(request SalesforceReconciliationRequest) (SalesforceReconciliation, error) {
+	return createSalesforceReconciliation(request, 1, salesforceShardValidationScope{}, nil, "", "")
+}
+
+func createSalesforceReconciliation(request SalesforceReconciliationRequest, schemaVersion int, scope salesforceShardValidationScope, extraPacketFiles []reconciliationPacketFile, orchestratorPlanSHA, orchestratorBindingSHA string) (SalesforceReconciliation, error) {
 	for _, path := range []string{request.OraclePlanPath, request.PacketOutput, request.OutputPath} {
 		if !filepath.IsAbs(path) {
 			return SalesforceReconciliation{}, fmt.Errorf("absolute Salesforce reconciliation paths are required")
@@ -70,7 +129,11 @@ func CreateSalesforceReconciliation(request SalesforceReconciliationRequest) (Sa
 		return SalesforceReconciliation{}, err
 	}
 	var snapshots []salesforceShardEvidenceSnapshot
-	if err := validateSalesforceShardFiles(request.OraclePlanPath, request.ShardFiles, &snapshots); err != nil {
+	if schemaVersion == 1 {
+		if err := validateSalesforceShardFiles(request.OraclePlanPath, request.ShardFiles, &snapshots); err != nil {
+			return SalesforceReconciliation{}, err
+		}
+	} else if err := validateSalesforceShardFiles(request.OraclePlanPath, request.ShardFiles, &snapshots, scope); err != nil {
 		return SalesforceReconciliation{}, err
 	}
 	plan, planBytes, err := readExactJSONBytes[OraclePlan](request.OraclePlanPath)
@@ -82,7 +145,7 @@ func CreateSalesforceReconciliation(request SalesforceReconciliationRequest) (Sa
 	if err != nil {
 		return SalesforceReconciliation{}, fmt.Errorf("read staged Oracle bundle: %w", err)
 	}
-	packetFiles := []reconciliationPacketFile{}
+	packetFiles := append([]reconciliationPacketFile(nil), extraPacketFiles...)
 	addSource := func(name, source string) error {
 		snapshot, err := readRegularFileSnapshot(source)
 		if err != nil {
@@ -97,7 +160,7 @@ func CreateSalesforceReconciliation(request SalesforceReconciliationRequest) (Sa
 	if err := addSource("bundle.json", bundlePath); err != nil {
 		return SalesforceReconciliation{}, err
 	}
-	receipt := SalesforceReconciliation{SchemaVersion: 1, Status: "pass", Candidate: plan.Candidate, Tools: plan.Tools, OraclePlanSHA256: replayBytesSHA256(planBytes), BundleSHA256: replayBytesSHA256(bundleBytes), Shards: make([]SalesforceReconciliationShard, 0, len(snapshots))}
+	receipt := SalesforceReconciliation{SchemaVersion: schemaVersion, Status: "pass", Candidate: plan.Candidate, Tools: plan.Tools, OraclePlanSHA256: replayBytesSHA256(planBytes), OrchestratorPlanSHA256: orchestratorPlanSHA, OrchestratorBindingSHA256: orchestratorBindingSHA, BundleSHA256: replayBytesSHA256(bundleBytes), Shards: make([]SalesforceReconciliationShard, 0, len(snapshots))}
 	rowSet := make([]SalesforceReconciliationRow, 0)
 	for index, snapshot := range snapshots {
 		shardPath := request.ShardFiles[index]
@@ -167,18 +230,72 @@ func VerifySalesforceReconciliation(oraclePlanPath, receiptPath, packetPath stri
 }
 
 func loadSalesforceReconciliation(oraclePlanPath, receiptPath, packetPath string) ([]salesforceShardEvidenceSnapshot, error) {
-	for _, path := range []string{oraclePlanPath, receiptPath, packetPath} {
+	return loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath, 1, nil, 0, nil)
+}
+
+func VerifyOrchestratorSalesforceReconciliation(plan OrchestratorCampaignPlan, lease OrchestratorLease, receiptPath, packetPath string) error {
+	if err := validateOrchestratorWorkerPlanLease(plan, lease); err != nil {
+		return err
+	}
+	_, err := loadSalesforceReconciliationVersion("", receiptPath, packetPath, 2, func(oraclePlan OraclePlan) ([]string, error) {
+		return orchestratorSalesforceExpectedSurfaceIDs(oraclePlan, plan, lease)
+	}, len(plan.Jobs), func(receipt SalesforceReconciliation, files map[string]reportInputSnapshot, oraclePlan OraclePlan, oraclePlanBytes []byte) error {
+		planBytes, marshalErr := json.Marshal(plan)
+		if marshalErr != nil {
+			return marshalErr
+		}
+		planBytes = append(planBytes, '\n')
+		binding, _, bindingErr := decodeReconciliationJSON[OrchestratorBatchBinding](files["ORCHESTRATOR_BINDING.json"].Data)
+		wantBinding, wantErr := expectedOrchestratorBatchBinding(plan, lease)
+		if replayBytesSHA256(planBytes) != receipt.OrchestratorPlanSHA256 {
+			return fmt.Errorf("orchestrator plan does not bind the receipt")
+		}
+		if bindingErr != nil || wantErr != nil || !reflect.DeepEqual(binding, wantBinding) || files["ORCHESTRATOR_BINDING.json"].Mode.Perm() != 0o400 || replayBytesSHA256(files["ORCHESTRATOR_BINDING.json"].Data) != receipt.OrchestratorBindingSHA256 {
+			return fmt.Errorf("retained orchestrator binding does not bind the receipt")
+		}
+		if plan.Definition.ControlledInputSHA256["oracle-plan"] != replayBytesSHA256(oraclePlanBytes) || plan.Definition.Candidate.Commit != oraclePlan.Candidate.Commit || plan.Definition.Candidate.SHA256 != oraclePlan.Candidate.SHA256 || plan.Definition.Tools.Commit != oraclePlan.Tools.Commit || plan.Definition.Tools.SHA256 != oraclePlan.Tools.SHA256 {
+			return fmt.Errorf("controlled oracle plan binding drift")
+		}
+		return validateOrchestratorReconciliationPacket(packetPath, files, receipt)
+	})
+	return err
+}
+
+type reconciliationPacketValidator func(SalesforceReconciliation, map[string]reportInputSnapshot, OraclePlan, []byte) error
+
+func loadSalesforceReconciliationVersion(oraclePlanPath, receiptPath, packetPath string, schemaVersion int, expectedSurfaceIDs func(OraclePlan) ([]string, error), logicalShardCount int, validatePacket reconciliationPacketValidator) ([]salesforceShardEvidenceSnapshot, error) {
+	paths := []string{receiptPath, packetPath}
+	if oraclePlanPath != "" {
+		paths = append(paths, oraclePlanPath)
+	}
+	for _, path := range paths {
 		if !filepath.IsAbs(path) {
 			return nil, fmt.Errorf("absolute Salesforce reconciliation paths are required")
 		}
 	}
-	receipt, receiptBytes, err := readExactJSONBytes[SalesforceReconciliation](receiptPath)
-	if err != nil || receipt.SchemaVersion != 1 || receipt.Status != "pass" || len(receipt.Shards) == 0 || !sha256Pattern.MatchString(receipt.OraclePlanSHA256) || !sha256Pattern.MatchString(receipt.BundleSHA256) || !sha256Pattern.MatchString(receipt.PacketManifestSHA256) {
+	var receipt SalesforceReconciliation
+	var receiptBytes []byte
+	var err error
+	if schemaVersion == 2 {
+		var snapshot reportInputSnapshot
+		snapshot, err = readRegularFileSnapshot(receiptPath)
+		receiptBytes = snapshot.Data
+		if err == nil && snapshot.Mode.Perm() != 0o600 {
+			err = fmt.Errorf("v2 Salesforce reconciliation receipt must be mode 0600")
+		}
+		if err == nil {
+			err = decodeExactJSON(receiptBytes, &receipt)
+		}
+	} else {
+		receipt, receiptBytes, err = readExactJSONBytes[SalesforceReconciliation](receiptPath)
+	}
+	if err != nil || receipt.SchemaVersion != schemaVersion || receipt.Status != "pass" || len(receipt.Shards) == 0 || !sha256Pattern.MatchString(receipt.OraclePlanSHA256) || !sha256Pattern.MatchString(receipt.BundleSHA256) || !sha256Pattern.MatchString(receipt.PacketManifestSHA256) || (schemaVersion == 1 && (receipt.OrchestratorPlanSHA256 != "" || receipt.OrchestratorBindingSHA256 != "")) || (schemaVersion == 2 && (len(receipt.Shards) != 1 || !sha256Pattern.MatchString(receipt.OrchestratorPlanSHA256) || !sha256Pattern.MatchString(receipt.OrchestratorBindingSHA256))) {
 		return nil, fmt.Errorf("invalid Salesforce reconciliation receipt")
 	}
-	plan, planBytes, err := readExactJSONBytes[OraclePlan](oraclePlanPath)
-	if err != nil || replayBytesSHA256(planBytes) != receipt.OraclePlanSHA256 || plan.Candidate != receipt.Candidate || plan.Tools != receipt.Tools {
-		return nil, fmt.Errorf("Salesforce reconciliation receipt does not bind the oracle plan")
+	if schemaVersion == 2 {
+		if err := preflightOrchestratorReconciliationPacket(packetPath); err != nil {
+			return nil, err
+		}
 	}
 	files, err := readReconciliationPacket(packetPath, receipt.PacketManifestSHA256)
 	if err != nil {
@@ -187,14 +304,36 @@ func loadSalesforceReconciliation(oraclePlanPath, receiptPath, packetPath string
 	if replayBytesSHA256(files["ORACLE_PLAN.json"].Data) != receipt.OraclePlanSHA256 || replayBytesSHA256(files["bundle.json"].Data) != receipt.BundleSHA256 {
 		return nil, fmt.Errorf("retained Salesforce reconciliation packet does not bind the receipt")
 	}
+	var plan OraclePlan
+	var planBytes []byte
+	if oraclePlanPath == "" {
+		plan, planBytes, err = decodeReconciliationJSON[OraclePlan](files["ORACLE_PLAN.json"].Data)
+	} else {
+		plan, planBytes, err = readExactJSONBytes[OraclePlan](oraclePlanPath)
+	}
+	if err != nil || replayBytesSHA256(planBytes) != receipt.OraclePlanSHA256 || plan.Candidate != receipt.Candidate || plan.Tools != receipt.Tools {
+		return nil, fmt.Errorf("Salesforce reconciliation receipt does not bind the oracle plan")
+	}
 	bundle, _, err := decodeReconciliationJSON[OracleBundle](files["bundle.json"].Data)
 	if err != nil || bundle.Candidate != receipt.Candidate || bundle.Tools != receipt.Tools {
 		return nil, fmt.Errorf("retained Oracle bundle does not bind the receipt")
+	}
+	if validatePacket != nil {
+		if err := validatePacket(receipt, files, plan, planBytes); err != nil {
+			return nil, err
+		}
 	}
 	rows := make([]SalesforceReconciliationRow, 0)
 	expectedKinds, err := oracleSalesforceResultKinds(plan)
 	if err != nil {
 		return nil, err
+	}
+	expected := sortedMapKeys(expectedKinds)
+	if expectedSurfaceIDs != nil {
+		expected, err = expectedSurfaceIDs(plan)
+		if err != nil {
+			return nil, err
+		}
 	}
 	shards := make([]SalesforceShard, 0, len(receipt.Shards))
 	snapshots := make([]salesforceShardEvidenceSnapshot, 0, len(receipt.Shards))
@@ -257,10 +396,159 @@ func loadSalesforceReconciliation(oraclePlanPath, receiptPath, packetPath string
 	if !equalReconciliationRows(rows, receipt.Rows) || len(receiptBytes) == 0 {
 		return nil, fmt.Errorf("retained Salesforce result rows do not bind the receipt")
 	}
-	if err := ValidateSalesforceShards(shards, sortedMapKeys(expectedKinds)); err != nil {
+	if logicalShardCount == 0 {
+		logicalShardCount = len(shards)
+	}
+	if err := validateSalesforceShards(shards, expected, logicalShardCount); err != nil {
 		return nil, fmt.Errorf("retained Salesforce shards do not validate: %w", err)
 	}
+	for _, shard := range shards {
+		for _, result := range shard.Results {
+			if result.Kind != expectedKinds[result.SurfaceID] {
+				return nil, fmt.Errorf("retained Salesforce result %q has wrong oracle action", result.SurfaceID)
+			}
+		}
+	}
 	return snapshots, nil
+}
+
+func orchestratorSalesforceExpectedSurfaceIDs(oraclePlan OraclePlan, campaignPlan OrchestratorCampaignPlan, lease OrchestratorLease) ([]string, error) {
+	if err := validateOrchestratorWorkerPlanLease(campaignPlan, lease); err != nil {
+		return nil, err
+	}
+	kinds, err := oracleSalesforceResultKinds(oraclePlan)
+	if err != nil {
+		return nil, err
+	}
+	campaignSurfaces := map[string]bool{}
+	for _, job := range campaignPlan.Jobs {
+		for _, surfaceID := range job.SurfaceIDs {
+			campaignSurfaces[surfaceID] = true
+		}
+	}
+	if len(campaignSurfaces) != len(oraclePlan.Rows) {
+		return nil, fmt.Errorf("orchestrator campaign must partition the exact Oracle plan")
+	}
+	for _, row := range oraclePlan.Rows {
+		if !campaignSurfaces[row.SurfaceID] {
+			return nil, fmt.Errorf("Oracle surface %q is outside orchestrator campaign", row.SurfaceID)
+		}
+	}
+	expected := make([]string, 0, len(lease.SurfaceIDs))
+	for _, surfaceID := range lease.SurfaceIDs {
+		if kinds[surfaceID] != "" {
+			expected = append(expected, surfaceID)
+		}
+	}
+	if len(expected) == 0 {
+		return nil, fmt.Errorf("orchestrator shard has no Salesforce-required surfaces")
+	}
+	return expected, nil
+}
+
+func expectedOrchestratorBatchBinding(plan OrchestratorCampaignPlan, lease OrchestratorLease) (OrchestratorBatchBinding, error) {
+	if err := validateOrchestratorWorkerPlanLease(plan, lease); err != nil {
+		return OrchestratorBatchBinding{}, err
+	}
+	return OrchestratorBatchBinding{
+		SchemaVersion: 1, CampaignID: plan.CampaignID, SpecSHA256: plan.SpecSHA256,
+		Candidate: plan.Definition.Candidate, Tools: plan.Definition.Tools, ScopeSHA256: plan.Definition.ScopeSHA256,
+		ControlledInputSHA256: plan.Definition.ControlledInputSHA256, JobID: lease.JobID, JobKind: lease.Kind,
+		Generation: lease.Generation, ShardIndex: lease.ShardIndex, SurfaceIDs: lease.SurfaceIDs,
+	}, nil
+}
+
+func validateOrchestratorReconciliationPacket(packetPath string, files map[string]reportInputSnapshot, receipt SalesforceReconciliation) error {
+	if len(receipt.Shards) != 1 || len(receipt.Shards[0].InputSHA256) != 5 {
+		return fmt.Errorf("orchestrator packet must retain exactly one typed Salesforce shard")
+	}
+	prefix := fmt.Sprintf("shards/%02d", receipt.Shards[0].ShardIndex)
+	required := map[string]bool{
+		"ORACLE_PLAN.json": true, "bundle.json": true, "ORCHESTRATOR_BINDING.json": true,
+		prefix + "/SALESFORCE_SHARD.json": true, prefix + "/SALESFORCE_DISPATCH.json": true,
+		prefix + "/ORG_PREFLIGHT.json": true, prefix + "/ORG_CREATION.json": true,
+		prefix + "/ORG_CLEANUP.json": true, prefix + "/" + salesforceExecutorManifestName: true,
+	}
+	for name := range files {
+		if required[name] || strings.HasPrefix(name, prefix+"/executor/") {
+			delete(required, name)
+			continue
+		}
+		return fmt.Errorf("orchestrator packet contains unexpected evidence %q", name)
+	}
+	if len(required) != 0 {
+		return fmt.Errorf("orchestrator packet is missing required evidence")
+	}
+	wantFiles := map[string]bool{reconciliationPacketManifestName: true}
+	wantDirectories := map[string]bool{".": true}
+	for name := range files {
+		wantFiles[name] = true
+		for directory := filepath.ToSlash(filepath.Dir(name)); directory != "."; directory = filepath.ToSlash(filepath.Dir(directory)) {
+			wantDirectories[directory] = true
+		}
+	}
+	seenFiles, seenDirectories := map[string]bool{}, map[string]bool{}
+	err := filepath.WalkDir(packetPath, func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		relative, err := filepath.Rel(packetPath, path)
+		if err != nil {
+			return err
+		}
+		relative = filepath.ToSlash(relative)
+		if entry.Type()&os.ModeSymlink != 0 {
+			return fmt.Errorf("orchestrator packet contains symlink component")
+		}
+		if entry.IsDir() {
+			if !wantDirectories[relative] {
+				return fmt.Errorf("orchestrator packet contains unexpected directory")
+			}
+			seenDirectories[relative] = true
+			return nil
+		}
+		if !entry.Type().IsRegular() || !wantFiles[relative] {
+			return fmt.Errorf("orchestrator packet contains unexpected file")
+		}
+		seenFiles[relative] = true
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("invalid orchestrator reconciliation packet: %w", err)
+	}
+	if len(seenFiles) != len(wantFiles) || len(seenDirectories) != len(wantDirectories) {
+		return fmt.Errorf("invalid orchestrator reconciliation packet")
+	}
+	return nil
+}
+
+func preflightOrchestratorReconciliationPacket(packetPath string) error {
+	err := filepath.WalkDir(packetPath, func(_ string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.Type()&os.ModeSymlink != 0 {
+			return fmt.Errorf("orchestrator packet contains symlink component")
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			if info.Mode().Perm() != 0o700 {
+				return fmt.Errorf("orchestrator packet directory must be mode 0700")
+			}
+			return nil
+		}
+		if !info.Mode().IsRegular() {
+			return fmt.Errorf("orchestrator packet contains non-regular component")
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("invalid orchestrator reconciliation packet: %w", err)
+	}
+	return nil
 }
 
 func sortedMapKeys(values map[string]string) []string {
@@ -333,8 +621,12 @@ func writeReconciliationPacket(output string, files []reconciliationPacketFile) 
 
 func readReconciliationPacket(packetPath, expectedManifestSHA string) (map[string]reportInputSnapshot, error) {
 	manifestPath := filepath.Join(packetPath, reconciliationPacketManifestName)
-	manifest, manifestBytes, err := readExactJSONBytes[reportPacketManifest](manifestPath)
-	if err != nil || manifest.SchemaVersion != 1 || replayBytesSHA256(manifestBytes) != expectedManifestSHA {
+	manifestSnapshot, err := readRegularFileSnapshot(manifestPath)
+	var manifest reportPacketManifest
+	if err == nil && manifestSnapshot.Mode.Perm() == 0o600 {
+		err = decodeExactJSON(manifestSnapshot.Data, &manifest)
+	}
+	if err != nil || manifestSnapshot.Mode.Perm() != 0o600 || manifest.SchemaVersion != 1 || replayBytesSHA256(manifestSnapshot.Data) != expectedManifestSHA {
 		return nil, fmt.Errorf("invalid retained Salesforce packet manifest")
 	}
 	files := map[string]reportInputSnapshot{}
@@ -357,16 +649,7 @@ func readReconciliationPacket(packetPath, expectedManifestSHA string) (map[strin
 
 func decodeReconciliationJSON[T any](data []byte) (T, []byte, error) {
 	var value T
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&value); err != nil {
-		return value, data, err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		if err == nil {
-			return value, data, fmt.Errorf("multiple JSON values")
-		}
+	if err := decodeExactJSON(data, &value); err != nil {
 		return value, data, err
 	}
 	return value, data, nil
