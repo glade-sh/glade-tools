@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -114,6 +115,99 @@ func TestCorpusAssuranceOrchestratorCleanupCloseIsNotPublic(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "cleanup-close"}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") {
 		t.Fatalf("public cleanup-close accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorWorkerOnceHasOnlyTypedFixedFlags(t *testing.T) {
+	root := t.TempDir()
+	args := []string{"corpus", "assurance", "orchestrator", "worker-once", "--db", filepath.Join(root, "orchestrator.db")}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "flag provided but not defined") {
+		t.Fatalf("worker-once accepted coordinator DB/arbitrary flags: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorWorkerOnceRejectsUnsealedExecutableBeforeOrgWork(t *testing.T) {
+	root := t.TempDir()
+	plan := filepath.Join(root, "plan.json")
+	writeOrchestratorCLIJSON(t, plan, corpusassurance.OrchestratorCampaignPlan{Definition: corpusassurance.OrchestratorCampaignDefinition{Tools: corpusassurance.OrchestratorArtifact{SHA256: strings.Repeat("f", 64)}}})
+	outputRoot := filepath.Join(root, "output")
+	args := []string{"corpus", "assurance", "orchestrator", "worker-once", "--plan", plan, "--plan-sha256", orchestratorCLIFileSHA256(t, plan), "--lease", filepath.Join(root, "lease.json"), "--lease-sha256", strings.Repeat("e", 64), "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", outputRoot}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "executing worker does not match sealed tools") {
+		t.Fatalf("unsealed executable accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	if _, err := os.Lstat(outputRoot); !os.IsNotExist(err) {
+		t.Fatalf("output root exists after executable rejection: %v", err)
+	}
+}
+
+func TestCorpusAssuranceOrchestratorWorkerOnceRejectsDispatchedInputHashDrift(t *testing.T) {
+	root := t.TempDir()
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	executableSHA, err := sha256File(executable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	planPath, leasePath := filepath.Join(root, "plan.json"), filepath.Join(root, "lease.json")
+	writeOrchestratorCLIJSON(t, planPath, corpusassurance.OrchestratorCampaignPlan{Definition: corpusassurance.OrchestratorCampaignDefinition{Tools: corpusassurance.OrchestratorArtifact{SHA256: executableSHA}}})
+	writeOrchestratorCLIJSON(t, leasePath, corpusassurance.OrchestratorLease{})
+	planSHA, leaseSHA := orchestratorCLIFileSHA256(t, planPath), orchestratorCLIFileSHA256(t, leasePath)
+	for name, hashes := range map[string][2]string{
+		"plan":  {strings.Repeat("a", 64), leaseSHA},
+		"lease": {planSHA, strings.Repeat("b", 64)},
+	} {
+		t.Run(name, func(t *testing.T) {
+			outputRoot := filepath.Join(root, "output-"+name)
+			args := []string{"corpus", "assurance", "orchestrator", "worker-once", "--plan", planPath, "--plan-sha256", hashes[0], "--lease", leasePath, "--lease-sha256", hashes[1], "--bundle", filepath.Join(root, "bundle.json"), "--dev-hub", "sealed-hub", "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", outputRoot}
+			var stdout, stderr bytes.Buffer
+			if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "does not match dispatched hash") {
+				t.Fatalf("%s hash drift accepted: code=%d stdout=%q stderr=%q", name, code, stdout.String(), stderr.String())
+			}
+			if _, err := os.Lstat(outputRoot); !os.IsNotExist(err) {
+				t.Fatalf("output root exists after %s hash drift: %v", name, err)
+			}
+		})
+	}
+}
+
+func TestCorpusAssuranceOrchestratorSSHDispatchRejectsUnsafeHostBeforeFiles(t *testing.T) {
+	root := t.TempDir()
+	args := []string{"corpus", "assurance", "orchestrator", "ssh-dispatch", "--db", filepath.Join(root, "orchestrator.db"), "--host", "worker;rm -rf /", "--worker-bin", filepath.Join(root, "glade-tools"), "--plan", filepath.Join(root, "plan"), "--lease", filepath.Join(root, "lease"), "--bundle", filepath.Join(root, "bundle"), "--target-org", "scratch-a", "--sf-bin", filepath.Join(root, "sf"), "--output-root", filepath.Join(root, "output-root"), "--output", filepath.Join(root, "output")}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "invalid orchestrator SSH dispatch target") {
+		t.Fatalf("unsafe SSH host accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestWriteOrchestratorSSHResultExposesActionReceiptOnError(t *testing.T) {
+	var output bytes.Buffer
+	wantErr := errors.New("receipt path changed")
+	receipt := corpusassurance.OrchestratorSSHDispatchReceipt{SchemaVersion: 1, Status: "failed", ActionRequired: true, ActionCode: "inspect-remote-lifecycle-artifacts-and-close-cleanup"}
+	if err := writeOrchestratorSSHResult(&output, receipt, wantErr); !errors.Is(err, wantErr) {
+		t.Fatalf("result error = %v", err)
+	}
+	var got corpusassurance.OrchestratorSSHDispatchReceipt
+	if err := json.Unmarshal(output.Bytes(), &got); err != nil || got != receipt {
+		t.Fatalf("action receipt = %#v, want %#v (err=%v)", got, receipt, err)
+	}
+}
+
+func TestCorpusAssuranceOrchestratorNewCommandsRejectDuplicateFlagsBeforeParse(t *testing.T) {
+	root := t.TempDir()
+	for _, command := range []string{"worker-once", "ssh-dispatch"} {
+		for _, first := range []string{"--plan", "-plan"} {
+			t.Run(command+first, func(t *testing.T) {
+				args := []string{"corpus", "assurance", "orchestrator", command, first, filepath.Join(root, "one"), "--plan", filepath.Join(root, "two")}
+				var stdout, stderr bytes.Buffer
+				if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "duplicate flag --plan") {
+					t.Fatalf("duplicate flag accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+				}
+			})
+		}
 	}
 }
 

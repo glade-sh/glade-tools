@@ -760,10 +760,13 @@ func requiredAssuranceFlags(values ...string) error {
 func rejectDuplicateAssuranceFlags(args []string, repeatable map[string]bool) error {
 	seen := make(map[string]struct{})
 	for _, arg := range args {
-		if !strings.HasPrefix(arg, "--") {
+		if arg == "--" {
+			break
+		}
+		if arg == "-" || !strings.HasPrefix(arg, "-") {
 			continue
 		}
-		name := strings.TrimPrefix(arg, "--")
+		name := strings.TrimPrefix(strings.TrimPrefix(arg, "-"), "-")
 		if equal := strings.IndexByte(name, '='); equal >= 0 {
 			name = name[:equal]
 		}

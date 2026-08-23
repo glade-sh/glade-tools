@@ -2,6 +2,7 @@ package toolcli
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -20,10 +21,86 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-transfer|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-once|ssh-dispatch|worker-transfer|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
+	case "worker-once":
+		flags := orchestratorFlags("worker-once")
+		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		planSHA, leaseSHA := flags.String("plan-sha256", "", ""), flags.String("lease-sha256", "", "")
+		bundlePath, devHub, targetOrg := flags.String("bundle", "", ""), flags.String("dev-hub", "", ""), flags.String("target-org", "", "")
+		sfBin, outputRoot := flags.String("sf-bin", "", ""), flags.String("output-root", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*planPath, *planSHA, *leasePath, *leaseSHA, *bundlePath, *devHub, *targetOrg, *sfBin, *outputRoot); err != nil {
+			return err
+		}
+		for _, path := range []string{*planPath, *leasePath, *bundlePath, *sfBin, *outputRoot} {
+			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+				return errors.New("absolute clean worker-once paths are required")
+			}
+		}
+		var plan corpusassurance.OrchestratorCampaignPlan
+		planBytes, err := readOrchestratorJSONBytes(*planPath, &plan)
+		if err != nil {
+			return err
+		}
+		actualPlanSHA := fmt.Sprintf("%x", sha256.Sum256(planBytes))
+		if actualPlanSHA != *planSHA {
+			return errors.New("worker plan does not match dispatched hash")
+		}
+		executable, err := os.Executable()
+		if err != nil {
+			return fmt.Errorf("resolve executing worker: %w", err)
+		}
+		executingSHA, err := sha256File(executable)
+		if err != nil || executingSHA != plan.Definition.Tools.SHA256 {
+			return errors.New("executing worker does not match sealed tools")
+		}
+		var lease corpusassurance.OrchestratorLease
+		leaseBytes, err := readOrchestratorJSONBytes(*leasePath, &lease)
+		if err != nil {
+			return err
+		}
+		actualLeaseSHA := fmt.Sprintf("%x", sha256.Sum256(leaseBytes))
+		if actualLeaseSHA != *leaseSHA {
+			return errors.New("worker lease does not match dispatched hash")
+		}
+		result, err := corpusassurance.RunRawSalesforceShard(corpusassurance.RawSalesforceShardRequest{Plan: plan, Lease: lease, BundlePath: *bundlePath, DevHub: *devHub, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot})
+		if err != nil {
+			return err
+		}
+		completion, err := corpusassurance.OrchestratorWorkerOnceCompletionFromRaw(plan, lease, actualPlanSHA, actualLeaseSHA, result)
+		if err != nil {
+			return err
+		}
+		return writeOrchestratorOutput(w, completion)
+	case "ssh-dispatch":
+		flags := orchestratorFlags("ssh-dispatch")
+		database := flags.String("db", "", "")
+		host := flags.String("host", "", "")
+		workerBin := flags.String("worker-bin", "", "")
+		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		bundlePath, targetOrg := flags.String("bundle", "", ""), flags.String("target-org", "", "")
+		sfBin, outputRoot, output := flags.String("sf-bin", "", ""), flags.String("output-root", "", ""), flags.String("output", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*database, *host, *workerBin, *planPath, *leasePath, *bundlePath, *targetOrg, *sfBin, *outputRoot, *output); err != nil {
+			return err
+		}
+		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
+			receipt, err := corpusassurance.RunOrchestratorSSHDispatch(corpusassurance.OrchestratorSSHDispatchRequest{Coordinator: orchestrator, Host: *host, WorkerBin: *workerBin, PlanPath: *planPath, LeasePath: *leasePath, BundlePath: *bundlePath, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot, OutputPath: *output})
+			return writeOrchestratorSSHResult(w, receipt, err)
+		})
 	case "worker-transfer":
 		flags := orchestratorFlags("worker-transfer")
 		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
@@ -272,6 +349,18 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 	}
 }
 
+func writeOrchestratorSSHResult(w io.Writer, receipt corpusassurance.OrchestratorSSHDispatchReceipt, runErr error) error {
+	if runErr != nil {
+		if receipt.ActionRequired {
+			if err := writeOrchestratorOutput(w, receipt); err != nil {
+				return errors.Join(runErr, err)
+			}
+		}
+		return runErr
+	}
+	return writeOrchestratorOutput(w, receipt)
+}
+
 func orchestratorFlags(name string) *flag.FlagSet {
 	flags := flag.NewFlagSet("corpus assurance orchestrator "+name, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
@@ -298,19 +387,27 @@ func withOrchestrator(path string, run func(*corpusassurance.Orchestrator) error
 }
 
 func readOrchestratorJSON(path string, value any) error {
+	_, err := readOrchestratorJSONBytes(path, value)
+	return err
+}
+
+func readOrchestratorJSONBytes(path string, value any) ([]byte, error) {
 	if path == "" {
-		return errors.New("orchestrator JSON path is required")
+		return nil, errors.New("orchestrator JSON path is required")
 	}
 	file, err := os.Open(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer file.Close()
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return releasecontract.DecodeExactJSON(data, value)
+	if err := releasecontract.DecodeExactJSON(data, value); err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func writeOrchestratorJSON(path string, value any) error {
