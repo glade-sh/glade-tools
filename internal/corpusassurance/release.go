@@ -122,10 +122,10 @@ func RunReleaseValidation(request ReleaseValidationRequest) (ReleaseValidation, 
 		runner = runReleaseCommand
 	}
 	results := make([]ReleaseCommandResult, 0, len(commands))
-	for _, command := range commands {
+	for index, command := range commands {
 		result, err := runReleaseValidationCommand(runner, command)
 		if err != nil {
-			return ReleaseValidation{}, err
+			return ReleaseValidation{}, fmt.Errorf("release validation command %d failed: %w", index+1, err)
 		}
 		results = append(results, result)
 	}
@@ -274,7 +274,7 @@ func runReleaseValidationCommand(runner releaseCommandRunner, command releaseCom
 	after, hashErr := sha256File(command.Path)
 	receipt := ReleaseCommandResult{CommandResult: CommandResult{Command: append([]string{command.Path}, command.Args...), ExecutableSHA256: before, ExecutableAfterSHA256: after, CommandSpecSHA256: releaseCommandSpecSHA256(command), ExitCode: output.ExitCode, DurationMS: time.Since(started).Milliseconds(), StdoutSHA256: replayBytesSHA256(output.Stdout), StderrSHA256: replayBytesSHA256(output.Stderr), Passed: err == nil && hashErr == nil && before == after && output.ExitCode == 0, TimedOut: ctx.Err() == context.DeadlineExceeded}, WorkingDirectory: command.WorkingDirectory, Environment: append([]string(nil), command.Environment...), TimeoutMS: command.Timeout.Milliseconds()}
 	if !receipt.Passed || receipt.TimedOut {
-		return ReleaseCommandResult{}, fmt.Errorf("release validation command failed")
+		return ReleaseCommandResult{}, fmt.Errorf("release validation command failed: exitCode=%d timedOut=%t", receipt.ExitCode, receipt.TimedOut)
 	}
 	return receipt, nil
 }
