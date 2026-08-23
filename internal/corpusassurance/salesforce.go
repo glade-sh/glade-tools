@@ -2268,7 +2268,12 @@ func ValidateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 	return validateSalesforceShardFiles(planPath, shardFiles, nil)
 }
 
-func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardFiles, snapshots *[]salesforceShardEvidenceSnapshot) error {
+type salesforceShardValidationScope struct {
+	ExpectedSurfaceIDs []string
+	LogicalShardCount  int
+}
+
+func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardFiles, snapshots *[]salesforceShardEvidenceSnapshot, trustedScope ...salesforceShardValidationScope) error {
 	if !filepath.IsAbs(planPath) || len(shardFiles) == 0 {
 		return fmt.Errorf("absolute oracle plan and Salesforce shard paths are required")
 	}
@@ -2283,6 +2288,24 @@ func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 	expected := make([]string, 0, len(expectedKinds))
 	for surfaceID := range expectedKinds {
 		expected = append(expected, surfaceID)
+	}
+	logicalShardCount := len(shardFiles)
+	if len(trustedScope) > 1 {
+		return fmt.Errorf("invalid trusted Salesforce shard scope")
+	}
+	if len(trustedScope) == 1 {
+		expected = append([]string(nil), trustedScope[0].ExpectedSurfaceIDs...)
+		logicalShardCount = trustedScope[0].LogicalShardCount
+		seen := map[string]bool{}
+		for _, surfaceID := range expected {
+			if surfaceID == "" || seen[surfaceID] || expectedKinds[surfaceID] == "" {
+				return fmt.Errorf("invalid trusted Salesforce surface %q", surfaceID)
+			}
+			seen[surfaceID] = true
+		}
+		if len(expected) == 0 || logicalShardCount < 1 {
+			return fmt.Errorf("trusted Salesforce shard scope is empty")
+		}
 	}
 	planSHA := replayBytesSHA256(planBytes)
 	bundlePath := filepath.Join(filepath.Dir(planPath), "bundle.json")
@@ -2367,7 +2390,7 @@ func validateSalesforceShardFiles(planPath string, shardFiles []SalesforceShardF
 		executorRoots = append(executorRoots, shard.ExecutorRoot)
 		executorSnapshots = append(executorSnapshots, snapshot)
 	}
-	if err := ValidateSalesforceShards(shards, expected); err != nil {
+	if err := validateSalesforceShards(shards, expected, logicalShardCount); err != nil {
 		return err
 	}
 	for _, shard := range shards {
@@ -2449,8 +2472,15 @@ func oracleSalesforceResultKinds(plan OraclePlan) (map[string]string, error) {
 }
 
 func ValidateSalesforceShards(shards []SalesforceShard, expected []string) error {
+	return validateSalesforceShards(shards, expected, len(shards))
+}
+
+func validateSalesforceShards(shards []SalesforceShard, expected []string, logicalShardCount int) error {
 	if len(shards) == 0 || len(expected) == 0 {
 		return fmt.Errorf("Salesforce shards and expected surfaces are required")
+	}
+	if logicalShardCount < 1 {
+		return fmt.Errorf("invalid logical Salesforce shard count")
 	}
 	expectedSet, results, indexes, aliases, orgs := map[string]bool{}, map[string]bool{}, map[int]bool{}, map[string]bool{}, map[string]bool{}
 	for _, id := range expected {
@@ -2461,7 +2491,7 @@ func ValidateSalesforceShards(shards []SalesforceShard, expected []string) error
 	}
 	first := shards[0]
 	for _, shard := range shards {
-		if ValidateRuntimeArtifact(shard.Candidate) != nil || ValidateRuntimeArtifact(shard.Tools) != nil || !validSalesforceBindings(shard.Bindings) || shard.Candidate != first.Candidate || shard.Tools != first.Tools || !sameSalesforceBundleBindings(shard.Bindings, first.Bindings) || shard.ShardCount != len(shards) || shard.ShardIndex < 0 || shard.ShardIndex >= shard.ShardCount || indexes[shard.ShardIndex] || shard.OrgAlias == "" || aliases[shard.OrgAlias] || shard.OrgID == "" || orgs[shard.OrgID] || shard.OrgStatus != "Active" || !validShardLifecycle(shard) || !validSalesforceCommands(shard.Commands, shard.Bindings.FilterCommandSpecSHA256) || !baselineSalesforceInventory(shard.PreInventory) || !sameInventory(shard.PreInventory, shard.PostInventory) || !shard.Cleanup.ResidueAbsent {
+		if ValidateRuntimeArtifact(shard.Candidate) != nil || ValidateRuntimeArtifact(shard.Tools) != nil || !validSalesforceBindings(shard.Bindings) || shard.Candidate != first.Candidate || shard.Tools != first.Tools || !sameSalesforceBundleBindings(shard.Bindings, first.Bindings) || shard.ShardCount != logicalShardCount || shard.ShardIndex < 0 || shard.ShardIndex >= shard.ShardCount || indexes[shard.ShardIndex] || shard.OrgAlias == "" || aliases[shard.OrgAlias] || shard.OrgID == "" || orgs[shard.OrgID] || shard.OrgStatus != "Active" || !validShardLifecycle(shard) || !validSalesforceCommands(shard.Commands, shard.Bindings.FilterCommandSpecSHA256) || !baselineSalesforceInventory(shard.PreInventory) || !sameInventory(shard.PreInventory, shard.PostInventory) || !shard.Cleanup.ResidueAbsent {
 			return fmt.Errorf("invalid Salesforce shard %d", shard.ShardIndex)
 		}
 		indexes[shard.ShardIndex], aliases[shard.OrgAlias], orgs[shard.OrgID] = true, true, true
