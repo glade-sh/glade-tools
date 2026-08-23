@@ -25,6 +25,8 @@ type OrchestratorArtifact struct {
 	SHA256 string `json:"sha256"`
 }
 
+const OrchestratorToolsAMD64Input = "tools-darwin-amd64"
+
 type OrchestratorCampaignDefinition struct {
 	Candidate             OrchestratorArtifact `json:"candidate"`
 	Tools                 OrchestratorArtifact `json:"tools"`

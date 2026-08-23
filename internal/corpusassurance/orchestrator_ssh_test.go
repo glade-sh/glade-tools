@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -32,7 +33,7 @@ func TestRunOrchestratorSSHDispatchUsesFixedWorkerCommandAndSanitizedReceipt(t *
 	if gotBinary != orchestratorSSHBinary || len(gotArgs) != 5 || gotArgs[0] != "-o" || gotArgs[1] != "BatchMode=yes" || gotArgs[2] != "--" || gotArgs[3] != request.Host {
 		t.Fatalf("ssh invocation = %q %#v", gotBinary, gotArgs)
 	}
-	want := orchestratorSSHWorkerOnceCommand(request, plan.Definition.Tools.SHA256, planSHA, leaseSHA, "sealed-hub")
+	want := orchestratorSSHWorkerOnceCommand(request, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, "sealed-hub")
 	if gotArgs[4] != want || !strings.Contains(want, "/usr/bin/shasum -a 256 --") || !strings.Contains(want, "export SF_USE_GENERIC_UNIX_KEYCHAIN=true; exec") || !strings.Contains(want, " corpus assurance orchestrator worker-once") || !strings.Contains(want, "--dev-hub 'sealed-hub'") {
 		t.Fatalf("worker command = %q, want %q", gotArgs[4], want)
 	}
@@ -51,6 +52,24 @@ func TestRunOrchestratorSSHDispatchUsesFixedWorkerCommandAndSanitizedReceipt(t *
 	var sealed OrchestratorSSHDispatchReceipt
 	if err := json.Unmarshal(data, &sealed); err != nil || sealed != receipt {
 		t.Fatalf("sealed receipt = %#v, want %#v (err=%v)", sealed, receipt, err)
+	}
+}
+
+func TestOrchestratorSSHWorkerOnceCommandAllowsPlanBoundPlatformWorker(t *testing.T) {
+	root := t.TempDir()
+	request := OrchestratorSSHDispatchRequest{
+		WorkerBin: filepath.Join(root, "glade-tools"), PlanPath: filepath.Join(root, "plan"),
+		LeasePath: filepath.Join(root, "lease"), BundlePath: filepath.Join(root, "bundle"),
+		TargetOrg: "scratch-a", SFBin: filepath.Join(root, "sf"), OutputRoot: filepath.Join(root, "output"),
+	}
+	primarySHA := strings.Repeat("a", 64)
+	alternateSHA := strings.Repeat("b", 64)
+	command := orchestratorSSHWorkerOnceCommand(request, primarySHA, alternateSHA, strings.Repeat("c", 64), strings.Repeat("d", 64), "sealed-hub")
+	if !strings.Contains(command, "worker_sha=") || !strings.Contains(command, primarySHA) || !strings.Contains(command, alternateSHA) || !strings.Contains(command, "|| test \"$worker_sha\"") {
+		t.Fatalf("worker command does not allow both plan-bound hashes: %q", command)
+	}
+	if output, err := exec.Command("/bin/sh", "-n", "-c", command).CombinedOutput(); err != nil {
+		t.Fatalf("worker command is not valid shell: %v: %s", err, output)
 	}
 }
 

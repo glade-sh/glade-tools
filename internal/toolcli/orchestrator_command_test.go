@@ -209,6 +209,46 @@ func TestCorpusAssuranceOrchestratorWorkerOnceRejectsUnsealedExecutableBeforeOrg
 	}
 }
 
+func TestOrchestratorWorkerExecutableAllowsSealedMatchingArchitecture(t *testing.T) {
+	commit := strings.Repeat("a", 40)
+	primarySHA := strings.Repeat("b", 64)
+	amd64SHA := strings.Repeat("c", 64)
+	tools := corpusassurance.OrchestratorArtifact{Commit: commit, SHA256: primarySHA}
+	definition := corpusassurance.OrchestratorCampaignDefinition{Tools: tools, ControlledInputSHA256: map[string]string{corpusassurance.OrchestratorToolsAMD64Input: amd64SHA}}
+	bundle := corpusassurance.OracleBundle{
+		Tools:            corpusassurance.RuntimeArtifact{Commit: commit, OS: "darwin", Arch: "arm64", SHA256: primarySHA},
+		ToolsAMD64:       corpusassurance.RuntimeArtifact{Commit: commit, OS: "darwin", Arch: "amd64", SHA256: amd64SHA},
+		ToolsAMD64SHA256: amd64SHA,
+	}
+	if !orchestratorWorkerExecutableMatches(definition, bundle, primarySHA, "darwin", "arm64") {
+		t.Fatal("exact primary worker was rejected")
+	}
+	if !orchestratorWorkerExecutableMatches(definition, bundle, amd64SHA, "darwin", "amd64") {
+		t.Fatal("sealed same-commit amd64 worker was rejected")
+	}
+	unbound := definition
+	unbound.ControlledInputSHA256 = nil
+	if orchestratorWorkerExecutableMatches(unbound, bundle, amd64SHA, "darwin", "amd64") {
+		t.Fatal("alternate worker absent from the campaign was accepted")
+	}
+	for name, mutate := range map[string]func(*corpusassurance.OracleBundle){
+		"primary hash": func(value *corpusassurance.OracleBundle) { value.Tools.SHA256 = strings.Repeat("d", 64) },
+		"commit":       func(value *corpusassurance.OracleBundle) { value.ToolsAMD64.Commit = strings.Repeat("e", 40) },
+		"hash":         func(value *corpusassurance.OracleBundle) { value.ToolsAMD64.SHA256 = strings.Repeat("f", 64) },
+	} {
+		t.Run(name, func(t *testing.T) {
+			changed := bundle
+			mutate(&changed)
+			if orchestratorWorkerExecutableMatches(definition, changed, amd64SHA, "darwin", "amd64") {
+				t.Fatal("unbound alternate worker was accepted")
+			}
+		})
+	}
+	if orchestratorWorkerExecutableMatches(definition, bundle, amd64SHA, "darwin", "arm64") {
+		t.Fatal("alternate worker was accepted on the wrong architecture")
+	}
+}
+
 func TestCorpusAssuranceOrchestratorWorkerOnceRejectsDispatchedInputHashDrift(t *testing.T) {
 	root := t.TempDir()
 	executable, err := os.Executable()
