@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/glade-sh/glade/tools/internal/corpusassurance"
@@ -59,7 +60,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 			return fmt.Errorf("resolve executing worker: %w", err)
 		}
 		executingSHA, err := sha256File(executable)
-		if err != nil || executingSHA != plan.Definition.Tools.SHA256 {
+		if err != nil || validateOrchestratorWorkerExecutable(plan.Definition, *bundlePath, executingSHA) != nil {
 			return errors.New("executing worker does not match sealed tools")
 		}
 		var lease corpusassurance.OrchestratorLease
@@ -511,6 +512,31 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 	default:
 		return errors.New("unknown corpus assurance orchestrator operation")
 	}
+}
+
+func validateOrchestratorWorkerExecutable(definition corpusassurance.OrchestratorCampaignDefinition, bundlePath, executingSHA string) error {
+	if executingSHA == definition.Tools.SHA256 {
+		return nil
+	}
+	if err := corpusassurance.ValidateOracleBundle(bundlePath); err != nil {
+		return err
+	}
+	var bundle corpusassurance.OracleBundle
+	if err := readOrchestratorJSON(bundlePath, &bundle); err != nil || !orchestratorWorkerExecutableMatches(definition, bundle, executingSHA, runtime.GOOS, runtime.GOARCH) {
+		return errors.New("alternate worker does not match sealed bundle")
+	}
+	return nil
+}
+
+func orchestratorWorkerExecutableMatches(definition corpusassurance.OrchestratorCampaignDefinition, bundle corpusassurance.OracleBundle, executingSHA, goos, goarch string) bool {
+	tools := definition.Tools
+	if executingSHA == tools.SHA256 {
+		return true
+	}
+	return bundle.Tools.Commit == tools.Commit && bundle.Tools.SHA256 == tools.SHA256 &&
+		bundle.ToolsAMD64.Commit == tools.Commit && bundle.ToolsAMD64.OS == goos && bundle.ToolsAMD64.Arch == goarch &&
+		bundle.ToolsAMD64.SHA256 == bundle.ToolsAMD64SHA256 && executingSHA == bundle.ToolsAMD64SHA256 &&
+		definition.ControlledInputSHA256[corpusassurance.OrchestratorToolsAMD64Input] == executingSHA
 }
 
 func validateRawIngestRoot(path string) error {

@@ -143,7 +143,7 @@ func runOrchestratorSSHDispatchWithTimeout(request OrchestratorSSHDispatchReques
 		return OrchestratorSSHDispatchReceipt{}, fmt.Errorf("SSH dispatch requires exact reserved Dev Hub")
 	}
 	planSHA, leaseSHA := replayBytesSHA256(planBytes), replayBytesSHA256(leaseBytes)
-	command := orchestratorSSHWorkerOnceCommand(request, plan.Definition.Tools.SHA256, planSHA, leaseSHA, reservedHub)
+	command := orchestratorSSHWorkerOnceCommand(request, plan.Definition.Tools.SHA256, plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input], planSHA, leaseSHA, reservedHub)
 	args := []string{"-o", "BatchMode=yes", "--", request.Host, command}
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -221,7 +221,7 @@ func validateOrchestratorSSHDispatchRequest(request OrchestratorSSHDispatchReque
 	return nil
 }
 
-func orchestratorSSHWorkerOnceCommand(request OrchestratorSSHDispatchRequest, toolsSHA256, planSHA256, leaseSHA256, devHub string) string {
+func orchestratorSSHWorkerOnceCommand(request OrchestratorSSHDispatchRequest, toolsSHA256, alternateToolsSHA256, planSHA256, leaseSHA256, devHub string) string {
 	command := strings.Join([]string{
 		shellQuote(request.WorkerBin), "corpus assurance orchestrator worker-once --plan", shellQuote(request.PlanPath),
 		"--plan-sha256", shellQuote(planSHA256), "--lease", shellQuote(request.LeasePath), "--lease-sha256", shellQuote(leaseSHA256), "--bundle", shellQuote(request.BundlePath),
@@ -229,8 +229,13 @@ func orchestratorSSHWorkerOnceCommand(request OrchestratorSSHDispatchRequest, to
 		"--target-org", shellQuote(request.TargetOrg), "--sf-bin", shellQuote(request.SFBin),
 		"--output-root", shellQuote(request.OutputRoot),
 	}, " ")
+	workerHashCommand := "/usr/bin/shasum -a 256 -- " + shellQuote(request.WorkerBin) + " | /usr/bin/awk '{print $1}'"
+	workerCheck := "test \"$(" + workerHashCommand + ")\" = " + shellQuote(toolsSHA256)
+	if alternateToolsSHA256 != "" {
+		workerCheck = "worker_sha=\"$(" + workerHashCommand + ")\" && { test \"$worker_sha\" = " + shellQuote(toolsSHA256) + " || test \"$worker_sha\" = " + shellQuote(alternateToolsSHA256) + "; }"
+	}
 	checks := []string{
-		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.WorkerBin) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(toolsSHA256),
+		workerCheck,
 		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.PlanPath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(planSHA256),
 		"test \"$(/usr/bin/shasum -a 256 -- " + shellQuote(request.LeasePath) + " | /usr/bin/awk '{print $1}')\" = " + shellQuote(leaseSHA256),
 	}
