@@ -379,6 +379,12 @@ login_count="$(grep -c 'org login sfdx-url' "$tmp/logs/sf.log")"
   --identity "$identity" --state "$state" --expected-alias-hash "$expected_hash" \
   --sf-bin "$tmp/bin/sf" >"$tmp/login-cached.out"
 [[ "$(grep -c 'org login sfdx-url' "$tmp/logs/sf.log")" == "$login_count" ]]
+display_count="$(grep -c 'org display' "$tmp/logs/sf.log" || true)"
+"$helper" verify --store "$tmp/worker" --alias glade-dev-hub \
+  --identity "$identity" --state "$state" --expected-alias-hash "$expected_hash" \
+  --sf-bin "$tmp/bin/sf" >"$tmp/verify-cached.out"
+[[ "$(grep -c 'org display' "$tmp/logs/sf.log")" == "$((display_count + 1))" ]]
+[[ "$(cat "$state/aliases/glade-dev-hub.health")" == healthy ]]
 
 if FAKE_SF_FAIL=1 "$helper" login --store "$tmp/worker" --alias glade-dev-hub \
   --identity "$identity" --state "$state" --sf-bin "$tmp/bin/sf" 2>"$tmp/sf.err"; then

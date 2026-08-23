@@ -335,6 +335,7 @@ login_dev_hub() {
   [[ -z "$expected_alias_hash" || "$expected_alias_hash" == "$current_alias_hash" ]] ||
     integrity_die "$state"
 
+  export SF_USE_GENERIC_UNIX_KEYCHAIN=true
   if [[ -n "$expected_alias_hash" && -f "$state/aliases/$alias_name.hash" &&
     "$(cat "$state/aliases/$alias_name.hash")" == "$current_alias_hash" &&
     -f "$state/aliases/$alias_name.health" &&
@@ -344,7 +345,6 @@ login_dev_hub() {
     return
   fi
 
-  export SF_USE_GENERIC_UNIX_KEYCHAIN=true
   set +e
   age -d -i "$identity" "$cipher" 2>/dev/null |
     "$sf_bin" org login sfdx-url --alias "$alias_name" --set-default-dev-hub \
