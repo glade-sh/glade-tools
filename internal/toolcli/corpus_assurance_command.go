@@ -827,7 +827,7 @@ func printCorpusAssuranceHelp(w io.Writer) {
 	fmt.Fprint(w, `Run the sealed private-corpus assurance workflow.
 
 Usage:
-  glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-transfer|cleanup-takeover|cleanup-claim> [fixed flags]
+  glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-once|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|worker-transfer|cleanup-takeover|cleanup-claim> [fixed flags]
   glade-tools corpus assurance campaign --spec <CAMPAIGN.json> --state <CAMPAIGN_STATE.json> [--promote --out <new-root>]
   glade-tools corpus assurance candidate-build --candidate-root <glade-root> --tools-root <glade-tools-root> --candidate-ref <ref> --tools-ref <ref> --candidate-output <glade> --tools-output <glade-tools> --receipt-output <CANDIDATE_BUILD_RECEIPT.json> --review-output <REVIEW.md> --tools-freeze-output <TOOLS_COMMIT>
   glade-tools corpus assurance candidate-authority --candidate-root <glade-root> --tools-root <glade-tools-root> --receipt <candidate-receipt.json> --review <REVIEW.md> --output <CANDIDATE_AUTHORITY.json>

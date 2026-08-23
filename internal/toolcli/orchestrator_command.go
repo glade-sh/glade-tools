@@ -21,7 +21,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-once|raw-ingest|raw-accept|ssh-dispatch|worker-transfer|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|reserve|receipt|worker-once|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|worker-transfer|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
@@ -156,6 +156,89 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 				return fmt.Errorf("read SSH receipt: %w", err)
 			}
 			accepted, err := corpusassurance.AcceptOrchestratorRawCanary(corpusassurance.OrchestratorRawCanaryRequest{Coordinator: orchestrator, Plan: planValue, Lease: leaseValue, PlanSHA256: fmt.Sprintf("%x", sha256.Sum256(planBytes)), LeaseSHA256: fmt.Sprintf("%x", sha256.Sum256(leaseBytes)), SSHReceiptSHA256: fmt.Sprintf("%x", sha256.Sum256(sshBytes)), AllocationAlias: *allocation, SSHReceipt: sshReceipt, ReceiptPath: *receiptPath, PacketPath: *packetPath, OutputPath: *outputPath})
+			if err != nil {
+				return err
+			}
+			return writeOrchestratorOutput(w, accepted)
+		})
+	case "raw-abort-observe":
+		flags := orchestratorFlags("raw-abort-observe")
+		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		sshPath, bundlePath := flags.String("ssh-receipt", "", ""), flags.String("bundle", "", "")
+		allocation, sfBin := flags.String("allocation", "", ""), flags.String("sf-bin", "", "")
+		rawRoot, outputPath := flags.String("raw-root", "", ""), flags.String("output", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*planPath, *leasePath, *sshPath, *bundlePath, *allocation, *sfBin, *rawRoot, *outputPath); err != nil {
+			return err
+		}
+		var plan corpusassurance.OrchestratorCampaignPlan
+		planBytes, err := readOrchestratorJSONBytes(*planPath, &plan)
+		if err != nil {
+			return fmt.Errorf("read orchestrator plan: %w", err)
+		}
+		var lease corpusassurance.OrchestratorLease
+		leaseBytes, err := readOrchestratorJSONBytes(*leasePath, &lease)
+		if err != nil {
+			return fmt.Errorf("read orchestrator lease: %w", err)
+		}
+		var sshReceipt corpusassurance.OrchestratorSSHDispatchReceipt
+		sshBytes, err := readOrchestratorJSONBytes(*sshPath, &sshReceipt)
+		if err != nil {
+			return fmt.Errorf("read SSH receipt: %w", err)
+		}
+		observed, err := corpusassurance.ObserveOrchestratorRawPrecreationAbort(corpusassurance.OrchestratorRawPrecreationAbortObservationRequest{
+			Plan: plan, Lease: lease, PlanSHA256: fmt.Sprintf("%x", sha256.Sum256(planBytes)), LeaseSHA256: fmt.Sprintf("%x", sha256.Sum256(leaseBytes)),
+			FailedSSHReceipt: sshReceipt, FailedSSHReceiptSHA256: fmt.Sprintf("%x", sha256.Sum256(sshBytes)), BundlePath: *bundlePath,
+			RawRoot: *rawRoot, AllocationAlias: *allocation, TargetOrg: *allocation, SFBin: *sfBin, OutputPath: *outputPath,
+		})
+		if err != nil {
+			return err
+		}
+		return writeOrchestratorOutput(w, observed)
+	case "raw-abort-accept":
+		flags := orchestratorFlags("raw-abort-accept")
+		database, planPath, leasePath := flags.String("db", "", ""), flags.String("plan", "", ""), flags.String("lease", "", "")
+		sshPath, allocation := flags.String("ssh-receipt", "", ""), flags.String("allocation", "", "")
+		observationPath, outputPath := flags.String("observation", "", ""), flags.String("output", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*database, *planPath, *leasePath, *sshPath, *allocation, *observationPath, *outputPath); err != nil {
+			return err
+		}
+		var plan corpusassurance.OrchestratorCampaignPlan
+		planBytes, err := readOrchestratorJSONBytes(*planPath, &plan)
+		if err != nil {
+			return fmt.Errorf("read orchestrator plan: %w", err)
+		}
+		var lease corpusassurance.OrchestratorLease
+		leaseBytes, err := readOrchestratorJSONBytes(*leasePath, &lease)
+		if err != nil {
+			return fmt.Errorf("read orchestrator lease: %w", err)
+		}
+		var sshReceipt corpusassurance.OrchestratorSSHDispatchReceipt
+		sshBytes, err := readOrchestratorJSONBytes(*sshPath, &sshReceipt)
+		if err != nil {
+			return fmt.Errorf("read SSH receipt: %w", err)
+		}
+		observationBytes, err := os.ReadFile(*observationPath)
+		if err != nil {
+			return fmt.Errorf("read raw abort observation: %w", err)
+		}
+		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
+			accepted, err := corpusassurance.AcceptOrchestratorRawPrecreationAbort(corpusassurance.OrchestratorRawPrecreationAbortAcceptanceRequest{
+				Coordinator: orchestrator, Plan: plan, Lease: lease, PlanSHA256: fmt.Sprintf("%x", sha256.Sum256(planBytes)), LeaseSHA256: fmt.Sprintf("%x", sha256.Sum256(leaseBytes)),
+				FailedSSHReceipt: sshReceipt, FailedSSHReceiptSHA256: fmt.Sprintf("%x", sha256.Sum256(sshBytes)), AllocationAlias: *allocation,
+				ObservationPath: *observationPath, ObservationSHA256: fmt.Sprintf("%x", sha256.Sum256(observationBytes)), OutputPath: *outputPath,
+			})
 			if err != nil {
 				return err
 			}

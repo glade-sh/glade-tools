@@ -172,6 +172,28 @@ func TestCorpusAssuranceOrchestratorRawAcceptUsesTypedFixedFlags(t *testing.T) {
 	}
 }
 
+func TestCorpusAssuranceOrchestratorRawAbortUsesTypedFixedFlags(t *testing.T) {
+	root := t.TempDir()
+	for _, test := range []struct {
+		name string
+		args []string
+	}{
+		{"observe", []string{"corpus", "assurance", "orchestrator", "raw-abort-observe", "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--bundle", filepath.Join(root, "bundle.json"), "--allocation", "scratch-canary", "--sf-bin", filepath.Join(root, "sf"), "--raw-root", filepath.Join(root, "raw"), "--output", filepath.Join(root, "observation.json")}},
+		{"accept", []string{"corpus", "assurance", "orchestrator", "raw-abort-accept", "--db", filepath.Join(root, "orchestrator.db"), "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--ssh-receipt", filepath.Join(root, "ssh.json"), "--allocation", "scratch-canary", "--observation", filepath.Join(root, "observation.json"), "--output", filepath.Join(root, "acceptance.json")}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			var stdout, stderr bytes.Buffer
+			code := Run(context.Background(), test.args, &stdout, &stderr)
+			if code == 0 || strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") || strings.Contains(stderr.String(), "flag provided but not defined") {
+				t.Fatalf("raw abort contract rejected before typed input validation: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+			}
+			if !strings.Contains(stderr.String(), "read orchestrator plan") {
+				t.Fatalf("raw abort did not validate the plan first: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+			}
+		})
+	}
+}
+
 func TestCorpusAssuranceOrchestratorWorkerOnceRejectsUnsealedExecutableBeforeOrgWork(t *testing.T) {
 	root := t.TempDir()
 	plan := filepath.Join(root, "plan.json")
