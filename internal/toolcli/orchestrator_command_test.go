@@ -127,6 +127,51 @@ func TestCorpusAssuranceOrchestratorWorkerOnceHasOnlyTypedFixedFlags(t *testing.
 	}
 }
 
+func TestCorpusAssuranceOrchestratorRawIngestUsesTypedFixedFlags(t *testing.T) {
+	root := t.TempDir()
+	args := []string{"corpus", "assurance", "orchestrator", "raw-ingest", "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--oracle-plan", filepath.Join(root, "ORACLE_PLAN.json"), "--raw-root", filepath.Join(root, "raw"), "--packet-output", filepath.Join(root, "packet"), "--output", filepath.Join(root, "receipt.json")}
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), args, &stdout, &stderr)
+	if code == 0 || strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") || strings.Contains(stderr.String(), "flag provided but not defined") {
+		t.Fatalf("raw-ingest contract rejected before typed input validation: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "read orchestrator plan") {
+		t.Fatalf("raw-ingest did not validate the plan: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorRawIngestRejectsNonPrivateRawRoot(t *testing.T) {
+	root := t.TempDir()
+	planPath, leasePath, oraclePath := filepath.Join(root, "plan.json"), filepath.Join(root, "lease.json"), filepath.Join(root, "ORACLE_PLAN.json")
+	for _, path := range []string{planPath, leasePath, oraclePath} {
+		if err := os.WriteFile(path, []byte("{}\n"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	rawRoot := filepath.Join(root, "raw")
+	if err := os.WriteFile(rawRoot, []byte("not a directory\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	args := []string{"corpus", "assurance", "orchestrator", "raw-ingest", "--plan", planPath, "--lease", leasePath, "--oracle-plan", oraclePath, "--raw-root", rawRoot, "--packet-output", filepath.Join(root, "packet"), "--output", filepath.Join(root, "receipt.json")}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), args, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "raw-ingest root") {
+		t.Fatalf("non-private raw root accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorRawAcceptUsesTypedFixedFlags(t *testing.T) {
+	root := t.TempDir()
+	args := []string{"corpus", "assurance", "orchestrator", "raw-accept", "--db", filepath.Join(root, "orchestrator.db"), "--plan", filepath.Join(root, "plan.json"), "--lease", filepath.Join(root, "lease.json"), "--allocation", "scratch-canary", "--ssh-receipt", filepath.Join(root, "ssh.json"), "--receipt", filepath.Join(root, "receipt.json"), "--packet", filepath.Join(root, "packet"), "--output", filepath.Join(root, "acceptance.json")}
+	var stdout, stderr bytes.Buffer
+	code := Run(context.Background(), args, &stdout, &stderr)
+	if code == 0 || strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") || strings.Contains(stderr.String(), "flag provided but not defined") {
+		t.Fatalf("raw-accept contract rejected before typed input validation: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "read orchestrator plan") {
+		t.Fatalf("raw-accept did not validate the plan: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
 func TestCorpusAssuranceOrchestratorWorkerOnceRejectsUnsealedExecutableBeforeOrgWork(t *testing.T) {
 	root := t.TempDir()
 	plan := filepath.Join(root, "plan.json")

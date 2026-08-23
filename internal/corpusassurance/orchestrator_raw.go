@@ -1,6 +1,7 @@
 package corpusassurance
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -45,6 +46,149 @@ type RawSalesforceShardResult struct {
 	Dispatch             SalesforceDispatch
 	Shard                SalesforceShard
 	Cleanup              SalesforceOrgCleanup
+}
+
+type OrchestratorRawCanaryRequest struct {
+	Coordinator      *Orchestrator
+	Plan             OrchestratorCampaignPlan
+	Lease            OrchestratorLease
+	PlanSHA256       string
+	LeaseSHA256      string
+	SSHReceiptSHA256 string
+	AllocationAlias  string
+	SSHReceipt       OrchestratorSSHDispatchReceipt
+	ReceiptPath      string
+	PacketPath       string
+	OutputPath       string
+}
+
+type OrchestratorRawCanaryReceipt struct {
+	SchemaVersion             int                  `json:"schemaVersion"`
+	Status                    string               `json:"status"`
+	ProofCredit               int                  `json:"proofCredit"`
+	CampaignID                string               `json:"campaignId"`
+	JobID                     string               `json:"jobId"`
+	ShardIndex                int                  `json:"shardIndex"`
+	Generation                int                  `json:"generation"`
+	Candidate                 OrchestratorArtifact `json:"candidate"`
+	Tools                     OrchestratorArtifact `json:"tools"`
+	SpecSHA256                string               `json:"specSha256"`
+	PlanSHA256                string               `json:"planSha256"`
+	LeaseSHA256               string               `json:"leaseSha256"`
+	SSHReceiptSHA256          string               `json:"sshReceiptSha256"`
+	ReconciliationSHA256      string               `json:"reconciliationSha256"`
+	PacketManifestSHA256      string               `json:"packetManifestSha256"`
+	OraclePlanSHA256          string               `json:"oraclePlanSha256"`
+	BundleSHA256              string               `json:"bundleSha256"`
+	OrchestratorBindingSHA256 string               `json:"orchestratorBindingSha256"`
+	SalesforceShardSHA256     string               `json:"salesforceShardSha256"`
+	OrgCleanupSHA256          string               `json:"orgCleanupSha256"`
+	CleanupClosed             bool                 `json:"cleanupClosed"`
+}
+
+func AcceptOrchestratorRawCanary(request OrchestratorRawCanaryRequest) (result OrchestratorRawCanaryReceipt, err error) {
+	if request.Coordinator == nil || request.Coordinator.db == nil || !filepath.IsAbs(request.ReceiptPath) || !filepath.IsAbs(request.PacketPath) || !filepath.IsAbs(request.OutputPath) || filepath.Clean(request.ReceiptPath) != request.ReceiptPath || filepath.Clean(request.PacketPath) != request.PacketPath || filepath.Clean(request.OutputPath) != request.OutputPath || !safeOrchestratorToken(request.AllocationAlias) {
+		return result, fmt.Errorf("invalid raw canary acceptance request")
+	}
+	outputExists := false
+	if info, err := os.Lstat(request.OutputPath); err == nil {
+		if info.Mode()&os.ModeSymlink != 0 {
+			return result, fmt.Errorf("raw canary output must not be a symlink")
+		}
+		outputExists = true
+	} else if !os.IsNotExist(err) {
+		return result, err
+	}
+	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil || !sha256Pattern.MatchString(request.PlanSHA256) || !sha256Pattern.MatchString(request.LeaseSHA256) || !sha256Pattern.MatchString(request.SSHReceiptSHA256) {
+		return result, fmt.Errorf("raw canary plan and lease binding is invalid")
+	}
+	planBytes, err := json.Marshal(request.Plan)
+	if err != nil {
+		return result, err
+	}
+	planBytes = append(planBytes, '\n')
+	leaseBytes, err := json.Marshal(request.Lease)
+	if err != nil {
+		return result, err
+	}
+	leaseBytes = append(leaseBytes, '\n')
+	if replayBytesSHA256(planBytes) != request.PlanSHA256 || replayBytesSHA256(leaseBytes) != request.LeaseSHA256 {
+		return result, fmt.Errorf("raw canary plan and lease bytes do not match typed bindings")
+	}
+	ssh := request.SSHReceipt
+	if ssh.SchemaVersion != 1 || !ssh.Passed || ssh.Status != "worker-complete" || ssh.ExitCode != 0 || ssh.TimedOut || ssh.FailureCode != "" || ssh.ActionRequired || ssh.ActionCode != "" || ssh.CampaignID != request.Lease.CampaignID || ssh.JobID != request.Lease.JobID || ssh.ShardIndex != request.Lease.ShardIndex || ssh.Generation != request.Lease.Generation || ssh.SpecSHA256 != request.Plan.SpecSHA256 || ssh.PlanSHA256 != request.PlanSHA256 || ssh.LeaseSHA256 != request.LeaseSHA256 || !sha256Pattern.MatchString(ssh.CommandSHA256) || !sha256Pattern.MatchString(ssh.StdoutSHA256) || !sha256Pattern.MatchString(ssh.StderrSHA256) || !sha256Pattern.MatchString(ssh.OrchestratorBindingSHA256) || !sha256Pattern.MatchString(ssh.SalesforceShardSHA256) || !sha256Pattern.MatchString(ssh.OrgCleanupSHA256) {
+		return result, fmt.Errorf("SSH worker receipt does not bind the raw canary")
+	}
+	sshBytes, err := json.Marshal(ssh)
+	if err != nil {
+		return result, err
+	}
+	if replayBytesSHA256(append(sshBytes, '\n')) != request.SSHReceiptSHA256 {
+		return result, fmt.Errorf("SSH worker receipt bytes are not canonical")
+	}
+	if err := VerifyOrchestratorSalesforceReconciliation(request.Plan, request.Lease, request.ReceiptPath, request.PacketPath); err != nil {
+		return result, fmt.Errorf("verify retained worker reconciliation: %w", err)
+	}
+	reconciliation, reconciliationBytes, err := readExactJSONBytes[SalesforceReconciliation](request.ReceiptPath)
+	if err != nil || len(reconciliation.Shards) != 1 {
+		return result, fmt.Errorf("read retained worker reconciliation")
+	}
+	shard := reconciliation.Shards[0]
+	if reconciliation.Status != "pass" || reconciliation.OrchestratorPlanSHA256 != request.PlanSHA256 || reconciliation.OrchestratorBindingSHA256 != ssh.OrchestratorBindingSHA256 || shard.InputSHA256["shard"] != ssh.SalesforceShardSHA256 || shard.InputSHA256["cleanup"] != ssh.OrgCleanupSHA256 {
+		return result, fmt.Errorf("SSH worker receipt does not match retained reconciliation")
+	}
+	packetFiles, err := readReconciliationPacket(request.PacketPath, reconciliation.PacketManifestSHA256)
+	if err != nil {
+		return result, fmt.Errorf("read retained worker packet: %w", err)
+	}
+	cleanupPath := fmt.Sprintf("shards/%02d/ORG_CLEANUP.json", shard.ShardIndex)
+	cleanup, _, cleanupErr := decodeReconciliationJSON[SalesforceOrgCleanup](packetFiles[cleanupPath].Data)
+	if cleanupErr != nil || replayBytesSHA256(packetFiles[cleanupPath].Data) != ssh.OrgCleanupSHA256 {
+		return result, fmt.Errorf("retained cleanup does not bind the SSH receipt")
+	}
+	result = OrchestratorRawCanaryReceipt{SchemaVersion: 1, Status: "validated-zero-credit", ProofCredit: 0, CleanupClosed: true, CampaignID: request.Lease.CampaignID, JobID: request.Lease.JobID, ShardIndex: request.Lease.ShardIndex, Generation: request.Lease.Generation, Candidate: request.Plan.Definition.Candidate, Tools: request.Plan.Definition.Tools, SpecSHA256: request.Plan.SpecSHA256, PlanSHA256: request.PlanSHA256, LeaseSHA256: request.LeaseSHA256, SSHReceiptSHA256: request.SSHReceiptSHA256, ReconciliationSHA256: replayBytesSHA256(reconciliationBytes), PacketManifestSHA256: reconciliation.PacketManifestSHA256, OraclePlanSHA256: reconciliation.OraclePlanSHA256, BundleSHA256: reconciliation.BundleSHA256, OrchestratorBindingSHA256: ssh.OrchestratorBindingSHA256, SalesforceShardSHA256: ssh.SalesforceShardSHA256, OrgCleanupSHA256: ssh.OrgCleanupSHA256}
+	if outputExists {
+		snapshot, readErr := readRegularFileSnapshot(request.OutputPath)
+		var existing OrchestratorRawCanaryReceipt
+		if readErr != nil {
+			return OrchestratorRawCanaryReceipt{}, fmt.Errorf("read existing raw canary output: %w", readErr)
+		}
+		if snapshot.Mode.Perm() != 0o600 || decodeExactJSON(snapshot.Data, &existing) != nil {
+			return OrchestratorRawCanaryReceipt{}, fmt.Errorf("existing raw canary output is invalid")
+		}
+		if existing != result {
+			return OrchestratorRawCanaryReceipt{}, fmt.Errorf("existing raw canary output does not match request")
+		}
+	} else {
+		if err := preflightOrchestratorSSHReceiptPath(request.OutputPath); err != nil {
+			return result, fmt.Errorf("preflight raw canary output: %w", err)
+		}
+	}
+	var cleanupState, allocationState string
+	if err := request.Coordinator.db.QueryRow(`SELECT c.state, a.state FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ?`, request.AllocationAlias, request.Lease.CampaignID, request.Lease.JobID, request.Lease.Generation).Scan(&cleanupState, &allocationState); err != nil {
+		return OrchestratorRawCanaryReceipt{}, fmt.Errorf("read raw canary cleanup: %w", err)
+	}
+	if cleanupState == "closed" && allocationState == "closed" {
+		if !outputExists {
+			if err := WriteNewJSON(request.OutputPath, result); err != nil {
+				return OrchestratorRawCanaryReceipt{}, err
+			}
+		}
+		return result, nil
+	}
+	if cleanupState != "pending" || allocationState != "reserved" {
+		return OrchestratorRawCanaryReceipt{}, fmt.Errorf("raw canary cleanup is not claimable")
+	}
+	now := time.Now().UTC()
+	if err := request.Coordinator.closeRawAcceptanceCleanup(request.Lease, request.AllocationAlias, now, !cleanup.RecoveredAbsent); err != nil {
+		return result, fmt.Errorf("close raw canary cleanup: %w", err)
+	}
+	if !outputExists {
+		if err := WriteNewJSON(request.OutputPath, result); err != nil {
+			return OrchestratorRawCanaryReceipt{}, err
+		}
+	}
+	return result, nil
 }
 
 func RunRawSalesforceShard(request RawSalesforceShardRequest) (result RawSalesforceShardResult, err error) {
