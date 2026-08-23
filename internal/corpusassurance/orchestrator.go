@@ -458,6 +458,10 @@ func (o *Orchestrator) ClaimCleanupForLease(lease OrchestratorLease, allocationA
 }
 
 func (o *Orchestrator) CloseCleanup(claim OrchestratorCleanupClaim, now time.Time) error {
+	return o.closeCleanup(claim, now, true)
+}
+
+func (o *Orchestrator) closeCleanup(claim OrchestratorCleanupClaim, now time.Time, proofEligible bool) error {
 	tx, err := o.db.Begin()
 	if err != nil {
 		return err
@@ -466,6 +470,11 @@ func (o *Orchestrator) CloseCleanup(claim OrchestratorCleanupClaim, now time.Tim
 	var hubAlias string
 	if err := tx.QueryRow(`SELECT a.hub_alias FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND c.state = 'running' AND c.claimed_by = ? AND c.claim_until = ? AND c.claim_until > ?`, claim.AllocationAlias, claim.CampaignID, claim.JobID, claim.Generation, claim.Worker, claim.ClaimUntil.UTC().UnixMilli(), now.UTC().UnixMilli()).Scan(&hubAlias); err != nil {
 		return fmt.Errorf("cleanup close requires the current unexpired claim")
+	}
+	if !proofEligible {
+		if _, err := tx.Exec(`INSERT OR IGNORE INTO cleanup_credit_blocks (allocation_alias) VALUES (?)`, claim.AllocationAlias); err != nil {
+			return err
+		}
 	}
 	result, err := tx.Exec(`UPDATE cleanup_journal SET state = 'closed', closed_at = ? WHERE allocation_alias = ? AND campaign_id = ? AND job_id = ? AND generation = ? AND state = 'running' AND claimed_by = ? AND claim_until = ?`, now.UTC().UnixMilli(), claim.AllocationAlias, claim.CampaignID, claim.JobID, claim.Generation, claim.Worker, claim.ClaimUntil.UTC().UnixMilli())
 	if err != nil {
@@ -510,6 +519,10 @@ func (o *Orchestrator) RecordReceipt(request OrchestratorReceiptRequest, now tim
 	var cleanupClosed int
 	if err := o.db.QueryRow(`SELECT count(*) FROM cleanup_journal WHERE campaign_id = ? AND job_id = ? AND generation = ? AND state = 'closed'`, lease.CampaignID, lease.JobID, lease.Generation).Scan(&cleanupClosed); err != nil || cleanupClosed != 1 {
 		return OrchestratorReceipt{}, fmt.Errorf("receipt requires closed cleanup")
+	}
+	var proofBlocked int
+	if err := o.db.QueryRow(`SELECT count(*) FROM cleanup_credit_blocks b JOIN cleanup_journal c ON c.allocation_alias = b.allocation_alias WHERE c.campaign_id = ? AND c.job_id = ? AND c.generation = ?`, lease.CampaignID, lease.JobID, lease.Generation).Scan(&proofBlocked); err != nil || proofBlocked != 0 {
+		return OrchestratorReceipt{}, fmt.Errorf("cleanup is proof-ineligible")
 	}
 	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](scopePath)
 	if err != nil || replayBytesSHA256(scopeBytes) != scopeSHA || validateSurfaceOracleScope(scope) != nil {
@@ -865,6 +878,9 @@ CREATE TABLE IF NOT EXISTS cleanup_journal (
   claim_until INTEGER,
   closed_at INTEGER,
   UNIQUE (campaign_id, job_id, generation)
+);
+CREATE TABLE IF NOT EXISTS cleanup_credit_blocks (
+  allocation_alias TEXT PRIMARY KEY REFERENCES cleanup_journal(allocation_alias)
 );
 CREATE TABLE IF NOT EXISTS actions (
   id INTEGER PRIMARY KEY,

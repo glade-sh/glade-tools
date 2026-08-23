@@ -53,6 +53,115 @@ type OrchestratorWorkerTransfer struct {
 	ManifestSHA256 string `json:"manifestSha256"`
 }
 
+// OrchestratorCleanupTakeoverRequest binds cleanup to the exact journal claim
+// and the existing typed Salesforce cleanup inputs. It intentionally has no
+// proof-credit fields: takeover can close cleanup only.
+type OrchestratorCleanupTakeoverRequest struct {
+	Claim         OrchestratorCleanupClaim `json:"claim"`
+	BundlePath    string                   `json:"bundlePath"`
+	CreationPath  string                   `json:"creationPath"`
+	PreflightPath string                   `json:"preflightPath"`
+	TargetOrg     string                   `json:"targetOrg"`
+	SFBin         string                   `json:"sfBin"`
+	OutputPath    string                   `json:"outputPath"`
+}
+
+type salesforceOrgCleanupRunner func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error)
+
+// RunOrchestratorCleanupTakeover runs the real typed Salesforce cleanup
+// before closing the coordinator journal. The callback is kept internal-test
+// injectable; the public path always uses RunSalesforceOrgCleanup.
+func RunOrchestratorCleanupTakeover(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest) error {
+	return runOrchestratorCleanupTakeoverAt(orchestrator, request, func() time.Time { return time.Now().UTC() }, RunSalesforceOrgCleanup)
+}
+
+func runOrchestratorCleanupTakeover(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest, now time.Time, cleanup salesforceOrgCleanupRunner) error {
+	return runOrchestratorCleanupTakeoverAt(orchestrator, request, func() time.Time { return now }, cleanup)
+}
+
+func runOrchestratorCleanupTakeoverAt(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest, clock func() time.Time, cleanup salesforceOrgCleanupRunner) error {
+	if orchestrator == nil || cleanup == nil || request.Claim.CampaignID == "" || request.Claim.JobID == "" || request.Claim.Generation < 1 || request.Claim.AllocationAlias == "" || request.Claim.Worker == "" {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	for _, path := range []string{request.BundlePath, request.CreationPath, request.PreflightPath, request.OutputPath} {
+		if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+			return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+		}
+	}
+	if request.TargetOrg == "" || request.TargetOrg != request.Claim.AllocationAlias || request.SFBin == "" {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	if clock == nil || validateOrchestratorCleanupClaim(orchestrator, request.Claim, clock().UTC()) != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	if info, err := os.Lstat(request.OutputPath); err == nil {
+		if !info.Mode().IsRegular() {
+			return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+		}
+		cleanupReceipt, err := readValidatedOrchestratorCleanup(request)
+		if err != nil {
+			return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+		}
+		if err := orchestrator.closeCleanup(request.Claim, clock().UTC(), !cleanupReceipt.RecoveredAbsent); err != nil {
+			return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+		}
+		return nil
+	} else if !os.IsNotExist(err) {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	cleanupRequest := SalesforceOrgCleanupRequest{BundlePath: request.BundlePath, CreationPath: request.CreationPath, PreflightPath: request.PreflightPath, TargetOrg: request.TargetOrg, DevHub: request.Claim.HubAlias, SFBin: request.SFBin, OutputPath: request.OutputPath}
+	if _, err := cleanup(cleanupRequest); err != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	cleanupReceipt, err := readValidatedOrchestratorCleanup(request)
+	if err != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	if err := orchestrator.closeCleanup(request.Claim, clock().UTC(), !cleanupReceipt.RecoveredAbsent); err != nil {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	return nil
+}
+
+func validateOrchestratorCleanupClaim(orchestrator *Orchestrator, claim OrchestratorCleanupClaim, now time.Time) error {
+	var claimUntil int64
+	var claimedBy, hubAlias string
+	err := orchestrator.db.QueryRow(`SELECT c.claim_until, c.claimed_by, a.hub_alias FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias WHERE c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND c.allocation_alias = ? AND c.state = 'running' AND a.campaign_id = c.campaign_id AND a.job_id = c.job_id AND a.generation = c.generation AND a.state = 'reserved'`, claim.CampaignID, claim.JobID, claim.Generation, claim.AllocationAlias).Scan(&claimUntil, &claimedBy, &hubAlias)
+	if err != nil || claimUntil != claim.ClaimUntil.UTC().UnixMilli() || claimedBy != claim.Worker || hubAlias != claim.HubAlias || claimUntil <= now.UTC().UnixMilli() {
+		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	return nil
+}
+
+func validateExistingOrchestratorCleanup(request OrchestratorCleanupTakeoverRequest) error {
+	_, err := readValidatedOrchestratorCleanup(request)
+	return err
+}
+
+func readValidatedOrchestratorCleanup(request OrchestratorCleanupTakeoverRequest) (SalesforceOrgCleanup, error) {
+	bundleSHA, err := sha256File(request.BundlePath)
+	if err != nil {
+		return SalesforceOrgCleanup{}, orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	creation, _, err := readExactJSONBytes[SalesforceOrgCreation](request.CreationPath)
+	if err != nil || !validSalesforceOrgCreation(creation, bundleSHA, request.BundlePath, request.Claim.HubAlias, request.TargetOrg) {
+		return SalesforceOrgCleanup{}, orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	preflight, _, err := readExactJSONBytes[SalesforceOrgPreflight](request.PreflightPath)
+	if err != nil || !validSalesforceOrgPreflight(preflight, bundleSHA, request.BundlePath) || preflight.OrgAlias != request.TargetOrg || preflight.OrgID != creation.OrgID {
+		return SalesforceOrgCleanup{}, orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	snapshot, err := readRegularFileSnapshot(request.OutputPath)
+	if err != nil || snapshot.Mode.Perm() != 0o600 {
+		return SalesforceOrgCleanup{}, orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	var cleanup SalesforceOrgCleanup
+	if err := decodeExactJSON(snapshot.Data, &cleanup); err != nil || cleanup.OrgAlias != request.TargetOrg || (!validSalesforceOrgCleanup(cleanup, bundleSHA, request.BundlePath, creation) && !validSalesforceRecoveredOrgCleanup(cleanup, bundleSHA, request.BundlePath, creation)) {
+		return SalesforceOrgCleanup{}, orchestratorWorkerError{orchestratorWorkerCleanupFailed}
+	}
+	return cleanup, nil
+}
+
 type OrchestratorShardRunner func(context.Context, OrchestratorWorkerRequest) (OrchestratorWorkerRunResult, error)
 
 type orchestratorWorkerError struct{ code string }

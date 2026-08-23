@@ -65,6 +65,58 @@ func TestCorpusAssuranceOrchestratorPlansInitializesAndRejectsArbitraryCommands(
 	}
 }
 
+func TestCorpusAssuranceOrchestratorJSONRejectsDuplicateFields(t *testing.T) {
+	root := t.TempDir()
+	definitionPath := filepath.Join(root, "campaign.json")
+	if err := os.WriteFile(definitionPath, []byte(`{"candidate":{},"candidate":{}}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "plan", "--campaign", definitionPath, "--output", filepath.Join(root, "plan.json")}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "duplicate") {
+		t.Fatalf("duplicate JSON field accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorCleanupTakeoverRejectsUnknownTrailingAndExtraArgs(t *testing.T) {
+	root := t.TempDir()
+	request := filepath.Join(root, "cleanup.json")
+	for _, content := range []string{
+		`{"claim":{},"unknown":true}`,
+		`{"claim":{}} {"trailing":true}`,
+	} {
+		if err := os.WriteFile(request, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		var stdout, stderr bytes.Buffer
+		if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "cleanup-takeover", "--db", filepath.Join(root, "orchestrator.db"), "--request", request}, &stdout, &stderr); code == 0 || (!strings.Contains(stderr.String(), "unknown JSON key") && !strings.Contains(stderr.String(), "multiple JSON values") && !strings.Contains(stderr.String(), "one value")) {
+			t.Fatalf("invalid cleanup request accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+		}
+	}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "cleanup-takeover", "--db", filepath.Join(root, "orchestrator.db"), "--request", request, "trailing"}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "unexpected argument") {
+		t.Fatalf("extra cleanup argument accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorCleanupTakeoverDecodesRFC3339ClaimUntil(t *testing.T) {
+	root := t.TempDir()
+	request := filepath.Join(root, "cleanup.json")
+	if err := os.WriteFile(request, []byte(`{"claim":{"campaignId":"campaign","jobId":"job","generation":1,"allocationAlias":"scratch-a","hubAlias":"hub-a","worker":"worker-b","claimUntil":"2030-01-01T00:00:00Z"},"bundlePath":"/tmp/bundle.json","creationPath":"/tmp/creation.json","preflightPath":"/tmp/preflight.json","targetOrg":"scratch-a","sfBin":"/tmp/sf","outputPath":"/tmp/cleanup.json"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "cleanup-takeover", "--db", filepath.Join(root, "orchestrator.db"), "--request", request}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "orchestrator-worker-cleanup-failed") || strings.Contains(stderr.String(), "expected JSON object") || strings.Contains(stderr.String(), "cannot parse time") || strings.Contains(stderr.String(), "RFC3339") {
+		t.Fatalf("RFC3339 claimUntil was not decoded before cleanup validation: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
+func TestCorpusAssuranceOrchestratorCleanupCloseIsNotPublic(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	if code := Run(context.Background(), []string{"corpus", "assurance", "orchestrator", "cleanup-close"}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "unknown corpus assurance orchestrator operation") {
+		t.Fatalf("public cleanup-close accepted: code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
+	}
+}
+
 func writeOrchestratorCLIJSON(t *testing.T, path string, value any) {
 	t.Helper()
 	data, err := json.Marshal(value)

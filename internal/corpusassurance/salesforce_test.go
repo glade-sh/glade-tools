@@ -15,6 +15,7 @@ import (
 )
 
 const testSalesforceScratchMarker = "glade-assurance-0123456789abcdef0123456789abcdef"
+const testSalesforceCleanupOrgID = "00D000000000001"
 
 var salesforceCLIPath string
 
@@ -1020,6 +1021,146 @@ func TestRunSalesforceOrgCleanupOnlyDeletesTheReceiptCreatedOrg(t *testing.T) {
 	}
 	if _, err := os.Stat(outputPath); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRunSalesforceOrgCleanupWritesRecoveryReceiptWhenDeleteReportsNotFound(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, "assurance-sf0")
+	if err := os.Remove(outputPath); err != nil {
+		t.Fatal(err)
+	}
+	serverDeleted := false
+	cleanup, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", DevHub: "sealed-dev-hub", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		}
+		if len(args) >= 2 && args[0] == "org" && args[1] == "delete" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"permission denied"}`), ExitCode: 1}, nil
+		}
+		if len(args) >= 2 && args[0] == "data" && args[1] == "query" {
+			if strings.Contains(strings.Join(args, " "), "FROM ActiveScratchOrg") {
+				if serverDeleted {
+					return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)}, nil
+				}
+				return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":1,"records":[{"Id":"2AS000000000001","ScratchOrg":"` + testSalesforceCleanupOrgID + `"}]}}`)}, nil
+			}
+		}
+		if len(args) >= 2 && args[0] == "data" && args[1] == "delete" {
+			serverDeleted = true
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"success":true}}`)}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)}, nil
+	}})
+	creation, _, creationErr := readExactJSONBytes[SalesforceOrgCreation](creationPath)
+	if err != nil || creationErr != nil || !cleanup.RecoveredAbsent || !cleanup.ResidueAbsent || !validSalesforceRecoveredOrgCleanup(cleanup, localProofFileSHA256(t, bundlePath), bundlePath, creation) {
+		t.Fatalf("recovery cleanup = %#v, %v", cleanup, err)
+	}
+	if validSalesforceOrgCleanup(cleanup, localProofFileSHA256(t, bundlePath), bundlePath, creation) {
+		t.Fatal("recovery receipt accepted as standard cleanup proof")
+	}
+}
+
+func TestRunSalesforceOrgCleanupRecoversWhenServerRecordIsAlreadyAbsent(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, "assurance-sf0")
+	if err := os.Remove(outputPath); err != nil {
+		t.Fatal(err)
+	}
+	cleanup, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", DevHub: "sealed-dev-hub", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		}
+		if len(args) >= 2 && args[0] == "org" && args[1] == "delete" {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"permission denied"}`), ExitCode: 1}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)}, nil
+	}})
+	creation, _, creationErr := readExactJSONBytes[SalesforceOrgCreation](creationPath)
+	if err != nil || creationErr != nil || !cleanup.RecoveredAbsent || len(cleanup.Commands) != 2 || !validSalesforceRecoveredOrgCleanup(cleanup, localProofFileSHA256(t, bundlePath), bundlePath, creation) {
+		t.Fatalf("zero-record recovery = %#v, %v", cleanup, err)
+	}
+}
+
+func TestRunSalesforceOrgCleanupRejectsMalformedOrMismatchedServerRecord(t *testing.T) {
+	for name, response := range map[string][]byte{
+		"malformed":  []byte(`not-json`),
+		"mismatched": []byte(`{"status":0,"result":{"totalSize":1,"records":[{"Id":"2AS000000000001","ScratchOrg":"00D1"}]}}`),
+	} {
+		t.Run(name, func(t *testing.T) {
+			root := t.TempDir()
+			bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, "assurance-sf0")
+			if err := os.Remove(outputPath); err != nil {
+				t.Fatal(err)
+			}
+			_, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", DevHub: "sealed-dev-hub", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+				if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
+					return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+				}
+				if len(args) >= 2 && args[0] == "org" && args[1] == "delete" {
+					return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"permission denied"}`), ExitCode: 1}, nil
+				}
+				return salesforceCommandOutput{Stdout: response}, nil
+			}})
+			if err == nil {
+				t.Fatal("invalid ActiveScratchOrg response produced recovery")
+			}
+			if _, statErr := os.Lstat(outputPath); !os.IsNotExist(statErr) {
+				t.Fatalf("invalid response left cleanup receipt: %v", statErr)
+			}
+		})
+	}
+}
+
+func TestRunSalesforceOrgCleanupRejectsArbitraryDeleteFailureRecovery(t *testing.T) {
+	root := t.TempDir()
+	bundlePath, creationPath, preflightPath, outputPath := writeValidCleanupTakeoverFiles(t, root, "assurance-sf0")
+	if err := os.Remove(outputPath); err != nil {
+		t.Fatal(err)
+	}
+	_, err := RunSalesforceOrgCleanup(SalesforceOrgCleanupRequest{BundlePath: bundlePath, CreationPath: creationPath, PreflightPath: preflightPath, TargetOrg: "assurance-sf0", DevHub: "sealed-dev-hub", SFBin: salesforceCLIPath, OutputPath: outputPath, validateBundle: func(string) error { return nil }, runner: func(_ context.Context, _ string, args ...string) (salesforceCommandOutput, error) {
+		if len(args) >= 2 && args[0] == "org" && args[1] == "display" && containsString(args, "sealed-dev-hub") {
+			return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"id":"00D0","status":"Active","username":"sealed-dev-hub@example.invalid"}}`)}, nil
+		}
+		return salesforceCommandOutput{Stdout: []byte(`{"status":1,"message":"permission denied"}`), ExitCode: 1}, nil
+	}})
+	if err == nil {
+		t.Fatal("arbitrary delete failure produced recovery receipt")
+	}
+}
+
+func TestCleanupSalesforceServerOrgByIDRejectsInvalidOrgIDBeforeQuery(t *testing.T) {
+	called := false
+	authority := testSalesforceDevHubAuthority(t, "sealed-dev-hub", "00D000000000001", "sealed-dev-hub@example.invalid", testSalesforceExecutionAuthority(t))
+	_, err := cleanupSalesforceServerOrgByID(func(context.Context, string, ...string) (salesforceCommandOutput, error) {
+		called = true
+		return salesforceCommandOutput{Stdout: []byte(`{"status":0,"result":{"totalSize":0,"records":[]}}`)}, nil
+	}, authority, t.TempDir(), "00D0' OR ScratchOrg != '00D0")
+	if err == nil || called {
+		t.Fatalf("cleanupSalesforceServerOrgByID(err=%v, runnerCalled=%v), want validation error before runner", err, called)
+	}
+}
+
+func TestValidSalesforceOrgDisplayFailureRequiresNotFoundForm(t *testing.T) {
+	for name, data := range map[string][]byte{
+		"malformed":     []byte(`not-json`),
+		"authorization": []byte(`{"status":1,"message":"permission denied"}`),
+		"timeout":       []byte(`{"status":1,"message":"command timed out"}`),
+	} {
+		t.Run(name, func(t *testing.T) {
+			if validSalesforceOrgDisplayFailure(data) {
+				t.Fatalf("accepted non-not-found response %q", data)
+			}
+		})
+	}
+	for _, data := range [][]byte{
+		[]byte(`{"status":1,"message":"not found"}`),
+		[]byte(`{"status":1,"message":"No authorization information found for alias"}`),
+		[]byte(`{"status":1,"message":"org does not exist"}`),
+	} {
+		if !validSalesforceOrgDisplayFailure(data) {
+			t.Fatalf("rejected not-found response %q", data)
+		}
 	}
 }
 
