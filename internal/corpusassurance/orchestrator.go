@@ -780,6 +780,9 @@ func validateOrchestratorDefinition(definition OrchestratorCampaignDefinition) e
 			return fmt.Errorf("invalid controlled input hash")
 		}
 	}
+	if scope.Kind == "oracle-plan" && definition.ControlledInputSHA256["oracle-plan"] != scope.OraclePlanSHA256 {
+		return fmt.Errorf("campaign scope does not bind the controlled Oracle plan")
+	}
 	scopeIDs := make(map[string]bool, len(scope.Rows))
 	for _, row := range scope.Rows {
 		scopeIDs[row.SurfaceID] = true

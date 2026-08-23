@@ -420,18 +420,42 @@ func orchestratorSalesforceExpectedSurfaceIDs(oraclePlan OraclePlan, campaignPla
 	if err != nil {
 		return nil, err
 	}
+	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](campaignPlan.Definition.ScopePath)
+	if err != nil || replayBytesSHA256(scopeBytes) != campaignPlan.Definition.ScopeSHA256 {
+		return nil, fmt.Errorf("orchestrator campaign scope binding drift")
+	}
 	campaignSurfaces := map[string]bool{}
 	for _, job := range campaignPlan.Jobs {
 		for _, surfaceID := range job.SurfaceIDs {
 			campaignSurfaces[surfaceID] = true
 		}
 	}
-	if len(campaignSurfaces) != len(oraclePlan.Rows) {
-		return nil, fmt.Errorf("orchestrator campaign must partition the exact Oracle plan")
-	}
-	for _, row := range oraclePlan.Rows {
-		if !campaignSurfaces[row.SurfaceID] {
-			return nil, fmt.Errorf("Oracle surface %q is outside orchestrator campaign", row.SurfaceID)
+	if scope.Kind == "oracle-plan" {
+		if len(campaignSurfaces) != len(kinds) {
+			return nil, fmt.Errorf("orchestrator campaign must partition the exact Salesforce-required Oracle projection")
+		}
+		scopeRows := make(map[string]SurfaceOracleScopeRow, len(scope.Rows))
+		for _, row := range scope.Rows {
+			scopeRows[row.SurfaceID] = row
+		}
+		for surfaceID, action := range kinds {
+			if !campaignSurfaces[surfaceID] || scopeRows[surfaceID].Action != action {
+				return nil, fmt.Errorf("Salesforce-required Oracle surface %q does not match orchestrator campaign", surfaceID)
+			}
+		}
+		for surfaceID := range campaignSurfaces {
+			if kinds[surfaceID] == "" {
+				return nil, fmt.Errorf("non-Salesforce Oracle surface %q is inside orchestrator campaign", surfaceID)
+			}
+		}
+	} else {
+		if len(campaignSurfaces) != len(oraclePlan.Rows) {
+			return nil, fmt.Errorf("orchestrator campaign must partition the exact Oracle plan")
+		}
+		for _, row := range oraclePlan.Rows {
+			if !campaignSurfaces[row.SurfaceID] {
+				return nil, fmt.Errorf("Oracle surface %q is outside orchestrator campaign", row.SurfaceID)
+			}
 		}
 	}
 	expected := make([]string, 0, len(lease.SurfaceIDs))

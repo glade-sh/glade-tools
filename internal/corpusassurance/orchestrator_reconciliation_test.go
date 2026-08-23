@@ -119,7 +119,7 @@ func TestCreateOrchestratorSalesforceReconciliationRejectsDrift(t *testing.T) {
 	})
 	t.Run("empty oracle intersection", func(t *testing.T) {
 		definition := fixture.plan.Definition
-		definition.Shards = [2][]string{{"apex:Local.only"}, {"apex:Other.only", "apex:Runtime.run"}}
+		definition.Shards = [2][]string{{"apex:Local.only"}, {"apex:Mock.run", "apex:Other.only", "apex:Runtime.run", "apex:Shape.run"}}
 		plan, err := PlanOrchestratorCampaign(definition)
 		if err != nil {
 			t.Fatal(err)
@@ -408,10 +408,29 @@ func overwriteReconciliationJSON(t *testing.T, path string, value any) {
 func newOrchestratorSalesforceReconciliationFixture(t *testing.T) orchestratorSalesforceReconciliationFixture {
 	t.Helper()
 	inputs := oracleBundleTestInputsForLocalProof(t)
+	manifest, _, err := readExactJSONBytes[LocalProofFixtureManifest](inputs.fixtureManifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, fixture := range manifest.Fixtures {
+		if fixture.ID == "shape" {
+			manifest.SalesforceFixtures = append(manifest.SalesforceFixtures, fixture)
+		}
+	}
+	overwriteReconciliationJSON(t, inputs.fixtureManifestPath, manifest)
+	profile, _, err := readExactJSONBytes[AssuranceProfile](inputs.profilePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	profile.FixtureManifestSHA256 = localProofFileSHA256(t, inputs.fixtureManifestPath)
+	overwriteReconciliationJSON(t, inputs.profilePath, profile)
+	inputs.plan.ProfileSHA256 = localProofFileSHA256(t, inputs.profilePath)
 	inputs.plan.Rows = []OraclePlanRow{
 		{SurfaceID: "apex:Local.only", Action: oracleLocalContractOnly, ExclusionClass: "local-contract", ExclusionReason: "local-only proof"},
+		{SurfaceID: "apex:Mock.run", Action: oracleLocalContractOnly, ExclusionClass: "local-contract", ExclusionReason: "local-only mock"},
 		{SurfaceID: "apex:Other.only", Action: oracleWaiver, ExclusionClass: "waiver", ExclusionReason: "explicit non-parity waiver"},
 		{SurfaceID: "apex:Runtime.run", Action: oracleRuntime},
+		{SurfaceID: "apex:Shape.run", Action: oracleCompile},
 	}
 	overwriteReconciliationJSON(t, inputs.planPath, inputs.plan)
 	authority, _, err := readExactJSONBytes[ExclusionAuthority](inputs.authorityPath)
@@ -419,8 +438,10 @@ func newOrchestratorSalesforceReconciliationFixture(t *testing.T) orchestratorSa
 		t.Fatal(err)
 	}
 	authority.PlanSHA256 = localProofFileSHA256(t, inputs.planPath)
+	authority.ProfileSHA256 = localProofFileSHA256(t, inputs.profilePath)
 	authority.Rows = []ExclusionPolicyRow{
 		{SurfaceID: "apex:Local.only", Class: "local-contract", Reason: "local-only proof"},
+		{SurfaceID: "apex:Mock.run", Class: "local-contract", Reason: "local-only mock"},
 		{SurfaceID: "apex:Other.only", Class: "waiver", Reason: "explicit non-parity waiver"},
 	}
 	overwriteReconciliationJSON(t, inputs.authorityPath, authority)
@@ -470,10 +491,12 @@ func newOrchestratorSalesforceReconciliationFixture(t *testing.T) orchestratorSa
 	scopePath := filepath.Join(controllerRoot, "scope.json")
 	scope := SurfaceOracleScope{
 		SchemaVersion: 1, Kind: "all-runtime", SourceProfileSHA256: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64), PolicySHA256: strings.Repeat("c", 64),
-		Total: 3, ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 3}, Rows: []SurfaceOracleScopeRow{
+		Total: 5, ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 5}, Rows: []SurfaceOracleScopeRow{
 			{SurfaceID: "apex:Local.only", Disposition: localRuntimeRequired},
+			{SurfaceID: "apex:Mock.run", Disposition: localRuntimeRequired},
 			{SurfaceID: "apex:Other.only", Disposition: localRuntimeRequired},
 			{SurfaceID: "apex:Runtime.run", Disposition: localRuntimeRequired},
+			{SurfaceID: "apex:Shape.run", Disposition: localRuntimeRequired},
 		},
 	}
 	if err := WriteNewJSON(scopePath, scope); err != nil {
@@ -484,7 +507,7 @@ func newOrchestratorSalesforceReconciliationFixture(t *testing.T) orchestratorSa
 		Tools:     OrchestratorArtifact{Commit: bundle.Tools.Commit, SHA256: bundle.Tools.SHA256},
 		ScopePath: scopePath, ScopeSHA256: localProofFileSHA256(t, scopePath),
 		ControlledInputSHA256: map[string]string{"oracle-plan": localProofFileSHA256(t, oraclePlanPath)},
-		Shards:                [2][]string{{"apex:Local.only", "apex:Runtime.run"}, {"apex:Other.only"}},
+		Shards:                [2][]string{{"apex:Local.only", "apex:Runtime.run"}, {"apex:Mock.run", "apex:Other.only", "apex:Shape.run"}},
 	}
 	plan, err := PlanOrchestratorCampaign(definition)
 	if err != nil {
@@ -499,4 +522,34 @@ func newOrchestratorSalesforceReconciliationFixture(t *testing.T) orchestratorSa
 		t.Fatal(err)
 	}
 	return orchestratorSalesforceReconciliationFixture{plan: plan, lease: lease, oraclePlanPath: oraclePlanPath, bindingPath: bindingPath, files: files, workerRoot: workerRoot}
+}
+
+func withOraclePlanCampaignScope(t *testing.T, fixture orchestratorSalesforceReconciliationFixture) orchestratorSalesforceReconciliationFixture {
+	t.Helper()
+	root := t.TempDir()
+	scopePath := filepath.Join(root, "scope.json")
+	scope := SurfaceOracleScope{
+		SchemaVersion: 1, Kind: "oracle-plan", OraclePlanSHA256: localProofFileSHA256(t, fixture.oraclePlanPath),
+		SourceProfileSHA256: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64), PolicySHA256: strings.Repeat("c", 64),
+		Total: 2, ByDisposition: map[string]int{deterministicMockRequired: 0, localRuntimeRequired: 1, compileShapeRequired: 1}, Rows: []SurfaceOracleScopeRow{
+			{SurfaceID: "apex:Runtime.run", Disposition: localRuntimeRequired, Action: oracleRuntime},
+			{SurfaceID: "apex:Shape.run", Disposition: compileShapeRequired, Action: oracleCompile},
+		},
+	}
+	if err := WriteNewJSON(scopePath, scope); err != nil {
+		t.Fatal(err)
+	}
+	definition := fixture.plan.Definition
+	definition.ScopePath, definition.ScopeSHA256 = scopePath, localProofFileSHA256(t, scopePath)
+	definition.Shards = [2][]string{{"apex:Runtime.run"}, {"apex:Shape.run"}}
+	plan, err := PlanOrchestratorCampaign(definition)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture.plan, fixture.lease = plan, leaseForOrchestratorPlan(plan, 0)
+	fixture.bindingPath = filepath.Join(root, "ORCHESTRATOR_BINDING.json")
+	if _, err := WriteOrchestratorBatchBinding(fixture.bindingPath, fixture.plan, fixture.lease); err != nil {
+		t.Fatal(err)
+	}
+	return fixture
 }
