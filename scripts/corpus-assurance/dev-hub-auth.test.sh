@@ -132,6 +132,11 @@ grep -F 'missing recipients' "$tmp/missing.err"
 "$helper" list --store "$tmp/store" >"$tmp/list.out"
 grep -Eq '^store[[:space:]][0-9a-f]{64}$' "$tmp/list.out"
 grep -Eq '^alias[[:space:]]+glade-dev-hub[[:space:]][0-9a-f]{64}$' "$tmp/list.out"
+if ! /bin/bash "$helper" list --store "$tmp/store" >"$tmp/list-bash32.out" 2>"$tmp/list-bash32.err"; then
+  echo 'list failed under the system Bash with no temporary paths' >&2
+  exit 1
+fi
+[[ ! -s "$tmp/list-bash32.err" ]]
 
 old_hash="$(awk '$1 == "alias" {print $3}' "$tmp/list.out")"
 "$helper" replace --store "$tmp/store" --alias glade-dev-hub \

@@ -13,9 +13,11 @@ store_transaction_paths=()
 
 cleanup_temporary() {
   local path
-  for path in "${temporary_paths[@]}"; do
-    find "$path" -depth -delete 2>/dev/null || true
-  done
+  if ((${#temporary_paths[@]})); then
+    for path in "${temporary_paths[@]}"; do
+      find "$path" -depth -delete 2>/dev/null || true
+    done
+  fi
 }
 
 rollback_store_transaction() {
@@ -453,10 +455,12 @@ case "$command_name" in
       find "$state/pause" -maxdepth 0 -type f -delete 2>/dev/null || true
     fi
     printf 'store\t%s\n' "$current_store_hash"
-    for cipher in "${ciphers[@]}"; do
-      alias_name="$(basename "$cipher" .sfdx-auth-url.age)"
-      printf 'alias\t%s\t%s\n' "$alias_name" "$(file_hash "$cipher")"
-    done
+    if ((${#ciphers[@]})); then
+      for cipher in "${ciphers[@]}"; do
+        alias_name="$(basename "$cipher" .sfdx-auth-url.age)"
+        printf 'alias\t%s\t%s\n' "$alias_name" "$(file_hash "$cipher")"
+      done
+    fi
     ;;
 
   rewrap-all)
