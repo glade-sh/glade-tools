@@ -167,6 +167,129 @@ func TestRunReleaseValidationSealsFourFixedChecks(t *testing.T) {
 	}
 }
 
+func TestRunReleaseValidationReportsFailedCommandSafely(t *testing.T) {
+	root := t.TempDir()
+	gladeRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/glade\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/smoke.sh": "#!/bin/sh\n"})
+	toolsRoot := newInventoryRepository(t, map[string]string{"go.mod": "module example.com/tools\n\ngo 1.23.0\n", "main.go": "package main\n", "scripts/release-check.sh": "#!/bin/sh\n"})
+	candidatePath := filepath.Join(root, "glade")
+	if err := os.WriteFile(candidatePath, []byte("binary"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	toolsPath, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	toolsCommit := testGitOutput(t, toolsRoot, "rev-parse", "HEAD")
+	attemptPath := writeReleaseAttempt(t, root, candidatePath, testGitOutput(t, gladeRoot, "rev-parse", "HEAD"), toolsPath, toolsCommit)
+	freezePath := filepath.Join(root, "FINAL_TOOLS_COMMIT")
+	if err := os.WriteFile(freezePath, []byte(toolsCommit+"\n"), 0o400); err != nil {
+		t.Fatal(err)
+	}
+	outputPath := filepath.Join(root, "RELEASE_VALIDATION.json")
+	commandIndex := 0
+	_, err = RunReleaseValidation(ReleaseValidationRequest{
+		AttemptPath: attemptPath, GladeRoot: gladeRoot, CandidatePath: candidatePath,
+		ToolsRoot: toolsRoot, ToolsPath: toolsPath, ToolsFreezePath: freezePath, OutputPath: outputPath,
+		runner: func(_ context.Context, _ releaseCommand) (salesforceCommandOutput, error) {
+			commandIndex++
+			if commandIndex == 2 {
+				return salesforceCommandOutput{ExitCode: 17, Stdout: []byte("stdout-payload"), Stderr: []byte("stderr-payload")}, nil
+			}
+			return salesforceCommandOutput{}, nil
+		},
+	})
+	if err == nil || !strings.Contains(err.Error(), "release validation command 2 failed") || !strings.Contains(err.Error(), "exitCode=17") || !strings.Contains(err.Error(), "timedOut=false") {
+		t.Fatalf("RunReleaseValidation error = %v", err)
+	}
+	for _, leaked := range []string{"stdout-payload", "stderr-payload", gladeRoot, toolsRoot} {
+		if strings.Contains(err.Error(), leaked) {
+			t.Fatalf("RunReleaseValidation error leaked %q: %v", leaked, err)
+		}
+	}
+	if _, statErr := os.Stat(outputPath); !os.IsNotExist(statErr) {
+		t.Fatalf("release validation output exists after failed command: %v", statErr)
+	}
+}
+
+func TestRunReleaseValidationCommandReportsSafeFailures(t *testing.T) {
+	tests := []struct {
+		name   string
+		setup  func(*testing.T) releaseCommand
+		runner releaseCommandRunner
+		want   string
+	}{
+		{
+			name: "pre-hash missing path",
+			setup: func(t *testing.T) releaseCommand {
+				return releaseCommand{Path: filepath.Join(t.TempDir(), "missing"), Timeout: time.Second}
+			},
+			runner: func(context.Context, releaseCommand) (salesforceCommandOutput, error) {
+				t.Fatal("runner called after pre-hash failure")
+				return salesforceCommandOutput{}, nil
+			},
+			want: "exitCode=-1 timedOut=false",
+		},
+		{
+			name: "runner error",
+			setup: func(t *testing.T) releaseCommand {
+				path := filepath.Join(t.TempDir(), "check")
+				if err := os.WriteFile(path, []byte("check"), 0o700); err != nil {
+					t.Fatal(err)
+				}
+				return releaseCommand{Path: path, Timeout: time.Second}
+			},
+			runner: func(context.Context, releaseCommand) (salesforceCommandOutput, error) {
+				return salesforceCommandOutput{}, context.Canceled
+			},
+			want: "exitCode=-1 timedOut=false",
+		},
+		{
+			name: "timeout",
+			setup: func(t *testing.T) releaseCommand {
+				path := filepath.Join(t.TempDir(), "check")
+				if err := os.WriteFile(path, []byte("check"), 0o700); err != nil {
+					t.Fatal(err)
+				}
+				return releaseCommand{Path: path, Timeout: time.Millisecond}
+			},
+			runner: func(ctx context.Context, _ releaseCommand) (salesforceCommandOutput, error) {
+				<-ctx.Done()
+				return salesforceCommandOutput{}, nil
+			},
+			want: "exitCode=-1 timedOut=true",
+		},
+		{
+			name: "post-hash failure",
+			setup: func(t *testing.T) releaseCommand {
+				path := filepath.Join(t.TempDir(), "check")
+				if err := os.WriteFile(path, []byte("check"), 0o700); err != nil {
+					t.Fatal(err)
+				}
+				return releaseCommand{Path: path, Timeout: time.Second}
+			},
+			runner: func(_ context.Context, command releaseCommand) (salesforceCommandOutput, error) {
+				if err := os.Remove(command.Path); err != nil {
+					return salesforceCommandOutput{}, err
+				}
+				return salesforceCommandOutput{}, nil
+			},
+			want: "exitCode=-1 timedOut=false",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			command := test.setup(t)
+			_, err := runReleaseValidationCommand(test.runner, command)
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("runReleaseValidationCommand error = %v, want %q", err, test.want)
+			}
+			if strings.Contains(err.Error(), command.Path) {
+				t.Fatalf("runReleaseValidationCommand error leaked path %q: %v", command.Path, err)
+			}
+		})
+	}
+}
+
 func TestFixedReleaseCommandsUseCurrentToolsGate(t *testing.T) {
 	root := t.TempDir()
 	for _, path := range []string{filepath.Join(root, "glade", "scripts", "smoke.sh"), filepath.Join(root, "tools", "scripts", "release-check.sh")} {
