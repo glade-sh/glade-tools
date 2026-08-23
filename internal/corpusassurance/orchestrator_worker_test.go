@@ -404,6 +404,31 @@ func TestOrchestratorWorkerSuccessfulRetryClosesResolvedPriorGenerationAction(t 
 	}
 }
 
+func TestOrchestratorCleanupTakeoverClosesExactAction(t *testing.T) {
+	orchestrator, plan, lease, now, _, _ := readyOrchestratorWorker(t)
+	if err := orchestrator.SetHubCapacity("hub-a", 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.Reserve(lease, "hub-a", "scratch-takeover", now); err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.recordWorkerFailure(lease, orchestratorWorkerCleanupFailed, now); err != nil {
+		t.Fatal(err)
+	}
+	claimNow := now.Add(2 * time.Minute)
+	claim, err := orchestrator.ClaimCleanup(plan.CampaignID, "worker-b", claimNow, time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := orchestrator.CloseCleanup(claim, claimNow); err != nil {
+		t.Fatal(err)
+	}
+	var openActions int
+	if err := orchestrator.db.QueryRow(`SELECT count(*) FROM actions WHERE campaign_id = ? AND state = 'open'`, plan.CampaignID).Scan(&openActions); err != nil || openActions != 0 {
+		t.Fatalf("open actions=%d, err=%v", openActions, err)
+	}
+}
+
 func fixedOrchestratorWorkerClock(now time.Time) func() time.Time {
 	return func() time.Time { return now }
 }

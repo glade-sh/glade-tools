@@ -488,6 +488,10 @@ func (o *Orchestrator) CloseCleanup(claim OrchestratorCleanupClaim, now time.Tim
 	if rows, _ := result.RowsAffected(); rows != 1 {
 		return fmt.Errorf("cleanup hub reservation is unavailable")
 	}
+	actionPrefix := fmt.Sprintf("job %s generation %d: scratch cleanup action required; journal ", claim.JobID, claim.Generation)
+	if _, err := tx.Exec(`UPDATE actions SET state = 'closed' WHERE campaign_id = ? AND state = 'open' AND substr(detail, 1, ?) = ?`, claim.CampaignID, len(actionPrefix), actionPrefix); err != nil {
+		return err
+	}
 	return tx.Commit()
 }
 
