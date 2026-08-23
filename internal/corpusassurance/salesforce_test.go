@@ -1143,9 +1143,16 @@ func TestCleanupSalesforceServerOrgByIDRejectsInvalidOrgIDBeforeQuery(t *testing
 
 func TestValidSalesforceOrgDisplayFailureRequiresNotFoundForm(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"malformed":     []byte(`not-json`),
-		"authorization": []byte(`{"status":1,"message":"permission denied"}`),
-		"timeout":       []byte(`{"status":1,"message":"command timed out"}`),
+		"malformed":      []byte(`not-json`),
+		"authorization":  []byte(`{"status":1,"message":"permission denied"}`),
+		"timeout":        []byte(`{"status":1,"message":"command timed out"}`),
+		"success":        []byte(`{"status":0,"message":"not found"}`),
+		"unnamed-v2":     []byte(`{"status":2,"exitCode":2,"message":"No authorization information found for alias"}`),
+		"wrong-v2-name":  []byte(`{"status":2,"exitCode":2,"name":"AuthError","code":"NamedOrgNotFoundError","context":"OrgDisplayCommand","commandName":"OrgDisplayCommand","message":"No authorization information found for alias"}`),
+		"wrong-v2-code":  []byte(`{"status":2,"exitCode":2,"name":"NamedOrgNotFoundError","code":"AuthError","context":"OrgDisplayCommand","commandName":"OrgDisplayCommand","message":"No authorization information found for alias"}`),
+		"wrong-v2-exit":  []byte(`{"status":2,"exitCode":1,"name":"NamedOrgNotFoundError","code":"NamedOrgNotFoundError","context":"OrgDisplayCommand","commandName":"OrgDisplayCommand","message":"No authorization information found for alias"}`),
+		"wrong-v2-place": []byte(`{"status":2,"exitCode":2,"name":"NamedOrgNotFoundError","code":"NamedOrgNotFoundError","context":"OrgListCommand","commandName":"OrgListCommand","message":"No authorization information found for alias"}`),
+		"arbitrary-v3":   []byte(`{"status":3,"exitCode":3,"name":"NamedOrgNotFoundError","code":"NamedOrgNotFoundError","context":"OrgDisplayCommand","commandName":"OrgDisplayCommand","message":"No authorization information found for alias"}`),
 	} {
 		t.Run(name, func(t *testing.T) {
 			if validSalesforceOrgDisplayFailure(data) {
@@ -1157,6 +1164,7 @@ func TestValidSalesforceOrgDisplayFailureRequiresNotFoundForm(t *testing.T) {
 		[]byte(`{"status":1,"message":"not found"}`),
 		[]byte(`{"status":1,"message":"No authorization information found for alias"}`),
 		[]byte(`{"status":1,"message":"org does not exist"}`),
+		[]byte(`{"status":2,"exitCode":2,"name":"NamedOrgNotFoundError","code":"NamedOrgNotFoundError","context":"OrgDisplayCommand","commandName":"OrgDisplayCommand","message":"No authorization information found for alias"}`),
 	} {
 		if !validSalesforceOrgDisplayFailure(data) {
 			t.Fatalf("rejected not-found response %q", data)
