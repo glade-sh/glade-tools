@@ -466,6 +466,22 @@ func TestFixedReleaseEnvironmentDisablesMutableGoToolchainConfig(t *testing.T) {
 	}
 }
 
+func TestFixedReleaseEnvironmentPinsPackageConcurrency(t *testing.T) {
+	t.Setenv("GOMAXPROCS", "99")
+	entries := fixedReleaseEnvironment()
+	matches := 0
+	for _, entry := range entries {
+		if entry == "GOMAXPROCS=2" {
+			matches++
+		} else if strings.HasPrefix(entry, "GOMAXPROCS=") {
+			t.Fatalf("release environment has ambient GOMAXPROCS override: %#v", entries)
+		}
+	}
+	if matches != 1 {
+		t.Fatalf("release environment GOMAXPROCS entries = %d, want exactly one: %#v", matches, entries)
+	}
+}
+
 func TestFixedReleaseEnvironmentPrefersSupportedMacTools(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("Homebrew path is macOS-specific")
