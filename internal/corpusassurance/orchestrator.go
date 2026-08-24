@@ -596,13 +596,13 @@ func (o *Orchestrator) ClaimCleanupForLease(lease OrchestratorLease, allocationA
 		CampaignID: lease.CampaignID, JobID: lease.JobID, Generation: lease.Generation,
 		AllocationAlias: allocationAlias, Worker: lease.Worker, ClaimUntil: now.UTC().Add(duration),
 	}
-	if err := tx.QueryRow(`SELECT a.hub_alias FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND c.state = 'pending' AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until > ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, lease.Worker, now.UTC().UnixMilli()).Scan(&claim.HubAlias); err != nil {
+	if err := tx.QueryRow(`SELECT a.hub_alias FROM cleanup_journal c JOIN scratch_allocations a ON a.allocation_alias = c.allocation_alias JOIN jobs j ON j.campaign_id = c.campaign_id AND j.id = c.job_id WHERE c.allocation_alias = ? AND c.campaign_id = ? AND c.job_id = ? AND c.generation = ? AND (c.state = 'pending' OR (c.state = 'running' AND c.claim_until <= ?)) AND j.generation = c.generation AND j.leased_by = ? AND j.status = 'running' AND j.lease_until > ?`, allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, now.UTC().UnixMilli(), lease.Worker, now.UTC().UnixMilli()).Scan(&claim.HubAlias); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return OrchestratorCleanupClaim{}, fmt.Errorf("current lease cleanup journal is not claimable")
 		}
 		return OrchestratorCleanupClaim{}, err
 	}
-	result, err := tx.Exec(`UPDATE cleanup_journal SET state = 'running', claimed_by = ?, claim_until = ? WHERE allocation_alias = ? AND campaign_id = ? AND job_id = ? AND generation = ? AND state = 'pending'`, lease.Worker, claim.ClaimUntil.UnixMilli(), allocationAlias, lease.CampaignID, lease.JobID, lease.Generation)
+	result, err := tx.Exec(`UPDATE cleanup_journal SET state = 'running', claimed_by = ?, claim_until = ? WHERE allocation_alias = ? AND campaign_id = ? AND job_id = ? AND generation = ? AND (state = 'pending' OR (state = 'running' AND claim_until <= ?))`, lease.Worker, claim.ClaimUntil.UnixMilli(), allocationAlias, lease.CampaignID, lease.JobID, lease.Generation, now.UTC().UnixMilli())
 	if err != nil {
 		return OrchestratorCleanupClaim{}, err
 	}

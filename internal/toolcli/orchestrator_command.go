@@ -22,7 +22,7 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		return err
 	}
 	if len(args) == 0 || isHelpArg(args[0]) {
-		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|hub-observe|reserve|receipt|worker-once|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|production-build|worker-transfer|cleanup-takeover|cleanup-claim>")
+		_, err := fmt.Fprintln(w, "glade-tools corpus assurance orchestrator <plan|init|enqueue|status|lease|heartbeat|hub-observe|reserve|receipt|worker-once|worker-cleanup|raw-ingest|raw-accept|raw-abort-observe|raw-abort-accept|ssh-dispatch|ssh-fetch|production-build|worker-transfer|cleanup-takeover|cleanup-claim>")
 		return err
 	}
 	switch args[0] {
@@ -82,6 +82,53 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 		}
 		completion.ExecutedTools = corpusassurance.RuntimeArtifact{Commit: plan.Definition.Tools.Commit, OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: executingSHA}
 		return writeOrchestratorOutput(w, completion)
+	case "worker-cleanup":
+		flags := orchestratorFlags("worker-cleanup")
+		planPath, leasePath := flags.String("plan", "", ""), flags.String("lease", "", "")
+		planSHA, leaseSHA, failedSSHSHA := flags.String("plan-sha256", "", ""), flags.String("lease-sha256", "", ""), flags.String("failed-ssh-sha256", "", "")
+		bundlePath, devHub, targetOrg := flags.String("bundle", "", ""), flags.String("dev-hub", "", ""), flags.String("target-org", "", "")
+		sfBin, outputRoot := flags.String("sf-bin", "", ""), flags.String("output-root", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
+		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
+			return err
+		}
+		if err := requiredAssuranceFlags(*planPath, *planSHA, *leasePath, *leaseSHA, *failedSSHSHA, *bundlePath, *devHub, *targetOrg, *sfBin, *outputRoot); err != nil {
+			return err
+		}
+		for _, path := range []string{*planPath, *leasePath, *bundlePath, *sfBin, *outputRoot} {
+			if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+				return errors.New("absolute clean worker-cleanup paths are required")
+			}
+		}
+		var plan corpusassurance.OrchestratorCampaignPlan
+		planBytes, err := readOrchestratorJSONBytes(*planPath, &plan)
+		if err != nil || fmt.Sprintf("%x", sha256.Sum256(planBytes)) != *planSHA {
+			return errors.New("worker cleanup plan does not match dispatched hash")
+		}
+		var lease corpusassurance.OrchestratorLease
+		leaseBytes, err := readOrchestratorJSONBytes(*leasePath, &lease)
+		if err != nil || fmt.Sprintf("%x", sha256.Sum256(leaseBytes)) != *leaseSHA {
+			return errors.New("worker cleanup lease does not match dispatched hash")
+		}
+		executable, err := os.Executable()
+		if err != nil {
+			return fmt.Errorf("resolve executing worker cleanup: %w", err)
+		}
+		executingSHA, err := sha256File(executable)
+		if err != nil || validateOrchestratorWorkerExecutable(plan.Definition, *bundlePath, executingSHA) != nil {
+			return errors.New("executing cleanup worker does not match sealed tools")
+		}
+		receipt, err := corpusassurance.RunOrchestratorWorkerCleanup(corpusassurance.OrchestratorWorkerCleanupRequest{
+			Plan: plan, Lease: lease, PlanSHA256: *planSHA, LeaseSHA256: *leaseSHA, FailedSSHReceiptSHA256: *failedSSHSHA,
+			BundlePath: *bundlePath, DevHub: *devHub, TargetOrg: *targetOrg, SFBin: *sfBin, OutputRoot: *outputRoot,
+			ExecutedTools: corpusassurance.RuntimeArtifact{Commit: plan.Definition.Tools.Commit, OS: runtime.GOOS, Arch: runtime.GOARCH, SHA256: executingSHA},
+		})
+		if err != nil {
+			return err
+		}
+		return writeOrchestratorOutput(w, receipt)
 	case "raw-ingest":
 		flags := orchestratorFlags("raw-ingest")
 		planPath, leasePath, oraclePlanPath := flags.String("plan", "", ""), flags.String("lease", "", ""), flags.String("oracle-plan", "", "")
@@ -574,18 +621,45 @@ func runCorpusAssuranceOrchestrator(ctx context.Context, args []string, w io.Wri
 	case "cleanup-claim":
 		flags := orchestratorFlags("cleanup-claim")
 		database, campaign, worker := flags.String("db", "", ""), flags.String("campaign", "", ""), flags.String("worker", "", "")
+		leasePath, allocation := flags.String("lease", "", ""), flags.String("allocation", "", "")
 		seconds, output := flags.Int("seconds", 0, ""), flags.String("output", "", "")
+		if err := rejectDuplicateAssuranceFlags(args[1:], nil); err != nil {
+			return err
+		}
 		if err := parseOrchestratorFlags(flags, args[1:]); err != nil {
 			return err
 		}
-		if err := requiredAssuranceFlags(*database, *campaign, *worker, *output); err != nil || *seconds <= 0 {
+		if err := requiredAssuranceFlags(*database, *worker, *output); err != nil || *seconds <= 0 {
 			if err != nil {
 				return err
 			}
 			return errors.New("positive cleanup claim seconds are required")
 		}
 		return withOrchestrator(*database, func(orchestrator *corpusassurance.Orchestrator) error {
-			claim, err := orchestrator.ClaimCleanup(*campaign, *worker, time.Now().UTC(), time.Duration(*seconds)*time.Second)
+			duration := time.Duration(*seconds) * time.Second
+			var claim corpusassurance.OrchestratorCleanupClaim
+			var err error
+			if *leasePath != "" || *allocation != "" {
+				if err := requiredAssuranceFlags(*leasePath, *allocation); err != nil {
+					return errors.New("exact cleanup claim requires lease and allocation")
+				}
+				if duration <= corpusassurance.MinimumOrchestratorSSHCleanupClaimDuration {
+					return fmt.Errorf("exact SSH cleanup claim seconds must exceed %d", int(corpusassurance.MinimumOrchestratorSSHCleanupClaimDuration/time.Second))
+				}
+				var lease corpusassurance.OrchestratorLease
+				if err := readOrchestratorJSON(*leasePath, &lease); err != nil {
+					return err
+				}
+				if lease.Worker != *worker {
+					return errors.New("exact cleanup claim worker must match lease")
+				}
+				claim, err = orchestrator.ClaimCleanupForLease(lease, *allocation, time.Now().UTC(), duration)
+			} else {
+				if *campaign == "" {
+					return errors.New("campaign is required for campaign-wide cleanup claim")
+				}
+				claim, err = orchestrator.ClaimCleanup(*campaign, *worker, time.Now().UTC(), duration)
+			}
 			if err != nil {
 				return err
 			}

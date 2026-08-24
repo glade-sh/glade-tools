@@ -362,8 +362,34 @@ glade-tools corpus assurance orchestrator cleanup-takeover \
 `CLEANUP_TAKEOVER.json` is strict JSON. Unknown fields, duplicate fields,
 trailing JSON, and trailing command arguments fail. A cleanup error or a
 receipt without `residueAbsent: true` leaves the journal open and earns no
-proof credit. Only normal created-plus-preflight receipts are supported;
-reservation or invalidated takeover remains action-required. The `worker-once`
+proof credit. Normal created-plus-preflight takeover remains local. If SSH is
+hard-killed after org creation but before preflight, first claim the exact
+lease and allocation for more than 250 seconds (360 seconds is recommended):
+
+```bash
+glade-tools corpus assurance orchestrator cleanup-claim \
+  --db /absolute/coordinator/orchestrator.db \
+  --lease /absolute/coordinator/LEASE.json \
+  --allocation scratch-allocation \
+  --worker worker-name \
+  --seconds 360 \
+  --output /absolute/private/CLEANUP_CLAIM.json
+```
+
+Set the cleanup request's `ssh` object to the coordinator plan, lease, failed
+dispatch, host, worker binary, distinct worker-side plan, lease, bundle,
+Salesforce binary and lifecycle-root paths, plus a coordinator-local fetched
+receipt path. The coordinator rebinds the failed or timed-out dispatch to the
+stored campaign and exact original SSH command. It then runs the fixed
+`worker-cleanup` command where the bundle and credentials already live.
+Reservation-only, canonical invalidated-creation, and completed-creation
+before preflight are the only accepted lifecycle stages. The worker runs the
+existing no-preflight cleanup and seals `WORKER_CLEANUP.json`; the coordinator
+fetches only that sanitized mode-0600 receipt. It contains lifecycle stage,
+exact hashes, `residueAbsent: true`, and `proofCredit: 0`, but no host, path,
+org identity, username, command output, or raw error. Closure always writes a
+permanent cleanup credit block. Exact receipt-published and DB-closed retries
+finish idempotently without rerunning Salesforce cleanup. The `worker-once`
 entrypoint is DB-free, verifies its executable against the sealed Tools hash,
 requires the coordinator-reserved Dev Hub to match the sealed bundle, and runs
 one typed raw Salesforce shard. `ssh-dispatch` requires its job and attempt

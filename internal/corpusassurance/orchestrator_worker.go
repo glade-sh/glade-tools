@@ -58,13 +58,14 @@ type OrchestratorWorkerTransfer struct {
 // and the existing typed Salesforce cleanup inputs. It intentionally has no
 // proof-credit fields: takeover can close cleanup only.
 type OrchestratorCleanupTakeoverRequest struct {
-	Claim         OrchestratorCleanupClaim `json:"claim"`
-	BundlePath    string                   `json:"bundlePath"`
-	CreationPath  string                   `json:"creationPath"`
-	PreflightPath string                   `json:"preflightPath"`
-	TargetOrg     string                   `json:"targetOrg"`
-	SFBin         string                   `json:"sfBin"`
-	OutputPath    string                   `json:"outputPath"`
+	Claim         OrchestratorCleanupClaim       `json:"claim"`
+	BundlePath    string                         `json:"bundlePath"`
+	CreationPath  string                         `json:"creationPath"`
+	PreflightPath string                         `json:"preflightPath"`
+	TargetOrg     string                         `json:"targetOrg"`
+	SFBin         string                         `json:"sfBin"`
+	OutputPath    string                         `json:"outputPath"`
+	SSH           *OrchestratorSSHCleanupBinding `json:"ssh,omitempty"`
 }
 
 type salesforceOrgCleanupRunner func(SalesforceOrgCleanupRequest) (SalesforceOrgCleanup, error)
@@ -81,6 +82,10 @@ func runOrchestratorCleanupTakeover(orchestrator *Orchestrator, request Orchestr
 }
 
 func runOrchestratorCleanupTakeoverAt(orchestrator *Orchestrator, request OrchestratorCleanupTakeoverRequest, clock func() time.Time, cleanup salesforceOrgCleanupRunner) error {
+	if request.SSH != nil {
+		_, err := runOrchestratorSSHCleanupTakeover(request.SSH.coordinatorRequest(orchestrator, request.Claim, request.OutputPath), orchestratorSSHCleanupTimeout)
+		return err
+	}
 	if orchestrator == nil || cleanup == nil || request.Claim.CampaignID == "" || request.Claim.JobID == "" || request.Claim.Generation < 1 || request.Claim.AllocationAlias == "" || request.Claim.Worker == "" {
 		return orchestratorWorkerError{orchestratorWorkerCleanupFailed}
 	}
