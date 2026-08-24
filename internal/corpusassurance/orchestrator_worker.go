@@ -31,7 +31,8 @@ type OrchestratorWorkerRequest struct {
 }
 
 type OrchestratorWorkerRunResult struct {
-	BatchRoot string `json:"batchRoot"`
+	BatchRoot  string                                   `json:"batchRoot,omitempty"`
+	Production *BuildOrchestratorProductionBatchRequest `json:"-"`
 }
 
 type OrchestratorWorkerResult struct {
@@ -185,8 +186,8 @@ func runOrchestratorWorkerOnce(ctx context.Context, orchestrator *Orchestrator, 
 	if receipt, _, found, loadErr := loadOrchestratorReceipt(orchestrator.db, request.Lease.CampaignID, request.Lease.JobID, request.Lease.Generation); loadErr != nil {
 		return result, orchestratorWorkerError{failureCode}
 	} else if found {
-		transfer, validateErr := validateExistingOrchestratorWorkerTransfer(request.Plan, request.Lease, request.EvidenceRoot, request.OraclePlanPath, reconcile)
-		if validateErr != nil || receipt.BatchRoot != transfer.BatchRoot || receipt.ManifestSHA256 != transfer.ManifestSHA256 {
+		transfer, carrier, validateErr := validateExistingOrchestratorWorkerTransferBatch(request.Plan, request.Lease, request.EvidenceRoot, request.OraclePlanPath, reconcile)
+		if validateErr != nil || receipt.BatchRoot != transfer.BatchRoot || receipt.ManifestSHA256 != carrier.ManifestSHA256 || receipt.BindingSHA256 != carrier.AuthoritySHA256 {
 			return result, orchestratorWorkerError{failureCode}
 		}
 		_ = orchestrator.closeWorkerActions(request.Lease)
@@ -215,7 +216,7 @@ func runOrchestratorWorkerOnce(ctx context.Context, orchestrator *Orchestrator, 
 			err = orchestratorWorkerError{failureCode}
 		}
 	}()
-	transfer, transferErr := validateExistingOrchestratorWorkerTransfer(request.Plan, request.Lease, request.EvidenceRoot, request.OraclePlanPath, reconcile)
+	transfer, carrier, transferErr := validateExistingOrchestratorWorkerTransferBatch(request.Plan, request.Lease, request.EvidenceRoot, request.OraclePlanPath, reconcile)
 	if transferErr != nil {
 		if !os.IsNotExist(transferErr) {
 			failureCode = orchestratorWorkerTransferFailed
@@ -233,14 +234,25 @@ func runOrchestratorWorkerOnce(ctx context.Context, orchestrator *Orchestrator, 
 			return result, orchestratorWorkerError{failureCode}
 		}
 		var run OrchestratorWorkerRunResult
-		if run, err = runner(workContext, request); err != nil || workContext.Err() != nil || !filepath.IsAbs(run.BatchRoot) {
+		if run, err = runner(workContext, request); err != nil || workContext.Err() != nil || (run.Production == nil) == (run.BatchRoot == "") {
 			return result, orchestratorWorkerError{failureCode}
 		}
-		if _, _, err = validateOrchestratorWorkerBatch(run.BatchRoot, request.Plan, request.Lease); err != nil {
+		sourceBatchRoot := run.BatchRoot
+		if run.Production != nil {
+			production := *run.Production
+			if _, err = BuildOrchestratorProductionBatch(production); err != nil {
+				return result, orchestratorWorkerError{failureCode}
+			}
+			sourceBatchRoot = production.OutputPath
+		}
+		if !filepath.IsAbs(sourceBatchRoot) {
+			return result, orchestratorWorkerError{failureCode}
+		}
+		if _, err = validateOrchestratorBatch(sourceBatchRoot, request.Plan, request.Lease, true); err != nil {
 			return result, orchestratorWorkerError{failureCode}
 		}
 		failureCode = orchestratorWorkerTransferFailed
-		transfer, transferErr = transferOrchestratorWorkerBatch(OrchestratorWorkerTransferRequest{Plan: request.Plan, Lease: request.Lease, SourceBatchRoot: run.BatchRoot, EvidenceRoot: request.EvidenceRoot, OraclePlanPath: request.OraclePlanPath}, reconcile, nil)
+		transfer, carrier, transferErr = transferValidatedOrchestratorWorkerBatch(OrchestratorWorkerTransferRequest{Plan: request.Plan, Lease: request.Lease, SourceBatchRoot: sourceBatchRoot, EvidenceRoot: request.EvidenceRoot, OraclePlanPath: request.OraclePlanPath}, reconcile, nil)
 		if transferErr != nil {
 			if transferErr == errOrchestratorReconciliation {
 				failureCode = orchestratorWorkerReconciliationFailed
@@ -281,7 +293,7 @@ func runOrchestratorWorkerOnce(ctx context.Context, orchestrator *Orchestrator, 
 		failureCode = orchestratorWorkerCreditFailed
 		return result, orchestratorWorkerError{failureCode}
 	}
-	receipt, receiptErr := orchestrator.RecordReceipt(OrchestratorReceiptRequest{Lease: request.Lease, BatchRoot: transfer.BatchRoot}, now)
+	receipt, receiptErr := orchestrator.recordValidatedReceipt(OrchestratorReceiptRequest{Lease: request.Lease, BatchRoot: transfer.BatchRoot}, now, carrier)
 	if receiptErr != nil {
 		failureCode = orchestratorWorkerCreditFailed
 		return result, orchestratorWorkerError{failureCode}
@@ -319,69 +331,81 @@ func TransferOrchestratorWorkerBatch(request OrchestratorWorkerTransferRequest) 
 }
 
 func transferOrchestratorWorkerBatch(request OrchestratorWorkerTransferRequest, reconcile func(string, string, string) error, beforeRename func(string) error) (OrchestratorWorkerTransfer, error) {
+	transfer, _, err := transferValidatedOrchestratorWorkerBatch(request, reconcile, beforeRename)
+	return transfer, err
+}
+
+func transferValidatedOrchestratorWorkerBatch(request OrchestratorWorkerTransferRequest, reconcile func(string, string, string) error, beforeRename func(string) error) (OrchestratorWorkerTransfer, validatedOrchestratorBatch, error) {
 	if reconcile == nil || !filepath.IsAbs(request.SourceBatchRoot) || !filepath.IsAbs(request.EvidenceRoot) || !filepath.IsAbs(request.OraclePlanPath) {
-		return OrchestratorWorkerTransfer{}, fmt.Errorf("absolute worker transfer paths are required")
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, fmt.Errorf("absolute worker transfer paths are required")
 	}
 	if err := validateOrchestratorWorkerPlanLease(request.Plan, request.Lease); err != nil {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
-	if hash, err := sha256File(request.OraclePlanPath); err != nil || request.Plan.Definition.ControlledInputSHA256["oracle-plan"] != hash {
-		return OrchestratorWorkerTransfer{}, fmt.Errorf("oracle plan binding drift")
-	}
-	batch, paths, err := validateOrchestratorWorkerBatch(request.SourceBatchRoot, request.Plan, request.Lease)
+	batch, err := validateOrchestratorBatch(request.SourceBatchRoot, request.Plan, request.Lease, true)
 	if err != nil {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
+	}
+	if batch.SchemaVersion != orchestratorProductionBatchSchema {
+		if hash, err := sha256File(request.OraclePlanPath); err != nil || request.Plan.Definition.ControlledInputSHA256["oracle-plan"] != hash {
+			return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, fmt.Errorf("oracle plan binding drift")
+		}
 	}
 	if err := ensureOrchestratorEvidenceRoot(request.EvidenceRoot); err != nil {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
 	final := filepath.Join(request.EvidenceRoot, orchestratorWorkerBatchName(request.Lease))
 	if _, err := os.Lstat(final); err == nil {
 		existingTransfer, existingBatch, validateErr := validateExistingOrchestratorWorkerTransferBatch(request.Plan, request.Lease, request.EvidenceRoot, request.OraclePlanPath, reconcile)
-		if validateErr != nil || !reflect.DeepEqual(existingBatch, batch) {
-			return OrchestratorWorkerTransfer{}, fmt.Errorf("existing worker batch differs from sealed transfer")
+		comparison := existingBatch
+		comparison.BatchRoot = ""
+		if validateErr != nil || !reflect.DeepEqual(comparison, batch) {
+			return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, fmt.Errorf("existing worker batch differs from sealed transfer")
 		}
-		return existingTransfer, nil
+		return existingTransfer, existingBatch, nil
 	} else if !os.IsNotExist(err) {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
 	temp, err := os.MkdirTemp(request.EvidenceRoot, ".worker-transfer-")
 	if err != nil {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
 	defer os.RemoveAll(temp)
 	if err := os.Chmod(temp, 0o700); err != nil {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
-	for _, relative := range paths {
+	for _, relative := range batch.Paths {
 		if err := copyOrchestratorWorkerFile(request.SourceBatchRoot, temp, relative); err != nil {
-			return OrchestratorWorkerTransfer{}, err
+			return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 		}
 	}
-	receipt := filepath.Join(temp, "evidence", "SALESFORCE_RECONCILIATION.json")
-	packet := filepath.Join(temp, "evidence", "salesforce-reconciliation-packet")
-	if err := reconcile(request.OraclePlanPath, receipt, packet); err != nil {
-		return OrchestratorWorkerTransfer{}, errOrchestratorReconciliation
+	if batch.SchemaVersion != orchestratorProductionBatchSchema {
+		receipt := filepath.Join(temp, "evidence", "SALESFORCE_RECONCILIATION.json")
+		packet := filepath.Join(temp, "evidence", "salesforce-reconciliation-packet")
+		if err := reconcile(request.OraclePlanPath, receipt, packet); err != nil {
+			return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, errOrchestratorReconciliation
+		}
 	}
-	validated, _, err := validateOrchestratorWorkerBatch(temp, request.Plan, request.Lease)
+	validated, err := validateOrchestratorBatch(temp, request.Plan, request.Lease, true)
 	if err != nil || !reflect.DeepEqual(validated, batch) {
-		return OrchestratorWorkerTransfer{}, fmt.Errorf("coordinator-local runtime batch validation failed")
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, fmt.Errorf("coordinator-local runtime batch validation failed")
 	}
 	if err := syncOrchestratorWorkerTree(temp); err != nil {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
 	if beforeRename != nil {
 		if err := beforeRename(final); err != nil {
-			return OrchestratorWorkerTransfer{}, err
+			return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 		}
 	}
 	if err := os.Rename(temp, final); err != nil {
-		return OrchestratorWorkerTransfer{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
-	if err := syncOrchestratorWorkerDirectory(request.EvidenceRoot); err != nil {
-		return OrchestratorWorkerTransfer{}, err
+	if err := syncOrchestratorWorkerDirectory(request.EvidenceRoot); err != nil && batch.SchemaVersion != orchestratorProductionBatchSchema {
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
-	return OrchestratorWorkerTransfer{BatchRoot: final, ManifestSHA256: batch.ManifestSHA256}, nil
+	validated.BatchRoot = final
+	return OrchestratorWorkerTransfer{BatchRoot: final, ManifestSHA256: batch.ManifestSHA256}, validated, nil
 }
 
 func validateExistingOrchestratorWorkerTransfer(plan OrchestratorCampaignPlan, lease OrchestratorLease, evidenceRoot, oraclePlanPath string, reconcile func(string, string, string) error) (OrchestratorWorkerTransfer, error) {
@@ -389,32 +413,132 @@ func validateExistingOrchestratorWorkerTransfer(plan OrchestratorCampaignPlan, l
 	return transfer, err
 }
 
-func validateExistingOrchestratorWorkerTransferBatch(plan OrchestratorCampaignPlan, lease OrchestratorLease, evidenceRoot, oraclePlanPath string, reconcile func(string, string, string) error) (OrchestratorWorkerTransfer, SurfaceOracleIndexRuntimeBatch, error) {
+func validateExistingOrchestratorWorkerTransferBatch(plan OrchestratorCampaignPlan, lease OrchestratorLease, evidenceRoot, oraclePlanPath string, reconcile func(string, string, string) error) (OrchestratorWorkerTransfer, validatedOrchestratorBatch, error) {
 	if reconcile == nil || !filepath.IsAbs(evidenceRoot) || !filepath.IsAbs(oraclePlanPath) {
-		return OrchestratorWorkerTransfer{}, SurfaceOracleIndexRuntimeBatch{}, fmt.Errorf("absolute worker transfer paths are required")
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, fmt.Errorf("absolute worker transfer paths are required")
 	}
 	if err := validateOrchestratorWorkerPlanLease(plan, lease); err != nil {
-		return OrchestratorWorkerTransfer{}, SurfaceOracleIndexRuntimeBatch{}, err
-	}
-	if hash, err := sha256File(oraclePlanPath); err != nil || plan.Definition.ControlledInputSHA256["oracle-plan"] != hash {
-		return OrchestratorWorkerTransfer{}, SurfaceOracleIndexRuntimeBatch{}, fmt.Errorf("oracle plan binding drift")
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
 	final := filepath.Join(evidenceRoot, orchestratorWorkerBatchName(lease))
 	info, err := os.Lstat(final)
 	if err != nil {
-		return OrchestratorWorkerTransfer{}, SurfaceOracleIndexRuntimeBatch{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
 	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
-		return OrchestratorWorkerTransfer{}, SurfaceOracleIndexRuntimeBatch{}, fmt.Errorf("worker batch destination is not a directory")
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, fmt.Errorf("worker batch destination is not a directory")
 	}
-	batch, _, err := validateOrchestratorWorkerBatch(final, plan, lease)
+	batch, err := validateOrchestratorBatch(final, plan, lease, true)
 	if err != nil {
-		return OrchestratorWorkerTransfer{}, SurfaceOracleIndexRuntimeBatch{}, err
+		return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, err
 	}
-	if err := reconcile(oraclePlanPath, filepath.Join(final, "evidence", "SALESFORCE_RECONCILIATION.json"), filepath.Join(final, "evidence", "salesforce-reconciliation-packet")); err != nil {
-		return OrchestratorWorkerTransfer{}, SurfaceOracleIndexRuntimeBatch{}, errOrchestratorReconciliation
+	if batch.SchemaVersion != orchestratorProductionBatchSchema {
+		if hash, err := sha256File(oraclePlanPath); err != nil || plan.Definition.ControlledInputSHA256["oracle-plan"] != hash {
+			return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, fmt.Errorf("oracle plan binding drift")
+		}
+		if err := reconcile(oraclePlanPath, filepath.Join(final, "evidence", "SALESFORCE_RECONCILIATION.json"), filepath.Join(final, "evidence", "salesforce-reconciliation-packet")); err != nil {
+			return OrchestratorWorkerTransfer{}, validatedOrchestratorBatch{}, errOrchestratorReconciliation
+		}
 	}
+	batch.BatchRoot = final
 	return OrchestratorWorkerTransfer{BatchRoot: final, ManifestSHA256: batch.ManifestSHA256}, batch, nil
+}
+
+type validatedOrchestratorBatch struct {
+	BatchRoot       string
+	SchemaVersion   int
+	ManifestSHA256  string
+	AuthoritySHA256 string
+	Candidate       OrchestratorArtifact
+	Tools           OrchestratorArtifact
+	ProofStates     map[string]string
+	Paths           []string
+	ProductionFiles []ProductionRuntimeBatchFile
+	Legacy          SurfaceOracleIndexRuntimeBatch
+}
+
+func validateOrchestratorBatch(root string, plan OrchestratorCampaignPlan, lease OrchestratorLease, transfer bool) (validatedOrchestratorBatch, error) {
+	productionMarker := filepath.Join(root, "production", "PRODUCTION_RUNTIME_BATCH.json")
+	_, productionErr := os.Lstat(productionMarker)
+	production := productionErr == nil
+	legacy := false
+	for _, marker := range []string{filepath.Join(root, "inputs", "RUNTIME_BATCH_MANIFEST.json"), filepath.Join(root, "evidence", "ORCHESTRATOR_BINDING.json")} {
+		if _, err := os.Lstat(marker); err == nil {
+			legacy = true
+		} else if !os.IsNotExist(err) {
+			return validatedOrchestratorBatch{}, err
+		}
+	}
+	if production && legacy {
+		return validatedOrchestratorBatch{}, fmt.Errorf("mixed production v3 and legacy batch markers")
+	}
+	if production {
+		validated, err := validateOrchestratorProductionBatch(root, plan, lease)
+		if err != nil {
+			return validatedOrchestratorBatch{}, err
+		}
+		return validatedOrchestratorBatch{
+			SchemaVersion: orchestratorProductionBatchSchema, ManifestSHA256: validated.manifestSHA256, AuthoritySHA256: validated.manifestSHA256,
+			Candidate: OrchestratorArtifact{Commit: validated.manifest.Candidate.Commit, SHA256: validated.manifest.Candidate.SHA256}, Tools: OrchestratorArtifact{Commit: validated.manifest.NativeTools.Commit, SHA256: validated.manifest.NativeTools.SHA256},
+			ProofStates: validated.proofStates, Paths: validated.paths, ProductionFiles: append([]ProductionRuntimeBatchFile(nil), validated.manifest.Files...),
+		}, nil
+	}
+	if !os.IsNotExist(productionErr) {
+		return validatedOrchestratorBatch{}, productionErr
+	}
+	scope, scopeBytes, err := readExactJSONBytes[SurfaceOracleScope](plan.Definition.ScopePath)
+	if err != nil || replayBytesSHA256(scopeBytes) != plan.Definition.ScopeSHA256 {
+		return validatedOrchestratorBatch{}, fmt.Errorf("campaign scope binding drift")
+	}
+	legacyBatch, states, err := validateSurfaceRuntimeAdjudications(root, scope)
+	if err != nil {
+		return validatedOrchestratorBatch{}, err
+	}
+	if legacyBatch.candidateCommit != plan.Definition.Candidate.Commit || legacyBatch.candidateSHA256 != plan.Definition.Candidate.SHA256 || legacyBatch.toolsCommit != plan.Definition.Tools.Commit || legacyBatch.toolsSHA256 != plan.Definition.Tools.SHA256 {
+		return validatedOrchestratorBatch{}, fmt.Errorf("worker batch campaign binding drift")
+	}
+	if len(states) != len(lease.SurfaceIDs) {
+		return validatedOrchestratorBatch{}, fmt.Errorf("worker batch must adjudicate exact shard")
+	}
+	for _, surfaceID := range lease.SurfaceIDs {
+		if states[surfaceID] == "" {
+			return validatedOrchestratorBatch{}, fmt.Errorf("worker batch must adjudicate exact shard")
+		}
+	}
+	binding, err := readSurfaceBatchFile(root, filepath.Join("evidence", "ORCHESTRATOR_BINDING.json"))
+	if err != nil || binding.Mode.Perm() != 0o400 {
+		return validatedOrchestratorBatch{}, fmt.Errorf("sealed orchestrator batch binding is required")
+	}
+	var bindingValue OrchestratorBatchBinding
+	wantBinding, wantErr := expectedOrchestratorBatchBinding(plan, lease)
+	if decodeExactJSON(binding.Data, &bindingValue) != nil || wantErr != nil || !reflect.DeepEqual(bindingValue, wantBinding) {
+		return validatedOrchestratorBatch{}, fmt.Errorf("orchestrator batch binding drift")
+	}
+	proofStates := make(map[string]string, len(states))
+	for surfaceID, state := range states {
+		switch state {
+		case "matched":
+			proofStates[surfaceID] = "accepted"
+		case "product-mismatch":
+			proofStates[surfaceID] = "rejected"
+		case "inconclusive":
+			proofStates[surfaceID] = "inconclusive"
+		default:
+			return validatedOrchestratorBatch{}, fmt.Errorf("validated batch must adjudicate the exact shard in v1")
+		}
+	}
+	paths := []string(nil)
+	if transfer {
+		validated, transferPaths, err := validateOrchestratorWorkerBatch(root, plan, lease)
+		if err != nil {
+			return validatedOrchestratorBatch{}, err
+		}
+		if !reflect.DeepEqual(validated, legacyBatch) {
+			return validatedOrchestratorBatch{}, fmt.Errorf("legacy worker batch validation drift")
+		}
+		paths = transferPaths
+	}
+	return validatedOrchestratorBatch{SchemaVersion: 1, ManifestSHA256: legacyBatch.ManifestSHA256, AuthoritySHA256: replayBytesSHA256(binding.Data), Candidate: OrchestratorArtifact{Commit: legacyBatch.candidateCommit, SHA256: legacyBatch.candidateSHA256}, Tools: OrchestratorArtifact{Commit: legacyBatch.toolsCommit, SHA256: legacyBatch.toolsSHA256}, ProofStates: proofStates, Paths: paths, Legacy: legacyBatch}, nil
 }
 
 func validateOrchestratorWorkerRequest(request OrchestratorWorkerRequest) error {

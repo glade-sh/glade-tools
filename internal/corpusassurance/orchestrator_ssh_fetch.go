@@ -36,25 +36,26 @@ type OrchestratorSSHRawFetchRequest struct {
 }
 
 type OrchestratorSSHRawFetchReceipt struct {
-	SchemaVersion             int    `json:"schemaVersion"`
-	Status                    string `json:"status"`
-	Passed                    bool   `json:"passed"`
-	CampaignID                string `json:"campaignId"`
-	JobID                     string `json:"jobId"`
-	ShardIndex                int    `json:"shardIndex"`
-	Generation                int    `json:"generation"`
-	SpecSHA256                string `json:"specSha256"`
-	PlanSHA256                string `json:"planSha256"`
-	LeaseSHA256               string `json:"leaseSha256"`
-	SSHReceiptSHA256          string `json:"sshReceiptSha256"`
-	TreeManifestSHA256        string `json:"treeManifestSha256"`
-	OrchestratorBindingSHA256 string `json:"orchestratorBindingSha256"`
-	SalesforceShardSHA256     string `json:"salesforceShardSha256"`
-	OrgCleanupSHA256          string `json:"orgCleanupSha256"`
-	CopyStdoutSHA256          string `json:"copyStdoutSha256"`
-	CopyStderrSHA256          string `json:"copyStderrSha256"`
-	ChecksumStdoutSHA256      string `json:"checksumStdoutSha256"`
-	ChecksumStderrSHA256      string `json:"checksumStderrSha256"`
+	SchemaVersion             int             `json:"schemaVersion"`
+	Status                    string          `json:"status"`
+	Passed                    bool            `json:"passed"`
+	CampaignID                string          `json:"campaignId"`
+	JobID                     string          `json:"jobId"`
+	ShardIndex                int             `json:"shardIndex"`
+	Generation                int             `json:"generation"`
+	SpecSHA256                string          `json:"specSha256"`
+	PlanSHA256                string          `json:"planSha256"`
+	LeaseSHA256               string          `json:"leaseSha256"`
+	SSHReceiptSHA256          string          `json:"sshReceiptSha256"`
+	TreeManifestSHA256        string          `json:"treeManifestSha256"`
+	OrchestratorBindingSHA256 string          `json:"orchestratorBindingSha256"`
+	SalesforceShardSHA256     string          `json:"salesforceShardSha256"`
+	OrgCleanupSHA256          string          `json:"orgCleanupSha256"`
+	CopyStdoutSHA256          string          `json:"copyStdoutSha256"`
+	CopyStderrSHA256          string          `json:"copyStderrSha256"`
+	ChecksumStdoutSHA256      string          `json:"checksumStdoutSha256"`
+	ChecksumStderrSHA256      string          `json:"checksumStderrSha256"`
+	ExecutedTools             RuntimeArtifact `json:"executedTools,omitzero"`
 }
 
 func FetchOrchestratorSSHRaw(request OrchestratorSSHRawFetchRequest) (OrchestratorSSHRawFetchReceipt, error) {
@@ -146,7 +147,7 @@ func validateOrchestratorSSHRawFetchRequest(request OrchestratorSSHRawFetchReque
 		return "", "", "", fmt.Errorf("orchestrator fetch SSH receipt drift")
 	}
 	sshSHA := replayBytesSHA256(sshBytes)
-	if dispatch.SchemaVersion != 1 || !dispatch.Passed || dispatch.Status != "worker-complete" || dispatch.ExitCode != 0 || dispatch.TimedOut || dispatch.FailureCode != "" || dispatch.ActionRequired || dispatch.ActionCode != "" || dispatch.CampaignID != request.Lease.CampaignID || dispatch.JobID != request.Lease.JobID || dispatch.ShardIndex != request.Lease.ShardIndex || dispatch.Generation != request.Lease.Generation || dispatch.SpecSHA256 != request.Plan.SpecSHA256 || dispatch.PlanSHA256 != planSHA || dispatch.LeaseSHA256 != leaseSHA || dispatch.TimeoutMS != orchestratorSSHTimeout.Milliseconds() || !sha256Pattern.MatchString(dispatch.StdoutSHA256) || !sha256Pattern.MatchString(dispatch.StderrSHA256) || !sha256Pattern.MatchString(dispatch.OrchestratorBindingSHA256) || !sha256Pattern.MatchString(dispatch.SalesforceShardSHA256) || !sha256Pattern.MatchString(dispatch.OrgCleanupSHA256) {
+	if dispatch.SchemaVersion != 1 || !dispatch.Passed || dispatch.Status != "worker-complete" || dispatch.ExitCode != 0 || dispatch.TimedOut || dispatch.FailureCode != "" || dispatch.ActionRequired || dispatch.ActionCode != "" || dispatch.CampaignID != request.Lease.CampaignID || dispatch.JobID != request.Lease.JobID || dispatch.ShardIndex != request.Lease.ShardIndex || dispatch.Generation != request.Lease.Generation || dispatch.SpecSHA256 != request.Plan.SpecSHA256 || dispatch.PlanSHA256 != planSHA || dispatch.LeaseSHA256 != leaseSHA || dispatch.TimeoutMS != orchestratorSSHTimeout.Milliseconds() || !sha256Pattern.MatchString(dispatch.StdoutSHA256) || !sha256Pattern.MatchString(dispatch.StderrSHA256) || !sha256Pattern.MatchString(dispatch.OrchestratorBindingSHA256) || !sha256Pattern.MatchString(dispatch.SalesforceShardSHA256) || !sha256Pattern.MatchString(dispatch.OrgCleanupSHA256) || !validOrchestratorExecutedTools(dispatch.ExecutedTools, request.Plan) {
 		return "", "", "", fmt.Errorf("invalid completed SSH dispatch receipt")
 	}
 	commandRequest := OrchestratorSSHDispatchRequest{Host: request.Host, WorkerBin: request.WorkerBin, PlanPath: request.PlanPath, LeasePath: request.LeasePath, BundlePath: request.BundlePath, TargetOrg: request.TargetOrg, SFBin: request.SFBin, OutputRoot: request.RemoteRoot}
@@ -171,7 +172,7 @@ func validateExistingOrchestratorSSHRawFetch(request OrchestratorSSHRawFetchRequ
 }
 
 func validOrchestratorSSHRawFetchReceipt(receipt OrchestratorSSHRawFetchReceipt, request OrchestratorSSHRawFetchRequest, planSHA, leaseSHA, sshSHA, manifestSHA string) bool {
-	return receipt.SchemaVersion == 1 && receipt.Status == "fetched" && receipt.Passed && receipt.CampaignID == request.Plan.CampaignID && receipt.JobID == request.Lease.JobID && receipt.ShardIndex == request.Lease.ShardIndex && receipt.Generation == request.Lease.Generation && receipt.SpecSHA256 == request.Plan.SpecSHA256 && receipt.PlanSHA256 == planSHA && receipt.LeaseSHA256 == leaseSHA && receipt.SSHReceiptSHA256 == sshSHA && receipt.TreeManifestSHA256 == manifestSHA && receipt.OrchestratorBindingSHA256 == request.Dispatch.OrchestratorBindingSHA256 && receipt.SalesforceShardSHA256 == request.Dispatch.SalesforceShardSHA256 && receipt.OrgCleanupSHA256 == request.Dispatch.OrgCleanupSHA256 && sha256Pattern.MatchString(receipt.CopyStdoutSHA256) && sha256Pattern.MatchString(receipt.CopyStderrSHA256) && sha256Pattern.MatchString(receipt.ChecksumStdoutSHA256) && sha256Pattern.MatchString(receipt.ChecksumStderrSHA256)
+	return receipt.SchemaVersion == 1 && receipt.Status == "fetched" && receipt.Passed && receipt.CampaignID == request.Plan.CampaignID && receipt.JobID == request.Lease.JobID && receipt.ShardIndex == request.Lease.ShardIndex && receipt.Generation == request.Lease.Generation && receipt.SpecSHA256 == request.Plan.SpecSHA256 && receipt.PlanSHA256 == planSHA && receipt.LeaseSHA256 == leaseSHA && receipt.SSHReceiptSHA256 == sshSHA && receipt.TreeManifestSHA256 == manifestSHA && receipt.OrchestratorBindingSHA256 == request.Dispatch.OrchestratorBindingSHA256 && receipt.SalesforceShardSHA256 == request.Dispatch.SalesforceShardSHA256 && receipt.OrgCleanupSHA256 == request.Dispatch.OrgCleanupSHA256 && receipt.ExecutedTools == request.Dispatch.ExecutedTools && sha256Pattern.MatchString(receipt.CopyStdoutSHA256) && sha256Pattern.MatchString(receipt.CopyStderrSHA256) && sha256Pattern.MatchString(receipt.ChecksumStdoutSHA256) && sha256Pattern.MatchString(receipt.ChecksumStderrSHA256)
 }
 
 func orchestratorSSHRawFetchReceipt(request OrchestratorSSHRawFetchRequest, planSHA, leaseSHA, sshSHA, manifestSHA string, copyOutput, checksumOutput salesforceCommandOutput) OrchestratorSSHRawFetchReceipt {
@@ -179,6 +180,7 @@ func orchestratorSSHRawFetchReceipt(request OrchestratorSSHRawFetchRequest, plan
 		SchemaVersion: 1, Status: "fetched", Passed: true, CampaignID: request.Plan.CampaignID, JobID: request.Lease.JobID, ShardIndex: request.Lease.ShardIndex, Generation: request.Lease.Generation,
 		SpecSHA256: request.Plan.SpecSHA256, PlanSHA256: planSHA, LeaseSHA256: leaseSHA, SSHReceiptSHA256: sshSHA, TreeManifestSHA256: manifestSHA,
 		OrchestratorBindingSHA256: request.Dispatch.OrchestratorBindingSHA256, SalesforceShardSHA256: request.Dispatch.SalesforceShardSHA256, OrgCleanupSHA256: request.Dispatch.OrgCleanupSHA256,
+		ExecutedTools:    request.Dispatch.ExecutedTools,
 		CopyStdoutSHA256: replayBytesSHA256(copyOutput.Stdout), CopyStderrSHA256: replayBytesSHA256(copyOutput.Stderr), ChecksumStdoutSHA256: replayBytesSHA256(checksumOutput.Stdout), ChecksumStderrSHA256: replayBytesSHA256(checksumOutput.Stderr),
 	}
 }

@@ -18,7 +18,8 @@ func TestRunOrchestratorSSHDispatchUsesFixedWorkerCommandAndSanitizedReceipt(t *
 	planSHA, leaseSHA := orchestratorSSHTestInputHashes(t, request)
 	var gotBinary string
 	var gotArgs []string
-	completion, err := json.Marshal(OrchestratorWorkerOnceCompletion{CampaignID: lease.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "worker-complete", SpecSHA256: plan.SpecSHA256, PlanSHA256: planSHA, LeaseSHA256: leaseSHA, OrchestratorBindingSHA256: strings.Repeat("a", 64), SalesforceShardSHA256: strings.Repeat("b", 64), OrgCleanupSHA256: strings.Repeat("c", 64)})
+	executedTools := RuntimeArtifact{Commit: plan.Definition.Tools.Commit, OS: "darwin", Arch: "arm64", SHA256: plan.Definition.Tools.SHA256}
+	completion, err := json.Marshal(OrchestratorWorkerOnceCompletion{CampaignID: lease.CampaignID, JobID: lease.JobID, ShardIndex: lease.ShardIndex, Generation: lease.Generation, Status: "worker-complete", SpecSHA256: plan.SpecSHA256, PlanSHA256: planSHA, LeaseSHA256: leaseSHA, OrchestratorBindingSHA256: strings.Repeat("a", 64), SalesforceShardSHA256: strings.Repeat("b", 64), OrgCleanupSHA256: strings.Repeat("c", 64), ExecutedTools: executedTools})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +38,7 @@ func TestRunOrchestratorSSHDispatchUsesFixedWorkerCommandAndSanitizedReceipt(t *
 	if gotArgs[4] != want || !strings.Contains(want, "/usr/bin/shasum -a 256 --") || !strings.Contains(want, "export SF_USE_GENERIC_UNIX_KEYCHAIN=true; exec") || !strings.Contains(want, " corpus assurance orchestrator worker-once") || !strings.Contains(want, "--dev-hub 'sealed-hub'") {
 		t.Fatalf("worker command = %q, want %q", gotArgs[4], want)
 	}
-	if receipt.Status != "worker-complete" || !receipt.Passed || receipt.TimeoutMS != orchestratorSSHTimeout.Milliseconds() || receipt.StdoutSHA256 == "" || receipt.StderrSHA256 == "" || receipt.SpecSHA256 != plan.SpecSHA256 || receipt.PlanSHA256 != planSHA || receipt.LeaseSHA256 != leaseSHA || receipt.OrchestratorBindingSHA256 != strings.Repeat("a", 64) || receipt.SalesforceShardSHA256 != strings.Repeat("b", 64) || receipt.OrgCleanupSHA256 != strings.Repeat("c", 64) || receipt.ActionRequired || receipt.ActionCode != "" {
+	if receipt.Status != "worker-complete" || !receipt.Passed || receipt.TimeoutMS != orchestratorSSHTimeout.Milliseconds() || receipt.StdoutSHA256 == "" || receipt.StderrSHA256 == "" || receipt.SpecSHA256 != plan.SpecSHA256 || receipt.PlanSHA256 != planSHA || receipt.LeaseSHA256 != leaseSHA || receipt.OrchestratorBindingSHA256 != strings.Repeat("a", 64) || receipt.SalesforceShardSHA256 != strings.Repeat("b", 64) || receipt.OrgCleanupSHA256 != strings.Repeat("c", 64) || receipt.ExecutedTools != executedTools || receipt.ActionRequired || receipt.ActionCode != "" {
 		t.Fatalf("receipt = %#v", receipt)
 	}
 	data, err := os.ReadFile(request.OutputPath)
@@ -52,6 +53,19 @@ func TestRunOrchestratorSSHDispatchUsesFixedWorkerCommandAndSanitizedReceipt(t *
 	var sealed OrchestratorSSHDispatchReceipt
 	if err := json.Unmarshal(data, &sealed); err != nil || sealed != receipt {
 		t.Fatalf("sealed receipt = %#v, want %#v (err=%v)", sealed, receipt, err)
+	}
+}
+
+func TestOrchestratorExecutedToolsPreservesHistoricalZeroValueJSON(t *testing.T) {
+	for name, value := range map[string]any{
+		"completion": OrchestratorWorkerOnceCompletion{Status: "worker-complete"},
+		"dispatch":   OrchestratorSSHDispatchReceipt{Status: "worker-complete"},
+		"fetch":      OrchestratorSSHRawFetchReceipt{Status: "fetched"},
+	} {
+		data, err := json.Marshal(value)
+		if err != nil || strings.Contains(string(data), "executedTools") {
+			t.Fatalf("%s zero-value JSON = %s, %v", name, data, err)
+		}
 	}
 }
 

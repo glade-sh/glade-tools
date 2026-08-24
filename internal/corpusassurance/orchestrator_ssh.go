@@ -39,46 +39,48 @@ type OrchestratorSSHDispatchRequest struct {
 // OrchestratorSSHDispatchReceipt is safe to publish. It deliberately contains
 // no host, user, org, path, command, or retained SSH output.
 type OrchestratorSSHDispatchReceipt struct {
-	SchemaVersion             int    `json:"schemaVersion"`
-	CampaignID                string `json:"campaignId"`
-	JobID                     string `json:"jobId"`
-	ShardIndex                int    `json:"shardIndex"`
-	Generation                int    `json:"generation"`
-	Status                    string `json:"status"`
-	FailureCode               string `json:"failureCode,omitempty"`
-	CommandSHA256             string `json:"commandSha256"`
-	StdoutSHA256              string `json:"stdoutSha256"`
-	StderrSHA256              string `json:"stderrSha256"`
-	ExitCode                  int    `json:"exitCode"`
-	DurationMS                int64  `json:"durationMs"`
-	TimeoutMS                 int64  `json:"timeoutMs"`
-	TimedOut                  bool   `json:"timedOut"`
-	Passed                    bool   `json:"passed"`
-	ActionRequired            bool   `json:"actionRequired"`
-	ActionCode                string `json:"actionCode,omitempty"`
-	SpecSHA256                string `json:"specSha256"`
-	PlanSHA256                string `json:"planSha256"`
-	LeaseSHA256               string `json:"leaseSha256"`
-	OrchestratorBindingSHA256 string `json:"orchestratorBindingSha256"`
-	SalesforceShardSHA256     string `json:"salesforceShardSha256"`
-	OrgCleanupSHA256          string `json:"orgCleanupSha256"`
+	SchemaVersion             int             `json:"schemaVersion"`
+	CampaignID                string          `json:"campaignId"`
+	JobID                     string          `json:"jobId"`
+	ShardIndex                int             `json:"shardIndex"`
+	Generation                int             `json:"generation"`
+	Status                    string          `json:"status"`
+	FailureCode               string          `json:"failureCode,omitempty"`
+	CommandSHA256             string          `json:"commandSha256"`
+	StdoutSHA256              string          `json:"stdoutSha256"`
+	StderrSHA256              string          `json:"stderrSha256"`
+	ExitCode                  int             `json:"exitCode"`
+	DurationMS                int64           `json:"durationMs"`
+	TimeoutMS                 int64           `json:"timeoutMs"`
+	TimedOut                  bool            `json:"timedOut"`
+	Passed                    bool            `json:"passed"`
+	ActionRequired            bool            `json:"actionRequired"`
+	ActionCode                string          `json:"actionCode,omitempty"`
+	SpecSHA256                string          `json:"specSha256"`
+	PlanSHA256                string          `json:"planSha256"`
+	LeaseSHA256               string          `json:"leaseSha256"`
+	OrchestratorBindingSHA256 string          `json:"orchestratorBindingSha256"`
+	SalesforceShardSHA256     string          `json:"salesforceShardSha256"`
+	OrgCleanupSHA256          string          `json:"orgCleanupSha256"`
+	ExecutedTools             RuntimeArtifact `json:"executedTools,omitzero"`
 }
 
 // OrchestratorWorkerOnceCompletion is the only stdout contract accepted from
 // a remote worker. It contains no paths, host identity, org identity, or raw
 // command output.
 type OrchestratorWorkerOnceCompletion struct {
-	CampaignID                string `json:"campaignId"`
-	JobID                     string `json:"jobId"`
-	ShardIndex                int    `json:"shardIndex"`
-	Generation                int    `json:"generation"`
-	Status                    string `json:"status"`
-	SpecSHA256                string `json:"specSha256"`
-	PlanSHA256                string `json:"planSha256"`
-	LeaseSHA256               string `json:"leaseSha256"`
-	OrchestratorBindingSHA256 string `json:"orchestratorBindingSha256"`
-	SalesforceShardSHA256     string `json:"salesforceShardSha256"`
-	OrgCleanupSHA256          string `json:"orgCleanupSha256"`
+	CampaignID                string          `json:"campaignId"`
+	JobID                     string          `json:"jobId"`
+	ShardIndex                int             `json:"shardIndex"`
+	Generation                int             `json:"generation"`
+	Status                    string          `json:"status"`
+	SpecSHA256                string          `json:"specSha256"`
+	PlanSHA256                string          `json:"planSha256"`
+	LeaseSHA256               string          `json:"leaseSha256"`
+	OrchestratorBindingSHA256 string          `json:"orchestratorBindingSha256"`
+	SalesforceShardSHA256     string          `json:"salesforceShardSha256"`
+	OrgCleanupSHA256          string          `json:"orgCleanupSha256"`
+	ExecutedTools             RuntimeArtifact `json:"executedTools,omitzero"`
 }
 
 type orchestratorSSHRunner func(context.Context, string, ...string) (salesforceCommandOutput, error)
@@ -163,7 +165,7 @@ func runOrchestratorSSHDispatchWithTimeout(request OrchestratorSSHDispatchReques
 	}
 	var completion OrchestratorWorkerOnceCompletion
 	completionErr := decodeExactJSON(output.Stdout, &completion)
-	completionValid := completionErr == nil && completion.CampaignID == lease.CampaignID && completion.JobID == lease.JobID && completion.ShardIndex == lease.ShardIndex && completion.Generation == lease.Generation && completion.Status == "worker-complete" && completion.SpecSHA256 == plan.SpecSHA256 && completion.PlanSHA256 == planSHA && completion.LeaseSHA256 == leaseSHA && sha256Pattern.MatchString(completion.OrchestratorBindingSHA256) && sha256Pattern.MatchString(completion.SalesforceShardSHA256) && sha256Pattern.MatchString(completion.OrgCleanupSHA256)
+	completionValid := completionErr == nil && completion.CampaignID == lease.CampaignID && completion.JobID == lease.JobID && completion.ShardIndex == lease.ShardIndex && completion.Generation == lease.Generation && completion.Status == "worker-complete" && completion.SpecSHA256 == plan.SpecSHA256 && completion.PlanSHA256 == planSHA && completion.LeaseSHA256 == leaseSHA && sha256Pattern.MatchString(completion.OrchestratorBindingSHA256) && sha256Pattern.MatchString(completion.SalesforceShardSHA256) && sha256Pattern.MatchString(completion.OrgCleanupSHA256) && validOrchestratorExecutedTools(completion.ExecutedTools, plan)
 	receipt.Passed = runErr == nil && receipt.ExitCode == 0 && !receipt.TimedOut && completionValid
 	if receipt.Passed {
 		receipt.Status, receipt.FailureCode = "worker-complete", ""
@@ -174,6 +176,7 @@ func runOrchestratorSSHDispatchWithTimeout(request OrchestratorSSHDispatchReques
 		receipt.OrchestratorBindingSHA256 = completion.OrchestratorBindingSHA256
 		receipt.SalesforceShardSHA256 = completion.SalesforceShardSHA256
 		receipt.OrgCleanupSHA256 = completion.OrgCleanupSHA256
+		receipt.ExecutedTools = completion.ExecutedTools
 	} else if receipt.TimedOut {
 		receipt.Status, receipt.FailureCode = "timeout", orchestratorSSHDispatchTimeout
 	}
@@ -189,6 +192,13 @@ func runOrchestratorSSHDispatchWithTimeout(request OrchestratorSSHDispatchReques
 		return receipt, fmt.Errorf("%s", receipt.FailureCode)
 	}
 	return receipt, nil
+}
+
+func validOrchestratorExecutedTools(tools RuntimeArtifact, plan OrchestratorCampaignPlan) bool {
+	if tools == (RuntimeArtifact{}) {
+		return true
+	}
+	return ValidateRuntimeArtifact(tools) == nil && tools.Commit == plan.Definition.Tools.Commit && (tools.SHA256 == plan.Definition.Tools.SHA256 || tools.SHA256 == plan.Definition.ControlledInputSHA256[OrchestratorToolsAMD64Input])
 }
 
 func preflightOrchestratorSSHReceiptPath(path string) error {

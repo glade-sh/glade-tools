@@ -67,6 +67,28 @@ func TestCorpusAssuranceOrchestratorPlansInitializesAndRejectsArbitraryCommands(
 	}
 }
 
+func TestCorpusAssuranceOrchestratorProductionBuildIsReachable(t *testing.T) {
+	request := filepath.Join(t.TempDir(), "request.json")
+	if err := os.WriteFile(request, []byte("{}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	var stdout bytes.Buffer
+	if err := runCorpusAssuranceOrchestrator(context.Background(), []string{"production-build", "--request", request}, &stdout); err == nil || !strings.Contains(err.Error(), "mode-0600") {
+		t.Fatalf("production-build accepted writable private request: %v", err)
+	}
+	if err := os.Chmod(request, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	for name, args := range map[string][]string{
+		"duplicate": {"production-build", "--request", request, "--request", request},
+		"trailing":  {"production-build", "--request", request, "trailing"},
+	} {
+		if err := runCorpusAssuranceOrchestrator(context.Background(), args, &stdout); err == nil {
+			t.Fatalf("production-build accepted %s arguments", name)
+		}
+	}
+}
+
 func TestCorpusAssuranceOrchestratorHubObserveRequiresModeProtectedSanitizedJSON(t *testing.T) {
 	root := t.TempDir()
 	database := filepath.Join(root, "orchestrator.db")
