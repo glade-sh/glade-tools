@@ -535,7 +535,7 @@ func CreateSalesforceDispatch(request SalesforceDispatchRequest) (SalesforceDisp
 	if bundle.FilterSHA256 != approvedFilterSHA256(request.approvedFilterSHA256) {
 		return SalesforceDispatch{}, fmt.Errorf("Salesforce bundle filter is not independently authorized")
 	}
-	executorRoot, runID, err := sealedSalesforceDispatchLayout(request.BundlePath, bundle.AttemptSHA256, request.ShardIndex)
+	executorRoot, runID, err := sealedSalesforceDispatchLayout(request.BundlePath, bundle.AttemptSHA256, request.ShardIndex, request.ShardCount)
 	requestExecutorRoot, requestErr := canonicalSalesforceExecutorRoot(request.ExecutorRoot)
 	if err != nil || requestErr != nil || requestExecutorRoot != executorRoot || request.RunID != runID {
 		return SalesforceDispatch{}, fmt.Errorf("Salesforce dispatch does not use the sealed attempt layout")
@@ -571,8 +571,8 @@ func CreateSalesforceDispatch(request SalesforceDispatchRequest) (SalesforceDisp
 	return dispatch, nil
 }
 
-func sealedSalesforceDispatchIdentity(bundlePath, attemptSHA256 string, shardIndex int) (string, string, error) {
-	executorRoot, runID, err := sealedSalesforceDispatchLayout(bundlePath, attemptSHA256, shardIndex)
+func sealedSalesforceDispatchIdentity(bundlePath, attemptSHA256 string, shardIndex, shardCount int) (string, string, error) {
+	executorRoot, runID, err := sealedSalesforceDispatchLayout(bundlePath, attemptSHA256, shardIndex, shardCount)
 	if err != nil {
 		return "", "", err
 	}
@@ -582,13 +582,17 @@ func sealedSalesforceDispatchIdentity(bundlePath, attemptSHA256 string, shardInd
 	return executorRoot, runID, nil
 }
 
-func sealedSalesforceDispatchLayout(bundlePath, attemptSHA256 string, shardIndex int) (string, string, error) {
+func sealedSalesforceDispatchLayout(bundlePath, attemptSHA256 string, shardIndex, shardCount int) (string, string, error) {
 	canonicalBundle, err := filepath.EvalSymlinks(bundlePath)
-	if err != nil || !filepath.IsAbs(canonicalBundle) || filepath.Base(filepath.Dir(canonicalBundle)) != "bundle" || filepath.Base(filepath.Dir(filepath.Dir(canonicalBundle))) != "salesforce-worker" || !sha256Pattern.MatchString(attemptSHA256) || shardIndex < 0 || shardIndex >= 2 {
+	if err != nil || !filepath.IsAbs(canonicalBundle) || filepath.Base(filepath.Dir(canonicalBundle)) != "bundle" || filepath.Base(filepath.Dir(filepath.Dir(canonicalBundle))) != "salesforce-worker" || !sha256Pattern.MatchString(attemptSHA256) || shardCount < 1 || shardIndex < 0 || shardIndex >= shardCount {
 		return "", "", fmt.Errorf("invalid staged bundle layout")
 	}
 	attemptRoot := filepath.Dir(filepath.Dir(filepath.Dir(canonicalBundle)))
-	return filepath.Join(attemptRoot, "executor", fmt.Sprintf("shard-%d", shardIndex)), "assurance-" + attemptSHA256[:16] + fmt.Sprintf("-shard-%d", shardIndex), nil
+	suffix := fmt.Sprintf("shard-%d", shardIndex)
+	if shardCount != 2 {
+		suffix = fmt.Sprintf("shard-%d-of-%d", shardIndex, shardCount)
+	}
+	return filepath.Join(attemptRoot, "executor", suffix), "assurance-" + attemptSHA256[:16] + "-" + suffix, nil
 }
 
 func canonicalSalesforceExecutorRoot(path string) (string, error) {
@@ -685,7 +689,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 		return SalesforceShard{}, fmt.Errorf("invalid sealed Salesforce dispatch")
 	}
 	dispatchSHA := replayBytesSHA256(dispatchBytes)
-	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
+	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex, dispatch.ShardCount); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
 		return SalesforceShard{}, fmt.Errorf("invalid physical sealed Salesforce executor")
 	}
 	filterOutput := sealedSalesforceFilterOutputPath(dispatch.ExecutorRoot)
@@ -739,7 +743,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if command.CommandSpecSHA256 != dispatch.FilterCommandSpecSHA256 {
 		return SalesforceShard{}, fmt.Errorf("Salesforce filter command does not match sealed dispatch")
 	}
-	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
+	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex, dispatch.ShardCount); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
 		return SalesforceShard{}, fmt.Errorf("sealed Salesforce executor changed during filter execution")
 	}
 	if info, err := os.Lstat(filterOutput); err != nil || info.Mode()&os.ModeSymlink != 0 || !info.IsDir() {
@@ -750,7 +754,7 @@ func RunSalesforceShard(request SalesforceShardRequest) (SalesforceShard, error)
 	if err != nil {
 		return SalesforceShard{}, fmt.Errorf("Salesforce postflight: %w", err)
 	}
-	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
+	if executorRoot, runID, err := sealedSalesforceDispatchIdentity(request.BundlePath, bundle.AttemptSHA256, dispatch.ShardIndex, dispatch.ShardCount); err != nil || executorRoot != dispatch.ExecutorRoot || runID != dispatch.RunID {
 		return SalesforceShard{}, fmt.Errorf("sealed Salesforce executor changed during postflight execution")
 	}
 	if err := validate(request.BundlePath); err != nil {
@@ -2258,7 +2262,7 @@ func validSalesforceDispatch(dispatch SalesforceDispatch, bundle OracleBundle, b
 	if validateApprovedOracleBundleFilter(bundle) != nil {
 		return false
 	}
-	executorRoot, runID, identityErr := sealedSalesforceDispatchLayout(bundlePath, bundle.AttemptSHA256, dispatch.ShardIndex)
+	executorRoot, runID, identityErr := sealedSalesforceDispatchLayout(bundlePath, bundle.AttemptSHA256, dispatch.ShardIndex, dispatch.ShardCount)
 	filterPath := sealedSalesforceFilterScriptPath(executorRoot)
 	stagedFilterPath := filepath.Join(filepath.Dir(filepath.Dir(bundlePath)), "transport", "salesforce-first-filter.py")
 	filterSource, sourceErr := os.ReadFile(stagedFilterPath)
