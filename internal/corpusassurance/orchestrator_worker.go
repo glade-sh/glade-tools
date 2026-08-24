@@ -278,7 +278,9 @@ func runOrchestratorWorkerOnce(ctx context.Context, orchestrator *Orchestrator, 
 		if err = orchestrator.Heartbeat(request.Lease, now, heartbeat); err != nil {
 			return result, orchestratorWorkerError{failureCode}
 		}
-		claim, claimErr := orchestrator.ClaimCleanupForLease(request.Lease, request.AllocationAlias, now, heartbeat)
+		renewedLease := request.Lease
+		renewedLease.LeaseUntil = time.UnixMilli(now.Add(heartbeat).UnixMilli()).UTC()
+		claim, claimErr := orchestrator.ClaimCleanupForLease(renewedLease, request.AllocationAlias, now, heartbeat)
 		if claimErr != nil || claim.JobID != request.Lease.JobID || claim.Generation != request.Lease.Generation || claim.AllocationAlias != request.AllocationAlias || claim.HubAlias != request.HubAlias {
 			return result, orchestratorWorkerError{failureCode}
 		}
